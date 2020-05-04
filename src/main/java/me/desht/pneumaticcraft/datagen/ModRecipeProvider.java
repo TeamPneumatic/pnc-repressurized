@@ -847,7 +847,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 "LSL/SFS/LSL",
                 'L', PneumaticCraftTags.Items.UPGRADE_COMPONENTS,
                 'S', Items.SUGAR,
-                'F', FluidIngredient.of(ModFluids.LUBRICANT.get(), 1000)
+                'F', FluidIngredient.of(1000, ModFluids.LUBRICANT.get())
         ).build(consumer);
 
         shaped(EnumUpgrade.JET_BOOTS.getItem(1), ModItems.PNEUMATIC_BOOTS.get(),
@@ -1069,23 +1069,23 @@ public class ModRecipeProvider extends RecipeProvider {
         heatFrameCooling(Ingredient.fromItems(Items.LAVA_BUCKET), 273,
                 new ItemStack(Blocks.OBSIDIAN))
                 .build(consumer, RL("heat_frame_cooling/obsidian"));
-        heatFrameCooling(FluidIngredient.of(ModFluids.PLASTIC.get(), 1000), 273,
+        heatFrameCooling(FluidIngredient.of(1000, PneumaticCraftTags.Fluids.PLASTIC), 273,
                 new ItemStack(ModItems.PLASTIC.get()), 0.01f, 0.75f)
                 .build(consumer, RL("heat_frame_cooling/plastic"));
 
         // refinery
-        refinery(FluidIngredient.of(ModFluids.OIL.get(), 10),
+        refinery(FluidIngredient.of(10, PneumaticCraftTags.Fluids.OIL),
                 TemperatureRange.min(373),
                 new FluidStack(ModFluids.DIESEL.get(), 4),
                 new FluidStack(ModFluids.LPG.get(), 2)
         ).build(consumer, RL("refinery/oil_2"));
-        refinery(FluidIngredient.of(ModFluids.OIL.get(), 10),
+        refinery(FluidIngredient.of(10, PneumaticCraftTags.Fluids.OIL),
                 TemperatureRange.min(373),
                 new FluidStack(ModFluids.DIESEL.get(), 2),
                 new FluidStack(ModFluids.KEROSENE.get(), 3),
                 new FluidStack(ModFluids.LPG.get(), 2)
         ).build(consumer, RL("refinery/oil_3"));
-        refinery(FluidIngredient.of(ModFluids.OIL.get(), 10),
+        refinery(FluidIngredient.of(10, PneumaticCraftTags.Fluids.OIL),
                 TemperatureRange.min(373),
                 new FluidStack(ModFluids.DIESEL.get(), 2),
                 new FluidStack(ModFluids.KEROSENE.get(), 3),
@@ -1094,27 +1094,27 @@ public class ModRecipeProvider extends RecipeProvider {
         ).build(consumer, RL("refinery/oil_4"));
 
         // thermopneumatic processing plant
-        thermoPlant(FluidIngredient.of(ModFluids.DIESEL.get(), 100), Ingredient.EMPTY,
+        thermoPlant(FluidIngredient.of(100, PneumaticCraftTags.Fluids.DIESEL), Ingredient.EMPTY,
                 new FluidStack(ModFluids.KEROSENE.get(), 80), ItemStack.EMPTY,
                 TemperatureRange.min(573), 2.0f, false
         ).build(consumer, RL("thermo_plant/kerosene"));
-        thermoPlant(FluidIngredient.of(ModFluids.KEROSENE.get(), 100), Ingredient.EMPTY,
+        thermoPlant(FluidIngredient.of(100, PneumaticCraftTags.Fluids.KEROSENE), Ingredient.EMPTY,
                 new FluidStack(ModFluids.GASOLINE.get(), 80), ItemStack.EMPTY,
                 TemperatureRange.min(573), 2.0f, false
         ).build(consumer, RL("thermo_plant/gasoline"));
-        thermoPlant(FluidIngredient.of(ModFluids.GASOLINE.get(), 100), Ingredient.EMPTY,
+        thermoPlant(FluidIngredient.of(100, PneumaticCraftTags.Fluids.GASOLINE), Ingredient.EMPTY,
                 new FluidStack(ModFluids.LPG.get(), 80), ItemStack.EMPTY,
                 TemperatureRange.min(573), 2.0f, false
         ).build(consumer, RL("thermo_plant/lpg"));
-        thermoPlant(FluidIngredient.of(ModFluids.DIESEL.get(), 1000), Ingredient.fromTag(Tags.Items.DUSTS_REDSTONE),
+        thermoPlant(FluidIngredient.of(1000, PneumaticCraftTags.Fluids.DIESEL), Ingredient.fromTag(Tags.Items.DUSTS_REDSTONE),
                 new FluidStack(ModFluids.LUBRICANT.get(), 1000), ItemStack.EMPTY,
                 TemperatureRange.min(373), 0f, false
         ).build(consumer, RL("thermo_plant/lubricant"));
-        thermoPlant(FluidIngredient.of(ModFluids.LPG.get(), 100), Ingredient.fromTag(ItemTags.COALS),
+        thermoPlant(FluidIngredient.of(100, PneumaticCraftTags.Fluids.LPG), Ingredient.fromTag(ItemTags.COALS),
                 new FluidStack(ModFluids.PLASTIC.get(), 1000), ItemStack.EMPTY,
                 TemperatureRange.min(373), 0f, false
         ).build(consumer, RL("thermo_plant/plastic"));
-        thermoPlant(FluidIngredient.of(Fluids.WATER, 1000), Ingredient.fromItems(Items.LAPIS_LAZULI),
+        thermoPlant(FluidIngredient.of(1000, Fluids.WATER), Ingredient.fromItems(Items.LAPIS_LAZULI),
                 FluidStack.EMPTY, new ItemStack(ModItems.UPGRADE_MATRIX.get(), 4),
                 TemperatureRange.min(273), 2f, false
         ).build(consumer, RL("thermo_plant/upgrade_matrix"));
@@ -1327,7 +1327,7 @@ public class ModRecipeProvider extends RecipeProvider {
 
     private HeatFrameCoolingRecipeBuilder heatFrameCooling(Ingredient ingredient, int maxTemp, ItemStack result, float bonusMult, float bonusLimit) {
         return new HeatFrameCoolingRecipeBuilder(ingredient, maxTemp, result, bonusMult, bonusLimit)
-                .addCriterion(Criteria.has(ingredient));
+                .addCriterion(Criteria.has(ModItems.HEAT_FRAME.get()));
     }
 
     private RefineryRecipeBuilder refinery(FluidIngredient ingredient, TemperatureRange operatingTemp, FluidStack... outputs) {

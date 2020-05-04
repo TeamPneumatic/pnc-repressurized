@@ -2,7 +2,7 @@
   "type": "pneumaticcraft:heat_frame_cooling",
   "input": {
     "type": "pneumaticcraft:fluid",
-    "fluid": "pneumaticcraft:plastic",
+    "tag": "pneumaticcraft:plastic",
     "amount": 1000
   },
   "max_temp": 273,

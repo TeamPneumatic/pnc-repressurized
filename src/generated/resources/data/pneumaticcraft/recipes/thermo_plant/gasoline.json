@@ -2,7 +2,7 @@
   "type": "pneumaticcraft:thermo_plant",
   "fluid_input": {
     "type": "pneumaticcraft:fluid",
-    "fluid": "pneumaticcraft:kerosene",
+    "tag": "pneumaticcraft:kerosene",
     "amount": 100
   },
   "fluid_output": {

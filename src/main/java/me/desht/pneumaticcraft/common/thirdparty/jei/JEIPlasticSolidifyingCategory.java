@@ -91,7 +91,7 @@ public class JEIPlasticSolidifyingCategory implements IRecipeCategory<JEIPlastic
     public static Collection<PlasticSolidifyingRecipe> getAllRecipes() {
         return ImmutableList.of(
                 new PlasticSolidifyingRecipe(
-                        FluidIngredient.of(ModFluids.PLASTIC.get(), 1000),
+                        FluidIngredient.of(1000, ModFluids.PLASTIC.get()),
                         new ItemStack(ModItems.PLASTIC.get())
                 ),
                 new PlasticSolidifyingRecipe(

@@ -6,12 +6,12 @@
     ]
   },
   "criteria": {
-    "plastic_bucket": {
+    "heat_frame": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "item": "pneumaticcraft:plastic_bucket"
+            "item": "pneumaticcraft:heat_frame"
           }
         ]
       }
@@ -25,7 +25,7 @@
   },
   "requirements": [
     [
-      "plastic_bucket",
+      "heat_frame",
       "has_the_recipe"
     ]
   ]

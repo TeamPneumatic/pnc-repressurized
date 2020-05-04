@@ -100,7 +100,7 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
         buffer.writeVarInt(operatingTemperature.getMax());
         buffer.writeFloat(requiredPressure);
         inputItem.write(buffer);
-        inputFluid.writeToPacket(buffer);
+        inputFluid.write(buffer);
         outputFluid.writeToPacket(buffer);
         buffer.writeItemStack(outputItem);
         buffer.writeBoolean(exothermic);
@@ -140,7 +140,7 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
                     Ingredient.EMPTY;
             Ingredient fluidInput = json.has("fluid_input") ?
                     FluidIngredient.deserialize(json.get("fluid_input")) :
-                    Ingredient.EMPTY;
+                    FluidIngredient.EMPTY;
             if (itemInput.hasNoMatchingItems() && fluidInput.hasNoMatchingItems()) {
                 throw new JsonSyntaxException("Must have at least one of item_input and/or fluid_input!");
             }
@@ -172,7 +172,7 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
             TemperatureRange range = TemperatureRange.of(buffer.readVarInt(), buffer.readVarInt());
             float pressure = buffer.readFloat();
             Ingredient input = Ingredient.read(buffer);
-            FluidIngredient fluidIn = FluidIngredient.readFromPacket(buffer);
+            FluidIngredient fluidIn = (FluidIngredient) Ingredient.read(buffer);
             FluidStack fluidOut = FluidStack.readFromPacket(buffer);
             ItemStack itemOutput = buffer.readItemStack();
             boolean exothermic = buffer.readBoolean();

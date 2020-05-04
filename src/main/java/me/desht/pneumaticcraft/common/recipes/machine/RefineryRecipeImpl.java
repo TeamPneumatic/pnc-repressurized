@@ -58,7 +58,7 @@ public class RefineryRecipeImpl extends RefineryRecipe {
 
 	@Override
 	public void write(PacketBuffer buffer) {
-		input.writeToPacket(buffer);
+		input.write(buffer);
 		buffer.writeVarInt(operatingTemp.getMin());
 		buffer.writeVarInt(operatingTemp.getMax());
 		buffer.writeVarInt(outputs.size());
@@ -110,7 +110,7 @@ public class RefineryRecipeImpl extends RefineryRecipe {
         @Nullable
         @Override
         public T read(ResourceLocation recipeId, PacketBuffer buffer) {
-            FluidIngredient input = FluidIngredient.readFromPacket(buffer);
+            FluidIngredient input = (FluidIngredient) Ingredient.read(buffer);
             TemperatureRange range = TemperatureRange.of(buffer.readVarInt(), buffer.readVarInt());
             int nOutputs = buffer.readVarInt();
             FluidStack[] outputs = new FluidStack[nOutputs];

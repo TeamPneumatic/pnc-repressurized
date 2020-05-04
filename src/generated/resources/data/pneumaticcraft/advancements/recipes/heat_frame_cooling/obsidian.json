@@ -6,12 +6,12 @@
     ]
   },
   "criteria": {
-    "lava_bucket": {
+    "heat_frame": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "item": "minecraft:lava_bucket"
+            "item": "pneumaticcraft:heat_frame"
           }
         ]
       }
@@ -25,7 +25,7 @@
   },
   "requirements": [
     [
-      "lava_bucket",
+      "heat_frame",
       "has_the_recipe"
     ]
   ]

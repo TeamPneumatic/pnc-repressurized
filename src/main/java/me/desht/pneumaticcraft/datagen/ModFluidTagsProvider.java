@@ -20,6 +20,12 @@ public class ModFluidTagsProvider extends FluidTagsProvider {
     protected void registerTags() {
         createTag(PneumaticCraftTags.Fluids.OIL, ModFluids.OIL);
         createTag(PneumaticCraftTags.Fluids.ETCHING_ACID, ModFluids.ETCHING_ACID);
+        createTag(PneumaticCraftTags.Fluids.PLASTIC, ModFluids.PLASTIC);
+        createTag(PneumaticCraftTags.Fluids.LUBRICANT, ModFluids.LUBRICANT);
+        createTag(PneumaticCraftTags.Fluids.DIESEL, ModFluids.DIESEL);
+        createTag(PneumaticCraftTags.Fluids.KEROSENE, ModFluids.KEROSENE);
+        createTag(PneumaticCraftTags.Fluids.GASOLINE, ModFluids.GASOLINE);
+        createTag(PneumaticCraftTags.Fluids.LPG, ModFluids.LPG);
     }
 
     @Override

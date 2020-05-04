@@ -6,12 +6,12 @@
     ]
   },
   "criteria": {
-    "water_bucket": {
+    "heat_frame": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "item": "minecraft:water_bucket"
+            "item": "pneumaticcraft:heat_frame"
           }
         ]
       }
@@ -25,7 +25,7 @@
   },
   "requirements": [
     [
-      "water_bucket",
+      "heat_frame",
       "has_the_recipe"
     ]
   ]
