@@ -26,6 +26,7 @@ import me.desht.pneumaticcraft.common.recipes.machine.ExplosionCraftingRecipeImp
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefineryController;
+import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Names;
@@ -180,11 +181,10 @@ public class EventHandlerPneumaticCraft {
             if (event.getWorld() != null && !event.getWorld().isRemote) {
                 if (interactedBlock != ModBlocks.SECURITY_STATION.get() || event instanceof PlayerInteractEvent.LeftClickBlock) {
                     boolean tryingToPlaceSecurityStation = heldItem.getItem() instanceof BlockItem && ((BlockItem) heldItem.getItem()).getBlock() == ModBlocks.SECURITY_STATION.get();
-                    int blockingStations = PneumaticCraftUtils.getProtectingSecurityStations(event.getWorld(), event.getPos(), event.getPlayer(), true, tryingToPlaceSecurityStation);
+                    int blockingStations = TileEntitySecurityStation.getProtectingSecurityStations(event.getPlayer(), event.getPos(), true, tryingToPlaceSecurityStation);
                     if (blockingStations > 0) {
                         event.setCanceled(true);
-                        event.getPlayer().sendStatusMessage(
-                                new TranslationTextComponent(
+                        event.getPlayer().sendStatusMessage(new TranslationTextComponent(
                                         tryingToPlaceSecurityStation ? "message.securityStation.stationPlacementPrevented" : "message.securityStation.accessPrevented",
                                         blockingStations), false);
                     }

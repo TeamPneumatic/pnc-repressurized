@@ -6,7 +6,6 @@ import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerPneumaticDoorBase;
 import me.desht.pneumaticcraft.common.network.*;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
 import net.minecraft.block.BlockState;
@@ -119,7 +118,7 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase
                 int range = TileEntityConstants.RANGE_PNEUMATIC_DOOR_BASE + this.getUpgrades(EnumUpgrade.RANGE);
                 AxisAlignedBB aabb = new AxisAlignedBB(getPos()).grow(range);
                 for (PlayerEntity player : getWorld().getEntitiesWithinAABB(PlayerEntity.class, aabb)) {
-                    if (PneumaticCraftUtils.getProtectingSecurityStations(getWorld(), getPos(), player, false, false) > 0) {
+                    if (TileEntitySecurityStation.getProtectingSecurityStations(player, getPos(), false, false) > 0) {
                         continue;
                     }
                     if (redstoneMode == 0) {
