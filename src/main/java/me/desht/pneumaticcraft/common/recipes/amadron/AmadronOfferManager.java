@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.recipes.amadron;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
@@ -275,18 +276,18 @@ public enum AmadronOfferManager {
         staticOffers.clear();
         periodicOffers.clear();
         resourceList.forEach((id, json) -> {
-            try {
-                if (JSONUtils.getString(json, "type").equals("pneumaticcraft:amadron")) {
+            if (JSONUtils.getString(json, "type", "").equals("pneumaticcraft:amadron")) {
+                try {
                     AmadronOffer offer = AmadronOffer.fromJson(id, json);
                     if (offer.isStaticOffer()) {
                         staticOffers.add(offer);
                     } else {
                         periodicOffers.computeIfAbsent(offer.getTradeLevel(), l -> new ArrayList<>()).add(offer);
                     }
+                } catch (CommandSyntaxException | JsonSyntaxException e) {
+                    Log.error("Syntax error for offer id " + id + ": " + e.getMessage());
+                    Log.error(ExceptionUtils.getStackTrace(e));
                 }
-            } catch (CommandSyntaxException e) {
-                Log.error("Syntax error for offer id " + id + ": " + e.getMessage());
-                Log.error(ExceptionUtils.getStackTrace(e));
             }
         });
     }
