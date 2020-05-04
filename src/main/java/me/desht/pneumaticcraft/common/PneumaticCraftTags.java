@@ -67,6 +67,12 @@ public class PneumaticCraftTags {
     public static class Fluids extends PneumaticCraftTags {
         public static final Tag<Fluid> OIL = modTag("oil");
         public static final Tag<Fluid> ETCHING_ACID = modTag("etching_acid");
+        public static final Tag<Fluid> PLASTIC = modTag("plastic");
+        public static final Tag<Fluid> DIESEL = modTag("diesel");
+        public static final Tag<Fluid> KEROSENE = modTag("kerosene");
+        public static final Tag<Fluid> GASOLINE = modTag("gasoline");
+        public static final Tag<Fluid> LPG = modTag("lpg");
+        public static final Tag<Fluid> LUBRICANT = modTag("lubricant");
 
         static Tag<Fluid> tag(String modid, String name) {
             return tag(FluidTags.Wrapper::new, modid, name);

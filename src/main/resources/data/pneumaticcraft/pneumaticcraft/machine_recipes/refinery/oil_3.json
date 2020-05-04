@@ -1,7 +1,7 @@
 {
   "input": {
     "type": "pneumaticcraft:fluid",
-    "fluid": "pneumaticcraft:oil",
+    "tag": "pneumaticcraft:oil",
     "amount": 10
   },
   "results": [

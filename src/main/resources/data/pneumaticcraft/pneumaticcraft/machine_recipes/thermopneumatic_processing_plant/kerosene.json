@@ -1,7 +1,7 @@
 {
   "fluid_input": {
     "type": "pneumaticcraft:fluid",
-    "fluid": "pneumaticcraft:diesel",
+    "tag": "pneumaticcraft:diesel",
     "amount": 100
   },
   "min_temp": 573,

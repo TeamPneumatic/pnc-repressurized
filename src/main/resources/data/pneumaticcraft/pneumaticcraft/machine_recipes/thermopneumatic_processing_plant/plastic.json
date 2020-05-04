@@ -1,7 +1,7 @@
 {
   "fluid_input": {
     "type": "pneumaticcraft:fluid",
-    "fluid": "pneumaticcraft:lpg",
+    "tag": "pneumaticcraft:lpg",
     "amount": 100
   },
   "item_input": {
