@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "pneumaticcraft:amadron/oil_to_emerald"
+    ]
+  },
+  "criteria": {
+    "amadron_tablet": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:amadron_tablet"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "pneumaticcraft:amadron/oil_to_emerald"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "amadron_tablet",
+      "has_the_recipe"
+    ]
+  ]
+}
