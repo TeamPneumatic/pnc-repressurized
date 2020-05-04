@@ -8,6 +8,30 @@ Changes are in reverse chronological order; newest changes at the top.
 
 This release brings a very major internal rewrite and many many major new and modified gameplay elements. See also https://gist.github.com/desht/b604bd670f7f718bb4e6f20ff53893e2
 
+## 1.0.2-11 (May 4 2020)
+
+This release contains various fixes and small improvements backported from the 1.15.2 release
+
+### Updates
+* Added fluid tags for most PneumaticCraft fluid (tag names same as fluid name, e.g. "pneumaticcraft:lpg" fluid tag contains "pneumaticcraft:lpg" by default)
+  * Also updated Refinery and Thermopneumatic Processing Plant recipes to use fluid tags instead of fluids directly
+  * Makes it easier to support other fluids (e.g. for the Refinery to use another mod's oil, add that mod's "mod:oil" fluid to "pneumaticcraft:oil" tag in your datapack; no need to add a whole new recipe now)
+* Increased Jet Boots speed a little, back to 1.12.2 levels
+* Air Grate uses less air now, and only when actually pushing/pulling entities
+* A few texture tweaks to some items and blocks
+* A camouflaged elevator now renders the camo on the elevator floor at all times (not just when the elevator is at the bottom)
+* Removed experience drop for smelting Plastic Construction Bricks™ back to Plastic Sheets (much too easy to exploit for infinite exp)
+* Drones no longer use their owner's UUID for their fake player.
+  * While this was convenient for protection mods, it introduced some subtle problems, where the server associated a player's UUID with a fake player object instead of the real player.  The most obvious effect of this was advancements often not working.
+  * Protection mods should now use "<playername>_drone" to permit a given player's drones.
+
+### Fixes
+* Pressure Chamber Interface door now shrinks as it opens, so it doesn't overlap adjacent blocks (which looked dumb when the adjacent block was Pressure Glass...)
+* Fixed possible crash in tube module syncing due to client trying to send a packet intended for server-client usage
+* Sentry Turret now renders its bullet tracers when the block itself is off-screen
+* Fixed multiblock elevators sounding much too loud
+* Logistics advancements no longer require plastic to be unlocked (since logistics items no longer require plastic...)
+
 ## 1.0.1-10 (Apr 17 2020)
 
 ### Fixes
