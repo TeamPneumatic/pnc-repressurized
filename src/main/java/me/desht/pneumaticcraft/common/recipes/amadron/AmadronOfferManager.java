@@ -197,20 +197,22 @@ public enum AmadronOfferManager {
         villagerTrades.values().forEach(offers -> offers.forEach(offer -> addOffer(allOffers, offer)));
 
         int nProfessions = validProfessions.size() + (periodicOffers.isEmpty() ? 0 : 1);
-        Random rand = new Random();
-        for (int i = 0; i < PNCConfig.Common.Amadron.numPeriodicOffers; i++) {
-            int p = rand.nextInt(nProfessions);
-            AmadronOffer offer;
-            if (!periodicOffers.isEmpty() && p == validProfessions.size()) {
-                offer = pickRandomPeriodicTrade(rand);
-            } else {
-                if (p == validProfessions.size()) {
-                    p = rand.nextInt(validProfessions.size());
+        if (nProfessions > 0) {  // should always be > 0, but sanity checking...
+            Random rand = new Random();
+            for (int i = 0; i < PNCConfig.Common.Amadron.numPeriodicOffers; i++) {
+                int p = rand.nextInt(nProfessions);
+                AmadronOffer offer;
+                if (!periodicOffers.isEmpty() && p == validProfessions.size()) {
+                    offer = pickRandomPeriodicTrade(rand);
+                } else {
+                    if (p == validProfessions.size()) {
+                        p = rand.nextInt(validProfessions.size());
+                    }
+                    offer = pickRandomVillagerTrade(validProfessions.get(p), rand);
                 }
-                offer = pickRandomVillagerTrade(validProfessions.get(p), rand);
-            }
-            if (offer != null) {
-                addOffer(activeOffers, offer);
+                if (offer != null) {
+                    addOffer(activeOffers, offer);
+                }
             }
         }
 
