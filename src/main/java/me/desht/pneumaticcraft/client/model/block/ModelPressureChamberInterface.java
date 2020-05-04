@@ -32,14 +32,20 @@ public class ModelPressureChamberInterface extends AbstractTileModelRenderer.Bas
     }
 
     private void renderDoors(float size, float inputDoor, float outputDoor){
-        GlStateManager.pushMatrix();
-        GlStateManager.translated((1F - (float)Math.cos(inputDoor * Math.PI)) * 0.37F, 0, 0);
-        input.render(size);
-        GlStateManager.popMatrix();
-        GlStateManager.pushMatrix();
-        GlStateManager.translated((1F - (float)Math.cos(outputDoor * Math.PI)) * 0.37F, 0, 0);
-        output.render(size);
-        GlStateManager.popMatrix();
+        if (inputDoor < 1f) {
+            GlStateManager.pushMatrix();
+            GlStateManager.translated((1F - (float) Math.cos(inputDoor * Math.PI)) * 0.37F, 0, 0);
+            GlStateManager.scaled(1f - inputDoor, 1, 1);
+            input.render(size);
+            GlStateManager.popMatrix();
+        }
+        if (outputDoor < 1f) {
+            GlStateManager.pushMatrix();
+            GlStateManager.translated((1F - (float) Math.cos(outputDoor * Math.PI)) * 0.37F, 0, 0);
+            GlStateManager.scaled(1f - outputDoor, 1, 1);
+            output.render(size);
+            GlStateManager.popMatrix();
+        }
     }
 
     public void renderModel(float size, TileEntityPressureChamberInterface te, float partialTicks) {
