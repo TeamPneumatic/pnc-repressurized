@@ -26,6 +26,8 @@ This release contains various fixes and small improvements backported from the 1
   * Protection mods should now use "<playername>_drone" to permit a given player's drones.
 
 ### Fixes
+* Fixed fluids not syncing in the Refinery GUI (sync issue only - Refinery was working properly serverside)
+* Fixed misleading tooltip on non-PneumaticCraft fluid buckets (e.g. Silent's Gems oil bucket) suggesting it could be used in the Refinery. It can't by default (datapack is needed to add the fluid to appropriate tag, i.e. "pneumaticcraft:oil")
 * Pressure Chamber Interface door now shrinks as it opens, so it doesn't overlap adjacent blocks (which looked dumb when the adjacent block was Pressure Glass...)
 * Fixed possible crash in tube module syncing due to client trying to send a packet intended for server-client usage
 * Sentry Turret now renders its bullet tracers when the block itself is off-screen
