@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.api.tileentity.IAirListener;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.block.BlockElevatorBase;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
@@ -77,6 +78,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     @DescSynced
     private ItemStack camoStack = ItemStack.EMPTY;
     private BlockState camoState;
+    public double[] fakeFloorTextureUV;
 
     public TileEntityElevatorBase() {
         super(ModTileEntities.ELEVATOR_BASE.get(), PneumaticValues.DANGER_PRESSURE_ELEVATOR, PneumaticValues.MAX_PRESSURE_ELEVATOR, PneumaticValues.VOLUME_ELEVATOR, 4);
@@ -130,7 +132,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
                 if (isStopped) {
                     soundName = ModSounds.ELEVATOR_RISING_START.get();
                     isStopped = false;
-                    if (!world.isRemote) {
+                    if (!world.isRemote && isFirstMultiElevator()) {
                         PacketDistributor.TargetPoint tp = new PacketDistributor.TargetPoint(pos.getX(), pos.getY(), pos.getZ(), 1024, world.getDimension().getType());
                         NetworkHandler.sendToAllAround(new PacketPlayMovingSound(MovingSounds.Sound.ELEVATOR, getCoreElevator()), tp);
                     }
@@ -162,7 +164,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
                 if (isStopped) {
                     soundName = ModSounds.ELEVATOR_RISING_START.get();
                     isStopped = false;
-                    if (!world.isRemote) {
+                    if (!world.isRemote && isFirstMultiElevator()) {
                         PacketDistributor.TargetPoint tp = new PacketDistributor.TargetPoint(pos.getX(), pos.getY(), pos.getZ(), 1024, world.getDimension().getType());
                         NetworkHandler.sendToAllAround(new PacketPlayMovingSound(MovingSounds.Sound.ELEVATOR, getCoreElevator()), tp);
                     }
@@ -178,7 +180,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
                 isStopped = true;
             }
 
-            if (soundName != null && getWorld().isRemote) {
+            if (soundName != null && getWorld().isRemote && isFirstMultiElevator()) {
                 getWorld().playSound(getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5, soundName, SoundCategory.BLOCKS, 0.5F, 1.0F, true);
             }
 
@@ -212,6 +214,10 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
                 te = getWorld().getTileEntity(getPos().add(0, i, 0));
             }
         }
+    }
+
+    private boolean isFirstMultiElevator() {
+        return multiElevators == null || this == multiElevators.get(0);
     }
 
     private boolean isControlledByRedstone() {
@@ -356,7 +362,13 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
 
     @Override
     public void onDescUpdate() {
+        BlockState oldCamo = camoState;
         camoState = ICamouflageableTE.getStateForStack(camoStack);
+        if (oldCamo != camoState) {
+            // cache the UV's for the camouflaged texture (top face of the camo block)
+            // for efficiently rendering it on the moving elevator floor
+            fakeFloorTextureUV = ClientUtils.getTextureUV(camoState, Direction.UP);
+        }
 
         super.onDescUpdate();
     }

@@ -33,6 +33,11 @@ public abstract class AbstractTileModelRenderer<T extends TileEntityBase> extend
         renderModel(te, partialTicks);
 
         GlStateManager.popMatrix();
+
+        renderExtras(te, x, y, z, partialTicks);
+    }
+
+    protected void renderExtras(T te, double x, double y, double z, float partialTicks) {
     }
 
     public static abstract class BaseModel extends Model {
