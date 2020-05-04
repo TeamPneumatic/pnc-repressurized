@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import me.desht.pneumaticcraft.client.render.tileentity.AbstractTileModelRenderer;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberInterface;
 import net.minecraft.client.renderer.entity.model.RendererModel;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.MathHelper;
 
 import static me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberInterface.MAX_PROGRESS;
@@ -31,17 +32,17 @@ public class ModelPressureChamberInterface extends AbstractTileModelRenderer.Bas
         setRotation(output, 0F, 0F, 0F);
     }
 
-    private void renderDoors(float size, float inputDoor, float outputDoor){
+    private void renderDoors(TileEntityPressureChamberInterface te, float size, float inputDoor, float outputDoor){
         if (inputDoor < 1f) {
             GlStateManager.pushMatrix();
-            GlStateManager.translated((1F - (float) Math.cos(inputDoor * Math.PI)) * 0.37F, 0, 0);
+            GlStateManager.translated((1F - (float) Math.cos(inputDoor * Math.PI)) * 0.185F * te.getRotation().getAxisDirection().getOffset(), 0, 0);
             GlStateManager.scaled(1f - inputDoor, 1, 1);
             input.render(size);
             GlStateManager.popMatrix();
         }
         if (outputDoor < 1f) {
             GlStateManager.pushMatrix();
-            GlStateManager.translated((1F - (float) Math.cos(outputDoor * Math.PI)) * 0.37F, 0, 0);
+            GlStateManager.translated((1F - (float) Math.cos(outputDoor * Math.PI)) * 0.185F * te.getRotation().getAxisDirection().getOffset(), 0, 0);
             GlStateManager.scaled(1f - outputDoor, 1, 1);
             output.render(size);
             GlStateManager.popMatrix();
@@ -51,6 +52,6 @@ public class ModelPressureChamberInterface extends AbstractTileModelRenderer.Bas
     public void renderModel(float size, TileEntityPressureChamberInterface te, float partialTicks) {
         float renderInputProgress = MathHelper.lerp(partialTicks, te.oldInputProgress, te.inputProgress);
         float renderOutputProgress = MathHelper.lerp(partialTicks, te.oldOutputProgress, te.outputProgress);
-        renderDoors(size, renderInputProgress / MAX_PROGRESS, renderOutputProgress / MAX_PROGRESS);
+        renderDoors(te, size, renderInputProgress / MAX_PROGRESS, renderOutputProgress / MAX_PROGRESS);
     }
 }
