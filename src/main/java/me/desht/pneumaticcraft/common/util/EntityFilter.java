@@ -15,17 +15,21 @@ import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.passive.AnimalEntity;
+import net.minecraft.entity.passive.CatEntity;
+import net.minecraft.entity.passive.SheepEntity;
+import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.DyeColor;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.common.IShearable;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -111,21 +115,62 @@ public class EntityFilter implements Predicate<Entity>, com.google.common.base.P
         return !sense;
     }
 
+    private static final Set<String> DYE_COLORS = new HashSet<>();
+    static {
+        for (DyeColor d : DyeColor.values()) {
+            DYE_COLORS.add(d.getTranslationKey());
+        }
+    }
+
     private enum Modifier {
         AGE(ImmutableSet.of("adult", "baby")),
-        BREEDABLE(ImmutableSet.of("yes", "no"));
+        BREEDABLE(ImmutableSet.of("yes", "no")),
+        SHEARABLE(ImmutableSet.of("yes", "no")),
+        COLOR(DYE_COLORS);
 
         private final Set<String> vals;
 
-        Modifier(ImmutableSet<String> v) {
+        Modifier(Set<String> v) {
             vals = v;
         }
 
         boolean isValid(String s) {
             return vals.contains(s);
         }
-    }
 
+        boolean match(Entity entity, String val) {
+            switch (this) {
+                case AGE:
+                    if (entity instanceof AgeableEntity) {
+                        return ((AgeableEntity) entity).getGrowingAge() >= 0 ?
+                                val.equalsIgnoreCase("adult") : val.equalsIgnoreCase("baby");
+                    }
+                    break;
+                case BREEDABLE:
+                    if (entity instanceof AnimalEntity) {
+                        return ((AnimalEntity) entity).getGrowingAge() == 0 ?
+                                val.equalsIgnoreCase("yes") : val.equalsIgnoreCase("no");
+                    }
+                    break;
+                case SHEARABLE:
+                    if (entity instanceof IShearable) {
+                        return ((IShearable) entity).isShearable(new ItemStack(Items.SHEARS), entity.getEntityWorld(), entity.getPosition()) ?
+                                val.equalsIgnoreCase("yes") : val.equalsIgnoreCase("no");
+                    }
+                    break;
+                case COLOR:
+                    if (entity instanceof SheepEntity) {
+                        return ((SheepEntity) entity).getFleeceColor().getTranslationKey().equalsIgnoreCase(val);
+                    } else if (entity instanceof WolfEntity) {
+                        return ((WolfEntity) entity).getCollarColor().getTranslationKey().equalsIgnoreCase(val);
+                    } else if (entity instanceof CatEntity) {
+                        return ((CatEntity) entity).getCollarColor().getTranslationKey().equalsIgnoreCase(val);
+                    }
+                    break;
+            }
+            return false;
+        }
+    }
 
     private class EntityMatcher implements Predicate<Entity> {
         private final Pattern regex;
@@ -178,25 +223,13 @@ public class EntityFilter implements Predicate<Entity>, com.google.common.base.P
         }
 
         private boolean matchModifiers(Entity entity) {
+            // this is a match-all (e.g. "sheep(sheared=false,color=black)" matches sheep which are unsheared AND black
             for (Pair<Modifier,String> pair : modifiers) {
                 Modifier modifier = pair.getLeft();
                 String val = pair.getRight();
-                boolean ret = false;
-                switch (modifier) {
-                    case AGE:
-                        if (entity instanceof AgeableEntity) {
-                            ret = ((AgeableEntity) entity).getGrowingAge() >= 0 ?
-                                    val.equalsIgnoreCase("adult") : val.equalsIgnoreCase("baby");
-                        }
-                        break;
-                    case BREEDABLE:
-                        if (entity instanceof AnimalEntity) {
-                            ret = ((AnimalEntity) entity).getGrowingAge() == 0 ?
-                                    val.equalsIgnoreCase("yes") : val.equalsIgnoreCase("no");
-                        }
-                        break;
+                if (!modifier.match(entity, val)) {
+                    return false;
                 }
-                if (!ret) return false;
             }
             return true;
         }
