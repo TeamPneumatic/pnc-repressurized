@@ -18,48 +18,48 @@ public class ModelLogistics extends AbstractModelRenderer<ModuleLogistics> {
     private final ModelRenderer notPowered, powered, action, notEnoughAir;
 
     public ModelLogistics() {
-        notPowered = new ModelRenderer(32, 32, 72, 0);
+        notPowered = new ModelRenderer(128, 128, 72, 0);
         notPowered.addBox(0F, 0F, 0F, 6, 2, 6);
         notPowered.setRotationPoint(-3F, 13F, 4F);
         notPowered.mirror = true;
         setRotation(notPowered, -1.570796F, 0F, 0F);
-        powered = new ModelRenderer(32, 32, 48, 0);
+        powered = new ModelRenderer(128, 128, 48, 0);
         powered.addBox(0F, 0F, 0F, 6, 2, 6);
         powered.setRotationPoint(-3F, 13F, 4F);
         powered.mirror = true;
         setRotation(powered, -1.570796F, 0F, 0F);
-        action = new ModelRenderer(32, 32, 24, 0);
+        action = new ModelRenderer(128, 128, 24, 0);
         action.addBox(0F, 0F, 0F, 6, 2, 6);
         action.setRotationPoint(-3F, 13F, 4F);
         action.mirror = true;
         setRotation(action, -1.570796F, 0F, 0F);
-        notEnoughAir = new ModelRenderer(32, 32, 0, 0);
+        notEnoughAir = new ModelRenderer(128, 128, 0, 0);
         notEnoughAir.addBox(0F, 0F, 0F, 6, 2, 6);
         notEnoughAir.setRotationPoint(-3F, 13F, 4F);
         notEnoughAir.mirror = true;
         setRotation(notEnoughAir, -1.570796F, 0F, 0F);
 
-        base2 = new ModelRenderer(32, 32, 0, 25);
+        base2 = new ModelRenderer(128, 128, 0, 25);
         base2.addBox(0F, 0F, 0F, 12, 2, 12);
         base2.setRotationPoint(-6F, 10F, 6F);
         base2.mirror = true;
         setRotation(base2, -1.570796F, 0F, 0F);
-        shape1 = new ModelRenderer(32, 32, 0, 39);
+        shape1 = new ModelRenderer(128, 128, 0, 39);
         shape1.addBox(0F, 0F, 0F, 1, 13, 1);
         shape1.setRotationPoint(5.5F, 9.5F, 5.5F);
         shape1.mirror = true;
         setRotation(shape1, 0F, 0F, 0F);
-        shape2 = new ModelRenderer(32, 32, 4, 39);
+        shape2 = new ModelRenderer(128, 128, 4, 39);
         shape2.addBox(0F, 0F, 0F, 1, 13, 1);
         shape2.setRotationPoint(-6.5F, 9.5F, 5.5F);
         shape2.mirror = true;
         setRotation(shape2, 0F, 0F, 0F);
-        shape3 = new ModelRenderer(32, 32, 8, 39);
+        shape3 = new ModelRenderer(128, 128, 8, 39);
         shape3.addBox(0F, 0F, 0F, 11, 1, 1);
         shape3.setRotationPoint(-5.5F, 9.5F, 5.5F);
         shape3.mirror = true;
         setRotation(shape3, 0F, 0F, 0F);
-        shape4 = new ModelRenderer(32, 32, 8, 41);
+        shape4 = new ModelRenderer(128, 128, 8, 41);
         shape4.addBox(0F, 0F, 0F, 11, 1, 1);
         shape4.setRotationPoint(-5.5F, 21.5F, 5.5F);
         shape4.mirror = true;
@@ -80,7 +80,7 @@ public class ModelLogistics extends AbstractModelRenderer<ModuleLogistics> {
         base2.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
 
         // the coloured frame
-        int[] cols = RenderUtils.decomposeColor(0xFF000000 | DyeColor.byId(module.getColorChannel()).getColorValue());
+        float[] cols = RenderUtils.decomposeColorF(0xFF000000 | DyeColor.byId(module.getColorChannel()).getColorValue());
         shape1.render(matrixStack, builder, combinedLight, combinedOverlay, cols[1], cols[2], cols[3], cols[0]);
         shape2.render(matrixStack, builder, combinedLight, combinedOverlay, cols[1], cols[2], cols[3], cols[0]);
         shape3.render(matrixStack, builder, combinedLight, combinedOverlay, cols[1], cols[2], cols[3], cols[0]);
