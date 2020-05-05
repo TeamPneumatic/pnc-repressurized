@@ -20,6 +20,10 @@ Changes are in reverse chronological order; newest changes at the top.
 * All Refinery and TPP recipes now use fluid tags rather than the fluid directly.  
   * All PNC:R fluids have a corresponding fluid tag now (e.g. `pneumaticcraft:diesel` tag contains `pneumaticcraft:diesel` fluid by default and so on)
   * This makes it a lot easier to support other mods' fluids with default recipes - just add them to the appropriate `pneumaticcraft:` fluid tag
+* Entity filters now support a couple of new matches for sheep, wolves & cats
+  * `sheep(shearable=yes)` matches only sheep which have wool right now (good if you want to give your shearing drone a break)
+  * `sheep(color=XXX)` matches only sheep of a given color (colors are e.g. "white", "black", "light_blue"...)
+  * `wolf(color=XXX)` and `cat(color=XXX)` match only wolves/cats with a given collar color, just in case you feel the need to sort your pets by collar color
 
 ### Fixes
 
