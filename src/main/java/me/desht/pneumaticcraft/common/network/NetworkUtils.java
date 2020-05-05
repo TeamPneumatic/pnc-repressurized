@@ -4,7 +4,6 @@ import me.desht.pneumaticcraft.common.network.SyncedField.*;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
 
@@ -129,10 +128,10 @@ public class NetworkUtils {
                     return syncedFields;
                 }
                 if (o instanceof FluidStack[]) {
-                    FluidTank[] array = (FluidTank[]) o;
                     if (filteredIndex >= 0) {
                         syncedFields.add(new SyncedFluidStack(te, field).setArrayIndex(filteredIndex).setLazy(isLazy));
                     } else {
+                        FluidStack[] array = (FluidStack[]) o;
                         for (int i = 0; i < array.length; i++) {
                             syncedFields.add(new SyncedFluidStack(te, field).setArrayIndex(i).setLazy(isLazy));
                         }
@@ -140,10 +139,10 @@ public class NetworkUtils {
                     return syncedFields;
                 }
                 if (o instanceof ItemStackHandler[]) {
-                    ItemStackHandler[] array = (ItemStackHandler[]) o;
                     if (filteredIndex >= 0) {
                         syncedFields.add(new SyncedItemStack(te, field).setArrayIndex(filteredIndex).setLazy(isLazy));
                     } else {
+                        ItemStackHandler[] array = (ItemStackHandler[]) o;
                         for (int i = 0; i < array.length; i++) {
                             syncedFields.add(new SyncedItemStack(te, field).setArrayIndex(i).setLazy(isLazy));
                         }
