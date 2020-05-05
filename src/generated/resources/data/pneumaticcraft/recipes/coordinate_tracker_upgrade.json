@@ -10,7 +10,7 @@
       "tag": "pneumaticcraft:upgrade_components"
     },
     "X": {
-      "item": "minecraft:redstone"
+      "tag": "forge:dusts/redstone"
     },
     "C": {
       "item": "pneumaticcraft:gps_tool"

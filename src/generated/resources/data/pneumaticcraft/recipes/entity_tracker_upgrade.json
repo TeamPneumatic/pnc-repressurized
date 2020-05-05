@@ -10,7 +10,7 @@
       "tag": "pneumaticcraft:upgrade_components"
     },
     "X": {
-      "item": "minecraft:bone"
+      "tag": "forge:bones"
     },
     "C": {
       "item": "minecraft:fermented_spider_eye"

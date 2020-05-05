@@ -7,7 +7,7 @@
   ],
   "key": {
     "W": {
-      "item": "pneumaticcraft:plastic"
+      "tag": "pneumaticcraft:plastic_sheets"
     },
     "P": {
       "item": "pneumaticcraft:printed_circuit_board"

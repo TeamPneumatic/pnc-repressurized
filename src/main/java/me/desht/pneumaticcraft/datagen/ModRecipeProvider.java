@@ -75,7 +75,7 @@ public class ModRecipeProvider extends RecipeProvider {
         shaped(ModItems.ADVANCED_PCB.get(), 4, ModItems.PRINTED_CIRCUIT_BOARD.get(),
                 "RPR/PCP/RPR",
                 'R', Tags.Items.DUSTS_REDSTONE,
-                'P', ModItems.PLASTIC.get(),
+                'P', PneumaticCraftTags.Items.PLASTIC_SHEETS,
                 'C', ModItems.PRINTED_CIRCUIT_BOARD.get()
         ).build(consumer);
 
@@ -104,7 +104,7 @@ public class ModRecipeProvider extends RecipeProvider {
 
         shaped(ModBlocks.AIR_COMPRESSOR.get(), ModBlocks.PRESSURE_TUBE.get(),
                 "III/I T/IFI",
-                'I', ModBlocks.REINFORCED_BRICKS.get(),
+                'I', PneumaticCraftTags.Items.REINFORCED_STONE_BRICKS,
                 'T', ModBlocks.PRESSURE_TUBE.get(),
                 'F', Blocks.FURNACE
         ).build(consumer);
@@ -117,7 +117,7 @@ public class ModRecipeProvider extends RecipeProvider {
 
         shapedPressure(ModItems.AMADRON_TABLET.get(), ModItems.PLASTIC.get(),
                 "PPP/PGP/PCP",
-                'P', ModItems.PLASTIC.get(),
+                'P', PneumaticCraftTags.Items.PLASTIC_SHEETS,
                 'G', ModItems.GPS_TOOL.get(),
                 'C', ModItems.AIR_CANISTER.get()
         ).build(consumer);
@@ -176,7 +176,7 @@ public class ModRecipeProvider extends RecipeProvider {
         shaped(ModBlocks.ASSEMBLY_PLATFORM.get(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
                 "C C/PPP/IBI",
                 'C', ModItems.PNEUMATIC_CYLINDER.get(),
-                'P', ModItems.PLASTIC.get(),
+                'P', PneumaticCraftTags.Items.PLASTIC_SHEETS,
                 'B', ModItems.PRINTED_CIRCUIT_BOARD.get(),
                 'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON
         ).build(consumer);
@@ -247,7 +247,7 @@ public class ModRecipeProvider extends RecipeProvider {
         shaped(ModBlocks.ELECTROSTATIC_COMPRESSOR.get(), ModItems.TURBINE_ROTOR.get(),
                 "BPB/PRP/BCB",
                 'B', Blocks.IRON_BARS,
-                'P', ModItems.PLASTIC.get(),
+                'P', PneumaticCraftTags.Items.PLASTIC_SHEETS,
                 'R', ModItems.TURBINE_ROTOR.get(),
                 'C', ModBlocks.AIR_COMPRESSOR.get()
         ).build(consumer);
@@ -255,17 +255,17 @@ public class ModRecipeProvider extends RecipeProvider {
         shaped(ModBlocks.ELEVATOR_BASE.get(), ModItems.PLASTIC.get(),
                 "CP/PC",
                 'C', ModItems.PNEUMATIC_CYLINDER.get(),
-                'P', ModItems.PLASTIC.get()
+                'P', PneumaticCraftTags.Items.PLASTIC_SHEETS
         ).build(consumer, RL("elevator_base_1"));
         shaped(ModBlocks.ELEVATOR_BASE.get(), ModItems.PLASTIC.get(),
                 "PC/CP",
                 'C', ModItems.PNEUMATIC_CYLINDER.get(),
-                'P', ModItems.PLASTIC.get()
+                'P', PneumaticCraftTags.Items.PLASTIC_SHEETS
         ).build(consumer, RL("elevator_base_2"));
 
         shaped(ModBlocks.ELEVATOR_CALLER.get(), ModItems.PLASTIC.get(),
                 "BPB/PRP/BPB",
-                'P', ModItems.PLASTIC.get(),
+                'P', PneumaticCraftTags.Items.PLASTIC_SHEETS,
                 'B', Blocks.STONE_BUTTON,
                 'R', Tags.Blocks.STONE
         ).build(consumer);
@@ -311,7 +311,7 @@ public class ModRecipeProvider extends RecipeProvider {
         shaped(ModItems.GPS_TOOL.get(), ModItems.PLASTIC.get(),
                 " R /PGP/PDP",
                 'R', Blocks.REDSTONE_TORCH,
-                'P', ModItems.PLASTIC.get(),
+                'P', PneumaticCraftTags.Items.PLASTIC_SHEETS,
                 'G', Tags.Items.GLASS_PANES,
                 'D', Tags.Items.GEMS_DIAMOND
         ).build(consumer);
@@ -413,14 +413,14 @@ public class ModRecipeProvider extends RecipeProvider {
                 "DED/PSP/G G",
                 'D', Tags.Items.GEMS_DIAMOND,
                 'E', Tags.Items.GEMS_EMERALD,
-                'P', ModItems.PLASTIC.get(),
+                'P', PneumaticCraftTags.Items.PLASTIC_SHEETS,
                 'S', Blocks.SOUL_SAND,
                 'G', Tags.Items.INGOTS_GOLD
         ).build(consumer);
 
         shaped(ModItems.MICROMISSILES.get(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
                 " T /WPW/WFW",
-                'W', ModItems.PLASTIC.get(),
+                'W', PneumaticCraftTags.Items.PLASTIC_SHEETS,
                 'P', ModItems.PRINTED_CIRCUIT_BOARD.get(),
                 'T', Blocks.TNT,
                 'F', Items.FIRE_CHARGE
@@ -470,7 +470,7 @@ public class ModRecipeProvider extends RecipeProvider {
 
         shaped(ModItems.PNEUMATIC_CYLINDER.get(), 2, ModItems.PLASTIC.get(),
                 "PIP/PIP/PBP",
-                'P', ModItems.PLASTIC.get(),
+                'P', PneumaticCraftTags.Items.PLASTIC_SHEETS,
                 'B', ModItems.CANNON_BARREL.get(),
                 'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON
         ).build(consumer);
@@ -578,12 +578,12 @@ public class ModRecipeProvider extends RecipeProvider {
                 'G', Tags.Items.GLASS_PANES_BLACK,
                 'T', ModItems.TURBINE_ROTOR.get(),
                 'B', ModItems.PRINTED_CIRCUIT_BOARD.get(),
-                'P', ModItems.PLASTIC.get()
+                'P', PneumaticCraftTags.Items.PLASTIC_SHEETS
         ).build(consumer);
 
         shaped(ModItems.PROGRAMMING_PUZZLE.get(),8, ModItems.PRINTED_CIRCUIT_BOARD.get(),
                 "PPP/PCP/PPP",
-                'P', ModItems.PLASTIC.get(),
+                'P', PneumaticCraftTags.Items.PLASTIC_SHEETS,
                 'C', ModItems.PRINTED_CIRCUIT_BOARD.get()
         ).build(consumer);
 
@@ -648,7 +648,7 @@ public class ModRecipeProvider extends RecipeProvider {
         shaped(ModBlocks.SECURITY_STATION.get(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
                 "DBD/TPT/G G",
                 'D', Tags.Items.DYES_GRAY,
-                'G', ModItems.PLASTIC.get(),
+                'G', PneumaticCraftTags.Items.PLASTIC_SHEETS,
                 'B', Tags.Items.GLASS_PANES_BLACK,
                 'T', ModItems.TURBINE_ROTOR.get(),
                 'P', ModItems.PRINTED_CIRCUIT_BOARD.get()
@@ -665,7 +665,7 @@ public class ModRecipeProvider extends RecipeProvider {
         shaped(ModBlocks.SENTRY_TURRET.get(), ModItems.PLASTIC.get(),
                 " M /PIP/I I",
                 'M', ModItems.MINIGUN.get(),
-                'P', ModItems.PLASTIC.get(),
+                'P', PneumaticCraftTags.Items.PLASTIC_SHEETS,
                 'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON
         ).build(consumer);
 
@@ -679,7 +679,7 @@ public class ModRecipeProvider extends RecipeProvider {
 
         shaped(ModItems.SPAWNER_AGITATOR.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
                 "III/IGI/III",
-                'I', ModItems.COMPRESSED_IRON_INGOT.get(),
+                'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
                 'G', Items.GHAST_TEAR
         ).build(consumer);
 
@@ -689,7 +689,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 'T', ModBlocks.PRESSURE_TUBE.get()
         ).build(consumer);
 
-        shaped(ModBlocks.TAG_WORKBENCH.get(), ModBlocks.REINFORCED_STONE.get(),
+        shaped(ModBlocks.TAG_WORKBENCH.get(), ModBlocks.DISPLAY_TABLE.get(),
                 "B/D",
                 'B', Items.WRITABLE_BOOK,
                 'D', ModBlocks.DISPLAY_TABLE.get()
@@ -704,7 +704,7 @@ public class ModRecipeProvider extends RecipeProvider {
 
         shaped(ModBlocks.TANK_MEDIUM.get(), ModItems.PLASTIC.get(),
                 "PSP/ITI/PSP",
-                'P', ModItems.PLASTIC.get(),
+                'P', PneumaticCraftTags.Items.PLASTIC_SHEETS,
                 'S', ModBlocks.TANK_SMALL.get(),
                 'I', Tags.Items.INGOTS_GOLD,
                 'T', ModBlocks.PRESSURE_TUBE.get()
@@ -713,14 +713,14 @@ public class ModRecipeProvider extends RecipeProvider {
         shaped(ModBlocks.TANK_LARGE.get(), ModBlocks.ADVANCED_PRESSURE_TUBE.get(),
                 "PMP/DTD/PMP",
                 'M', ModBlocks.TANK_MEDIUM.get(),
-                'P', ModItems.PLASTIC.get(),
+                'P', PneumaticCraftTags.Items.PLASTIC_SHEETS,
                 'D', Tags.Items.GEMS_DIAMOND,
                 'T', ModBlocks.ADVANCED_PRESSURE_TUBE.get()
         ).build(consumer);
 
         shaped(ModBlocks.THERMAL_COMPRESSOR.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
                 "ITI/PAP/ITI",
-                'I', ModItems.COMPRESSED_IRON_INGOT.get(),
+                'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
                 'T', ModBlocks.PRESSURE_TUBE.get(),
                 'A', ModBlocks.AIR_COMPRESSOR.get(),
                 'P', Blocks.HEAVY_WEIGHTED_PRESSURE_PLATE
@@ -740,13 +740,13 @@ public class ModRecipeProvider extends RecipeProvider {
         shaped(ModItems.TURBINE_ROTOR.get(), ModItems.TURBINE_BLADE.get(),
                 " B / I /B B",
                 'B', ModItems.TURBINE_BLADE.get(),
-                'I', ModItems.COMPRESSED_IRON_INGOT.get()
+                'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON
         ).build(consumer);
 
         shaped(ModBlocks.UNIVERSAL_SENSOR.get(), ModItems.PLASTIC.get(),
                 " S /PRP/PCP",
                 'S', ModItems.SEISMIC_SENSOR.get(),
-                'P', ModItems.PLASTIC.get(),
+                'P', PneumaticCraftTags.Items.PLASTIC_SHEETS,
                 'R', Blocks.REPEATER,
                 'C', ModBlocks.PRESSURE_TUBE.get()
         ).build(consumer);
@@ -777,11 +777,11 @@ public class ModRecipeProvider extends RecipeProvider {
         shapeless(Items.PAPER, Items.PAPER, ModItems.TAG_FILTER.get()).build(consumer, RL("paper_from_tag_filter"));
 
         // network components
-        networkComponent(ModItems.DIAGNOSTIC_SUBROUTINE.get(), 1, ModItems.PLASTIC.get(), Tags.Items.DYES_RED).build(consumer);
-        networkComponent(ModItems.NETWORK_API.get(), 1, ModItems.PLASTIC.get(), Tags.Items.DYES_BLUE).build(consumer);
-        networkComponent(ModItems.NETWORK_DATA_STORAGE.get(), 1, ModItems.PLASTIC.get(), Tags.Items.DYES_GRAY).build(consumer);
+        networkComponent(ModItems.DIAGNOSTIC_SUBROUTINE.get(), 1, PneumaticCraftTags.Items.PLASTIC_SHEETS, Tags.Items.DYES_RED).build(consumer);
+        networkComponent(ModItems.NETWORK_API.get(), 1, PneumaticCraftTags.Items.PLASTIC_SHEETS, Tags.Items.DYES_BLUE).build(consumer);
+        networkComponent(ModItems.NETWORK_DATA_STORAGE.get(), 1, PneumaticCraftTags.Items.PLASTIC_SHEETS, Tags.Items.DYES_GRAY).build(consumer);
         networkComponent(ModItems.NETWORK_IO_PORT.get(), 1, ModItems.CAPACITOR.get(), Tags.Items.DYES_CYAN).build(consumer);
-        networkComponent(ModItems.NETWORK_REGISTRY.get(), 1, ModItems.PLASTIC.get(), Tags.Items.DYES_LIME).build(consumer);
+        networkComponent(ModItems.NETWORK_REGISTRY.get(), 1, PneumaticCraftTags.Items.PLASTIC_SHEETS, Tags.Items.DYES_LIME).build(consumer);
         networkComponent(ModItems.NETWORK_NODE.get(), 16, ModItems.TRANSISTOR.get(), Tags.Items.DYES_PURPLE).build(consumer);
 
         // logistics frames
@@ -803,20 +803,23 @@ public class ModRecipeProvider extends RecipeProvider {
         pneumaticTool(ModItems.VORTEX_CANNON.get(), Tags.Items.DYES_YELLOW).build(consumer);
 
         // standard upgrade patterns (4 x lapis, 4 x edge item, 1 x center item)
-        standardUpgrade(EnumUpgrade.ARMOR, ModItems.COMPRESSED_IRON_INGOT.get(), Items.DIAMOND).build(consumer);
+        standardUpgrade(EnumUpgrade.ARMOR, PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON, Tags.Items.GEMS_DIAMOND).build(consumer);
         standardUpgrade(EnumUpgrade.BLOCK_TRACKER, Items.FERMENTED_SPIDER_EYE, ModBlocks.PRESSURE_CHAMBER_WALL.get()).build(consumer);
         standardUpgrade(EnumUpgrade.CHARGING, ModItems.CHARGING_MODULE.get(), ModBlocks.PRESSURE_TUBE.get()).build(consumer);
-        standardUpgrade(EnumUpgrade.COORDINATE_TRACKER, ModItems.GPS_TOOL.get(), Items.REDSTONE).build(consumer);
-        standardUpgrade(EnumUpgrade.DISPENSER, Blocks.DISPENSER, Items.QUARTZ).build(consumer);
-        standardUpgrade(EnumUpgrade.ENTITY_TRACKER, Items.FERMENTED_SPIDER_EYE, Items.BONE).build(consumer);
+        standardUpgrade(EnumUpgrade.COORDINATE_TRACKER, ModItems.GPS_TOOL.get(), Tags.Items.DUSTS_REDSTONE).build(consumer);
+        standardUpgrade(EnumUpgrade.DISPENSER, Blocks.DISPENSER, Tags.Items.GEMS_QUARTZ).build(consumer);
+        standardUpgrade(EnumUpgrade.ENTITY_TRACKER, Items.FERMENTED_SPIDER_EYE, Tags.Items.BONES).build(consumer);
+        standardUpgrade(EnumUpgrade.FLIPPERS, Items.BLACK_WOOL, PneumaticCraftTags.Items.PLASTIC_SHEETS).build(consumer);
+        standardUpgrade(EnumUpgrade.INVENTORY, Tags.Items.CHESTS_WOODEN, ItemTags.PLANKS).build(consumer);
         standardUpgrade(EnumUpgrade.ITEM_LIFE, Items.CLOCK, Items.APPLE).build(consumer);
-        standardUpgrade(EnumUpgrade.MAGNET, ModItems.PLASTIC.get(), ModItems.COMPRESSED_IRON_INGOT.get()).build(consumer);
-        standardUpgrade(EnumUpgrade.RANGE, Items.BOW, Items.ARROW).build(consumer);
+        standardUpgrade(EnumUpgrade.MAGNET, PneumaticCraftTags.Items.PLASTIC_SHEETS, PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON).build(consumer);
+        standardUpgrade(EnumUpgrade.MINIGUN, ModItems.MINIGUN.get(), Tags.Items.GUNPOWDER).build(consumer);
+        standardUpgrade(EnumUpgrade.RANGE, Items.BOW, Tags.Items.ARROWS).build(consumer);
         standardUpgrade(EnumUpgrade.SEARCH, Items.GOLDEN_CARROT, Items.ENDER_EYE).build(consumer);
-        standardUpgrade(EnumUpgrade.SECURITY, ModItems.SAFETY_TUBE_MODULE.get(), Blocks.OBSIDIAN).build(consumer);
-        standardUpgrade(EnumUpgrade.VOLUME, ModItems.AIR_CANISTER.get(), ModItems.COMPRESSED_IRON_INGOT.get()).build(consumer);
-        standardUpgrade(EnumUpgrade.FLIPPERS, Items.BLACK_WOOL, ModItems.PLASTIC.get()).build(consumer);
-        standardUpgrade(EnumUpgrade.MINIGUN, ModItems.MINIGUN.get(), Items.GUNPOWDER).build(consumer);
+        standardUpgrade(EnumUpgrade.SECURITY, ModItems.SAFETY_TUBE_MODULE.get(), Tags.Items.OBSIDIAN).build(consumer);
+        standardUpgrade(EnumUpgrade.SPEED, FluidIngredient.of(1000, ModFluids.LUBRICANT.get()), Items.SUGAR).build(consumer);
+        standardUpgrade(EnumUpgrade.STANDBY, ItemTags.BEDS, Items.REDSTONE_TORCH).build(consumer);
+        standardUpgrade(EnumUpgrade.VOLUME, ModItems.AIR_CANISTER.get(), PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON).build(consumer);
 
         // non-standard upgrade patterns
         ItemStack nightVisionPotion = new ItemStack(Items.POTION);
@@ -828,26 +831,12 @@ public class ModRecipeProvider extends RecipeProvider {
                 'N', IngredientNBTWrapper.fromItemStack(nightVisionPotion)
         ).build(consumer);
 
-        shaped(EnumUpgrade.INVENTORY.getItem(), Blocks.CHEST,
-                "LWL/WCW/LWL",
-                'L', PneumaticCraftTags.Items.UPGRADE_COMPONENTS,
-                'W', ItemTags.PLANKS,
-                'C', Tags.Items.CHESTS_WOODEN
-        ).build(consumer);
-
         shaped(EnumUpgrade.SCUBA.getItem(), ModItems.PNEUMATIC_HELMET.get(),
                 "LTL/PRP/LPL",
                 'L', PneumaticCraftTags.Items.UPGRADE_COMPONENTS,
-                'P', ModItems.PLASTIC.get(),
+                'P', PneumaticCraftTags.Items.PLASTIC_SHEETS,
                 'R', ModItems.REGULATOR_TUBE_MODULE.get(),
                 'T', ModBlocks.ADVANCED_PRESSURE_TUBE.get()
-        ).build(consumer);
-
-        shaped(EnumUpgrade.SPEED.getItem(), ModItems.LUBRICANT_BUCKET.get(),
-                "LSL/SFS/LSL",
-                'L', PneumaticCraftTags.Items.UPGRADE_COMPONENTS,
-                'S', Items.SUGAR,
-                'F', FluidIngredient.of(1000, ModFluids.LUBRICANT.get())
         ).build(consumer);
 
         shaped(EnumUpgrade.JET_BOOTS.getItem(1), ModItems.PNEUMATIC_BOOTS.get(),
@@ -922,13 +911,6 @@ public class ModRecipeProvider extends RecipeProvider {
                 'J', IngredientNBTWrapper.fromItemStack(jumpBoostPotion2),
                 'P', Blocks.PISTON,
                 'C', ModItems.PNEUMATIC_CYLINDER.get()
-        ).build(consumer);
-
-        shaped(EnumUpgrade.STANDBY.getItem(), ModItems.TURBINE_ROTOR.get(),
-                "LXL/XCX/LXL",
-                'L', PneumaticCraftTags.Items.UPGRADE_COMPONENTS,
-                'X', Items.REDSTONE_TORCH,
-                'C', ItemTags.BEDS
         ).build(consumer);
 
         // bricks etc.
@@ -1221,6 +1203,10 @@ public class ModRecipeProvider extends RecipeProvider {
                 'D', dye);
     }
 
+    private ShapedRecipeBuilder networkComponent(Item result, int count, Tag<Item> edge, Tag<Item> dyeCorner) {
+        return shaped(result, count, ModItems.CAPACITOR.get(), "CEC/EXE/CEC", 'C', dyeCorner, 'E', edge, 'X', Tags.Items.CHESTS_WOODEN);
+    }
+
     private ShapedRecipeBuilder networkComponent(Item result, int count, Item edge, Tag<Item> dyeCorner) {
         return shaped(result, count, ModItems.CAPACITOR.get(), "CEC/EXE/CEC", 'C', dyeCorner, 'E', edge, 'X', Tags.Items.CHESTS_WOODEN);
     }
@@ -1228,7 +1214,7 @@ public class ModRecipeProvider extends RecipeProvider {
     private <T extends IItemProvider & IForgeRegistryEntry<?>> ShapedPressurizableRecipeBuilder pneumaticTool(T result, Object dye) {
         return shapedPressure(result, ModItems.COMPRESSED_IRON_INGOT.get(),
                 "IDI/C  /ILI",
-                'I', ModItems.COMPRESSED_IRON_INGOT.get(),
+                'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
                 'D', dye,
                 'C', ModItems.AIR_CANISTER.get(),
                 'L', Blocks.LEVER
@@ -1283,7 +1269,7 @@ public class ModRecipeProvider extends RecipeProvider {
         Item brick = ModBlocks.plasticBrick(color).get().asItem();
         return shaped(brick, 8, ModItems.PLASTIC.get(),
                 "PPP/PDP/PPP",
-                'P', ModItems.PLASTIC.get(),
+                'P', PneumaticCraftTags.Items.PLASTIC_SHEETS,
                 'D', dyeIngredient);
     }
 
@@ -1291,21 +1277,29 @@ public class ModRecipeProvider extends RecipeProvider {
         return shaped(result, ModItems.GUN_AMMO.get(),
                 " A /C1C/C2C",
                 'A', ModItems.GUN_AMMO.get(),
-                'C', ModItems.COMPRESSED_IRON_INGOT.get(),
+                'C', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
                 '1', item1,
                 '2', item2);
     }
 
-    private <T extends IItemProvider & IForgeRegistryEntry<?>> ShapedRecipeBuilder standardUpgrade(EnumUpgrade what, T center, T edge) {
-        return ShapedRecipeBuilder.shapedRecipe(what.getItem())
-                .patternLine("LXL")
-                .patternLine("XCX")
-                .patternLine("LXL")
-                .key('L', PneumaticCraftTags.Items.UPGRADE_COMPONENTS)
-                .key('X', edge)
-                .key('C', center)
-                .addCriterion("has_" + safeName(center), this.hasItem(center));
+    private ShapedRecipeBuilder standardUpgrade(EnumUpgrade what, Object center, Object edge) {
+        return shaped(what.getItem(), Items.LAPIS_LAZULI,
+                "LXL/XCX/LXL",
+                'L', PneumaticCraftTags.Items.UPGRADE_COMPONENTS,
+                'X', edge,
+                'C', center);
     }
+
+//    private <T extends IItemProvider & IForgeRegistryEntry<?>> ShapedRecipeBuilder standardUpgrade(EnumUpgrade what, T center, T edge) {
+//        return ShapedRecipeBuilder.shapedRecipe(what.getItem())
+//                .patternLine("LXL")
+//                .patternLine("XCX")
+//                .patternLine("LXL")
+//                .key('L', PneumaticCraftTags.Items.UPGRADE_COMPONENTS)
+//                .key('X', edge)
+//                .key('C', center)
+//                .addCriterion("has_" + safeName(center), this.hasItem(center));
+//    }
 
     private CustomRecipeBuilder specialRecipe(SpecialRecipeSerializer<?> recipe) {
         return CustomRecipeBuilder.customRecipe(recipe);

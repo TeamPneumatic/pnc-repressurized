@@ -6,12 +6,12 @@
     ]
   },
   "criteria": {
-    "has_charging_module": {
+    "has_lapis_lazuli": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "item": "pneumaticcraft:charging_module"
+            "item": "minecraft:lapis_lazuli"
           }
         ]
       }
@@ -25,7 +25,7 @@
   },
   "requirements": [
     [
-      "has_charging_module",
+      "has_lapis_lazuli",
       "has_the_recipe"
     ]
   ]

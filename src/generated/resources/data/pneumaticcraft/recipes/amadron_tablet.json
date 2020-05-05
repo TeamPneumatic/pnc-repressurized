@@ -7,7 +7,7 @@
   ],
   "key": {
     "P": {
-      "item": "pneumaticcraft:plastic"
+      "tag": "pneumaticcraft:plastic_sheets"
     },
     "G": {
       "item": "pneumaticcraft:gps_tool"

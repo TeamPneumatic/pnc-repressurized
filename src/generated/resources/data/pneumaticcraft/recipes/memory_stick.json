@@ -13,7 +13,7 @@
       "tag": "forge:gems/emerald"
     },
     "P": {
-      "item": "pneumaticcraft:plastic"
+      "tag": "pneumaticcraft:plastic_sheets"
     },
     "S": {
       "item": "minecraft:soul_sand"

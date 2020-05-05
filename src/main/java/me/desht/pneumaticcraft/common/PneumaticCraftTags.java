@@ -21,6 +21,8 @@ public class PneumaticCraftTags {
         public static final Tag<Block> PLASTIC_BRICKS = modTag("plastic_bricks");
         public static final Tag<Block> FLUID_TANKS = modTag("fluid_tanks");
         public static final Tag<Block> CHESTS = modTag("chests");
+        public static final Tag<Block> REINFORCED_STONE = modTag("reinforced_stone");
+        public static final Tag<Block> REINFORCED_STONE_BRICKS = modTag("reinforced_stone_bricks");
 
         public static final Tag<Block> STORAGE_BLOCKS_COMPRESSED_IRON = forgeTag("storage_blocks/compressed_iron");
 
@@ -45,9 +47,12 @@ public class PneumaticCraftTags {
         public static final Tag<Item> PLASTIC_BRICKS = modTag("plastic_bricks");
         public static final Tag<Item> FLUID_TANKS = modTag("fluid_tanks");
         public static final Tag<Item> CHESTS = modTag("chests");
+        public static final Tag<Item> REINFORCED_STONE = modTag("reinforced_stone");
+        public static final Tag<Item> REINFORCED_STONE_BRICKS = modTag("reinforced_stone_bricks");
 
         public static final Tag<Item> UPGRADE_COMPONENTS = modTag("upgrade_components");
         public static final Tag<Item> BASIC_DRONES = modTag("basic_drones");
+        public static final Tag<Item> PLASTIC_SHEETS = modTag("plastic_sheets");
 
         public static final Tag<Item> INGOTS_COMPRESSED_IRON = forgeTag("ingots/compressed_iron");
         public static final Tag<Item> STORAGE_BLOCKS_COMPRESSED_IRON = forgeTag("storage_blocks/compressed_iron");

@@ -10,7 +10,7 @@
       "tag": "pneumaticcraft:upgrade_components"
     },
     "X": {
-      "item": "minecraft:gunpowder"
+      "tag": "forge:gunpowder"
     },
     "C": {
       "item": "pneumaticcraft:minigun"

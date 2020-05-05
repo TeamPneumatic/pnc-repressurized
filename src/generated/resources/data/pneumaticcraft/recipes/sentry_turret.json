@@ -10,7 +10,7 @@
       "item": "pneumaticcraft:minigun"
     },
     "P": {
-      "item": "pneumaticcraft:plastic"
+      "tag": "pneumaticcraft:plastic_sheets"
     },
     "I": {
       "tag": "forge:ingots/compressed_iron"

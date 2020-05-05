@@ -10,7 +10,7 @@
       "tag": "pneumaticcraft:upgrade_components"
     },
     "X": {
-      "item": "minecraft:arrow"
+      "tag": "forge:arrows"
     },
     "C": {
       "item": "minecraft:bow"

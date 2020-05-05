@@ -7,7 +7,7 @@
   ],
   "key": {
     "P": {
-      "item": "pneumaticcraft:plastic"
+      "tag": "pneumaticcraft:plastic_sheets"
     },
     "D": {
       "tag": "forge:dyes/blue"

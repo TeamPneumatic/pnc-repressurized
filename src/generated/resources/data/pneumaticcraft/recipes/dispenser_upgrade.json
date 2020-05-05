@@ -10,7 +10,7 @@
       "tag": "pneumaticcraft:upgrade_components"
     },
     "X": {
-      "item": "minecraft:quartz"
+      "tag": "forge:gems/quartz"
     },
     "C": {
       "item": "minecraft:dispenser"

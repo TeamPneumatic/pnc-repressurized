@@ -10,7 +10,7 @@
       "tag": "forge:dyes/gray"
     },
     "G": {
-      "item": "pneumaticcraft:plastic"
+      "tag": "pneumaticcraft:plastic_sheets"
     },
     "B": {
       "tag": "forge:glass_panes/black"

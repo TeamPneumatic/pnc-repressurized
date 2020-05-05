@@ -10,7 +10,7 @@
       "item": "pneumaticcraft:gun_ammo"
     },
     "C": {
-      "item": "pneumaticcraft:ingot_iron_compressed"
+      "tag": "forge:ingots/compressed_iron"
     },
     "1": {
       "tag": "forge:gems/diamond"

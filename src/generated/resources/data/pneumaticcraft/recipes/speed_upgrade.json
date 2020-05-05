@@ -1,18 +1,18 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "LSL",
-    "SFS",
-    "LSL"
+    "LXL",
+    "XCX",
+    "LXL"
   ],
   "key": {
     "L": {
       "tag": "pneumaticcraft:upgrade_components"
     },
-    "S": {
+    "X": {
       "item": "minecraft:sugar"
     },
-    "F": {
+    "C": {
       "type": "pneumaticcraft:fluid",
       "fluid": "pneumaticcraft:lubricant",
       "amount": 1000

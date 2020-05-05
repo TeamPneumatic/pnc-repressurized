@@ -7,7 +7,7 @@
   ],
   "key": {
     "I": {
-      "item": "pneumaticcraft:reinforced_bricks"
+      "tag": "pneumaticcraft:reinforced_stone_bricks"
     },
     "T": {
       "item": "pneumaticcraft:pressure_tube"

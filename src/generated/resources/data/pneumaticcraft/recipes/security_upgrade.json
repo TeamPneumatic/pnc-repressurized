@@ -10,7 +10,7 @@
       "tag": "pneumaticcraft:upgrade_components"
     },
     "X": {
-      "item": "minecraft:obsidian"
+      "tag": "forge:obsidian"
     },
     "C": {
       "item": "pneumaticcraft:safety_tube_module"

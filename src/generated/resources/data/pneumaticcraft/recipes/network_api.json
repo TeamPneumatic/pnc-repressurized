@@ -10,7 +10,7 @@
       "tag": "forge:dyes/blue"
     },
     "E": {
-      "item": "pneumaticcraft:plastic"
+      "tag": "pneumaticcraft:plastic_sheets"
     },
     "X": {
       "tag": "forge:chests/wooden"

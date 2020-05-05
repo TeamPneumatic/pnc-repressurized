@@ -10,7 +10,7 @@
       "item": "pneumaticcraft:medium_tank"
     },
     "P": {
-      "item": "pneumaticcraft:plastic"
+      "tag": "pneumaticcraft:plastic_sheets"
     },
     "D": {
       "tag": "forge:gems/diamond"

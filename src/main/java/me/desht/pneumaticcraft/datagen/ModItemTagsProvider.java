@@ -30,6 +30,8 @@ public class ModItemTagsProvider extends ItemTagsProvider {
         copy(PneumaticCraftTags.Blocks.PLASTIC_BRICKS, PneumaticCraftTags.Items.PLASTIC_BRICKS);
         copy(PneumaticCraftTags.Blocks.FLUID_TANKS, PneumaticCraftTags.Items.FLUID_TANKS);
         copy(PneumaticCraftTags.Blocks.CHESTS, PneumaticCraftTags.Items.CHESTS);
+        copy(PneumaticCraftTags.Blocks.REINFORCED_STONE, PneumaticCraftTags.Items.REINFORCED_STONE);
+        copy(PneumaticCraftTags.Blocks.REINFORCED_STONE_BRICKS, PneumaticCraftTags.Items.REINFORCED_STONE_BRICKS);
 
         appendToTag(ItemTags.SLABS, PneumaticCraftTags.Items.SLABS);
         appendToTag(ItemTags.STAIRS, PneumaticCraftTags.Items.STAIRS);
@@ -37,6 +39,10 @@ public class ModItemTagsProvider extends ItemTagsProvider {
         appendToTag(ItemTags.DOORS, PneumaticCraftTags.Items.DOORS);
         appendToTag(Tags.Items.STORAGE_BLOCKS, PneumaticCraftTags.Items.STORAGE_BLOCKS_COMPRESSED_IRON);
         appendToTag(Tags.Items.CHESTS, PneumaticCraftTags.Items.CHESTS);
+        appendToTag(Tags.Items.STONE, PneumaticCraftTags.Items.REINFORCED_STONE);
+        appendToTag(ItemTags.STONE_BRICKS, PneumaticCraftTags.Items.REINFORCED_STONE_BRICKS);
+
+        addItemsToTag(PneumaticCraftTags.Items.PLASTIC_SHEETS, ModItems.PLASTIC);
 
         addItemsToTag(PneumaticCraftTags.Items.UPGRADE_COMPONENTS, ModItems.UPGRADE_MATRIX, () -> Items.LAPIS_LAZULI);
 
@@ -45,6 +51,7 @@ public class ModItemTagsProvider extends ItemTagsProvider {
         );
 
         addItemsToTag(PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON, ModItems.COMPRESSED_IRON_INGOT);
+
         appendToTag(Tags.Items.INGOTS, PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON);
 
         addItemsToTag(CurioTags.CURIO, ModItems.MEMORY_STICK);

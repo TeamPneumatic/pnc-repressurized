@@ -1,15 +1,15 @@
 {
   "type": "minecraft:crafting_shaped",
   "pattern": [
-    "LWL",
-    "WCW",
-    "LWL"
+    "LXL",
+    "XCX",
+    "LXL"
   ],
   "key": {
     "L": {
       "tag": "pneumaticcraft:upgrade_components"
     },
-    "W": {
+    "X": {
       "tag": "minecraft:planks"
     },
     "C": {

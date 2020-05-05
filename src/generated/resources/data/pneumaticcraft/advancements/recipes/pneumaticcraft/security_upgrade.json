@@ -6,12 +6,12 @@
     ]
   },
   "criteria": {
-    "has_safety_tube_module": {
+    "has_lapis_lazuli": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "item": "pneumaticcraft:safety_tube_module"
+            "item": "minecraft:lapis_lazuli"
           }
         ]
       }
@@ -25,7 +25,7 @@
   },
   "requirements": [
     [
-      "has_safety_tube_module",
+      "has_lapis_lazuli",
       "has_the_recipe"
     ]
   ]

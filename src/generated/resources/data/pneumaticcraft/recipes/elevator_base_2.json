@@ -9,7 +9,7 @@
       "item": "pneumaticcraft:pneumatic_cylinder"
     },
     "P": {
-      "item": "pneumaticcraft:plastic"
+      "tag": "pneumaticcraft:plastic_sheets"
     }
   },
   "result": {

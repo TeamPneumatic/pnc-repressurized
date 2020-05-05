@@ -10,7 +10,7 @@
       "item": "pneumaticcraft:seismic_sensor"
     },
     "P": {
-      "item": "pneumaticcraft:plastic"
+      "tag": "pneumaticcraft:plastic_sheets"
     },
     "R": {
       "item": "minecraft:repeater"

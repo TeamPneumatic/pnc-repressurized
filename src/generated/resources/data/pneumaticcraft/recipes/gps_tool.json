@@ -10,7 +10,7 @@
       "item": "minecraft:redstone_torch"
     },
     "P": {
-      "item": "pneumaticcraft:plastic"
+      "tag": "pneumaticcraft:plastic_sheets"
     },
     "G": {
       "tag": "forge:glass_panes"

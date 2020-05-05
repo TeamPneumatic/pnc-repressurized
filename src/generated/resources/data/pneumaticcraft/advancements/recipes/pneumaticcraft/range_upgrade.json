@@ -6,12 +6,12 @@
     ]
   },
   "criteria": {
-    "has_bow": {
+    "has_lapis_lazuli": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "item": "minecraft:bow"
+            "item": "minecraft:lapis_lazuli"
           }
         ]
       }
@@ -25,7 +25,7 @@
   },
   "requirements": [
     [
-      "has_bow",
+      "has_lapis_lazuli",
       "has_the_recipe"
     ]
   ]
