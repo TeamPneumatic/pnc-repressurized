@@ -6,7 +6,29 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.15.2
 
-## 1.1.0-? (unreleased)
+## 1.1.1-6 (May 5 2020)
+
+### Updates
+
+* Added/updated some item/block tags
+  * `pneumaticcraft:plastic_sheets` contains `pneumaticcraft:plastic`
+  * `minecraft:stone_bricks` includes `pneumaticcraft:reinforced_stone_bricks`
+  * `forge:stone` includes `pneumaticcraft:reinforced_stone`
+* All crafting recipes using compressed iron now use the tag `forge:ingots/compressed_iron` rather than the compressed iron item
+  * Note that Silent Mechanisms also provides compressed iron using this tag, so you can use that mod's compressed iron too. 
+  * This is fine with me since Silents compressed iron is probably more effort to make than PNC:R's.
+* All Refinery and TPP recipes now use fluid tags rather than the fluid directly.  
+  * All PNC:R fluids have a corresponding fluid tag now (e.g. `pneumaticcraft:diesel` tag contains `pneumaticcraft:diesel` fluid by default and so on)
+  * This makes it a lot easier to support other mods' fluids with default recipes - just add them to the appropriate `pneumaticcraft:` fluid tag
+
+### Fixes
+
+* Fixed Refinery GUI not showing output fluids
+* Fixed Amadron recipe scanning barfing if recipe JSON's are missing `type` field; such recipes are now quietly ignored
+* Fixed server crash if no valid villager professions are found when looking for villager trades to add to Amadron (this should only happen if a previous datapack loading error occurred, like the missing `type` field error above)
+* Removed reference to non-existent plastic mixer from the Patchouli guidebook which was causing some log spam about missing items
+
+## 1.1.0-3 (May 3 2020)
 
 This release adds no major new features to the 1.14.4 version, but there are several smaller changes & fixes worth noting.  See 1.14.4 changes below for major changes relative to 1.12.2, and also https://gist.github.com/desht/b604bd670f7f718bb4e6f20ff53893e2
 
