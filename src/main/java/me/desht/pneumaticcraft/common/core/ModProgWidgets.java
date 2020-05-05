@@ -10,6 +10,8 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.ObjectHolder;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
@@ -71,6 +73,10 @@ public class ModProgWidgets {
     public static final ProgWidgetType<ProgWidgetDroneConditionPressure> DRONE_CONDITION_PRESSURE = null;
     public static final ProgWidgetType<ProgWidgetEnergyCondition> CONDITION_RF = null;
     public static final ProgWidgetType<ProgWidgetDroneConditionEnergy> DRONE_CONDITION_RF = null;
+
+    public static class Sorted {
+        public static final List<ProgWidgetType<?>> WIDGET_LIST = new ArrayList<>();
+    }
 
     @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
     public static class Listener {
@@ -136,7 +142,9 @@ public class ModProgWidgets {
         }
 
         public static void register(IForgeRegistry<ProgWidgetType<?>> registry, String name, Supplier<? extends IProgWidgetBase> sup) {
-            registry.register(new ProgWidgetType<>(sup).setRegistryName(RL(name)));
+            ProgWidgetType<?> type = new ProgWidgetType<>(sup).setRegistryName(RL(name));
+            registry.register(type);
+            Sorted.WIDGET_LIST.add(type);
         }
     }
 }
