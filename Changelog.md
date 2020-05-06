@@ -6,6 +6,18 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.15.2
 
+## 1.1.2-? (unreleased)
+
+### Updates
+* Oil and Lubricant are now in the `forge:oil` and `forge:lubricant` fluid tags, respectively.
+  * This means that (for example) Silent Mechanisms Oil (also tagged as `forge:oil`) is now accepted in the Refinery by default.
+
+### Fixes
+* Fixed some bugginess in Pressure Tubes connecting and disconnecting or wrongly leaking
+* Fixed Small Tanks not getting used up in crafting recipes
+* Fixed Logistics Module not rendering properly
+* Fixed Pressure Chamber crafting bug where 2 milk buckets made slime balls (correct recipe is 1 milk bucket + 4 green dye = 1 bucket + 4 slime balls)
+
 ## 1.1.1-6 (May 5 2020)
 
 ### Updates

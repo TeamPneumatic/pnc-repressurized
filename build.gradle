@@ -28,9 +28,12 @@ repositories {
 //        name = "ComputerCraft"
 //        url = "http://cc.crzd.me/maven"
 //    }
-    maven {
-        name = "hwyla"
-        url = 'http://tehnut.info/maven/'
+//    maven {
+//        name = "hwyla"
+//        url = 'http://tehnut.info/maven/'
+//    }
+    flatDir {
+        dir 'libs/'
     }
     maven { // TOP
         name = "tterrag maven"
@@ -183,9 +186,8 @@ minecraft {
 
 dependencies {
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
-    compile fg.deobf (project.dependencies.create("mcp.mobius.waila:Hwyla:${hwyla_version}") {
-        transitive = false
-    })
+    compileOnly fg.deobf("mcp.mobius.waila:Hwyla:${hwyla_version}:api")
+    runtime fg.deobf("mcp.mobius.waila:Hwyla:${hwyla_version}")
     compileOnly fg.deobf ("mcjty.theoneprobe:TheOneProbe-1.15:${top_version}:api")
     runtime fg.deobf ("mcjty.theoneprobe:TheOneProbe-1.15:${top_version}")
     compileOnly fg.deobf("mezz.jei:jei-1.15.2:${jei_version}:api")
