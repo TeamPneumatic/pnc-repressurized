@@ -7,7 +7,13 @@
   "pages": [
     {
       "type": "text",
-      "text": "$(thing)Tube modules/$ are components which can be attached to $(l:tubes/pressure_tubes)Pressure Tubes/$, either onto the side of the tube, or inline with the tube.$(p)Attached modules can be removed by $(thing)sneak+right-clicking/$ with a $(l:tools/pneumatic_wrench)Pneumatic Wrench/$."
+      "text": "$(thing)Tube modules/$ are components which can be attached to $(l:tubes/pressure_tubes)Pressure Tubes/$, either onto the side of the tube, or $(thing)inline/$ with the tube.$(p)Attached modules can be removed by $(thing)sneak+right-clicking/$ with a $(l:tools/pneumatic_wrench)Pneumatic Wrench/$."
+    },
+    {
+      "anchor": "inline",
+      "type": "text",
+      "title": "Inline Modules",
+      "text": "$(thing)Inline modules/$ are a little special, in that:$(li)A Pressure Tube may have only one inline module.$(li)A Pressure Tube with an inline module may not have any other modules.$(li)A Pressure Tube with an inline module may only be connected to on two sides: the two ends of the inline module."
     },
     {
       "type": "relations",

@@ -136,16 +136,20 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
         super.tick();
 
         boolean hasModules = false;
-        for (TubeModule module : modules) {
-            if (module != null) {
+        boolean hasClosedSide = false;
+        for (Direction dir : Direction.VALUES) {
+            if (modules[dir.getIndex()] != null) {
                 hasModules = true;
-                module.shouldDrop = true;
-                module.update();
+                modules[dir.getIndex()].shouldDrop = true;
+                modules[dir.getIndex()].update();
+            }
+            if (sidesClosed[dir.getIndex()]) {
+                hasClosedSide = true;
             }
         }
 
         if (!getWorld().isRemote) {
-            if (hasModules) {
+            if (hasModules || hasClosedSide) {
                 airHandler.setSideLeaking(null);
             } else {
                 List<IAirHandlerMachine.Connection> l = airHandler.getConnectedAirHandlers(this);

@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "This tube module shows the $(l:base_concepts/pressure)pressure/$ currently in the tube it's attached to. It also emits a (directional) $(#f00)redstone signal/$ of which the strength equals:$(p)$(formula)  strength = 2 x pressure/$$(p)So a pressure of 3.5 bar results in a redstone signal level of 7."
+      "text": "This tube module shows the $(l:base_concepts/pressure)pressure/$ currently in the tube it's attached to. It also emits a (directional) $(#f00)redstone signal/$ of which the strength equals:$(p)$(formula)  strength = 2 x pressure/$$(p)E.g. a pressure of 3.5 bar results in a redstone signal level of 7."
     },
     {
       "type": "text",

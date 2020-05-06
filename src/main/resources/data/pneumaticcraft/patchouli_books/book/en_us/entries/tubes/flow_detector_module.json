@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "The Flow Detector Tube Module is an $(thing)in-line/$ module which measures the $(thing)airflow/$ through a tube. It emits a $(#f00)redstone signal/$ as result of this, which follows the following formula:$(p)  $(formula)0.2 * flow (mL/tick)/$$(p)E.g. with 20mL/tick of air flowing, the signal level will be 20*0.2=4."
+      "text": "The Flow Detector Tube Module is an $(l:tubes/tube_modules#inline)inline/$ module which measures the $(thing)airflow/$ through a tube. It emits a $(#f00)redstone signal/$ as result of this, using the following formula:$(p)  $(formula)0.2 * flow (mL/tick)/$$(p)E.g. with 20mL/tick of air flowing, the signal level will be 20*0.2=4."
     },
     {
       "type": "text",

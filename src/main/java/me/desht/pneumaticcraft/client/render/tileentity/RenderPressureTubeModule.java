@@ -11,6 +11,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -56,12 +57,11 @@ public class RenderPressureTubeModule extends TileEntityRenderer<TileEntityPress
         for (int i = 0; i < tile.modules.length; i++) {
             TubeModule module = tile.modules[i];
             if (module != null) {
-
                 // FIXME: map lookup isn't ideal for performance here: need a cached index-based lookup of module->model
                 getModel(module).renderModule(module, matrixStack, buffer, partialTicks, combinedLight, combinedOverlay);
 
                 if (module.isFake()) {
-                    tile.modules[i] = null;
+                    tile.setModule(null, Direction.byIndex(i));
                 }
             }
         }
