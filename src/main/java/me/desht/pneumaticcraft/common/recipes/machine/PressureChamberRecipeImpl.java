@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.recipes.machine;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Sets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -23,10 +24,7 @@ import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class PressureChamberRecipeImpl extends PressureChamberRecipe {
     private final float pressureRequired;
@@ -47,16 +45,27 @@ public class PressureChamberRecipeImpl extends PressureChamberRecipe {
 
     @Override
     public Collection<Integer> findIngredients(IItemHandler chamberHandler) {
+        // Ingredient doesn't override equals() and hashCode() but there's always the possibility
+        // that some subclass might, so we'll use an identity set here.  We want to always treat
+        // two equivalent ingredients in a recipe as different objects.
+        Set<Ingredient> inputSet = Sets.newIdentityHashSet();
+        inputSet.addAll(inputs);
+
         List<Integer> slots = new ArrayList<>();
         for (int i = 0; i < chamberHandler.getSlots(); i++) {
-            for (Ingredient ingr : inputs) {
-                if (ingr.test(chamberHandler.getStackInSlot(i))) {
-                    slots.add(i);
-                    break;
+            if (!chamberHandler.getStackInSlot(i).isEmpty()) {
+                Iterator<Ingredient> iter = inputSet.iterator();
+                while (iter.hasNext()) {
+                    Ingredient ingr = iter.next();
+                    if (ingr.test(chamberHandler.getStackInSlot(i))) {
+                        iter.remove();
+                        slots.add(i);
+                        break;
+                    }
                 }
-            }
-            if (slots.size() == inputs.size()) {
-                return slots;
+                if (slots.size() == inputs.size()) {
+                    return slots;
+                }
             }
         }
         return Collections.emptyList();
