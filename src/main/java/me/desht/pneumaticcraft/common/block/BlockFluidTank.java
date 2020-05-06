@@ -35,6 +35,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 
 import javax.annotation.Nullable;
@@ -159,7 +160,11 @@ public class BlockFluidTank extends BlockPneumaticCraft implements ColorHandlers
 
         @Override
         public boolean hasContainerItem(ItemStack stack) {
-            return true;
+            // the tank is a container item if it's being used in fluid crafting
+            // but an empty tank used in crafting is not a container item
+            return stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY)
+                    .map(h -> !h.drain(Integer.MAX_VALUE, IFluidHandler.FluidAction.SIMULATE).isEmpty())
+                    .orElse(false);
         }
 
         @Override
