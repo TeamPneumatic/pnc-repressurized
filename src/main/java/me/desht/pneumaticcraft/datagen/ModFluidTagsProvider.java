@@ -49,8 +49,8 @@ public class ModFluidTagsProvider extends FluidTagsProvider {
     }
 
     @SafeVarargs
-    private final void createAndAppend(Tag<Fluid> tag, Tag<Fluid> to, Supplier<? extends Fluid>... blocks) {
-        createTag(tag, blocks);
+    private final void createAndAppend(Tag<Fluid> tag, Tag<Fluid> to, Supplier<? extends Fluid>... fluids) {
+        createTag(tag, fluids);
         appendToTag(to, tag);
     }
 }

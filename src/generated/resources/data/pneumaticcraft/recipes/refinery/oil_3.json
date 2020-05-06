@@ -2,7 +2,7 @@
   "type": "pneumaticcraft:refinery",
   "input": {
     "type": "pneumaticcraft:fluid",
-    "tag": "pneumaticcraft:oil",
+    "tag": "forge:oil",
     "amount": 10
   },
   "temperature": {
