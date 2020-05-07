@@ -28,10 +28,14 @@ repositories {
 //        name = "ComputerCraft"
 //        url = "http://cc.crzd.me/maven"
 //    }
-//    maven {
+//    maven {  currently down
 //        name = "hwyla"
 //        url = 'http://tehnut.info/maven/'
 //    }
+    maven {
+        name = "hwyla-temp"
+        url = "https://github.com/TehNut/temporary-maven-thing/tree/master/maven"
+    }
     flatDir {
         dir 'libs/'
     }
