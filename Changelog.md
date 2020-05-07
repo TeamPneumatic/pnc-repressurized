@@ -9,6 +9,18 @@ Changes are in reverse chronological order; newest changes at the top.
 
 This release brings a very major internal rewrite and many many major new and modified gameplay elements. See also https://gist.github.com/desht/b604bd670f7f718bb4e6f20ff53893e2
 
+## 1.0.3-? (unreleased)
+
+### Updates
+* Oil and Lubricant are now in the `forge:oil` and `forge:lubricant` fluid tags, respectively.
+  * This means that (for example) Silent Mechanisms Oil (also tagged as `forge:oil`) is now accepted in the Refinery by default.
+
+### Fixes
+* Fixed some bugginess in Pressure Tubes connecting and disconnecting or wrongly leaking
+* Fixed Small Tanks not getting used up in crafting recipes
+* Fixed Pressure Chamber crafting bug where 2 milk buckets made slime balls (correct recipe is 1 milk bucket + 4 green dye = 1 bucket + 4 slime balls)
+* Fixed Flux Compressor GUI not showing "Low Signal" redstone mode
+
 ## 1.0.2-11 (May 4 2020)
 
 This release contains various fixes and small improvements backported from the 1.15.2 release
