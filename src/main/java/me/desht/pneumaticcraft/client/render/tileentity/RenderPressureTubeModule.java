@@ -10,6 +10,7 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
+import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -67,7 +68,7 @@ public class RenderPressureTubeModule extends TileEntityRenderer<TileEntityPress
                 getModel(module).render(0.0625f, module, partialTicks);
 
                 if (module.isFake()) {
-                    tile.modules[i] = null;
+                    tile.setModule(null, Direction.byIndex(i));
                     GlStateManager.disableBlend();
                 }
                 GlStateManager.color4f(1, 1, 1, 1);
