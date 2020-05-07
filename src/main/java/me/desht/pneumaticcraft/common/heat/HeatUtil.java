@@ -76,7 +76,7 @@ public class HeatUtil {
     }
 
     public static ITextComponent formatHeatString(Direction face, String temp) {
-        return PneumaticCraftUtils.xlate("waila.temperature" + face.toString().toLowerCase())
+        return PneumaticCraftUtils.xlate("waila.temperature." + face.toString().toLowerCase())
                 .appendText(TextFormatting.WHITE.toString() + temp)
                 .applyTextStyles(TextFormatting.GRAY);
     }

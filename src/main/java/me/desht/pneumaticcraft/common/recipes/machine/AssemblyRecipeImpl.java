@@ -90,14 +90,15 @@ public class AssemblyRecipeImpl extends AssemblyRecipe {
 
     /**
      * Work out which recipes can be chained.  E.g. if laser recipe makes B from A, and drill recipe makes C from B,
-     * then add a laser/drill recipe to make C from A. Takes into account the number of inputs & outputs from each step.
+     * then add a synthetic laser/drill recipe to make C from A. Takes into account the number of inputs & outputs
+     * from each step.
      *
      * @param drillRecipes all known drill recipes
      * @param laserRecipes all known laser recipes
-     * @return a map (recipeId -> recipe) of all derived laser/drill recipes
+     * @return a map (recipeId -> recipe) of all synthetic laser/drill recipes
      */
     public static Map<ResourceLocation, AssemblyRecipeImpl> calculateAssemblyChain(Collection<AssemblyRecipe> drillRecipes, Collection<AssemblyRecipe> laserRecipes) {
-        Map<ResourceLocation, AssemblyRecipeImpl> r = new HashMap<>();
+        Map<ResourceLocation, AssemblyRecipeImpl> drillLaser = new HashMap<>();
         for (AssemblyRecipe r1 : drillRecipes) {
             for (AssemblyRecipe r2 : laserRecipes) {
                 if (r2.getInput().test(r1.getOutput())
@@ -105,13 +106,12 @@ public class AssemblyRecipeImpl extends AssemblyRecipe {
                         && r2.getOutput().getMaxStackSize() >= r2.getOutput().getCount() * (r1.getOutput().getCount() / r2.getInputAmount())) {
                     ItemStack output = r2.getOutput().copy();
                     output.setCount(output.getCount() * (r1.getOutput().getCount() / r2.getInputAmount()));
-                    String name = r1.getId().getPath() + "_" + r2.getId().getPath();
-                    ResourceLocation id = RL(name);
-                    r.put(id, new AssemblyRecipeImpl(id, r1.getInput(), output, AssemblyProgramType.DRILL_LASER));
+                    ResourceLocation id = RL(r1.getId().getPath() + "_" + r2.getId().getPath());
+                    drillLaser.put(id, new AssemblyRecipeImpl(id, r1.getInput(), output, AssemblyProgramType.DRILL_LASER));
                 }
             }
         }
-        return r;
+        return drillLaser;
     }
 
     public static class Serializer<T extends AssemblyRecipe> extends ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<T> {

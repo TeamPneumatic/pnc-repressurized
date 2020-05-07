@@ -111,7 +111,7 @@ public class EntityHeatFrame extends EntitySemiblockBase {
             byte newStatus = IDLE;
             if (logic.getTemperature() > MIN_COOKING_TEMP) {
                 newStatus = doCooking();
-            } else if (logic.getTemperature() < HeatFrameCoolingRecipeImpl.getMaxThresholdTemp()) {
+            } else if (logic.getTemperature() < HeatFrameCoolingRecipeImpl.getMaxThresholdTemp(getWorld())) {
                 newStatus = doCooling();
             }
             setStatus(newStatus);

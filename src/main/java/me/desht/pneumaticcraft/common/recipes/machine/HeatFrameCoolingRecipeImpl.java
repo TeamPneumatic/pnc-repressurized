@@ -9,10 +9,11 @@ import net.minecraft.item.crafting.*;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nullable;
-import java.util.List;
+import java.util.Collection;
 
 public class HeatFrameCoolingRecipeImpl extends HeatFrameCoolingRecipe {
     // cache the highest threshold temperature of all recipes, to reduce the recipe searching heat frames need to do
@@ -87,7 +88,7 @@ public class HeatFrameCoolingRecipeImpl extends HeatFrameCoolingRecipe {
         return PneumaticCraftRecipeType.HEAT_FRAME_COOLING;
     }
 
-    public static <T extends IRecipe<?>> void cacheMaxThresholdTemp(List<T> recipes) {
+    public static <T extends IRecipe<?>> void cacheMaxThresholdTemp(Collection<T> recipes) {
         maxThresholdTemp = Integer.MIN_VALUE;
         for (T recipe : recipes) {
             if (recipe instanceof HeatFrameCoolingRecipe) {
@@ -98,7 +99,10 @@ public class HeatFrameCoolingRecipeImpl extends HeatFrameCoolingRecipe {
         }
     }
 
-    public static int getMaxThresholdTemp() {
+    public static int getMaxThresholdTemp(World world) {
+        if (maxThresholdTemp == Integer.MIN_VALUE) {
+            cacheMaxThresholdTemp(PneumaticCraftRecipeType.HEAT_FRAME_COOLING.getRecipes(world).values());
+        }
         return maxThresholdTemp;
     }
 

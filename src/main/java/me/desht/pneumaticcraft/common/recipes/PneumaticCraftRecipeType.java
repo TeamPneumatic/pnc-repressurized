@@ -83,6 +83,8 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
 
     public static void clearCachedRecipes() {
         types.forEach(type -> type.cachedRecipes.clear());
+
+        HeatFrameCoolingRecipeImpl.cacheMaxThresholdTemp(Collections.emptyList());  // clear the cached temp
     }
 
     public Map<ResourceLocation, T> getRecipes(World world) {
@@ -97,9 +99,7 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
             List<T> recipes = recipeManager.getRecipes(this, PneumaticCraftRecipe.DummyIInventory.getInstance(), world);
             recipes.forEach(recipe -> cachedRecipes.put(recipe.getId(), recipe));
 
-            if (this == HEAT_FRAME_COOLING) {
-                HeatFrameCoolingRecipeImpl.cacheMaxThresholdTemp(recipes);
-            } else if (this == ASSEMBLY_DRILL_LASER) {
+            if (this == ASSEMBLY_DRILL_LASER) {
                 Collection<AssemblyRecipe> drillRecipes = PneumaticCraftRecipeType.ASSEMBLY_DRILL.getRecipes(world).values();
                 Collection<AssemblyRecipe> laserRecipes = PneumaticCraftRecipeType.ASSEMBLY_LASER.getRecipes(world).values();
                 AssemblyRecipeImpl.calculateAssemblyChain(drillRecipes, laserRecipes).forEach((id, recipe) -> cachedRecipes.put(id, (T) recipe));
