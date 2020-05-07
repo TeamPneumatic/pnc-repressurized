@@ -32,10 +32,10 @@ repositories {
 //        name = "hwyla"
 //        url = 'http://tehnut.info/maven/'
 //    }
-    maven {
-        name = "hwyla-temp"
-        url = "https://github.com/TehNut/temporary-maven-thing/tree/master/maven"
-    }
+//    maven {
+//        name = "hwyla-temp"
+//        url = "https://github.com/TehNut/temporary-maven-thing/tree/master/maven"
+//    }
     flatDir {
         dir 'libs/'
     }
