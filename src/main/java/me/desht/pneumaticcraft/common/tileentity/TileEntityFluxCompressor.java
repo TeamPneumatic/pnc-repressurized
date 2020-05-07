@@ -106,7 +106,7 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase implements
 
     @Override
     public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player) {
-        if (tag.equals(IGUIButtonSensitive.REDSTONE_TAG) && ++redstoneMode == 2) {
+        if (tag.equals(IGUIButtonSensitive.REDSTONE_TAG) && ++redstoneMode == 3) {
             redstoneMode = 0;
         }
     }
