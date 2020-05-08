@@ -76,7 +76,6 @@ public class ConfigHelper {
         PNCConfig.Common.Machines.pneumaticPumpEfficiency = common.machines.pneumaticPumpEfficiency.get();
         PNCConfig.Common.Machines.speedUpgradeSpeedMultiplier = common.machines.speedUpgradeSpeedMultiplier.get();
         PNCConfig.Common.Machines.speedUpgradeUsageMultiplier = common.machines.speedUpgradeUsageMultiplier.get();
-        PNCConfig.Common.Machines.thermalCompressorThermalResistance = common.machines.thermalCompressorThermalResistance.get();
 
         PNCConfig.Common.Armor.jetBootsAirUsage = common.armor.jetBootsAirUsage.get();
         PNCConfig.Common.Armor.armorStartupTime = common.armor.armorStartupTime.get();

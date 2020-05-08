@@ -37,7 +37,6 @@ public class CommonConfig {
         ForgeConfigSpec.IntValue pneumaticPumpEfficiency;
         ForgeConfigSpec.DoubleValue speedUpgradeSpeedMultiplier;
         ForgeConfigSpec.DoubleValue speedUpgradeUsageMultiplier;
-        ForgeConfigSpec.DoubleValue thermalCompressorThermalResistance;
     }
     public class Armor {
         ForgeConfigSpec.IntValue jetBootsAirUsage;
@@ -249,10 +248,6 @@ public class CommonConfig {
                 .comment("Fuel usage / heat gen multiplier per speed upgrade: usage mult = speedUpgradeUsageMultiplier ^ num_of_speed_upgrades")
                 .translation("pneumaticcraft.config.common.machine_properties.speed_upgrade_usage_multiplier")
                 .defineInRange("speed_upgrade_usage_multiplier", PneumaticValues.DEF_SPEED_UPGRADE_USAGE_MULTIPLIER, 1.0, 2.0);
-        machines.thermalCompressorThermalResistance = builder
-                .comment("Thermal resistance between opposite faces of the Thermal Compressor. Higher values means heat leaks across (equalizes) more slowly, making the compressor better at converting heat differential to pressure.")
-                .translation("pneumaticcraft.config.common.machine_properties.thermal_compressor_thermal_resistance")
-                .defineInRange("thermal_compressor_thermal_resistance", 150, 0, Double.MAX_VALUE);
         builder.pop();
 
         builder.push("Pneumatic Armor");

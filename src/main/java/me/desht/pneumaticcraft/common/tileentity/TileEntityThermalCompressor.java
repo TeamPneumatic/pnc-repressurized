@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.common.tileentity;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.client.util.TintColor;
-import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.heat.SyncedTemperature;
@@ -28,7 +27,10 @@ import java.util.stream.IntStream;
 
 public class TileEntityThermalCompressor extends TileEntityPneumaticBase
         implements IHeatTinted, IRedstoneControlled, INamedContainerProvider {
+    // these values are carefully chosen to avoid exploits with vortex tubes and feedback loops
     private static final double AIR_GEN_MULTIPLIER = 0.05;  // mL per degree of difference
+    private static final int ACTIVE_THERMAL_RESISTANCE = 60;  // thermal resistance when running
+    private static final int INACTIVE_THERMAL_RESISTANCE = 10000;  // when disabled by redstone
 
     private double[] generated = new double[2];
 
@@ -67,7 +69,7 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase
 
     private IHeatExchangerLogic makeConnector(Direction side) {
         IHeatExchangerLogic connector = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
-        connector.setThermalResistance(PNCConfig.Common.Machines.thermalCompressorThermalResistance);
+        connector.setThermalResistance(ACTIVE_THERMAL_RESISTANCE);
         connector.addConnectedExchanger(heatExchangers[side.getHorizontalIndex()]);
         connector.addConnectedExchanger(heatExchangers[side.getOpposite().getHorizontalIndex()]);
         return connector;
@@ -88,11 +90,11 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase
             }
 
             if (redstoneAllows()) {
-                connector1.setThermalResistance(PNCConfig.Common.Machines.thermalCompressorThermalResistance);
-                connector2.setThermalResistance(PNCConfig.Common.Machines.thermalCompressorThermalResistance);
+                connector1.setThermalResistance(ACTIVE_THERMAL_RESISTANCE);
+                connector2.setThermalResistance(ACTIVE_THERMAL_RESISTANCE);
             } else {
-                connector1.setThermalResistance(PNCConfig.Common.Machines.thermalCompressorThermalResistance * 100);
-                connector2.setThermalResistance(PNCConfig.Common.Machines.thermalCompressorThermalResistance * 100);
+                connector1.setThermalResistance(INACTIVE_THERMAL_RESISTANCE);
+                connector2.setThermalResistance(INACTIVE_THERMAL_RESISTANCE);
             }
 
             connector1.tick();

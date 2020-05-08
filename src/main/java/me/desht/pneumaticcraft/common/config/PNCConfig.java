@@ -67,7 +67,6 @@ public class PNCConfig {
             public static int pneumaticPumpEfficiency;
             public static double speedUpgradeSpeedMultiplier;
             public static double speedUpgradeUsageMultiplier;
-            public static double thermalCompressorThermalResistance;
         }
 
         public static class Armor {
