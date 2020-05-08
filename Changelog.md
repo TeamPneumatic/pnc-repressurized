@@ -13,12 +13,18 @@ Changes are in reverse chronological order; newest changes at the top.
   * This means that (for example) Silent Mechanisms Oil (also tagged as `forge:oil`) is now accepted in the Refinery by default.
 
 ### Fixes
+* Fixed infinite air exploit with Thermal Compressor
+  * Thermal Compressor internal heat resistance has been lowered significantly since there was the possibility of a feedback loop in conjunction with a Vortex Tube
+  * This means heat source blocks will get used up faster, sorry!
+* Fixed server crash with UV Light Box (related to a drone flying nearby and playing particle effects)
 * Fixed some bugginess in Pressure Tubes connecting and disconnecting or wrongly leaking
 * Fixed Small Tanks not getting used up in crafting recipes
 * Fixed Logistics Module not rendering properly
 * Fixed Pressure Chamber crafting bug where 2 milk buckets made slime balls (correct recipe is 1 milk bucket + 4 green dye = 1 bucket + 4 slime balls)
 * Fixed Heat Frame Cooling not working on dedicated server
 * Fixed Flux Compressor GUI now showing "Low Signal" redstone mode
+* Fixed Charging Module over-aggressively caching an item handler capability (was most apparent with Aerial Interface not reliably working with side switching and the Charging Module)
+
 
 ## 1.1.1-6 (May 5 2020)
 
