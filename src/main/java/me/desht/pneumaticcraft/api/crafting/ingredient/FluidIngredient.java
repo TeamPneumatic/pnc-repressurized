@@ -124,7 +124,7 @@ public class FluidIngredient extends Ingredient {
     }
 
     public List<FluidStack> getFluidStacks() {
-        return fluids.stream().map(f -> new FluidStack(f, amount)).collect(Collectors.toList());
+        return getFluidList().stream().map(f -> new FluidStack(f, amount)).collect(Collectors.toList());
     }
 
     public static class Serializer implements IIngredientSerializer<FluidIngredient> {
