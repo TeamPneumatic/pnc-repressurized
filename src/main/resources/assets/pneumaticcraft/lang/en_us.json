@@ -1322,7 +1322,7 @@
   "gui.sideConfigurator.items.offhandInv": "Offhand Slot",
   "gui.sideConfigurator.items.enderInv": "Ender Inventory",
   "gui.sideConfigurator.items.droneInv": "Drone Inventory",
-  "gui.sideConfigurator.items.baublesInv": "Baubles Slots",
+  "gui.sideConfigurator.items.curiosInv": "Curios Slots",
   "gui.sideConfigurator.items.programmableInv": "Programmable Slot",
 
   "_comment": "Waila/TOP",
