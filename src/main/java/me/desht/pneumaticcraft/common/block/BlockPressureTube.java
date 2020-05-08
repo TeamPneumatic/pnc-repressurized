@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleNetworkManager;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
-import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ItemTubeModule;
@@ -24,7 +23,6 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.fluid.IFluidState;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.particles.RedstoneParticleData;
 import net.minecraft.state.EnumProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
@@ -37,8 +35,6 @@ import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
@@ -46,7 +42,6 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 
 import static me.desht.pneumaticcraft.common.block.BlockPressureTube.ConnectionType.CONNECTED;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.HORIZONTALS;
@@ -481,33 +476,35 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
         return drops;
     }
 
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public void animateTick(BlockState state, World par1World, BlockPos pos, Random rand) {
-        if (!PNCConfig.Client.tubeModuleRedstoneParticles) return;
+    // leaving disabled for now... to do this reliably would need a lot more network traffic, I think,
+    // and it's not that important
 
-        TileEntityPressureTube tePt = TileEntityPressureTube.getTube(par1World.getTileEntity(pos));
-        if (tePt != null) {
-            int l = 0;
-            Direction side = null;
-            for (TubeModule module : tePt.modules) {
-                if (module != null && module.getRedstoneLevel() > l) {
-                    l = module.getRedstoneLevel();
-                    side = module.getDirection();
-                }
-            }
-            if (l > 0) {
-                double x = pos.getX() + 0.5D + side.getXOffset() * 0.5D + (rand.nextFloat() - 0.5D) * 0.5D;
-                double y = pos.getY() + 0.5D + side.getYOffset() * 0.5D + (rand.nextFloat() - 0.5D) * 0.5D;
-                double z = pos.getZ() + 0.5D + side.getZOffset() * 0.5D + (rand.nextFloat() - 0.5D) * 0.5D;
-                float f = l / 15.0F;
-                float dx = f * 0.6F + 0.4F;
-                float dy = Math.max(0f, f * f * 0.7F - 0.5F);
-                float dz = Math.max(0f, f * f * 0.6F - 0.7F);
-                par1World.addParticle(RedstoneParticleData.REDSTONE_DUST, x, y, z, dx, dy, dz);
-            }
-        }
-    }
+//    @Override
+//    public void animateTick(BlockState state, World par1World, BlockPos pos, Random rand) {
+//        if (!PNCConfig.Client.tubeModuleRedstoneParticles) return;
+//
+//        TileEntityPressureTube tePt = TileEntityPressureTube.getTube(par1World.getTileEntity(pos));
+//        if (tePt != null) {
+//            int l = 0;
+//            Direction side = null;
+//            for (TubeModule module : tePt.modules) {
+//                if (module != null && module.getRedstoneLevel() > l) {
+//                    l = module.getRedstoneLevel();
+//                    side = module.getDirection();
+//                }
+//            }
+//            if (l > 0) {
+//                double x = pos.getX() + 0.5D + side.getXOffset() * 0.5D + (rand.nextFloat() - 0.5D) * 0.5D;
+//                double y = pos.getY() + 0.5D + side.getYOffset() * 0.5D + (rand.nextFloat() - 0.5D) * 0.5D;
+//                double z = pos.getZ() + 0.5D + side.getZOffset() * 0.5D + (rand.nextFloat() - 0.5D) * 0.5D;
+//                float f = l / 15.0F;
+//                float dx = f * 0.6F + 0.4F;
+//                float dy = Math.max(0f, f * f * 0.7F - 0.5F);
+//                float dz = Math.max(0f, f * f * 0.6F - 0.7F);
+//                par1World.addParticle(RedstoneParticleData.REDSTONE_DUST, x, y, z, dx, dy, dz);
+//            }
+//        }
+//    }
 
     @Override
     public int getWeakPower(BlockState state, IBlockReader par1IBlockAccess, BlockPos pos, Direction side) {

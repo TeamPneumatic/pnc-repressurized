@@ -26,10 +26,6 @@ public class PacketUpdatePressureBlock extends LocationIntPacket {
     public PacketUpdatePressureBlock() {
     }
 
-//    public PacketUpdatePressureBlock(TileEntity te) {
-//        this(te, null);
-//    }
-
     public PacketUpdatePressureBlock(TileEntity te, Direction handlerDir, Direction leakDir, int currentAir) {
         super(te.getPos());
 
