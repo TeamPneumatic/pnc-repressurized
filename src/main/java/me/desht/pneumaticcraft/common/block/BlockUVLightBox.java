@@ -59,8 +59,7 @@ public class BlockUVLightBox extends BlockPneumaticCraft implements ColorHandler
     @Override
     public int getTintColor(BlockState state, @Nullable ILightReader world, @Nullable BlockPos pos, int tintIndex) {
         if (world != null && pos != null) {
-            boolean lightsOn = world.getBlockState(pos).get(BlockUVLightBox.LIT);
-            return lightsOn ? 0xFF4000FF : 0xFFAFAFE4;
+            return state.has(BlockUVLightBox.LIT) && state.get(BlockUVLightBox.LIT) ? 0xFF4000FF : 0xFFAFAFE4;
         }
         return 0xFFAFAFE4;
     }
