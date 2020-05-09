@@ -111,7 +111,7 @@ public class ProgrammedDroneUtils {
             widgetImport.setUseCount(true);
             widgetImport.setCount(stack.getCount());
             ProgWidgetItemFilter filter = ProgWidgetItemFilter.withFilter(stack);
-            filter.useNBT = true;
+            filter.useNBT = stack.hasTag();
             builder.add(widgetImport, ProgWidgetArea.fromPosition(pos), filter);
         }
         builder.add(new ProgWidgetGoToLocation(), ProgWidgetArea.fromPosition(drone.getPosition()));

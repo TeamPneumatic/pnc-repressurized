@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.api.crafting;
 
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -66,17 +67,6 @@ public class AmadronTradeResource {
 
     public static AmadronTradeResource of(FluidStack stack) {
         return new AmadronTradeResource(stack);
-    }
-
-    public static AmadronTradeResource fromNBT(CompoundNBT tag) {
-        Type type = Type.valueOf(tag.getString("type"));
-        switch (type) {
-            case ITEM:
-                return new AmadronTradeResource(ItemStack.read(tag.getCompound("resource")));
-            case FLUID:
-                return new AmadronTradeResource(FluidStack.loadFluidStackFromNBT(tag.getCompound("resource")));
-        }
-        throw new IllegalStateException("bad trade resource type: " + type);
     }
 
     public static AmadronTradeResource fromPacketBuf(PacketBuffer pb) {
@@ -247,16 +237,17 @@ public class AmadronTradeResource {
     }
 
     /**
-     * Get the total number of matching items in the given (lazy) item handler. "Matching" means that the items
-     * can stack together.
+     * Get the total number of matching items in the given (lazy) item handler. "Matching" means that the stacks are
+     * the same item, AND if the item in the offer has any NBT, the stack's NBT must also match.
      *
      * @param item the item to look for
      * @param lazy the LazyOptional item handler
      * @return the total number of matching items
      */
     private static int countItemsInHandler(ItemStack item, LazyOptional<IItemHandler> lazy) {
+        boolean matchNBT = item.hasTag();
         return lazy.map(handler -> IntStream.range(0, handler.getSlots())
-                .filter(i -> ItemHandlerHelper.canItemStacksStack(handler.getStackInSlot(i), item))
+                .filter(i -> PneumaticCraftUtils.doesItemMatchFilter(item, handler.getStackInSlot(i), false, matchNBT, false))
                 .map(i -> handler.getStackInSlot(i).getCount())
                 .sum()
         ).orElse(0);
