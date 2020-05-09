@@ -14,7 +14,7 @@ public abstract class PacketAbstractAmadronTrade {
     }
 
     public PacketAbstractAmadronTrade(PacketBuffer buffer) {
-        offer = AmadronPlayerOffer.loadFromBuf(buffer);
+        offer = AmadronPlayerOffer.playerOfferFromBuf(buffer.readResourceLocation(), buffer);
     }
 
     public void toBytes(PacketBuffer buf) {

@@ -31,9 +31,9 @@ public class PacketSyncAmadronOffers {
         List<AmadronOffer> offers = new ArrayList<>();
         for (int i = 0; i < offerCount; i++) {
             if (buf.readBoolean()) {
-                offers.add(AmadronPlayerOffer.loadFromBuf(buf));
+                offers.add(AmadronPlayerOffer.playerOfferFromBuf(buf.readResourceLocation(), buf));
             } else {
-                offers.add(AmadronOffer.readFromBuf(buf));
+                offers.add(AmadronOffer.offerFromBuf(buf.readResourceLocation(), buf));
             }
         }
         return offers;

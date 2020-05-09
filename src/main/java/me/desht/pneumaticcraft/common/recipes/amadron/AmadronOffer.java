@@ -84,9 +84,8 @@ public class AmadronOffer extends AmadronRecipe {
         buf.writeVarInt(tradeLevel);
     }
 
-    public static AmadronOffer readFromBuf(PacketBuffer buf) {
-        return new AmadronOffer(
-                buf.readResourceLocation(),
+    public static AmadronOffer offerFromBuf(ResourceLocation id, PacketBuffer buf) {
+        return new AmadronOffer(id,
                 AmadronTradeResource.fromPacketBuf(buf),
                 AmadronTradeResource.fromPacketBuf(buf),
                 buf.readBoolean(),

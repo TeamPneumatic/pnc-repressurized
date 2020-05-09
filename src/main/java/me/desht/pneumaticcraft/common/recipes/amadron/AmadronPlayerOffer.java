@@ -209,38 +209,10 @@ public class AmadronPlayerOffer extends AmadronOffer {
         return providingPos;
     }
 
-//    @Override
-//    public void writeToNBT(CompoundNBT tag) {
-//        super.writeToNBT(tag);
-//        tag.putString("offeringPlayerId", offeringPlayerId);
-//        tag.putString("offeringPlayerName", offeringPlayerName);
-//        tag.putInt("inStock", inStock);
-//        tag.putInt("pendingPayments", pendingPayments);
-//        if (providingPos != null) {
-//            tag.put("providingPos", GlobalPosUtils.serializeGlobalPos(providingPos));
-//        }
-//        if (returningPos != null) {
-//            tag.put("returningPos", GlobalPosUtils.serializeGlobalPos(returningPos));
-//        }
-//    }
-//
-//    public static AmadronPlayerOffer loadFromNBT(CompoundNBT tag) {
-//        AmadronOffer offer = AmadronOffer.loadFromNBT(tag);
-//        AmadronPlayerOffer custom = new AmadronPlayerOffer(offer.getId(), offer.getInput(), offer.getOutput(), tag.getString("offeringPlayerName"), tag.getString("offeringPlayerId"));
-//        custom.inStock = tag.getInt("inStock");
-//        custom.pendingPayments = tag.getInt("pendingPayments");
-//        if (tag.contains("providingPos")) {
-//            custom.setProvidingPosition(GlobalPosUtils.deserializeGlobalPos(tag.getCompound("providingPos")));
-//        }
-//        if (tag.contains("returningPos")) {
-//            custom.setProvidingPosition(GlobalPosUtils.deserializeGlobalPos(tag.getCompound("returningPos")));
-//        }
-//        return custom;
-//    }
-
     @Override
     public void write(PacketBuffer buf) {
-        super.write(buf);
+        input.writeToBuf(buf);
+        output.writeToBuf(buf);
         buf.writeString(offeringPlayerName);
         buf.writeString(offeringPlayerId);
         buf.writeBoolean(providingPos != null);
@@ -255,11 +227,10 @@ public class AmadronPlayerOffer extends AmadronOffer {
         buf.writeVarInt(pendingPayments);
     }
 
-    public static AmadronPlayerOffer loadFromBuf(PacketBuffer buf) {
-        AmadronPlayerOffer offer = new AmadronPlayerOffer(
-                buf.readResourceLocation(),
+    public static AmadronPlayerOffer playerOfferFromBuf(ResourceLocation id, PacketBuffer buf) {
+        AmadronPlayerOffer offer = new AmadronPlayerOffer(id,
                 AmadronTradeResource.fromPacketBuf(buf), AmadronTradeResource.fromPacketBuf(buf),
-                buf.readString(), buf.readString()
+                buf.readString(100), buf.readString(100)
         );
         if (buf.readBoolean()) {
             offer.setProvidingPosition(PacketUtil.readGlobalPos(buf));
