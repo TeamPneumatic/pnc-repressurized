@@ -606,7 +606,7 @@
   "gui.tab.problems.pressure_chamber_interface.not_formed": "§fBad Multiblock! \\n§0The Pressure Chamber Multiblock is not properly formed.",
   "gui.tab.problems.pressure_chamber_interface.not_enough_pressure": "§fNot enough pressure! \\n§0Apply more pressure to the Pressure Chamber. The required pressure is dependent on the number of items being transported.",
   "gui.tab.problems.thermal_compressor.poor_temp_diff": "§fPoor Temperature Differential \\n§0Place a hot block on any side of the compressor, and a cold block on the opposite side.",
-  "gui.tab.problems.thermal_compressor.no_temp_diff": "§fNo Temperature Differential \\n§0Place a hot block on any side of the compressor, and a cold block on the opposite side.",
+  "gui.tab.problems.thermal_compressor.no_temp_diff": "§fInsufficient Temperature Differential \\n§0Place a hot block on any side of the compressor, and a cold block on the opposite side.",
   "gui.tab.problems.charging_station.no_item": "§fNo item to (dis)charge \\n§0Put any pneumatic item in the charge slot.",
   "gui.tab.problems.charging_station.item_full": "§f%s can't be charged \\n§0It's full.",
   "gui.tab.problems.charging_station.item_empty": "§f%s can't be discharged \\n§0It's empty.",

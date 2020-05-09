@@ -5,5 +5,5 @@
   "transformCold": {
     "block": "minecraft:netherrack"
   },
-  "heatCapacity": 2500
+  "heatCapacity": 10000
 }

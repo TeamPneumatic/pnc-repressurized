@@ -5,5 +5,5 @@
   "transformCold": {
     "block": "minecraft:sand"
   },
-  "heatCapacity": 1000
+  "heatCapacity": 2500
 }

@@ -27,12 +27,10 @@ import java.util.stream.IntStream;
 
 public class TileEntityThermalCompressor extends TileEntityPneumaticBase
         implements IHeatTinted, IRedstoneControlled, INamedContainerProvider {
-    // these values are carefully chosen to avoid exploits with vortex tubes and feedback loops
     private static final double AIR_GEN_MULTIPLIER = 0.05;  // mL per degree of difference
-    private static final int ACTIVE_THERMAL_RESISTANCE = 60;  // thermal resistance when running
-    private static final int INACTIVE_THERMAL_RESISTANCE = 10000;  // when disabled by redstone
 
-    private double[] generated = new double[2];
+    // track running air generation amounts; won't be added to the air handler until > 1.0
+    private double[] airGenerated = new double[2];
 
     @GuiSynced
     private final IHeatExchangerLogic[] heatExchangers = new IHeatExchangerLogic[4];
@@ -69,9 +67,9 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase
 
     private IHeatExchangerLogic makeConnector(Direction side) {
         IHeatExchangerLogic connector = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
-        connector.setThermalResistance(ACTIVE_THERMAL_RESISTANCE);
-        connector.addConnectedExchanger(heatExchangers[side.getHorizontalIndex()]);
-        connector.addConnectedExchanger(heatExchangers[side.getOpposite().getHorizontalIndex()]);
+        connector.setThermalResistance(200);
+        connector.addConnectedExchanger(getHeatExchanger(side));
+        connector.addConnectedExchanger(getHeatExchanger(side.getOpposite()));
         return connector;
     }
 
@@ -90,44 +88,62 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase
             }
 
             if (redstoneAllows()) {
-                connector1.setThermalResistance(ACTIVE_THERMAL_RESISTANCE);
-                connector2.setThermalResistance(ACTIVE_THERMAL_RESISTANCE);
-            } else {
-                connector1.setThermalResistance(INACTIVE_THERMAL_RESISTANCE);
-                connector2.setThermalResistance(INACTIVE_THERMAL_RESISTANCE);
+                connector1.tick();
+                connector2.tick();
+
+                equaliseHeat(Direction.NORTH, generatePressure(Direction.NORTH));
+                equaliseHeat(Direction.EAST, generatePressure(Direction.EAST));
             }
 
-            connector1.tick();
-            connector2.tick();
-
-            if (redstoneAllows()) {
-                generatePressure(0);  // south and north
-                generatePressure(1);  // west and east
-            }
-
-            for (int i = 0; i < 4; i++) {
+            for (int i = 0; i < heatExchangers.length; i++) {
                 syncedTemperatures[i].setCurrentTemp(heatExchangers[i].getTemperature());
             }
         }
     }
 
-    public double airProduced(int side) {
-        if (world.isRemote) {
-            double diff = Math.abs(heatExchangers[side].getTemperatureAsInt() - heatExchangers[side + 2].getTemperatureAsInt());
-            return diff * AIR_GEN_MULTIPLIER;
+    private IHeatExchangerLogic getHeatExchanger(Direction side) {
+        return heatExchangers[side.getHorizontalIndex()];
+    }
+
+    private void equaliseHeat(Direction side, double airProduced) {
+        // vortex tube adds 1 heat to its hot side and -1 heat to its cold side for every 10 air used
+        // thermal compressor must be no more efficient than that or there will be positive feedback loops = infinite air exploits
+        double heatToAdd = airProduced / 5.0;
+
+        IHeatExchangerLogic h1 = getHeatExchanger(side);
+        IHeatExchangerLogic h2 = getHeatExchanger(side.getOpposite());
+
+        if (h1.getTemperature() > h2.getTemperature()) {
+            h1.addHeat(-heatToAdd);
+            h2.addHeat(heatToAdd);
         } else {
-            double diff = Math.abs(heatExchangers[side].getTemperature() - heatExchangers[side + 2].getTemperature());
-            return diff * AIR_GEN_MULTIPLIER;
+            h1.addHeat(heatToAdd);
+            h2.addHeat(-heatToAdd);
         }
     }
 
-    private void generatePressure(int side) {
-        generated[side] += airProduced(side);
-        if (generated[side] > 1.0) {
-            int toAdd = (int) generated[side];
-            addAir(toAdd);
-            generated[side] -= toAdd;
+    public double airProduced(Direction side) {
+        if (world.isRemote) {
+            // clientside: just for GUI display purposes
+            double diff = Math.abs(getHeatExchanger(side).getTemperatureAsInt() - getHeatExchanger(side.getOpposite()).getTemperatureAsInt());
+            return diff < 10 ? 0 : diff * AIR_GEN_MULTIPLIER;
+        } else {
+            // server side: the actual calculation
+            double diff = Math.abs(getHeatExchanger(side).getTemperature() - getHeatExchanger(side.getOpposite()).getTemperature());
+            return diff < 10 ? 0 : diff * AIR_GEN_MULTIPLIER;
         }
+    }
+
+    private double generatePressure(Direction side) {
+        double airProduced = airProduced(side);
+        int sideIdx = side.getAxis() == Direction.Axis.Z ? 1 : 0;
+        airGenerated[sideIdx] += airProduced;
+        if (airGenerated[sideIdx] > 1.0) {
+            int toAdd = (int) airGenerated[sideIdx];
+            addAir(toAdd);
+            airGenerated[sideIdx] -= toAdd;
+        }
+        return airProduced;
     }
 
     @Override
@@ -146,6 +162,8 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase
         for (int i = 0; i < 4; i++) {
             tag.put("side" + i, heatExchangers[i].serializeNBT());
         }
+        tag.put("connector1", connector1.serializeNBT());
+        tag.put("connector2", connector2.serializeNBT());
         tag.putInt("redstoneMode", redstoneMode);
         return tag;
     }
@@ -156,6 +174,8 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase
         for (int i = 0; i < 4; i++) {
             heatExchangers[i].deserializeNBT(tag.getCompound("side" + i));
         }
+        connector1.deserializeNBT(tag.getCompound("connector1"));
+        connector2.deserializeNBT(tag.getCompound("connector2"));
         redstoneMode = tag.getInt("redstoneMode");
     }
 

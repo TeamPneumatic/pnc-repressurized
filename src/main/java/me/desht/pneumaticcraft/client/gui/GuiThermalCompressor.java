@@ -58,7 +58,7 @@ public class GuiThermalCompressor extends GuiPneumaticContainerBase<ContainerThe
     protected void addPressureStatInfo(List<String> pressureStatText) {
         super.addPressureStatInfo(pressureStatText);
 
-        double prod = te.airProduced(0) + te.airProduced(1);
+        double prod = te.airProduced(Direction.NORTH) + te.airProduced(Direction.EAST);
         if (prod > 0 && redstoneAllows) {
             pressureStatText.add(TextFormatting.BLACK + I18n.format("gui.tooltip.producingAir",
                     PneumaticCraftUtils.roundNumberTo(prod, 1)));
@@ -69,8 +69,7 @@ public class GuiThermalCompressor extends GuiPneumaticContainerBase<ContainerThe
     protected void addProblems(List<String> curInfo) {
         super.addProblems(curInfo);
 
-        int d = getTemperatureDifferential(Direction.NORTH) + getTemperatureDifferential(Direction.EAST);
-        if (d == 0) {
+        if (getTemperatureDifferential(Direction.NORTH) < 10 && getTemperatureDifferential(Direction.EAST) < 10) {
             curInfo.add(I18n.format("gui.tab.problems.thermal_compressor.no_temp_diff"));
         }
     }
@@ -79,8 +78,9 @@ public class GuiThermalCompressor extends GuiPneumaticContainerBase<ContainerThe
     protected void addWarnings(List<String> curInfo) {
         super.addWarnings(curInfo);
 
-        int d = getTemperatureDifferential(Direction.NORTH) + getTemperatureDifferential(Direction.EAST);
-        if (d > 0 && d < 20) {
+        int dns = getTemperatureDifferential(Direction.NORTH);
+        int dew = getTemperatureDifferential(Direction.EAST);
+        if ((dns < 20 && (dew >= 10 && dew < 20)) || (dew < 20 && (dns >= 10 && dns < 20))) {
             curInfo.add(I18n.format("gui.tab.problems.thermal_compressor.poor_temp_diff"));
         }
     }

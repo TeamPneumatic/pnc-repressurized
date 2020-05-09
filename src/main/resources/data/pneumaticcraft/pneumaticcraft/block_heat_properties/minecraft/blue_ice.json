@@ -2,7 +2,7 @@
   "block": "minecraft:blue_ice",
   "temperature": 233,
   "thermalResistance": 200,
-  "heatCapacity": 5000,
+  "heatCapacity": 10000,
   "transformHot": {
     "block": "minecraft:packed_ice"
   }

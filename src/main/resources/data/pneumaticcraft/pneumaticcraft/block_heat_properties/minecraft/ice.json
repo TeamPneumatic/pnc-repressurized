@@ -2,7 +2,7 @@
   "block": "minecraft:ice",
   "temperature": 263,
   "thermalResistance": 500,
-  "heatCapacity": 2000,
+  "heatCapacity": 5000,
   "transformHot": {
     "fluid": "minecraft:water"
   },
