@@ -264,7 +264,7 @@ public class AmadronPlayerOffer extends AmadronOffer {
         AmadronPlayerOffer offer = new AmadronPlayerOffer(
                 buf.readResourceLocation(),
                 AmadronTradeResource.fromPacketBuf(buf), AmadronTradeResource.fromPacketBuf(buf),
-                buf.readString(), buf.readString()
+                buf.readString(100), buf.readString(100)
         );
         if (buf.readBoolean()) {
             offer.setProvidingPosition(PacketUtil.readGlobalPos(buf));
