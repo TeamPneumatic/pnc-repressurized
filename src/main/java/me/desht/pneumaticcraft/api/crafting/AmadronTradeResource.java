@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.api.crafting;
 
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -256,7 +257,7 @@ public class AmadronTradeResource {
      */
     private static int countItemsInHandler(ItemStack item, LazyOptional<IItemHandler> lazy) {
         return lazy.map(handler -> IntStream.range(0, handler.getSlots())
-                .filter(i -> ItemHandlerHelper.canItemStacksStack(handler.getStackInSlot(i), item))
+                .filter(i -> PneumaticCraftUtils.doesItemMatchFilter(item, handler.getStackInSlot(i), false, item.hasTag(), false))
                 .map(i -> handler.getStackInSlot(i).getCount())
                 .sum()
         ).orElse(0);
