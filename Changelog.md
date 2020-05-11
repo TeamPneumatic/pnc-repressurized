@@ -9,17 +9,25 @@ Changes are in reverse chronological order; newest changes at the top.
 
 This release brings a very major internal rewrite and many many major new and modified gameplay elements. See also https://gist.github.com/desht/b604bd670f7f718bb4e6f20ff53893e2
 
-## 1.0.3-? (unreleased)
+## 1.0.3-12 (unreleased)
 
 ### Updates
 * Oil and Lubricant are now in the `forge:oil` and `forge:lubricant` fluid tags, respectively.
   * This means that (for example) Silent Mechanisms Oil (also tagged as `forge:oil`) is now accepted in the Refinery by default.
-
+* Disabled Redstone particle emission for pressure tube modules
+  * This was unreliable and fixing it properly would involve a lot more packet syncing from server to client which is not really worth it
+  * Waila/TOP still shows the output level
+  
 ### Fixes
 * Fixed some bugginess in Pressure Tubes connecting and disconnecting or wrongly leaking
 * Fixed Small Tanks not getting used up in crafting recipes
 * Fixed Pressure Chamber crafting bug where 2 milk buckets made slime balls (correct recipe is 1 milk bucket + 4 green dye = 1 bucket + 4 slime balls)
 * Fixed Flux Compressor GUI not showing "Low Signal" redstone mode
+* Fixed server crash with UV Light Box (related to a drone flying nearby and playing particle effects)
+* Fixed Charging Module over-aggressively caching an item handler capability (was most apparent with Aerial Interface not reliably working with side switching and the Charging Module)
+* Fixed crashes when adding Amadron player-player trades
+* Fixed Amadron not matching items with NBT even when the item in the offer has no NBT
+  * E.g. Quark adds some NBT to the vanilla Compass, which is a villager Amadron can offer sometimes. With the added NBT, any Compasses players held were untradeable.
 
 ## 1.0.2-11 (May 4 2020)
 
