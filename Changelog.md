@@ -6,25 +6,31 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.15.2
 
-## 1.1.2-? (unreleased)
+## 1.1.2-12 (May 11 2020)
 
 ### Updates
 * Oil and Lubricant are now in the `forge:oil` and `forge:lubricant` fluid tags, respectively.
   * This means that (for example) Silent Mechanisms Oil (also tagged as `forge:oil`) is now accepted in the Refinery by default.
+* Disabled Redstone particle emission for pressure tube modules
+  * This was unreliable and fixing it properly would involve a lot more packet syncing from server to client which is not really worth it
+  * Waila/TOP still shows the output level
 
 ### Fixes
 * Fixed infinite air exploit with Thermal Compressor
-  * Thermal Compressor internal heat resistance has been lowered significantly since there was the possibility of a feedback loop in conjunction with a Vortex Tube
-  * This means heat source blocks will get used up faster, sorry!
+  * Thermal Compressor handles heat -> air conversion differently now since there was the possibility of a feedback loop in conjunction with a Vortex Tube
+  * Increased heat capacity of several heat source blocks (such as magma) to compensate.
+  * It's technically still possible to generate "free" air with sufficiently complex setups, but the amount generated is very small and not really worth the effort (it would be very difficult to do any useful work with it). This is a necessary compromise between having an exploitable system and making the Thermal Compressor so weak that it's useless.
 * Fixed server crash with UV Light Box (related to a drone flying nearby and playing particle effects)
 * Fixed some bugginess in Pressure Tubes connecting and disconnecting or wrongly leaking
 * Fixed Small Tanks not getting used up in crafting recipes
 * Fixed Logistics Module not rendering properly
 * Fixed Pressure Chamber crafting bug where 2 milk buckets made slime balls (correct recipe is 1 milk bucket + 4 green dye = 1 bucket + 4 slime balls)
 * Fixed Heat Frame Cooling not working on dedicated server
-* Fixed Flux Compressor GUI now showing "Low Signal" redstone mode
+* Fixed Flux Compressor GUI not offering a "Low Signal" redstone mode
 * Fixed Charging Module over-aggressively caching an item handler capability (was most apparent with Aerial Interface not reliably working with side switching and the Charging Module)
-
+* Fixed crashes when adding Amadron player-player trades
+* Fixed Amadron not matching items with NBT even when the item in the offer has no NBT
+  * E.g. Quark adds some NBT to the vanilla Compass, which is a villager Amadron can offer sometimes. With the added NBT, any Compasses players held were untradeable.
 
 ## 1.1.1-6 (May 5 2020)
 

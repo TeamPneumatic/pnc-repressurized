@@ -192,6 +192,7 @@ public class HeatExchangerLogicTicking implements IHeatExchangerLogic {
         }
     }
 
+    @Override
     public double getAmbientTemperature() {
         return ambientTemperature;
     }
