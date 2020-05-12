@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.common.config.aux;
+package me.desht.pneumaticcraft.common.config.subconfig;
 
 import java.io.File;
 import java.io.IOException;

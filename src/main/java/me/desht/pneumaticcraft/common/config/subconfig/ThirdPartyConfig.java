@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.common.config.aux;
+package me.desht.pneumaticcraft.common.config.subconfig;
 
 import com.google.common.collect.Maps;
 import com.google.gson.JsonElement;

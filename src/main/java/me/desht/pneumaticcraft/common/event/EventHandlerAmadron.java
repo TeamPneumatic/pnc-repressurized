@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.event;
 import me.desht.pneumaticcraft.api.drone.AmadronRetrievalEvent;
 import me.desht.pneumaticcraft.api.drone.DroneSuicideEvent;
 import me.desht.pneumaticcraft.common.DroneRegistry;
-import me.desht.pneumaticcraft.common.config.aux.AmadronPlayerOffers;
+import me.desht.pneumaticcraft.common.config.subconfig.AmadronPlayerOffers;
 import me.desht.pneumaticcraft.common.entity.living.EntityAmadrone;
 import me.desht.pneumaticcraft.common.entity.living.EntityAmadrone.AmadronAction;
 import me.desht.pneumaticcraft.common.item.ItemAmadronTablet;

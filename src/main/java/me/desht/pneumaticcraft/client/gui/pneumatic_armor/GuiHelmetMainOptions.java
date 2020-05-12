@@ -6,7 +6,7 @@ import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.MainHelmetHandler;
-import me.desht.pneumaticcraft.common.config.aux.ArmorHUDLayout;
+import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import net.minecraft.client.Minecraft;
 
 public class GuiHelmetMainOptions extends IOptionPage.SimpleToggleableOptions<MainHelmetHandler> {

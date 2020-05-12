@@ -16,7 +16,7 @@ import me.desht.pneumaticcraft.common.capabilities.CapabilityHacking;
 import me.desht.pneumaticcraft.common.capabilities.CapabilityHeat;
 import me.desht.pneumaticcraft.common.commands.ModCommands;
 import me.desht.pneumaticcraft.common.config.ConfigHolder;
-import me.desht.pneumaticcraft.common.config.aux.AuxConfigHandler;
+import me.desht.pneumaticcraft.common.config.subconfig.AuxConfigHandler;
 import me.desht.pneumaticcraft.common.core.*;
 import me.desht.pneumaticcraft.common.dispenser.BehaviorDispenseDrone;
 import me.desht.pneumaticcraft.common.event.*;

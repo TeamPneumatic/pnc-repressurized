@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.common.config.aux;
+package me.desht.pneumaticcraft.common.config.subconfig;
 
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Names;

@@ -7,7 +7,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetKeybindCheckBox;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker.BlockTrackEntryList;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.BlockTrackUpgradeHandler;
-import me.desht.pneumaticcraft.common.config.aux.ArmorHUDLayout;
+import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import net.minecraft.client.Minecraft;
 
 public class GuiBlockTrackOptions extends IOptionPage.SimpleToggleableOptions<BlockTrackUpgradeHandler> {

@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.thirdparty;
 
 import joptsimple.internal.Strings;
-import me.desht.pneumaticcraft.common.config.aux.ThirdPartyConfig;
+import me.desht.pneumaticcraft.common.config.subconfig.ThirdPartyConfig;
 import me.desht.pneumaticcraft.common.thirdparty.botania.Botania;
 import me.desht.pneumaticcraft.common.thirdparty.curios.Curios;
 import me.desht.pneumaticcraft.common.thirdparty.patchouli.Patchouli;

@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.client.gui.GuiMicromissile;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
-import me.desht.pneumaticcraft.common.config.aux.MicromissileDefaults;
+import me.desht.pneumaticcraft.common.config.subconfig.MicromissileDefaults;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.entity.projectile.EntityMicromissile;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;

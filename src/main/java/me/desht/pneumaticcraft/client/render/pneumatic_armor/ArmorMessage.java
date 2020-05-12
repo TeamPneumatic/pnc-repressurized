@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.client.render.pneumatic_armor;
 
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.config.aux.ArmorHUDLayout;
+import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.SoundCategory;

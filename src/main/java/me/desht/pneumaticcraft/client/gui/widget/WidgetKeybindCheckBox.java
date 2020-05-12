@@ -5,7 +5,7 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler
 import me.desht.pneumaticcraft.client.ClientSetup;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.UpgradeRenderHandlerList;
-import me.desht.pneumaticcraft.common.config.aux.ArmorFeatureStatus;
+import me.desht.pneumaticcraft.common.config.subconfig.ArmorFeatureStatus;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketToggleArmorFeature;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
