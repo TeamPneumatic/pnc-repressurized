@@ -1,5 +1,5 @@
 {
-  "block": "quark:icy_stone",
+  "block": "quark:permafrost",
   "temperature": 223,
   "heatCapacity": 5000,
   "transformCold": {
