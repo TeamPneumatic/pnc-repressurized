@@ -76,11 +76,11 @@ public class IOHelper {
      * @param requestedStack the item to search for, including the number of items; this stack is not modified
      * @param countType how to interpret the item count of requestedStack
      * @param simulate true if extraction should only be simulated
-     * @param fuzzyMeta true if item meta should be ignored when searching
+     * @param matchNBT if true, require an exact match of item NBT
      *
      * @return the extracted item stack, or ItemStack.EMPTY if nothing was extracted
      */
-    public static ItemStack extract(IItemHandler handler, ItemStack requestedStack, ExtractCount countType, boolean simulate, boolean fuzzyMeta) {
+    public static ItemStack extract(IItemHandler handler, ItemStack requestedStack, ExtractCount countType, boolean simulate, boolean matchNBT) {
         if (requestedStack.isEmpty()) return requestedStack;
 
         if (handler != null) {
@@ -88,7 +88,7 @@ public class IOHelper {
             List<Integer> slotsOfInterest = Lists.newArrayList();
             for (int slot = 0; slot < handler.getSlots() && itemsFound < requestedStack.getCount(); slot++) {
                 ItemStack stack = handler.getStackInSlot(slot);
-                if (!stack.isEmpty() && matchStacks(stack, requestedStack, fuzzyMeta)) {
+                if (!stack.isEmpty() && matchStacks(stack, requestedStack, matchNBT)) {
                     if (countType == ExtractCount.FIRST_MATCHING) {
                         return handler.extractItem(slot, Math.min(requestedStack.getCount(), stack.getCount()), simulate);
                     }
@@ -102,7 +102,7 @@ public class IOHelper {
                 int totalExtracted = 0;
                 for (int slot : slotsOfInterest) {
                     ItemStack stack = handler.getStackInSlot(slot);
-                    if (matchStacks(stack, requestedStack, fuzzyMeta)) {
+                    if (matchStacks(stack, requestedStack, matchNBT)) {
                         int itemsSubtracted = Math.min(itemsNeeded, stack.getCount());
                         if (itemsSubtracted > 0) {
                             exportedStack = stack;
@@ -120,8 +120,8 @@ public class IOHelper {
         return ItemStack.EMPTY;
     }
 
-    private static boolean matchStacks(ItemStack stack1, ItemStack stack2, boolean fuzzyMeta) {
-        return fuzzyMeta ? ItemStack.areItemsEqualIgnoreDurability(stack1, stack2) : ItemStack.areItemsEqual(stack1, stack2);
+    private static boolean matchStacks(ItemStack stack1, ItemStack stack2, boolean matchNBT) {
+        return ItemStack.areItemsEqual(stack1, stack2) && (!matchNBT || ItemStack.areItemStackTagsEqual(stack1, stack2));
     }
 
     @Nonnull

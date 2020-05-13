@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.block.tubes;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.common.ai.LogisticsManager;
 import me.desht.pneumaticcraft.common.ai.LogisticsManager.LogisticsTask;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
@@ -204,28 +205,31 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
     }
 
     private void tryItemTransfer(ModuleLogistics providingModule, ModuleLogistics requestingModule, IItemHandler providingHandler, IItemHandler requestingHandler, ItemStack toTransfer) {
-        ItemStack extractedStack = IOHelper.extract(providingHandler, toTransfer, IOHelper.ExtractCount.UP_TO, true, false);
-        if (!extractedStack.isEmpty()) {
-            requestingModule.getTube().getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).ifPresent(receiverAirHandler -> {
-                int airUsed = (int) (PNCConfig.Common.Logistics.itemTransportCost * extractedStack.getCount() * PneumaticCraftUtils.distBetween(providingModule.getTube().getPos(), requestingModule.getTube().getPos()));
-                if (airUsed > receiverAirHandler.getAir()) {
-                    // not enough air to move all the items - scale back the number to be moved
-                    double scale = receiverAirHandler.getAir() / (double) airUsed;
-                    extractedStack.setCount((int) (extractedStack.getCount() * scale));
-                    airUsed *= scale;
-                }
-                if (extractedStack.isEmpty()) {
-                    sendModuleUpdate(providingModule, false);
-                    sendModuleUpdate(requestingModule, false);
-                } else {
-                    sendModuleUpdate(providingModule, true);
-                    sendModuleUpdate(requestingModule, true);
-                    receiverAirHandler.addAir(-airUsed);
-                    IOHelper.extract(providingHandler, extractedStack, IOHelper.ExtractCount.EXACT, false, false);
-                    ItemHandlerHelper.insertItem(requestingHandler, extractedStack, false);
-                    ticksUntilNextCycle = 20;
-                }
-            });
+        ItemStack extractedStack = IOHelper.extract(providingHandler, toTransfer, IOHelper.ExtractCount.UP_TO, true, requestingModule.getFrame().isMatchNBT());
+        if (extractedStack.isEmpty()) return;
+
+        IAirHandlerMachine receiverAirHandler = requestingModule.getTube().getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY)
+                .orElseThrow(RuntimeException::new);
+
+        int airUsed = (int) (PNCConfig.Common.Logistics.itemTransportCost * extractedStack.getCount() * PneumaticCraftUtils.distBetween(providingModule.getTube().getPos(), requestingModule.getTube().getPos()));
+
+        if (airUsed > receiverAirHandler.getAir()) {
+            // not enough air to move all the items - scale back the number to be moved
+            double scaleBack = receiverAirHandler.getAir() / (double) airUsed;
+            extractedStack.setCount((int) (extractedStack.getCount() * scaleBack));
+            airUsed *= scaleBack;
+        }
+
+        if (extractedStack.isEmpty()) {
+            sendModuleUpdate(providingModule, false);
+            sendModuleUpdate(requestingModule, false);
+        } else {
+            sendModuleUpdate(providingModule, true);
+            sendModuleUpdate(requestingModule, true);
+            receiverAirHandler.addAir(-airUsed);
+            IOHelper.extract(providingHandler, extractedStack, IOHelper.ExtractCount.EXACT, false, requestingModule.getFrame().isMatchNBT());
+            ItemHandlerHelper.insertItem(requestingHandler, extractedStack, false);
+            ticksUntilNextCycle = 20;
         }
     }
 
@@ -243,26 +247,28 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
 
     private void tryFluidTransfer(ModuleLogistics providingModule, IFluidHandler providingHandler, ModuleLogistics requestingModule, IFluidHandler requestingHandler, FluidStack toTransfer) {
         FluidStack extractedFluid = providingHandler.drain(toTransfer, IFluidHandler.FluidAction.SIMULATE);
-        if (!extractedFluid.isEmpty()) {
-            requestingModule.getTube().getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).ifPresent(receiverAirHandler -> {
-                double airUsed = (PNCConfig.Common.Logistics.fluidTransportCost * extractedFluid.getAmount() * PneumaticCraftUtils.distBetween(providingModule.getTube().getPos(), requestingModule.getTube().getPos()));
-                if (airUsed > receiverAirHandler.getAir()) {
-                    // not enough air to move it all - scale back the amount of fluid to be moved
-                    double scale = receiverAirHandler.getAir() / airUsed;
-                    toTransfer.setAmount((int) (extractedFluid.getAmount() * scale));
-                    airUsed *= scale;
-                }
-                if (toTransfer.isEmpty()) {
-                    sendModuleUpdate(providingModule, false);
-                    sendModuleUpdate(requestingModule, false);
-                } else {
-                    sendModuleUpdate(providingModule, true);
-                    sendModuleUpdate(requestingModule, true);
-                    receiverAirHandler.addAir((int) -airUsed);
-                    requestingHandler.fill(providingHandler.drain(toTransfer, IFluidHandler.FluidAction.EXECUTE), IFluidHandler.FluidAction.EXECUTE);
-                    ticksUntilNextCycle = 20;
-                }
-            });
+
+        if (extractedFluid.isEmpty()) return;
+
+        IAirHandlerMachine receiverAirHandler = requestingModule.getTube().getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY)
+                .orElseThrow(RuntimeException::new);
+
+        double airUsed = (PNCConfig.Common.Logistics.fluidTransportCost * extractedFluid.getAmount() * PneumaticCraftUtils.distBetween(providingModule.getTube().getPos(), requestingModule.getTube().getPos()));
+        if (airUsed > receiverAirHandler.getAir()) {
+            // not enough air to move it all - scale back the amount of fluid to be moved
+            double scaleBack = receiverAirHandler.getAir() / airUsed;
+            toTransfer.setAmount((int) (extractedFluid.getAmount() * scaleBack));
+            airUsed *= scaleBack;
+        }
+        if (toTransfer.isEmpty()) {
+            sendModuleUpdate(providingModule, false);
+            sendModuleUpdate(requestingModule, false);
+        } else {
+            sendModuleUpdate(providingModule, true);
+            sendModuleUpdate(requestingModule, true);
+            receiverAirHandler.addAir((int) -airUsed);
+            requestingHandler.fill(providingHandler.drain(toTransfer, IFluidHandler.FluidAction.EXECUTE), IFluidHandler.FluidAction.EXECUTE);
+            ticksUntilNextCycle = 20;
         }
     }
 
