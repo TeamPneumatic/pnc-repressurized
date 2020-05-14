@@ -155,7 +155,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
             addButton(dButton);
             difficultyButtons.add(dButton);
             dButton.otherChoices = difficultyButtons;
-            dButton.setTooltip("gui.programmer.difficulty." + difficulty.toString().toLowerCase() + ".tooltip");
+            dButton.setTooltip(I18n.format("gui.programmer.difficulty." + difficulty.toString().toLowerCase() + ".tooltip"));
         }
 
         addButton(new WidgetButtonExtended(xStart + 5, yStart + yBottom + 4, 87, 20,
@@ -1035,15 +1035,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
                 return true;
             } else {
                 // just a regular click, nothing of interest held
-                if (hovered != null) {
-                    // clicking on a widget in the main area
-                    draggingWidget = hovered;
-                    dragMouseStartX = mouseX - guiLeft;
-                    dragMouseStartY = mouseY - guiTop;
-                    dragWidgetStartX = hovered.getX();
-                    dragWidgetStartY = hovered.getY();
-                    return true;
-                } else {
+                if (showingAllWidgets || origX > guiLeft + getProgrammerBounds().getX() + getProgrammerBounds().getWidth()) {
                     // clicking on a widget in the tray?
                     for (IProgWidget widget : visibleSpawnWidgets) {
                         if (origX >= widget.getX() + guiLeft
@@ -1060,6 +1052,15 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
                             return true;
                         }
                     }
+                }
+                if (hovered != null) {
+                    // clicking on a widget in the main area
+                    draggingWidget = hovered;
+                    dragMouseStartX = mouseX - guiLeft;
+                    dragMouseStartY = mouseY - guiTop;
+                    dragWidgetStartX = hovered.getX();
+                    dragWidgetStartY = hovered.getY();
+                    return true;
                 }
             }
         } else if (button == 2) {
