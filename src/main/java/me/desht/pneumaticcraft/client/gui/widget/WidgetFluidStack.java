@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
@@ -32,10 +33,10 @@ public class WidgetFluidStack extends WidgetFluidFilter {
             int fluidAmount = fluidStack.getAmount() / 1000;
             if (fluidAmount > 1) {
                 FontRenderer fr = Minecraft.getInstance().fontRenderer;
-                RenderSystem.translated(0, 0, 400);  // ensure amount is drawn in front of the fluid texture
+                RenderSystem.translated(0, 0, 200);  // ensure amount is drawn in front of the fluid texture
                 String s = fluidAmount + "B";
                 fr.drawStringWithShadow(s, x - fr.getStringWidth(s) + 17, y + 9, 0xFFFFFFFF);
-                RenderSystem.translated(0, 0, -400);
+                RenderSystem.translated(0, 0, -200);
             }
         }
     }
@@ -68,7 +69,9 @@ public class WidgetFluidStack extends WidgetFluidFilter {
 
     @Override
     public void addTooltip(double mouseX, double mouseY, List<String> curTip, boolean shiftPressed) {
-        super.addTooltip(mouseX, mouseY, curTip, shiftPressed);
-        if (!fluidStack.isEmpty()) curTip.add(TextFormatting.GRAY + "" + fluidStack.getAmount() + "mB");
+        if (!fluidStack.isEmpty()) {
+            curTip.add(new FluidStack(fluidStack, 1).getDisplayName().getFormattedText() + " (" + fluidStack.getAmount() + "mB)");
+            curTip.add(TextFormatting.BLUE + "" + TextFormatting.ITALIC + ModNameCache.getModName(fluidStack.getFluid().getRegistryName().getNamespace()));
+        }
     }
 }

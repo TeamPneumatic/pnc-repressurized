@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
@@ -15,6 +14,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fluids.FluidStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,14 +75,14 @@ public class JEIAmadronTradeCategory implements IRecipeCategory<AmadronOffer> {
             recipeLayout.getItemStacks().init(0, true, 5, 14);
             recipeLayout.getItemStacks().set(0, recipe.getInput().getItem());
         } else if (recipe.getInput().getType() == AmadronTradeResource.Type.FLUID) {
-            recipeLayout.getFluidStacks().init(0, true, 6, 15);
+            recipeLayout.getFluidStacks().init(0, true, 6, 15, 16, 16, 1000, false, new FluidTextOverlay(recipe.getInput().getFluid()));
             recipeLayout.getFluidStacks().set(0, recipe.getInput().getFluid());
         }
         if (recipe.getOutput().getType() == AmadronTradeResource.Type.ITEM) {
             recipeLayout.getItemStacks().init(1, false, 50, 14);
             recipeLayout.getItemStacks().set(1, recipe.getOutput().getItem());
         } else if (recipe.getOutput().getType() == AmadronTradeResource.Type.FLUID) {
-            recipeLayout.getFluidStacks().init(1, false, 51, 15);
+            recipeLayout.getFluidStacks().init(1, false, 51, 15, 16, 16, 1000, false, new FluidTextOverlay(recipe.getOutput().getFluid()));
             recipeLayout.getFluidStacks().set(1, recipe.getOutput().getFluid());
         }
     }
@@ -92,20 +92,6 @@ public class JEIAmadronTradeCategory implements IRecipeCategory<AmadronOffer> {
         FontRenderer fr = Minecraft.getInstance().fontRenderer;
         int x = (background.getWidth() - fr.getStringWidth(recipe.getVendor())) / 2;
         fr.drawString(recipe.getVendor(), x, 3, 0xFF404040);
-
-        if (recipe.getInput().getType() == AmadronTradeResource.Type.FLUID) {
-            drawFluidOverlay(22, fr, recipe.getInput());
-        }
-        if (recipe.getOutput().getType() == AmadronTradeResource.Type.FLUID) {
-            drawFluidOverlay(67, fr, recipe.getOutput());
-        }
-    }
-
-    private void drawFluidOverlay(int x, FontRenderer fr, AmadronTradeResource res) {
-        String s = res.getAmount() / 1000 + "B";
-        RenderSystem.translated(0, 0, 400);
-        fr.drawStringWithShadow(s, x - fr.getStringWidth(s), 23, 0xFFFFFFFF);
-        RenderSystem.translated(0, 0, -400);
     }
 
     @Override
@@ -117,5 +103,29 @@ public class JEIAmadronTradeCategory implements IRecipeCategory<AmadronOffer> {
             res.add(I18n.format("gui.amadron.amadronWidget.buying", recipe.getInput().toString()));
         }
         return res;
+    }
+
+    private static class FluidTextOverlay implements IDrawable {
+        private final String text;
+
+        FluidTextOverlay(FluidStack stack) {
+            this.text = stack.getAmount() / 1000 + "B";
+        }
+
+        @Override
+        public int getWidth() {
+            return 16;
+        }
+
+        @Override
+        public int getHeight() {
+            return 16;
+        }
+
+        @Override
+        public void draw(int x, int y) {
+            FontRenderer fr = Minecraft.getInstance().fontRenderer;
+            fr.drawStringWithShadow(text, x + getWidth() - fr.getStringWidth(text), y + getHeight() - fr.FONT_HEIGHT, 0xFFFFFFFF);
+        }
     }
 }

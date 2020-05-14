@@ -48,7 +48,7 @@ public class WidgetAmadronOffer extends Widget implements ITooltipProvider {
                 AbstractGui.blit(x, y, 0, 0, width, height, 256, 256);
             }
             for (Widget widget : subWidgets) {
-                widget.render(mouseX, mouseY, partialTick);
+                widget.renderButton(mouseX, mouseY, partialTick);
             }
             fr.drawString(offer.getVendor(), x + 2, y + 2, 0xFF000000);
             boolean playerOffer = offer instanceof AmadronPlayerOffer;

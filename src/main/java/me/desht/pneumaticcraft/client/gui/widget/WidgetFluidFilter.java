@@ -1,9 +1,11 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
 import me.desht.pneumaticcraft.client.util.GuiUtils;
+import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.fluid.Fluid;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.util.List;
@@ -36,7 +38,10 @@ public class WidgetFluidFilter extends Widget implements ITooltipProvider {
 
     @Override
     public void addTooltip(double mouseX, double mouseY, List<String> curTip, boolean shiftPressed) {
-        if (!fluidStack.isEmpty()) curTip.add(new FluidStack(fluidStack, 1).getDisplayName().getFormattedText());
+        if (!fluidStack.isEmpty()) {
+            curTip.add(new FluidStack(fluidStack, 1).getDisplayName().getFormattedText());
+            curTip.add(TextFormatting.BLUE + "" + TextFormatting.ITALIC + ModNameCache.getModName(fluidStack.getFluid().getRegistryName().getNamespace()));
+        }
     }
 
     public Fluid getFluid() {
