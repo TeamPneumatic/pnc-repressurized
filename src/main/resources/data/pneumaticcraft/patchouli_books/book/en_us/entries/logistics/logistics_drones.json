@@ -2,7 +2,7 @@
   "name": "Logistics Drones",
   "icon": "pneumaticcraft:logistics_drone",
   "category": "logistics",
-  "advancement": "pneumaticcraft:plastic",
+  "advancement": "pneumaticcraft:root",
   "pages": [
     {
       "type": "text",
