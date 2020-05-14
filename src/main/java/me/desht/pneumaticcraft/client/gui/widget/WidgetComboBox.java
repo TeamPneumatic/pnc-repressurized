@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.lib.GuiConstants;
 import net.minecraft.client.gui.FontRenderer;
 import org.lwjgl.glfw.GLFW;
@@ -9,7 +8,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public class WidgetComboBox extends WidgetTextField {
+public class WidgetComboBox extends WidgetTextField implements IDrawAfterRender {
 
     private final ArrayList<String> elements = new ArrayList<>();
     private final FontRenderer fontRenderer;
@@ -72,19 +71,19 @@ public class WidgetComboBox extends WidgetTextField {
     public void renderButton(int mouseX, int mouseY, float partialTick) {
         super.renderButton(mouseX, mouseY, partialTick);
 
+        fontRenderer.drawString(isFocused() ? GuiConstants.TRIANGLE_UP : GuiConstants.TRIANGLE_DOWN, x + width - 7, y + 1, 0xc0c0c0);
+    }
+
+    @Override
+    public void renderAfterEverythingElse(int mouseX, int mouseY, float partialTick) {
         if (enabled && active && isFocused()) {
             List<String> applicableElements = getApplicableElements();
-            RenderSystem.translated(0, 0, 300);
             fill(x - 1, y + height + 1, x + width + 1, y + height + 3 + applicableElements.size() * fontRenderer.FONT_HEIGHT, 0xFFA0A0A0);
             fill(x,     y + height + 1, x + width,     y + height + 2 + applicableElements.size() * fontRenderer.FONT_HEIGHT, 0xFF000000);
             for (int i = 0; i < applicableElements.size(); i++) {
                 String element = applicableElements.get(i);
                 fontRenderer.drawStringWithShadow(fontRenderer.trimStringToWidth(element, getWidth()), x + 4, y + height + 2 + i * fontRenderer.FONT_HEIGHT, 0xE0E0E0);
             }
-            fontRenderer.drawString(GuiConstants.TRIANGLE_UP, x + width - 7, y + 2, 0xc0c0c0);
-            RenderSystem.translated(0, 0, -300);
-        } else {
-            fontRenderer.drawString(GuiConstants.TRIANGLE_DOWN, x + width - 7, y + 2, 0xc0c0c0);
         }
     }
 
@@ -155,4 +154,5 @@ public class WidgetComboBox extends WidgetTextField {
             setText(elements.get(index));
         }
     }
+
 }

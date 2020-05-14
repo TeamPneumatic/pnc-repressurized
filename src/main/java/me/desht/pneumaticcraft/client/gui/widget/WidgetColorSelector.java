@@ -1,12 +1,11 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.item.DyeColor;
 
 import java.util.function.Consumer;
 
-public class WidgetColorSelector extends WidgetButtonExtended {
+public class WidgetColorSelector extends WidgetButtonExtended implements IDrawAfterRender {
     private boolean expanded = false;
     private DyeColor color = DyeColor.WHITE;
     private final Rectangle2d mainArea;
@@ -42,9 +41,11 @@ public class WidgetColorSelector extends WidgetButtonExtended {
         fill(x + 3, y + 3, x + width - 4, y + height - 4, 0xFF000000 | color.getColorValue());
         hLine(x + 3, x + width - 3, y + height - 4, 0xFF606060);
         vLine(x + width - 4, y + 3, y + height - 3, 0xFF606060);
+    }
 
+    @Override
+    public void renderAfterEverythingElse(int mouseX, int mouseY, float partialTick) {
         if (expanded) {
-            RenderSystem.translated(0, 0, 500);
             fill(x, y - 1 + height, x + width * 4, y -1 + height * 5, 0xFF000000);
             fill(x + 1, y + height, x + width * 4 - 1, y - 2 + height * 5, 0xFF808080);
             for (DyeColor color : DyeColor.values()) {
@@ -54,7 +55,6 @@ public class WidgetColorSelector extends WidgetButtonExtended {
                 hLine(dx + 3, dx + 13, dy + 13, 0xFF606060);
                 vLine(dx + 13, dy + 3, dy + 13, 0xFF606060);
             }
-            RenderSystem.translated(0, 0, -500);
         }
     }
 
