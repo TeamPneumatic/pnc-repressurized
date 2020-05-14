@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.client.gui.programmer;
 
-import com.google.common.collect.Lists;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.client.gui.GuiInventorySearcher;
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
@@ -52,36 +51,38 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
     public void init() {
         super.init();
 
-        addLabel(I18n.format("gui.progWidget.area.point1"), guiLeft + 50, guiTop + 10);
-        addLabel(I18n.format("gui.progWidget.area.point2"), guiLeft + 177, guiTop + 10);
-        addLabel(I18n.format("gui.progWidget.area.type"), guiLeft + 4, guiTop + 50);
-
         boolean advancedMode = PNCConfig.Client.programmerDifficulty == IProgWidget.WidgetDifficulty.ADVANCED;
-        WidgetButtonExtended gpsButton1 = new WidgetButtonExtended(guiLeft + (advancedMode ? 6 : 55), guiTop + 20, 20, 20, "", b -> openInvSearchGUI(0));
-        WidgetButtonExtended gpsButton2 = new WidgetButtonExtended(guiLeft + (advancedMode ? 133 : 182), guiTop + 20, 20, 20, "", b -> openInvSearchGUI(1));
-        gpsButton1.setRenderStacks(new ItemStack(ModItems.GPS_TOOL.get()));
-        gpsButton2.setRenderStacks(new ItemStack(ModItems.GPS_TOOL.get()));
+
+        // GPS buttons
+        WidgetButtonExtended gpsButton1 = new WidgetButtonExtended(guiLeft + (advancedMode ? 6 : 55), guiTop + 30, 20, 20, "", b -> openInvSearchGUI(0))
+                .setRenderStacks(new ItemStack(ModItems.GPS_TOOL.get()))
+                .setTooltipText(I18n.format("gui.progWidget.area.selectGPS1"));
         addButton(gpsButton1);
+        WidgetButtonExtended gpsButton2 = new WidgetButtonExtended(guiLeft + (advancedMode ? 133 : 182), guiTop + 30, 20, 20, "", b -> openInvSearchGUI(1))
+                .setRenderStacks(new ItemStack(ModItems.GPS_TOOL.get()))
+                .setTooltipText(I18n.format("gui.progWidget.area.selectGPS2"));
         addButton(gpsButton2);
 
-        variableField1 = new WidgetComboBox(font, guiLeft + 28, guiTop + 25, 88, font.FONT_HEIGHT + 1);
-        variableField2 = new WidgetComboBox(font, guiLeft + 155, guiTop + 25, 88, font.FONT_HEIGHT + 1);
+        // variable textfields
+        variableField1 = new WidgetComboBox(font, guiLeft + 28, guiTop + 35, 88, font.FONT_HEIGHT + 1);
+        variableField2 = new WidgetComboBox(font, guiLeft + 155, guiTop + 35, 88, font.FONT_HEIGHT + 1);
         Set<String> variables = guiProgrammer == null ? Collections.emptySet() : guiProgrammer.te.getAllVariables();
         variableField1.setElements(variables);
         variableField2.setElements(variables);
         variableField1.setText(progWidget.getCoord1Variable());
         variableField2.setText(progWidget.getCoord2Variable());
-
         if (advancedMode) {
             addButton(variableField1);
             addButton(variableField2);
         }
 
+        // type selector radio buttons
+        addLabel(I18n.format("gui.progWidget.area.type"), guiLeft + 8, guiTop + 88);
         final int widgetsPerColumn = 5;
         List<WidgetRadioButton> radioButtons = new ArrayList<>();
         for (int i = 0; i < allAreaTypes.size(); i++) {
             final AreaType areaType = allAreaTypes.get(i);
-            WidgetRadioButton radioButton = new WidgetRadioButton(guiLeft + widgetsPerColumn + i / widgetsPerColumn * 80, guiTop + 60 + i % widgetsPerColumn * 12, 0xFF404040, areaType.getName(), b -> {
+            WidgetRadioButton radioButton = new WidgetRadioButton(guiLeft + widgetsPerColumn + i / widgetsPerColumn * 80, guiTop + 100 + i % widgetsPerColumn * 12, 0xFF404040, areaType.getName(), b -> {
                 progWidget.type = areaType;
                 switchToWidgets(areaType);
             });
@@ -94,49 +95,42 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
             radioButtons.add(radioButton);
             radioButton.otherChoices = radioButtons;
         }
-
-        //typeInfoField.setTooltip(I18n.format("gui.progWidget.area.extraInfo.tooltip"));
-        //addWidget(new WidgetLabel(guiLeft + 160, guiTop + 100, I18n.format("gui.progWidget.area.extraInfo")));
         switchToWidgets(progWidget.type);
 
         if (invSearchGui != null) {
-            ItemStack stack = invSearchGui.getSearchStack();
-            if (stack.getItem() instanceof IPositionProvider) {
-                List<BlockPos> posList = ((IPositionProvider) stack.getItem()).getStoredPositions(ClientUtils.getClientWorld(), stack);
-                if (!posList.isEmpty()) {
-                    BlockPos pos = posList.get(0);
-                    if (pos != null) {
-                        if (pointSearched == 0) {
-                            progWidget.x1 = pos.getX();
-                            progWidget.y1 = pos.getY();
-                            progWidget.z1 = pos.getZ();
-                        } else {
-                            progWidget.x2 = pos.getX();
-                            progWidget.y2 = pos.getY();
-                            progWidget.z2 = pos.getZ();
-                        }
-                    } else {
-                        if (pointSearched == 0) {
-                            progWidget.x1 = progWidget.y1 = progWidget.z1 = 0;
-                        } else {
-                            progWidget.x2 = progWidget.y2 = progWidget.z2 = 0;
-                        }
-                    }
-                }
+            // returning from GPS selection GUI; copy the selected blockpos to the progwidget
+            BlockPos searchPos = getSearchedGPSPos();
+            if (pointSearched == 0) {
+                progWidget.x1 = searchPos.getX();
+                progWidget.y1 = searchPos.getY();
+                progWidget.z1 = searchPos.getZ();
+            } else {
+                progWidget.x2 = searchPos.getX();
+                progWidget.y2 = searchPos.getY();
+                progWidget.z2 = searchPos.getZ();
             }
         }
 
-        List<String> b1List = Lists.newArrayList(I18n.format("gui.progWidget.area.selectGPS1"));
-        if (progWidget.x1 != 0 || progWidget.y1 != 0 || progWidget.z1 != 0) {
-            b1List.add(String.format(TextFormatting.GRAY + "[Current] %d, %d, %d", progWidget.x1, progWidget.y1, progWidget.z1));
-        }
-        gpsButton1.setTooltipText(b1List);
+        // blockpos labels
+        String l1 = "P1: " + TextFormatting.DARK_BLUE + formatPos(progWidget.x1, progWidget.y1, progWidget.z1);
+        addLabel(l1, guiLeft + 8, guiTop + 20);
+        String l2 = "P2: " + TextFormatting.DARK_BLUE + formatPos(progWidget.x2, progWidget.y2, progWidget.z2);
+        addLabel(l2, guiLeft + 133, guiTop + 20);
+    }
 
-        List<String> b2List = Lists.newArrayList(I18n.format("gui.progWidget.area.selectGPS2"));
-        if (progWidget.x2 != 0 || progWidget.y2 != 0 || progWidget.z2 != 0) {
-            b2List.add(String.format(TextFormatting.GRAY + "[Current] %d, %d, %d", progWidget.x2, progWidget.y2, progWidget.z2));
+    private String formatPos(int x, int y, int z) {
+        return x == 0 && y == 0 && z == 0 ? "-" : String.format("[ %d, %d, %d ]", x, y, z);
+    }
+
+    private BlockPos getSearchedGPSPos() {
+        ItemStack stack = invSearchGui.getSearchStack();
+        if (stack.getItem() instanceof IPositionProvider) {
+            List<BlockPos> posList = ((IPositionProvider) stack.getItem()).getStoredPositions(ClientUtils.getClientWorld(), stack);
+            if (!posList.isEmpty() && posList.get(0) != null) {
+                return posList.get(0);
+            }
         }
-        gpsButton2.setTooltipText(b2List);
+        return BlockPos.ZERO;
     }
 
     private void openInvSearchGUI(int which) {
@@ -164,7 +158,7 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
         areaTypeValueWidgets.clear();
         areaTypeStaticWidgets.clear();
 
-        int curY = guiTop + 60;
+        int curY = guiTop + 100;
         int x = guiLeft + 150;
         List<AreaTypeWidget> atWidgets = new ArrayList<>();
         type.addUIWidgets(atWidgets);

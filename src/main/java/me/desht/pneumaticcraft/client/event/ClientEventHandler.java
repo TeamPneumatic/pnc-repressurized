@@ -6,7 +6,10 @@ import com.mojang.blaze3d.vertex.IVertexBuilder;
 import me.desht.pneumaticcraft.api.client.IFOVModifierItem;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.ICustomDurabilityBar;
+import me.desht.pneumaticcraft.client.gui.GuiPneumaticContainerBase;
+import me.desht.pneumaticcraft.client.gui.GuiPneumaticScreenBase;
 import me.desht.pneumaticcraft.client.gui.IExtraGuiHandling;
+import me.desht.pneumaticcraft.client.gui.widget.IDrawAfterRender;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
@@ -30,6 +33,7 @@ import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.IGuiEventListener;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.*;
@@ -383,6 +387,17 @@ public class ClientEventHandler {
     public static Pair<Integer,Integer> getScaledScreenSize() {
         //noinspection SuspiciousNameCombination
         return Pair.of(lastWidth, lastHeight);
+    }
+
+    @SubscribeEvent
+    public static void onGuiDrawPost(GuiScreenEvent.DrawScreenEvent.Post event) {
+        if (event.getGui() instanceof GuiPneumaticContainerBase || event.getGui() instanceof GuiPneumaticScreenBase) {
+            for (IGuiEventListener l : event.getGui().children()) {
+                if (l instanceof IDrawAfterRender) {
+                    ((IDrawAfterRender) l).renderAfterEverythingElse(event.getMouseX(), event.getMouseY(), event.getRenderPartialTicks());
+                }
+            }
+        }
     }
 }
 

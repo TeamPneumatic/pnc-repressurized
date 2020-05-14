@@ -43,7 +43,7 @@ public class GuiInventorySearcher extends ContainerScreen<ContainerInventorySear
     protected void init() {
         super.init();
 
-        addButton(label = new WidgetLabel(guiLeft + 105, guiTop + 28, "", 0xFF404080))/*.setScale(0.5f))*/;
+        addButton(label = new WidgetLabel(guiLeft + 105, guiTop + 28, "", 0xFF404080));
     }
 
     @Override
@@ -77,11 +77,6 @@ public class GuiInventorySearcher extends ContainerScreen<ContainerInventorySear
         if (!stack.isEmpty() && stackPredicate.test(stack)) {
             inventory.setStackInSlot(0, ItemHandlerHelper.copyStackWithSize(stack, 1));
         }
-    }
-
-    @Override
-    public int getSlotColor(int index) {
-        return super.getSlotColor(index);
     }
 
     @Override
@@ -123,22 +118,16 @@ public class GuiInventorySearcher extends ContainerScreen<ContainerInventorySear
 
     @Override
     protected void drawGuiContainerForegroundLayer(int par1, int par2) {
-        font.drawString("Inventory", 7, 5, 0x404040);
-        font.drawString("Searcher", 7, 15, 0x404040);
-        font.drawString("Target", 71, 8, 0x404040);
+        int x = (xSize - font.getStringWidth(getTitle().getFormattedText())) / 2;
+        font.drawString(getTitle().getFormattedText(), x, 5, 0x404040);
 
+        // darken out all non-matching slots
         for (int i = 0; i < this.container.inventorySlots.size() - 1; ++i) {
             Slot slot = this.container.inventorySlots.get(i);
             if (!stackPredicate.test(slot.getStack())) {
-                RenderSystem.disableLighting();
-                RenderSystem.disableDepthTest();
-                int x = slot.xPos;
-                int y = slot.yPos;
                 RenderSystem.colorMask(true, true, true, false);
-                this.fillGradient(x, y, x + 16, y + 16, 0xC0202020, 0xC0202020);
+                this.fillGradient(slot.xPos, slot.yPos, slot.xPos + 16, slot.yPos + 16, 0xC0202020, 0xC0202020);
                 RenderSystem.colorMask(true, true, true, true);
-                RenderSystem.enableLighting();
-                RenderSystem.enableDepthTest();
             }
         }
     }
@@ -147,6 +136,8 @@ public class GuiInventorySearcher extends ContainerScreen<ContainerInventorySear
     public void render(int par1, int par2, float par3) {
         super.render(par1, par2, par3);
 
-        renderHoveredToolTip(par1, par2);
+        if (this.hoveredSlot != null && stackPredicate.test(this.hoveredSlot.getStack())) {
+            renderHoveredToolTip(par1, par2);
+        }
     }
 }

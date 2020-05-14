@@ -116,17 +116,6 @@ public class ProgWidgetLiquidFilter extends ProgWidget {
         return false;
     }
 
-//    public static boolean isLiquidValid(Fluid fluid, List<ProgWidgetLiquidFilter> whitelist, List<ProgWidgetLiquidFilter> blacklist) {
-//        for (ProgWidgetLiquidFilter filter : blacklist) {
-//            if (!filter.isLiquidValid(fluid)) return false;
-//        }
-//        if (whitelist.size() == 0) return true;
-//        for (ProgWidgetLiquidFilter filter : whitelist) {
-//            if (filter.isLiquidValid(fluid)) return true;
-//        }
-//        return false;
-//    }
-
     @Override
     public WidgetDifficulty getDifficulty() {
         return WidgetDifficulty.EASY;
