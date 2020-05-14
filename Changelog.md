@@ -6,6 +6,18 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.15.2
 
+## 1.1.3-? (unreleased)
+
+### Fixes
+* Fixed Logistic Modules not properly handling NBT matching in item filters
+* Fixed Aphorism Tile not recalculating the text scale when text adjusted server-side (via drone)
+* Fixed GPS Area tool Line and Wall modes sometimes being off by one block (arithmetic rounding error)
+* Several GUI fixes and cleanups:
+  * Fixed widgets with dropdowns (combo box and color selector) often rendering their dropdown under other widgets
+  * Cleaned up the prog widget Area GUI and GPS selection GUI a bit
+  * Fixed Programmer widget tray dragging sometimes selecting a widget under the open tray instead of the widget in the tray
+  * Fixed fluid searching in the Liquid Filter prog widget GUI
+
 ## 1.1.2-14 (May 11 2020)
 
 ### Updates
