@@ -26,6 +26,7 @@ public class GuiProgWidgetLiquidFilter extends GuiProgWidgetOptionBase<ProgWidge
     private WidgetTextField searchField;
     private int lastScroll;
     private final List<WidgetFluidFilter> visibleFluidWidgets = new ArrayList<>();
+    private int textTimer = 0;
 
     public GuiProgWidgetLiquidFilter(ProgWidgetLiquidFilter widget, GuiProgrammer guiProgrammer) {
         super(widget, guiProgrammer);
@@ -60,10 +61,11 @@ public class GuiProgWidgetLiquidFilter extends GuiProgWidgetOptionBase<ProgWidge
             }
         }
 
-        searchField = new WidgetTextField(font, guiLeft + 10, guiTop + 30, 90, 10);
+        searchField = new WidgetTextField(font, guiLeft + 8, guiTop + 35, 90, 10);
         addButton(searchField);
+        setFocused(searchField);
         searchField.setFocused2(true);
-        searchField.setResponder(s -> addValidFluids());
+        searchField.setResponder(s -> textTimer = 5);
 
         scrollbar = new WidgetVerticalScrollbar(guiLeft + 155, guiTop + 47, 112);
         scrollbar.setListening(true);
@@ -84,13 +86,16 @@ public class GuiProgWidgetLiquidFilter extends GuiProgWidgetOptionBase<ProgWidge
         for (int i = 0; i < visibleFluidWidgets.size(); i++) {
             if (i + offset < fluids.size()) {
                 visibleFluidWidgets.get(i).setFluid(fluids.get(i + offset));
+            } else {
+                visibleFluidWidgets.get(i).setFluid(Fluids.EMPTY);
             }
         }
     }
 
     private boolean matchSearch(String srch, Fluid fluid) {
         if (fluid == Fluids.EMPTY || !fluid.isSource(fluid.getDefaultState())) return false;
-        return srch.isEmpty() || new FluidStack(fluid, 1).getDisplayName().getString().contains(srch);
+        String srchL = srch.toLowerCase();
+        return srch.isEmpty() || new FluidStack(fluid, 1).getDisplayName().getString().toLowerCase().contains(srchL);
     }
 
     @Override
@@ -99,6 +104,8 @@ public class GuiProgWidgetLiquidFilter extends GuiProgWidgetOptionBase<ProgWidge
 
         if (lastScroll != scrollbar.getState()) {
             lastScroll = scrollbar.getState();
+            addValidFluids();
+        } else if (textTimer > 0 && --textTimer == 0) {
             addValidFluids();
         }
     }
