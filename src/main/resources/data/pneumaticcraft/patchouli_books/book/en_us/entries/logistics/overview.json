@@ -2,7 +2,7 @@
   "name": "Logistics Overview",
   "icon": "pneumaticcraft:logistics_configurator",
   "category": "logistics",
-  "advancement": "pneumaticcraft:plastic",
+  "advancement": "pneumaticcraft:root",
   "priority": "true",
   "pages": [
     {
