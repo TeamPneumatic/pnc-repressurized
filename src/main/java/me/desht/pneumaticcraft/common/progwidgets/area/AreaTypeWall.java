@@ -36,7 +36,7 @@ public class AreaTypeWall extends AreaType{
                         curZ += lineVec.z;
                         for (int i = minX; i <= maxX; i++) {
                             if (curY >= 0 && curY < 256) {
-                                BlockPos pos = new BlockPos(i, (int) curY, (int) curZ);
+                                BlockPos pos = new BlockPos(i, curY, curZ);
                                 areaAdder.accept(pos);
                             }
                         }
@@ -56,7 +56,7 @@ public class AreaTypeWall extends AreaType{
                         curX += lineVec.x;
                         curZ += lineVec.z;
                         for (int i = Math.max(0, minY); i <= Math.min(maxY, 255); i++) {
-                            BlockPos pos = new BlockPos((int) curX, i, (int) curZ);
+                            BlockPos pos = new BlockPos(curX, i, curZ);
                             areaAdder.accept(pos);
                         }
                     }
@@ -76,7 +76,7 @@ public class AreaTypeWall extends AreaType{
                         curY += lineVec.y;
                         for (int i = minZ; i <= maxZ; i++) {
                             if (curY >= 0 && curY < 256) {
-                                BlockPos pos = new BlockPos((int) curX, (int) curY, i);
+                                BlockPos pos = new BlockPos(curX, curY, i);
                                 areaAdder.accept(pos);
                             }
                         }
