@@ -26,5 +26,5 @@ public interface IPathfindHandler {
      * @param world the drone's world
      * @param pos the block position to test
      */
-    void onPathingThrough(World world, BlockPos pos);
+    default void onPathingThrough(World world, BlockPos pos) {}
 }

@@ -8,6 +8,7 @@ import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 import java.util.EnumSet;
@@ -42,10 +43,7 @@ public class DroneEntityAIPickupItems extends Goal {
             ItemStack stack = ((ItemEntity) ent).getItem();
             if (itemPickupWidget.isItemValidForFilters(stack)) {
                 if (IOHelper.insert(drone, stack, null, true).isEmpty()) {
-                    if (drone.getPathNavigator().moveToEntity(ent)) {
-                        curPickingUpEntity = (ItemEntity) ent;
-                        return true;
-                    }
+                    return tryMoveToItem(ent);
                 } else {
                     drone.addDebugEntry("gui.progWidget.inventoryImport.debug.filledToMax");
                 }
@@ -57,13 +55,39 @@ public class DroneEntityAIPickupItems extends Goal {
 
     }
 
+    // different order to Direction.values() - UP first as it's the most likely, and DOWN last as it's the least
+    private static final Direction[] DIRECTIONS = new Direction[] {
+            Direction.UP, Direction.NORTH, Direction.WEST, Direction.EAST, Direction.SOUTH, Direction.DOWN
+    };
+
+    private boolean tryMoveToItem(Entity ent) {
+        if (!drone.isBlockValidPathfindBlock(ent.getPosition())) {
+            // the item's in some block space that the drone can't pathfind to (e.g. bamboo, stairs...)
+            // maybe we can find a clear adjacent block?
+            for (Direction d : DIRECTIONS) {
+                BlockPos pos2 = ent.getPosition().offset(d);
+                if (drone.isBlockValidPathfindBlock(pos2)
+                        && drone.getPathNavigator().moveToXYZ(pos2.getX() + 0.5, pos2.getY() + 0.5, pos2.getZ() + 0.5)) {
+                    curPickingUpEntity = (ItemEntity) ent;
+                    return true;
+                }
+            }
+        } else {
+            if (drone.getPathNavigator().moveToEntity(ent)) {
+                curPickingUpEntity = (ItemEntity) ent;
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * Returns whether an in-progress EntityAIBase should continue executing
      */
     @Override
     public boolean shouldContinueExecuting() {
         if (!curPickingUpEntity.isAlive()) return false;
-        if (new Vec3d(curPickingUpEntity.posX, curPickingUpEntity.posY, curPickingUpEntity.posZ).squareDistanceTo(drone.getDronePos()) < 2.25) {
+        if (new Vec3d(curPickingUpEntity.posX, curPickingUpEntity.posY, curPickingUpEntity.posZ).squareDistanceTo(drone.getDronePos()) < 4) {
             ItemStack stack = curPickingUpEntity.getItem();
             if (itemPickupWidget.isItemValidForFilters(stack)) {
                 tryPickupItem(drone, curPickingUpEntity);
