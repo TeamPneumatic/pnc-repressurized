@@ -71,6 +71,7 @@ public class TileEntityAphorismTile extends TileEntityBase {
                 textLines = new String[l.size()];
                 IntStream.range(0, textLines.length).forEach(i -> textLines[i] = l.getString(i));
             }
+            maxLineWidth = -1;
             textRotation = subTag.getInt(NBT_TEXT_ROTATION);
             if (subTag.contains(NBT_BORDER_COLOR)) {
                 borderColor = subTag.getInt(NBT_BORDER_COLOR);
