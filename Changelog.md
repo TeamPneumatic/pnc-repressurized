@@ -8,8 +8,18 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## 1.1.3-? (unreleased)
 
+### Updates
+* Pneumatic Armor can now be repaired in an Anvil with Compressed Iron Ingots
+  * Each ingot repairs 16 durability
+  * XP Level cost is (ingots / 2), minimum 1 level
+  * This is an addition to using Item Life upgrades, which still works 
+* Drones with Magnet Upgrade now respect Botania's Solegnolia
+* Drones now apply a 40-tick pickup delay to items dropped with the Drop Item widget, same as players do
+  * This avoids problems where Drones with Magnet Upgrades just immediately pick up dropped items again
+  * The delay can be disabled in the Drop Item widget GUI if you need to
+  
 ### Fixes
-* Fixed Logistic Modules not properly handling NBT matching in item filters
+* Fixed Logistics Drones & Modules not properly handling NBT matching in item filters
 * Fixed Aphorism Tile not recalculating the text scale when text adjusted server-side (via drone)
 * Fixed GPS Area tool Line and Wall modes sometimes being off by one block (arithmetic rounding error)
 * Several GUI fixes and cleanups:
@@ -88,7 +98,7 @@ This release adds no major new features to the 1.14.4 version, but there are sev
 * Logistics advancements no longer require plastic to be unlocked (since logistics items no longer require plastic...)
 * Drones no longer use their owner's UUID for their fake player.
   * While this was convenient for protection mods, it introduced some subtle problems, where the server associated a player's UUID with a fake player object instead of the real player.  The most obvious effect of this was advancements often not working.
-  * Protection mods should now use "<playername>_drone" to permit a given player's drones.
+  * Protection mods should now use "{playername}_drone" to permit a given player's drones.
 * Improved textures for Air Cannon, Vacuum Pump & Charging Station.  Also, these machines now use Reinforced Stone Slabs instead of Cobblestone or Stone slabs in their crafting recipes.
 * Reduced network chatter for leaking pressure tubes (sounds and particles now played purely client-side)
 * Reduce network chatter for moving elevators

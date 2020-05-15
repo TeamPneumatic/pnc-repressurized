@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.event;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
+import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.item.ItemMinigun;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
@@ -29,6 +30,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
+import net.minecraftforge.event.AnvilUpdateEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -48,6 +50,7 @@ public class EventHandlerPneumaticArmor {
     private static final Map<Integer, Integer> targetingTracker = new HashMap<>();
 
     private static final Map<UUID,Long> armorJumping = new HashMap<>();
+    private static final int ARMOR_REPAIR_AMOUNT = 16;  // durability repaired per compressed iron ingot
 
     @SubscribeEvent
     public void onMobTargetSet(LivingSetAttackTargetEvent event) {
@@ -286,5 +289,21 @@ public class EventHandlerPneumaticArmor {
 
         double midY = (player.getPosY() + player.getEyePosition(1.0f).y) / 2;
         return player.getPositionVector().add(player.getLookVec().scale(player.getPosY() - midY));
+    }
+
+    @SubscribeEvent
+    public void onArmorRepair(AnvilUpdateEvent event) {
+        if (event.getLeft().getItem() instanceof ItemPneumaticArmor
+                && PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON.contains(event.getRight().getItem()))
+        {
+            ItemStack repairedItem = event.getLeft().copy();
+            int damageRepaired = Math.min(repairedItem.getDamage(), event.getRight().getCount() * ARMOR_REPAIR_AMOUNT);
+            int ingotsToUse = ((damageRepaired - 1)/ ARMOR_REPAIR_AMOUNT) + 1;
+            repairedItem.setDamage(repairedItem.getDamage() - damageRepaired);
+
+            event.setOutput(repairedItem);
+            event.setCost(Math.max(1, ingotsToUse / 2));
+            event.setMaterialCost(ingotsToUse);
+        }
     }
 }

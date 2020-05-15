@@ -8,6 +8,7 @@ import me.desht.pneumaticcraft.api.item.ICustomDurabilityBar;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderCoordWireframe;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.UpgradeRenderHandlerList;
+import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.capabilities.AirHandlerItemStack;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModContainers;
@@ -326,7 +327,7 @@ public class ItemPneumaticArmor extends ArmorItem
 
         @Override
         public Ingredient getRepairMaterial() {
-            return Ingredient.EMPTY;
+            return Ingredient.fromTag(PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON);
         }
 
         @Override
