@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.common.ai.DroneAIImExBase;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.DyeColor;
@@ -12,12 +13,16 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class ProgWidgetDropItem extends ProgWidgetInventoryBase implements IItemDropper {
     private boolean dropStraight;
+    private boolean pickupDelay = true;
 
     public ProgWidgetDropItem() {
         super(ModProgWidgets.DROP_ITEM);
@@ -43,28 +48,50 @@ public class ProgWidgetDropItem extends ProgWidgetInventoryBase implements IItem
         this.dropStraight = dropStraight;
     }
 
+    public boolean isPickupDelay() {
+        return pickupDelay;
+    }
+
+    public void setPickupDelay(boolean pickupDelay) {
+        this.pickupDelay = pickupDelay;
+    }
+
     @Override
     public void writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
         tag.putBoolean("dropStraight", dropStraight);
+        tag.putBoolean("pickupDelay", pickupDelay);
     }
 
     @Override
     public void readFromNBT(CompoundNBT tag) {
         super.readFromNBT(tag);
         dropStraight = tag.getBoolean("dropStraight");
+        pickupDelay = tag.getBoolean("pickupDelay");
     }
 
     @Override
     public void writeToPacket(PacketBuffer buf) {
         super.writeToPacket(buf);
         buf.writeBoolean(dropStraight);
+        buf.writeBoolean(pickupDelay);
     }
 
     @Override
     public void readFromPacket(PacketBuffer buf) {
         super.readFromPacket(buf);
         dropStraight = buf.readBoolean();
+        pickupDelay = buf.readBoolean();
+    }
+
+    @Override
+    public void getTooltip(List<ITextComponent> curTooltip) {
+        super.getTooltip(curTooltip);
+        if (pickupDelay) {
+            curTooltip.add(new TranslationTextComponent("gui.progWidget.drop.hasPickupDelay"));
+        } else {
+            curTooltip.add(new TranslationTextComponent("gui.progWidget.drop.noPickupDelay"));
+        }
     }
 
     @Override
@@ -113,6 +140,7 @@ public class ProgWidgetDropItem extends ProgWidgetInventoryBase implements IItem
                         if (progWidget.dropStraight()) {
                             item.setMotion(0, 0, 0);
                         }
+                        if (pickupDelay) item.setPickupDelay(40);
                         drone.world().addEntity(item);
                         if (useCount() && getRemainingCount() == 0) break;
                     }
@@ -130,6 +158,6 @@ public class ProgWidgetDropItem extends ProgWidgetInventoryBase implements IItem
 
     @Override
     public String getExtraStringInfo() {
-        return dropStraight() ? "Straight" : "Random";
+        return I18n.format("gui.progWidget.drop.dropMethod." + (dropStraight() ? "straight" : "random"));
     }
 }

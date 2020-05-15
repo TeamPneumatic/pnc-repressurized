@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.ai;
 import me.desht.pneumaticcraft.api.drone.SpecialVariableRetrievalEvent;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.progwidgets.*;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import net.minecraft.entity.ai.goal.Goal;
@@ -323,13 +324,15 @@ public class DroneAIManager implements IVariableProvider {
         int magnetUpgrades = drone.getUpgrades(EnumUpgrade.MAGNET);
         if (magnetUpgrades > 0) {
             int range = Math.min(6, 1 + magnetUpgrades);
+            int rangeSq = range * range;
             Vec3d v = drone.getDronePos();
             AxisAlignedBB aabb = new AxisAlignedBB(v.x, v.y, v.z, v.x, v.y, v.z).grow(range);
             List<ItemEntity> items = drone.world().getEntitiesWithinAABB(ItemEntity.class, aabb,
                     item -> item != null
                             && item.isAlive()
                             && !item.cannotPickup()
-                            && drone.getDronePos().squareDistanceTo(item.getPositionVector()) <= range * range);
+                            && !ItemRegistry.getInstance().shouldSuppressMagnet(item)
+                            && drone.getDronePos().squareDistanceTo(item.getPositionVector()) <= rangeSq);
 
             for (ItemEntity item : items) {
                 DroneEntityAIPickupItems.tryPickupItem(drone, item);
