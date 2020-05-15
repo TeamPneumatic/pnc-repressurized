@@ -58,6 +58,7 @@ public class ItemRegistry implements IItemRegistry {
         magnetSuppressors.add(suppressor);
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean shouldSuppressMagnet(Entity e) {
         return magnetSuppressors.stream().anyMatch(s -> s.shouldSuppressMagnet(e));
     }
