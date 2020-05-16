@@ -8,6 +8,10 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## 1.1.3-? (unreleased)
 
+### Known Issues
+* There is an incompatibility with the current version of the Performant mod, which (with default settings) will mess up Drone pathfinding
+  * Setting `fastPathFinding` to `false` in Performant's config works around the issue
+
 ### Updates
 * Pneumatic Armor can now be repaired in an Anvil with Compressed Iron Ingots
   * Each ingot repairs 16 durability
