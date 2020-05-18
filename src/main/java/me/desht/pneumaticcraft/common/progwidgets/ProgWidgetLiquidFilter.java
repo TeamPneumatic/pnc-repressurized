@@ -101,7 +101,7 @@ public class ProgWidgetLiquidFilter extends ProgWidget {
         return this.fluid == null || fluid == this.fluid;
     }
 
-    static boolean isLiquidValid(Fluid fluid, IProgWidget mainWidget, int filterIndex) {
+    public static boolean isLiquidValid(Fluid fluid, IProgWidget mainWidget, int filterIndex) {
         ProgWidgetLiquidFilter widget = (ProgWidgetLiquidFilter) mainWidget.getConnectedParameters()[mainWidget.getParameters().size() + filterIndex];
         while (widget != null) {
             if (!widget.isLiquidValid(fluid)) return false;
@@ -112,6 +112,17 @@ public class ProgWidgetLiquidFilter extends ProgWidget {
         while (widget != null) {
             if (widget.isLiquidValid(fluid)) return true;  // TODO verify this, looks dodgy
             widget = (ProgWidgetLiquidFilter) widget.getConnectedParameters()[0];
+        }
+        return false;
+    }
+
+    public static boolean isLiquidValid(Fluid fluid, List<ProgWidgetLiquidFilter> whitelist, List<ProgWidgetLiquidFilter> blacklist) {
+        for (ProgWidgetLiquidFilter filter : blacklist) {
+            if (!filter.isLiquidValid(fluid)) return false;
+        }
+        if (whitelist.size() == 0) return true;
+        for (ProgWidgetLiquidFilter filter : whitelist) {
+            if (filter.isLiquidValid(fluid)) return true;
         }
         return false;
     }

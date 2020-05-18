@@ -253,18 +253,24 @@ public class RenderUtils {
     public static void renderRing(ProgressingLine line, ProgressingLine lastLine, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, float partialTick, float rotationYaw, float rotationPitch, int color) {
         matrixStackIn.push();
 
-        double renderProgress = lerp(partialTick, line.progress, lastLine.progress);
-        matrixStackIn.translate((lerp(partialTick, line.endX, lastLine.endX) - line.startX) * renderProgress, (lerp(partialTick, line.endY, lastLine.endY) - line.startY) * renderProgress, (lerp(partialTick, line.endZ, lastLine.endZ) - line.startZ) * renderProgress);
-
-        matrixStackIn.rotate(Vector3f.YP.rotationDegrees(rotationYaw));
+        double renderProgress = lerp(partialTick, lastLine.progress, line.progress);
+        matrixStackIn.translate(
+                (line.endX - line.startX) * renderProgress,
+                (line.endY - line.startY) * renderProgress,
+                (line.endZ - line.startZ) * renderProgress
+        );
+        matrixStackIn.rotate(Vector3f.YP.rotationDegrees(rotationYaw - 90));
         matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(rotationPitch));
 
         IVertexBuilder builder = bufferIn.getBuffer(ModRenderTypes.getLineLoops(1.0));
 
         int[] cols = RenderUtils.decomposeColor(0xFF000000 | color);
-        double size = 5 / 16D;
-        for (int i = 0; i < PneumaticCraftUtils.CIRCLE_POINTS; i++) {
-            builder.pos(0, PneumaticCraftUtils.sin[i] * size, PneumaticCraftUtils.cos[i] * size).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
+        double size = (1 + 4 * renderProgress) / 16;
+        Matrix4f posMat = matrixStackIn.getLast().getMatrix();
+        for (int i = 0; i < PneumaticCraftUtils.CIRCLE_POINTS; i += 25) { // 25 sides is enough to look circular
+            RenderUtils.posF(builder, posMat, 0f, PneumaticCraftUtils.sin[i] * size, PneumaticCraftUtils.cos[i] * size)
+                    .color(cols[1], cols[2], cols[3], cols[0])
+                    .endVertex();
         }
         matrixStackIn.pop();
     }

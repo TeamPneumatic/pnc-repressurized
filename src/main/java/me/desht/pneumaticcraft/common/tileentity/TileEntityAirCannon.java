@@ -11,8 +11,8 @@ import me.desht.pneumaticcraft.common.inventory.ContainerAirCannon;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
-import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethod;
-import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethodRegistry;
+import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethod;
+import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethodRegistry;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.fakeplayer.FakeNetHandlerPlayerServer;
@@ -701,7 +701,6 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
         } else {
             ItemEntity e = new ItemEntity(world, 0, 0, 0, stack);
             e.setPickupDelay(20);
-//            e.lifespan = 1200;
             return e;
         }
     }
@@ -726,16 +725,8 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
         return null;
     }
 
-    /********************************
-     *  ComputerCraft API
-     */
-//    @Override
-//    public String getType() {
-//        return "airCannon";
-//    }
-
     @Override
-    protected void addLuaMethods(LuaMethodRegistry registry) {
+    public void addLuaMethods(LuaMethodRegistry registry) {
         super.addLuaMethods(registry);
 
         registry.registerLuaMethod(new LuaMethod("setTargetLocation") {

@@ -31,7 +31,6 @@ import me.desht.pneumaticcraft.common.util.fakeplayer.DroneItemHandler;
 import me.desht.pneumaticcraft.common.util.fakeplayer.FakeNetHandlerPlayerServer;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.goal.GoalSelector;
 import net.minecraft.entity.item.ItemEntity;
@@ -190,9 +189,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
                 drone = ModEntities.PROGRAMMABLE_CONTROLLER.get().create(getWorld());
                 drone.setController(this);
                 drone.setPosition(curX, curY, curZ);
-                if (world instanceof ClientWorld) {  // should always be the case
-                    ((ClientWorld) getWorld()).addEntity(drone.getEntityId(), drone);
-                }
+                ClientUtils.spawnEntityClientside(drone);
             }
             drone.setPosition(curX, curY, curZ);
         }

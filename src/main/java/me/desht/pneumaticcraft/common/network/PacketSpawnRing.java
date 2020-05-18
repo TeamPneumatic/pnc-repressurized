@@ -31,7 +31,7 @@ public class PacketSpawnRing extends LocationDoublePacket {
     public PacketSpawnRing(PacketBuffer buffer) {
         super(buffer);
         targetEntityId = buffer.readInt();
-        colors = new int[buffer.readInt()];
+        colors = new int[buffer.readVarInt()];
         for (int i = 0; i < colors.length; i++) {
             colors[i] = buffer.readInt();
         }
@@ -41,7 +41,7 @@ public class PacketSpawnRing extends LocationDoublePacket {
     public void toBytes(PacketBuffer buffer) {
         super.toBytes(buffer);
         buffer.writeInt(targetEntityId);
-        buffer.writeInt(colors.length);
+        buffer.writeVarInt(colors.length);
         Arrays.stream(colors).forEach(buffer::writeInt);
     }
 
@@ -51,7 +51,7 @@ public class PacketSpawnRing extends LocationDoublePacket {
             Entity entity = world.getEntityByID(targetEntityId);
             if (entity != null) {
                 for (int color : colors) {
-                    world.addEntity(new EntityRing(world, x, y, z, entity, color));
+                    ClientUtils.spawnEntityClientside(new EntityRing(world, x, y, z, entity, color));
                 }
             }
         });

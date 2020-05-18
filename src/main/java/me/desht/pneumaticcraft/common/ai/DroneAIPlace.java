@@ -1,7 +1,9 @@
 package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
+import me.desht.pneumaticcraft.common.progwidgets.IBlockOrdered;
 import me.desht.pneumaticcraft.common.progwidgets.ISidedWidget;
+import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetAreaItemBase;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetPlace;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -20,13 +22,12 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceContext;
 
-public class DroneAIPlace extends DroneAIBlockInteraction<ProgWidgetPlace> {
-
+public class DroneAIPlace<W extends ProgWidgetAreaItemBase & IBlockOrdered & ISidedWidget> extends DroneAIBlockInteraction<W> {
     /**
      * @param drone the drone
-     * @param widget needs to implement IBlockOrdered and IDirectionalWidget.
+     * @param widget needs to implement IBlockOrdered as well as ProgWidgetAreaItemBase
      */
-    public DroneAIPlace(IDroneBase drone, ProgWidgetPlace widget) {
+    public DroneAIPlace(IDroneBase drone, W widget) {
         super(drone, widget);
     }
 

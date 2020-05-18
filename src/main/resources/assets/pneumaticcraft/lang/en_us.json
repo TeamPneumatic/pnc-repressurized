@@ -248,7 +248,7 @@
   "programmingPuzzle.pneumaticcraft.place.name": "Place",
   "programmingPuzzle.pneumaticcraft.entity_right_click.name": "Right Click Entity",
   "programmingPuzzle.pneumaticcraft.block_right_click.name": "Right Click Block",
-  "programmingPuzzle.pneumaticcraft.computer_craft.name": "Computer Control",
+  "programmingPuzzle.pneumaticcraft.computer_control.name": "Computer Control",
   "programmingPuzzle.pneumaticcraft.drop_item.name": "Drop Items",
   "programmingPuzzle.pneumaticcraft.emit_redstone.name": "Emit Redstone",
   "programmingPuzzle.pneumaticcraft.liquid_export.name": "Export Fluid",

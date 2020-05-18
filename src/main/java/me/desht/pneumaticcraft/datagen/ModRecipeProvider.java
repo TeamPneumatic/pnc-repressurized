@@ -29,8 +29,11 @@ import net.minecraft.tags.Tag;
 import net.minecraft.util.IItemProvider;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.Tags;
+import net.minecraftforge.common.crafting.ConditionalRecipe;
 import net.minecraftforge.common.crafting.NBTIngredient;
+import net.minecraftforge.common.crafting.conditions.ModLoadedCondition;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 import net.minecraftforge.registries.ObjectHolder;
 
@@ -243,6 +246,19 @@ public class ModRecipeProvider extends RecipeProvider {
                 'B', ModItems.TURBINE_ROTOR.get(),
                 'P', ModItems.PRINTED_CIRCUIT_BOARD.get()
         ).build(consumer);
+
+        Item ccModem = ForgeRegistries.ITEMS.getValue(new ResourceLocation("computercraft:wireless_modem_normal"));
+        ConditionalRecipe.builder()
+                .addCondition(new ModLoadedCondition("computercraft"))
+                .addRecipe(
+                        shaped(ModBlocks.DRONE_INTERFACE.get(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
+                                " U /MP /III",
+                                'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
+                                'U', EnumUpgrade.RANGE.getItem(),
+                                'P', ModItems.PRINTED_CIRCUIT_BOARD.get(),
+                                'M', ccModem)
+                                ::build)
+                .build(consumer, RL("drone_interface"));
 
         shaped(ModBlocks.ELECTROSTATIC_COMPRESSOR.get(), ModItems.TURBINE_ROTOR.get(),
                 "BPB/PRP/BCB",

@@ -21,7 +21,7 @@ public class ProgWidgetInventoryImport extends ProgWidgetInventoryBase {
 
     @Override
     public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
-        return new DroneEntityAIInventoryImport(drone, (ProgWidgetInventoryImport) widget);
+        return new DroneEntityAIInventoryImport(drone, (ProgWidgetInventoryBase) widget);
     }
 
     @Override

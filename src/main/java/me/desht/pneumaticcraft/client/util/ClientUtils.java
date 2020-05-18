@@ -167,4 +167,8 @@ public class ClientUtils {
             return null;
         }
     }
+
+    public static void spawnEntityClientside(Entity e) {
+        ((ClientWorld) getClientWorld()).addEntity(e.getEntityId(), e);
+    }
 }

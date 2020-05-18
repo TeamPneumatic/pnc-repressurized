@@ -255,7 +255,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         int i = 0;
         for (ProgWidgetType type : ModProgWidgets.Sorted.WIDGET_LIST) {
             IProgWidget widget = IProgWidget.create(type);
-            if (difficulty >= widget.getDifficulty().ordinal()) {
+            if (widget.isAvailable() && difficulty >= widget.getDifficulty().ordinal()) {
                 widget.setY(y + 40);
                 widget.setX(showAllWidgets ? x : getWidgetTrayRight());
                 int widgetHeight = widget.getHeight() / 2 + (widget.hasStepOutput() ? 5 : 0) + 1;

@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.common.thirdparty.computercraft;
+package me.desht.pneumaticcraft.common.thirdparty.computer_common;
 
 /**
  * Used to get constant return values.
@@ -18,12 +18,9 @@ public class LuaConstant extends LuaMethod {
     }
 
     @Override
-    public Object[] call(Object[] args) throws Exception {
-        if (args.length == 0) {
-            return new Object[]{constant};
-        } else {
-            throw new IllegalArgumentException(getMethodName() + " doesn't take any arguments!");
-        }
+    public Object[] call(Object[] args) {
+        requireNoArgs(args);
+        return new Object[]{constant};
     }
 
 }

@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
+import me.desht.pneumaticcraft.common.util.ChunkCache;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
@@ -12,7 +13,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.ICollisionReader;
-import net.minecraft.world.Region;
 import net.minecraft.world.World;
 
 import java.util.*;
@@ -67,7 +67,7 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget
     public static ICollisionReader getCache(Collection<BlockPos> area, World world) {
         if (area.isEmpty()) return world;
         AxisAlignedBB aabb = getExtents(area);
-        return new Region(world, new BlockPos(aabb.minX, aabb.minY, aabb.minZ), new BlockPos(aabb.maxX, aabb.maxY, aabb.maxZ));
+        return new ChunkCache(world, new BlockPos(aabb.minX, aabb.minY, aabb.minZ), new BlockPos(aabb.maxX, aabb.maxY, aabb.maxZ));
     }
 
     public static AxisAlignedBB getExtents(Collection<BlockPos> areaSet) {
@@ -107,6 +107,11 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget
     public Set<BlockPos> getCachedAreaSet() {
         getCachedAreaList();
         return areaSetCache;
+    }
+
+    protected synchronized void invalidateAreaCache() {
+        areaListCache = null;
+        areaSetCache = null;
     }
 
     private void initializeVariableCache() {
@@ -192,7 +197,7 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget
         return getEntitiesInArea(
                 (ProgWidgetArea) getConnectedParameters()[0],
                 (ProgWidgetArea) getConnectedParameters()[getParameters().size()],
-                world, filter
+                world, filter, null
         );
     }
 
@@ -212,8 +217,9 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget
         return entityFilters.isEntityValid(entity);
     }
 
-    private static List<Entity> getEntitiesInArea(ProgWidgetArea whitelistWidget, ProgWidgetArea blacklistWidget, World world,
-                                                  Predicate<? super Entity> whitelistPredicate) {
+    public static List<Entity> getEntitiesInArea(ProgWidgetArea whitelistWidget, ProgWidgetArea blacklistWidget, World world,
+                                                  Predicate<? super Entity> whitelistPredicate,
+                                                  Predicate<? super Entity> blacklistPredicate) {
         if (whitelistWidget == null) return new ArrayList<>();
         Set<Entity> entities = new HashSet<>();
         ProgWidgetArea widget = whitelistWidget;
@@ -227,9 +233,9 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget
             entities.removeAll(widget.getEntitiesWithinArea(world, whitelistPredicate));
             widget = (ProgWidgetArea) widget.getConnectedParameters()[0];
         }
-//        if (blacklistPredicate != null) {
-//            entities.removeIf(blacklistPredicate);
-//        }
+        if (blacklistPredicate != null) {
+            entities.removeIf(blacklistPredicate);
+        }
         return new ArrayList<>(entities);
     }
 

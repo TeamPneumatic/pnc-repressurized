@@ -4,18 +4,24 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
+import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.HashSet;
 import java.util.Set;
 
 public class ProgWidgetConfig extends AuxConfigJson {
-    public static final Set<ResourceLocation> blacklistedPieces = new HashSet<>();
+    private final Set<ResourceLocation> blacklistedPieces = new HashSet<>();
 
     public static final ProgWidgetConfig INSTANCE = new ProgWidgetConfig();
 
-    public ProgWidgetConfig() {
+    private ProgWidgetConfig() {
         super(true);
+    }
+
+    public boolean isWidgetBlacklisted(ProgWidgetType<?> widgetType) {
+        return blacklistedPieces.contains(widgetType.getRegistryName());
     }
 
     @Override
@@ -25,12 +31,22 @@ public class ProgWidgetConfig extends AuxConfigJson {
 
     @Override
     protected void writeToJson(JsonObject json) {
-        json.addProperty("description", "In the 'blacklist' tag you can put the programming puzzle names that need to blacklisted from this instance. When they were used in existing programs already they will be deleted. A list of all programming puzzle names can be seen in 'allWidgets'.");
+        json.addProperty("description",
+                "In the 'blacklist' tag you can add any progwidget registry names you wish to blacklist from this instance. " +
+                        "When they were used in existing programs already they will be deleted. " +
+                        "A reference list of all known programming puzzle names can be seen in 'allWidgets'.");
+
         JsonArray array = new JsonArray();
         for (ResourceLocation name : blacklistedPieces) {
             array.add(new JsonPrimitive(name.toString()));
         }
         json.add("blacklist", array);
+
+        JsonArray allArray = new JsonArray();
+        for (ProgWidgetType<?> name : ModProgWidgets.Sorted.WIDGET_LIST) {
+            allArray.add(new JsonPrimitive(name.getRegistryName().toString()));
+        }
+        json.add("allWidgets", allArray);
     }
 
     @Override
@@ -41,5 +57,4 @@ public class ProgWidgetConfig extends AuxConfigJson {
             blacklistedPieces.add(new ResourceLocation(element.getAsString()));
         }
     }
-
 }

@@ -4,7 +4,6 @@ import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
-import me.desht.pneumaticcraft.common.config.subconfig.ProgWidgetConfig;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModRegistries;
 import me.desht.pneumaticcraft.common.core.ModSounds;
@@ -175,23 +174,15 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
         int nWidgets = buf.readVarInt();
         for (int i = 0; i < nWidgets; i++) {
             try {
-                widgets.add(ProgWidget.fromPacket(buf));
+                IProgWidget widget = ProgWidget.fromPacket(buf);
+                if (!widget.isAvailable()) {
+                    Log.warning("ignoring unavailable widget type " + widget.getTypeID().toString());
+                } else {
+                    widgets.add(widget);
+                }
             } catch (IllegalStateException e) {
                 Log.warning(e.getMessage());
             }
-//            ResourceLocation typeID = buf.readResourceLocation();
-//            if (!ProgWidgetConfig.blacklistedPieces.contains(typeID)) {
-//                ProgWidgetType type = ModRegistries.PROG_WIDGETS.getValue(typeID);
-//                if (type != null) {
-//                    IProgWidget newWidget = IProgWidget.create(type);
-//                    newWidget.readFromPacket(buf);
-//                    widgets.add(newWidget);
-//                } else {
-//                    Log.warning("unknown widget type found: " + typeID);
-//                }
-//            } else {
-//                Log.warning("ignoring blacklisted widget type: " + typeID);
-//            }
         }
         return widgets;
     }
@@ -209,17 +200,17 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
         for (int i = 0; i < widgetTags.size(); i++) {
             CompoundNBT widgetTag = widgetTags.getCompound(i);
             ResourceLocation typeID = new ResourceLocation(widgetTag.getString("name"));
-            if (!ProgWidgetConfig.blacklistedPieces.contains(typeID)) {
-                ProgWidgetType type = ModRegistries.PROG_WIDGETS.getValue(typeID);
-                if (type != null) {
-                    IProgWidget addedWidget = IProgWidget.create(type);
+            ProgWidgetType type = ModRegistries.PROG_WIDGETS.getValue(typeID);
+            if (type != null) {
+                IProgWidget addedWidget = IProgWidget.create(type);
+                if (addedWidget.isAvailable()) {
                     addedWidget.readFromNBT(widgetTag);
                     newWidgets.add(addedWidget);
                 } else {
-                    Log.warning("unknown widget type found: " + typeID);
+                    Log.warning("ignoring unavailable widget type: " + typeID);
                 }
             } else {
-                Log.warning("ignoring blacklisted widget type: " + typeID);
+                Log.warning("unknown widget type found: " + typeID);
             }
         }
         return newWidgets;

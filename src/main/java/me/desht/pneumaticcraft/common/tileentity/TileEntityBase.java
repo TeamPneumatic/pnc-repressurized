@@ -11,8 +11,8 @@ import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.thirdparty.IHeatDisperser;
-import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethod;
-import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethodRegistry;
+import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethod;
+import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethodRegistry;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.TileEntityCache;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
@@ -50,10 +50,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.BiPredicate;
 
-//@Optional.InterfaceList({
-//        @Optional.Interface(iface = "dan200.computercraft.api.peripheral.IPeripheral", modid = ModIds.COMPUTERCRAFT)
-//})
-public abstract class TileEntityBase extends TileEntity implements IGUIButtonSensitive, IDescSynced, IUpgradeAcceptor, IUpgradeHolder /*, IPeripheral*/ {
+public abstract class TileEntityBase extends TileEntity implements IGUIButtonSensitive, IDescSynced, IUpgradeAcceptor, IUpgradeHolder, ILuaMethodProvider {
     private static final List<String> REDSTONE_LABELS = ImmutableList.of(
             "gui.tab.redstoneBehaviour.button.anySignal",
             "gui.tab.redstoneBehaviour.button.highSignal",
@@ -76,7 +73,7 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
     private boolean preserveStateOnBreak = false; // set to true if shift-wrenched to keep upgrades in the block
     private float actualSpeedMult = PneumaticValues.DEF_SPEED_UPGRADE_MULTIPLIER;
     private float actualUsageMult = PneumaticValues.DEF_SPEED_UPGRADE_USAGE_MULTIPLIER;
-//    private LuaMethodRegistry luaMethodRegistry = null;
+    private final LuaMethodRegistry luaMethodRegistry = new LuaMethodRegistry(this);
 
     // tracks which synced fields have changed and need to be synced on the next tick
     private BitSet fieldsToSync;
@@ -491,80 +488,34 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
         return ApplicableUpgradesDB.getInstance().getApplicableUpgrades(this);
     }
 
-    protected void addLuaMethods(LuaMethodRegistry registry) {
-        if (getHeatCap(null).isPresent()) {
-            registry.registerLuaMethod(new LuaMethod("getTemperature") {
-                @Override
-                public Object[] call(Object[] args) {
-                    requireArgs(args, 0, 1, "face? (down/up/north/south/west/east)");
-                    Direction dir = args.length == 0 ? null : getDirForString((String) args[0]);
-                    return new Object[]{
-                            getHeatCap(dir).map(IHeatExchangerLogic::getTemperature).orElseThrow(RuntimeException::new)
-                    };
-                }
-            });
+    @Override
+    public void addLuaMethods(LuaMethodRegistry registry) {
+        for (Direction d : Direction.VALUES) {
+            if (getHeatCap(d).isPresent()) {
+                registry.registerLuaMethod(new LuaMethod("getTemperature") {
+                    @Override
+                    public Object[] call(Object[] args) {
+                        requireArgs(args, 0, 1, "face? (down/up/north/south/west/east)");
+                        Direction dir = args.length == 0 ? null : getDirForString((String) args[0]);
+                        return new Object[]{
+                                getHeatCap(dir).map(IHeatExchangerLogic::getTemperature).orElseThrow(RuntimeException::new)
+                        };
+                    }
+                });
+                break;
+            }
         }
     }
 
-    // todo 1.14 computercraft
-//    private LuaMethodRegistry getLuaMethodRegistry() {
-//        if (luaMethodRegistry == null) {
-//            luaMethodRegistry = new LuaMethodRegistry();
-//            addLuaMethods(luaMethodRegistry);
-//        }
-//        return luaMethodRegistry;
-//    }
-//
-//    @Override
-//    public String getType() {
-//        return getBlockType().getTranslationKey().substring(5);
-//    }
-//
-//    @Override
-//    public String[] getMethodNames() {
-//        return getLuaMethodRegistry().getMethodNames();
-//    }
-//
-//    public Object[] callLuaMethod(String methodName, Object... args) throws Exception {
-//        return getLuaMethodRegistry().getMethod(methodName).call(args);
-//    }
-//
-//    @Override
-//    @Optional.Method(modid = ModIds.COMPUTERCRAFT)
-//    public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) throws LuaException {
-//        try {
-//            return getLuaMethodRegistry().getMethod(method).call(arguments);
-//        } catch (Exception e) {
-//            throw new LuaException(e.getMessage());
-//        }
-//    }
-//
-//    @Override
-//    @Optional.Method(modid = ModIds.COMPUTERCRAFT)
-//    public void attach(IComputerAccess computer) {
-//    }
-//
-//    @Override
-//    @Optional.Method(modid = ModIds.COMPUTERCRAFT)
-//    public void detach(IComputerAccess computer) {
-//    }
-//
-//    @Override
-//    @Optional.Method(modid = ModIds.COMPUTERCRAFT)
-//    public boolean equals(IPeripheral other) {
-//        if (other == null) {
-//            return false;
-//        }
-//        if (this == other) {
-//            return true;
-//        }
-//        if (other instanceof TileEntity) {
-//            TileEntity otherTE = (TileEntity) other;
-//            return otherTE.getWorld().equals(getWorld()) && otherTE.getPos().equals(getPos());
-//        }
-//
-//        return false;
-//    }
+    @Override
+    public LuaMethodRegistry getLuaMethodRegistry() {
+        return luaMethodRegistry;
+    }
+
+    @Override
+    public String getPeripheralType() {
+        return getType().getRegistryName().toString();
+    }
 
     public abstract IItemHandler getPrimaryInventory();
 

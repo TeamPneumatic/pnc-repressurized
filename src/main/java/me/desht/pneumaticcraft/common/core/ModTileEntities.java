@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.core;
 
 import com.google.common.collect.ImmutableSet;
+import me.desht.pneumaticcraft.common.thirdparty.computer_common.TileEntityDroneInterface;
 import me.desht.pneumaticcraft.common.tileentity.*;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.tileentity.TileEntityType;
@@ -127,6 +128,9 @@ public class ModTileEntities {
     public static final RegistryObject<TileEntityType<TileEntityDisplayTable>> DISPLAY_TABLE
             = register("display_table", () -> new TileEntityType<>(TileEntityDisplayTable::new, ImmutableSet.of(ModBlocks.DISPLAY_TABLE.get()),
             null));
+    public static final RegistryObject<TileEntityType<TileEntityDroneInterface>> DRONE_INTERFACE
+            = register("drone_interface", () -> new TileEntityType<>(TileEntityDroneInterface::new, ImmutableSet.of(ModBlocks.DRONE_INTERFACE.get()),
+        null));
 
     private static <T extends TileEntityType<?>> RegistryObject<T> register(String name, Supplier<T> sup) {
         return TILE_ENTITIES.register(name, sup);

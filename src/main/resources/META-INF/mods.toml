@@ -21,9 +21,15 @@ PneumaticCraft: Repressurized: doing cool stuff with compressed air.'''
     ordering="NONE"
     side="BOTH"
 [[dependencies.pneumaticcraft]]
-    modId="patchouli" #mandatory
-    mandatory=false #mandatory
-    versionRange="[1.15.2-1.2-32,)" #mandatory
+    modId="patchouli"
+    mandatory=false
+    versionRange="[1.15.2-1.2-32,)"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.pneumaticcraft]]
+    modId="computercraft"
+    mandatory=false
+    versionRange="[1.88.1,)"
     ordering="NONE"
     side="BOTH"
 [[dependencies.pneumaticcraft]]

@@ -1,15 +1,14 @@
 package me.desht.pneumaticcraft.common.ai;
 
-import me.desht.pneumaticcraft.common.progwidgets.ISidedWidget;
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetEnergyExport;
+import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetInventoryBase;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 
-public class DroneAIEnergyExport extends DroneAIImExBase<ProgWidgetEnergyExport> {
-    public DroneAIEnergyExport(IDroneBase drone, ProgWidgetEnergyExport widget) {
+public class DroneAIEnergyExport extends DroneAIImExBase<ProgWidgetInventoryBase> {
+    public DroneAIEnergyExport(IDroneBase drone, ProgWidgetInventoryBase widget) {
         super(drone, widget);
     }
 
@@ -32,7 +31,7 @@ public class DroneAIEnergyExport extends DroneAIImExBase<ProgWidgetEnergyExport>
             TileEntity te = drone.world().getTileEntity(pos);
             if (te != null) {
                 for (Direction face : Direction.VALUES) {
-                    if (ISidedWidget.checkSide(progWidget, face)) {
+                    if (progWidget.isSideSelected(face)) {
                         didWork = tryExportToSide(te, face, simulate);
                         if (didWork) break;
                     }

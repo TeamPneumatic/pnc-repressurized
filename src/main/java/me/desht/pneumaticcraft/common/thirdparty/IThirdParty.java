@@ -37,4 +37,8 @@ public interface IThirdParty {
             Log.warning("Can't find fuel: " + fuelName);
         }
     }
+
+    default ThirdPartyManager.ModType modType() {
+        return null;
+    }
 }

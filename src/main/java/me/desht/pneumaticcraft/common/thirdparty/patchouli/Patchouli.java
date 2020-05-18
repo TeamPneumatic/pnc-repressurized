@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.thirdparty.IDocsProvider;
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
+import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
@@ -115,5 +116,10 @@ public class Patchouli implements IThirdParty, IDocsProvider {
     @Override
     public boolean isInstalled() {
         return true;
+    }
+
+    @Override
+    public ThirdPartyManager.ModType modType() {
+        return ThirdPartyManager.ModType.DOCUMENTATION;
     }
 }

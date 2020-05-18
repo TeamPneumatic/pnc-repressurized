@@ -47,7 +47,7 @@ public class Textures {
     public static final ResourceLocation PROG_WIDGET_COMMENT = progWidgetTexture("comment_piece.png");
     public static final ResourceLocation PROG_WIDGET_AREA = progWidgetTexture("area_piece.png");
     public static final ResourceLocation PROG_WIDGET_ATTACK = progWidgetTexture("attack_piece.png");
-    public static final ResourceLocation PROG_WIDGET_CC = progWidgetTexture("computer_craft_piece.png");
+    public static final ResourceLocation PROG_WIDGET_CC = progWidgetTexture("computer_control_piece.png");
     public static final ResourceLocation PROG_WIDGET_DIG = progWidgetTexture("dig_piece.png");
     public static final ResourceLocation PROG_WIDGET_HARVEST = progWidgetTexture("harvest_piece.png");
     public static final ResourceLocation PROG_WIDGET_GOTO = progWidgetTexture("goto_piece.png");

@@ -1,24 +1,19 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
-import me.desht.pneumaticcraft.common.ai.DroneAIImExBase;
+import me.desht.pneumaticcraft.common.ai.DroneAIDropItem;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.DyeColor;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class ProgWidgetDropItem extends ProgWidgetInventoryBase implements IItemDropper {
     private boolean dropStraight;
@@ -48,10 +43,12 @@ public class ProgWidgetDropItem extends ProgWidgetInventoryBase implements IItem
         this.dropStraight = dropStraight;
     }
 
-    public boolean isPickupDelay() {
+    @Override
+    public boolean hasPickupDelay() {
         return pickupDelay;
     }
 
+    @Override
     public void setPickupDelay(boolean pickupDelay) {
         this.pickupDelay = pickupDelay;
     }
@@ -96,59 +93,7 @@ public class ProgWidgetDropItem extends ProgWidgetInventoryBase implements IItem
 
     @Override
     public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
-        return new DroneAIImExBase<ProgWidgetDropItem>(drone, (ProgWidgetDropItem) widget) {
-
-            private final Set<BlockPos> visitedPositions = new HashSet<>();
-
-            @Override
-            public boolean shouldExecute() {
-                boolean shouldExecute = false;
-                for (int i = 0; i < drone.getInv().getSlots(); i++) {
-                    ItemStack stack = drone.getInv().getStackInSlot(i);
-                    if (progWidget.isItemValidForFilters(stack)) {
-                        shouldExecute = super.shouldExecute();
-                        break;
-                    }
-                }
-                return shouldExecute;
-            }
-
-            @Override
-            protected boolean moveIntoBlock() {
-                return true;
-            }
-
-            @Override
-            protected boolean isValidPosition(BlockPos pos) {
-                return !visitedPositions.contains(pos);//another requirement is that the drone can navigate to this exact block, but that's handled by the pathfinder.
-            }
-
-            @Override
-            protected boolean doBlockInteraction(BlockPos pos, double distToBlock) {
-                visitedPositions.add(pos);
-                for (int i = 0; i < drone.getInv().getSlots(); i++) {
-                    ItemStack stack = drone.getInv().getStackInSlot(i);
-                    if (progWidget.isItemValidForFilters(stack)) {
-                        if (useCount() && getRemainingCount() < stack.getCount()) {
-                            stack = stack.split(getRemainingCount());
-                            decreaseCount(getRemainingCount());
-                        } else {
-                            decreaseCount(stack.getCount());
-                            drone.getInv().setStackInSlot(i, ItemStack.EMPTY);
-                        }
-                        ItemEntity item = new ItemEntity(drone.world(), pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, stack);
-                        if (progWidget.dropStraight()) {
-                            item.setMotion(0, 0, 0);
-                        }
-                        if (pickupDelay) item.setPickupDelay(40);
-                        drone.world().addEntity(item);
-                        if (useCount() && getRemainingCount() == 0) break;
-                    }
-                }
-                return false;
-            }
-
-        };
+        return new DroneAIDropItem(drone, (ProgWidgetInventoryBase) widget);
     }
 
     @Override

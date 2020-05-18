@@ -6,9 +6,9 @@ import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
-import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaConstant;
-import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethod;
-import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethodRegistry;
+import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaConstant;
+import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethod;
+import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethodRegistry;
 import me.desht.pneumaticcraft.lib.NBTKeys;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntityType;
@@ -157,8 +157,9 @@ public abstract class TileEntityPneumaticBase extends TileEntityTickableBase {
     }
 
     @Override
-    protected void addLuaMethods(LuaMethodRegistry registry) {
+    public void addLuaMethods(LuaMethodRegistry registry) {
         super.addLuaMethods(registry);
+
         registry.registerLuaMethod(new LuaMethod("getPressure") {
             @Override
             public Object[] call(Object[] args) {

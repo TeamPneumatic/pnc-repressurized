@@ -37,7 +37,7 @@ public class GuiProgWidgetDropItem extends GuiProgWidgetImportExport<ProgWidgetD
 
         WidgetCheckBox pickupDelay = new WidgetCheckBox(guiLeft + 8, guiTop + 115, 0xFF404040,
                 I18n.format("gui.progWidget.drop.hasPickupDelay"), b -> progWidget.setPickupDelay(b.checked));
-        pickupDelay.checked = progWidget.isPickupDelay();
+        pickupDelay.checked = progWidget.hasPickupDelay();
         addButton(pickupDelay);
     }
 

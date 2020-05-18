@@ -126,6 +126,13 @@ public interface IProgWidget extends IProgWidgetBase {
     DyeColor getColor();
 
     /**
+     * Is this widget currently available in this world?  i.e. make sure it's not blacklisted by server admin,
+     * and any mod dependencies are loaded
+     * @return true if the widget is available for use by players
+     */
+    boolean isAvailable();
+
+    /**
      * At least do <code>tag.putString("name", getTypeID().toString());</code>
      * <p>Note that the base implementation {@link ProgWidget} does this.</p>
      *

@@ -12,8 +12,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
 
 public class EntityRing extends Entity {
-
-//    public RenderRing ring, oldRing;
     public ProgressingLine ring, oldRing;
     private final Entity targetEntity;
     public final int color;

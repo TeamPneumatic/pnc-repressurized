@@ -1,14 +1,13 @@
 package me.desht.pneumaticcraft.common.ai;
 
-import me.desht.pneumaticcraft.common.progwidgets.ISidedWidget;
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetEnergyImport;
+import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetInventoryBase;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.energy.CapabilityEnergy;
 
-public class DroneAIEnergyImport extends DroneAIImExBase<ProgWidgetEnergyImport> {
-    public DroneAIEnergyImport(IDroneBase drone, ProgWidgetEnergyImport widget) {
+public class DroneAIEnergyImport extends DroneAIImExBase<ProgWidgetInventoryBase> {
+    public DroneAIEnergyImport(IDroneBase drone, ProgWidgetInventoryBase widget) {
         super(drone, widget);
     }
 
@@ -30,7 +29,7 @@ public class DroneAIEnergyImport extends DroneAIImExBase<ProgWidgetEnergyImport>
             TileEntity te = drone.world().getTileEntity(pos);
             if (te == null) return false;
             for (Direction face : Direction.VALUES) {
-                if (ISidedWidget.checkSide(progWidget, face)) {
+                if (progWidget.isSideSelected(face)) {
                     didWork = tryImportFromSide(te, face, simulate);
                     if (didWork) break;
                 }

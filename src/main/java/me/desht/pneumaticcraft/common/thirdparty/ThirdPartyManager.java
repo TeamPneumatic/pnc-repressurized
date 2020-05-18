@@ -3,14 +3,13 @@ package me.desht.pneumaticcraft.common.thirdparty;
 import joptsimple.internal.Strings;
 import me.desht.pneumaticcraft.common.config.subconfig.ThirdPartyConfig;
 import me.desht.pneumaticcraft.common.thirdparty.botania.Botania;
+import me.desht.pneumaticcraft.common.thirdparty.computercraft.ComputerCraft;
 import me.desht.pneumaticcraft.common.thirdparty.curios.Curios;
 import me.desht.pneumaticcraft.common.thirdparty.patchouli.Patchouli;
 import me.desht.pneumaticcraft.common.thirdparty.theoneprobe.TheOneProbe;
 import me.desht.pneumaticcraft.common.thirdparty.waila.Waila;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.ModIds;
-import net.minecraft.block.Block;
-import net.minecraft.item.Item;
 import net.minecraftforge.fml.ModList;
 
 import java.util.*;
@@ -20,10 +19,13 @@ import java.util.stream.Collectors;
 public class ThirdPartyManager {
 
     private static final ThirdPartyManager INSTANCE = new ThirdPartyManager();
+
+    private static final GenericIntegrationHandler GENERIC = new GenericIntegrationHandler();
+    private static final IThirdParty DUMMY_HANDLER = new IThirdParty() {};
+
     private final List<IThirdParty> thirdPartyMods = new ArrayList<>();
-    public static boolean computerCraftLoaded;
     private IDocsProvider docsProvider = new IDocsProvider.NoDocsProvider();
-    private GenericIntegrationHandler generic = new GenericIntegrationHandler();
+    private final Set<ModType> loadedModTypes = EnumSet.noneOf(ModType.class);
 
     public static ThirdPartyManager instance() {
         return INSTANCE;
@@ -33,12 +35,23 @@ public class ThirdPartyManager {
         return docsProvider;
     }
 
+    @SuppressWarnings("Convert2MethodRef")
     public void index() {
         Map<String, Supplier<? extends IThirdParty>> thirdPartyClasses = new HashMap<>();
         try {
+            // Not using method refs here, because that can cause early class loading and we don't want that
+            thirdPartyClasses.put(ModIds.COMPUTERCRAFT, () -> new ComputerCraft());
+            thirdPartyClasses.put(ModIds.WAILA, () -> new Waila());
+            thirdPartyClasses.put(ModIds.TOP, () -> new TheOneProbe());
+            thirdPartyClasses.put(ModIds.CURIOS, () -> new Curios());
+            thirdPartyClasses.put(ModIds.BOTANIA, () -> new Botania());
+            thirdPartyClasses.put(ModIds.PATCHOULI, () -> new Patchouli());
+            thirdPartyClasses.put(ModIds.JEI, () -> DUMMY_HANDLER);  // implicit initialisation
+
+            // these were supported 1.12.2 and may or may not come back...
+
 //            thirdPartyClasses.put(ModIds.BUILDCRAFT, BuildCraft.class);
 //            thirdPartyClasses.put(ModIds.IGWMOD, IGWMod.class);
-//            thirdPartyClasses.put(ModIds.COMPUTERCRAFT, ComputerCraft.class);
 //            if (!ModList.get().isLoaded(ModIds.COMPUTERCRAFT)) {
 //                thirdPartyClasses.put(ModIds.OPEN_COMPUTERS, OpenComputers.class);
 //            }
@@ -46,16 +59,11 @@ public class ThirdPartyManager {
 //            thirdPartyClasses.put(ModIds.FORESTRY, Forestry.class);
 //            thirdPartyClasses.put(ModIds.EIO, EnderIO.class);
 //            thirdPartyClasses.put(ModIds.COFH_CORE, CoFHCore.class);
-            thirdPartyClasses.put(ModIds.WAILA, Waila::new);
-            thirdPartyClasses.put(ModIds.TOP, TheOneProbe::new);
-            thirdPartyClasses.put(ModIds.CURIOS, Curios::new);
 //            thirdPartyClasses.put(ModIds.CRAFTTWEAKER, CraftTweaker.class);
 //            thirdPartyClasses.put(ModIds.INDUSTRIALCRAFT, IC2.class);
 //            thirdPartyClasses.put(ModIds.IMMERSIVEENGINEERING, ImmersiveEngineering.class);
 //            thirdPartyClasses.put(ModIds.THAUMCRAFT, Thaumcraft.class);
-            thirdPartyClasses.put(ModIds.BOTANIA, Botania::new);
 //            thirdPartyClasses.put(ModIds.IMMERSIVE_PETROLEUM, ImmersivePetroleum.class);
-            thirdPartyClasses.put(ModIds.PATCHOULI, Patchouli::new);
 //            thirdPartyClasses.put(ModIds.MEKANISM, Mekanism.class);
 //            thirdPartyClasses.put(ModIds.BAUBLES, Baubles.class);
 //            thirdPartyClasses.put(ModIds.TOUGH_AS_NAILS, ToughAsNails.class);
@@ -68,29 +76,21 @@ public class ThirdPartyManager {
 
         Set<String> enabledThirdParty = thirdPartyClasses.keySet().stream().filter(ThirdPartyConfig::isEnabled).collect(Collectors.toSet());
 
-        Log.info("Thirdparty integration activated for [" + Strings.join(enabledThirdParty, ", ") + "]");
-
+        List<String> modNames = new ArrayList<>();
         for (Map.Entry<String, Supplier<? extends IThirdParty>> entry : thirdPartyClasses.entrySet()) {
             if (enabledThirdParty.contains(entry.getKey()) && ModList.get().isLoaded(entry.getKey())) {
-                thirdPartyMods.add(entry.getValue().get());
+                IThirdParty mod = entry.getValue().get();
+                thirdPartyMods.add(mod);
+                if (mod.modType() != null) loadedModTypes.add(mod.modType());
+                modNames.add(entry.getKey());
             }
         }
-    }
 
-    public void onItemRegistry(Item item) {
-        for (IThirdParty thirdParty : thirdPartyMods) {
-            if (thirdParty instanceof IRegistryListener) ((IRegistryListener) thirdParty).onItemRegistry(item);
-        }
-    }
-
-    public void onBlockRegistry(Block block) {
-        for (IThirdParty thirdParty : thirdPartyMods) {
-            if (thirdParty instanceof IRegistryListener) ((IRegistryListener) thirdParty).onBlockRegistry(block);
-        }
+        Log.info("Thirdparty integration activated for [" + Strings.join(modNames, ", ") + "]");
     }
 
     public void init() {
-        generic.init();
+        GENERIC.init();
         for (IThirdParty thirdParty : thirdPartyMods) {
             try {
                 thirdParty.init();
@@ -102,7 +102,7 @@ public class ThirdPartyManager {
     }
 
     public void postInit() {
-        generic.postInit();
+        GENERIC.postInit();
         for (IThirdParty thirdParty : thirdPartyMods) {
             try {
                 thirdParty.postInit();
@@ -115,7 +115,7 @@ public class ThirdPartyManager {
     }
 
     public void clientInit() {
-        generic.clientInit();
+        GENERIC.clientInit();
         for (IThirdParty thirdParty : thirdPartyMods) {
             try {
                 thirdParty.clientInit();
@@ -128,5 +128,19 @@ public class ThirdPartyManager {
                 e.printStackTrace();
             }
         }
+    }
+
+    public boolean isModTypeLoaded(ModType modType) {
+        return loadedModTypes.contains(modType);
+    }
+
+    /**
+     * Collection of mod types; categories of mod which can be used to control whether blocks/items etc. should be
+     * made visible to players (blocks/items are *always* registered, but might need to be hidden if their functionality
+     * doesn't make sense without certain other mods present - e.g. the Drone Interface needs a computer mod loaded)
+     */
+    public enum ModType {
+        COMPUTER,
+        DOCUMENTATION
     }
 }

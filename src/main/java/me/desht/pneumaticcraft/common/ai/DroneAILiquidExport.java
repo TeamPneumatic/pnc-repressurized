@@ -1,6 +1,9 @@
 package me.desht.pneumaticcraft.common.ai;
 
-import me.desht.pneumaticcraft.common.progwidgets.*;
+import me.desht.pneumaticcraft.common.progwidgets.ICountWidget;
+import me.desht.pneumaticcraft.common.progwidgets.ILiquidExport;
+import me.desht.pneumaticcraft.common.progwidgets.ILiquidFiltered;
+import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetInventoryBase;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
@@ -40,7 +43,7 @@ public class DroneAILiquidExport<W extends ProgWidgetInventoryBase & ILiquidFilt
                 FluidStack exportedFluid = drone.getFluidTank().drain(Integer.MAX_VALUE, FluidAction.SIMULATE);
                 if (!exportedFluid.isEmpty() && progWidget.isFluidValid(exportedFluid.getFluid())) {
                     for (Direction side : Direction.VALUES) {
-                        if (ISidedWidget.checkSide(progWidget, side) && trySide(te, side, exportedFluid, simulate)) return true;
+                        if (progWidget.isSideSelected(side) && trySide(te, side, exportedFluid, simulate)) return true;
                     }
                     drone.addDebugEntry("gui.progWidget.liquidExport.debug.filledToMax", pos);
                 } else {

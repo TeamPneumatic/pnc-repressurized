@@ -14,8 +14,8 @@ import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerElevator;
 import me.desht.pneumaticcraft.common.network.*;
-import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethod;
-import me.desht.pneumaticcraft.common.thirdparty.computercraft.LuaMethodRegistry;
+import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethod;
+import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethodRegistry;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -590,17 +590,8 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
         return getWorld().getTileEntity(getPos()) == this;
     }
 
-    /*
-     * COMPUTERCRAFT API
-     */
-
-//    @Override
-//    public String getType() {
-//        return "elevator";
-//    }
-
     @Override
-    protected void addLuaMethods(LuaMethodRegistry registry) {
+    public void addLuaMethods(LuaMethodRegistry registry) {
         super.addLuaMethods(registry);
 
         registry.registerLuaMethod(new LuaMethod("setHeight") {

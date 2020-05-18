@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.core;
 
 import me.desht.pneumaticcraft.common.block.*;
+import me.desht.pneumaticcraft.common.thirdparty.computer_common.BlockDroneInterface;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
@@ -185,6 +186,8 @@ public class ModBlocks {
             BlockTagWorkbench::new);
     public static final RegistryObject<BlockDisplayTable> DISPLAY_TABLE = register("display_table",
             BlockDisplayTable::new);
+    public static final RegistryObject<BlockDroneInterface> DRONE_INTERFACE = register("drone_interface",
+            BlockDroneInterface::new);
 
     public static final List<RegistryObject<BlockPlasticBrick>> PLASTIC_BRICKS = new ArrayList<>();
     static {

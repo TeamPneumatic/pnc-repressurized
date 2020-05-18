@@ -90,6 +90,11 @@ public abstract class ProgWidget implements IProgWidget {
     }
 
     @Override
+    public boolean isAvailable() {
+        return !ProgWidgetConfig.INSTANCE.isWidgetBlacklisted(getType());
+    }
+
+    @Override
     public int getX() {
         return x;
     }
@@ -292,17 +297,13 @@ public abstract class ProgWidget implements IProgWidget {
 
     public static IProgWidget fromPacket(PacketBuffer buf) {
         ResourceLocation typeID = buf.readResourceLocation();
-        if (!ProgWidgetConfig.blacklistedPieces.contains(typeID)) {
-            ProgWidgetType type = ModRegistries.PROG_WIDGETS.getValue(typeID);
-            if (type != null) {
-                IProgWidget newWidget = IProgWidget.create(type);
-                newWidget.readFromPacket(buf);
-                return newWidget;
-            } else {
-                throw new IllegalStateException("unknown widget type found: " + typeID);
-            }
+        ProgWidgetType type = ModRegistries.PROG_WIDGETS.getValue(typeID);
+        if (type != null) {
+            IProgWidget newWidget = IProgWidget.create(type);
+            newWidget.readFromPacket(buf);
+            return newWidget;
         } else {
-            throw new IllegalStateException("ignoring blacklisted widget type: " + typeID);
+            throw new IllegalStateException("unknown widget type found: " + typeID);
         }
     }
 

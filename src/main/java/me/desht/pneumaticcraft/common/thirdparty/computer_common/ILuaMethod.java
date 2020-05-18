@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.common.thirdparty.computercraft;
+package me.desht.pneumaticcraft.common.thirdparty.computer_common;
 
 public interface ILuaMethod {
     String getMethodName();

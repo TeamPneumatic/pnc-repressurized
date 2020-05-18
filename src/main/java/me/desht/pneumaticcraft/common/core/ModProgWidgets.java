@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.core;
 import me.desht.pneumaticcraft.api.drone.IProgWidgetBase;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.progwidgets.*;
+import me.desht.pneumaticcraft.common.thirdparty.computer_common.ProgWidgetCC;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -73,6 +74,7 @@ public class ModProgWidgets {
     public static final ProgWidgetType<ProgWidgetDroneConditionPressure> DRONE_CONDITION_PRESSURE = null;
     public static final ProgWidgetType<ProgWidgetEnergyCondition> CONDITION_RF = null;
     public static final ProgWidgetType<ProgWidgetDroneConditionEnergy> DRONE_CONDITION_RF = null;
+    public static final ProgWidgetType<ProgWidgetCC> COMPUTER_CONTROL = null;
 
     public static class Sorted {
         public static final List<ProgWidgetType<?>> WIDGET_LIST = new ArrayList<>();
@@ -139,6 +141,7 @@ public class ModProgWidgets {
             register(r, "drone_condition_pressure", ProgWidgetDroneConditionPressure::new);
             register(r, "condition_rf", ProgWidgetEnergyCondition::new);
             register(r, "drone_condition_rf", ProgWidgetDroneConditionEnergy::new);
+            register(r, "computer_control", ProgWidgetCC::new);
         }
 
         public static void register(IForgeRegistry<ProgWidgetType<?>> registry, String name, Supplier<? extends IProgWidgetBase> sup) {
