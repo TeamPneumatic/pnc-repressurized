@@ -6,23 +6,30 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.15.2
 
-## 1.1.3-? (unreleased)
+## 1.2.0-20 (18 May 2020)
 
 ### Known Issues
-* There is an incompatibility with the current version of the Performant mod, which (with default settings) will mess up Drone pathfinding
-  * Setting `fastPathFinding` to `false` in Performant's config works around the issue
+* There is an incompatibility with the version 1.15.2-10m and older of the Performant mod, which (with default settings) will mess up Drone pathfinding
+  * Using Performant 1.15.20-11m (not released at time of writing) or newer fixes the problem
+  * Alternatively (for older versions), setting `fastPathFinding` to `false` in Performant's config works around the problem
+
+### New
+* ComputerCraft support has returned!
+  * You will need CC:Tweaked, version 1.88.1 or newer.  Older releases will *not* work.
+  * Other than that, it should work pretty much as it did for 1.12.2, although testing has been fairly light so far, so consider this an alpha-level feature.
 
 ### Updates
-* Pneumatic Armor can now be repaired in an Anvil with Compressed Iron Ingots
+* Pneumatic Armor can now be repaired in an Anvil with Compressed Iron Ingots (and experience)
   * Each ingot repairs 16 durability
   * XP Level cost is (ingots / 2), minimum 1 level
-  * This is an addition to using Item Life upgrades, which still works 
+  * This is an addition to using Item Life upgrades, which still work
 * Drones with Magnet Upgrade now respect Botania's Solegnolia
 * Drones now apply a 40-tick pickup delay to items dropped with the Drop Item widget, same as players do
   * This avoids problems where Drones with Magnet Upgrades just immediately pick up dropped items again
   * The delay can be disabled in the Drop Item widget GUI if you need to
   
 ### Fixes
+* Fixed non-fatal startup exceptions being logged when soft-depended mods (e.g. The One Probe) aren't present 
 * Fixed Logistics Drones & Modules not properly handling NBT matching in item filters
 * Fixed Aphorism Tile not recalculating the text scale when text adjusted server-side (via drone)
 * Fixed GPS Area tool Line and Wall modes sometimes being off by one block (arithmetic rounding error)
