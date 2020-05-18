@@ -38,6 +38,7 @@ import me.desht.pneumaticcraft.common.worldgen.ModDecorators;
 import me.desht.pneumaticcraft.common.worldgen.ModWorldGen;
 import me.desht.pneumaticcraft.datagen.*;
 import me.desht.pneumaticcraft.datagen.loot.TileEntitySerializerFunction;
+import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.Block;
 import net.minecraft.block.DispenserBlock;
@@ -63,13 +64,9 @@ import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 @Mod(Names.MOD_ID)
 public class PneumaticCraftRepressurized {
-    public static final Logger LOGGER = LogManager.getLogger();
-
     public PneumaticCraftRepressurized() {
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
 
@@ -129,7 +126,7 @@ public class PneumaticCraftRepressurized {
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
-        LOGGER.info(Names.MOD_NAME + " is loading!");
+        Log.info(Names.MOD_NAME + " is loading!");
 
         AuxConfigHandler.postInit();
         registerCapabilities();
