@@ -137,7 +137,7 @@ public enum BlockHeatProperties {
             for (Fluid fluid : ForgeRegistries.FLUIDS.getValues()) {
                 if (fluid == Fluids.EMPTY) continue;
                 Block block = fluid.getDefaultState().getBlockState().getBlock();
-                if (block == null || BlockHeatProperties.getInstance().getCustomHeatEntry(block) != null) {
+                if (block == null || block == Blocks.AIR || BlockHeatProperties.getInstance().getCustomHeatEntry(block) != null) {
                     continue;
                 }
                 CustomHeatEntry entry = BlockHeatProperties.getInstance().getOrCreateCustomHeatEntry(fluid);
