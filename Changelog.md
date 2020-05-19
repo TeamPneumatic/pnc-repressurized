@@ -4,12 +4,27 @@ This is an overview of significant new features and fixes by release.  See https
 
 Changes are in reverse chronological order; newest changes at the top.
 
-<<<<<<< HEAD
 ## Minecraft 1.14.4
 
 This release brings a very major internal rewrite and many many major new and modified gameplay elements. See also https://gist.github.com/desht/b604bd670f7f718bb4e6f20ff53893e2
 
-## 1.0.3-12 (unreleased)
+## 1.0.4-13 (19 May 2020)
+
+### Fixes
+
+* Fixed client crash in elevator GUI when trying to cycle floors & no floors are found
+* Fixed Elevator Frames having a player-blocking hitbox with 3x3 or larger elevators
+* Drones now apply a 40-tick pickup delay to items dropped with the Drop Item widget, same as players do
+  * This avoids problems where Drones with Magnet Upgrades just immediately pick up dropped items again
+  * The delay can be disabled in the Drop Item widget GUI if you need to
+* Fixed GPS Area tool Line and Wall modes sometimes being off by one block (arithmetic rounding error)
+* Fixed Aphorism Tile not recalculating the text scale when text adjusted server-side (via drone)
+* Fixed Logistics Drones & Modules not properly handling NBT matching in item filters
+* Drone item pickup is more robust now, and is better at picking items off shaped blocks like stairs.
+* Fixed fluid searching in the Liquid Filter prog widget GUI
+* Fixed Patchouli guidebook Logistics section being locked behind plastic (logistics stuff no longer requires plastic)
+
+## 1.0.3-12 (11 May 2020)
 
 ### Updates
 * Oil and Lubricant are now in the `forge:oil` and `forge:lubricant` fluid tags, respectively.
@@ -34,6 +49,7 @@ This release brings a very major internal rewrite and many many major new and mo
 This release contains various fixes and small improvements backported from the 1.15.2 release
 
 ### Updates
+* Reduced vertical aggro range of Guard Drone to 8 up & 5 down, to minimise risk of aggroing something in a cave deep below and teleporting off, leaving owner puzzled as to where it went.  Horizontal range is unchanged at 16 in each direction.
 * Added fluid tags for most PneumaticCraft fluid (tag names same as fluid name, e.g. "pneumaticcraft:lpg" fluid tag contains "pneumaticcraft:lpg" by default)
   * Also updated Refinery and Thermopneumatic Processing Plant recipes to use fluid tags instead of fluids directly
   * Makes it easier to support other fluids (e.g. for the Refinery to use another mod's oil, add that mod's "mod:oil" fluid to "pneumaticcraft:oil" tag in your datapack; no need to add a whole new recipe now)
