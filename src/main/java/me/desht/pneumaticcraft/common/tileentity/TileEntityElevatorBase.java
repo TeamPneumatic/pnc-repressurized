@@ -16,6 +16,7 @@ import me.desht.pneumaticcraft.common.inventory.ContainerElevator;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethod;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethodRegistry;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorCaller.ElevatorButton;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -68,9 +69,11 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     private float targetExtension;
     @DescSynced
     float syncedSpeedMult;
-    private boolean isStopped = true;  //used for sounds
+    private boolean isStopped = true;
+    // top elevator of the vertical stack (not to be confused with multiElevators, which is horizontal connections
     private TileEntityElevatorBase coreElevator;
-    private List<TileEntityElevatorBase> multiElevators; //initialized when multiple elevators are connected in a multiblock manner.
+    // horizontally-connected multiblock; will always be non-null after init, even when only one elevator
+    private List<TileEntityElevatorBase> multiElevators;
     @DescSynced
     public int multiElevatorCount;
     @GuiSynced
@@ -123,15 +126,12 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
 
             if (extension + moveBy > targetExtension) {
                 extension = targetExtension;
-                if (!getWorld().isRemote) {
-                    updateFloors();
-                }
             }
 
             if (isStopped) {
                 soundName = ModSounds.ELEVATOR_RISING_START.get();
                 isStopped = false;
-                if (!getWorld().isRemote && (multiElevators == null || this == multiElevators.get(0))) {
+                if (!getWorld().isRemote && shouldPlaySounds()) {
                     PacketDistributor.TargetPoint tp = new PacketDistributor.TargetPoint(pos.getX(), pos.getY(), pos.getZ(), 1024, world.getDimension().getType());
                     NetworkHandler.sendToAllAround(new PacketPlayMovingSound(MovingSounds.Sound.ELEVATOR, getCoreElevator()), tp);
                 }
@@ -153,12 +153,11 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
             }
             if (extension < targetExtension) {
                 extension = targetExtension;
-                if (!getWorld().isRemote) updateFloors();
             }
             if (isStopped) {
                 soundName = ModSounds.ELEVATOR_RISING_START.get();
                 isStopped = false;
-                if (!world.isRemote && (multiElevators == null || this == multiElevators.get(0))) {
+                if (!world.isRemote && shouldPlaySounds()) {
                     PacketDistributor.TargetPoint tp = new PacketDistributor.TargetPoint(pos.getX(), pos.getY(), pos.getZ(), 1024, world.getDimension().getType());
                     NetworkHandler.sendToAllAround(new PacketPlayMovingSound(MovingSounds.Sound.ELEVATOR, getCoreElevator()), tp);
                 }
@@ -173,9 +172,14 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
             isStopped = true;
         }
 
-        if (soundName != null && getWorld().isRemote) {
+        if (soundName != null && getWorld().isRemote && shouldPlaySounds()) {
             getWorld().playSound(getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5, soundName, SoundCategory.BLOCKS, (float) PNCConfig.Client.Sound.elevatorVolumeStartStop, 1.0F, true);
         }
+    }
+
+    private boolean shouldPlaySounds() {
+        return !(getCachedNeighbor(Direction.EAST) instanceof TileEntityElevatorBase)
+                && !(getCachedNeighbor(Direction.SOUTH) instanceof TileEntityElevatorBase);
     }
 
     private void handleRedstoneControl() {
@@ -376,6 +380,10 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
         super.onDescUpdate();
     }
 
+    /**
+     * Called when a block neighbour changes: if this elevator has no elevators above it, set it as a core
+     * elevator, and inform all elevators below us of that fact.
+     */
     private void updateConnections() {
         if (getWorld().getBlockState(getPos().offset(Direction.UP)).getBlock() != ModBlocks.ELEVATOR_BASE.get()) {
             coreElevator = this;
@@ -407,11 +415,11 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
         }
     }
 
-    public void updateFloors() {
+    public void updateFloors(boolean notifyClient) {
         List<Integer> floorList = new ArrayList<>();
         List<BlockPos> callerList = new ArrayList<>();
 
-        if (multiElevators != null) {
+        if (multiElevators != null) {  // should always be the case, even if only a single member
             int yOffset = 0;
             boolean shouldBreak = false;
             while (!shouldBreak) {
@@ -441,11 +449,11 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
             }
         }
 
-        TileEntityElevatorCaller.ElevatorButton[] elevatorButtons = new TileEntityElevatorCaller.ElevatorButton[floorHeights.length];
+        ElevatorButton[] elevatorButtons = new ElevatorButton[floorHeights.length];
         int columns = (elevatorButtons.length - 1) / 12 + 1;
         for (int j = 0; j < columns; j++) {
             for (int i = j * 12; i < floorHeights.length && i < j * 12 + 12; i++) {
-                elevatorButtons[i] = new TileEntityElevatorCaller.ElevatorButton(0.2F + 0.6F / columns * j, 0.5F + (Math.min(floorHeights.length, 12) - 2) * (BUTTON_SPACING + BUTTON_HEIGHT) / 2 - i % 12 * (BUTTON_HEIGHT + BUTTON_SPACING), 0.58F / columns, BUTTON_HEIGHT, i, floorHeights[i]);
+                elevatorButtons[i] = new ElevatorButton(0.2F + 0.6F / columns * j, 0.5F + (Math.min(floorHeights.length, 12) - 2) * (BUTTON_SPACING + BUTTON_HEIGHT) / 2 - i % 12 * (BUTTON_HEIGHT + BUTTON_SPACING), 0.58F / columns, BUTTON_HEIGHT, i, floorHeights[i]);
                 elevatorButtons[i].setColor(floorHeights[i] == targetExtension ? 0 : 1, 1, floorHeights[i] == targetExtension ? 0 : 1);
                 String floorName = floorNames.get(floorHeights[i]);
                 if (floorName != null) {
@@ -465,9 +473,10 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
         for (BlockPos p : callerList) {
             TileEntity te = getWorld().getTileEntity(p);
             if (te instanceof TileEntityElevatorCaller) {
+                TileEntityElevatorCaller caller = (TileEntityElevatorCaller) te;
                 int callerFloorHeight = p.getY() - getPos().getY() - 2;
                 int callerFloor = -1;
-                for (TileEntityElevatorCaller.ElevatorButton floor : elevatorButtons) {
+                for (ElevatorButton floor : elevatorButtons) {
                     if (floor.floorHeight == callerFloorHeight) {
                         callerFloor = floor.floorNumber;
                         break;
@@ -476,10 +485,13 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
                 if (callerFloor == -1) {
                     Log.error("Error while updating elevator floors! This will cause a indexOutOfBoundsException, index = -1");
                 }
-                ((TileEntityElevatorCaller) te).setEmittingRedstone(PneumaticCraftUtils.areFloatsEqual(targetExtension, extension, 0.1F) && PneumaticCraftUtils.areFloatsEqual(extension, callerFloorHeight, 0.1F));
-                ((TileEntityElevatorCaller) te).setFloors(elevatorButtons, callerFloor);
+                caller.setEmittingRedstone(PneumaticCraftUtils.areFloatsEqual(targetExtension, extension, 0.1F)
+                        && PneumaticCraftUtils.areFloatsEqual(extension, callerFloorHeight, 0.1F));
+                caller.setFloors(elevatorButtons, callerFloor);
             }
         }
+
+        if (notifyClient && !world.isRemote) sendDescPacketFromAllElevators();
     }
 
     public void goToFloor(int floor) {
@@ -489,7 +501,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
         if (floor >= 0 && floor < floorHeights.length) {
             setTargetHeight(floorHeights[floor]);
         }
-        updateFloors();
+        updateFloors(false);
         sendDescPacketFromAllElevators();
     }
 
@@ -581,7 +593,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     public void setFloorName(int floor, String name) {
         if (floor < floorHeights.length) {
             floorNames.put(floorHeights[floor], name);
-            updateFloors();
+            updateFloors(true);
         }
     }
 

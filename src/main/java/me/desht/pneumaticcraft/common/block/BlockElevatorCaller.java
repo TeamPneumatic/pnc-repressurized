@@ -152,11 +152,17 @@ public class BlockElevatorCaller extends BlockPneumaticCraftCamo {
         super.onReplaced(state, world, pos, newState, isMoving);
     }
 
+    /**
+     * Called when a caller is added or removed; detect any connected elevator base (by finding an adjacent frame
+     * and following it down), and tell it to rescan for elevator callers.
+     * @param world the world
+     * @param pos the blockpos where the caller has been placed/removed
+     */
     private void updateElevatorButtons(World world, BlockPos pos) {
         for (Direction dir : PneumaticCraftUtils.HORIZONTALS) {
             TileEntityElevatorBase elevator = getElevatorBase(world, pos.offset(dir).offset(Direction.DOWN, 2));
             if (elevator != null) {
-                elevator.updateFloors();
+                elevator.updateFloors(true);
                 break;
             }
         }
@@ -181,17 +187,6 @@ public class BlockElevatorCaller extends BlockPneumaticCraftCamo {
     public boolean isRotatable() {
         return true;
     }
-
-//    @OnlyIn(Dist.CLIENT)
-//    public int getPackedLightmapCoords(BlockState state, IEnviromentBlockReader worldIn, BlockPos pos) {
-//        int i = worldIn.getLightFor(LightType.SKY, pos);
-//        return (i << 20) | 0xF0;
-//    }
-
-//    @Override
-//    public boolean isOpaqueCube(BlockState state) {
-//        return false ;//this should return false, because otherwise I can't give color to the rendered elevator buttons for some reason...
-//    }
 
     @Override
     public boolean canProvidePower(BlockState state) {

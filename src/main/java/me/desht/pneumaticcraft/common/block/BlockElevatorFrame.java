@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorBase;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorFrame;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.IWaterLoggable;
 import net.minecraft.entity.Entity;
@@ -73,13 +74,6 @@ public class BlockElevatorFrame extends BlockPneumaticCraft implements IWaterLog
 
     }
 
-//    @OnlyIn(Dist.CLIENT)
-//    public int getPackedLightmapCoords(BlockState state, IEnviromentBlockReader worldIn, BlockPos pos) {
-////        return 0xFFFF;
-//        int i = worldIn.getLightFor(LightType.SKY, pos);
-//        return (i << 20) | 0xF;
-//    }
-
     @Override
     public IFluidState getFluidState(BlockState state) {
         return state.get(WATERLOGGED) ? Fluids.WATER.getStillFluidState(false) : super.getFluidState(state);
@@ -105,7 +99,21 @@ public class BlockElevatorFrame extends BlockPneumaticCraft implements IWaterLog
 
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext selectionContext) {
-        if (selectionContext.hasItem(this.asItem())) {
+        return getShapePrivate(state, world, pos, selectionContext, false);
+    }
+
+    @Override
+    public VoxelShape getCollisionShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+        return getShapePrivate(state, worldIn, pos, context, true);
+    }
+
+    @Override
+    public BlockRenderType getRenderType(BlockState state) {
+        return getCachedShape(state).isEmpty() ? BlockRenderType.INVISIBLE : super.getRenderType(state);
+    }
+
+    private VoxelShape getShapePrivate(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext selectionContext, boolean collision) {
+        if (selectionContext.hasItem(this.asItem()) && !collision) {
             // return a (mostly) full bounding box if holding frames, for ease of placement of frames against frames
             return MOSTLY_FULL;
         }
@@ -120,9 +128,9 @@ public class BlockElevatorFrame extends BlockPneumaticCraft implements IWaterLog
             shape = VoxelShapes.or(shape, Block.makeCuboidShape(5, 0, 5, 11, 16, 11));
         }
 
-        if (shape.isEmpty()) {
-            return MOSTLY_EMPTY;  // prevent a crash when trying to render break particles
-        }
+//        if (shape.isEmpty() && !collision) {
+//            return MOSTLY_EMPTY;  // prevent a crash when trying to render break particles
+//        }
 
         return shape;
     }
