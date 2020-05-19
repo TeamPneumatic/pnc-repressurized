@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorBase;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorFrame;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.IWaterLoggable;
 import net.minecraft.entity.Entity;
@@ -105,6 +106,12 @@ public class BlockElevatorFrame extends BlockPneumaticCraft implements IWaterLog
     }
 
     @Override
+    public BlockRenderType getRenderType(BlockState state) {
+        // prevents a crash when trying to render break particles
+        return getCachedShape(state).isEmpty() ? BlockRenderType.INVISIBLE : BlockRenderType.MODEL;
+    }
+
+    @Override
     public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext selectionContext) {
         if (selectionContext.hasItem(this.asItem())) {
             // return a (mostly) full bounding box if holding frames, for ease of placement of frames against frames
@@ -119,10 +126,6 @@ public class BlockElevatorFrame extends BlockPneumaticCraft implements IWaterLog
             shape = VoxelShapes.or(shape, Block.makeCuboidShape(0.001, minY, 0.001, 15.999, maxY, 15.999));
         } else if (blockHeight > 1f) {
             shape = VoxelShapes.or(shape, Block.makeCuboidShape(5, 0, 5, 11, 16, 11));
-        }
-
-        if (shape.isEmpty()) {
-            return MOSTLY_EMPTY;  // prevent a crash when trying to render break particles
         }
 
         return shape;

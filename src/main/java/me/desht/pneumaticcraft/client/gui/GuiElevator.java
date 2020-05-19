@@ -56,14 +56,16 @@ public class GuiElevator extends GuiPneumaticContainerBase<ContainerElevator, Ti
     }
 
     private void cycleFloor(int dir) {
-        currentEditedFloor += dir;
-        if (currentEditedFloor >= te.floorHeights.length) currentEditedFloor = 0;
-        else if (currentEditedFloor < 0) currentEditedFloor = te.floorHeights.length - 1;
+        if (te.floorHeights.length > 0) {
+            currentEditedFloor += dir;
+            if (currentEditedFloor >= te.floorHeights.length) currentEditedFloor = 0;
+            else if (currentEditedFloor < 0) currentEditedFloor = te.floorHeights.length - 1;
 
-        floorNameField.setText(te.getFloorName(currentEditedFloor));
-        floorNameField.setFocused2(true);
+            floorNameField.setText(te.getFloorName(currentEditedFloor));
+            floorNameField.setFocused2(true);
 
-        floorNameStat.setTextWithoutCuttingString(getFloorNameStat());
+            floorNameStat.setTextWithoutCuttingString(getFloorNameStat());
+        }
     }
 
     private void updateFloor(String floorName) {
