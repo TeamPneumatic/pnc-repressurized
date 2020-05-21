@@ -20,6 +20,7 @@ import net.minecraftforge.client.model.IModelLoader;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.client.model.data.IDynamicBakedModel;
 import net.minecraftforge.client.model.data.IModelData;
+import net.minecraftforge.client.model.data.ModelProperty;
 import net.minecraftforge.client.model.geometry.IModelGeometry;
 import net.minecraftforge.client.model.pipeline.BakedQuadBuilder;
 
@@ -62,8 +63,8 @@ public class PressureGlassModel implements IDynamicBakedModel {
         if (side == null || extraData == EmptyModelData.INSTANCE) {
             return Collections.emptyList();
         }
-
-        int textureIndex = extraData.getData(TileEntityPressureChamberGlass.DIR_PROPS.get(side.getIndex()));
+        ModelProperty<?> prop = TileEntityPressureChamberGlass.DIR_PROPS.get(side.getIndex());
+        int textureIndex = extraData.hasProperty(prop) ? extraData.getData(TileEntityPressureChamberGlass.DIR_PROPS.get(side.getIndex())) : 0;
         return Collections.singletonList(getCachedQuad(textureIndex, side));
     }
 
