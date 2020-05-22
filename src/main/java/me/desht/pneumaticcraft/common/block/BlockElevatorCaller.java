@@ -21,7 +21,7 @@ import net.minecraft.world.World;
 
 public class BlockElevatorCaller extends BlockPneumaticCraftCamo {
     public BlockElevatorCaller() {
-        super(ModBlocks.defaultProps());
+        super(ModBlocks.defaultProps().notSolid());
     }
 
     @Override
@@ -60,64 +60,6 @@ public class BlockElevatorCaller extends BlockPneumaticCraftCamo {
         }
         return -1;
     }
-
-    // todo 1.14 figure out raytracing
-//    @Override
-//    public RayTraceResult collisionRayTrace(BlockState state, World world, BlockPos pos, Vec3d origin, Vec3d direction) {
-//        setBlockBounds(FULL_BLOCK_AABB);
-//        RayTraceResult rayTrace = super.collisionRayTrace(state, world, pos, origin, direction);
-//        Direction orientation = getRotation(world, pos).getOpposite();
-//        if (rayTrace != null && rayTrace.sideHit == orientation) {
-//            TileEntity te = world.getTileEntity(pos);
-//            if (te instanceof TileEntityElevatorCaller) {
-//                TileEntityElevatorCaller caller = (TileEntityElevatorCaller) te;
-//                for (TileEntityElevatorCaller.ElevatorButton button : caller.getFloors()) {
-//                    float startX = 0, startZ = 0, endX = 0, endZ = 0;
-//                    switch (orientation) {
-//                        case NORTH:
-//                            startZ = 0F;
-//                            endZ = 0.01F;
-//                            endX = 1 - (float) button.posX;
-//                            startX = 1 - ((float) button.posX + (float) button.width);
-//                            break;
-//                        case SOUTH:
-//                            startZ = 0.99F;
-//                            endZ = 1F;
-//                            startX = (float) button.posX;
-//                            endX = (float) button.posX + (float) button.width;
-//                            break;
-//                        case WEST:
-//                            startX = 0F;
-//                            endX = 0.01F;
-//                            startZ = (float) button.posX;
-//                            endZ = (float) button.posX + (float) button.width;
-//                            break;
-//                        case EAST:
-//                            startX = 0.99F;
-//                            endX = 1F;
-//                            endZ = 1 - (float) button.posX;
-//                            startZ = 1 - ((float) button.posX + (float) button.width);
-//                            break;
-//                    }
-//
-//                    setBlockBounds(new AxisAlignedBB(startX, 1 - (float) (button.posY + button.height), startZ, endX, 1 - (float) button.posY, endZ));
-//                    RayTraceResult buttonTrace = super.collisionRayTrace(state, world, pos, origin, direction);
-//                    if (buttonTrace != null) {
-//                        if (startX > 0.01F && startX < 0.98F) startX += 0.01F;
-//                        if (startZ > 0.01F && startZ < 0.98F) startZ += 0.01F;
-//                        if (endX > 0.02F && endX < 0.99F) endX -= 0.01F;
-//                        if (endZ > 0.02F && endZ < 0.99F) endZ -= 0.01F;
-//                        setBlockBounds(new AxisAlignedBB(startX, 1.01F - (float) (button.posY + button.height), startZ, endX, 0.99F - (float) button.posY, endZ));
-//                        buttonTrace.subHit = button.floorNumber;
-//                        return buttonTrace;
-//                    }
-//                }
-//            }
-//        }
-//
-//        setBlockBounds(FULL_BLOCK_AABB);
-//        return rayTrace;
-//    }
 
     @Override
     protected boolean doesCamoOverrideBounds() {

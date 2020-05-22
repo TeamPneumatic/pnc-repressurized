@@ -30,10 +30,6 @@ public class RenderElevatorCaller extends TileEntityRenderer<TileEntityElevatorC
 
         FontRenderer fontRenderer = Minecraft.getInstance().getRenderManager().getFontRenderer();
         Matrix4f posMat = matrixStackIn.getLast().getMatrix();
-//        int blockLight = (combinedLightIn & 0xFFFF >> 4);
-//        if (blockLight < 10) {
-//            combinedLightIn &= 0xFFFF00A0;
-//        }
 
         for (TileEntityElevatorCaller.ElevatorButton button : te.getFloors()) {
             // button background
