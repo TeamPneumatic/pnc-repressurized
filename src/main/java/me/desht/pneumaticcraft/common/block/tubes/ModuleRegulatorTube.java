@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.block.tubes;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.common.item.ItemTubeModule;
+import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.LazyOptional;
 
@@ -76,8 +77,8 @@ public class ModuleRegulatorTube extends TubeModuleRedstoneReceiving implements 
 
     @Override
     public float getThreshold() {
-        // non-upgraded regulator has a simple redstone gradient
-        return upgraded ? super.getThreshold() : (getTube().dangerPressure - 0.1f) * (15 - getReceivingRedstoneLevel()) / 15f;
+        // non-upgraded regulator has a simple redstone gradient: 4.9 bar (redstone 0) down to 0 bar (redstone 15)
+        return upgraded ? super.getThreshold() : (PneumaticValues.DANGER_PRESSURE_TIER_ONE - 0.1f) * (15 - getReceivingRedstoneLevel()) / 15f;
     }
 
     private LazyOptional<IAirHandlerMachine> getCachedNeighbourAirHandler() {
