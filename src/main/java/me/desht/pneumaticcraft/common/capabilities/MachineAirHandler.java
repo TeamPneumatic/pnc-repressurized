@@ -110,6 +110,8 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
         Direction actualLeakDir = leakDir;
         if (!world.isRemote) {
             // server
+            disperseAir(ownerTE);
+
             BlockPos pos = ownerTE.getPos();
             if (hasSecurityUpgrade) {
                 if (!safetyLeak && getPressure() >= dangerPressure) {
@@ -117,25 +119,33 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
                 } else if (safetyLeak && getPressure() < dangerPressure - 0.25) {
                     safetyLeak = false;
                 }
-            } else {
+            } else if (world.getServer().getTickCounter() > 20) {
+                // little kludge: no overpressure checks right after server starts up (let things settle down)
                 doOverpressureChecks(ownerTE, world, pos);
             }
-            disperseAir(ownerTE);
-            prevAir = getAir();
-            // TODO: derive a best direction here, don't just assume UP is ok
-            actualLeakDir = safetyLeak ? Direction.UP : leakDir;
+
+            actualLeakDir = safetyLeak ? anyClearDirection(world, pos) : leakDir;
             if (prevLeakDir != actualLeakDir || actualLeakDir != null && (world.getGameTime() & 0x1f) == 0) {
                 // if leak status changes, sync pressure & leak dir to the client
                 // OR if already leaking, periodically sync pressure & leak dir to the client
                 NetworkHandler.sendToAllAround(new PacketUpdatePressureBlock(ownerTE, anyConnectedFace(), actualLeakDir, getAir()), world, 32D);
             }
 
+            prevAir = getAir();
             prevLeakDir = actualLeakDir;
         }
 
         if (actualLeakDir != null && getAir() != 0) {
             handleAirLeak(ownerTE, actualLeakDir);
         }
+    }
+
+    private Direction anyClearDirection(World w, BlockPos pos) {
+        for (Direction d : Direction.VALUES) {
+            BlockPos pos2 = pos.offset(d);
+            if (!w.getBlockState(pos2).isSolid()) return d;
+        }
+        return Direction.UP; // abitrary
     }
 
     private Direction anyConnectedFace() {
