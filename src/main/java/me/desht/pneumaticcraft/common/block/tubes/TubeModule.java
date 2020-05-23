@@ -36,7 +36,7 @@ public abstract class TubeModule {
     protected Direction dir = Direction.UP;
     private final VoxelShape[] boundingBoxes;
     protected boolean upgraded;
-    public float lowerBound = 7.5F, higherBound = 0;
+    public float lowerBound = 4.9F, higherBound = 0;
     private boolean fake;
     public boolean advancedConfig;
     public boolean shouldDrop;

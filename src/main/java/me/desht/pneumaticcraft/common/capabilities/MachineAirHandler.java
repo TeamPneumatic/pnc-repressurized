@@ -120,13 +120,15 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
     public void tick(TileEntity ownerTE) {
         World world = ownerTE.getWorld();
         if (!world.isRemote) {
-            BlockPos pos = ownerTE.getPos();
+            disperseAir(ownerTE);
+
             if (hasSecurityUpgrade) {
                 doSecurityAirChecks(ownerTE);
             }
 
             float p = getPressure();
             if (p > maxPressure) {
+                BlockPos pos = ownerTE.getPos();
                 world.createExplosion(null, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, 1.0F, Explosion.Mode.BREAK);
                 world.destroyBlock(pos, false);
                 return;
@@ -137,7 +139,6 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
                     world.playSound(null, ownerTE.getPos(), ModSounds.CREAK.get(), SoundCategory.BLOCKS, 0.7f, 0.6f + world.rand.nextFloat() * 0.8f);
                 }
             }
-            disperseAir(ownerTE);
         }
         if (soundCounter > 0) soundCounter--;
     }
