@@ -114,7 +114,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockItemUseContext ctx) {
-        BlockState state = super.getStateForPlacement(ctx);
+        BlockState state = getDefaultState();
         List<Direction> l = new ArrayList<>();
         for (Direction dir : Direction.VALUES) {
             TileEntity te = ctx.getWorld().getTileEntity(ctx.getPos().offset(dir));
@@ -446,6 +446,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
                 if (lookData != null) {
                     Direction sideHit = lookData.getRight();
                     tube.sidesClosed[sideHit.ordinal()] = !tube.sidesClosed[sideHit.ordinal()];
+                    tube.onNeighborBlockUpdate();
                     world.setBlockState(pos, recalculateState(world, pos, world.getBlockState(pos)));
                 }
             }
