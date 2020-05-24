@@ -6,6 +6,29 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.15.2
 
+## 1.2.1-?? (unreleased)
+
+### Updates
+* Made the volume of several sounds configurable in client-side config
+  * Miniguns (item, drone & sentry turret)
+  * Air leaks (beware of setting this to silent, it helps tracks leaks in your system!)
+  * Jet Boots
+  * Elevators
+* Regulator Module (without Advanced PCB) now always regulates to 4.9 bar, even when on Advanced Pressure Tubes
+  * Was a bit pointless having a Regulator which regulated to 19.9 when the point is to regulate down to tier 1
+  * Pressure level is still interpolated from 4.9 down to 0 based on redstone (0 redstone = 4.9 bar, 15 redstone = 0 bar)
+  * Regulators with an Advanced PCB are still fully configurable, as always
+
+### Fixes
+* Elevator fixes
+  * Fixed client crash when cycling through floors in Elevator GUI (with no Elevator Callers present)
+  * Fixed Elevator Frames having a player-blocking hitbox with 3x3 or larger elevators
+* Fixed External Program progwidget not doing anything
+* Fixed Safety Tube Module not releasing air when it should
+* Fixed Regulator Module bug which caused excess pressure to build up in their tube section
+* Fixed Refinery Controller block shape (caused x-ray effect with solid adjacent blocks)
+* Fixed client crash when trying to camouflage blocks with Pressure Chamber Glass
+
 ## 1.2.0-20 (18 May 2020)
 
 ### Known Issues
