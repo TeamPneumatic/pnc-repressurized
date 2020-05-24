@@ -131,6 +131,14 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
     @Override
     public BlockState getStateForPlacement(BlockItemUseContext ctx) {
         BlockState state = super.getStateForPlacement(ctx);
+        for (Direction facing : Direction.VALUES) {
+            if (state.has(connectionProperty(facing))) {
+                // handle pneumatic connections to neighbouring air handlers
+                TileEntity te = ctx.getWorld().getTileEntity(ctx.getPos().offset(facing));
+                boolean b = te != null && te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, facing.getOpposite()).isPresent();
+                state = state.with(connectionProperty(facing), b);
+            }
+        }
         if (isRotatable()) {
             Direction f = canRotateToTopOrBottom() ? ctx.getNearestLookingDirection() : ctx.getPlacementHorizontalFacing();
             return state.with(directionProperty(), reversePlacementRotation() ? f.getOpposite() : f);
