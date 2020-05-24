@@ -39,6 +39,11 @@ public class ConfigHelper {
 
         PNCConfig.Client.Sound.elevatorVolumeRunning = client.sound.elevatorVolumeRunning.get();
         PNCConfig.Client.Sound.elevatorVolumeStartStop = client.sound.elevatorVolumeStartStop.get();
+        PNCConfig.Client.Sound.airLeakVolume = client.sound.airLeakVolume.get();
+        PNCConfig.Client.Sound.minigunVolumeHeld = client.sound.minigunVolumeHeld.get();
+        PNCConfig.Client.Sound.minigunVolumeHeld = client.sound.minigunVolumeHeld.get();
+        PNCConfig.Client.Sound.minigunVolumeSentryTurret = client.sound.minigunVolumeSentryTurret.get();
+        PNCConfig.Client.Sound.jetbootsVolume = client.sound.jetbootsVolume.get();
 
         UpgradeRenderHandlerList.instance().refreshConfig();
     }

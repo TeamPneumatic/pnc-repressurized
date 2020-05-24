@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.sound;
 
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import net.minecraft.client.audio.TickableSound;
@@ -18,7 +19,7 @@ public class MovingSoundJetBoots extends TickableSound {
         this.player = player;
         this.repeat = true;
         this.repeatDelay = 0;
-        this.volume = 0.5F;
+        this.volume = (float) PNCConfig.Client.Sound.jetbootsVolume;
         this.targetPitch = 0.7F;
         this.pitch = 0.4F;
 
@@ -46,15 +47,15 @@ public class MovingSoundJetBoots extends TickableSound {
 
         if (endTimer > 0) {
             targetPitch = 0.5F;
-            volume = 0.5F - ((20 - endTimer) / 50F);
+            volume = (float) PNCConfig.Client.Sound.jetbootsVolume - ((20 - endTimer) / 50F);
         } else {
             if (handler.isJetBootsActive()) {
                 double vel = player.getMotion().length();
                 targetPitch = 0.7F + (float) vel / 15;
-                volume = 0.5F + (float) vel / 15;
+                volume = (float) PNCConfig.Client.Sound.jetbootsVolume + (float) vel / 15;
             } else {
                 targetPitch = 0.5F;
-                volume = 0.4F;
+                volume = (float) PNCConfig.Client.Sound.jetbootsVolume * 0.8F;
             }
         }
         pitch += (targetPitch - pitch) / 10F;

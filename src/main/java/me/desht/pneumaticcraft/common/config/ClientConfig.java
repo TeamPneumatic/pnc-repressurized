@@ -29,6 +29,11 @@ public class ClientConfig {
     public static class Sound {
         ForgeConfigSpec.DoubleValue elevatorVolumeRunning;
         ForgeConfigSpec.DoubleValue elevatorVolumeStartStop;
+        ForgeConfigSpec.DoubleValue airLeakVolume;
+        ForgeConfigSpec.DoubleValue minigunVolumeHeld;
+        ForgeConfigSpec.DoubleValue minigunVolumeDrone;
+        ForgeConfigSpec.DoubleValue minigunVolumeSentryTurret;
+        ForgeConfigSpec.DoubleValue jetbootsVolume;
     }
 
     public ClientConfig.General general = new General();
@@ -111,6 +116,26 @@ public class ClientConfig {
                 .comment("Volume level of the Elevator *clunk* while starting/stopping")
                 .translation("pneumaticcraft.config.client.sound.elevator_volume_start_stop")
                 .defineInRange("elevator_volume_start_stop", 0.5d, 0d, 2d);
+        sound.airLeakVolume = builder
+                .comment("Volume level of air leaks from unconnected tubes/machines. Beware: turning this off could lead to undetected leaks wasting pressure forever!")
+                .translation("pneumaticcraft.config.client.sound.air_leak_volume")
+                .defineInRange("air_leak_volume", 0.5d, 0d, 2d);
+        sound.minigunVolumeHeld = builder
+                .comment("Volume level of the hand-held Minigun")
+                .translation("pneumaticcraft.config.client.sound.minigun_volume_held")
+                .defineInRange("minigun_volume_held", 0.3d, 0d, 2d);
+        sound.minigunVolumeDrone = builder
+                .comment("Volume level of drone-mounted Miniguns")
+                .translation("pneumaticcraft.config.client.sound.minigun_volume_drone")
+                .defineInRange("minigun_volume_drone", 0.3d, 0d, 2d);
+        sound.minigunVolumeSentryTurret = builder
+                .comment("Volume level of the Sentry Turret's Minigun")
+                .translation("pneumaticcraft.config.client.sound.minigun_volume_sentry_turret")
+                .defineInRange("minigun_volume_sentry_turret", 0.3d, 0d, 2d);
+        sound.jetbootsVolume = builder
+                .comment("Volume level of the Jet Boots")
+                .translation("pneumaticcraft.config.client.sound.jetboots_volume")
+                .defineInRange("jetboots_volume", 0.5d, 0d, 2d);
     }
 
     /**

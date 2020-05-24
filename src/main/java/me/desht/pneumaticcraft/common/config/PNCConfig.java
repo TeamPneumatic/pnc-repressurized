@@ -32,6 +32,11 @@ public class PNCConfig {
         public static class Sound {
             public static double elevatorVolumeRunning;
             public static double elevatorVolumeStartStop;
+            public static double airLeakVolume;
+            public static double minigunVolumeHeld;
+            public static double minigunVolumeDrone;
+            public static double minigunVolumeSentryTurret;
+            public static double jetbootsVolume;
         }
     }
 
