@@ -221,7 +221,7 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
         for (IAirHandlerMachine.Connection neighbour: neighbours) {
             int totalMachineAir = (int) ((long) totalAir * neighbour.getAirHandler().getVolume() / totalVolume);
             neighbour.setMaxDispersion(getMaxDispersion(ownerTE, neighbour.getDirection()));
-            neighbour.setAirToDisperse(totalMachineAir - neighbour.getAirHandler().getAir());
+            neighbour.setAirToDisperse(Math.max(0, totalMachineAir - neighbour.getAirHandler().getAir()));  // no backflow
         }
 
         // 4. finally, actually disperse the air
