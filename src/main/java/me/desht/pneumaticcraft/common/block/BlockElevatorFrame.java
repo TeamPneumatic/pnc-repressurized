@@ -3,25 +3,25 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorBase;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorFrame;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderType;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.IWaterLoggable;
+import net.minecraft.block.*;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.fluid.IFluidState;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
+import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -31,7 +31,6 @@ import static net.minecraft.state.properties.BlockStateProperties.WATERLOGGED;
 public class BlockElevatorFrame extends BlockPneumaticCraft implements IWaterLoggable {
     private static final VoxelShape[] SHAPE_CACHE = new VoxelShape[16];
     private static final VoxelShape MOSTLY_FULL = Block.makeCuboidShape(0.5, 0, 0.5, 15.5, 16, 15.5);
-    private static final VoxelShape MOSTLY_EMPTY = Block.makeCuboidShape(0.5, 0, 0.5, 15.5, 0.5, 15.5);
 
     private static final BooleanProperty NE = BooleanProperty.create("ne");
     private static final BooleanProperty SE = BooleanProperty.create("se");
@@ -81,6 +80,10 @@ public class BlockElevatorFrame extends BlockPneumaticCraft implements IWaterLog
 
     @Override
     public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
+        if (!isValidPosition(stateIn, worldIn, currentPos)) {
+            return Blocks.AIR.getDefaultState();
+        }
+
         if (stateIn.get(WATERLOGGED)) {
             worldIn.getPendingFluidTicks().scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickRate(worldIn));
         }
@@ -109,6 +112,7 @@ public class BlockElevatorFrame extends BlockPneumaticCraft implements IWaterLog
 
     @Override
     public BlockRenderType getRenderType(BlockState state) {
+        // this avoids a crash when trying to render particles (see ParticleManager#addBlockDestroyEffects)
         return getCachedShape(state).isEmpty() ? BlockRenderType.INVISIBLE : super.getRenderType(state);
     }
 
@@ -127,10 +131,6 @@ public class BlockElevatorFrame extends BlockPneumaticCraft implements IWaterLog
         } else if (blockHeight > 1f) {
             shape = VoxelShapes.or(shape, Block.makeCuboidShape(5, 0, 5, 11, 16, 11));
         }
-
-//        if (shape.isEmpty() && !collision) {
-//            return MOSTLY_EMPTY;  // prevent a crash when trying to render break particles
-//        }
 
         return shape;
     }
@@ -201,7 +201,6 @@ public class BlockElevatorFrame extends BlockPneumaticCraft implements IWaterLog
 
     private float getElevatorBlockHeight(IBlockReader world, BlockPos pos) {
         TileEntityElevatorBase te = getElevatorTE(world, pos);
-//        return te == null ? 0F : MathHelper.clamp(te.extension - (pos.getY() - te.getPos().getY()) + 1, 0F, 1F);
         return te == null ? 0F : Math.max(te.extension - (pos.getY() - te.getPos().getY()) + 1, 0F);
     }
 
@@ -212,6 +211,40 @@ public class BlockElevatorFrame extends BlockPneumaticCraft implements IWaterLog
             elevatorBase.updateMaxElevatorHeight();
         }
         super.onReplaced(state, world, pos, newState, isMoving);
+    }
+
+    @Override
+    public boolean isValidPosition(BlockState state, IWorldReader worldIn, BlockPos pos) {
+        BlockState below = worldIn.getBlockState(pos.down());
+        return below.getBlock() == this || below.getBlock() == ModBlocks.ELEVATOR_BASE.get();
+    }
+
+    @Override
+    public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
+        if (!player.isCrouching() && player.getHeldItem(hand).getItem() == this.asItem()) {
+            // build it scaffolding-style
+            if (!world.isRemote) {
+                BlockPos.Mutable mPos = new BlockPos.Mutable(pos);
+                while (mPos.getY() < world.getMaxHeight() && world.getBlockState(mPos).getBlock() == this) {
+                    mPos.move(Direction.UP);
+                }
+                if (mPos.getY() < world.getMaxHeight() && world.getBlockState(mPos).isAir(world, mPos)) {
+                    world.setBlockState(mPos, this.getDefaultState());
+                    float pitch = Math.min(1.5f, (mPos.getY() - pos.getY()) * 0.05f + 1f);
+                    world.playSound(null, mPos, SoundEvents.BLOCK_METAL_PLACE, SoundCategory.BLOCKS, 1f, pitch);
+                    if (!player.isCreative()) {
+                        player.getHeldItem(hand).shrink(1);
+                    }
+                    return ActionResultType.SUCCESS;
+                } else {
+                    return ActionResultType.FAIL;
+                }
+            } else {
+                return ActionResultType.SUCCESS;
+            }
+        } else {
+            return super.onBlockActivated(state, world, pos, player, hand, brtr);
+        }
     }
 
     private enum Corner {

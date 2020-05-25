@@ -18,6 +18,12 @@ Changes are in reverse chronological order; newest changes at the top.
   * Was a bit pointless having a Regulator which regulated to 19.9 when the point is to regulate down to tier 1
   * Pressure level is still interpolated from 4.9 down to 0 based on redstone (0 redstone = 4.9 bar, 15 redstone = 0 bar)
   * Regulators with an Advanced PCB are still fully configurable, as always
+* Elevators are now much easier to build
+  * Elevator Frames are now placed like scaffolding
+     * Right-click a frame against another places it on top, building a tower from the bottom
+     * Sneak-right-click places it normally (if possible)
+  * Elevator Frames will now drop as an item if the block beneath is not an Elevator Base or Elevator Frame
+  * Elevator Frames can now only be placed on an Elevator Base or Elevator Frame
 
 ### Fixes
 * Elevator fixes
