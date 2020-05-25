@@ -6,7 +6,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.15.2
 
-## 1.2.1-?? (unreleased)
+## 1.2.1-25 (25 May 2020)
 
 ### Updates
 * Made the volume of several sounds configurable in client-side config (pneumaticcraft-client.toml)
