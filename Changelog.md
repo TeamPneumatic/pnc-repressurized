@@ -15,6 +15,7 @@ This release brings a very major internal rewrite and many many major new and mo
 * Fix bug where excess pressure builds up behind a Regulator Module
 * Fixed client crash when camo'ing blocks as Pressure Glass
 * Fixed External Program widget not doing anything
+* Fixed Refinery Controller block shape (caused x-ray effect with solid adjacent blocks) 
 
 ## 1.0.4-13 (19 May 2020)
 
