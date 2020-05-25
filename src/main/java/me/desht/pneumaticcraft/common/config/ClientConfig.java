@@ -34,6 +34,7 @@ public class ClientConfig {
         ForgeConfigSpec.DoubleValue minigunVolumeDrone;
         ForgeConfigSpec.DoubleValue minigunVolumeSentryTurret;
         ForgeConfigSpec.DoubleValue jetbootsVolume;
+        ForgeConfigSpec.DoubleValue jetbootsVolumeBuilderMode;
     }
 
     public ClientConfig.General general = new General();
@@ -133,9 +134,13 @@ public class ClientConfig {
                 .translation("pneumaticcraft.config.client.sound.minigun_volume_sentry_turret")
                 .defineInRange("minigun_volume_sentry_turret", 0.3d, 0d, 2d);
         sound.jetbootsVolume = builder
-                .comment("Volume level of the Jet Boots")
+                .comment("Volume level of the Jet Boots in normal flight mode")
                 .translation("pneumaticcraft.config.client.sound.jetboots_volume")
                 .defineInRange("jetboots_volume", 0.5d, 0d, 2d);
+        sound.jetbootsVolumeBuilderMode = builder
+                .comment("Volume level of the Jet Boots when in Builder Mode")
+                .translation("pneumaticcraft.config.client.sound.jetboots_volume_builder_mode")
+                .defineInRange("jetboots_volume_builder_mode", 0.5d, 0d, 2d);
     }
 
     /**

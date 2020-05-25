@@ -9,10 +9,10 @@ Changes are in reverse chronological order; newest changes at the top.
 ## 1.2.1-?? (unreleased)
 
 ### Updates
-* Made the volume of several sounds configurable in client-side config
+* Made the volume of several sounds configurable in client-side config (pneumaticcraft-client.toml)
   * Miniguns (item, drone & sentry turret)
   * Air leaks (beware of setting this to silent, it helps tracks leaks in your system!)
-  * Jet Boots
+  * Jet Boots (with separate volume level for builder mode)
   * Elevators
 * Regulator Module (without Advanced PCB) now always regulates to 4.9 bar, even when on Advanced Pressure Tubes
   * Was a bit pointless having a Regulator which regulated to 19.9 when the point is to regulate down to tier 1

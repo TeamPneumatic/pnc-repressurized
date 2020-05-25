@@ -37,6 +37,7 @@ public class PNCConfig {
             public static double minigunVolumeDrone;
             public static double minigunVolumeSentryTurret;
             public static double jetbootsVolume;
+            public static double jetbootsVolumeBuilderMode;
         }
     }
 

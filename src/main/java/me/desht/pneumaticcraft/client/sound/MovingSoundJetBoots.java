@@ -19,11 +19,10 @@ public class MovingSoundJetBoots extends TickableSound {
         this.player = player;
         this.repeat = true;
         this.repeatDelay = 0;
-        this.volume = (float) PNCConfig.Client.Sound.jetbootsVolume;
         this.targetPitch = 0.7F;
         this.pitch = 0.4F;
-
-        handler = CommonArmorHandler.getHandlerForPlayer(player);
+        this.handler = CommonArmorHandler.getHandlerForPlayer(player);
+        this.volume = volumeFromConfig();
     }
 
     @Override
@@ -47,15 +46,15 @@ public class MovingSoundJetBoots extends TickableSound {
 
         if (endTimer > 0) {
             targetPitch = 0.5F;
-            volume = (float) PNCConfig.Client.Sound.jetbootsVolume - ((20 - endTimer) / 50F);
+            volume = volumeFromConfig() - ((20 - endTimer) / 50F);
         } else {
             if (handler.isJetBootsActive()) {
                 double vel = player.getMotion().length();
                 targetPitch = 0.7F + (float) vel / 15;
-                volume = (float) PNCConfig.Client.Sound.jetbootsVolume + (float) vel / 15;
+                volume = volumeFromConfig() + (float) vel / 15;
             } else {
                 targetPitch = 0.5F;
-                volume = (float) PNCConfig.Client.Sound.jetbootsVolume * 0.8F;
+                volume = volumeFromConfig() * 0.8F;
             }
         }
         pitch += (targetPitch - pitch) / 10F;
@@ -63,5 +62,9 @@ public class MovingSoundJetBoots extends TickableSound {
             pitch *= 0.75f;
             volume *= 0.5f;
         }
+    }
+
+    private float volumeFromConfig() {
+        return (float) (handler.isJetBootsBuilderMode() ? PNCConfig.Client.Sound.jetbootsVolumeBuilderMode : PNCConfig.Client.Sound.jetbootsVolume);
     }
 }

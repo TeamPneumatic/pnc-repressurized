@@ -44,6 +44,7 @@ public class ConfigHelper {
         PNCConfig.Client.Sound.minigunVolumeHeld = client.sound.minigunVolumeHeld.get();
         PNCConfig.Client.Sound.minigunVolumeSentryTurret = client.sound.minigunVolumeSentryTurret.get();
         PNCConfig.Client.Sound.jetbootsVolume = client.sound.jetbootsVolume.get();
+        PNCConfig.Client.Sound.jetbootsVolumeBuilderMode = client.sound.jetbootsVolumeBuilderMode.get();
 
         UpgradeRenderHandlerList.instance().refreshConfig();
     }
