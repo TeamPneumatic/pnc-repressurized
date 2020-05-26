@@ -150,6 +150,7 @@ public class GuiUnitProgrammer extends Screen {
 
         MainWindow mw = minecraft.getMainWindow();
         int sf = minecraft.gameSettings.guiScale;
+        if (sf == 0) sf = mw.getWidth() / mw.getScaledWidth();
         GL11.glScissor((guiLeft + startX) * sf, (mw.getScaledHeight() - areaHeight - (guiTop + startY)) * sf, areaWidth * sf, areaHeight * sf);
         GL11.glEnable(GL11.GL_SCISSOR_TEST);
 
