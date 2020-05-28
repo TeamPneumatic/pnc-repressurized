@@ -212,7 +212,7 @@ public class EntityMicromissile extends ThrowableEntity {
         float x = -MathHelper.sin(yaw * 0.017453292F) * MathHelper.cos(pitch * 0.017453292F);
         float y = -MathHelper.sin(pitch * 0.017453292F);
         float z = MathHelper.cos(yaw * 0.017453292F) * MathHelper.cos(pitch * 0.017453292F);
-        this.shoot((double)x, (double)y, (double)z, velocity, 0f);
+        this.shoot(x, y, z, velocity, 0f);
         setMotion(getMotion().add(entityThrower.getMotion().x, 0, entityThrower.getMotion().z));
     }
 
@@ -226,7 +226,7 @@ public class EntityMicromissile extends ThrowableEntity {
 
         float f1 = MathHelper.sqrt(x * x + z * z);
         this.rotationYaw = (float)(MathHelper.atan2(x, z) * (180D / Math.PI));
-        this.rotationPitch = (float)(MathHelper.atan2(y, (double)f1) * (180D / Math.PI));
+        this.rotationPitch = (float)(MathHelper.atan2(y, f1) * (180D / Math.PI));
         this.prevRotationYaw = this.rotationYaw;
         this.prevRotationPitch = this.rotationPitch;
     }

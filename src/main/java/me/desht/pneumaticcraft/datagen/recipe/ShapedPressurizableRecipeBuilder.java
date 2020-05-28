@@ -134,7 +134,7 @@ public class ShapedPressurizableRecipeBuilder {
     public void build(Consumer<IFinishedRecipe> consumerIn, ResourceLocation id) {
         this.validate(id);
         this.advancementBuilder.withParentId(new ResourceLocation("recipes/root")).withCriterion("has_the_recipe", new RecipeUnlockedTrigger.Instance(id)).withRewards(AdvancementRewards.Builder.recipe(id)).withRequirementsStrategy(IRequirementsStrategy.OR);
-        consumerIn.accept(new ShapedPressurizableRecipeBuilder.Result(id, this.result, this.count, this.group == null ? "" : this.group, this.pattern, this.key, this.advancementBuilder, new ResourceLocation(id.getNamespace(), "recipes/" + this.result.getGroup().getPath() + "/" + id.getPath())));
+        consumerIn.accept(new Result(id, this.result, this.count, this.group == null ? "" : this.group, this.pattern, this.key, this.advancementBuilder, new ResourceLocation(id.getNamespace(), "recipes/" + this.result.getGroup().getPath() + "/" + id.getPath())));
     }
 
     /**
@@ -168,7 +168,7 @@ public class ShapedPressurizableRecipeBuilder {
         }
     }
 
-    public class Result implements IFinishedRecipe {
+    public static class Result implements IFinishedRecipe {
         private final ResourceLocation id;
         private final Item result;
         private final int count;

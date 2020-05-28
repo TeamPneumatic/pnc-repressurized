@@ -14,7 +14,7 @@ public abstract class AreaType{
     private final String unlocalizedName;
 
     public enum EnumAxis {
-        X, Y, Z;
+        X, Y, Z
 
 
     }
@@ -41,6 +41,7 @@ public abstract class AreaType{
      * Whether or not the area added in addArea is deterministic (used to determine if stuff can be cached or not).
      * @return
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean isDeterministic(){
         return true;
     }

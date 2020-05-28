@@ -35,7 +35,6 @@ import net.minecraftforge.common.crafting.conditions.ModLoadedCondition;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistryEntry;
-import net.minecraftforge.registries.ObjectHolder;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
@@ -45,9 +44,6 @@ import java.util.function.Consumer;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
 public class ModRecipeProvider extends RecipeProvider {
-    @ObjectHolder("patchouli:book")
-    private static Item PATCHOULI_BOOK = null;
-
     public ModRecipeProvider(DataGenerator generatorIn) {
         super(generatorIn);
     }

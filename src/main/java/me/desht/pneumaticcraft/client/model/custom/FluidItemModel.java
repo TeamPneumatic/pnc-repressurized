@@ -230,7 +230,7 @@ public class FluidItemModel implements IDynamicBakedModel {
         }
     }
 
-    private class FluidOverridesList extends ItemOverrideList {
+    private static class FluidOverridesList extends ItemOverrideList {
         private final FluidItemModel modelIn;
 
         FluidOverridesList(FluidItemModel modelIn) {

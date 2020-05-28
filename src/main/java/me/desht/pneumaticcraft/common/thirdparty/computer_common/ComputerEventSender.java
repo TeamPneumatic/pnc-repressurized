@@ -11,7 +11,7 @@ import java.util.List;
 public enum ComputerEventSender {
     INSTANCE;
 
-    private List<IComputerEventSender> senders = new ArrayList<>();
+    private final List<IComputerEventSender> senders = new ArrayList<>();
 
     public static ComputerEventSender getInstance() {
         return INSTANCE;

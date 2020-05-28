@@ -28,6 +28,7 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class GuiAerialInterface extends GuiPneumaticContainerBase<ContainerAerialInterface,TileEntityAerialInterface> {
@@ -89,8 +90,7 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<ContainerAeria
         } else {
             addAnimatedStat("gui.tab.info.aerialInterface.interfacingItems", new ItemStack(Blocks.CHEST), 0xFFA0A0A0, false)
                     .setText("gui.tab.info.aerialInterface.insertDispenser");
-            for (int i = 0; i < modeButtons.length; i++)
-                modeButtons[i] = null;
+            Arrays.fill(modeButtons, null);
         }
     }
 

@@ -59,7 +59,7 @@ public class ProgWidgetRename extends ProgWidget implements IRenamingWidget, IVa
         return new DroneAIRename(drone, (IRenamingWidget) widget);
     }
 
-    private class DroneAIRename extends Goal {
+    private static class DroneAIRename extends Goal {
         private final IDroneBase drone;
         private final IRenamingWidget widget;
 

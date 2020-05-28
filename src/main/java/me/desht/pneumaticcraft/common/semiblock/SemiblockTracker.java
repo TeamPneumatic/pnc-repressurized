@@ -143,7 +143,7 @@ public enum SemiblockTracker {
         return world.getDimension().getType().getRegistryName();
     }
 
-    private class SemiblockCollection {
+    private static class SemiblockCollection {
         private WeakReference<ISemiBlock> center = new WeakReference<>(null);
         private final List<WeakReference<ISemiBlock>> sides = new ArrayList<>();
 

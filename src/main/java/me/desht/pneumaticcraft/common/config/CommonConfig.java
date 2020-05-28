@@ -7,7 +7,7 @@ import net.minecraftforge.common.ForgeConfigSpec;
 import java.util.List;
 
 public class CommonConfig {
-    public class General {
+    public static class General {
         ForgeConfigSpec.IntValue oilGenerationChance;
         ForgeConfigSpec.BooleanValue enableDungeonLoot;
         ForgeConfigSpec.BooleanValue enableDroneSuffocation;
@@ -18,7 +18,7 @@ public class CommonConfig {
         ForgeConfigSpec.BooleanValue useUpDyesWhenColoring;
         ForgeConfigSpec.BooleanValue dronesRenderHeldItem;
     }
-    public class Machines {
+    public static class Machines {
         ForgeConfigSpec.BooleanValue aerialInterfaceArmorCompat;
         ForgeConfigSpec.DoubleValue cropSticksGrowthBoostChance;
         ForgeConfigSpec.IntValue electricCompressorEfficiency;
@@ -38,11 +38,11 @@ public class CommonConfig {
         ForgeConfigSpec.DoubleValue speedUpgradeSpeedMultiplier;
         ForgeConfigSpec.DoubleValue speedUpgradeUsageMultiplier;
     }
-    public class Armor {
+    public static class Armor {
         ForgeConfigSpec.IntValue jetBootsAirUsage;
         ForgeConfigSpec.IntValue armorStartupTime;
     }
-    public class Integration {
+    public static class Integration {
         ForgeConfigSpec.DoubleValue ieExternalHeaterHeatPerRF;
         ForgeConfigSpec.IntValue ieExternalHeaterRFperTick;
         ForgeConfigSpec.DoubleValue mekHeatEfficiency;
@@ -51,19 +51,19 @@ public class CommonConfig {
         ForgeConfigSpec.DoubleValue tanHeatDivider;
         ForgeConfigSpec.IntValue tanRefreshInterval;
     }
-    public class Advanced {
+    public static class Advanced {
         ForgeConfigSpec.BooleanValue disableKeroseneLampFakeAirBlock;
         ForgeConfigSpec.IntValue fluidTankUpdateRate;
         ForgeConfigSpec.BooleanValue stopDroneAI;
     }
-    public class Micromissiles {
+    public static class Micromissiles {
         ForgeConfigSpec.DoubleValue baseExplosionDamage;
         ForgeConfigSpec.BooleanValue damageTerrain;
         ForgeConfigSpec.IntValue launchCooldown;
         ForgeConfigSpec.IntValue lifetime;
         ForgeConfigSpec.IntValue missilePodSize;
     }
-    public class Minigun {
+    public static class Minigun {
         ForgeConfigSpec.DoubleValue apAmmoDamageMultiplier;
         ForgeConfigSpec.IntValue apAmmoIgnoreArmorChance;
         ForgeConfigSpec.IntValue armorPiercingAmmoCartridgeSize;
@@ -90,12 +90,12 @@ public class CommonConfig {
         ForgeConfigSpec.DoubleValue weightedAmmoRangeMultiplier;
         ForgeConfigSpec.BooleanValue blockHitParticles;
     }
-    public class Recipes {
+    public static class Recipes {
         ForgeConfigSpec.BooleanValue coalToDiamondsRecipe;
         ForgeConfigSpec.BooleanValue explosionCrafting;
     }
 
-    public class Amadron {
+    public static class Amadron {
         ForgeConfigSpec.IntValue numPeriodicOffers;
         ForgeConfigSpec.IntValue reshuffleInterval;
         ForgeConfigSpec.IntValue maxTradesPerPlayer;
@@ -104,7 +104,7 @@ public class CommonConfig {
         ForgeConfigSpec.BooleanValue notifyOfDealMade;
     }
 
-    public class Heat {
+    public static class Heat {
         ForgeConfigSpec.DoubleValue blockThermalResistance;
         ForgeConfigSpec.DoubleValue fluidThermalResistance;
         ForgeConfigSpec.IntValue defaultFluidHeatCapacity;
@@ -113,7 +113,7 @@ public class CommonConfig {
         ForgeConfigSpec.DoubleValue airThermalResistance;
     }
 
-    public class Logistics {
+    public static class Logistics {
         ForgeConfigSpec.DoubleValue itemTransportCost;
         ForgeConfigSpec.DoubleValue fluidTransportCost;
         ForgeConfigSpec.DoubleValue minPressure;

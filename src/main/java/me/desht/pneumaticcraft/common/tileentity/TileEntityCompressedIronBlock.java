@@ -15,10 +15,10 @@ import net.minecraftforge.items.IItemHandler;
 public class TileEntityCompressedIronBlock extends TileEntityTickableBase implements IComparatorSupport, IHeatTinted {
 
     protected final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
-    private LazyOptional<IHeatExchangerLogic> heatCap = LazyOptional.of(() -> heatExchanger);
+    private final LazyOptional<IHeatExchangerLogic> heatCap = LazyOptional.of(() -> heatExchanger);
     private int comparatorOutput = 0;
     @DescSynced
-    private SyncedTemperature syncedTemperature = new SyncedTemperature();
+    private final SyncedTemperature syncedTemperature = new SyncedTemperature();
 
     public TileEntityCompressedIronBlock() {
         this(ModTileEntities.COMPRESSED_IRON_BLOCK.get());

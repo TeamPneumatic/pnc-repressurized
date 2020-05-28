@@ -40,7 +40,7 @@ public class NBTToJsonConverter {
             } else if (nbt instanceof NumberNBT) {
                 keyObject.addProperty("value", ((NumberNBT) nbt).getDouble());
             } else if (nbt instanceof StringNBT) {
-                keyObject.addProperty("value", ((StringNBT) nbt).getString());
+                keyObject.addProperty("value", nbt.getString());
             } else if (nbt instanceof ListNBT) {
                 JsonArray array = new JsonArray();
                 ListNBT tagList = (ListNBT) nbt;

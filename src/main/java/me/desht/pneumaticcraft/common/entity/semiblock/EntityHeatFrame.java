@@ -53,7 +53,7 @@ public class EntityHeatFrame extends EntitySemiblockBase {
 
     private int coolingProgress;
 
-    private SyncedTemperature syncedTemperature = new SyncedTemperature();
+    private final SyncedTemperature syncedTemperature = new SyncedTemperature();
 
     public EntityHeatFrame(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);

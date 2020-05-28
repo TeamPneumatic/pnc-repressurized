@@ -14,6 +14,7 @@ import org.apache.http.message.BasicNameValuePair;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -108,7 +109,7 @@ public class PastebinHandler extends Thread {
             HttpEntity entity = response.getEntity();
             if (entity != null) {
                 InputStream instream = entity.getContent();
-                userKey = IOUtils.toString(instream, "UTF-8");
+                userKey = IOUtils.toString(instream, StandardCharsets.UTF_8);
                 if (userKey.startsWith("Bad API request")) {
                     Log.warning("User tried to log in into pastebin, it responded with the following: " + userKey);
                     userKey = null;
@@ -136,7 +137,7 @@ public class PastebinHandler extends Thread {
             HttpEntity entity = response.getEntity();
             if (entity != null) {
                 InputStream instream = entity.getContent();
-                return IOUtils.toString(instream, "UTF-8");
+                return IOUtils.toString(instream, StandardCharsets.UTF_8);
             }
 
         } catch (Exception e) {

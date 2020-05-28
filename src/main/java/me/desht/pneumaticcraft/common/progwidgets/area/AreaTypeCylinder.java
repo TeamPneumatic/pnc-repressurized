@@ -50,6 +50,7 @@ public class AreaTypeCylinder extends AreaType {
                 maxZ = (int) (p1.getZ() + rad + 1);
                 for (int y = Math.max(0, minY); y <= maxY && y < 256; y++) {
                     for (int z = minZ; z <= maxZ; z++) {
+                        //noinspection SuspiciousNameCombination
                         double centerDistSq = PneumaticCraftUtils.distBetweenSq(p1.getY(), p1.getZ(), y, z);
                         if (centerDistSq <= radSq) {
                             for (int x = minX; x <= maxX; x++) {

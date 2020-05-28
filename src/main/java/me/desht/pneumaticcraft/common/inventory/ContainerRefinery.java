@@ -50,11 +50,10 @@ public class ContainerRefinery extends ContainerPneumaticBase<TileEntityRefinery
 
             if (slotIndex < 27) {
                 if (!mergeItemStack(stackInSlot, 27, 36, false)) return ItemStack.EMPTY;
-                srcSlot.onSlotChange(stackInSlot, stack);
             } else {
                 if (!mergeItemStack(stackInSlot, 0, 27, false)) return ItemStack.EMPTY;
-                srcSlot.onSlotChange(stackInSlot, stack);
             }
+            srcSlot.onSlotChange(stackInSlot, stack);
 
             if (stackInSlot.isEmpty()) {
                 srcSlot.putStack(ItemStack.EMPTY);

@@ -26,12 +26,12 @@ public abstract class SyncedField<T> {
         this.te = te;
     }
 
-    SyncedField setArrayIndex(int arrayIndex) {
+    SyncedField<T> setArrayIndex(int arrayIndex) {
         this.arrayIndex = arrayIndex;
         return this;
     }
 
-    public SyncedField setLazy(boolean lazy) {
+    public SyncedField<T> setLazy(boolean lazy) {
         this.isLazy = lazy;
         return this;
     }
@@ -82,7 +82,7 @@ public abstract class SyncedField<T> {
 
     protected abstract T getValueForArray(Object array, int index);
 
-    protected abstract void setValueForArray(Object array, int index, T value) throws Exception;
+    protected abstract void setValueForArray(Object array, int index, T value);
 
     public T getValue() {
         return lastValue;

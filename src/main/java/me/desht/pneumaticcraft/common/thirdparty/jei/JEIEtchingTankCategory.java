@@ -19,10 +19,8 @@ import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 public class JEIEtchingTankCategory implements IRecipeCategory<JEIEtchingTankCategory.EtchingTankRecipe> {
     private final String localizedName;
@@ -104,13 +102,6 @@ public class JEIEtchingTankCategory implements IRecipeCategory<JEIEtchingTankCat
     @Override
     public void draw(EtchingTankRecipe recipe, double mouseX, double mouseY) {
         progressBar.draw(20, 0);
-    }
-
-    @Override
-    public List<String> getTooltipStrings(EtchingTankRecipe recipe, double mouseX, double mouseY) {
-        List<String> res = new ArrayList<>();
-        // ...
-        return res;
     }
 
     static class EtchingTankRecipe {

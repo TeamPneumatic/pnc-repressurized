@@ -18,8 +18,8 @@ public class GuiGPSAreaTool extends GuiGPSTool {
     private static final int CHANGE_AREA_BUTTON_WIDTH = 4 * 22 + 40 + 5 * 2;
     private static final int P1P2_BUTTON_WIDTH = 30;
 
-    private BlockPos[] p1p2Pos = new BlockPos[2];
-    private String[] vars = new String[2];
+    private final BlockPos[] p1p2Pos = new BlockPos[2];
+    private final String[] vars = new String[2];
     private int index;
 
     private GuiGPSAreaTool(ItemStack stack, Hand hand, int index) {

@@ -96,10 +96,8 @@ public abstract class GuiPneumaticInventoryItem extends GuiPneumaticContainerBas
         String containerName = itemStack.getDisplayName().getFormattedText();
         font.drawString(containerName, xSize / 2f - font.getStringWidth(containerName) / 2f, 5, 0x404040);
 
-        itemStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(h -> {
-            PressureGaugeRenderer.drawPressureGauge(font, 0, h.maxPressure(), h.maxPressure(), 0,
-                    te.chargingItemPressure, xSize * 3 / 4 + 10, ySize / 4 + 4);
-        });
+        itemStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
+                .ifPresent(h -> PressureGaugeRenderer.drawPressureGauge(font, 0, h.maxPressure(), h.maxPressure(), 0, te.chargingItemPressure, xSize * 3 / 4 + 10, ySize / 4 + 4));
     }
 
     @Override

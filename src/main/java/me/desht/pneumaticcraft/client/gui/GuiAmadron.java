@@ -181,7 +181,7 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
                 ((SlotUntouchable) container.getSlot(i * 2 + 1)).setEnabled(true);
             }
 
-            WidgetAmadronOffer widget = new WidgetAmadronOfferAdjustable(offerId,guiLeft + 6 + 73 * (i % 2), guiTop + 55 + 35 * (i / 2), offer);
+            WidgetAmadronOffer widget = new WidgetAmadronOfferAdjustable(offerId, guiLeft + 6 + 73 * (i % 2), guiTop + 55 + 35 * (i / 2), offer);
             addButton(widget);
             widgetOffers.add(widget);
         }
@@ -209,7 +209,7 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
         }
     }
 
-    class WidgetAmadronOfferAdjustable extends WidgetAmadronOffer {
+    static class WidgetAmadronOfferAdjustable extends WidgetAmadronOffer {
         private final int offerId;
 
         WidgetAmadronOfferAdjustable(int offerId, int x, int y, AmadronOffer offer) {

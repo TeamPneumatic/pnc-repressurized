@@ -67,7 +67,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
     @GuiSynced
     public float recipePressure;
 
-    private ItemStackHandler itemsInChamber = new ChamberStackHandler();
+    private final ItemStackHandler itemsInChamber = new ChamberStackHandler();
     ItemStackHandler craftedItems = new OutputStackHandler();
     @DescSynced
     CombinedInvWrapper allItems = new CombinedInvWrapper(itemsInChamber, craftedItems);

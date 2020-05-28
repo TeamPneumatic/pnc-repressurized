@@ -46,7 +46,7 @@ public class GuiThermopneumaticProcessingPlant extends
         addButton(new WidgetTank(guiLeft + 79, guiTop + 14, te.getOutputTank()));
 
         tempWidget = new WidgetTemperature(guiLeft + 98, guiTop + 15, 273, 673,
-                te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY), (int) te.minTemperature) {
+                te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY), te.minTemperature) {
             @Override
             public void addTooltip(double mouseX, double mouseY, List<String> curTip, boolean shift) {
                 super.addTooltip(mouseX, mouseY, curTip, shift);
@@ -71,7 +71,7 @@ public class GuiThermopneumaticProcessingPlant extends
     public void tick() {
         super.tick();
 
-        tempWidget.setScales((int) te.minTemperature);
+        tempWidget.setScales(te.minTemperature);
 
         if (hasShiftDown()) {
             dumpButton.setRenderedIcon(Textures.GUI_X_BUTTON);

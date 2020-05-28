@@ -30,18 +30,18 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase
     private static final double AIR_GEN_MULTIPLIER = 0.05;  // mL per degree of difference
 
     // track running air generation amounts; won't be added to the air handler until > 1.0
-    private double[] airGenerated = new double[2];
+    private final double[] airGenerated = new double[2];
 
     @GuiSynced
     private final IHeatExchangerLogic[] heatExchangers = new IHeatExchangerLogic[4];
-    private List<LazyOptional<IHeatExchangerLogic>> heatCaps = new ArrayList<>(4);
+    private final List<LazyOptional<IHeatExchangerLogic>> heatCaps = new ArrayList<>(4);
     private final IHeatExchangerLogic connector1;
     private final IHeatExchangerLogic connector2;
 
     private final IHeatExchangerLogic dummyExchanger;  // never does anything; gets returned from the "null" face
 
     @DescSynced
-    private SyncedTemperature[] syncedTemperatures = new SyncedTemperature[4];  // S-W-N-E
+    private final SyncedTemperature[] syncedTemperatures = new SyncedTemperature[4];  // S-W-N-E
 
     @GuiSynced
     private int redstoneMode;

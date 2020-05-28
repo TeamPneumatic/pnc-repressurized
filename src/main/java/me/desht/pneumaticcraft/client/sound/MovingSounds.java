@@ -26,7 +26,7 @@ public class MovingSounds {
         JET_BOOTS,
         MINIGUN,
         ELEVATOR,
-        AIR_LEAK;
+        AIR_LEAK
     }
 
     // track existing moving sound objects for blocks that can't easily tell when to start playing a sound

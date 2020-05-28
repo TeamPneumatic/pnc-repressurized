@@ -64,8 +64,8 @@ public class TileEntitySmartChest extends TileEntityTickableBase
     private int cooldown = 0;
 
     // track the current slots being used to push/pull from, to reduce inventory scanning
-    private int[] pullSlots = new int[6];
-    private int[] pushSlots = new int[6];
+    private final int[] pullSlots = new int[6];
+    private final int[] pushSlots = new int[6];
 
     public TileEntitySmartChest() {
         super(ModTileEntities.SMART_CHEST.get(), 4);

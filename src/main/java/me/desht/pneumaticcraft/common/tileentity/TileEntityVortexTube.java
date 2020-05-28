@@ -14,15 +14,15 @@ import net.minecraftforge.items.IItemHandler;
 
 public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHeatTinted {
     private final IHeatExchangerLogic coldHeatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
-    private LazyOptional<IHeatExchangerLogic> coldHeatCap = LazyOptional.of(() -> coldHeatExchanger);
+    private final LazyOptional<IHeatExchangerLogic> coldHeatCap = LazyOptional.of(() -> coldHeatExchanger);
     private final IHeatExchangerLogic hotHeatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
-    private LazyOptional<IHeatExchangerLogic> hotHeatCap = LazyOptional.of(() -> hotHeatExchanger);
+    private final LazyOptional<IHeatExchangerLogic> hotHeatCap = LazyOptional.of(() -> hotHeatExchanger);
     private final IHeatExchangerLogic connectingExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
 
     @DescSynced
-    private SyncedTemperature syncHot = new SyncedTemperature();
+    private final SyncedTemperature syncHot = new SyncedTemperature();
     @DescSynced
-    private SyncedTemperature syncCold = new SyncedTemperature();
+    private final SyncedTemperature syncCold = new SyncedTemperature();
 
     public TileEntityVortexTube() {
         super(ModTileEntities.VORTEX_TUBE.get(), 20, 25, 2000, 0);

@@ -7,6 +7,7 @@ public interface IPathNavigator {
 
     boolean moveToEntity(Entity entity);
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     boolean hasNoPath();
 
     boolean isGoingToTeleport();

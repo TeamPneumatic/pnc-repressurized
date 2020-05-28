@@ -46,6 +46,7 @@ public class TileEntityAssemblyDrill extends TileEntityAssemblyRobot {
             if (platformDirection == null) drillStep = 1;
             switch (drillStep) {
                 case 1:
+                case 6:
                     slowMode = false;
                     gotoHomePosition();
                     break;
@@ -70,10 +71,6 @@ public class TileEntityAssemblyDrill extends TileEntityAssemblyRobot {
                             platform.setHeldStack(output);
                         }
                     }
-                    break;
-                case 6:
-                    slowMode = false;
-                    gotoHomePosition();
                     break;
             }
             if (isDoneInternal()) {

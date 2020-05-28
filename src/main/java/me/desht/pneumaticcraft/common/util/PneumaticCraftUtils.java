@@ -92,13 +92,11 @@ public class PneumaticCraftUtils {
         switch (facing) {
             case NORTH:
                 return 180;
-            case SOUTH:
-                return 0;
             case WEST:
                 return 90;
             case EAST:
                 return -90;
-            default:
+            default:  // SOUTH
                 return 0;
         }
     }
@@ -698,6 +696,7 @@ public class PneumaticCraftUtils {
      * @param stack item to consume
      * @return true if an item was consumed
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean consumeInventoryItem(PlayerInventory inv, ItemStack stack) {
         int toConsume = stack.getCount();
         for (int i = 0; i < inv.mainInventory.size(); ++i) {

@@ -185,7 +185,7 @@ public class SensorHandler implements ISensorRegistry {
         registerSensor(new BlockAndCoordinatePollSensor(sensor));
     }
 
-    private class BlockAndCoordinateEventSensor implements IEventSensorSetting {
+    private static class BlockAndCoordinateEventSensor implements IEventSensorSetting {
         private final IBlockAndCoordinateEventSensor coordinateSensor;
 
         BlockAndCoordinateEventSensor(IBlockAndCoordinateEventSensor sensor) {
@@ -236,7 +236,7 @@ public class SensorHandler implements ISensorRegistry {
         }
     }
 
-    private class BlockAndCoordinatePollSensor implements IPollSensorSetting {
+    private static class BlockAndCoordinatePollSensor implements IPollSensorSetting {
         private final IBlockAndCoordinatePollSensor coordinateSensor;
 
         BlockAndCoordinatePollSensor(IBlockAndCoordinatePollSensor sensor) {

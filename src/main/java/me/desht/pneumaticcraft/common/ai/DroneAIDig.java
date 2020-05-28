@@ -134,6 +134,7 @@ public class DroneAIDig<W extends ProgWidgetAreaItemBase & IToolUser> extends Dr
         );
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private static boolean ignoreBlock(Block block) {
         return PneumaticCraftUtils.isBlockLiquid(block);
     }

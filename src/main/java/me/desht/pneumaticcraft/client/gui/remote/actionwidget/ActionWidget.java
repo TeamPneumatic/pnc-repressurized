@@ -35,9 +35,9 @@ public abstract class ActionWidget<W extends Widget> {
         return tag;
     }
 
-    public ActionWidget copy() {
+    public ActionWidget<?> copy() {
         try {
-            ActionWidget widget = this.getClass().newInstance();
+            ActionWidget<?> widget = this.getClass().newInstance();
             widget.readFromNBT(this.toNBT(0, 0), 0, 0);
             return widget;
         } catch (Exception e) {

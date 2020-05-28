@@ -59,7 +59,7 @@ public class TileEntityEtchingTank extends TileEntityTickableBase
 
     @GuiSynced
     private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
-    private LazyOptional<IHeatExchangerLogic> heatCap = LazyOptional.of(() -> heatExchanger);
+    private final LazyOptional<IHeatExchangerLogic> heatCap = LazyOptional.of(() -> heatExchanger);
 
     public TileEntityEtchingTank() {
         super(ModTileEntities.ETCHING_TANK.get());
@@ -222,7 +222,7 @@ public class TileEntityEtchingTank extends TileEntityTickableBase
         failedHandler.deserializeNBT(tag.getCompound("Failed"));
     }
 
-    private class EtchingTankHandler extends BaseItemStackHandler {
+    private static class EtchingTankHandler extends BaseItemStackHandler {
         EtchingTankHandler() {
             super(ETCHING_SLOTS);
         }
@@ -238,7 +238,7 @@ public class TileEntityEtchingTank extends TileEntityTickableBase
         }
     }
 
-    private class OutputItemHandler extends BaseItemStackHandler {
+    private static class OutputItemHandler extends BaseItemStackHandler {
         OutputItemHandler() {
             super(1);
         }
@@ -249,7 +249,7 @@ public class TileEntityEtchingTank extends TileEntityTickableBase
         }
     }
 
-    private class FailedItemHandler extends BaseItemStackHandler {
+    private static class FailedItemHandler extends BaseItemStackHandler {
         FailedItemHandler() {
             super(1);
         }

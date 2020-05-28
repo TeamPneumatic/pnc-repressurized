@@ -17,7 +17,7 @@ public enum ApplicableUpgradesDB {
     INSTANCE;
 
     // lookup table: 2 * sqrt(n) for 0..25
-    private static float[] VOLUME_MULT = new float[] {
+    private static final float[] VOLUME_MULT = new float[] {
             1f,
             2f,
             2.82842712474619f,

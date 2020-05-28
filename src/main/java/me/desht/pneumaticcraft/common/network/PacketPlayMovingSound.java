@@ -15,7 +15,7 @@ import java.util.function.Supplier;
  * Sent by server to start a new MovingSound playing
  */
 public class PacketPlayMovingSound {
-    enum SourceType { ENTITY, STATIC_POS;}
+    enum SourceType { ENTITY, STATIC_POS}
     private MovingSounds.Sound sound;
 
     private int entityId;

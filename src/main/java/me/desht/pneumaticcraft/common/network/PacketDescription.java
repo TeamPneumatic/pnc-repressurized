@@ -23,7 +23,7 @@ import java.util.function.Supplier;
  */
 public class PacketDescription extends LocationIntPacket {
     private boolean fullSync;
-    private List<IndexedField> fields = new ArrayList<>();
+    private final List<IndexedField> fields = new ArrayList<>();
     private CompoundNBT extraData;
 
     public PacketDescription() {

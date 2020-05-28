@@ -122,8 +122,8 @@ public class GuiUnitProgrammer extends Screen {
             if (!isOutsideProgrammingArea(widget)
                     && (mouseX - translatedX) / scale - guiLeft >= widget.getX()
                     && (mouseY - translatedY) / scale - guiTop >= widget.getY()
-                    && (mouseX - translatedX) / scale - guiLeft <= widget.getX() + widget.getWidth() / 2
-                    && (mouseY - translatedY) / scale - guiTop <= widget.getY() + widget.getHeight() / 2) {
+                    && (mouseX - translatedX) / scale - guiLeft <= widget.getX() + widget.getWidth() / 2f
+                    && (mouseY - translatedY) / scale - guiTop <= widget.getY() + widget.getHeight() / 2f) {
                 return widget;
             }
         }

@@ -34,7 +34,7 @@ public class ContainerEtchingTank extends ContainerPneumaticBase<TileEntityEtchi
         this(windowId, playerInv, getTilePos(buffer));
     }
 
-    private class SlotPCB extends SlotItemHandler {
+    private static class SlotPCB extends SlotItemHandler {
         SlotPCB(IItemHandler itemHandler, int index, int xPosition, int yPosition) {
             super(itemHandler, index, xPosition, yPosition);
         }

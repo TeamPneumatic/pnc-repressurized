@@ -34,7 +34,7 @@ public enum BlockHeatProperties {
 
     private static final String BLOCK_HEAT_PROPERTIES = "pneumaticcraft/block_heat_properties";
 
-    private Map<ResourceLocation, CustomHeatEntry> customHeatEntries = new HashMap<>();
+    private final Map<ResourceLocation, CustomHeatEntry> customHeatEntries = new HashMap<>();
 
     public static BlockHeatProperties getInstance() {
         return INSTANCE;

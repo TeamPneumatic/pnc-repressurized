@@ -119,8 +119,7 @@ public class LogisticsManager {
         remainder.grow(requester.getIncomingItems(providingStack));
         remainder = IOHelper.insert(te, remainder, requester.getFacing(), true);
         providingStack.shrink(remainder.getCount());
-        if (providingStack.getCount() <= 0) return 0;
-        return providingStack.getCount();
+        return Math.max(providingStack.getCount(), 0);
     }
 
     private static int getRequestedAmount(EntityLogisticsFrame requester, FluidStack providingStack) {

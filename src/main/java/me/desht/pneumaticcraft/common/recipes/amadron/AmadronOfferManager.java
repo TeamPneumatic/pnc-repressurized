@@ -42,9 +42,9 @@ public enum AmadronOfferManager {
     // periodic trades, randomly appear: loaded from recipes datapack
     private final Map<Integer,List<AmadronOffer>> periodicOffers = new HashMap<>();  // a list due to random access needs
     // maps villager profession/level to list of trades
-    private Map<String,List<AmadronOffer>> villagerTrades = new HashMap<>();
+    private final Map<String,List<AmadronOffer>> villagerTrades = new HashMap<>();
     // villager professions which actually have some trades
-    private List<VillagerProfession> validProfessions = new ArrayList<>();
+    private final List<VillagerProfession> validProfessions = new ArrayList<>();
     // A complete collection of all known offers
     private final Map<ResourceLocation, AmadronOffer> allOffers = new HashMap<>();
     // And these are the offers which are actually available via the Amadron Tablet (and shown in JEI) at this time

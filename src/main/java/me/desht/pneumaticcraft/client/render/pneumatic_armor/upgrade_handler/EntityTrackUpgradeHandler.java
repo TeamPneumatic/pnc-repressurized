@@ -207,7 +207,7 @@ public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler {
         return getTargetsStream().anyMatch(target -> target.scroll(event));
     }
 
-    private class EntityTrackerSelector extends StringFilterEntitySelector {
+    private static class EntityTrackerSelector extends StringFilterEntitySelector {
         private final PlayerEntity player;
         private final double threshold;
 

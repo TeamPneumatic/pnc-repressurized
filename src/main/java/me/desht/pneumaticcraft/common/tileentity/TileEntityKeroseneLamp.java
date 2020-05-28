@@ -84,7 +84,7 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements IR
             prevFluid = fluid;
         }
     };
-    private LazyOptional<IFluidHandler> fluidCap = LazyOptional.of(() -> tank);
+    private final LazyOptional<IFluidHandler> fluidCap = LazyOptional.of(() -> tank);
 
     @DescSynced
     private float fuelQuality = -1f; // the quality of the liquid currently in the tank; basically, its burn time

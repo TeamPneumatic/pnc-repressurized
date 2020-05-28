@@ -74,21 +74,21 @@ public class ClientEventHandler {
     private static int lastHeight = -1;
 
     @SubscribeEvent
-    public static void onLivingRender(RenderLivingEvent.Pre event) {
+    public static void onLivingRender(RenderLivingEvent.Pre<?,?> event) {
         setRenderHead(event.getEntity(), false);
     }
 
     @SubscribeEvent
-    public static void onLivingRender(RenderLivingEvent.Post event) {
+    public static void onLivingRender(RenderLivingEvent.Post<?,?> event) {
         setRenderHead(event.getEntity(), true);
     }
 
     private static void setRenderHead(LivingEntity entity, boolean setRender) {
         if (entity.getItemStackFromSlot(EquipmentSlotType.HEAD).getItem() == ModItems.PNEUMATIC_HELMET.get()
                 && (PNCConfig.Client.Armor.fancyArmorModels || DateEventHandler.isIronManEvent())) {
-            EntityRenderer renderer = Minecraft.getInstance().getRenderManager().getRenderer(entity);
+            EntityRenderer<?> renderer = Minecraft.getInstance().getRenderManager().getRenderer(entity);
             if (renderer instanceof BipedRenderer) {
-                BipedModel modelBiped = (BipedModel) ((BipedRenderer) renderer).getEntityModel();
+                BipedModel<?> modelBiped = ((BipedRenderer<?,?>) renderer).getEntityModel();
                 modelBiped.bipedHead.showModel = setRender;
             }
         }

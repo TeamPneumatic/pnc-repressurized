@@ -43,7 +43,7 @@ public class DroneAIPlace<W extends ProgWidgetAreaItemBase & IBlockOrdered & ISi
             for (int i = 0; i < drone.getInv().getSlots(); i++) {
                 ItemStack droneStack = drone.getInv().getStackInSlot(i);
                 if (droneStack.getItem() instanceof BlockItem && progWidget.isItemValidForFilters(droneStack)) {
-                    Direction side = ProgWidgetPlace.getDirForSides(((ISidedWidget) progWidget).getSides());
+                    Direction side = ProgWidgetPlace.getDirForSides(progWidget.getSides());
                     BlockPos placerPos = pos.offset(side);
                     BlockRayTraceResult brtr = drone.world().rayTraceBlocks(new RayTraceContext(PneumaticCraftUtils.getBlockCentre(placerPos), PneumaticCraftUtils.getBlockCentre(pos), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, drone.getFakePlayer()));
                     BlockItemUseContext ctx = new BlockItemUseContext(new ItemUseContext(drone.getFakePlayer(), Hand.MAIN_HAND, brtr));
@@ -72,7 +72,7 @@ public class DroneAIPlace<W extends ProgWidgetAreaItemBase & IBlockOrdered & ISi
     protected boolean doBlockInteraction(BlockPos pos, double distToBlock) {
 //        if (drone.getPathNavigator().hasNoPath()) {
         if (distToBlock < 2) {
-            Direction side = ProgWidgetPlace.getDirForSides(((ISidedWidget) progWidget).getSides());
+            Direction side = ProgWidgetPlace.getDirForSides(progWidget.getSides());
             for (int i = 0; i < drone.getInv().getSlots(); i++) {
                 ItemStack droneStack = drone.getInv().getStackInSlot(i);
                 if (droneStack.getItem() instanceof BlockItem && progWidget.isItemValidForFilters(droneStack)) {

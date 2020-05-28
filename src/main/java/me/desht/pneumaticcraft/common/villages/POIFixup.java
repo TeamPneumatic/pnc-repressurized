@@ -11,7 +11,7 @@ import java.lang.reflect.Method;
  * This appears to be necessary to get the blockstate->poi_type mapping correct in PointOfInterestType
  */
 public class POIFixup {
-    private static Method blockStatesInjector = ObfuscationReflectionHelper.findMethod(PointOfInterestType.class, "func_221052_a", PointOfInterestType.class);
+    private static final Method blockStatesInjector = ObfuscationReflectionHelper.findMethod(PointOfInterestType.class, "func_221052_a", PointOfInterestType.class);
 
     public static void fixup() {
         try {

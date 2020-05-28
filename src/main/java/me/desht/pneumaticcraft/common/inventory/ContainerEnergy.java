@@ -1,10 +1,8 @@
 package me.desht.pneumaticcraft.common.inventory;
 
-import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.network.SyncedField;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
@@ -30,9 +28,5 @@ public class ContainerEnergy<T extends TileEntityBase> extends Container4Upgrade
                 e.printStackTrace();
             }
         });
-    }
-
-    public static Container createPneumaticDynamoContainer(int i, PlayerInventory playerInventory, PacketBuffer buffer) {
-        return new ContainerEnergy(ModContainers.PNEUMATIC_DYNAMO.get(), i, playerInventory, buffer);
     }
 }

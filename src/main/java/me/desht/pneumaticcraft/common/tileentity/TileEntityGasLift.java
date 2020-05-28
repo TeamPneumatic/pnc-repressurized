@@ -59,7 +59,7 @@ public class TileEntityGasLift extends TileEntityPneumaticBase
 
     @GuiSynced
     private final GasLiftFluidTank tank = new GasLiftFluidTank();
-    private LazyOptional<IFluidHandler> fluidCap = LazyOptional.of(() -> tank);
+    private final LazyOptional<IFluidHandler> fluidCap = LazyOptional.of(() -> tank);
 
     private final ItemStackHandler inventory = new BaseItemStackHandler(this, INVENTORY_SIZE) {
         @Override

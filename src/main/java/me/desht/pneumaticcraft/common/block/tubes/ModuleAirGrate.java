@@ -35,7 +35,7 @@ public class ModuleAirGrate extends TubeModule {
     private EntityFilter entityFilter = null;
     private TileEntity adjacentInsertionTE = null;
     private Direction adjacentInsertionSide;
-    private Map<BlockPos,Boolean> traceabilityCache = new HashMap<>();
+    private final Map<BlockPos,Boolean> traceabilityCache = new HashMap<>();
 
     public ModuleAirGrate(ItemTubeModule itemTubeModule) {
         super(itemTubeModule);

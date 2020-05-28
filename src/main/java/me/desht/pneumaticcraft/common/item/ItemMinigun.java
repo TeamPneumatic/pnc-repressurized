@@ -188,7 +188,7 @@ public class ItemMinigun extends ItemPressurizable implements IChargeableContain
         Minigun minigun = getMinigun(stack, player);
         int trackers = minigun.getUpgrades(EnumUpgrade.ENTITY_TRACKER);
         if (!minigun.isMinigunActivated() || trackers == 0) return 1.0f;
-        return (float) (1 - (trackers * minigun.getMinigunSpeed() / 2));
+        return 1 - (trackers * minigun.getMinigunSpeed() / 2);
     }
 
     @Override
@@ -245,7 +245,7 @@ public class ItemMinigun extends ItemPressurizable implements IChargeableContain
         }
     }
 
-    private class MinigunItem extends Minigun {
+    private static class MinigunItem extends Minigun {
         MinigunItem() {
             super(false);
         }

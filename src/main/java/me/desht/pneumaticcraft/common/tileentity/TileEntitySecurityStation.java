@@ -54,7 +54,7 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
     private static final int INVENTORY_SIZE = INV_ROWS * INV_COLS;
 
     private final SecurityStationHandler inventory = new SecurityStationHandler();
-    private LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> inventory);
+    private final LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> inventory);
 
     public final List<GameProfile> hackedUsers = new ArrayList<>(); // Stores all the users that have hacked this Security Station.
     public final List<GameProfile> sharedUsers = new ArrayList<>(); // Stores all the users that have been allowed by the stationOwner.

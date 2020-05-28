@@ -1027,6 +1027,7 @@
   "gui.pastebin.merge": "Merge?",
   "gui.pastebin.merge.tooltip": "If checked, widgets will be merged with any existing widgets instead of replacing them. Merged widgets will be placed to the right of existing widgets. Any Start widget will be replaced with a Label & Text widget.",
   "gui.pastebin.uploadingToPastebin": "Uploading to Pastebin...",
+  "gui.pastebin.uploadedToPastebin": "Uploaded to Pastebin",
   "gui.pastebin.retrievingFromPastebin": "Retrieving from Pastebin...",
   "gui.pastebin.retrievedFromPastebin": "Retrieved from Pastebin",
   "gui.pastebin.clipboardSetToContents": "Clipboard set to contents.",

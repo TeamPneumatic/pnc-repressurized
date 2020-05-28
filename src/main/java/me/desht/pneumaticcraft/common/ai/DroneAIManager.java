@@ -235,10 +235,7 @@ public class DroneAIManager implements IVariableProvider {
                 widget = widget.getOutputWidget(drone, progWidgets);
                 if (widget == null) {
                     // reached the last widget in the line
-                    if (first) {
-                        // only a start widget?
-                        return;
-                    } else {
+                    if (!first) {
                         if (stopWhenEndReached) {
                             // stop executing
                             setActiveWidget(null);
@@ -246,8 +243,8 @@ public class DroneAIManager implements IVariableProvider {
                             // return to the start widget
                             gotoFirstWidget();
                         }
-                        return;
                     }
+                    return;
                 } else if (oldWidget.getOutputWidget() != widget) {
                     // we jumped to a "subroutine"
                     if (addJumpBackWidget(oldWidget)) return;
@@ -476,7 +473,7 @@ public class DroneAIManager implements IVariableProvider {
         }
     }
 
-    public class EntityAITaskEntry {
+    public static class EntityAITaskEntry {
         /**
          * The EntityAIBase object.
          */

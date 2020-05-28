@@ -13,6 +13,7 @@ public interface IDocsProvider {
         tooltip.add(xlate(showingAll ? "gui.programmer.pressIForInfoTrayOpen" : "gui.programmer.pressIForInfo"));
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     default boolean isInstalled() {
         return false;
     }

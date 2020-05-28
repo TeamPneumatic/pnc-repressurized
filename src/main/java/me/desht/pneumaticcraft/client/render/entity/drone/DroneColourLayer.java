@@ -15,7 +15,7 @@ import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraft.item.DyeColor;
 
 public class DroneColourLayer extends LayerRenderer<EntityDroneBase, ModelDrone> {
-    private ModelDroneCore model = new ModelDroneCore();
+    private final ModelDroneCore model = new ModelDroneCore();
 
     DroneColourLayer(IEntityRenderer<EntityDroneBase, ModelDrone> rendererIn) {
         super(rendererIn);

@@ -52,7 +52,7 @@ public class DroneProgramBuilder {
         return allWidgets;
     }
 
-    private class DroneInstruction {
+    private static class DroneInstruction {
         final IProgWidget mainInstruction;
         final List<IProgWidget> whitelist;
 

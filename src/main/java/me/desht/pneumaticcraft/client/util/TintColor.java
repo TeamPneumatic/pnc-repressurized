@@ -7,7 +7,7 @@ public class TintColor {
     public static final TintColor WHITE = new TintColor(255, 255, 255);
     public static final TintColor BLACK = new TintColor(0, 0, 0);
 
-    private int value;
+    private final int value;
 
     public TintColor(int r, int g, int b, int a) {
         value = ((a & 0xFF) << 24) |
@@ -49,7 +49,7 @@ public class TintColor {
     }
 
     public int getBlue() {
-        return (getRGB() >> 0) & 0xFF;
+        return getRGB() & 0xFF;
     }
 
     public int getAlpha() { return (getRGB() >> 24) & 0xFF; }
@@ -59,9 +59,9 @@ public class TintColor {
         if (hsbvals == null) {
             hsbvals = new float[3];
         }
-        int cmax = (r > g) ? r : g;
+        int cmax = Math.max(r, g);
         if (b > cmax) cmax = b;
-        int cmin = (r < g) ? r : g;
+        int cmin = Math.min(r, g);
         if (b < cmin) cmin = b;
 
         brightness = ((float) cmax) / 255.0f;

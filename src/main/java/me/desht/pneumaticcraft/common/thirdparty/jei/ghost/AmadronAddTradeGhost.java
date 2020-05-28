@@ -68,7 +68,7 @@ public class AmadronAddTradeGhost implements IGhostIngredientHandler<GuiAmadronA
         }
     }
 
-    private class ItemStackTarget extends TargetImpl<ItemStack> {
+    private static class ItemStackTarget extends TargetImpl<ItemStack> {
         ItemStackTarget(SlotPhantom slot, GuiAmadronAddTrade gui) {
             super(slot, gui);
         }

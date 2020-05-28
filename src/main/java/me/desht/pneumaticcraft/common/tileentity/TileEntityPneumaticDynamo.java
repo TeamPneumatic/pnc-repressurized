@@ -42,7 +42,7 @@ public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implement
     private int redstoneMode;
     @GuiSynced
     private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
-    private LazyOptional<IHeatExchangerLogic> heatCap = LazyOptional.of(() -> heatExchanger);
+    private final LazyOptional<IHeatExchangerLogic> heatCap = LazyOptional.of(() -> heatExchanger);
 
     public TileEntityPneumaticDynamo() {
         super(ModTileEntities.PNEUMATIC_DYNAMO.get(), PneumaticValues.DANGER_PRESSURE_PNEUMATIC_DYNAMO, PneumaticValues.MAX_PRESSURE_PNEUMATIC_DYNAMO, PneumaticValues.VOLUME_PNEUMATIC_DYNAMO, 4);

@@ -88,7 +88,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
 
     private static final int WIDGET_X_SPACING = 22; // x size of widgets in the widget tray
 
-    private boolean hiRes;
+    private final boolean hiRes;
 
     public GuiProgrammer(ContainerProgrammer container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
@@ -1040,8 +1040,8 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
                     for (IProgWidget widget : visibleSpawnWidgets) {
                         if (origX >= widget.getX() + guiLeft
                                 && origY >= widget.getY() + guiTop
-                                && origX <= widget.getX() + guiLeft + widget.getWidth() / 2
-                                && origY <= widget.getY() + guiTop + widget.getHeight() / 2)
+                                && origX <= widget.getX() + guiLeft + widget.getWidth() / 2f
+                                && origY <= widget.getY() + guiTop + widget.getHeight() / 2f)
                         {
                             draggingWidget = widget.copy();
                             te.progWidgets.add(draggingWidget);
@@ -1149,7 +1149,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
                 .orElse(null);
     }
 
-    private class FilterTextField extends WidgetTextField {
+    private static class FilterTextField extends WidgetTextField {
         FilterTextField(FontRenderer font, int x, int y, int width, int height) {
             super(font, x, y, width, height);
         }
@@ -1164,7 +1164,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         }
     }
 
-    private class DifficultyButton extends WidgetRadioButton {
+    private static class DifficultyButton extends WidgetRadioButton {
         final WidgetDifficulty difficulty;
 
         DifficultyButton(int x, int y, int color, WidgetDifficulty difficulty, Consumer<WidgetRadioButton> pressable) {
@@ -1173,7 +1173,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         }
     }
 
-    private class RemovingWidget {
+    private static class RemovingWidget {
         final IProgWidget widget;
         double ty = 0;
         double tx = 0;

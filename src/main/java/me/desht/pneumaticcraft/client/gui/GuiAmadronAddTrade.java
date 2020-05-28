@@ -47,9 +47,9 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadr
     private GuiLogisticsLiquidFilter fluidGui;
     private int settingSlot;
 
-    private WidgetFluidFilter[] fluidFilters = new WidgetFluidFilter[2];
-    private WidgetTextFieldNumber[] amountFields = new WidgetTextFieldNumber[2];
-    private BlockPos[] positions = new BlockPos[2];
+    private final WidgetFluidFilter[] fluidFilters = new WidgetFluidFilter[2];
+    private final WidgetTextFieldNumber[] amountFields = new WidgetTextFieldNumber[2];
+    private final BlockPos[] positions = new BlockPos[2];
     private Button addButton;
 
     public GuiAmadronAddTrade(ContainerAmadronAddTrade container, PlayerInventory inv, ITextComponent displayString) {

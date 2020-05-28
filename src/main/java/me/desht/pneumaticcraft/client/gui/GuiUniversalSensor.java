@@ -280,7 +280,7 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
         super.addWarnings(curInfo);
 
         if (!te.getPrimaryInventory().getStackInSlot(0).isEmpty() && te.outOfRange > 0) {
-            curInfo.addAll(PneumaticCraftUtils.splitString(I18n.format("gui.universalSensor.outOfRange")));
+            curInfo.addAll(PneumaticCraftUtils.splitString(I18n.format("gui.universalSensor.outOfRange", te.outOfRange)));
         }
     }
 

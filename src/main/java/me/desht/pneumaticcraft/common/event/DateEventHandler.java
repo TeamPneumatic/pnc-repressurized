@@ -4,34 +4,32 @@ import java.util.Calendar;
 import java.util.Random;
 
 public class DateEventHandler {
-    private static Random rand = new Random();
+    private static final Random rand = new Random();
     private static boolean initialized;
     private static boolean isIronManEvent;
 
     public static boolean isEvent() {
         Calendar calendar = Calendar.getInstance();
-        if (calendar.get(2) + 1 == 4 && calendar.get(5) == 17) {//MineMaarten's birthday
+        if (calendar.get(Calendar.MONTH) + 1 == 4 && calendar.get(Calendar.DATE) == 17) {//MineMaarten's birthday
             return true;
-        } else if (calendar.get(2) + 1 == 12 && calendar.get(5) == 31) {//New Years eve
+        } else if (calendar.get(Calendar.MONTH) + 1 == 12 && calendar.get(Calendar.DATE) == 31) {//New Years eve
             return true;
-        } else if (calendar.get(2) + 1 == 6 && calendar.get(5) == 9) {//PneumaticCraft's birthday
+        } else //MineMaarten released his first mod
+            if (calendar.get(Calendar.MONTH) + 1 == 6 && calendar.get(Calendar.DATE) == 9) {//PneumaticCraft's birthday
             return true;
-        } else if (calendar.get(2) + 1 == 2 && calendar.get(5) == 19) {//MineMaarten released his first mod
-            return true;
-        }
-        return false;
+        } else return calendar.get(Calendar.MONTH) + 1 == 2 && calendar.get(Calendar.DATE) == 19;
     }
 
     public static boolean isIronManEvent() {
         if (!initialized) {
             Calendar calendar = Calendar.getInstance();
-            if (calendar.get(2) + 1 == 4 && calendar.get(5) == 14) {//Iron Man (1) premiere
+            if (calendar.get(Calendar.MONTH) + 1 == 4 && calendar.get(Calendar.DATE) == 14) {//Iron Man (1) premiere
                 isIronManEvent = true;
-            } else if (calendar.get(2) + 1 == 4 && calendar.get(5) == 26) {//Iron Man 2 premiere
+            } else if (calendar.get(Calendar.MONTH) + 1 == 4 && calendar.get(Calendar.DATE) == 26) {//Iron Man 2 premiere
                 isIronManEvent = true;
-            } else if (calendar.get(2) + 1 == 4 && calendar.get(5) == 18) {//Iron Man 3 premiere
+            } else if (calendar.get(Calendar.MONTH) + 1 == 4 && calendar.get(Calendar.DATE) == 18) {//Iron Man 3 premiere
                 isIronManEvent = true;
-            } else if (calendar.get(2) + 1 == 4 && calendar.get(5) == 11) {//Avengers premiere
+            } else if (calendar.get(Calendar.MONTH) + 1 == 4 && calendar.get(Calendar.DATE) == 11) {//Avengers premiere
                 isIronManEvent = true;
             }
             initialized = true;

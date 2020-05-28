@@ -172,7 +172,7 @@ public class EntityFilter implements Predicate<Entity>, com.google.common.base.P
         }
     }
 
-    private class EntityMatcher implements Predicate<Entity> {
+    private static class EntityMatcher implements Predicate<Entity> {
         private final Pattern regex;
         private final Class<?> typeClass;
         private final List<Pair<Modifier,String>> modifiers = new ArrayList<>();

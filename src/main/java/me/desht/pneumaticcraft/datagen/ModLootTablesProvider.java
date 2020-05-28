@@ -97,7 +97,7 @@ public class ModLootTablesProvider extends LootTableProvider {
         return "PneumaticCraft Loot Tables";
     }
 
-    private class ChestLootTablePNC extends ChestLootTables {
+    private static class ChestLootTablePNC extends ChestLootTables {
         @Override
         public void accept(BiConsumer<ResourceLocation, LootTable.Builder> consumer) {
             LootPool.Builder lootPool = LootPool.builder();

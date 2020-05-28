@@ -20,7 +20,7 @@ import java.util.function.BiPredicate;
 
 public class TileEntityHeatPipe extends TileEntityTickableBase implements ICamouflageableTE {
     private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
-    private LazyOptional<IHeatExchangerLogic> heatCap = LazyOptional.of(() -> heatExchanger);
+    private final LazyOptional<IHeatExchangerLogic> heatCap = LazyOptional.of(() -> heatExchanger);
 
     @DescSynced
     private ItemStack camoStack = ItemStack.EMPTY;

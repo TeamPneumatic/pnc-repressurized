@@ -111,7 +111,7 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundNBT> {
     void updateHandler(String id, NonNullSupplier<T> handler) {
         int idx = idxMap.get(id);
         ConnectionEntry<T> e = entries.get(idx);
-        entries.set(idx, new ConnectionEntry<T>(e.id, e.texture, e.cap, handler));
+        entries.set(idx, new ConnectionEntry<>(e.id, e.texture, e.cap, handler));
         setNullFaceHandler(id);
     }
 

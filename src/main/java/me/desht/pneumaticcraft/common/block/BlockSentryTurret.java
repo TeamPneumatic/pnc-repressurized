@@ -21,7 +21,7 @@ import net.minecraft.world.World;
 import java.util.List;
 
 public class BlockSentryTurret extends BlockPneumaticCraft {
-    private VoxelShape BOUNDS = Block.makeCuboidShape(3, 0, 3, 13, 14, 13);
+    private final VoxelShape BOUNDS = Block.makeCuboidShape(3, 0, 3, 13, 14, 13);
 
     private static final String NBT_ENTITY_FILTER = "EntityFilter";
 

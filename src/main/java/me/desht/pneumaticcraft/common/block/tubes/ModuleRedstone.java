@@ -31,7 +31,7 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
     private boolean inverted = false;
     private int otherColor = 0;   // for advanced modules
     private int constantVal = 0;  // for advanced modules
-    private byte[] prevLevels = new byte[16];
+    private final byte[] prevLevels = new byte[16];
 
     // for client-side rendering the redstone connector
     public float extension = 1.0f;

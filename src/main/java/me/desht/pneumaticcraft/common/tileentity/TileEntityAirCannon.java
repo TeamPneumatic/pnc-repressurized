@@ -557,6 +557,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
         Entity launchedEntity = getCloseEntityIfUpgraded();
         if (getPressure() >= PneumaticValues.MIN_PRESSURE_AIR_CANNON && (launchedEntity != null || !itemHandler.getStackInSlot(CANNON_SLOT).isEmpty())) {
             float force = getForce();
+            //noinspection SuspiciousNameCombination
             double[] velocity = getVelocityVector(heightAngle, rotationAngle, force);
             addAir((int) (-500 * force));
             boolean shootingInventory = false;

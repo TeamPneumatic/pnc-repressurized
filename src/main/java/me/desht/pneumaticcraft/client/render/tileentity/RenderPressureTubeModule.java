@@ -42,7 +42,10 @@ public class RenderPressureTubeModule extends TileEntityRenderer<TileEntityPress
         }
         boolean render = false;
         for (int i = 0; i < tile.modules.length; i++) {
-            if (tile.modules[i] != null) render = true;
+            if (tile.modules[i] != null) {
+                render = true;
+                break;
+            }
         }
         if (!render && holdingModule == null)
             return;

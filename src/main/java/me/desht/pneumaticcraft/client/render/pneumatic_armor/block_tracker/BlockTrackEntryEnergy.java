@@ -36,9 +36,8 @@ public class BlockTrackEntryEnergy implements IBlockTrackEntry {
             infoList.add("blockTracker.info.rf");
             // FIXME: getting capabilities client-side is not a reliable way to do this
             // Need a more formal framework for sync'ing server-side data to the client
-            te.getCapability(CapabilityEnergy.ENERGY).ifPresent(storage -> {
-                infoList.add(storage.getEnergyStored() + " / " + storage.getMaxEnergyStored() + " RF");
-            });
+            te.getCapability(CapabilityEnergy.ENERGY)
+                    .ifPresent(storage -> infoList.add(storage.getEnergyStored() + " / " + storage.getMaxEnergyStored() + " RF"));
         } catch (Throwable e) {
             TrackerBlacklistManager.addEnergyTEToBlacklist(te, e);
         }

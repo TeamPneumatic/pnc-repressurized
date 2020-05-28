@@ -178,7 +178,7 @@ public class EntityDrone extends EntityDroneBase implements
     public String ownerName = "Drone";
     private UUID ownerUUID;
 
-    private DroneGoToChargingStation chargeAI;
+    private final DroneGoToChargingStation chargeAI;
     private DroneGoToOwner gotoOwnerAI;
     private final DroneAIManager aiManager = new DroneAIManager(this);
 

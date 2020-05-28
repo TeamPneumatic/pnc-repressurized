@@ -33,7 +33,7 @@ public class ContainerUVLightBox extends ContainerPneumaticBase<TileEntityUVLigh
         addPlayerSlots(playerInventory, 114);
     }
 
-    private class SlotPCB extends SlotItemHandler {
+    private static class SlotPCB extends SlotItemHandler {
         SlotPCB(IItemHandler itemHandler, int index, int xPosition, int yPosition) {
             super(itemHandler, index, xPosition, yPosition);
         }

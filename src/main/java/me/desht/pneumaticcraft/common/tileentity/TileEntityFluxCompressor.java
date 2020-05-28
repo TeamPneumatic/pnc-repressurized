@@ -37,7 +37,7 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase implements
     private int redstoneMode;
     @GuiSynced
     private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
-    private LazyOptional<IHeatExchangerLogic> heatCap = LazyOptional.of(() -> heatExchanger);
+    private final LazyOptional<IHeatExchangerLogic> heatCap = LazyOptional.of(() -> heatExchanger);
 
     public TileEntityFluxCompressor() {
         super(ModTileEntities.FLUX_COMPRESSOR.get(), PneumaticValues.DANGER_PRESSURE_FLUX_COMPRESSOR,

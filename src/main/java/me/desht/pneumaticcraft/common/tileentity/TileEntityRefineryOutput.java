@@ -139,7 +139,7 @@ public class TileEntityRefineryOutput extends TileEntityTickableBase
         return heatCap;
     }
 
-    private class TankWrapper implements IFluidHandler {
+    private static class TankWrapper implements IFluidHandler {
         private final SmartSyncTank wrapped;
 
         TankWrapper(SmartSyncTank wrapped) {

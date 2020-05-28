@@ -41,7 +41,7 @@ public class LogisticsFilterGhost implements IGhostIngredientHandler<GuiLogistic
     public void onComplete() {
     }
 
-    private class ItemStackTarget implements Target<ItemStack> {
+    private static class ItemStackTarget implements Target<ItemStack> {
         final SlotPhantom slot;
         final GuiLogisticsBase gui;
 
@@ -61,7 +61,7 @@ public class LogisticsFilterGhost implements IGhostIngredientHandler<GuiLogistic
         }
     }
 
-    private class FluidStackTarget implements Target<FluidStack> {
+    private static class FluidStackTarget implements Target<FluidStack> {
         final int slotNumber;
         final GuiLogisticsBase gui;
 

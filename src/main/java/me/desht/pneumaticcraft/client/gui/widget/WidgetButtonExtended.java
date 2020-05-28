@@ -25,7 +25,7 @@ public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidge
     private ItemStack[] renderedStacks;
 
     private ResourceLocation resLoc;
-    private List<String> tooltipText = new ArrayList<>();
+    private final List<String> tooltipText = new ArrayList<>();
     private final ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
     private int invisibleHoverColor;
     private boolean thisVisible = true;

@@ -14,7 +14,7 @@ public class Mekanism implements IThirdParty, IHeatDisperser {
 //    @CapabilityInject(IGridTransmitter.class)
 //    public static Capability<IGridTransmitter> CAPABILITY_GRID_TRANSMITTER = null;
 
-    private static MekanismHeatAdapter adapter = null;
+    private static final MekanismHeatAdapter adapter = null;
 
     public static boolean available = false;
 

@@ -184,7 +184,7 @@ public class ItemPneumaticArmor extends ArmorItem
         if (equipmentSlot == this.slot) {
             int upgrades = UpgradableItemUtils.getUpgrades(stack, EnumUpgrade.ARMOR);
             multimap.put(SharedMonsterAttributes.ARMOR.getName(), new AttributeModifier(PNEUMATIC_ARMOR_MODIFIERS[equipmentSlot.getIndex()], "Pneumatic Armor modifier boost", (double) upgrades / 2d, AttributeModifier.Operation.ADDITION));
-            multimap.put(SharedMonsterAttributes.ARMOR_TOUGHNESS.getName(), new AttributeModifier(PNEUMATIC_ARMOR_MODIFIERS[equipmentSlot.getIndex()], "Pneumatic Armor toughness boost", (double) upgrades, AttributeModifier.Operation.ADDITION));
+            multimap.put(SharedMonsterAttributes.ARMOR_TOUGHNESS.getName(), new AttributeModifier(PNEUMATIC_ARMOR_MODIFIERS[equipmentSlot.getIndex()], "Pneumatic Armor toughness boost", upgrades, AttributeModifier.Operation.ADDITION));
         }
 
         return multimap;

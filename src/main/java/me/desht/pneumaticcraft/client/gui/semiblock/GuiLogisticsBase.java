@@ -34,12 +34,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
-public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumaticContainerBase<ContainerLogistics,TileEntityBase> {
+public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumaticContainerBase<ContainerLogistics, TileEntityBase> {
     protected final L logistics;
     private GuiItemSearcher itemSearchGui;
     private GuiLogisticsLiquidFilter fluidSearchGui;
     private int editingSlot; // used for both fluid & item search.
-    private WidgetButtonExtended[] facingButtons = new WidgetButtonExtended[6];
+    private final WidgetButtonExtended[] facingButtons = new WidgetButtonExtended[6];
     private WidgetAnimatedStat facingTab;
     private WidgetLabel itemLabel;
     private WidgetLabel fluidLabel;
@@ -142,7 +142,7 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
             logistics.setMatchDurability(b.checked);
             syncToServer();
         })
-                .setTooltip(PneumaticCraftUtils.splitString(I18n.format("gui.logistics_frame.matchDurability.tooltip", 40)))
+                .setTooltip(PneumaticCraftUtils.splitString(I18n.format("gui.logistics_frame.matchDurability.tooltip"), 40))
                 .setChecked(logistics.isMatchDurability());
         filterTab.addSubWidget(matchDurability);
 
@@ -150,7 +150,7 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
             logistics.setMatchNBT(b.checked);
             syncToServer();
         })
-                .setTooltip(PneumaticCraftUtils.splitString(I18n.format("gui.logistics_frame.matchNBT.tooltip",40)))
+                .setTooltip(PneumaticCraftUtils.splitString(I18n.format("gui.logistics_frame.matchNBT.tooltip"), 40))
                 .setChecked(logistics.isMatchNBT());
         filterTab.addSubWidget(matchNBT);
 
@@ -158,7 +158,7 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
             logistics.setMatchModId(b.checked);
             syncToServer();
         })
-                .setTooltip(PneumaticCraftUtils.splitString(I18n.format("gui.logistics_frame.matchModId.tooltip", 40)))
+                .setTooltip(PneumaticCraftUtils.splitString(I18n.format("gui.logistics_frame.matchModId.tooltip"), 40))
                 .setChecked(logistics.isMatchModId());
         filterTab.addSubWidget(matchModId);
 
@@ -176,20 +176,20 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
         facingTab = addAnimatedStat("", new ItemStack(Items.MAP), 0xFFC0C0C0, false);
         facingTab.addPadding(8, 18);
 
-        facingTab.addSubWidget(facingButtons[0] = new WidgetButtonExtended(15, 62, 20, 20,"D",
+        facingTab.addSubWidget(facingButtons[0] = new WidgetButtonExtended(15, 62, 20, 20, "D",
                 b -> setFace(Direction.DOWN)));
-        facingTab.addSubWidget(facingButtons[1] = new WidgetButtonExtended(15, 20, 20, 20,"U",
+        facingTab.addSubWidget(facingButtons[1] = new WidgetButtonExtended(15, 20, 20, 20, "U",
                 b -> setFace(Direction.UP)));
-        facingTab.addSubWidget(facingButtons[2] = new WidgetButtonExtended(36, 20, 20, 20,"N",
+        facingTab.addSubWidget(facingButtons[2] = new WidgetButtonExtended(36, 20, 20, 20, "N",
                 b -> setFace(Direction.NORTH)));
-        facingTab.addSubWidget(facingButtons[3] = new WidgetButtonExtended(36, 62, 20, 20,"S",
+        facingTab.addSubWidget(facingButtons[3] = new WidgetButtonExtended(36, 62, 20, 20, "S",
                 b -> setFace(Direction.SOUTH)));
-        facingTab.addSubWidget(facingButtons[4] = new WidgetButtonExtended(15, 41, 20, 20,"W",
+        facingTab.addSubWidget(facingButtons[4] = new WidgetButtonExtended(15, 41, 20, 20, "W",
                 b -> setFace(Direction.WEST)));
-        facingTab.addSubWidget(facingButtons[5] = new WidgetButtonExtended(57, 41, 20, 20,"E",
+        facingTab.addSubWidget(facingButtons[5] = new WidgetButtonExtended(57, 41, 20, 20, "E",
                 b -> setFace(Direction.EAST)));
 
-        facingTab.addSubWidget(new WidgetButtonExtended(36, 41, 20, 20,"")
+        facingTab.addSubWidget(new WidgetButtonExtended(36, 41, 20, 20, "")
                 .setTooltipText(PneumaticCraftUtils.splitString(I18n.format("gui.logistics_frame.facing.tooltip")))
                 .setRenderedIcon(Textures.GUI_INFO_LOCATION)
                 .setVisible(false)
