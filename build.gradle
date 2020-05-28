@@ -155,9 +155,8 @@ sourceSets.main.resources {
 }
 
 minecraft {
-    mappings channel: 'snapshot', version: '20200323-1.15.1'
+    mappings channel: 'snapshot', version: "${mappings_version}"
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
-    //accessTransformer = file('my_at.cfg')
     runs {
         client = {
             // recommended logging data for a userdev environment

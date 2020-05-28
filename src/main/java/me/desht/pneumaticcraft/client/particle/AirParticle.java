@@ -53,7 +53,7 @@ public class AirParticle extends SpriteTexturedParticle {
 
         // fades out and gets bigger as it gets older
         selectSpriteWithAge(sprite);
-        multipleParticleScaleBy(1.04f);
+        multiplyParticleScaleBy(1.04f);
         particleAlpha *= 0.975;
 
         if (world.rand.nextInt(5) == 0) {

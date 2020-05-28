@@ -36,6 +36,6 @@ public class VillageStructures {
                 .map(p -> new Pair<>(p, 1))
                 .collect(Collectors.toList());
         newPieces.add(new Pair<>(new SingleJigsawPiece(toAdd.toString(), ImmutableList.of(), JigsawPattern.PlacementBehaviour.RIGID), weight));
-        JigsawManager.REGISTRY.register(new JigsawPattern(pool, old.func_214948_a(), newPieces, JigsawPattern.PlacementBehaviour.RIGID));
+        JigsawManager.REGISTRY.register(new JigsawPattern(pool, old.getFallback(), newPieces, JigsawPattern.PlacementBehaviour.RIGID));
     }
 }
