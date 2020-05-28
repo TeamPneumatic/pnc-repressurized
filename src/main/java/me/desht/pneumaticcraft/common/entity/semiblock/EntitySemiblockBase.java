@@ -108,7 +108,7 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
         }
 
         if (player.getHeldItem(hand).getItem() == ModItems.LOGISTICS_CONFIGURATOR.get()) {
-            if (player.isSteppingCarefully()) {
+            if (player.isSneaking()) {
                 removeSemiblock(player);
                 return ActionResultType.SUCCESS;
             } else {
@@ -122,7 +122,7 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
             }
         } else {
             // allow right-clicks to pass through to the inventory block being covered
-            if (player.isSteppingCarefully()) {
+            if (player.isSneaking()) {
                 ItemUseContext itemCtx = new ItemUseContext(player, hand, brtr);
                 ActionResultType res = player.getHeldItem(hand).onItemUseFirst(itemCtx);
                 return res == ActionResultType.PASS ? player.getHeldItem(hand).onItemUse(itemCtx) : res;

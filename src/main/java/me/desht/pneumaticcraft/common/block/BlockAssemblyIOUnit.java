@@ -14,11 +14,8 @@ public abstract class BlockAssemblyIOUnit extends BlockPneumaticCraft {
     private static final VoxelShape BASE_SHAPE = Block.makeCuboidShape(0, 0, 0, 16, 1, 16);
     private static final VoxelShape SHAPE = VoxelShapes.or(BASE_SHAPE, Block.makeCuboidShape(5, 1, 5, 11, 7, 11));
 
-    private final boolean isImport;
-
-    public BlockAssemblyIOUnit(Properties props, boolean isImport) {
+    public BlockAssemblyIOUnit(Properties props) {
         super(props);
-        this.isImport = isImport;
     }
 
     @Override
@@ -33,13 +30,13 @@ public abstract class BlockAssemblyIOUnit extends BlockPneumaticCraft {
 
     public static class Import extends BlockAssemblyIOUnit {
         public Import(Properties props) {
-            super(props,true);
+            super(props);
         }
     }
 
     public static class Export extends BlockAssemblyIOUnit {
         public Export(Properties props) {
-            super(props,false);
+            super(props);
         }
     }
 }

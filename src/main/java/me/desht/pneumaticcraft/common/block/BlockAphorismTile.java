@@ -111,7 +111,7 @@ public class BlockAphorismTile extends BlockPneumaticCraft implements ColorHandl
 
     @Override
     public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
-        if (world.isRemote && hand != Hand.OFF_HAND && player.getHeldItem(hand).isEmpty() && !player.isSteppingCarefully()) {
+        if (world.isRemote && hand != Hand.OFF_HAND && player.getHeldItem(hand).isEmpty() && !player.isSneaking()) {
             TileEntity te = world.getTileEntity(pos);
             if (te instanceof TileEntityAphorismTile) {
                 GuiAphorismTile.openGui((TileEntityAphorismTile) te);
@@ -172,7 +172,7 @@ public class BlockAphorismTile extends BlockPneumaticCraft implements ColorHandl
 
     @Override
     public boolean onWrenched(World world, PlayerEntity player, BlockPos pos, Direction face, Hand hand) {
-        if (player != null && player.isSteppingCarefully()) {
+        if (player != null && player.isSneaking()) {
             TileEntity tile = world.getTileEntity(pos);
             if (tile instanceof TileEntityAphorismTile) {
                 TileEntityAphorismTile teAt = (TileEntityAphorismTile) tile;

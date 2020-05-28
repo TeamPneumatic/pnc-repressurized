@@ -25,7 +25,7 @@ public abstract class ActionWidget<W extends Widget> {
         enablingValue = tag.contains("enablingX") ? new BlockPos(tag.getInt("enablingX"), tag.getInt("enablingY"), tag.getInt("enablingZ")) : new BlockPos(1, 0, 0);
     }
 
-    public CompoundNBT toNBT(int guiLeft, int guitTop) {
+    public CompoundNBT toNBT(int guiLeft, int guiTop) {
         CompoundNBT tag = new CompoundNBT();
         tag.putString("id", getId());
         tag.putString("enableVariable", enableVariable);
@@ -41,7 +41,7 @@ public abstract class ActionWidget<W extends Widget> {
             widget.readFromNBT(this.toNBT(0, 0), 0, 0);
             return widget;
         } catch (Exception e) {
-            Log.error("Error occured when trying to copy an " + getId() + " action widget.");
+            Log.error("Error occurred when trying to copy an " + getId() + " action widget.");
             e.printStackTrace();
             return null;
         }

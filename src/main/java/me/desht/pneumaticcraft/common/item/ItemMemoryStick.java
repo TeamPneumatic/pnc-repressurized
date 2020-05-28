@@ -58,7 +58,7 @@ public class ItemMemoryStick extends Item implements ColorHandlers.ITintableItem
             stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).ifPresent(handler -> {
                 int ratio = XPFluidManager.getInstance().getXPRatio(ModFluids.MEMORY_ESSENCE.get());
                 int playerXp = EnchantmentUtils.getPlayerXP(playerIn);
-                if (playerIn.isSteppingCarefully()) {
+                if (playerIn.isSneaking()) {
                     // take XP fluid from the stick and give to player
                     int xpToGive = EnchantmentUtils.getExperienceForLevel(playerIn.experienceLevel + 1) - playerXp;
                     int fluidAmount = xpToGive * ratio;
@@ -87,8 +87,8 @@ public class ItemMemoryStick extends Item implements ColorHandlers.ITintableItem
         } else {
             stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).ifPresent(handler -> {
                 int amount = handler.getFluidInTank(0).getAmount();
-                if (EnchantmentUtils.getPlayerXP(playerIn) > 0 && amount < handler.getTankCapacity(0) && !playerIn.isSteppingCarefully()
-                        || handler.getFluidInTank(0).getAmount() > 0 && playerIn.isSteppingCarefully()) {
+                if (EnchantmentUtils.getPlayerXP(playerIn) > 0 && amount < handler.getTankCapacity(0) && !playerIn.isSneaking()
+                        || handler.getFluidInTank(0).getAmount() > 0 && playerIn.isSneaking()) {
                     playerIn.playSound(SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, 0.1f,
                             (worldIn.rand.nextFloat() - worldIn.rand.nextFloat()) * 0.35F + 0.9F);
                 }

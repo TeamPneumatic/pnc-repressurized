@@ -134,7 +134,7 @@ public class ItemMinigun extends ItemPressurizable implements IChargeableContain
     public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand handIn) {
         ItemStack stack = player.getHeldItem(handIn);
         if (!world.isRemote) {
-            if (player.isSteppingCarefully()) {
+            if (player.isSneaking()) {
                 NetworkHooks.openGui((ServerPlayerEntity) player, new INamedContainerProvider() {
                     @Override
                     public ITextComponent getDisplayName() {

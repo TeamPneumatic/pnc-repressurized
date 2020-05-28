@@ -56,7 +56,7 @@ public class BlockDisplayTable extends BlockPneumaticCraft {
     public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
         TileEntity te = world.getTileEntity(pos);
         ItemStack heldStack = player.getHeldItem(hand);
-        if (player.isSteppingCarefully() || te instanceof INamedContainerProvider
+        if (player.isSneaking() || te instanceof INamedContainerProvider
                 || heldStack.getItem() == ModItems.PNEUMATIC_WRENCH.get() || ModdedWrenchUtils.getInstance().isModdedWrench(heldStack))
         {
             return super.onBlockActivated(state, world, pos, player, hand, brtr);

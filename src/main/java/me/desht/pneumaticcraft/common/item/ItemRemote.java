@@ -60,7 +60,7 @@ public class ItemRemote extends Item {
         PlayerEntity player = ctx.getPlayer();
         World world = ctx.getWorld();
         BlockPos pos = ctx.getPos();
-        if (!world.isRemote && !player.isSteppingCarefully() && isAllowedToEdit(player, remote)) {
+        if (!world.isRemote && !player.isSneaking() && isAllowedToEdit(player, remote)) {
             TileEntity te = world.getTileEntity(pos);
             if (te instanceof TileEntitySecurityStation) {
                 if (((TileEntitySecurityStation) te).doesAllowPlayer(player)) {

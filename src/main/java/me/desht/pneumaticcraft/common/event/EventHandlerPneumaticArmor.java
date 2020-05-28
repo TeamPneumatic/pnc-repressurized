@@ -203,7 +203,7 @@ public class EventHandlerPneumaticArmor {
                     && handler.isJumpBoostEnabled() && handler.getArmorPressure(EquipmentSlotType.LEGS) > 0.01F) {
                 float power = ItemPneumaticArmor.getIntData(stack, ItemPneumaticArmor.NBT_JUMP_BOOST, 100) / 100.0f;
                 int rangeUpgrades = handler.getUpgradeCount(EquipmentSlotType.LEGS, EnumUpgrade.JUMPING,
-                        player.isSteppingCarefully() ? 1 : PneumaticValues.PNEUMATIC_LEGS_MAX_JUMP);
+                        player.isSneaking() ? 1 : PneumaticValues.PNEUMATIC_LEGS_MAX_JUMP);
                 float actualBoost = Math.max(1.0f, rangeUpgrades * power);
                 float scale = player.isSprinting() ? 0.3f * actualBoost : 0.225f * actualBoost;
                 float rotRad = player.rotationYaw * 0.017453292f;  // deg2rad

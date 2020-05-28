@@ -166,7 +166,7 @@ public class BlockPneumaticDoor extends BlockPneumaticCraft {
         if (isTopDoor(state)) {
             return onWrenched(world, player, pos.offset(Direction.DOWN), face, hand);
         }
-        if (player != null && player.isSteppingCarefully()) {
+        if (player != null && player.isSneaking()) {
             if (!player.isCreative()) {
                 TileEntity te = world.getTileEntity(pos);
                 Block.spawnDrops(world.getBlockState(pos), world, pos, te);

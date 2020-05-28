@@ -227,7 +227,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
         if (tryPlaceModule(player, world, pos, brtr.getFace(), hand, false)) {
             return ActionResultType.SUCCESS;
         }
-        if (!player.isSteppingCarefully()) {
+        if (!player.isSneaking()) {
             TubeModule module = getFocusedModule(world, pos, player);
             if (module != null) {
                 return module.onActivated(player, hand) ? ActionResultType.SUCCESS : ActionResultType.PASS;
@@ -418,7 +418,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
         TileEntityPressureTube tube = getPressureTube(world, pos);
         if (tube == null) return false;
         TubeModule module = getFocusedModule(world, pos, player);
-        if (player.isSteppingCarefully()) {
+        if (player.isSneaking()) {
             if (module != null) {
                 // detach and drop the module as an item
                 if (!player.isCreative()) {

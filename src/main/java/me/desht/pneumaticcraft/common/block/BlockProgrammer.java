@@ -43,7 +43,7 @@ public class BlockProgrammer extends BlockPneumaticCraft {
 
     @Override
     public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
-        if (!world.isRemote && !player.isSteppingCarefully()) {
+        if (!world.isRemote && !player.isSneaking()) {
             TileEntity te = world.getTileEntity(pos);
             if (te instanceof TileEntityProgrammer) {
                 NetworkHandler.sendToPlayer(new PacketProgrammerUpdate((TileEntityProgrammer) te), (ServerPlayerEntity) player);

@@ -106,7 +106,7 @@ public class TOPInfoProvider {
             horiz.item(stack);
             horiz.text(stack.getDisplayName().getFormattedText());
             List<ITextComponent> currenttip = new ArrayList<>();
-            semiBlock.addTooltip(currenttip, player, stack.getTag(), player.isSteppingCarefully());
+            semiBlock.addTooltip(currenttip, player, stack.getTag(), player.isSneaking());
             currenttip.forEach(t -> vert.text(t.getFormattedText()));
         }
     }

@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.core;
 
 import com.google.common.collect.ImmutableSet;
+import me.desht.pneumaticcraft.common.villages.ModVillagerProfession;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -23,7 +24,7 @@ public class ModVillagers {
 
     @SuppressWarnings("SameParameterValue")
     private static RegistryObject<VillagerProfession> registerProfession(String name, Supplier<PointOfInterestType> poiType) {
-        return PROFESSIONS.register(name, () -> new VillagerProfession(Names.MOD_ID + ":" + name, poiType.get(), ImmutableSet.of(), ImmutableSet.of(), null));
+        return PROFESSIONS.register(name, () -> new ModVillagerProfession(Names.MOD_ID + ":" + name, poiType.get(), ImmutableSet.of(), ImmutableSet.of(), ModSounds.SHORT_HISS, ModSounds.PNEUMATIC_WRENCH));
     }
 
     private static Set<BlockState> getAllStates(Block block) {

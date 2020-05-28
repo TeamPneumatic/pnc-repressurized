@@ -110,7 +110,7 @@ public class BlockOmnidirectionalHopper extends BlockPneumaticCraft implements C
     @Override
     public boolean onWrenched(World world, PlayerEntity player, BlockPos pos, Direction face, Hand hand) {
         BlockState state = world.getBlockState(pos);
-        if (player != null && player.isSteppingCarefully()) {
+        if (player != null && player.isSneaking()) {
             Direction outputDir = getRotation(state);
             outputDir = Direction.byIndex(outputDir.ordinal() + 1);
             if (outputDir == getInputDirection(world, pos)) outputDir = Direction.byIndex(outputDir.ordinal() + 1);

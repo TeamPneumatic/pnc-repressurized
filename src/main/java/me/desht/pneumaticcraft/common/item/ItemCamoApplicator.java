@@ -44,7 +44,7 @@ public class ItemCamoApplicator extends ItemPressurizable {
 
     @Override
     public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
-        if (playerIn.isSteppingCarefully()) {
+        if (playerIn.isSneaking()) {
             if (!worldIn.isRemote) {
                 setCamoState(playerIn.getHeldItem(handIn), null);
             } else {
@@ -63,7 +63,7 @@ public class ItemCamoApplicator extends ItemPressurizable {
         PlayerEntity player = ctx.getPlayer();
 
         if (!world.isRemote) {
-            if (player.isSteppingCarefully()) {
+            if (player.isSneaking()) {
                 // sneak-right-click: clear camo
                 setCamoState(stack, null);
             } else {

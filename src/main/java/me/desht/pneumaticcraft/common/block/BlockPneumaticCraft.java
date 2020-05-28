@@ -103,7 +103,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
     public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
         ItemStack heldItem = player.getHeldItem(hand);
         TileEntity te = world.getTileEntity(pos);
-        if (player.isSteppingCarefully()
+        if (player.isSneaking()
                 || !(te instanceof INamedContainerProvider)
                 || isRotatable() && (heldItem.getItem() == ModItems.MANOMETER.get() || ModdedWrenchUtils.getInstance().isModdedWrench(heldItem))
                 || hand == Hand.OFF_HAND && ModdedWrenchUtils.getInstance().isModdedWrench(player.getHeldItemMainhand())) {
@@ -234,7 +234,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
 
     @Override
     public boolean onWrenched(World world, PlayerEntity player, BlockPos pos, Direction side, Hand hand) {
-        if (player != null && player.isSteppingCarefully()) {
+        if (player != null && player.isSneaking()) {
             TileEntity te = world.getTileEntity(pos);
             boolean preserve = false;
             if (te instanceof TileEntityBase) {

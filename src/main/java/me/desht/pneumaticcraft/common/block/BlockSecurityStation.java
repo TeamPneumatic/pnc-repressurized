@@ -67,7 +67,7 @@ public class BlockSecurityStation extends BlockPneumaticCraft {
 
     @Override
     public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
-        if (player.isSteppingCarefully()) {
+        if (player.isSneaking()) {
             return ActionResultType.PASS;
         } else {
             if (!world.isRemote) {

@@ -49,7 +49,7 @@ public class SemiblockProvider {
                                 .appendSibling(entity.getDisplayName())
                                 .appendSibling(new StringTextComponent("]"))
                                 .applyTextStyle(TextFormatting.YELLOW));
-                        entity.addTooltip(tooltip, accessor.getPlayer(), tag.getCompound(name), accessor.getPlayer().isSteppingCarefully());
+                        entity.addTooltip(tooltip, accessor.getPlayer(), tag.getCompound(name), accessor.getPlayer().isSneaking());
                     }
                 } catch (NumberFormatException ignored) {
                 }

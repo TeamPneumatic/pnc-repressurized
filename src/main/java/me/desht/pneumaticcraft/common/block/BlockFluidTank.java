@@ -89,7 +89,7 @@ public class BlockFluidTank extends BlockPneumaticCraft implements ColorHandlers
 
     @Override
     public boolean onWrenched(World world, PlayerEntity player, BlockPos pos, Direction side, Hand hand) {
-        if (!player.isSteppingCarefully()) {
+        if (!player.isSneaking()) {
             RayTraceResult rtr = PneumaticCraftUtils.getMouseOverServer(player, 5);
             if (rtr.getType() == RayTraceResult.Type.BLOCK) {
                 BlockRayTraceResult brtr = (BlockRayTraceResult) rtr;

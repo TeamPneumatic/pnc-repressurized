@@ -251,7 +251,7 @@ public class CommonArmorHandler {
                 break;
             case FEET:
                 if (getArmorPressure(EquipmentSlotType.FEET) > 0.0F && isStepAssistEnabled()) {
-                    player.stepHeight = player.isSteppingCarefully() ? 0.6001F : 1.25F;
+                    player.stepHeight = player.isSneaking() ? 0.6001F : 1.25F;
                 } else {
                     player.stepHeight = 0.6F;
                 }
@@ -363,7 +363,7 @@ public class CommonArmorHandler {
             if (isJetBootsActive()) {
                 if (jetBootsBuilderMode && jetbootsCount >= JetBootsUpgradeHandler.BUILDER_MODE_LEVEL) {
                     // builder mode - rise vertically (or hover if sneaking and firing)
-                    setYMotion(player, player.isSteppingCarefully() ? 0 : 0.15 + 0.15 * (jetbootsCount - 3));
+                    setYMotion(player, player.isSneaking() ? 0 : 0.15 + 0.15 * (jetbootsCount - 3));
                     jetbootsAirUsage = (int) (PNCConfig.Common.Armor.jetBootsAirUsage * jetbootsCount / 2.5F);
                 } else {
                     // jetboots firing - move in direction of looking
@@ -378,9 +378,9 @@ public class CommonArmorHandler {
                 jetBootsActiveTicks++;
             } else if (isJetBootsEnabled() && !player.onGround) {
                 // jetboots not firing, but enabled - slowly descend (or hover if enough upgrades)
-                setYMotion(player, player.isSteppingCarefully() ? -0.45 : -0.1 + 0.02 * jetbootsCount);
+                setYMotion(player, player.isSneaking() ? -0.45 : -0.1 + 0.02 * jetbootsCount);
                 player.fallDistance = 0;
-                jetbootsAirUsage = (int) (PNCConfig.Common.Armor.jetBootsAirUsage * (player.isSteppingCarefully() ? 0.25F : 0.5F));
+                jetbootsAirUsage = (int) (PNCConfig.Common.Armor.jetBootsAirUsage * (player.isSneaking() ? 0.25F : 0.5F));
                 flightAccel = 1.0F;
             } else {
                 flightAccel = 1.0F;

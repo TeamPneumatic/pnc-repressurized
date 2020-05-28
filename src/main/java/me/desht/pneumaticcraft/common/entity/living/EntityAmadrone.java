@@ -62,11 +62,15 @@ public class EntityAmadrone extends EntityDrone {
     @Override
     public int getUpgrades(EnumUpgrade upgrade) {
         switch (upgrade) {
-            case SECURITY: return 1;
-            case ITEM_LIFE: return 10;
-            case SPEED: return 10;
-            case INVENTORY: return 35;
-            default: return 0;
+            case SECURITY:
+                return 1;
+            case ITEM_LIFE:
+            case SPEED:
+                return 10;
+            case INVENTORY:
+                return 35;
+            default:
+                return 0;
         }
     }
 
