@@ -60,6 +60,11 @@ public class EntityAmadrone extends EntityDrone {
     }
 
     @Override
+    protected boolean canDropLoot() {
+        return false;
+    }
+
+    @Override
     public int getUpgrades(EnumUpgrade upgrade) {
         switch (upgrade) {
             case SECURITY:
