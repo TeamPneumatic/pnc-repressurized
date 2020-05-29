@@ -376,7 +376,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
             }
             ItemStack stack = inventory.getStackInSlot(PROGRAM_SLOT);
             writeProgWidgetsToNBT(stack.getOrCreateTag());
-            if (player != null) {
+            if (player instanceof ServerPlayerEntity) {
                 NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.HUD_INIT_COMPLETE.get(), SoundCategory.BLOCKS, getPos(), 1.0f, 1.0f, false), (ServerPlayerEntity) player);
                 AdvancementTriggers.PROGRAM_DRONE.trigger((ServerPlayerEntity) player);
             }

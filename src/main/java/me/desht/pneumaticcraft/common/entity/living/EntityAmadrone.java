@@ -65,6 +65,13 @@ public class EntityAmadrone extends EntityDrone {
     }
 
     @Override
+    protected void dropInventory() {
+        // The DroneSuicideEvent for amadrones *should* ensure the drone's inventory is emptied before death,
+        // but see https://github.com/TeamPneumatic/pnc-repressurized/issues/507
+        // So let's be extra-paranoid and drop nothing here
+    }
+
+    @Override
     public int getUpgrades(EnumUpgrade upgrade) {
         switch (upgrade) {
             case SECURITY: return 1;
