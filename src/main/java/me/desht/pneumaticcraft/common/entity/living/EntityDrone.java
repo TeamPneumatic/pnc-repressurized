@@ -75,10 +75,7 @@ import net.minecraft.network.play.client.CPlayerDiggingPacket;
 import net.minecraft.particles.BlockParticleData;
 import net.minecraft.particles.IParticleData;
 import net.minecraft.particles.ParticleTypes;
-import net.minecraft.pathfinding.Path;
-import net.minecraft.pathfinding.PathNavigator;
-import net.minecraft.pathfinding.PathNodeType;
-import net.minecraft.pathfinding.PathPoint;
+import net.minecraft.pathfinding.*;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -1061,6 +1058,7 @@ public class EntityDrone extends EntityDroneBase implements
         if (PneumaticCraftUtils.isBlockLiquid(block)) {
             return securityUpgradeCount > 0;
         }
+        if (state.allowsMovement(world, pos, PathType.LAND)) return true;
         if (!state.getMaterial().blocksMovement() && block != Blocks.LADDER) return true;
         if (DroneRegistry.getInstance().pathfindableBlocks.containsKey(block)) {
             IPathfindHandler pathfindHandler = DroneRegistry.getInstance().pathfindableBlocks.get(block);
