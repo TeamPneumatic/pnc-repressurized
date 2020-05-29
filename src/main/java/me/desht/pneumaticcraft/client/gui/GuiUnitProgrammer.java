@@ -149,9 +149,10 @@ public class GuiUnitProgrammer extends Screen {
         lastZoom = scaleScroll.getState();
 
         MainWindow mw = minecraft.getMainWindow();
-        int sf = minecraft.gameSettings.guiScale;
-        if (sf == 0) sf = mw.getWidth() / mw.getScaledWidth();
-        GL11.glScissor((guiLeft + startX) * sf, (mw.getScaledHeight() - areaHeight - (guiTop + startY)) * sf, areaWidth * sf, areaHeight * sf);
+        float sfX = (float) mw.getWidth() / mw.getScaledWidth();
+        float sfY = (float) mw.getHeight() / mw.getScaledHeight();
+        GL11.glScissor((int)((guiLeft + startX) * sfX), (int)((mw.getScaledHeight() - areaHeight - (guiTop + startY)) * sfY) + 1,
+                (int)(areaWidth * sfX), (int)(areaHeight * sfY));
         GL11.glEnable(GL11.GL_SCISSOR_TEST);
 
         RenderSystem.pushMatrix();
