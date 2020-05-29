@@ -38,7 +38,7 @@ import javax.annotation.Nullable;
 import java.util.Map;
 
 public abstract class TileEntityFluidTank extends TileEntityTickableBase
-        implements ISerializableTanks, INamedContainerProvider {
+        implements ISerializableTanks, INamedContainerProvider, IComparatorSupport {
     private static final int INVENTORY_SIZE = 2;
     private static final int INPUT_SLOT = 0;
     private static final int OUTPUT_SLOT = 1;
@@ -175,6 +175,11 @@ public abstract class TileEntityFluidTank extends TileEntityTickableBase
         public boolean isFluidValid(FluidStack stack) {
             return isNeighbourCompatible(stack, Direction.UP) && isNeighbourCompatible(stack, Direction.DOWN);
         }
+    }
+
+    @Override
+    public int getComparatorValue() {
+        return tank.isEmpty() ? 0 : 1 + (tank.getFluidAmount() * 14) / tank.getCapacity();
     }
 
     public static class Small extends TileEntityFluidTank {
