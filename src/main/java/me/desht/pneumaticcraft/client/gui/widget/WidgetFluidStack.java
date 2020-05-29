@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
@@ -69,6 +70,9 @@ public class WidgetFluidStack extends WidgetFluidFilter {
     @Override
     public void addTooltip(double mouseX, double mouseY, List<String> curTip, boolean shiftPressed) {
         super.addTooltip(mouseX, mouseY, curTip, shiftPressed);
-        if (!fluidStack.isEmpty()) curTip.add(TextFormatting.GRAY + "" + fluidStack.getAmount() + "mB");
+        if (!fluidStack.isEmpty()) {
+            curTip.add(TextFormatting.GRAY + "" + fluidStack.getAmount() + "mB");
+            curTip.add(TextFormatting.BLUE + "" + TextFormatting.ITALIC + ModNameCache.getModName(fluidStack.getFluid().getRegistryName().getNamespace()));
+        }
     }
 }
