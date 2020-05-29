@@ -257,6 +257,10 @@ public class EntityDrone extends EntityDroneBase implements
                 TileEntityProgrammer.updatePuzzleConnections(progWidgets);
             }
             setDroneColor(stackTag.getInt(NBT_DRONE_COLOR));
+            fluidTank.setCapacity(PneumaticValues.DRONE_TANK_SIZE * (1 + getUpgrades(EnumUpgrade.INVENTORY)));
+            if (stackTag.contains("Tank")) {
+                fluidTank.readFromNBT(stackTag.getCompound("Tank"));
+            }
         }
         if (droneStack.hasDisplayName()) setCustomName(droneStack.getDisplayName());
     }
@@ -274,6 +278,9 @@ public class EntityDrone extends EntityDroneBase implements
             TileEntityProgrammer.putWidgetsToNBT(progWidgets, tag);
         }
         tag.putInt("color", getDroneColor());
+        if (!fluidTank.isEmpty()) {
+            tag.put("Tank", fluidTank.writeToNBT(new CompoundNBT()));
+        }
         droneStack.setTag(tag);
 
         droneStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).orElseThrow(RuntimeException::new).addAir(getAirHandler().getAir());
