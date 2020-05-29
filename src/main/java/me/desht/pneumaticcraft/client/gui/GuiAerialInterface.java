@@ -145,7 +145,9 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<ContainerAeria
             for (Fluid f : availableXp) {
                 FluidStack stack = new FluidStack(f, 1000);
                 String modName = ModNameCache.getModName(f.getRegistryName().getNamespace());
-                liquidXpText.add(TextFormatting.BLACK.toString() + GuiConstants.bullet() + stack.getDisplayName().getFormattedText() + " (" + modName + ")");
+                liquidXpText.add(TextFormatting.BLACK.toString() + GuiConstants.BULLET + " "
+                        + stack.getDisplayName().getFormattedText()
+                        + TextFormatting.DARK_BLUE + " (" + modName + ")");
             }
         }
         return liquidXpText;
