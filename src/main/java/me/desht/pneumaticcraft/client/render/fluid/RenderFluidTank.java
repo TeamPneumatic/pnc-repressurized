@@ -35,7 +35,7 @@ public class RenderFluidTank extends AbstractFluidTESR<TileEntityFluidTank> {
             bounds = BOUNDS_DOWN;
         else
             bounds = BOUNDS_NONE;
-        return Collections.singletonList(new FluidTankRenderInfo(te.getTank(), bounds));
+        return Collections.singletonList(new FluidTankRenderInfo(te.getTank(), up, down, bounds));
     }
 
     public static class ItemRenderInfoProvider implements IFluidItemRenderInfoProvider {
@@ -48,18 +48,24 @@ public class RenderFluidTank extends AbstractFluidTESR<TileEntityFluidTank> {
     }
 
     private static class FluidTankRenderInfo extends TankRenderInfo {
-        FluidTankRenderInfo(IFluidTank tank, AxisAlignedBB bounds) {
+        private final boolean up;
+        private final boolean down;
+
+        FluidTankRenderInfo(IFluidTank tank, boolean up, boolean down, AxisAlignedBB bounds) {
             super(tank, bounds);
+            this.up = up;
+            this.down = down;
         }
 
         @Override
         public boolean shouldRender(Direction face) {
             switch (face) {
-                case UP: return getTank().getFluid().getAmount() < getTank().getCapacity()
+                case UP: return up
+                        || getTank().getFluid().getAmount() < getTank().getCapacity()
                         && !getTank().getFluid().getFluid().getAttributes().isLighterThanAir();
-                case DOWN:
-                    return getTank().getFluid().getAmount() < getTank().getCapacity()
-                            && getTank().getFluid().getFluid().getAttributes().isLighterThanAir();
+                case DOWN: return down
+                        || getTank().getFluid().getAmount() < getTank().getCapacity()
+                        && getTank().getFluid().getFluid().getAttributes().isLighterThanAir();
                 default:
                     return true;
             }
