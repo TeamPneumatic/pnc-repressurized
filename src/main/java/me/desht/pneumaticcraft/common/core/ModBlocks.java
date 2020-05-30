@@ -188,6 +188,8 @@ public class ModBlocks {
             BlockDisplayTable::new);
     public static final RegistryObject<BlockDroneInterface> DRONE_INTERFACE = register("drone_interface",
             BlockDroneInterface::new);
+    public static final RegistryObject<BlockThermalLagging> THERMAL_LAGGING = register("thermal_lagging",
+            BlockThermalLagging::new);
 
     public static final List<RegistryObject<BlockPlasticBrick>> PLASTIC_BRICKS = new ArrayList<>();
     static {

@@ -7,7 +7,7 @@
   ],
   "key": {
     "W": {
-      "tag": "minecraft:wool"
+      "item": "pneumaticcraft:thermal_lagging"
     },
     "B": {
       "tag": "forge:storage_blocks/compressed_iron"

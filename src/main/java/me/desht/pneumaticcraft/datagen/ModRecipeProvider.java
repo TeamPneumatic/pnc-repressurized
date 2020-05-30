@@ -360,7 +360,7 @@ public class ModRecipeProvider extends RecipeProvider {
 
         shaped(ModBlocks.HEAT_PIPE.get(), 6, ModItems.COMPRESSED_IRON_INGOT.get(),
                 "WWW/BBB/WWW",
-                'W', ItemTags.WOOL,
+                'W', ModBlocks.THERMAL_LAGGING.get(),
                 'B', PneumaticCraftTags.Items.STORAGE_BLOCKS_COMPRESSED_IRON
         ).build(consumer);
 
@@ -736,6 +736,12 @@ public class ModRecipeProvider extends RecipeProvider {
                 'T', ModBlocks.PRESSURE_TUBE.get(),
                 'A', ModBlocks.AIR_COMPRESSOR.get(),
                 'P', Blocks.HEAVY_WEIGHTED_PRESSURE_PLATE
+        ).build(consumer);
+
+        shaped(ModBlocks.THERMAL_LAGGING.get(), 6, ModItems.COMPRESSED_IRON_INGOT.get(),
+                "WGW/GWG/WGW",
+                'W', ItemTags.WOOL,
+                'G', Tags.Items.GLASS
         ).build(consumer);
 
         shaped(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.get(), ModItems.COMPRESSED_IRON_INGOT.get(),

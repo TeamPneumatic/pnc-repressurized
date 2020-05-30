@@ -214,15 +214,6 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
             state = state.with(directionProperty(), rotation.rotate(state.get(directionProperty())));
         }
 
-//        Boolean conn[] = new Boolean[4];
-//        if (state.has(NORTH)) {
-//             conn[rotation.rotate(Direction.NORTH).getHorizontalIndex()] = state.get(NORTH);
-//             conn[rotation.rotate(Direction.SOUTH).getHorizontalIndex()] = state.get(SOUTH);
-//             conn[rotation.rotate(Direction.WEST).getHorizontalIndex()] = state.get(WEST);
-//             conn[rotation.rotate(Direction.EAST).getHorizontalIndex()] = state.get(EAST);
-//             state
-//        }
-
         return state;
     }
 

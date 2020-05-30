@@ -1,0 +1,21 @@
+{
+  "textures": {
+    "all": "pneumaticcraft:block/thermal_lagging",
+    "edge": "minecraft:block/black_wool",
+    "particle" : "pneumaticcraft:block/thermal_lagging"
+  },
+  "elements": [
+    {
+      "from": [ 0, 0, 14 ],
+      "to": [ 16, 16, 16 ],
+      "faces": {
+        "down":  { "texture": "#edge","cullface": "down" },
+        "up":    { "texture": "#edge", "cullface": "up" },
+        "north": { "texture": "#all" },
+        "south": { "texture": "#all" },
+        "west":  { "texture": "#edge" },
+        "east":  { "texture": "#edge" }
+      }
+    }
+  ]
+}
