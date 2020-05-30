@@ -1,10 +1,11 @@
 package me.desht.pneumaticcraft.client.render.fluid;
 
-import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityFluidTank;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 
 import java.util.Collections;
@@ -29,15 +30,40 @@ public class RenderFluidTank extends FastFluidTESR<TileEntityFluidTank> {
             bounds = BOUNDS_DOWN;
         else
             bounds = BOUNDS_NONE;
-        return Collections.singletonList(new TankRenderInfo(te.getTank(), bounds));
+        return Collections.singletonList(new FluidTankRenderInfo(te.getTank(), up, down, bounds));
     }
 
     public static class ItemInfoProvider extends FluidItemRenderInfoProvider {
         @Override
         public List<TankRenderInfo> getTanksToRender(ItemStack stack) {
             return stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY)
-                    .map(h -> ImmutableList.of(new TankRenderInfo(h.getFluidInTank(0), h.getTankCapacity(0), BOUNDS_NONE)))
-                    .orElse(null);
+                    .map(h -> Collections.singletonList(new TankRenderInfo(h.getFluidInTank(0), h.getTankCapacity(0), BOUNDS_NONE)))
+                    .orElse(Collections.emptyList());
+        }
+    }
+
+    private static class FluidTankRenderInfo extends TankRenderInfo {
+        private final boolean up;
+        private final boolean down;
+
+        FluidTankRenderInfo(IFluidTank tank, boolean up, boolean down, AxisAlignedBB bounds) {
+            super(tank, bounds);
+            this.up = up;
+            this.down = down;
+        }
+
+        @Override
+        public boolean shouldRender(Direction face) {
+            switch (face) {
+                case UP: return up
+                        || getTank().getFluid().getAmount() < getTank().getCapacity()
+                        && !getTank().getFluid().getFluid().getAttributes().isLighterThanAir();
+                case DOWN: return down
+                        || getTank().getFluid().getAmount() < getTank().getCapacity()
+                        && getTank().getFluid().getFluid().getAttributes().isLighterThanAir();
+                default:
+                    return true;
+            }
         }
     }
 }
