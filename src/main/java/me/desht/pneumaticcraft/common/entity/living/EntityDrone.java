@@ -494,8 +494,9 @@ public class EntityDrone extends EntityDroneBase implements
     private void handleRedstoneEmission() {
         for (Direction d : Direction.values()) {
             if (getEmittingRedstone(d) > 0) {
-                if (world.isAirBlock(new BlockPos((int) Math.floor(getPosX() + getWidth() / 2), (int) Math.floor(getPosY()), (int) Math.floor(getPosZ() + getWidth() / 2)))) {
-                    world.setBlockState(new BlockPos((int) Math.floor(getPosX() + getWidth() / 2), (int) Math.floor(getPosY()), (int) Math.floor(getPosZ() + getWidth() / 2)), ModBlocks.DRONE_REDSTONE_EMITTER.get().getDefaultState());
+                BlockPos emitterPos = new BlockPos((int) Math.floor(getPosX() + getWidth() / 2), (int) Math.floor(getPosY()), (int) Math.floor(getPosZ() + getWidth() / 2));
+                if (world.isAirBlock(emitterPos)) {
+                    world.setBlockState(emitterPos, ModBlocks.DRONE_REDSTONE_EMITTER.get().getDefaultState());
                 }
                 break;
             }

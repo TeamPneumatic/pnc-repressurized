@@ -11,7 +11,7 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.world.IEntityReader;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -33,8 +33,8 @@ public class BlockDroneRedstoneEmitter extends AirBlock {
 
     @Override
     public int getWeakPower(BlockState state, IBlockReader blockAccess, BlockPos pos, Direction side) {
-        if (blockAccess instanceof World) {
-            World world = (World) blockAccess;
+        if (blockAccess instanceof IEntityReader) {
+            IEntityReader world = (IEntityReader) blockAccess;
             List<EntityDrone> drones = world.getEntitiesWithinAABB(EntityDrone.class, new AxisAlignedBB(pos, pos.add(1, 1, 1)));
             int signal = 0;
             for (EntityDrone drone : drones) {
