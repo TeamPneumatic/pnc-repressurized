@@ -6,6 +6,28 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.15.2
 
+## 1.2.2-?? (unreleased)
+
+### New
+* Added new Thermal Lagging block, an alternative to covering your Refinery & other heat machines with trapdoors
+  * Thermal Lagging has no collision box unless sneaking or holding a wrench or pickaxe
+  * Makes it easy to "click through" to the machine behind the lagging
+
+### Updates
+* Small/Medium/Large tanks now have Comparator support to measure their fullness
+* Pressure Mechanic villagers now have some workstation sounds again, as they did in 1.14.4
+
+### Fixes
+* Fixed Programmable Controller drones being unable to pick up items
+* Fixed crash caused by middle-clicking non-ammo slots in the Minigun magazine GUI
+* Fixed minor fluid rendering issues in connected tanks (Small/Medium/Large Tank)
+* Fixes to drone pathfinding to hopefully work better with "openable" blocks like trapdoors, doors, etc.
+* Fixed drones losing all their carried fluid when wrenched to item form
+* Fixed Amadrones sometimes dropping their carried items when they suicide
+  * Couldn't reproduce this one myself, but added some extra checks to ensure Amadrones never drop anything on death  
+* Fixed programmer GUI widget area clipping isses (sometimes not showing any widgets)
+  * Most obvious when using "Auto" gui scale - this is now much more robust
+  
 ## 1.2.1-25 (25 May 2020)
 
 ### Updates
