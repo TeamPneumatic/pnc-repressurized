@@ -35,8 +35,7 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundNBT> {
     private final String id;
     private final ISideConfigurable sideConfigurable;
     private final Map<String, Integer> idxMap = new HashMap<>();
-    private NonNullSupplier<T> nullFaceHandler;
-    private final LazyOptional<T> nullFaceCap = LazyOptional.of(nullFaceHandler);
+    private LazyOptional<T> nullFaceCap = LazyOptional.empty();
 
     // each value here is an index into the 'entries' list
     private final byte[] faces = new byte[RelativeFace.values().length];
@@ -101,7 +100,8 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundNBT> {
     }
 
     void setNullFaceHandler(String id) {
-        nullFaceHandler = entries.get(idxMap.get(id)).handler;
+        if (nullFaceCap.isPresent()) nullFaceCap.invalidate();
+        nullFaceCap = LazyOptional.of(entries.get(idxMap.get(id)).handler);
     }
 
     private boolean shouldSaveNBT() {

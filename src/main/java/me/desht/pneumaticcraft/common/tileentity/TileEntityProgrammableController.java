@@ -222,6 +222,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     private DroneItemHandler getDroneItemHandler() {
         if (droneItemHandler == null) {
             droneItemHandler = new DroneItemHandler(this);
+            itemHandlerSideConfigurator.updateHandler("droneInv", () -> droneItemHandler);
         }
         return droneItemHandler;
     }
