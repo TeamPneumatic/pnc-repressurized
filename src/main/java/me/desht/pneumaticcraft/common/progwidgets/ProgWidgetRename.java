@@ -70,7 +70,7 @@ public class ProgWidgetRename extends ProgWidget implements IRenamingWidget, IVa
 
         @Override
         public boolean shouldExecute() {
-            drone.setName(widget.getNewName() != null ? new StringTextComponent(widget.getNewName()) : xlate("entity.PneumaticCraft.Drone.name"));
+            drone.setName(widget.getNewName() != null ? new StringTextComponent(widget.getNewName()) : xlate("entity.pneumaticcraft.drone"));
             return false;
         }
     }
