@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.client.model.module;
+package me.desht.pneumaticcraft.client.render.tube_module;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
@@ -14,13 +14,13 @@ import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 
-public class ModelPressureGauge extends AbstractModelRenderer<ModulePressureGauge> {
+public class RenderPressureGaugeModule extends TubeModuleRendererBase<ModulePressureGauge> {
     private static final float GAUGE_SCALE = 0.007f;
 
     private final ModelRenderer shape1;
     private final ModelRenderer shape2;
 
-    public ModelPressureGauge() {
+    public RenderPressureGaugeModule() {
         shape1 = new ModelRenderer(64, 32, 0, 0);
         shape1.addBox(0F, 0F, 0F, 3, 3, 3);
         shape1.setRotationPoint(-1.5F, 14.5F, 2F);

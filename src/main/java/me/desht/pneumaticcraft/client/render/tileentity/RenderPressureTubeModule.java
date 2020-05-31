@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.client.render.tileentity;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.client.TubeModuleClientRegistry;
-import me.desht.pneumaticcraft.client.model.module.AbstractModelRenderer;
+import me.desht.pneumaticcraft.client.render.tube_module.TubeModuleRendererBase;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.item.ItemTubeModule;
@@ -21,7 +21,7 @@ import java.util.Map;
 
 public class RenderPressureTubeModule extends TileEntityRenderer<TileEntityPressureTube> {
 
-    private final Map<ResourceLocation, AbstractModelRenderer> models = new HashMap<>();
+    private final Map<ResourceLocation, TubeModuleRendererBase> models = new HashMap<>();
 
     public RenderPressureTubeModule(TileEntityRendererDispatcher dispatcher) {
         super(dispatcher);
@@ -71,7 +71,7 @@ public class RenderPressureTubeModule extends TileEntityRenderer<TileEntityPress
         matrixStack.pop();
     }
 
-    private AbstractModelRenderer getModel(TubeModule module) {
+    private TubeModuleRendererBase getModel(TubeModule module) {
         return models.computeIfAbsent(module.getType(), k -> TubeModuleClientRegistry.createModel(module));
     }
 

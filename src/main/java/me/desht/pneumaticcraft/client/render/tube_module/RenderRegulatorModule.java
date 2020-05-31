@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.client.model.module;
+package me.desht.pneumaticcraft.client.render.tube_module;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
@@ -7,11 +7,11 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.util.ResourceLocation;
 
-public class ModelPressureRegulator extends AbstractModelRenderer<ModuleRegulatorTube> {
+public class RenderRegulatorModule extends TubeModuleRendererBase<ModuleRegulatorTube> {
     private final ModelRenderer shape1;
     private final ModelRenderer valve;
 
-    public ModelPressureRegulator() {
+    public RenderRegulatorModule() {
         shape1 = new ModelRenderer(64, 32, 0, 0);
         shape1.addBox(0F, 0F, 0F, 7, 7, 7);
         shape1.setRotationPoint(-3.5F, 12.5F, -3F);

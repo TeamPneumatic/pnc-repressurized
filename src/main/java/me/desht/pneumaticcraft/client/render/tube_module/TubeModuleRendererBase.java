@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.client.model.module;
+package me.desht.pneumaticcraft.client.render.tube_module;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
@@ -9,7 +9,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.util.ResourceLocation;
 
-public abstract class AbstractModelRenderer<T extends TubeModule> {
+public abstract class TubeModuleRendererBase<T extends TubeModule> {
 
     protected final void setRotation(ModelRenderer model, float x, float y, float z) {
         model.rotateAngleX = x;

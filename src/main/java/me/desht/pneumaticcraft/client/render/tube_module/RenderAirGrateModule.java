@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.client.model.module;
+package me.desht.pneumaticcraft.client.render.tube_module;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
@@ -11,7 +11,7 @@ import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 
-public class ModelAirGrate extends AbstractModelRenderer<ModuleAirGrate> {
+public class RenderAirGrateModule extends TubeModuleRendererBase<ModuleAirGrate> {
     private final ModelRenderer top;
     private final ModelRenderer side1;
     private final ModelRenderer side2;
@@ -21,7 +21,7 @@ public class ModelAirGrate extends AbstractModelRenderer<ModuleAirGrate> {
     private final ModelRenderer base2;
     private final ModelRenderer base3;
 
-    public ModelAirGrate() {
+    public RenderAirGrateModule() {
         top = new ModelRenderer(128, 64, 42, 19);
         top.addBox(0F, 0F, 0F, 14, 0, 14);
         top.setRotationPoint(-7F, 9F, 8F);

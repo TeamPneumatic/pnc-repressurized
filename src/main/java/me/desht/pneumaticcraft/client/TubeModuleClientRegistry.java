@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.client;
 
 import me.desht.pneumaticcraft.client.gui.tubemodule.GuiTubeModule;
-import me.desht.pneumaticcraft.client.model.module.AbstractModelRenderer;
+import me.desht.pneumaticcraft.client.render.tube_module.TubeModuleRendererBase;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -12,10 +12,10 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class TubeModuleClientRegistry {
-    private static final Map<ResourceLocation, Supplier<? extends AbstractModelRenderer>> MODEL_FACTORY = new HashMap<>();
+    private static final Map<ResourceLocation, Supplier<? extends TubeModuleRendererBase>> MODEL_FACTORY = new HashMap<>();
     private static final Map<ResourceLocation, Function<BlockPos, ? extends GuiTubeModule>> guis = new HashMap<>();
 
-    static void registerTubeModuleModel(ResourceLocation moduleType, Supplier<? extends AbstractModelRenderer> factory) {
+    static void registerTubeModuleRenderer(ResourceLocation moduleType, Supplier<? extends TubeModuleRendererBase> factory) {
         MODEL_FACTORY.put(moduleType, factory);
     }
 
@@ -28,7 +28,7 @@ public class TubeModuleClientRegistry {
         return factory == null ? null : factory.apply(pos);
     }
 
-    public static AbstractModelRenderer createModel(TubeModule module) {
+    public static TubeModuleRendererBase createModel(TubeModule module) {
         return MODEL_FACTORY.get(module.getType()).get();
     }
 

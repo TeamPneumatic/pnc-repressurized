@@ -205,28 +205,4 @@ public class ModRenderTypes extends RenderType {
                     .texture(NO_TEXTURE)
                     .build(false)
     );
-
-    // drone ai (quads, pos/tex, blend)
-
-    // animated_stat
-
-    // target_circle (triangle strip, pos/color)
-
-    // target_circle_tagged (line loop, pos/color, no texture, shade smooth)
-
-    // block_outline (quads, pos/normal)
-
-    // logistics_frame
-
-    // drone_frame
-
-    // minigun tracers (lines, pos/color, no texture, pre/post stipple)
-
-    // drone laser (quads, color/tex, blend, no lighting, no cull)
-
-    // progress bar (quads, pos/color, no texture, shade smooth)
-
-    // progress bar & animated stat outline (line loop, pos/color, no texture, shade smooth)
-
-    // elevator caller (quads, pos/color, no texture, no lighting, blend)
 }

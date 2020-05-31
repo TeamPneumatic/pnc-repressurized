@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.client.model.module;
+package me.desht.pneumaticcraft.client.render.tube_module;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
@@ -7,12 +7,12 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.util.ResourceLocation;
 
-public class ModelCharging extends AbstractModelRenderer<ModuleCharging> {
+public class RenderChargingModule extends TubeModuleRendererBase<ModuleCharging> {
     private final ModelRenderer shape1;
     private final ModelRenderer shape2;
     private final ModelRenderer shape3;
 
-    public ModelCharging() {
+    public RenderChargingModule() {
         shape1 = new ModelRenderer(64, 32, 22, 0);
         shape1.addBox(0F, 0F, 0F, 2, 2, 2);
         shape1.setRotationPoint(1F, 15F, 8F);

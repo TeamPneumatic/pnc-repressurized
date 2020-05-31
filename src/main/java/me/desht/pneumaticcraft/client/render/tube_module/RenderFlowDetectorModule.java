@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.client.model.module;
+package me.desht.pneumaticcraft.client.render.tube_module;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
@@ -8,12 +8,12 @@ import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 
-public class ModelFlowDetector extends AbstractModelRenderer<ModuleFlowDetector> {
+public class RenderFlowDetectorModule extends TubeModuleRendererBase<ModuleFlowDetector> {
     private static final int TUBE_PARTS = 9;
 
     private final ModelRenderer shape1;
 
-    public ModelFlowDetector() {
+    public RenderFlowDetectorModule() {
         shape1 = new ModelRenderer(64, 32, 0, 8);
         shape1.addBox(-1F, -3F, -2F, 2, 1, 5);
         shape1.setRotationPoint(0F, 16F, 4.5F);

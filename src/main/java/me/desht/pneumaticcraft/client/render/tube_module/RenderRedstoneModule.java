@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.client.model.module;
+package me.desht.pneumaticcraft.client.render.tube_module;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
@@ -10,7 +10,7 @@ import net.minecraft.item.DyeColor;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 
-public class ModelRedstone extends AbstractModelRenderer<ModuleRedstone> {
+public class RenderRedstoneModule extends TubeModuleRendererBase<ModuleRedstone> {
     private final ModelRenderer redstoneConnector;
     private final ModelRenderer faceplate;
     private final ModelRenderer tubeConnector;
@@ -19,7 +19,7 @@ public class ModelRedstone extends AbstractModelRenderer<ModuleRedstone> {
     private final ModelRenderer frame3;
     private final ModelRenderer frame4;
 
-    public ModelRedstone() {
+    public RenderRedstoneModule() {
         this.frame1 = new ModelRenderer(64, 32, 39, 0);
         this.frame1.setRotationPoint(-4F, 11.5F, 6.0F);
         this.frame1.addBox(0.0F, 0.0F, 0.0F, 8, 1, 1, 0.0F);

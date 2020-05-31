@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.client.model.module;
+package me.desht.pneumaticcraft.client.render.tube_module;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
@@ -7,12 +7,12 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.util.ResourceLocation;
 
-public class ModelSafetyValve extends AbstractModelRenderer<ModuleSafetyValve> {
+public class RenderSafetyValveModule extends TubeModuleRendererBase<ModuleSafetyValve> {
     private final ModelRenderer shape1;
     private final ModelRenderer shape2;
     private final ModelRenderer shape3;
 
-    public ModelSafetyValve(){
+    public RenderSafetyValveModule(){
         shape1 = new ModelRenderer(64, 32, 32, 0);
         shape1.addBox(0F, 0F, 0F, 3, 3, 2);
         shape1.setRotationPoint(-1.5F, 14.5F, 2F);

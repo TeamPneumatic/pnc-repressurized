@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.client.model.module;
+package me.desht.pneumaticcraft.client.render.tube_module;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
@@ -9,7 +9,7 @@ import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.item.DyeColor;
 import net.minecraft.util.ResourceLocation;
 
-public class ModelLogistics extends AbstractModelRenderer<ModuleLogistics> {
+public class RenderLogisticsModule extends TubeModuleRendererBase<ModuleLogistics> {
     private final ModelRenderer base2;
     private final ModelRenderer shape1;
     private final ModelRenderer shape2;
@@ -17,7 +17,7 @@ public class ModelLogistics extends AbstractModelRenderer<ModuleLogistics> {
     private final ModelRenderer shape4;
     private final ModelRenderer notPowered, powered, action, notEnoughAir;
 
-    public ModelLogistics() {
+    public RenderLogisticsModule() {
         notPowered = new ModelRenderer(64, 64, 24, 8);
         notPowered.addBox(0F, 0F, 0F, 6, 2, 6);
         notPowered.setRotationPoint(-3F, 13F, 4F);
