@@ -6,8 +6,8 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.ContainerMinigunMagazine;
 import me.desht.pneumaticcraft.common.item.ItemMinigun;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
-import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.PlayerInventory;
@@ -55,13 +55,9 @@ public class GuiMinigunMagazine extends GuiPneumaticContainerBase<ContainerMinig
     public void tick() {
         super.tick();
 
-        ItemStack gunStack = minecraft.player.getHeldItemMainhand();
+        ItemStack gunStack = ItemMinigun.getHeldMinigun(Minecraft.getInstance().player);
         if (gunStack.getItem() instanceof ItemMinigun) {
-            if (NBTUtil.hasTag(gunStack, ItemMinigun.NBT_LOCKED_SLOT)) {
-                lockedSlot = NBTUtil.getInteger(gunStack, ItemMinigun.NBT_LOCKED_SLOT);
-            } else {
-                lockedSlot = -1;
-            }
+            lockedSlot = ItemMinigun.getLockedSlot(gunStack);
         }
     }
 
