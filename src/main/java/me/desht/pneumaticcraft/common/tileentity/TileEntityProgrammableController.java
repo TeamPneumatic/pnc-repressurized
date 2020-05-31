@@ -111,7 +111,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     public boolean isIdle;
 
     public static final Set<ResourceLocation> BLACKLISTED_WIDGETS = ImmutableSet.of(
-            RL("computer_craft"),
+            RL("computer_control"),
             RL("entity_attack"),
             RL("drone_condition_entity"),
             RL("standby"),
