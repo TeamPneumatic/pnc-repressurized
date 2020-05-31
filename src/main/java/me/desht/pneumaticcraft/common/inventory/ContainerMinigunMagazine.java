@@ -25,9 +25,10 @@ public class ContainerMinigunMagazine extends ContainerPneumaticBase<TileEntityB
         super(ModContainers.MINIGUN_MAGAZINE.get(), windowId, playerInventory);
 
         gunInv = ItemMinigun.getMagazine(playerInventory.player.getHeldItemMainhand());
-
-        for (int i = 0; i < gunInv.getSlots(); i++) {
-            addSlot(new SlotItemHandler(gunInv, i, 26 + (i % 2) * 18, 26 + (i / 2) * 18));
+        if (gunInv != null) {
+            for (int i = 0; i < gunInv.getSlots(); i++) {
+                addSlot(new SlotItemHandler(gunInv, i, 26 + (i % 2) * 18, 26 + (i / 2) * 18));
+            }
         }
 
         addPlayerSlots(playerInventory, 84);
@@ -48,11 +49,11 @@ public class ContainerMinigunMagazine extends ContainerPneumaticBase<TileEntityB
     @Nonnull
     @Override
     public ItemStack slotClick(int slotId, int dragType, ClickType clickType, PlayerEntity player) {
-        if (clickType == ClickType.CLONE && dragType == 2) {
+        if (clickType == ClickType.CLONE && dragType == 2 && slotId >= 0 && slotId < ItemMinigun.MAGAZINE_SIZE) {
             // middle-click to lock a slot
             ItemStack gunStack = player.getHeldItemMainhand();
             if (gunStack.getItem() instanceof ItemMinigun) {
-                int slot = NBTUtil.hasTag(gunStack, ItemMinigun.NBT_LOCKED_SLOT) ? NBTUtil.getInteger(gunStack, ItemMinigun.NBT_LOCKED_SLOT) : -1;
+                int slot = ItemMinigun.getLockedSlot(gunStack);
                 if (slot == slotId) {
                     NBTUtil.removeTag(gunStack, ItemMinigun.NBT_LOCKED_SLOT);
                 } else {

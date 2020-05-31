@@ -19,6 +19,7 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
+import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -44,7 +45,7 @@ import java.util.Map;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ItemMinigun extends ItemPressurizable implements IChargeableContainerProvider, IUpgradeAcceptor, IFOVModifierItem, IInventoryItem {
-    private static final int MAGAZINE_SIZE = 4;
+    public static final int MAGAZINE_SIZE = 4;
 
     private static final String NBT_MAGAZINE = "Magazine";
     public static final String NBT_LOCKED_SLOT = "LockedSlot";
@@ -204,13 +205,32 @@ public class ItemMinigun extends ItemPressurizable implements IChargeableContain
         return new IChargeableContainerProvider.Provider(te, ModContainers.CHARGING_MINIGUN.get());
     }
 
+    public static int getLockedSlot(ItemStack stack) {
+        if (NBTUtil.hasTag(stack, NBT_LOCKED_SLOT)) {
+            int slot = NBTUtil.getInteger(stack, NBT_LOCKED_SLOT);
+            if (slot >= 0 && slot < MAGAZINE_SIZE) {
+                return slot;
+            } else {
+                Log.warning("removed out of range saved ammo slot: " + slot);
+                NBTUtil.removeTag(stack, NBT_LOCKED_SLOT);
+            }
+        }
+        return -1;
+    }
+
+    public static ItemStack getHeldMinigun(PlayerEntity player) {
+        if (player.getHeldItemMainhand().getItem() == ModItems.MINIGUN.get()) return player.getHeldItemMainhand();
+        else if (player.getHeldItemOffhand().getItem() == ModItems.MINIGUN.get()) return player.getHeldItemOffhand();
+        else return ItemStack.EMPTY;
+    }
+
     public static class MagazineHandler extends BaseItemStackHandler {
         private final ItemStack gunStack;
 
         MagazineHandler(ItemStack gunStack) {
             super(MAGAZINE_SIZE);
-            this.gunStack = gunStack;
 
+            this.gunStack = gunStack;
             if (gunStack.hasTag() && gunStack.getTag().contains(NBT_MAGAZINE)) {
                 deserializeNBT(gunStack.getTag().getCompound(NBT_MAGAZINE));
             }
@@ -222,8 +242,9 @@ public class ItemMinigun extends ItemPressurizable implements IChargeableContain
         }
 
         public ItemStack getAmmo() {
-            if (NBTUtil.hasTag(gunStack, NBT_LOCKED_SLOT)) {
-                return getStackInSlot(NBTUtil.getInteger(gunStack, NBT_LOCKED_SLOT));
+            int slot = getLockedSlot(gunStack);
+            if (slot >= 0) {
+                return getStackInSlot(slot);
             }
             for (int i = 0; i < MAGAZINE_SIZE; i++) {
                 if (getStackInSlot(i).getItem() instanceof ItemGunAmmo) {
