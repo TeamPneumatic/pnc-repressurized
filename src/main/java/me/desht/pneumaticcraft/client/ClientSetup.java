@@ -14,13 +14,13 @@ import me.desht.pneumaticcraft.client.model.custom.CamouflageModel;
 import me.desht.pneumaticcraft.client.model.custom.FluidItemModel;
 import me.desht.pneumaticcraft.client.model.custom.PressureGlassModel;
 import me.desht.pneumaticcraft.client.model.custom.RenderedItemModel;
-import me.desht.pneumaticcraft.client.model.module.*;
 import me.desht.pneumaticcraft.client.particle.AirParticle;
 import me.desht.pneumaticcraft.client.render.entity.*;
 import me.desht.pneumaticcraft.client.render.entity.drone.RenderDrone;
 import me.desht.pneumaticcraft.client.render.fluid.*;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.entity_tracker.EntityTrackHandler;
 import me.desht.pneumaticcraft.client.render.tileentity.*;
+import me.desht.pneumaticcraft.client.render.tube_module.*;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo;
 import me.desht.pneumaticcraft.common.core.*;
 import me.desht.pneumaticcraft.common.progwidgets.*;
@@ -278,14 +278,14 @@ public class ClientSetup {
         TubeModuleClientRegistry.registerTubeModuleGUI(Names.MODULE_REDSTONE, GuiRedstoneModule::new);
         TubeModuleClientRegistry.registerTubeModuleGUI(Names.MODULE_LOGISTICS, GuiLogisticsModule::new);
 
-        TubeModuleClientRegistry.registerTubeModuleModel(Names.MODULE_AIR_GRATE, ModelAirGrate::new);
-        TubeModuleClientRegistry.registerTubeModuleModel(Names.MODULE_REDSTONE, ModelRedstone::new);
-        TubeModuleClientRegistry.registerTubeModuleModel(Names.MODULE_SAFETY_VALVE, ModelSafetyValve::new);
-        TubeModuleClientRegistry.registerTubeModuleModel(Names.MODULE_REGULATOR, ModelPressureRegulator::new);
-        TubeModuleClientRegistry.registerTubeModuleModel(Names.MODULE_GAUGE, ModelPressureGauge::new);
-        TubeModuleClientRegistry.registerTubeModuleModel(Names.MODULE_CHARGING, ModelCharging::new);
-        TubeModuleClientRegistry.registerTubeModuleModel(Names.MODULE_FLOW_DETECTOR, ModelFlowDetector::new);
-        TubeModuleClientRegistry.registerTubeModuleModel(Names.MODULE_LOGISTICS, ModelLogistics::new);
+        TubeModuleClientRegistry.registerTubeModuleRenderer(Names.MODULE_AIR_GRATE, RenderAirGrateModule::new);
+        TubeModuleClientRegistry.registerTubeModuleRenderer(Names.MODULE_REDSTONE, RenderRedstoneModule::new);
+        TubeModuleClientRegistry.registerTubeModuleRenderer(Names.MODULE_SAFETY_VALVE, RenderSafetyValveModule::new);
+        TubeModuleClientRegistry.registerTubeModuleRenderer(Names.MODULE_REGULATOR, RenderRegulatorModule::new);
+        TubeModuleClientRegistry.registerTubeModuleRenderer(Names.MODULE_GAUGE, RenderPressureGaugeModule::new);
+        TubeModuleClientRegistry.registerTubeModuleRenderer(Names.MODULE_CHARGING, RenderChargingModule::new);
+        TubeModuleClientRegistry.registerTubeModuleRenderer(Names.MODULE_FLOW_DETECTOR, RenderFlowDetectorModule::new);
+        TubeModuleClientRegistry.registerTubeModuleRenderer(Names.MODULE_LOGISTICS, RenderLogisticsModule::new);
     }
 
     private static void getAllKeybindsFromOptionsFile() {
