@@ -33,8 +33,11 @@ public class GuiSentryTurret extends GuiPneumaticContainerBase<ContainerSentryTu
     public void init() {
         super.init();
         addButton(entityFilter = new WidgetTextField(font, guiLeft + 80, guiTop + 63, 70, font.FONT_HEIGHT));
+        entityFilter.setMaxStringLength(256);
         entityFilter.setText(te.getText(0));
         entityFilter.setResponder(s -> sendDelayed(5));
+        entityFilter.setFocused2(true);
+        setFocused(entityFilter);
     }
 
     @Override
