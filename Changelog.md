@@ -8,10 +8,29 @@ Changes are in reverse chronological order; newest changes at the top.
 
 This release brings a very major internal rewrite and many many major new and modified gameplay elements. See also https://gist.github.com/desht/b604bd670f7f718bb4e6f20ff53893e2
 
+## 1.0.6-18 (1 Jun 2020)
+
+### Updates
+* Small/Medium/Large tanks now have Comparator support to measure their fullness
+
+### Fixes
+* Fixed Programmable Controller drones being unable to pick up items or pull items from chests
+* Fixed Programmable Controller ignoring its Inventory Upgrades
+* Fixed player kick (and subsequent inability to log back in) caused by middle-clicking non-ammo slots in the Minigun magazine GUI
+* Fixed minor fluid rendering issues in connected tanks (Small/Medium/Large Tank)
+* Fixes to drone pathfinding to hopefully work better with "openable" blocks like trapdoors, doors, etc.
+  * Note that drones still can't properly pathfind through doors and trapdoors but this helps interacting with blocks that are covered with trapdoors
+* Fixed drones losing all their carried fluid when wrenched to item form
+* Fixed Amadrones sometimes dropping their carried items when they suicide
+  * Couldn't reproduce this one myself, but added some extra checks to ensure Amadrones never drop anything on death  
+* Fixed programmer GUI widget area clipping issues (sometimes not showing any widgets)
+  * Most obvious when using the "Auto" GUI scale - this is now much more robust
+* Fixed semiblock items (crop sticks, logistics frames etc.) being consumed when placed in creative mode
+* Fixed crop sticks allowing multiple sticks to be placed in the same block space
+
 ## 1.0.5-16 (25 May 2020)
 
 ### Fixes
-
 * Fix bug where excess pressure builds up behind a Regulator Module
 * Fixed client crash when camo'ing blocks as Pressure Glass
 * Fixed External Program widget not doing anything
@@ -20,7 +39,6 @@ This release brings a very major internal rewrite and many many major new and mo
 ## 1.0.4-13 (19 May 2020)
 
 ### Fixes
-
 * Fixed client crash in elevator GUI when trying to cycle floors & no floors are found
 * Fixed Elevator Frames having a player-blocking hitbox with 3x3 or larger elevators
 * Drones now apply a 40-tick pickup delay to items dropped with the Drop Item widget, same as players do
