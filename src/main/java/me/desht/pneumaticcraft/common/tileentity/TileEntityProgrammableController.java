@@ -321,16 +321,36 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     }
 
     private void calculateUpgrades() {
-        int oldDispenserUpgrades = getUpgrades(EnumUpgrade.INVENTORY);
-        int dispenserUpgrades = Math.min(35, getUpgrades(EnumUpgrade.INVENTORY));
-        if (!getWorld().isRemote && oldDispenserUpgrades != dispenserUpgrades) {
-            tank.setCapacity((dispenserUpgrades + 1) * 16000);
+        int oldInvUpgrades = droneItemHandler.getSlots() - 1;
+        int newInvUpgrades = Math.min(35, getUpgrades(EnumUpgrade.INVENTORY));
+        if (oldInvUpgrades != newInvUpgrades) {
+            resizeDroneInventory(oldInvUpgrades + 1, newInvUpgrades + 1);
+            tank.setCapacity((newInvUpgrades + 1) * 16000);
             if (tank.getFluidAmount() > tank.getCapacity()) {
                 tank.getFluid().setAmount(tank.getCapacity());
             }
         }
 
         speedUpgrades = getUpgrades(EnumUpgrade.SPEED);
+    }
+
+    private void resizeDroneInventory(int oldSize, int newSize) {
+        DroneItemHandler tmpHandler = new DroneItemHandler(this);
+
+        for (int i = 0; i < oldSize && i < newSize; i++) {
+            tmpHandler.setStackInSlot(i, droneItemHandler.getStackInSlot(i));
+        }
+
+        // if the inventory has shrunk, eject any excess items
+        for (int i = newSize; i < oldSize; i++) {
+            ItemStack stack = droneItemHandler.getStackInSlot(i);
+            if (!stack.isEmpty()) {
+                PneumaticCraftUtils.dropItemOnGround(stack, getWorld(), getPos().up());
+            }
+        }
+
+        droneItemHandler = tmpHandler;
+        itemHandlerSideConfigurator.updateHandler("droneInv", () -> droneItemHandler);
     }
 
     @Override
