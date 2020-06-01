@@ -1,14 +1,15 @@
 {
   "homepage": "https://minecraft.curseforge.com/projects/pneumaticcraft-repressurized",
   "promos": {
-    "1.15.2-recommmended": "1.2.1-25",
-    "1.15.2-latest": "1.2.1-25"
+    "1.15.2-recommmended": "1.2.2-30",
+    "1.15.2-latest": "1.2.2-30"
   },
   "1.15.2": {
     "1.1.0-3": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.15/Changelog.md",
     "1.1.1-6": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.15/Changelog.md#111-6-5-may-2020",
     "1.1.2-14": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.15/Changelog.md#112-14-11-may-2020",
     "1.2.0-20": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.15/Changelog.md#120-20-18-may-2020",
-    "1.2.1-25": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.15/Changelog.md#121-25-25-may-2020"
+    "1.2.1-25": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.15/Changelog.md#121-25-25-may-2020",
+    "1.2.2-30": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.15/Changelog.md#122-30-1-jun-2020"
   }
 }

@@ -6,7 +6,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.15.2
 
-## 1.2.2-?? (unreleased)
+## 1.2.2-30 (1 Jun 2020)
 
 ### New
 * Added new Thermal Lagging block, an alternative to covering your Refinery & other heat machines with trapdoors
@@ -18,16 +18,20 @@ Changes are in reverse chronological order; newest changes at the top.
 * Pressure Mechanic villagers now have some workstation sounds again, as they did in 1.14.4
 
 ### Fixes
-* Fixed Programmable Controller drones being unable to pick up items
-* Fixed crash caused by middle-clicking non-ammo slots in the Minigun magazine GUI
+* Fixed Programmable Controller drones being unable to pick up items or pull items from chests
+* Fixed Programmable Controller ignoring its Inventory Upgrades
+* Fixed player kick (and subsequent inability to log back in) caused by middle-clicking non-ammo slots in the Minigun magazine GUI
 * Fixed minor fluid rendering issues in connected tanks (Small/Medium/Large Tank)
 * Fixes to drone pathfinding to hopefully work better with "openable" blocks like trapdoors, doors, etc.
+  * Note that drones still can't properly pathfind through doors and trapdoors but this helps interacting with blocks that are covered with trapdoors
 * Fixed drones losing all their carried fluid when wrenched to item form
 * Fixed Amadrones sometimes dropping their carried items when they suicide
   * Couldn't reproduce this one myself, but added some extra checks to ensure Amadrones never drop anything on death  
-* Fixed programmer GUI widget area clipping isses (sometimes not showing any widgets)
-  * Most obvious when using "Auto" gui scale - this is now much more robust
-  
+* Fixed programmer GUI widget area clipping issues (sometimes not showing any widgets)
+  * Most obvious when using the "Auto" GUI scale - this is now much more robust
+* Fixed semiblock items (crop sticks, logistics frames etc.) being consumed when placed in creative mode
+* Fixed crop sticks allowing multiple sticks to be placed in the same block space
+
 ## 1.2.1-25 (25 May 2020)
 
 ### Updates
