@@ -61,15 +61,16 @@ public class ItemSemiBlock extends Item {
 
         EntitySemiblockBase eSemi = createEntity(context.getWorld(), itemstack, context.getPlayer(), blockpos);
         if (eSemi != null) {
-            if (SemiblockTracker.getInstance().getAllSemiblocks(world, blockpos).anyMatch(s -> !s.canCoexist(eSemi))) {
-                return ActionResultType.FAIL;
-            }
-
             if (!eSemi.canPlace(direction)) {
+                // if the semiblock can't go in the clicked pos, maybe it can go adjacent to it?
                 eSemi.setPosition(eSemi.posX + direction.getXOffset(), eSemi.posY + direction.getYOffset(), eSemi.posZ + direction.getZOffset());
                 if (!eSemi.canPlace(direction)) {
                     return ActionResultType.FAIL;
                 }
+            }
+
+            if (SemiblockTracker.getInstance().getAllSemiblocks(world, eSemi.getBlockPos()).anyMatch(s -> !s.canCoexist(eSemi))) {
+                return ActionResultType.FAIL;
             }
 
             if (eSemi instanceof IDirectionalSemiblock) {
