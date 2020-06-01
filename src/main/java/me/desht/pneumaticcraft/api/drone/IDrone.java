@@ -20,7 +20,7 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 import java.util.List;
 
 /**
- * Represents a drone or drone-like entity (e.g. a Programmable Controller).
+ * Represents a drone or drone-like object (e.g. a Programmable Controller).
  * <p>
  * Do not implement this class yourself!
  */
@@ -40,7 +40,7 @@ public interface IDrone extends ICapabilityProvider {
     World world();
 
     /**
-     * Get the drone's fluid tank.Note that this is also accessible via the
+     * Get the drone's fluid tank.  Note that this is also accessible via the
      * {@link net.minecraftforge.fluids.capability.CapabilityFluidHandler#FLUID_HANDLER_CAPABILITY}
      * capability.
      *
@@ -152,7 +152,7 @@ public interface IDrone extends ICapabilityProvider {
      *
      * @return true if the drone's normal AI has been overridden
      */
-    boolean isAIOverriden();
+    boolean isAIOverridden();
 
     /**
      * Called when a drone is picking up an item.
@@ -165,7 +165,7 @@ public interface IDrone extends ICapabilityProvider {
     /**
      * Retrieve the owning player of this drone.
      *
-     * @return the owning player; may be null if the owner is offline
+     * @return the owning player; will be null if the owner is offline
      */
     PlayerEntity getOwner();
 }

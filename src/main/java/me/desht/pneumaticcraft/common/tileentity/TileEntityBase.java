@@ -230,7 +230,7 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
 
     public void onBlockRotated() {
         if (this instanceof ISideConfigurable) {
-            for (SideConfigurator sc : ((ISideConfigurable) this).getSideConfigurators()) {
+            for (SideConfigurator<?> sc : ((ISideConfigurable) this).getSideConfigurators()) {
                 sc.setupFacingMatrix();
             }
         }

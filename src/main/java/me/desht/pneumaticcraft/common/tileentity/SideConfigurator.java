@@ -243,7 +243,7 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundNBT> {
 
     public static CompoundNBT writeToNBT(ISideConfigurable sideConfigurable) {
         CompoundNBT tag = new CompoundNBT();
-        for (SideConfigurator sc : sideConfigurable.getSideConfigurators()) {
+        for (SideConfigurator<?> sc : sideConfigurable.getSideConfigurators()) {
             if (sc.shouldSaveNBT()) {
                 CompoundNBT subtag = sc.serializeNBT();
                 tag.put(sc.id, subtag);
@@ -253,7 +253,7 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundNBT> {
     }
 
     public static void readFromNBT(CompoundNBT tag, ISideConfigurable sideConfigurable) {
-        for (SideConfigurator sc : sideConfigurable.getSideConfigurators()) {
+        for (SideConfigurator<?> sc : sideConfigurable.getSideConfigurators()) {
             if (tag.contains(sc.id)) {
                 CompoundNBT subtag = tag.getCompound(sc.id);
                 sc.deserializeNBT(subtag);

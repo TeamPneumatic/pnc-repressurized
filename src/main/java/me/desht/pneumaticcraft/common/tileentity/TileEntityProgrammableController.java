@@ -81,6 +81,17 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     private static final UUID FALLBACK_UUID = UUID.nameUUIDFromBytes(FALLBACK_NAME.getBytes());
     private static final int MAX_ENERGY = 100000;
 
+    public static final Set<ResourceLocation> BLACKLISTED_WIDGETS = ImmutableSet.of(
+            RL("computer_control"),
+            RL("entity_attack"),
+            RL("drone_condition_entity"),
+            RL("standby"),
+            RL("suicide"),
+            RL("teleport"),
+            RL("entity_export"),
+            RL("entity_import")
+    );
+
     private final ProgrammableItemStackHandler inventory = new ProgrammableItemStackHandler(this);
     private final LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> inventory);
 
@@ -109,17 +120,6 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     private int speedUpgrades;
     @DescSynced
     public boolean isIdle;
-
-    public static final Set<ResourceLocation> BLACKLISTED_WIDGETS = ImmutableSet.of(
-            RL("computer_control"),
-            RL("entity_attack"),
-            RL("drone_condition_entity"),
-            RL("standby"),
-            RL("suicide"),
-            RL("teleport"),
-            RL("entity_export"),
-            RL("entity_import")
-    );
 
     private UUID ownerID;
     private ITextComponent ownerName;
@@ -257,7 +257,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     }
 
     @Override
-    public List<SideConfigurator> getSideConfigurators() {
+    public List<SideConfigurator<?>> getSideConfigurators() {
         return Collections.singletonList(itemHandlerSideConfigurator);
     }
 
@@ -326,16 +326,36 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     }
 
     private void calculateUpgrades() {
-        int oldDispenserUpgrades = getUpgrades(EnumUpgrade.INVENTORY);
-        int dispenserUpgrades = Math.min(35, getUpgrades(EnumUpgrade.INVENTORY));
-        if (!getWorld().isRemote && oldDispenserUpgrades != dispenserUpgrades) {
-            tank.setCapacity((dispenserUpgrades + 1) * 16000);
+        int oldInvUpgrades = droneItemHandler.getSlots() - 1;
+        int newInvUpgrades = Math.min(35, getUpgrades(EnumUpgrade.INVENTORY));
+        if (oldInvUpgrades != newInvUpgrades) {
+            resizeDroneInventory(oldInvUpgrades + 1, newInvUpgrades + 1);
+            tank.setCapacity((newInvUpgrades + 1) * 16000);
             if (tank.getFluidAmount() > tank.getCapacity()) {
                 tank.getFluid().setAmount(tank.getCapacity());
             }
         }
 
         speedUpgrades = getUpgrades(EnumUpgrade.SPEED);
+    }
+
+    private void resizeDroneInventory(int oldSize, int newSize) {
+        DroneItemHandler tmpHandler = new DroneItemHandler(this);
+
+        for (int i = 0; i < oldSize && i < newSize; i++) {
+            tmpHandler.setStackInSlot(i, droneItemHandler.getStackInSlot(i));
+        }
+
+        // if the inventory has shrunk, eject any excess items
+        for (int i = newSize; i < oldSize; i++) {
+            ItemStack stack = droneItemHandler.getStackInSlot(i);
+            if (!stack.isEmpty()) {
+                PneumaticCraftUtils.dropItemOnGround(stack, getWorld(), getPos().up());
+            }
+        }
+
+        droneItemHandler = tmpHandler;
+        itemHandlerSideConfigurator.updateHandler("droneInv", () -> droneItemHandler);
     }
 
     @Override
@@ -603,7 +623,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     }
 
     @Override
-    public boolean isAIOverriden() {
+    public boolean isAIOverridden() {
         return false;
     }
 

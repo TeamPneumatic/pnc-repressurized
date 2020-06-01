@@ -342,7 +342,7 @@ public class DroneAIManager implements IVariableProvider {
         
         if (PNCConfig.Common.Advanced.stopDroneAI) return;
 
-        if (!drone.isAIOverriden()) {
+        if (!drone.isAIOverridden()) {
             if (wasAIOveridden && curWidgetTargetAI != null) drone.getTargetAI().addGoal(2, curWidgetTargetAI);
             wasAIOveridden = false;
             ArrayList<EntityAITaskEntry> arraylist = new ArrayList<>();

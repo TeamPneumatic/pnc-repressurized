@@ -262,6 +262,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
     @Override
     public void read(CompoundNBT tag) {
         super.read(tag);
+
         redstoneMode = tag.getInt("redstoneMode");
         feedMode = FeedMode.valueOf(tag.getString("feedMode"));
         setPlayerId(tag.getString("playerName"), tag.getString("playerUUID"));
@@ -276,13 +277,14 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
     @Override
     public CompoundNBT write(CompoundNBT tag) {
         super.write(tag);
-        // Write the ItemStacks in the inventory to NBT
+
         tag.putInt("redstoneMode", redstoneMode);
         tag.putString("feedMode", feedMode.toString());
         tag.putString("playerName", playerName);
         tag.putString("playerUUID", playerUUID);
         tag.putString("curXpFluid", curXpFluid.getRegistryName().toString());
         energyStorage.writeToNBT(tag);
+
         return tag;
     }
 
@@ -347,7 +349,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
     }
 
     @Override
-    public List<SideConfigurator> getSideConfigurators() {
+    public List<SideConfigurator<?>> getSideConfigurators() {
         return Collections.singletonList(itemHandlerSideConfigurator);
     }
 

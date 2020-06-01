@@ -74,13 +74,16 @@ public interface IProgWidget extends IProgWidgetBase {
     void setOutputWidget(IProgWidget widget);
 
     /**
-     * Get the next widget in the program.
+     * Get the next widget in the program; the widget attached to the bottom of this one.
+     *
      * @return the next widget to run
      */
     IProgWidget getOutputWidget();
 
     /**
-     * This one will be called when running in an actual program.
+     * Get the next widget in the program, which may or may not be the widget attached to the bottom of this one.
+     * This method variant is called when running in a live program, and has access to the drone
+     * context and a view of the full program so it can deal with special conditions like jumps etc.
      *
      * @param drone the drone
      * @param allWidgets a list of widgets

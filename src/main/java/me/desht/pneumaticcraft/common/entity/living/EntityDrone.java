@@ -1228,7 +1228,7 @@ public class EntityDrone extends EntityDroneBase implements
     }
 
     @Override
-    public boolean isAIOverriden() {
+    public boolean isAIOverridden() {
         return chargeAI.isExecuting || gotoOwnerAI != null;
     }
 

@@ -21,7 +21,7 @@ public interface ISideConfigurable {
      *
      * @return the TE's side configurators
      */
-    List<SideConfigurator> getSideConfigurators();
+    List<SideConfigurator<?>> getSideConfigurators();
 
     /**
      * Check if the given handler is OK for the given face

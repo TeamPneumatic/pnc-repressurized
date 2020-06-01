@@ -190,7 +190,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
     }
 
     private void addSideConfiguratorTabs() {
-        for (SideConfigurator sc : ((ISideConfigurable) te).getSideConfigurators()) {
+        for (SideConfigurator<?> sc : ((ISideConfigurable) te).getSideConfigurators()) {
             WidgetAnimatedStat stat = addAnimatedStat(sc.getTranslationKey(), new ItemStack(ModBlocks.OMNIDIRECTIONAL_HOPPER.get()), 0xFF90C0E0, false);
             stat.addPadding(7, 16);
 
@@ -204,7 +204,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         }
     }
 
-    private WidgetButtonExtended makeSideConfButton(final SideConfigurator sideConfigurator, RelativeFace relativeFace, int x, int y) {
+    private WidgetButtonExtended makeSideConfButton(final SideConfigurator<?> sideConfigurator, RelativeFace relativeFace, int x, int y) {
         WidgetButtonExtended button = new WidgetButtonExtended(x, y, 20, 20, "", b -> {
             WidgetButtonExtended gbs = (WidgetButtonExtended) b;
             ((ISideConfigurable) te).getSideConfigurators().stream()
