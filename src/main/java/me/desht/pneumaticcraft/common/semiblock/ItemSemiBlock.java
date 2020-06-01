@@ -79,7 +79,9 @@ public class ItemSemiBlock extends Item {
             world.addEntity(eSemi);
             eSemi.onPlaced(player, context.getItem(), direction);
             world.notifyNeighborsOfStateChange(blockpos, world.getBlockState(blockpos).getBlock());
-            itemstack.shrink(1);
+            if (!player.isCreative()) {
+                itemstack.shrink(1);
+            }
         } else {
             Log.warning("can't get entity for semiblock item " + getRegistryName());
         }
