@@ -59,6 +59,9 @@ public interface ISerializableTanks {
              tag.put(NBTKeys.NBT_SAVED_TANKS, subTag);
          } else {
              tag.remove(NBTKeys.NBT_SAVED_TANKS);
+             if (tag.isEmpty()) {
+                 stack.getTag().remove(NBTKeys.BLOCK_ENTITY_TAG);
+             }
          }
     }
 

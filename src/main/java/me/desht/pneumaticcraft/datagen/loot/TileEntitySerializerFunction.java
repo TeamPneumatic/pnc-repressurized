@@ -94,6 +94,10 @@ public class TileEntitySerializerFunction extends LootFunction {
         if (!subTag.isEmpty()) {
             CompoundNBT tag = teStack.getOrCreateTag();
             tag.put(NBTKeys.BLOCK_ENTITY_TAG, subTag);
+        } else {
+            if (teStack.hasTag() && teStack.getTag().contains(NBTKeys.BLOCK_ENTITY_TAG)) {
+                teStack.getTag().remove(NBTKeys.BLOCK_ENTITY_TAG);
+            }
         }
         return teStack;
     }
