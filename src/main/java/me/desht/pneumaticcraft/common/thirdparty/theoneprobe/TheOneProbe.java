@@ -16,6 +16,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fml.InterModComms;
 
 import java.util.ArrayList;
@@ -68,6 +69,8 @@ public class TheOneProbe implements IThirdParty {
                         String p = PneumaticCraftUtils.roundNumberTo(h.getPressure(), 1);
                         probeInfo.text(COLOR + "Pressure: " + p + " bar");
                     });
+                    entity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY)
+                            .ifPresent(h -> TOPInfoProvider.handleFluidTanks(mode, probeInfo, h));
                 }
             });
             return null;

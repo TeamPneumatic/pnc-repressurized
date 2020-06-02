@@ -130,7 +130,7 @@ public class TOPInfoProvider {
         }
     }
 
-    private static void handleFluidTanks(ProbeMode mode, IProbeInfo probeInfo, IFluidHandler handler) {
+    static void handleFluidTanks(ProbeMode mode, IProbeInfo probeInfo, IFluidHandler handler) {
         if (mode == ProbeMode.EXTENDED) {
             for (int i = 0; i < handler.getTanks(); i++) {
                 FluidStack fluidStack = handler.getFluidInTank(i);

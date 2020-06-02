@@ -24,9 +24,9 @@ public interface IChargeableContainerProvider {
 
     class Provider implements INamedContainerProvider {
         private final TileEntityChargingStation te;
-        private final ContainerType type;
+        private final ContainerType<? extends ContainerChargingStationItemInventory> type;
 
-        public Provider(TileEntityChargingStation te, ContainerType type) {
+        public Provider(TileEntityChargingStation te, ContainerType<? extends ContainerChargingStationItemInventory> type) {
             this.te = te;
             this.type = type;
         }

@@ -442,6 +442,7 @@
   "gui.tab.info.electrostatic.strikeTime": "Average strike time: %s",
   "gui.tab.info.electrostatic.strikeTime.optimal": "  (with optimally sized grid)",
 
+  "gui.tooltip.fluid": "Fluid: ",
   "gui.tooltip.block.pneumaticcraft.reinforced_chest": "Blastproof chest which preserves its contents when broken.",
   "gui.tooltip.block.pneumaticcraft.smart_chest": "Blastproof chest which preserves its contents when broken. Slots can be individually filtered, and each side can be configured to push or pull items.",
   "gui.tooltip.block.pneumaticcraft.display_table": "This table can hold and display a single item, which can be interacted with via automation (hoppers/drones/pipes...)",

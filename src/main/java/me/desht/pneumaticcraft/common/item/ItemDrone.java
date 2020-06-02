@@ -11,6 +11,7 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.ILivingEntityData;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.player.PlayerEntity;
@@ -21,8 +22,15 @@ import net.minecraft.item.ItemUseContext;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.templates.FluidTank;
 
+import javax.annotation.Nullable;
+import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
 
@@ -50,6 +58,23 @@ public class ItemDrone extends ItemPressurizable implements IChargeableContainer
             iStack.shrink(1);
         }
         return ActionResultType.SUCCESS;
+    }
+
+    @Override
+    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+        super.addInformation(stack, worldIn, tooltip, flagIn);
+
+        if (stack.hasTag() && stack.getTag().contains("Tank")) {
+            FluidTank fluidTank = new FluidTank(16000);
+            fluidTank.readFromNBT(stack.getTag().getCompound("Tank"));
+            FluidStack fluidStack = fluidTank.getFluid();
+            if (!fluidStack.isEmpty()) {
+                tooltip.add(new TranslationTextComponent("gui.tooltip.fluid")
+                        .appendText(fluidStack.getAmount() + "mB ")
+                        .appendSibling(fluidStack.getDisplayName()).applyTextStyle(TextFormatting.GRAY)
+                );
+            }
+        }
     }
 
     public void spawnDrone(PlayerEntity player, World world, BlockPos clickPos, Direction facing, BlockPos placePos, ItemStack iStack){
