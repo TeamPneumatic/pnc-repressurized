@@ -75,6 +75,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
     private int lastMouseX, lastMouseY;
     private double dragMouseStartX, dragMouseStartY;
     private double dragWidgetStartX, dragWidgetStartY;
+    private boolean draggingBG;
     private static final int FAULT_MARGIN = 4;
     private int widgetPage;
     private int maxPage;
@@ -1063,6 +1064,8 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
                     dragWidgetStartX = hovered.getX();
                     dragWidgetStartY = hovered.getY();
                     return true;
+                } else if (getProgrammerBounds().contains((int)origX - guiLeft, (int)origY - guiTop)) {
+                    draggingBG = true;
                 }
             }
         } else if (button == 2) {
@@ -1098,6 +1101,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        draggingBG = false;
         if (draggingWidget != null) {
             if (programmerUnit.isOutsideProgrammingArea(draggingWidget)) {
                 deleteConnectingWidgets(draggingWidget);
@@ -1130,8 +1134,10 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
                     (int)(mouseX - dragMouseStartX + dragWidgetStartX - guiLeft),
                     (int)(mouseY - dragMouseStartY + dragWidgetStartY - guiTop));
             return true;
-        } else {
+        } else if (draggingBG) {
             return programmerUnit.mouseDragged(mouseX, mouseY, mouseButton, dragX, dragY);
+        } else {
+            return false;
         }
     }
 
