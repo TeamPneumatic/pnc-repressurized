@@ -6,11 +6,11 @@
         "side": "pneumaticcraft:model/omnihopper_outside"
     },
     "elements": [
-        {   "from": [ 6.001, 10, 6.001 ],
-            "to": [ 9.999, 16, 9.999 ],
+        {   "from": [ 6.5, 10, 6.5 ],
+            "to": [ 9.5, 16, 9.5 ],
             "faces": {
                 "down":  { "uv": [ 6,  6, 10, 10 ], "texture": "#side", "tintindex": 0 },
-                "up":    { "uv": [ 6,  6, 10, 10 ], "texture": "#side", "tintindex": 0 },
+                "up":    { "uv": [ 6,  6, 10, 10 ], "texture": "#side", "tintindex": 1 },
                 "north": { "uv": [ 6, 12, 10, 16 ], "texture": "#side", "tintindex": 0 },
                 "south": { "uv": [ 6, 12, 10, 16 ], "texture": "#side", "tintindex": 0 },
                 "west":  { "uv": [ 6, 12, 10, 16 ], "texture": "#side", "tintindex": 0 },

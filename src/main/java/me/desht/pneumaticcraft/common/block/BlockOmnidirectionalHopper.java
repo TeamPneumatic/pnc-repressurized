@@ -48,8 +48,8 @@ public class BlockOmnidirectionalHopper extends BlockPneumaticCraft implements C
         INPUT_DOWN, INPUT_UP, INPUT_NORTH, INPUT_SOUTH, INPUT_WEST, INPUT_EAST
     };
 
-    private static final VoxelShape OUTPUT_DOWN = Block.makeCuboidShape(6, 0, 6, 10, 6, 10);
-    private static final VoxelShape OUTPUT_UP = Block.makeCuboidShape(6, 10, 6, 10, 16, 10);
+    private static final VoxelShape OUTPUT_DOWN = Block.makeCuboidShape(6.5, 0, 6.5, 9.5, 6, 9.5);
+    private static final VoxelShape OUTPUT_UP = Block.makeCuboidShape(6.5, 10, 6.5, 9.5, 16, 9.5);
     private static final VoxelShape OUTPUT_NORTH = VoxelShapeUtils.rotateX(OUTPUT_DOWN, 90);
     private static final VoxelShape OUTPUT_SOUTH = VoxelShapeUtils.rotateX(OUTPUT_DOWN, 270);
     private static final VoxelShape OUTPUT_WEST = VoxelShapeUtils.rotateY(OUTPUT_NORTH, 270);
@@ -127,9 +127,15 @@ public class BlockOmnidirectionalHopper extends BlockPneumaticCraft implements C
     @Override
     public int getTintColor(BlockState state, @Nullable ILightReader world, @Nullable BlockPos pos, int tintIndex) {
         if (world != null && pos != null) {
-            TileEntity te = world.getTileEntity(pos);
-            if (te instanceof TileEntityAbstractHopper) {
-                return ((TileEntityAbstractHopper) te).isCreative ? 0xFFFF80FF : 0xFFFFFFFF;
+            switch (tintIndex) {
+                case 0:
+                    TileEntity te = world.getTileEntity(pos);
+                    if (te instanceof TileEntityAbstractHopper) {
+                        return ((TileEntityAbstractHopper) te).isCreative ? 0xFFFF80FF : 0xFFFFFFFF;
+                    }
+                    break;
+                case 1:
+                    return 0xFFA0A0A0;
             }
         }
         return 0xFFFFFFFF;
