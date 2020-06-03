@@ -1032,6 +1032,8 @@
   "gui.pastebin.loggingIn": "Logging in...",
   "gui.pastebin.merge": "Merge?",
   "gui.pastebin.merge.tooltip": "If checked, widgets will be merged with any existing widgets instead of replacing them. Merged widgets will be placed to the right of existing widgets. Any Start widget will be replaced with a Label & Text widget.",
+  "gui.pastebin.pretty": "Pretty?",
+  "gui.pastebin.pretty.tooltip": "If checked, uploaded JSON will be pretty-printed with whitespace etc.  Makes the uploaded document considerably larger.",
   "gui.pastebin.uploadingToPastebin": "Uploading to Pastebin...",
   "gui.pastebin.uploadedToPastebin": "Uploaded to Pastebin",
   "gui.pastebin.retrievingFromPastebin": "Retrieving from Pastebin...",
