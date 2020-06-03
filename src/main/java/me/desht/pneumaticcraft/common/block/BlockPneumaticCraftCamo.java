@@ -88,6 +88,11 @@ public abstract class BlockPneumaticCraftCamo extends BlockPneumaticCraft /*impl
         return camo == null ? super.getOpacity(state, world, pos) : camo.getCamouflage().getOpacity(world, pos);
     }
 
+    @Override
+    public boolean isVariableOpacity() {
+        return true;  // prevent blockstate caching side solidity
+    }
+
     private ICamouflageableTE getCamoState(IBlockReader blockAccess, BlockPos pos) {
         TileEntity te = blockAccess.getTileEntity(pos);
         return te instanceof ICamouflageableTE && ((ICamouflageableTE) te).getCamouflage() != null ? (ICamouflageableTE) te : null;
