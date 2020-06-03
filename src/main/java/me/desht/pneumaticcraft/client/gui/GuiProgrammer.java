@@ -74,6 +74,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
     private int lastMouseX, lastMouseY;
     private double dragMouseStartX, dragMouseStartY;
     private double dragWidgetStartX, dragWidgetStartY;
+    private boolean draggingBG;
     private static final int FAULT_MARGIN = 4;
     private int widgetPage;
     private int maxPage;
@@ -1032,21 +1033,13 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
                 return true;
             } else {
                 // just a regular click, nothing of interest held
-                if (hovered != null) {
-                    // clicking on a widget in the main area
-                    draggingWidget = hovered;
-                    dragMouseStartX = mouseX - guiLeft;
-                    dragMouseStartY = mouseY - guiTop;
-                    dragWidgetStartX = hovered.getX();
-                    dragWidgetStartY = hovered.getY();
-                    return true;
-                } else {
+                if (showingAllWidgets || origX > guiLeft + getProgrammerBounds().getX() + getProgrammerBounds().getWidth()) {
                     // clicking on a widget in the tray?
                     for (IProgWidget widget : visibleSpawnWidgets) {
                         if (origX >= widget.getX() + guiLeft
                                 && origY >= widget.getY() + guiTop
-                                && origX <= widget.getX() + guiLeft + widget.getWidth() / 2
-                                && origY <= widget.getY() + guiTop + widget.getHeight() / 2)
+                                && origX <= widget.getX() + guiLeft + widget.getWidth() / 2f
+                                && origY <= widget.getY() + guiTop + widget.getHeight() / 2f)
                         {
                             draggingWidget = widget.copy();
                             te.progWidgets.add(draggingWidget);
@@ -1057,6 +1050,17 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
                             return true;
                         }
                     }
+                }
+                if (hovered != null) {
+                    // clicking on a widget in the main area
+                    draggingWidget = hovered;
+                    dragMouseStartX = mouseX - guiLeft;
+                    dragMouseStartY = mouseY - guiTop;
+                    dragWidgetStartX = hovered.getX();
+                    dragWidgetStartY = hovered.getY();
+                    return true;
+                } else if (getProgrammerBounds().contains((int)origX - guiLeft, (int)origY - guiTop)) {
+                    draggingBG = true;
                 }
             }
         } else if (button == 2) {
@@ -1092,6 +1096,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        draggingBG = false;
         if (draggingWidget != null) {
             if (programmerUnit.isOutsideProgrammingArea(draggingWidget)) {
                 deleteConnectingWidgets(draggingWidget);
@@ -1124,8 +1129,10 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
                     (int)(mouseX - dragMouseStartX + dragWidgetStartX - guiLeft),
                     (int)(mouseY - dragMouseStartY + dragWidgetStartY - guiTop));
             return true;
-        } else {
+        } else if (draggingBG) {
             return programmerUnit.mouseDragged(mouseX, mouseY, mouseButton, dragX, dragY);
+        } else {
+            return false;
         }
     }
 
