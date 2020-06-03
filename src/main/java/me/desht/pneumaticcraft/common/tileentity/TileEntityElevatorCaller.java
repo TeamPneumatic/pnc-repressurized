@@ -129,8 +129,10 @@ public class TileEntityElevatorCaller extends TileEntityTickableBase implements 
     public void setCamouflage(BlockState state) {
         camoState = state;
         camoStack = ICamouflageableTE.getStackForState(state);
-        sendDescriptionPacket();
-        markDirty();
+        if (world != null && !world.isRemote) {
+            sendDescriptionPacket();
+            markDirty();
+        }
     }
 
     public static class ElevatorButton {
