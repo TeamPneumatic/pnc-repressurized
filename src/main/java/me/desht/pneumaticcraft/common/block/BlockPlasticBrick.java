@@ -16,6 +16,7 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
+import net.minecraft.pathfinding.PathType;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraft.state.EnumProperty;
@@ -120,6 +121,10 @@ public class BlockPlasticBrick extends Block implements ColorHandlers.ITintableB
     @Override
     public int getTintColor(BlockState state, @Nullable ILightReader world, @Nullable BlockPos pos, int tintIndex) {
         return getColor().getColorValue();
+    }
+
+    public boolean allowsMovement(BlockState state, IBlockReader worldIn, BlockPos pos, PathType type) {
+        return false;
     }
 
     enum PartType implements IStringSerializable {
