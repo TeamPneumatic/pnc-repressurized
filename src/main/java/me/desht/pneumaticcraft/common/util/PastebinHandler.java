@@ -96,7 +96,7 @@ public class PastebinHandler extends Thread {
     }
 
     public boolean loginInternal(String userName, String password) {
-        HttpPost httppost = new HttpPost("http://pastebin.com/api/api_login.php");
+        HttpPost httppost = new HttpPost("https://pastebin.com/api/api_login.php");
 
         List<NameValuePair> params = new ArrayList<>(3);
         params.add(new BasicNameValuePair("api_dev_key", DEV_KEY));
@@ -123,7 +123,7 @@ public class PastebinHandler extends Thread {
     }
 
     public String putInternal(String contents) {
-        HttpPost httppost = new HttpPost("http://pastebin.com/api/api_post.php");
+        HttpPost httppost = new HttpPost("https://pastebin.com/api/api_post.php");
 
         List<NameValuePair> params = new ArrayList<>();
         params.add(new BasicNameValuePair("api_dev_key", DEV_KEY));
@@ -147,6 +147,6 @@ public class PastebinHandler extends Thread {
 
     public String getInternal(String key) throws IOException {
         if (key.contains("pastebin")) key = key.substring(key.lastIndexOf('/') + 1);
-        return PneumaticCraftUtils.getPage("http://pastebin.com/raw.php?i=" + key);
+        return PneumaticCraftUtils.getPage("https://pastebin.com/raw.php?i=" + key);
     }
 }

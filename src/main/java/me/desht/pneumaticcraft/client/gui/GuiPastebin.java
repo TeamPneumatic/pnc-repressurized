@@ -24,7 +24,9 @@ public class GuiPastebin extends GuiPneumaticScreenBase {
 
     private WidgetTextField usernameBox, passwordBox;
     private WidgetTextField pastebinBox;
-    private final String pastingString;
+    private WidgetCheckBox prettyCB;
+//    private final String pastingString;
+    private final CompoundNBT pastingNBT;
     private final Screen parentScreen;
     private String statusMessage = "";
     private String lastMessage = "";
@@ -37,18 +39,24 @@ public class GuiPastebin extends GuiPneumaticScreenBase {
         NONE, GETTING, PUTTING, LOGIN, LOGOUT
     }
 
-    private GuiPastebin(Screen parentScreen, String pastingString) {
-        super(new StringTextComponent("Pastebin"));
-
-        xSize = 183;
-        ySize = 202;
-        this.pastingString = pastingString;
-        this.parentScreen = parentScreen;
-        Minecraft.getInstance().keyboardListener.enableRepeatEvents(true);
-    }
+//    private GuiPastebin(Screen parentScreen, Comnp pastingString) {
+//        super(new StringTextComponent("Pastebin"));
+//
+//        xSize = 183;
+//        ySize = 202;
+////        this.pastingString = pastingString;
+//        this.pastingNBT =
+//        this.parentScreen = parentScreen;
+//        Minecraft.getInstance().keyboardListener.enableRepeatEvents(true);
+//    }
 
     GuiPastebin(Screen parentScreen, CompoundNBT tag) {
-        this(parentScreen, new NBTToJsonConverter(tag).convert(true));
+        super(new StringTextComponent("Pastebin"));
+        xSize = 183;
+        ySize = 202;
+        this.pastingNBT = tag;
+        this.parentScreen = parentScreen;
+        Minecraft.getInstance().keyboardListener.enableRepeatEvents(true);
     }
 
     @Override
@@ -99,11 +107,17 @@ public class GuiPastebin extends GuiPneumaticScreenBase {
         retrieveFromClipboard.setTooltipText(I18n.format("gui.pastebin.button.loadFromClipboard"));
         addButton(retrieveFromClipboard);
 
-        WidgetCheckBox cb = new WidgetCheckBox(0, guiTop + 115, 0xFF404040, I18n.format("gui.pastebin.merge"),
+        prettyCB = new WidgetCheckBox(0, guiTop + 102, 0xFF404040, I18n.format("gui.pastebin.pretty"),
                 b -> shouldMerge = b.checked);
-        cb.x = guiLeft + (170 - cb.getWidth());
-        cb.setTooltip(PneumaticCraftUtils.splitString(I18n.format("gui.pastebin.merge.tooltip")));
-        addButton(cb);
+        prettyCB.x = guiLeft + (170 - prettyCB.getWidth());
+        prettyCB.setTooltip(PneumaticCraftUtils.splitString(I18n.format("gui.pastebin.pretty.tooltip")));
+        addButton(prettyCB);
+
+        WidgetCheckBox mergeCB = new WidgetCheckBox(0, guiTop + 155, 0xFF404040, I18n.format("gui.pastebin.merge"),
+                b -> shouldMerge = b.checked);
+        mergeCB.x = guiLeft + (170 - mergeCB.getWidth());
+        mergeCB.setTooltip(PneumaticCraftUtils.splitString(I18n.format("gui.pastebin.merge.tooltip")));
+        addButton(mergeCB);
 
         addLabel(I18n.format("gui.pastebin.pastebinLink"), guiLeft + 10, guiTop + 120);
     }
@@ -120,7 +134,7 @@ public class GuiPastebin extends GuiPneumaticScreenBase {
     }
 
     private void sendToPastebin() {
-        PastebinHandler.put(pastingString);
+        PastebinHandler.put(new NBTToJsonConverter(pastingNBT).convert(prettyCB.checked));
         state = EnumState.PUTTING;
         statusMessage = I18n.format("gui.pastebin.uploadingToPastebin");
     }
@@ -132,7 +146,7 @@ public class GuiPastebin extends GuiPneumaticScreenBase {
     }
 
     private void putToClipboard() {
-        minecraft.keyboardListener.setClipboardString(pastingString);
+        minecraft.keyboardListener.setClipboardString(new NBTToJsonConverter(pastingNBT).convert(prettyCB.checked));
         statusMessage = I18n.format("gui.pastebin.clipboardSetToContents");
     }
 
