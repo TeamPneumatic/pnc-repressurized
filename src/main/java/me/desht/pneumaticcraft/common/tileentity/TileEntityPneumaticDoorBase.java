@@ -231,8 +231,10 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase
     public void setCamouflage(BlockState state) {
         camoState = state;
         camoStack = ICamouflageableTE.getStackForState(state);
-        sendDescriptionPacket();
-        markDirty();
+        if (world != null && !world.isRemote) {
+            sendDescriptionPacket();
+            markDirty();
+        }
     }
 
     @Override
