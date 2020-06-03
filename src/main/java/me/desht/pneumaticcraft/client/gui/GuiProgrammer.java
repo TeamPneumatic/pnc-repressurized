@@ -987,6 +987,8 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
                     if (areaToolWidget != null && hovered instanceof ProgWidgetArea) {
                         CompoundNBT tag = new CompoundNBT();
                         areaToolWidget.writeToNBT(tag);
+                        tag.putInt("x", hovered.getX());
+                        tag.putInt("y", hovered.getY());
                         hovered.readFromNBT(tag);
                     } else if (heldItem.getItem() == ModItems.GPS_TOOL.get()) {
                         if (hovered instanceof ProgWidgetCoordinate) {
