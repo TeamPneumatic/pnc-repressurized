@@ -11,7 +11,7 @@ import net.minecraft.item.DyeColor;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 
-public class GuiLogisticsModule extends GuiTubeModule {
+public class GuiLogisticsModule extends GuiTubeModule<ModuleLogistics> {
     private int ourColor;
 
     public GuiLogisticsModule(BlockPos modulePos) {
@@ -24,7 +24,7 @@ public class GuiLogisticsModule extends GuiTubeModule {
     public void init() {
         super.init();
 
-        ourColor = ((ModuleLogistics) module).getColorChannel();
+        ourColor = module.getColorChannel();
 
         WidgetLabel ourColorLabel;
         addButton(ourColorLabel = new WidgetLabel(guiLeft + 10, guiTop + 25, I18n.format("gui.tubeModule.channel")));
@@ -44,7 +44,7 @@ public class GuiLogisticsModule extends GuiTubeModule {
     public void onClose() {
         super.onClose();
 
-        ((ModuleLogistics) module).setColorChannel(ourColor);
+        module.setColorChannel(ourColor);
         NetworkHandler.sendToServer(new PacketTubeModuleColor(module));
     }
 }

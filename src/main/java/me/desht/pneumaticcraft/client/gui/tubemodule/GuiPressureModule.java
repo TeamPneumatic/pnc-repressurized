@@ -22,7 +22,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import org.lwjgl.opengl.GL11;
 
-public class GuiPressureModule extends GuiTubeModule {
+public class GuiPressureModule extends GuiTubeModule<TubeModule> {
 
     private TextFieldWidget lowerBoundField;
     private TextFieldWidget higherBoundField;

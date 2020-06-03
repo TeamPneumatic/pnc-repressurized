@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.block.tubes.ModuleRedstone;
+import me.desht.pneumaticcraft.common.block.tubes.ModuleRedstone.EnumRedstoneDirection;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import net.minecraft.network.PacketBuffer;
@@ -20,6 +21,7 @@ public class PacketSyncRedstoneModuleToServer extends LocationIntPacket {
     private byte otherColor;
     private byte constantVal;
     private boolean invert;
+    private boolean input;
 
     @SuppressWarnings("unused")
     public PacketSyncRedstoneModuleToServer() {
@@ -28,6 +30,7 @@ public class PacketSyncRedstoneModuleToServer extends LocationIntPacket {
     public PacketSyncRedstoneModuleToServer(ModuleRedstone module) {
         super(module.getTube().getPos());
 
+        this.input = module.getRedstoneDirection() == EnumRedstoneDirection.INPUT;
         this.side = (byte) module.getDirection().ordinal();
         this.op = (byte) module.getOperation().ordinal();
         this.ourColor = (byte) module.getColorChannel();
@@ -39,22 +42,28 @@ public class PacketSyncRedstoneModuleToServer extends LocationIntPacket {
     PacketSyncRedstoneModuleToServer(PacketBuffer buffer) {
         super(buffer);
         side = buffer.readByte();
-        op = buffer.readByte();
+        input = buffer.readBoolean();
         ourColor = buffer.readByte();
-        otherColor = buffer.readByte();
-        constantVal = buffer.readByte();
-        invert = buffer.readBoolean();
+        if (!input) {
+            op = buffer.readByte();
+            otherColor = buffer.readByte();
+            constantVal = buffer.readByte();
+            invert = buffer.readBoolean();
+        }
     }
 
     @Override
     public void toBytes(PacketBuffer buf) {
         super.toBytes(buf);
         buf.writeByte(side);
-        buf.writeByte(op);
+        buf.writeBoolean(input);
         buf.writeByte(ourColor);
-        buf.writeByte(otherColor);
-        buf.writeByte(constantVal);
-        buf.writeBoolean(invert);
+        if (!input) {
+            buf.writeByte(op);
+            buf.writeByte(otherColor);
+            buf.writeByte(constantVal);
+            buf.writeBoolean(invert);
+        }
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
@@ -64,9 +73,17 @@ public class PacketSyncRedstoneModuleToServer extends LocationIntPacket {
                 TubeModule m = ((TileEntityPressureTube) te).modules[side];
                 if (m instanceof ModuleRedstone) {
                     ModuleRedstone mr = (ModuleRedstone) m;
+                    EnumRedstoneDirection prev = mr.getRedstoneDirection();
+                    mr.setRedstoneDirection(input ? EnumRedstoneDirection.INPUT : EnumRedstoneDirection.OUTPUT);
                     mr.setColorChannel(ourColor);
-                    mr.setInverted(invert);
-                    mr.setOperation(ModuleRedstone.Operation.values()[op], otherColor, constantVal);
+                    if (!input) {
+                        mr.setInverted(invert);
+                        mr.setOperation(ModuleRedstone.Operation.values()[op], otherColor, constantVal);
+                    }
+                    if (prev != mr.getRedstoneDirection()) {
+                        TileEntityPressureTube pressureTube = mr.getTube();
+                        pressureTube.getWorld().notifyNeighborsOfStateChange(pressureTube.getPos(), pressureTube.getWorld().getBlockState(pressureTube.getPos()).getBlock());
+                    }
                 }
             }
         });

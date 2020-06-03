@@ -18,7 +18,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.glfw.GLFW;
 
-public class GuiAirGrateModule extends GuiTubeModule {
+public class GuiAirGrateModule extends GuiTubeModule<ModuleAirGrate> {
     private int sendTimer = 0;
     private WidgetButtonExtended warningButton;
 
@@ -41,7 +41,7 @@ public class GuiAirGrateModule extends GuiTubeModule {
 
         int tx = 12 + label.getWidth();
         textfield = new WidgetTextField(font, guiLeft + tx, guiTop + 29, xSize - tx - 10, 10);
-        textfield.setText(((ModuleAirGrate) module).getEntityFilterString());
+        textfield.setText(module.getEntityFilterString());
         textfield.setResponder(s -> sendTimer = 5);
         textfield.setFocused2(true);
         setFocused(textfield);
@@ -70,7 +70,7 @@ public class GuiAirGrateModule extends GuiTubeModule {
     public void render(int mouseX, int mouseY, float partialTicks) {
         super.render(mouseX, mouseY, partialTicks);
 
-        if (!textfield.isFocused()) textfield.setText(((ModuleAirGrate) module).getEntityFilterString());
+        if (!textfield.isFocused()) textfield.setText(module.getEntityFilterString());
 
         if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {
             GuiUtils.showPopupHelpScreen(this, font,

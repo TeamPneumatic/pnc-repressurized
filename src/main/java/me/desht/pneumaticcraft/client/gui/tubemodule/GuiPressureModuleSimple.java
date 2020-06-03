@@ -13,7 +13,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import org.lwjgl.glfw.GLFW;
 
-public class GuiPressureModuleSimple extends GuiTubeModule {
+public class GuiPressureModuleSimple extends GuiTubeModule<TubeModule> {
     private WidgetTextFieldNumber thresholdField;
     private WidgetButtonExtended moreOrLessButton;
 

@@ -321,7 +321,15 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
     }
 
     public enum EnumRedstoneDirection {
-        INPUT, OUTPUT
+        INPUT, OUTPUT;
+
+        public EnumRedstoneDirection toggle() {
+            return this == INPUT ? OUTPUT : INPUT;
+        }
+
+        public String getTranslationKey() {
+            return "gui.redstoneModule." + toString().toLowerCase();
+        }
     }
 
     public enum Operation {

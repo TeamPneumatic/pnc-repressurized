@@ -3,10 +3,13 @@ package me.desht.pneumaticcraft.client.gui.tubemodule;
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleRedstone;
+import me.desht.pneumaticcraft.common.block.tubes.ModuleRedstone.EnumRedstoneDirection;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleRedstone.Operation;
+import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncRedstoneModuleToServer;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.DyeColor;
@@ -20,7 +23,7 @@ import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.dyeColorDesc;
 
-public class GuiRedstoneModule extends GuiTubeModule {
+public class GuiRedstoneModule extends GuiTubeModule<ModuleRedstone> {
     private WidgetComboBox comboBox;
     private WidgetLabel constLabel;
     private WidgetTextFieldNumber textField;
@@ -36,7 +39,7 @@ public class GuiRedstoneModule extends GuiTubeModule {
     public GuiRedstoneModule(BlockPos modulePos) {
         super(modulePos);
 
-        ySize = ((ModuleRedstone) module).getRedstoneDirection() == ModuleRedstone.EnumRedstoneDirection.OUTPUT ? 202 : 57;
+        ySize = module.getRedstoneDirection() == EnumRedstoneDirection.OUTPUT ? 202 : 57;
     }
 
     @Override
@@ -48,11 +51,18 @@ public class GuiRedstoneModule extends GuiTubeModule {
     public void init() {
         super.init();
 
-        ModuleRedstone mr = (ModuleRedstone) module;
-        upgraded = mr.isUpgraded();
-        output = mr.getRedstoneDirection() == ModuleRedstone.EnumRedstoneDirection.OUTPUT;
-        ourColor = mr.getColorChannel();
-        otherColor = mr.getOtherColor();
+        upgraded = module.isUpgraded();
+        output = module.getRedstoneDirection() == EnumRedstoneDirection.OUTPUT;
+        ourColor = module.getColorChannel();
+        otherColor = module.getOtherColor();
+
+        addButton(new WidgetButtonExtended(guiLeft + xSize - 22, guiTop + 2, 18, 12,
+                getDirText(module), b -> toggleRedstoneDirection())
+                .setTooltipText(ImmutableList.of(
+                        I18n.format(module.getRedstoneDirection().getTranslationKey()),
+                        TextFormatting.GRAY + I18n.format("gui.redstoneModule.clickToToggle")
+                ))
+        );
 
         addButton(new WidgetLabel(guiLeft + xSize / 2, guiTop + 5, getTitle().getFormattedText()).setAlignment(WidgetLabel.Alignment.CENTRE));
 
@@ -88,7 +98,7 @@ public class GuiRedstoneModule extends GuiTubeModule {
         }
         comboBox = new WidgetComboBox(font, xBase, guiTop + 43, xSize - xBase + guiLeft - 10, 12)
                 .setFixedOptions().setShouldSort(false).setElements(ops);
-        comboBox.selectElement(mr.getOperation().ordinal());
+        comboBox.selectElement(module.getOperation().ordinal());
         comboBox.active = upgraded;
         addButton(comboBox);
 
@@ -100,7 +110,7 @@ public class GuiRedstoneModule extends GuiTubeModule {
         textField = new WidgetTextFieldNumber(font, xBase, guiTop + 63, 30, 12);
         textField.minValue = 0;
         textField.setDecimals(0);
-        textField.setValue(mr.getConstantVal());
+        textField.setValue(module.getConstantVal());
         textField.active = upgraded;
         addButton(textField);
 
@@ -111,7 +121,7 @@ public class GuiRedstoneModule extends GuiTubeModule {
                 return super.mouseClicked(mouseX, mouseY, button);
             }
         };
-        invertCheckBox.checked = mr.isInverted();
+        invertCheckBox.checked = module.isInverted();
         invertCheckBox.setTooltip(I18n.format("gui.redstoneModule.invert.tooltip"));
         addButton(invertCheckBox);
 
@@ -179,11 +189,26 @@ public class GuiRedstoneModule extends GuiTubeModule {
     public void onClose() {
         super.onClose();
 
-        ((ModuleRedstone) module).setColorChannel(ourColor);
+        module.setColorChannel(ourColor);
         if (output) {
-            ((ModuleRedstone) module).setInverted(invertCheckBox.checked);
-            ((ModuleRedstone) module).setOperation(getSelectedOp(), otherColor, textField.getValue());
+            module.setInverted(invertCheckBox.checked);
+            module.setOperation(getSelectedOp(), otherColor, textField.getValue());
         }
-        NetworkHandler.sendToServer(new PacketSyncRedstoneModuleToServer((ModuleRedstone) module));
+        NetworkHandler.sendToServer(new PacketSyncRedstoneModuleToServer(module));
+    }
+
+    private void toggleRedstoneDirection() {
+        module.setRedstoneDirection(module.getRedstoneDirection().toggle());
+
+        // close and re-open... will call onClose() to sync the settings
+        onClose();
+        minecraft.displayGuiScreen(new GuiRedstoneModule(module.getTube().getPos()));
+        minecraft.player.playSound(ModSounds.INTERFACE_DOOR.get(), 0.7f, 2f);
+    }
+
+    private String getDirText(ModuleRedstone module) {
+        return module.getRedstoneDirection() == EnumRedstoneDirection.INPUT ?
+                TextFormatting.DARK_RED + GuiConstants.TRIANGLE_LEFT :
+                TextFormatting.RED + GuiConstants.TRIANGLE_RIGHT;
     }
 }

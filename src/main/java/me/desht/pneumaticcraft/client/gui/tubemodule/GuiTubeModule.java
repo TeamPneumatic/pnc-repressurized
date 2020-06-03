@@ -9,14 +9,14 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 
-public abstract class GuiTubeModule extends GuiPneumaticScreenBase {
-    protected final TubeModule module;
+public abstract class GuiTubeModule<M extends TubeModule> extends GuiPneumaticScreenBase {
+    protected final M module;
 
     GuiTubeModule(BlockPos modulePos) {
-        this(BlockPressureTube.getFocusedModule(Minecraft.getInstance().world, modulePos, Minecraft.getInstance().player));
+        this((M) BlockPressureTube.getFocusedModule(Minecraft.getInstance().world, modulePos, Minecraft.getInstance().player));
     }
 
-    GuiTubeModule(TubeModule module) {
+    GuiTubeModule(M module) {
         super(new ItemStack(module.getItem()).getDisplayName());
 
         this.module = module;
