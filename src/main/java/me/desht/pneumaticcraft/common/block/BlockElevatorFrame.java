@@ -9,6 +9,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.fluid.IFluidState;
 import net.minecraft.item.BlockItemUseContext;
+import net.minecraft.pathfinding.PathType;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
@@ -217,6 +218,11 @@ public class BlockElevatorFrame extends BlockPneumaticCraft implements IWaterLog
     public boolean isValidPosition(BlockState state, IWorldReader worldIn, BlockPos pos) {
         BlockState below = worldIn.getBlockState(pos.down());
         return below.getBlock() == this || below.getBlock() == ModBlocks.ELEVATOR_BASE.get();
+    }
+
+    @Override
+    public boolean allowsMovement(BlockState state, IBlockReader worldIn, BlockPos pos, PathType type) {
+        return true;
     }
 
     @Override

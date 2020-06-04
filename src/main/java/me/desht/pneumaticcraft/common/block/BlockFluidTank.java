@@ -16,7 +16,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.pathfinding.PathType;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
@@ -140,10 +139,6 @@ public class BlockFluidTank extends BlockPneumaticCraft implements ColorHandlers
             return size.tintColor;
         }
         return 0xFFFFFFFF;
-    }
-
-    public boolean allowsMovement(BlockState state, IBlockReader worldIn, BlockPos pos, PathType type) {
-        return false;
     }
 
     public static class ItemBlockFluidTank extends BlockItem implements ColorHandlers.ITintableItem, IFluidRendered {

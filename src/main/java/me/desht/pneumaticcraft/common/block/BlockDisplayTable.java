@@ -9,7 +9,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
-import net.minecraft.pathfinding.PathType;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
@@ -77,9 +76,5 @@ public class BlockDisplayTable extends BlockPneumaticCraft {
             return ActionResultType.SUCCESS;
         }
         return ActionResultType.PASS;
-    }
-
-    public boolean allowsMovement(BlockState state, IBlockReader worldIn, BlockPos pos, PathType type) {
-        return false;
     }
 }
