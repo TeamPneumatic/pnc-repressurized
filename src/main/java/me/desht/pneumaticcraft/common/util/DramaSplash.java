@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.util;
 
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.lib.Log;
 import org.apache.commons.io.IOUtils;
 
@@ -27,7 +28,9 @@ public class DramaSplash {
             splashSite = null;
         }
         dramaFifo = new ConcurrentLinkedQueue<>();
-        fetchMoreSplash();
+        if (PNCConfig.Client.aphorismDrama) {
+            fetchMoreSplash();
+        }
     }
 
     public static DramaSplash getInstance() {
