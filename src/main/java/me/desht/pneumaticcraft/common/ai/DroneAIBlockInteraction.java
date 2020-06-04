@@ -5,11 +5,8 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
-import me.desht.pneumaticcraft.common.progwidgets.IBlockOrdered;
+import me.desht.pneumaticcraft.common.progwidgets.*;
 import me.desht.pneumaticcraft.common.progwidgets.IBlockOrdered.EnumOrder;
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetAreaItemBase;
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetDigAndPlace;
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetPlace;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.ThreadedSorter;
 import net.minecraft.entity.ai.goal.Goal;
@@ -186,9 +183,11 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
                 return movedToBlockOK(pos);
             }
         } else {
+            ISidedWidget w = progWidget instanceof ISidedWidget ? (ISidedWidget) progWidget : null;
             for (Direction dir : Direction.VALUES) {
                 BlockPos pos2 = curPos.offset(dir);
-                if (worldCache.getBlockState(pos2).allowsMovement(worldCache, pos2, PathType.AIR)
+                if ((w == null || w.isSideSelected(dir))
+                        && worldCache.getBlockState(pos2).allowsMovement(worldCache, pos2, PathType.AIR)
                         && drone.getPathNavigator().moveToXYZ(pos2.getX(), pos2.getY() + 0.5, pos2.getZ())) {
                     return movedToBlockOK(pos);
                 }
