@@ -18,6 +18,7 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particles.RedstoneParticleData;
+import net.minecraft.pathfinding.PathType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -134,7 +135,9 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
                 firstRun = false;
                 while (!shouldAbort() && searchIndex < area.size()) {
                     BlockPos pos = area.get(searchIndex);
-                    if (isYValid(pos.getY()) && !blacklist.contains(pos) && (!respectClaims() || !DroneClaimManager.getInstance(drone.world()).isClaimed(pos))) {
+                    if (isYValid(pos.getY()) && !blacklist.contains(pos)
+                            && (!respectClaims() || !DroneClaimManager.getInstance(drone.world()).isClaimed(pos)))
+                    {
                         indicateToListeningPlayers(pos);
                         if (isValidPosition(pos)) {
                             curPos = pos;
@@ -178,12 +181,15 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
 
     private boolean tryMoveToBlock(BlockPos pos) {
         if (moveIntoBlock()) {
-            if (drone.getPathNavigator().moveToXYZ(curPos.getX(), curPos.getY() + 0.5, curPos.getZ())) {
+            if (worldCache.getBlockState(curPos).allowsMovement(worldCache, curPos, PathType.AIR)
+                    && drone.getPathNavigator().moveToXYZ(curPos.getX(), curPos.getY() + 0.5, curPos.getZ())) {
                 return movedToBlockOK(pos);
             }
         } else {
             for (Direction dir : Direction.VALUES) {
-                if (drone.getPathNavigator().moveToXYZ(curPos.getX() + dir.getXOffset(), curPos.getY() + dir.getYOffset() + 0.5, curPos.getZ() + dir.getZOffset())) {
+                BlockPos pos2 = curPos.offset(dir);
+                if (worldCache.getBlockState(pos2).allowsMovement(worldCache, pos2, PathType.AIR)
+                        && drone.getPathNavigator().moveToXYZ(pos2.getX(), pos2.getY() + 0.5, pos2.getZ())) {
                     return movedToBlockOK(pos);
                 }
             }
