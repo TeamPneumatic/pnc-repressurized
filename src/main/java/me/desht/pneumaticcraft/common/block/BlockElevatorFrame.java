@@ -11,6 +11,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.fluid.IFluidState;
 import net.minecraft.item.BlockItemUseContext;
+import net.minecraft.pathfinding.PathType;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
@@ -215,6 +216,10 @@ public class BlockElevatorFrame extends BlockPneumaticCraft implements IWaterLog
         super.onReplaced(state, world, pos, newState, isMoving);
     }
 
+    public boolean allowsMovement(BlockState state, IBlockReader worldIn, BlockPos pos, PathType type) {
+        return true;
+    }
+    
     private enum Corner {
         NE( 1,-1, BlockElevatorFrame.NE, Block.makeCuboidShape(14.5f, 0,  0.5f, 15.5f, 16,  1.5f)),
         SE( 1, 1, BlockElevatorFrame.SE, Block.makeCuboidShape(14.5f, 0, 14.5f, 15.5f, 16, 15.5f)),

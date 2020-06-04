@@ -11,6 +11,7 @@ import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.DoorBlock;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.IFluidState;
@@ -18,6 +19,7 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.pathfinding.PathType;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
@@ -44,13 +46,14 @@ public class BlockPneumaticDoor extends BlockPneumaticCraft {
 
         setDefaultState(getStateContainer().getBaseState()
                 .with(BlockStateProperties.HORIZONTAL_FACING, Direction.NORTH)
+                .with(DoorBlock.OPEN, false)
                 .with(TOP_DOOR, false));
     }
 
     @Override
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
         super.fillStateContainer(builder);
-        builder.add(TOP_DOOR);
+        builder.add(TOP_DOOR, DoorBlock.OPEN);
     }
 
     @Override
@@ -221,7 +224,12 @@ public class BlockPneumaticDoor extends BlockPneumaticCraft {
         }
     }
 
-    private TileEntityPneumaticDoorBase getDoorBase(World world, BlockPos pos) {
+    @Override
+    public boolean allowsMovement(BlockState state, IBlockReader worldIn, BlockPos pos, PathType type) {
+        return state.get(DoorBlock.OPEN);
+    }
+
+    private TileEntityPneumaticDoorBase getDoorBase(IBlockReader world, BlockPos pos) {
         if (world.getBlockState(pos).getBlock() != this) return null;
         if (!isTopDoor(world.getBlockState(pos))) {
             return getDoorBase(world, pos.offset(Direction.UP));

@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.common.block.BlockPneumaticDoor;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
+import net.minecraft.block.DoorBlock;
 import net.minecraft.item.DyeColor;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
@@ -30,6 +31,12 @@ public class TileEntityPneumaticDoor extends TileEntityTickableBase {
 
         oldRotationAngle = this.rotationAngle;
         this.rotationAngle = rotationAngle;
+
+        if (oldRotationAngle < 90f && rotationAngle == 90f) {
+            world.setBlockState(pos, getBlockState().with(DoorBlock.OPEN, true));
+        } else if (oldRotationAngle == 90f && rotationAngle < 90f) {
+            world.setBlockState(pos, getBlockState().with(DoorBlock.OPEN, false));
+        }
 
         // also rotate the TE for the other half of the door
         TileEntity otherTE = getWorld().getTileEntity(getPos().offset(isTopDoor() ? Direction.DOWN : Direction.UP));
