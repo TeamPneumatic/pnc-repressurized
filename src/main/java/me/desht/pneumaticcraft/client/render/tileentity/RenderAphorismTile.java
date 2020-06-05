@@ -43,7 +43,7 @@ public class RenderAphorismTile extends TileEntityRenderer<TileEntityAphorismTil
             String textLine = editedLine == i ? ">" + textLines[i] + "<" : textLines[i];
             float x = -fr.getStringWidth(textLine) / 2f;
             float y = -(textLines.length * fh) / 2f + i * fh + 1;
-            fr.renderString(textLine, x, y, 0xFF000000, false, matrixStack.getLast().getMatrix(), buffer, false, 0, 0x00F000F0);
+            fr.renderString(textLine, x, y, 0xFF000000, false, matrixStack.getLast().getMatrix(), buffer, false, 0, combinedLight);
         }
 
         matrixStack.pop();
