@@ -36,6 +36,10 @@ public class DroneAIPlace<W extends ProgWidgetAreaItemBase & IBlockOrdered /*& I
     @Override
     protected boolean isValidPosition(BlockPos pos) {
         if (drone.world().getBlockState(pos).getMaterial().isReplaceable()) {
+            if (PneumaticCraftUtils.getBlockCentre(pos).squareDistanceTo(drone.getDronePos()) < 1.2) {
+                // too close - placement could be blocked by the drone
+                return false;
+            }
             boolean failedOnPlacement = false;
             for (int i = 0; i < drone.getInv().getSlots(); i++) {
                 ItemStack droneStack = drone.getInv().getStackInSlot(i);
