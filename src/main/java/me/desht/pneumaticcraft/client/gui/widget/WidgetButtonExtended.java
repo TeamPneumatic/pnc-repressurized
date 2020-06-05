@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.gui.widget.ExtendedButton;
+import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -138,7 +139,10 @@ public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidge
                 RenderSystem.disableRescaleNormal();
             }
             if (resLoc != null) {
+                RenderSystem.enableBlend();
+                RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
                 GuiUtils.drawTexture(resLoc, this.x + width / 2 - 8, this.y + 2);
+                RenderSystem.disableBlend();
             }
             if (active && !thisVisible && x >= this.x && y >= this.y && x < this.x + width && y < this.y + height) {
                 AbstractGui.fill(this.x, this.y, this.x + width, this.y + height, invisibleHoverColor);
