@@ -4,10 +4,10 @@ import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetText;
 
-public class GuiProgWidgetString extends GuiProgWidgetOptionBase<ProgWidgetText> {
+public class GuiProgWidgetString<T extends ProgWidgetText> extends GuiProgWidgetOptionBase<T> {
     private WidgetTextField textfield;
 
-    public GuiProgWidgetString(ProgWidgetText widget, GuiProgrammer guiProgrammer) {
+    public GuiProgWidgetString(T widget, GuiProgrammer guiProgrammer) {
         super(widget, guiProgrammer);
     }
 

@@ -485,25 +485,6 @@ public class PneumaticCraftUtils {
         return block instanceof FlowingFluidBlock;
     }
 
-    public static String getOrientationName(Direction dir) {
-        switch (dir) {
-            case UP:
-                return "Top";
-            case DOWN:
-                return "Bottom";
-            case NORTH:
-                return "North";
-            case SOUTH:
-                return "South";
-            case EAST:
-                return "East";
-            case WEST:
-                return "West";
-            default:
-                return "Unknown";
-        }
-    }
-
     public static void dropItemOnGround(ItemStack stack, World world, BlockPos pos) {
         dropItemOnGround(stack, world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
     }

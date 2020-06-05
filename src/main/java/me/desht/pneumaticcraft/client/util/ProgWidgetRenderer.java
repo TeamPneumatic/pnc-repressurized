@@ -20,6 +20,9 @@ import org.lwjgl.opengl.GL11;
 
 import java.util.List;
 
+import static me.desht.pneumaticcraft.client.util.RenderUtils.FULL_BRIGHT;
+import static me.desht.pneumaticcraft.client.util.RenderUtils.renderWithType;
+
 public class ProgWidgetRenderer {
     /**
      * Render a progwidget into a GUI.  Do not use for in-world rendering
@@ -55,16 +58,16 @@ public class ProgWidgetRenderer {
         Pair<Float,Float> maxUV = progWidget.getMaxUV();
         float u = maxUV.getLeft();
         float v = maxUV.getRight();
-        RenderUtils.renderWithType(matrixStack, buffer, ModRenderTypes.getTextureRenderColored(progWidget.getTexture()), (posMat, builder) -> {
-            builder.pos(posMat, 0, 0, 0).color(255, 255, 255, 255).tex(0, 0).lightmap(0x00F000F0).endVertex();
-            builder.pos(posMat, width, 0, 0).color(255, 255, 255, 255).tex(u, 0).lightmap(0x00F000F0).endVertex();
-            builder.pos(posMat, width, height, 0).color(255, 255, 255, 255).tex(u, v).lightmap(0x00F000F0).endVertex();
-            builder.pos(posMat, 0, height, 0).color(255, 255, 255, 255).tex(0, v).lightmap(0x00F000F0).endVertex();
+        renderWithType(matrixStack, buffer, ModRenderTypes.getTextureRenderColored(progWidget.getTexture()), (posMat, builder) -> {
+            builder.pos(posMat, 0, 0, 0).color(255, 255, 255, 255).tex(0, 0).lightmap(FULL_BRIGHT).endVertex();
+            builder.pos(posMat, width, 0, 0).color(255, 255, 255, 255).tex(u, 0).lightmap(FULL_BRIGHT).endVertex();
+            builder.pos(posMat, width, height, 0).color(255, 255, 255, 255).tex(u, v).lightmap(FULL_BRIGHT).endVertex();
+            builder.pos(posMat, 0, height, 0).color(255, 255, 255, 255).tex(0, v).lightmap(FULL_BRIGHT).endVertex();
         });
     }
 
     public static void renderExtras(IProgWidget progWidget) {
-        if (progWidget.getExtraStringInfo() != null) {
+        if (progWidget.getExtraStringInfo() != null && !progWidget.getExtraStringInfo().isEmpty()) {
             RenderSystem.pushMatrix();
             RenderSystem.scaled(0.5, 0.5, 0.5);
             FontRenderer fr = Minecraft.getInstance().fontRenderer;

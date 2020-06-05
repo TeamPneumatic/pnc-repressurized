@@ -1091,7 +1091,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
             IProgWidget widget = programmerUnit.getHoveredWidget((int)origX, (int)origY);
             if (widget != null) {
                 // right click a prog widget: show its options screen, if any
-                GuiProgWidgetOptionBase gui = ProgWidgetGuiManager.getGui(widget, this);
+                GuiProgWidgetOptionBase<?> gui = ProgWidgetGuiManager.getGui(widget, this);
                 if (gui != null) {
                     minecraft.displayGuiScreen(gui);
                 }

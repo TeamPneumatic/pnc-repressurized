@@ -59,7 +59,7 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
     @Override
     public void renderExtraInfo() {
         ProgWidgetRenderer.renderItemFilterExtras(this);
-        if (variable.equals("")) {
+        if (variable.isEmpty()) {
             if (!filter.isEmpty()) {
                 GuiUtils.drawItemStack(filter, 10, 2, "");
             }
@@ -70,12 +70,12 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
 
     @Override
     public String getExtraStringInfo() {
-        return "\"" + variable + "\"";
+        return variable.isEmpty() ? "" : "\"" + variable + "\"";
     }
 
     @Nonnull
     public ItemStack getFilter() {
-        return variable.equals("") ? filter : aiManager != null ? aiManager.getStack(variable) : ItemStack.EMPTY;
+        return variable.isEmpty() ? filter : aiManager != null ? aiManager.getStack(variable) : ItemStack.EMPTY;
     }
 
     public ItemStack getRawFilter() {

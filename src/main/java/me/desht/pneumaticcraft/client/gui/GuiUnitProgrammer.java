@@ -198,7 +198,6 @@ public class GuiUnitProgrammer extends Screen {
                 RenderSystem.pushMatrix();
                 RenderSystem.translated(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
                 RenderSystem.scaled(0.5, 0.5, 1);
-                ProgWidgetRenderer.renderExtras(widget);
                 widget.renderExtraInfo();
                 RenderSystem.popMatrix();
             }

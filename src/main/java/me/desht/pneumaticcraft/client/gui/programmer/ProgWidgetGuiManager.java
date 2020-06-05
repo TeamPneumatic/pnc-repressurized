@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ProgWidgetGuiManager {
-    private static final Map<Class<? extends IProgWidget>, ProgWidgetGuiFactory> widgetToGuiMap = new HashMap<>();
+    private static final Map<Class<? extends IProgWidget>, ProgWidgetGuiFactory<? extends IProgWidget>> widgetToGuiMap = new HashMap<>();
 
     public static <T extends IProgWidget> void registerProgWidgetGui(Class<T> widgetClass, ProgWidgetGuiFactory<T> factory) {
         widgetToGuiMap.put(widgetClass, factory);
@@ -17,13 +17,13 @@ public class ProgWidgetGuiManager {
         return widgetToGuiMap.containsKey(widget.getClass());
     }
 
-    public static <T extends IProgWidget> GuiProgWidgetOptionBase getGui(T widget, GuiProgrammer programmer) {
-        @SuppressWarnings("unchecked") ProgWidgetGuiFactory<T> factory = widgetToGuiMap.get(widget.getClass());
+    public static <T extends IProgWidget> GuiProgWidgetOptionBase<T> getGui(T widget, GuiProgrammer programmer) {
+        @SuppressWarnings("unchecked") ProgWidgetGuiFactory<T> factory = (ProgWidgetGuiFactory<T>) widgetToGuiMap.get(widget.getClass());
         return factory == null ? null : factory.createGui(widget, programmer);
     }
 
     @FunctionalInterface
     public interface ProgWidgetGuiFactory<T extends IProgWidget> {
-        GuiProgWidgetOptionBase createGui(T progWidget, GuiProgrammer programmer);
+        GuiProgWidgetOptionBase<T> createGui(T progWidget, GuiProgrammer programmer);
     }
 }

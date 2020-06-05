@@ -1,9 +1,9 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.ai.DroneAIRightClickBlock;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.nbt.CompoundNBT;
@@ -54,7 +54,8 @@ public class ProgWidgetBlockRightClick extends ProgWidgetPlace implements IBlock
     public void getTooltip(List<ITextComponent> curTooltip) {
         super.getTooltip(curTooltip);
 
-        curTooltip.add(new TranslationTextComponent("gui.progWidget.blockRightClick.clickSide").appendText(": " + PneumaticCraftUtils.getOrientationName(clickSide)));
+        curTooltip.add(new TranslationTextComponent("gui.progWidget.blockRightClick.clickSide")
+                .appendText(": " + ClientUtils.translateDirection(clickSide)));
         if (sneaking) {
             curTooltip.add(new TranslationTextComponent("gui.progWidget.blockRightClick.sneaking"));
         }

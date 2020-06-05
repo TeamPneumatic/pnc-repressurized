@@ -198,7 +198,7 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
     }
 
     private void updateFacing() {
-        String s = logistics.getFacing() == null ? "-" : logistics.getFacing().getName();
+        String s = logistics.getFacing() == null ? "-" : ClientUtils.translateDirection(logistics.getFacing());
         facingTab.setTitle(I18n.format("gui.logistics_frame.facing", s));
         for (Direction face : Direction.values()) {
             facingButtons[face.getIndex()].active = face != logistics.getFacing();

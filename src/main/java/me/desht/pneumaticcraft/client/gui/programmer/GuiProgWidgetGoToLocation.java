@@ -9,9 +9,9 @@ import net.minecraft.client.resources.I18n;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GuiProgWidgetGoToLocation extends GuiProgWidgetAreaShow<ProgWidgetGoToLocation> {
+public class GuiProgWidgetGoToLocation<T extends ProgWidgetGoToLocation> extends GuiProgWidgetAreaShow<T> {
 
-    public GuiProgWidgetGoToLocation(ProgWidgetGoToLocation progWidget, GuiProgrammer guiProgrammer) {
+    public GuiProgWidgetGoToLocation(T progWidget, GuiProgrammer guiProgrammer) {
         super(progWidget, guiProgrammer);
     }
 

@@ -4,8 +4,8 @@ import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetRadioButton;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextFieldNumber;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.progwidgets.*;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.util.Direction;
 
 import java.util.ArrayList;
@@ -24,7 +24,7 @@ public abstract class GuiProgWidgetDroneCondition<T extends ProgWidgetDroneCondi
 
         if (isSidedWidget()) {
             for (Direction dir : Direction.VALUES) {
-                String sideName = PneumaticCraftUtils.getOrientationName(dir);
+                String sideName = ClientUtils.translateDirection(dir);
                 WidgetCheckBox checkBox = new WidgetCheckBox(guiLeft + 8, guiTop + 30 + dir.getIndex() * 12, 0xFF404040, sideName,
                         b -> ((ISidedWidget) progWidget).getSides()[dir.getIndex()] = b.checked);
                 checkBox.checked = ((ISidedWidget) progWidget).getSides()[dir.getIndex()];

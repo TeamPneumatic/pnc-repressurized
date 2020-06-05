@@ -4,8 +4,8 @@ import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetComboBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetBlockRightClick;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.Direction;
 
@@ -30,7 +30,7 @@ public class GuiProgWidgetBlockRightClick extends GuiProgWidgetPlace<ProgWidgetB
 
         sideSelector = new WidgetComboBox(font, guiLeft + 8 + label.getWidth() + 5, guiTop + 73, 50, 12);
         List<String> values = Arrays.stream(Direction.VALUES)
-                .map(PneumaticCraftUtils::getOrientationName)
+                .map(ClientUtils::translateDirection)
                 .collect(Collectors.toList());
         sideSelector.setShouldSort(false).setElements(values).setFixedOptions();
         sideSelector.setText(values.get(progWidget.getClickSide().ordinal()));

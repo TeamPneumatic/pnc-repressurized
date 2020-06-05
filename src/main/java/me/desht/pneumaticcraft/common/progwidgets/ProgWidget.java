@@ -134,24 +134,6 @@ public abstract class ProgWidget implements IProgWidget {
         return parent;
     }
 
-//    @Override
-//    public void render() {
-//        // FIXME this won't work for in-world rendering (drone debugging)
-//        Minecraft.getInstance().getTextureManager().bindTexture(getTexture());
-//        int width = getWidth() + (getParameters().isEmpty() ? 0 : 10);//(getParameters() != null && getParameters().size() > 0 ? 10 : 0);
-//        int height = getHeight() + (hasStepOutput() ? 10 : 0);
-//        Pair<Float,Float> maxUV = getMaxUV();
-//        float u = maxUV.getLeft();
-//        float v = maxUV.getRight();
-//        BufferBuilder wr = Tessellator.getInstance().getBuffer();
-//        wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-//        wr.pos(0, 0, 0).tex(0, 0).endVertex();
-//        wr.pos(0, height, 0).tex(0, v).endVertex();
-//        wr.pos(width, height, 0).tex(u, v).endVertex();
-//        wr.pos(width, 0, 0).tex(u, 0).endVertex();
-//        Tessellator.getInstance().draw();
-//    }
-
     @Override
     public void renderExtraInfo() {
         ProgWidgetRenderer.renderExtras(this);

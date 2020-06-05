@@ -2,6 +2,8 @@ package me.desht.pneumaticcraft.common.progwidgets;
 
 import joptsimple.internal.Strings;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.lib.GuiConstants;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.Direction;
@@ -18,7 +20,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
  * Base class for widgets which have side filtering and count limits.
  */
 public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase implements ISidedWidget, ICountWidget {
-    private boolean[] accessingSides = new boolean[]{true, true, true, true, true, true};
+    private boolean[] accessingSides = new boolean[]{false, true, false, false, false, false};
     private boolean useCount;
     private int count = 1;
 
@@ -71,7 +73,7 @@ public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase imp
     public void getTooltip(List<ITextComponent> curTooltip) {
         super.getTooltip(curTooltip);
         if (isUsingSides()) curTooltip.add(xlate("gui.progWidget.inventory.accessingSides"));
-        curTooltip.add(new StringTextComponent(getExtraStringInfo()));
+        curTooltip.add(new StringTextComponent(GuiConstants.TRIANGLE_RIGHT + " " + getExtraStringInfo()));
         if (useCount) curTooltip.add(xlate("gui.progWidget.inventory.usingCount", count));
     }
 
@@ -97,7 +99,7 @@ public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase imp
         } else {
             List<String> l = Arrays.stream(Direction.VALUES)
                     .filter(side -> accessingSides[side.getIndex()])
-                    .map(Direction::getName)
+                    .map(ClientUtils::translateDirection)
                     .collect(Collectors.toList());
             return Strings.join(l, ", ");
         }

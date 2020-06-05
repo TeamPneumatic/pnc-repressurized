@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
@@ -170,5 +171,9 @@ public class ClientUtils {
 
     public static void spawnEntityClientside(Entity e) {
         ((ClientWorld) getClientWorld()).addEntity(e.getEntityId(), e);
+    }
+
+    public static String translateDirection(Direction d) {
+        return I18n.format("gui.tooltip.direction." + d.toString());
     }
 }
