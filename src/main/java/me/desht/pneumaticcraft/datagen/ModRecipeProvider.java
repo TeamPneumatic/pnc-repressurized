@@ -396,7 +396,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 'H', Blocks.HOPPER
         ).build(consumer);
 
-        shaped(ModItems.LOGISTICS_CORE.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
+        shaped(ModItems.LOGISTICS_CORE.get(), 2, ModItems.COMPRESSED_IRON_INGOT.get(),
                 "BBB/BRB/BBB",
                 'B', ModBlocks.REINFORCED_BRICK_TILE.get(),
                 'R', Tags.Items.DUSTS_REDSTONE
