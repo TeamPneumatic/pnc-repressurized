@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.common.ai;
 import me.desht.pneumaticcraft.common.progwidgets.IBlockRightClicker;
 import me.desht.pneumaticcraft.common.progwidgets.ISidedWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetAreaItemBase;
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetPlace;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.block.Block;
@@ -29,12 +28,12 @@ import net.minecraftforge.eventbus.api.Event;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DroneAIBlockInteract extends DroneAIBlockInteraction<ProgWidgetAreaItemBase> {
-
+public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetAreaItemBase> {
     private final List<BlockPos> visitedPositions = new ArrayList<>();
 
-    public DroneAIBlockInteract(IDroneBase drone, ProgWidgetAreaItemBase widget) {
+    public DroneAIRightClickBlock(IDroneBase drone, ProgWidgetAreaItemBase widget) {
         super(drone, widget);
+
         drone.getFakePlayer().setSneaking(((IBlockRightClicker) widget).isSneaking());
     }
 
@@ -55,7 +54,7 @@ public class DroneAIBlockInteract extends DroneAIBlockInteraction<ProgWidgetArea
     }
 
     private boolean rightClick(BlockPos pos) {
-        Direction faceDir = ProgWidgetPlace.getDirForSides(((ISidedWidget) progWidget).getSides());
+        Direction faceDir = ISidedWidget.getDirForSides(((ISidedWidget) progWidget).getSides());
         PlayerEntity fakePlayer = drone.getFakePlayer();
         World world = drone.world();
         ItemStack stack = fakePlayer.getHeldItemMainhand();
