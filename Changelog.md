@@ -6,6 +6,38 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.15.2
 
+## 1.2.3-?? (unreleased)
+
+### Updates
+* Logistics Core recipe has been changed to create two cores instead of one
+* Did some drone pathfinding optimisation, in particular reducing server-side CPU usage when drones can't find a path
+  * Added some checks to cull a lot of unnecessary searches
+* Small visual improvement for the Omnidirection & Liquid Hopppers
+  * Output spout is slightly narrower, and the output end is a little darker
+* Pastebin GUI: added "Pretty?" option to control pretty-printing of JSON output to Pastebin/clipboard
+  * Default is now not to pretty-print JSON, so saved drone programs & remote layouts are a lot more compact
+* Redstone Module I/O direction can now be configured in the module's GUI
+  * This does not require an Advanced PCB to be installed
+  * Toggling I/O with a Wrench still works too
+* Drones (both entity and item form) now show their carried fluid, if any
+  * Shown in item tooltip for drones in item form
+  * Shown in TOP/Waila display for drone entities
+* It's now possible to attach levers/buttons/etc. to the side of camouflaged blocks (assuming the camouflage is solid, of course)
+  * This is particularly nice for camouflaged Pressure Tubes with Redstone Modules on them
+  
+### Fixes
+* Drones should be able to place blocks much more reliably now
+* Fixed Drones (and other entities) sometimes getting badly confused while trying to path across or through some PneumaticCraft blocks
+  * Blocks were wrongly reporting themselves suitable for pathing through, when their hitbox actually didn't allow it
+* Fixed the clientside "drama_splash" config option not being properly honoured when set to false
+* Some Programmer GUI fixes:
+  * Fixed widget area dragging behaviour when dragging items from inventory slots across it
+  * Fixed Area widgets in the programmer GUI not being sync'd to server when clicked with a GPS (or Area GPS) Tool
+  * Fixed Area widgets jumping position when clicked with a GPS or Area GPS tool in the programmer
+* Fixed Pastebin communication (now using HTTPS exclusively, looks like HTTP is no longer accepted) 
+* Fixed client crash caused by wrongly attempting to send some server->client sync packets
+  * Caused sometimes when breaking off camouflage blocks
+  
 ## 1.2.2-30 (1 Jun 2020)
 
 ### New
