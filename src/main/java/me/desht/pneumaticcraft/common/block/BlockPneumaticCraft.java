@@ -350,17 +350,25 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
         }
 
         String info = "gui.tab.info." + stack.getTranslationKey();
-        if (I18n.hasKey(info)) {
-            if (PneumaticCraftRepressurized.proxy.isSneakingInGui()) {
-                String translatedInfo = TextFormatting.AQUA + I18n.format(info).substring(2);  // strip out the leading text formatting
-                curInfo.addAll(PneumaticCraftUtils.convertStringIntoList(translatedInfo, 50));
-                if (!ThirdPartyManager.instance().docsProvider.docsProviderInstalled()) {
-                    curInfo.add(I18n.format("gui.tab.info.assistIGW"));
-                }
-            } else {
-                curInfo.add(TextFormatting.AQUA + I18n.format("gui.tooltip.sneakForInfo"));
+        if (PneumaticCraftRepressurized.proxy.isSneakingInGui()) {
+            if (!addTooltip(curInfo, info + ".short")) {
+                addTooltip(curInfo, info);
             }
+        } else {
+            curInfo.add(TextFormatting.AQUA + I18n.format("gui.tooltip.sneakForInfo"));
         }
+    }
+
+    private boolean addTooltip(List<String> curInfo, String info) {
+        if (I18n.hasKey(info)) {
+            String translatedInfo = TextFormatting.AQUA + I18n.format(info).substring(2);  // strip out the leading text formatting
+            curInfo.addAll(PneumaticCraftUtils.convertStringIntoList(translatedInfo, 50));
+            if (!ThirdPartyManager.instance().docsProvider.docsProviderInstalled()) {
+                curInfo.add(I18n.format("gui.tab.info.assistIGW"));
+            }
+            return true;
+        }
+        return false;
     }
 
     protected void addExtraInformation(ItemStack stack, World world, List<String> curInfo, ITooltipFlag flag) {
@@ -501,7 +509,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
         if(te instanceof IInfoForwarder){
             te = ((IInfoForwarder)te).getInfoTileEntity();
         }
-        
+
         if (te instanceof IPneumaticMachine) {
             TOPCallback.handlePneumatic(mode, probeInfo, (IPneumaticMachine)te);
         }
