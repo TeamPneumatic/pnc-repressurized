@@ -49,16 +49,16 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
     public void init() {
         super.init();
 
-        String amadron = I18n.format("gui.amadron.title");
+        String amadron = I18n.format("pneumaticcraft.gui.amadron.title");
         addLabel(amadron, guiLeft + xSize / 2 - font.getStringWidth(amadron) / 2, guiTop + 5, 0xFFFFFF);
-        addLabel(I18n.format("gui.search"), guiLeft + 76 - font.getStringWidth(I18n.format("gui.search")), guiTop + 41, 0xFFFFFF);
+        addLabel(I18n.format("pneumaticcraft.gui.search"), guiLeft + 76 - font.getStringWidth(I18n.format("pneumaticcraft.gui.search")), guiTop + 41, 0xFFFFFF);
 
         addInfoTab(I18n.format("gui.tooltip.item.pneumaticcraft.amadron_tablet"));
-        addAnimatedStat("gui.tab.info.ghostSlotInteraction.title", Textures.GUI_MOUSE_LOCATION, 0xFF00AAFF, true)
-                .setText("gui.tab.info.ghostSlotInteraction");
-        addAnimatedStat("gui.tab.amadron.disclaimer.title", new ItemStack(Items.WRITABLE_BOOK), 0xFF0000FF, true)
-                .setText("gui.tab.amadron.disclaimer");
-        customTradesTab = addAnimatedStat("gui.tab.amadron.customTrades", new ItemStack(Items.DIAMOND), 0xFFD07000, false);
+        addAnimatedStat("pneumaticcraft.gui.tab.info.ghostSlotInteraction.title", Textures.GUI_MOUSE_LOCATION, 0xFF00AAFF, true)
+                .setText("pneumaticcraft.gui.tab.info.ghostSlotInteraction");
+        addAnimatedStat("pneumaticcraft.gui.tab.amadron.disclaimer.title", new ItemStack(Items.WRITABLE_BOOK), 0xFF0000FF, true)
+                .setText("pneumaticcraft.gui.tab.amadron.disclaimer");
+        customTradesTab = addAnimatedStat("pneumaticcraft.gui.tab.amadron.customTrades", new ItemStack(Items.DIAMOND), 0xFFD07000, false);
         customTradesTab.addPadding(6, 10);
         searchBar = new WidgetTextField(font, guiLeft + 79, guiTop + 40, 73, font.FONT_HEIGHT);
         searchBar.setFocused2(true);
@@ -68,15 +68,15 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
 
         addButton(scrollbar = new WidgetVerticalScrollbar(guiLeft + 156, guiTop + 54, 142).setStates(1).setListening(true));
 
-        List<String> tooltip = PneumaticCraftUtils.splitString(I18n.format("gui.amadron.button.order.tooltip"), 40);
-        orderButton = new WidgetButtonExtended(guiLeft + 52, guiTop + 16, 72, 20, I18n.format("gui.amadron.button.order")).setTooltipText(tooltip).withTag("order");
+        List<String> tooltip = PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.amadron.button.order.tooltip"), 40);
+        orderButton = new WidgetButtonExtended(guiLeft + 52, guiTop + 16, 72, 20, I18n.format("pneumaticcraft.gui.amadron.button.order")).setTooltipText(tooltip).withTag("order");
         addButton(orderButton);
 
         addTradeButton = new WidgetButtonExtended(16, 26, 20, 20, "")
                 .setRenderStacks(new ItemStack(Items.EMERALD)).withTag("addPlayerTrade");
         tooltip = new ArrayList<>();
-        tooltip.add(I18n.format("gui.amadron.button.addTrade"));
-        tooltip.addAll(PneumaticCraftUtils.splitString(I18n.format("gui.amadron.button.addTrade.tooltip"), 40));
+        tooltip.add(I18n.format("pneumaticcraft.gui.amadron.button.addTrade"));
+        tooltip.addAll(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.amadron.button.addTrade.tooltip"), 40));
         addTradeButton.setTooltipText(tooltip);
         customTradesTab.addSubWidget(addTradeButton);
 
@@ -122,7 +122,7 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
         orderButton.active = !container.isBasketEmpty();
         addTradeButton.active = container.currentOffers < container.maxOffers;
         List<String> text = new ArrayList<>();
-        text.add(I18n.format("gui.amadron.button.addTrade.tooltip.offerCount",
+        text.add(I18n.format("pneumaticcraft.gui.amadron.button.addTrade.tooltip.offerCount",
                 container.currentOffers,
                 container.maxOffers == Integer.MAX_VALUE ? GuiConstants.INFINITY : container.maxOffers));
         IntStream.range(0, 3).forEach(i -> text.add(" "));

@@ -47,7 +47,7 @@ public class GuiGPSAreaTool extends GuiGPSTool {
 
         int x = xMiddle - CHANGE_AREA_BUTTON_WIDTH / 2;
         int y = yMiddle + 100;
-        addButton(new Button(x, y, CHANGE_AREA_BUTTON_WIDTH, 20, I18n.format("gui.gps_area_tool.changeAreaType"), b -> {
+        addButton(new Button(x, y, CHANGE_AREA_BUTTON_WIDTH, 20, I18n.format("pneumaticcraft.gui.gps_area_tool.changeAreaType"), b -> {
             ItemStack stack = minecraft.player.getHeldItem(hand);
             ProgWidgetArea area = ItemGPSAreaTool.getArea(stack);
             minecraft.displayGuiScreen(new GuiProgWidgetAreaTool(area, hand, () -> minecraft.displayGuiScreen(new GuiGPSAreaTool(stack, hand, index))));

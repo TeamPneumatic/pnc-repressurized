@@ -26,7 +26,7 @@ public class GuiProgWidgetBlockRightClick extends GuiProgWidgetPlace<ProgWidgetB
         super.init();
 
         WidgetLabel label;
-        addButton(label = new WidgetLabel(guiLeft + 8, guiTop + 75, I18n.format("gui.progWidget.blockRightClick.clickSide")));
+        addButton(label = new WidgetLabel(guiLeft + 8, guiTop + 75, I18n.format("pneumaticcraft.gui.progWidget.blockRightClick.clickSide")));
 
         sideSelector = new WidgetComboBox(font, guiLeft + 8 + label.getWidth() + 5, guiTop + 73, 50, 12);
         List<String> values = Arrays.stream(Direction.VALUES)
@@ -37,9 +37,9 @@ public class GuiProgWidgetBlockRightClick extends GuiProgWidgetPlace<ProgWidgetB
         addButton(sideSelector);
 
         checkboxSneaking = new WidgetCheckBox(guiLeft + 8, guiTop + 95, 0xFF404040,
-                I18n.format("gui.progWidget.blockRightClick.sneaking"));
+                I18n.format("pneumaticcraft.gui.progWidget.blockRightClick.sneaking"));
         checkboxSneaking.setChecked(progWidget.isSneaking());
-        checkboxSneaking.setTooltip(I18n.format("gui.progWidget.blockRightClick.sneaking.tooltip"));
+        checkboxSneaking.setTooltip(I18n.format("pneumaticcraft.gui.progWidget.blockRightClick.sneaking.tooltip"));
         addButton(checkboxSneaking);
     }
 

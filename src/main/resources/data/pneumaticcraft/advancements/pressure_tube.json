@@ -4,10 +4,10 @@
       "item": "pneumaticcraft:pressure_tube"
     },
     "title": {
-      "translate": "achievement.pressureTube"
+      "translate": "pneumaticcraft.achievement.pressureTube"
     },
     "description": {
-      "translate": "achievement.pressureTube.desc"
+      "translate": "pneumaticcraft.achievement.pressureTube.desc"
     }
   },
   "parent": "pneumaticcraft:root",

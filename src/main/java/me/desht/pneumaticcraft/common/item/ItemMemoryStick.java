@@ -107,7 +107,7 @@ public class ItemMemoryStick extends Item implements ColorHandlers.ITintableItem
                 FluidStack fluidStack = handler.getFluidInTank(0);
                 int amount = fluidStack.getAmount();
                 int levels = EnchantmentUtils.getLevelForExperience(amount/ ratio);
-                tooltip.add(new TranslationTextComponent("gui.tooltip.memory_stick.xp_stored", amount / ratio, levels).applyTextStyle(TextFormatting.GREEN));
+                tooltip.add(new TranslationTextComponent("pneumaticcraft.gui.tooltip.memory_stick.xp_stored", amount / ratio, levels).applyTextStyle(TextFormatting.GREEN));
             });
             boolean absorb = shouldAbsorbXPOrbs(stack);
             tooltip.add(new TranslationTextComponent("message.memory_stick.absorb." + absorb).applyTextStyle(TextFormatting.YELLOW));

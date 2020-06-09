@@ -4,10 +4,10 @@
       "item": "pneumaticcraft:programming_puzzle"
     },
     "title": {
-      "translate": "achievement.programmingPuzzle"
+      "translate": "pneumaticcraft.achievement.programmingPuzzle"
     },
     "description": {
-      "translate": "achievement.programmingPuzzle.desc"
+      "translate": "pneumaticcraft.achievement.programmingPuzzle.desc"
     }
   },
   "parent": "pneumaticcraft:programmer",

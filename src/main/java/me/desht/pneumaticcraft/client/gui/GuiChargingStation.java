@@ -68,7 +68,7 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<ContainerCharg
         ItemStack stack = te.getPrimaryInventory().getStackInSlot(TileEntityChargingStation.CHARGE_INVENTORY_INDEX);
         guiSelectButton.visible = stack.getItem() instanceof IChargeableContainerProvider;
         if (guiSelectButton.visible) {
-            guiSelectButton.setTooltipText(I18n.format("gui.tooltip.charging_station.manageUpgrades", stack.getDisplayName().getFormattedText()));
+            guiSelectButton.setTooltipText(I18n.format("pneumaticcraft.gui.tooltip.charging_station.manageUpgrades", stack.getDisplayName().getFormattedText()));
         }
 
         // multiplier of 25 is about the max that looks good (higher values can make the animation look like
@@ -93,11 +93,11 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<ContainerCharg
     protected void addPressureStatInfo(List<String> pressureStatText) {
         super.addPressureStatInfo(pressureStatText);
         if (te.charging || te.discharging) {
-            String key = te.charging ? "gui.tooltip.charging" : "gui.tooltip.discharging";
+            String key = te.charging ? "pneumaticcraft.gui.tooltip.charging" : "pneumaticcraft.gui.tooltip.discharging";
             String amount = PneumaticCraftUtils.roundNumberTo(PneumaticValues.CHARGING_STATION_CHARGE_RATE * te.getSpeedMultiplierFromUpgrades(), 1);
             pressureStatText.add(TextFormatting.BLACK + I18n.format(key, amount));
         } else {
-            pressureStatText.add(TextFormatting.BLACK + I18n.format("gui.tooltip.charging", 0));
+            pressureStatText.add(TextFormatting.BLACK + I18n.format("pneumaticcraft.gui.tooltip.charging", 0));
         }
     }
 
@@ -116,16 +116,16 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<ContainerCharg
         super.addWarnings(curInfo);
         ItemStack chargeStack  = te.getPrimaryInventory().getStackInSlot(TileEntityChargingStation.CHARGE_INVENTORY_INDEX);
         if (chargeStack.isEmpty()) {
-            curInfo.add(I18n.format("gui.tab.problems.charging_station.no_item"));
+            curInfo.add(I18n.format("pneumaticcraft.gui.tab.problems.charging_station.no_item"));
         } else {
             chargeStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(h -> {
                 String name = chargeStack.getDisplayName().getFormattedText();
                 if (h.getPressure() > te.getPressure() + 0.01F && h.getPressure() <= 0) {
-                    curInfo.addAll(PneumaticCraftUtils.splitString(I18n.format("gui.tab.problems.charging_station.item_empty", name)));
+                    curInfo.addAll(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.tab.problems.charging_station.item_empty", name)));
                 } else if (h.getPressure() < te.getPressure() - 0.01F && h.getPressure() >= h.maxPressure()) {
-                    curInfo.addAll(PneumaticCraftUtils.splitString(I18n.format("gui.tab.problems.charging_station.item_full", name)));
+                    curInfo.addAll(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.tab.problems.charging_station.item_full", name)));
                 } else if (!te.charging && !te.discharging) {
-                    curInfo.addAll(PneumaticCraftUtils.splitString(I18n.format("gui.tab.problems.charging_station.pressure_equal", name)));
+                    curInfo.addAll(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.tab.problems.charging_station.pressure_equal", name)));
                 }
             });
         }

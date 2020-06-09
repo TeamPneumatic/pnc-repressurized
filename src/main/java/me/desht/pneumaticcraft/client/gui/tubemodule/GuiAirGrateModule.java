@@ -35,8 +35,8 @@ public class GuiAirGrateModule extends GuiTubeModule<ModuleAirGrate> {
         super.init();
 
         addLabel(title.getFormattedText(), guiLeft + xSize / 2, guiTop + 5, WidgetLabel.Alignment.CENTRE);
-        WidgetLabel label = addLabel(I18n.format("gui.entityFilter"), guiLeft + 10, guiTop + 30);
-        addLabel(I18n.format("gui.holdF1forHelp"), guiLeft + xSize / 2, guiTop + ySize + 5, WidgetLabel.Alignment.CENTRE)
+        WidgetLabel label = addLabel(I18n.format("pneumaticcraft.gui.entityFilter"), guiLeft + 10, guiTop + 30);
+        addLabel(I18n.format("pneumaticcraft.gui.holdF1forHelp"), guiLeft + xSize / 2, guiTop + ySize + 5, WidgetLabel.Alignment.CENTRE)
                 .setColor(0xFFC0C0C0);
 
         int tx = 12 + label.getWidth();
@@ -74,7 +74,7 @@ public class GuiAirGrateModule extends GuiTubeModule<ModuleAirGrate> {
 
         if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {
             GuiUtils.showPopupHelpScreen(this, font,
-                    PneumaticCraftUtils.splitString(I18n.format("gui.entityFilter.helpText"), 60));
+                    PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.entityFilter.helpText"), 60));
         }
     }
 

@@ -44,14 +44,14 @@ public class ItemSeismicSensor extends Item {
                         }
                     }
                     player.sendStatusMessage(new TranslationTextComponent(
-                            "message.seismicSensor.foundOilDetails",
+                            "pneumaticcraft.message.seismicSensor.foundOilDetails",
                             TextFormatting.GREEN.toString() + (startY - pos.getY()),
                             TextFormatting.GREEN.toString() + oilPositions.size() / 10 * 10),
                             false);
                     return ActionResultType.SUCCESS;
                 }
             }
-            player.sendStatusMessage(new TranslationTextComponent("message.seismicSensor.noOilFound"), false);
+            player.sendStatusMessage(new TranslationTextComponent("pneumaticcraft.message.seismicSensor.noOilFound"), false);
         }
         return ActionResultType.SUCCESS; // we don't want to use the item.
 

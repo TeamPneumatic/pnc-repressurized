@@ -10,7 +10,7 @@ public interface IDocsProvider {
     void showWidgetDocs(String path);
 
     default void addTooltip(List<ITextComponent> tooltip, boolean showingAll) {
-        tooltip.add(xlate(showingAll ? "gui.programmer.pressIForInfoTrayOpen" : "gui.programmer.pressIForInfo"));
+        tooltip.add(xlate(showingAll ? "pneumaticcraft.gui.programmer.pressIForInfoTrayOpen" : "pneumaticcraft.gui.programmer.pressIForInfo"));
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")

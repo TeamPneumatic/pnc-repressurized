@@ -4,10 +4,10 @@
       "item": "pneumaticcraft:logistics_configurator"
     },
     "title": {
-      "translate": "achievement.logisticsConfigurator"
+      "translate": "pneumaticcraft.achievement.logisticsConfigurator"
     },
     "description": {
-      "translate": "achievement.logisticsConfigurator.desc"
+      "translate": "pneumaticcraft.achievement.logisticsConfigurator.desc"
     }
   },
   "parent": "pneumaticcraft:logistics_frame",

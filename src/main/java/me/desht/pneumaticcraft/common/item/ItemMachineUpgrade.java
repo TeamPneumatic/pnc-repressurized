@@ -44,15 +44,15 @@ public class ItemMachineUpgrade extends Item implements IUpgradeItem {
     @OnlyIn(Dist.CLIENT)
     public void addInformation(ItemStack stack, World world, List<ITextComponent> infoList, ITooltipFlag par4) {
         if (ClientUtils.hasShiftDown()) {
-            infoList.add(xlate("gui.tooltip.item.upgrade.usedIn"));
+            infoList.add(xlate("pneumaticcraft.gui.tooltip.item.upgrade.usedIn"));
             PneumaticRegistry.getInstance().getItemRegistry().addTooltip(upgrade, infoList);
         } else {
-            infoList.add(xlate("gui.tooltip.item.upgrade.shiftMessage").applyTextStyle(TextFormatting.AQUA));
+            infoList.add(xlate("pneumaticcraft.gui.tooltip.item.upgrade.shiftMessage").applyTextStyle(TextFormatting.AQUA));
         }
         if (getUpgradeType() == EnumUpgrade.DISPENSER) {
             Direction dir = stack.hasTag() ? Direction.byName(NBTUtil.getString(stack, NBT_DIRECTION)) : null;
-            infoList.add(xlate("message.dispenser.direction", dir == null ? "*" : dir.getName()));
-            infoList.add(xlate("message.dispenser.clickToSet"));
+            infoList.add(xlate("pneumaticcraft.message.dispenser.direction", dir == null ? "*" : dir.getName()));
+            infoList.add(xlate("pneumaticcraft.message.dispenser.clickToSet"));
         }
         super.addInformation(stack, world, infoList, par4);
     }
@@ -83,10 +83,10 @@ public class ItemMachineUpgrade extends Item implements IUpgradeItem {
         ItemStack stack = player.getHeldItem(hand);
         if (facing == null) {
             stack.setTag(null);
-            player.sendStatusMessage(new TranslationTextComponent("message.dispenser.direction", "*"), true);
+            player.sendStatusMessage(new TranslationTextComponent("pneumaticcraft.message.dispenser.direction", "*"), true);
         } else {
             NBTUtil.setString(stack, NBT_DIRECTION, facing.getName());
-            player.sendStatusMessage(new TranslationTextComponent("message.dispenser.direction", facing.getName()), true);
+            player.sendStatusMessage(new TranslationTextComponent("pneumaticcraft.message.dispenser.direction", facing.getName()), true);
         }
     }
 

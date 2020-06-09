@@ -177,7 +177,7 @@ public abstract class TubeModule {
         if (this instanceof INetworkedModule) {
             int colorChannel = ((INetworkedModule) this).getColorChannel();
             String key = "color.minecraft." + DyeColor.byId(colorChannel);
-            curInfo.add(new TranslationTextComponent("waila.logisticsModule.channel").appendText(" ")
+            curInfo.add(new TranslationTextComponent("pneumaticcraft.waila.logisticsModule.channel").appendText(" ")
                     .appendSibling(new TranslationTextComponent(key).applyTextStyle(TextFormatting.YELLOW)));
         }
     }

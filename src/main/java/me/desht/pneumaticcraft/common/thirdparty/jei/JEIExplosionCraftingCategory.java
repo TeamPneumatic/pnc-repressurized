@@ -21,7 +21,7 @@ public class JEIExplosionCraftingCategory implements IRecipeCategory<ExplosionCr
     private final IDrawable icon;
 
     JEIExplosionCraftingCategory() {
-        localizedName = I18n.format("gui.nei.title.explosionCrafting");
+        localizedName = I18n.format("pneumaticcraft.gui.nei.title.explosionCrafting");
         background = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_MISC_RECIPES, 0, 0, 82, 18);
         icon = JEIPlugin.jeiHelpers.getGuiHelper()
                 .drawableBuilder(Textures.JEI_EXPLOSION, 0, 0, 16, 16)
@@ -77,7 +77,7 @@ public class JEIExplosionCraftingCategory implements IRecipeCategory<ExplosionCr
     public List<String> getTooltipStrings(ExplosionCraftingRecipe recipe, double mouseX, double mouseY) {
         List<String> res = new ArrayList<>();
         if (mouseX >= 23 && mouseX <= 60) {
-            res.addAll(PneumaticCraftUtils.splitString(I18n.format("gui.nei.recipe.explosionCrafting", recipe.getLossRate()), 32));
+            res.addAll(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.nei.recipe.explosionCrafting", recipe.getLossRate()), 32));
         }
         return res;
     }

@@ -58,7 +58,7 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
             }
         }
         if (!usingVariables && getRecipeResult(ClientUtils.getClientWorld()) == null) {
-            curInfo.add(xlate("gui.progWidget.crafting.error.noCraftingRecipe"));
+            curInfo.add(xlate("pneumaticcraft.gui.progWidget.crafting.error.noCraftingRecipe"));
         }
     }
 

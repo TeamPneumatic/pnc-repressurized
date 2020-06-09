@@ -19,7 +19,7 @@ public abstract class AreaType{
 
     }
     public AreaType(String name){
-        this.unlocalizedName = String.format("gui.progWidget.area.type.%s.name", name);
+        this.unlocalizedName = String.format("pneumaticcraft.gui.progWidget.area.type.%s.name", name);
     }
     public String getName(){
         return I18n.format(unlocalizedName);

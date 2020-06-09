@@ -4,10 +4,10 @@
       "item": "pneumaticcraft:uv_light_box"
     },
     "title": {
-      "translate": "achievement.uvLightBox"
+      "translate": "pneumaticcraft.achievement.uvLightBox"
     },
     "description": {
-      "translate": "achievement.uvLightBox.desc"
+      "translate": "pneumaticcraft.achievement.uvLightBox.desc"
     }
   },
   "parent": "pneumaticcraft:pcb_blueprint",

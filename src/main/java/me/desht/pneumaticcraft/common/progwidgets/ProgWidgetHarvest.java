@@ -53,7 +53,7 @@ public class ProgWidgetHarvest extends ProgWidgetDigAndPlace implements IToolUse
         super.getTooltip(curTooltip);
         
         if (requiresTool()) {
-            curTooltip.add(xlate("gui.progWidget.harvest.requiresHoe"));
+            curTooltip.add(xlate("pneumaticcraft.gui.progWidget.harvest.requiresHoe"));
         }
     }
     

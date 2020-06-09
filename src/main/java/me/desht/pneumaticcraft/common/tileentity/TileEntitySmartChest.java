@@ -410,7 +410,7 @@ public class TileEntitySmartChest extends TileEntityTickableBase
         }
 
         public String getTranslationKey() {
-            return "gui.tooltip.smartChest.mode." + key;
+            return "pneumaticcraft.gui.tooltip.smartChest.mode." + key;
         }
 
         public PushPullMode cycle() {

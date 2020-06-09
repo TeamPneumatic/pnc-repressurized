@@ -185,7 +185,7 @@ public class EventHandlerPneumaticCraft {
                     if (blockingStations > 0) {
                         event.setCanceled(true);
                         event.getPlayer().sendStatusMessage(new TranslationTextComponent(
-                                        tryingToPlaceSecurityStation ? "message.securityStation.stationPlacementPrevented" : "message.securityStation.accessPrevented",
+                                        tryingToPlaceSecurityStation ? "pneumaticcraft.message.securityStation.stationPlacementPrevented" : "pneumaticcraft.message.securityStation.accessPrevented",
                                         blockingStations), false);
                     }
                 }

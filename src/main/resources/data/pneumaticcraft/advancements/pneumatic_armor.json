@@ -4,10 +4,10 @@
       "item": "pneumaticcraft:pneumatic_helmet"
     },
     "title": {
-      "translate": "achievement.pneumaticArmor"
+      "translate": "pneumaticcraft.achievement.pneumaticArmor"
     },
     "description": {
-      "translate": "achievement.pneumaticArmor.desc"
+      "translate": "pneumaticcraft.achievement.pneumaticArmor.desc"
     }
   },
   "parent": "pneumaticcraft:printed_circuit_board",

@@ -23,7 +23,7 @@ public class EntityAmadrone extends EntityDrone {
         super(type, world, null);
 
         getAirHandler().addAir(100000);
-        setCustomName(new TranslationTextComponent("drone.amadronDeliveryDrone"));
+        setCustomName(new TranslationTextComponent("pneumaticcraft.drone.amadronDeliveryDrone"));
     }
 
     public void setHandlingOffer(ResourceLocation offerId, int times, @Nonnull ItemStack usedTablet, String buyingPlayer, AmadronAction amadronAction) {

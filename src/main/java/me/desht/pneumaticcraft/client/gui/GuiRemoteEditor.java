@@ -67,7 +67,7 @@ public class GuiRemoteEditor extends GuiRemote {
             if (ItemRemote.hasSameSecuritySettings(remote, invSearchGui.getSearchStack())) {
                 remoteLayout = new RemoteLayout(invSearchGui.getSearchStack(), guiLeft, guiTop);
             } else {
-                minecraft.player.sendStatusMessage(new StringTextComponent("gui.remote.differentSecuritySettings"), false);
+                minecraft.player.sendStatusMessage(new StringTextComponent("pneumaticcraft.gui.remote.differentSecuritySettings"), false);
             }
         }
 
@@ -77,9 +77,9 @@ public class GuiRemoteEditor extends GuiRemote {
         oldGuiTop = guiTop;
 
         widgetTray.clear();
-        widgetTray.add(new ActionWidgetCheckBox(new WidgetCheckBox(guiLeft + 200, guiTop + 23, 0xFF404040, I18n.format("gui.remote.tray.checkbox.name"))));
-        widgetTray.add(new ActionWidgetLabel(new WidgetLabelVariable(guiLeft + 200, guiTop + 38, I18n.format("gui.remote.tray.label.name"))));
-        widgetTray.add(new ActionWidgetButton(new WidgetButtonExtended(guiLeft + 200, guiTop + 53, 50, 20, I18n.format("gui.remote.tray.button.name"))));
+        widgetTray.add(new ActionWidgetCheckBox(new WidgetCheckBox(guiLeft + 200, guiTop + 23, 0xFF404040, I18n.format("pneumaticcraft.gui.remote.tray.checkbox.name"))));
+        widgetTray.add(new ActionWidgetLabel(new WidgetLabelVariable(guiLeft + 200, guiTop + 38, I18n.format("pneumaticcraft.gui.remote.tray.label.name"))));
+        widgetTray.add(new ActionWidgetButton(new WidgetButtonExtended(guiLeft + 200, guiTop + 53, 50, 20, I18n.format("pneumaticcraft.gui.remote.tray.button.name"))));
         widgetTray.add(new ActionWidgetDropdown(new WidgetComboBox(font, guiLeft + 200, guiTop + 80, 70, font.FONT_HEIGHT + 1).setFixedOptions()));
 
         for (ActionWidget actionWidget : widgetTray) {
@@ -87,27 +87,27 @@ public class GuiRemoteEditor extends GuiRemote {
         }
 
         addButton(new WidgetButtonExtended(guiLeft - 24, guiTop, 20, 20, "", b -> doImport())
-                .setTooltipText(I18n.format("gui.remote.button.importRemoteButton"))
+                .setTooltipText(I18n.format("pneumaticcraft.gui.remote.button.importRemoteButton"))
                 .setRenderStacks(new ItemStack(ModItems.REMOTE.get()))
         );
 
         addButton(new WidgetButtonExtended(guiLeft - 24, guiTop + 22, 20, 20, "", b -> doPastebin())
-                .setTooltipText(I18n.format("gui.remote.button.pastebinButton"))
+                .setTooltipText(I18n.format("pneumaticcraft.gui.remote.button.pastebinButton"))
                 .setRenderedIcon(Textures.GUI_PASTEBIN_ICON_LOCATION)
         );
 
-        WidgetCheckBox snapCheck = new WidgetCheckBox(guiLeft + 194, guiTop + 105, 0xFF404040, I18n.format("gui.remote.snapToGrid"),
+        WidgetCheckBox snapCheck = new WidgetCheckBox(guiLeft + 194, guiTop + 105, 0xFF404040, I18n.format("pneumaticcraft.gui.remote.snapToGrid"),
                 b -> ConfigHelper.setGuiRemoteGridSnap(b.checked));
         snapCheck.checked = PNCConfig.Client.guiRemoteGridSnap;
         addButton(snapCheck);
 
-        addButton(new WidgetLabel(guiLeft + 234, guiTop + 7, TextFormatting.BOLD + I18n.format("gui.remote.widgetTray")).setAlignment(WidgetLabel.Alignment.CENTRE));
+        addButton(new WidgetLabel(guiLeft + 234, guiTop + 7, TextFormatting.BOLD + I18n.format("pneumaticcraft.gui.remote.widgetTray")).setAlignment(WidgetLabel.Alignment.CENTRE));
 
         minecraft.keyboardListener.enableRepeatEvents(true);
     }
 
     private void doImport() {
-        ClientUtils.openContainerGui(ModContainers.INVENTORY_SEARCHER.get(), new TranslationTextComponent("gui.amadron.addTrade.invSearch"));
+        ClientUtils.openContainerGui(ModContainers.INVENTORY_SEARCHER.get(), new TranslationTextComponent("pneumaticcraft.gui.amadron.addTrade.invSearch"));
         if (minecraft.currentScreen instanceof GuiInventorySearcher) {
             invSearchGui = (GuiInventorySearcher) minecraft.currentScreen;
             invSearchGui.setStackPredicate(s -> s.getItem() == ModItems.REMOTE.get());

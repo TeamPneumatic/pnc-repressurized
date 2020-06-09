@@ -15,7 +15,7 @@ public class GuiMinigun extends GuiPneumaticInventoryItem {
     public void init() {
         super.init();
 
-        addAnimatedStat("gui.tab.info", Textures.GUI_INFO_LOCATION, 0xFF8888FF, true)
+        addAnimatedStat("pneumaticcraft.gui.tab.info", Textures.GUI_INFO_LOCATION, 0xFF8888FF, true)
                 .setText("gui.tooltip.item.pneumaticcraft.minigun");
         addUpgradeTabs(itemStack.getItem(), "minigun");
     }

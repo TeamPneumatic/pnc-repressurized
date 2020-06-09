@@ -58,7 +58,7 @@ public class ProgWidgetStart extends ProgWidget {
         super.addErrors(curInfo, widgets);
         for (IProgWidget widget : widgets) {
             if (widget != this && widget instanceof ProgWidgetStart) {
-                curInfo.add(xlate("gui.progWidget.general.error.multipleStartPieces"));
+                curInfo.add(xlate("pneumaticcraft.gui.progWidget.general.error.multipleStartPieces"));
                 break;
             }
         }

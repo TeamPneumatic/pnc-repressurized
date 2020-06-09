@@ -32,8 +32,8 @@ public class ActionWidgetDropdown extends ActionWidgetVariable<WidgetComboBox> {
         y = widget.y;
         width = widget.getWidth();
         height = widget.getHeight();
-        widget.setText(I18n.format("gui.remote.tray.dropdown.name"));
-        widget.setTooltip(WordUtils.wrap(I18n.format("gui.remote.tray.dropdown.tooltip"), 50).split(System.getProperty("line.separator")));
+        widget.setText(I18n.format("pneumaticcraft.gui.remote.tray.dropdown.name"));
+        widget.setTooltip(WordUtils.wrap(I18n.format("pneumaticcraft.gui.remote.tray.dropdown.tooltip"), 50).split(System.getProperty("line.separator")));
     }
 
     @Override

@@ -19,12 +19,12 @@ public class HackableTripwire implements IHackableBlock {
 
     @Override
     public void addInfo(IBlockReader world, BlockPos pos, List<String> curInfo, PlayerEntity player) {
-        curInfo.add("pneumaticHelmet.hacking.result.neutralize");
+        curInfo.add("pneumaticcraft.armor.hacking.result.neutralize");
     }
 
     @Override
     public void addPostHackInfo(IBlockReader world, BlockPos pos, List<String> curInfo, PlayerEntity player) {
-        curInfo.add("pneumaticHelmet.hacking.finished.neutralized");
+        curInfo.add("pneumaticcraft.armor.hacking.finished.neutralized");
     }
 
     @Override

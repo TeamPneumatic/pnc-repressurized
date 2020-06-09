@@ -23,12 +23,12 @@ public class HackableCreeper implements IHackableEntity {
 
     @Override
     public void addHackInfo(Entity entity, List<String> curInfo, PlayerEntity player) {
-        curInfo.add("pneumaticHelmet.hacking.result.explode");
+        curInfo.add("pneumaticcraft.armor.hacking.result.explode");
     }
 
     @Override
     public void addPostHackInfo(Entity entity, List<String> curInfo, PlayerEntity player) {
-        curInfo.add("pneumaticHelmet.hacking.finished.exploded");
+        curInfo.add("pneumaticcraft.armor.hacking.finished.exploded");
     }
 
     @Override

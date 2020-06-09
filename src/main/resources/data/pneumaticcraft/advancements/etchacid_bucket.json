@@ -4,10 +4,10 @@
       "item": "pneumaticcraft:etching_acid_bucket"
     },
     "title": {
-      "translate": "achievement.etchacidBucket"
+      "translate": "pneumaticcraft.achievement.etchacidBucket"
     },
     "description": {
-      "translate": "achievement.etchacidBucket.desc"
+      "translate": "pneumaticcraft.achievement.etchacidBucket.desc"
     }
   },
   "parent": "pneumaticcraft:pressure_chamber",

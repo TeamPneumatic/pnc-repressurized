@@ -52,9 +52,9 @@ import java.util.function.BiPredicate;
 
 public abstract class TileEntityBase extends TileEntity implements IGUIButtonSensitive, IDescSynced, IUpgradeAcceptor, IUpgradeHolder, ILuaMethodProvider {
     private static final List<String> REDSTONE_LABELS = ImmutableList.of(
-            "gui.tab.redstoneBehaviour.button.anySignal",
-            "gui.tab.redstoneBehaviour.button.highSignal",
-            "gui.tab.redstoneBehaviour.button.lowSignal"
+            "pneumaticcraft.gui.tab.redstoneBehaviour.button.anySignal",
+            "pneumaticcraft.gui.tab.redstoneBehaviour.button.highSignal",
+            "pneumaticcraft.gui.tab.redstoneBehaviour.button.lowSignal"
     );
 
     private static final List<IHeatDisperser> moddedDispersers = new ArrayList<>();
@@ -590,7 +590,7 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
     }
 
     public String getRedstoneTabTitle() {
-        return this instanceof IRedstoneControlled ? "gui.tab.redstoneBehaviour.enableOn" : "gui.tab.redstoneBehaviour.emitRedstoneWhen";
+        return this instanceof IRedstoneControlled ? "pneumaticcraft.gui.tab.redstoneBehaviour.enableOn" : "pneumaticcraft.gui.tab.redstoneBehaviour.emitRedstoneWhen";
     }
 
     /**

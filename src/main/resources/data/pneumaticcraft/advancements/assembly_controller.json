@@ -4,10 +4,10 @@
       "item": "pneumaticcraft:assembly_controller"
     },
     "title": {
-      "translate": "achievement.assemblyController"
+      "translate": "pneumaticcraft.achievement.assemblyController"
     },
     "description": {
-      "translate": "achievement.assemblyController.desc"
+      "translate": "pneumaticcraft.achievement.assemblyController.desc"
     },
     "frame": "goal"
   },

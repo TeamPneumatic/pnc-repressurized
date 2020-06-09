@@ -27,12 +27,12 @@ public class HackableJukebox implements IHackableBlock {
 
     @Override
     public void addInfo(IBlockReader world, BlockPos pos, List<String> curInfo, PlayerEntity player) {
-        curInfo.add("pneumaticHelmet.hacking.result.silence");
+        curInfo.add("pneumaticcraft.armor.hacking.result.silence");
     }
 
     @Override
     public void addPostHackInfo(IBlockReader world, BlockPos pos, List<String> curInfo, PlayerEntity player) {
-        curInfo.add("pneumaticHelmet.hacking.finished.silenced");
+        curInfo.add("pneumaticcraft.armor.hacking.finished.silenced");
     }
 
     @Override

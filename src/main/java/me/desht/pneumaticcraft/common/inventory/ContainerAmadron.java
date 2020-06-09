@@ -84,7 +84,7 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
         }
 
         public String getTranslationKey() {
-            return "gui.tab.problems.amadron." + locKey;
+            return "pneumaticcraft.gui.tab.problems.amadron." + locKey;
         }
 
     }
@@ -160,7 +160,7 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
                 if (h.getPressure() > 0) {
                     return true;
                 } else {
-                    player.sendStatusMessage(new TranslationTextComponent("gui.tab.problems.notEnoughPressure"), false);
+                    player.sendStatusMessage(new TranslationTextComponent("pneumaticcraft.gui.tab.problems.notEnoughPressure"), false);
                     return false;
                 }
             }).orElse(false);

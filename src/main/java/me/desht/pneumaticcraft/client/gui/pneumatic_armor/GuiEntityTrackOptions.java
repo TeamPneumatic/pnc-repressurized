@@ -63,10 +63,10 @@ public class GuiEntityTrackOptions extends IOptionPage.SimpleToggleableOptions<E
 
     public void renderPost(int x, int y, float partialTicks) {
         FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
-        fontRenderer.drawString(I18n.format("gui.entityFilter"), 35, 50, 0xFFFFFFFF);
+        fontRenderer.drawString(I18n.format("pneumaticcraft.gui.entityFilter"), 35, 50, 0xFFFFFFFF);
         if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {
             GuiUtils.showPopupHelpScreen(Minecraft.getInstance().currentScreen, fontRenderer,
-                    PneumaticCraftUtils.splitString(I18n.format("gui.entityFilter.helpText"), 60));
+                    PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.entityFilter.helpText"), 60));
         }
     }
 

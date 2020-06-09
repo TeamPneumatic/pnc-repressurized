@@ -46,7 +46,7 @@ public class EntityProvider {
         public void appendBody(List<ITextComponent> tooltip, IEntityAccessor accessor, IPluginConfig config) {
             if (accessor.getServerData().contains("Pressure")) {
                 float pressure = accessor.getServerData().getFloat("Pressure");
-                tooltip.add(new TranslationTextComponent("gui.tooltip.pressure", PneumaticCraftUtils.roundNumberTo(pressure, 1)));
+                tooltip.add(new TranslationTextComponent("pneumaticcraft.gui.tooltip.pressure", PneumaticCraftUtils.roundNumberTo(pressure, 1)));
             }
             if (accessor.getServerData().contains("Temperature")) {
                 tooltip.add(HeatUtil.formatHeatString(accessor.getServerData().getInt("Temperature")));

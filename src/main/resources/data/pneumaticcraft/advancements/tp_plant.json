@@ -4,10 +4,10 @@
       "item": "pneumaticcraft:thermopneumatic_processing_plant"
     },
     "title": {
-      "translate": "achievement.tpPlant"
+      "translate": "pneumaticcraft.achievement.tpPlant"
     },
     "description": {
-      "translate": "achievement.tpPlant.desc"
+      "translate": "pneumaticcraft.achievement.tpPlant.desc"
     }
   },
   "parent": "pneumaticcraft:lpg_bucket",

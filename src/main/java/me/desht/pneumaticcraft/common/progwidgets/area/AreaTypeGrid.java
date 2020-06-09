@@ -35,7 +35,7 @@ public class AreaTypeGrid extends AreaType{
     @Override
     public void addUIWidgets(List<AreaTypeWidget> widgets){
         super.addUIWidgets(widgets);
-        widgets.add(new AreaTypeWidgetInteger("gui.progWidget.area.type.grid.interval", () -> interval, interval -> this.interval = interval));
+        widgets.add(new AreaTypeWidgetInteger("pneumaticcraft.gui.progWidget.area.type.grid.interval", () -> interval, interval -> this.interval = interval));
     }
     
     @Override

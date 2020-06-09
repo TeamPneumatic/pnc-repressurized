@@ -39,10 +39,10 @@ import java.util.List;
 
 public class TileEntityChargingStation extends TileEntityPneumaticBase implements IRedstoneControl, ICamouflageableTE, INamedContainerProvider {
     private static final List<String> REDSTONE_LABELS = ImmutableList.of(
-            "gui.tab.redstoneBehaviour.button.never",
-            "gui.tab.redstoneBehaviour.chargingStation.button.doneDischarging",
-            "gui.tab.redstoneBehaviour.chargingStation.button.charging",
-            "gui.tab.redstoneBehaviour.chargingStation.button.discharging"
+            "pneumaticcraft.gui.tab.redstoneBehaviour.button.never",
+            "pneumaticcraft.gui.tab.redstoneBehaviour.chargingStation.button.doneDischarging",
+            "pneumaticcraft.gui.tab.redstoneBehaviour.chargingStation.button.charging",
+            "pneumaticcraft.gui.tab.redstoneBehaviour.chargingStation.button.discharging"
     );
     private static final int INVENTORY_SIZE = 1;
     public static final int CHARGE_INVENTORY_INDEX = 0;

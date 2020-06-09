@@ -27,7 +27,7 @@ public class PacketAmadronTradeRemoved extends PacketAbstractAmadronTrade {
         ctx.get().enqueueWork(() -> {
             if (PNCConfig.Common.Amadron.notifyOfTradeRemoval)
                 ClientUtils.getClientPlayer().sendStatusMessage(
-                        xlate("message.amadron.playerRemovedTrade",
+                        xlate("pneumaticcraft.message.amadron.playerRemovedTrade",
                                 getOffer().getVendor(),
                                 getOffer().getInput().toString(),
                                 getOffer().getOutput().toString()

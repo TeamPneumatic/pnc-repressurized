@@ -85,16 +85,16 @@ public class ItemAmadronTablet extends ItemPressurizable implements IPositionPro
         super.addInformation(stack, worldIn, infoList, flag);
         GlobalPos gPos = getItemProvidingLocation(stack);
         if (gPos != null) {
-            infoList.add(xlate("gui.tooltip.amadronTablet.itemLocation", GlobalPosUtils.prettyPrint(gPos)).applyTextStyle(TextFormatting.YELLOW));
+            infoList.add(xlate("pneumaticcraft.gui.tooltip.amadronTablet.itemLocation", GlobalPosUtils.prettyPrint(gPos)).applyTextStyle(TextFormatting.YELLOW));
         } else {
-            infoList.add(xlate("gui.tooltip.amadronTablet.selectItemLocation"));
+            infoList.add(xlate("pneumaticcraft.gui.tooltip.amadronTablet.selectItemLocation"));
         }
 
         gPos = getFluidProvidingLocation(stack);
         if (gPos != null) {
-            infoList.add(xlate("gui.tooltip.amadronTablet.fluidLocation", GlobalPosUtils.prettyPrint(gPos)).applyTextStyle(TextFormatting.YELLOW));
+            infoList.add(xlate("pneumaticcraft.gui.tooltip.amadronTablet.fluidLocation", GlobalPosUtils.prettyPrint(gPos)).applyTextStyle(TextFormatting.YELLOW));
         } else {
-            infoList.add(xlate("gui.tooltip.amadronTablet.selectFluidLocation"));
+            infoList.add(xlate("pneumaticcraft.gui.tooltip.amadronTablet.selectFluidLocation"));
         }
     }
 

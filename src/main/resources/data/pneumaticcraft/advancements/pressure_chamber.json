@@ -4,10 +4,10 @@
       "item": "pneumaticcraft:pressure_chamber_wall"
     },
     "title": {
-      "translate": "achievement.pressureChamber"
+      "translate": "pneumaticcraft.achievement.pressureChamber"
     },
     "description": {
-      "translate": "achievement.pressureChamber.desc"
+      "translate": "pneumaticcraft.achievement.pressureChamber.desc"
     },
     "frame": "goal"
   },

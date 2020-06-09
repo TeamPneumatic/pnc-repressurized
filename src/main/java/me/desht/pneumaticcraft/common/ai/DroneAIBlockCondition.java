@@ -27,9 +27,9 @@ public abstract class DroneAIBlockCondition extends DroneAIBlockInteraction<Prog
         if (evaluate(pos) != ((ICondition) progWidget).isAndFunction()) {
             result = !result;
             if (result) {
-                drone.addDebugEntry("gui.progWidget.blockCondition.debug.blockMatches", pos);
+                drone.addDebugEntry("pneumaticcraft.gui.progWidget.blockCondition.debug.blockMatches", pos);
             } else {
-                drone.addDebugEntry("gui.progWidget.blockCondition.debug.blockDoesNotMatch", pos);
+                drone.addDebugEntry("pneumaticcraft.gui.progWidget.blockCondition.debug.blockDoesNotMatch", pos);
             }
             abort();
         }
@@ -39,9 +39,9 @@ public abstract class DroneAIBlockCondition extends DroneAIBlockInteraction<Prog
     @Override
     protected void addEndingDebugEntry() {
         if (result) {
-            drone.addDebugEntry("gui.progWidget.blockCondition.debug.allBlocksMatch");
+            drone.addDebugEntry("pneumaticcraft.gui.progWidget.blockCondition.debug.allBlocksMatch");
         } else {
-            drone.addDebugEntry("gui.progWidget.blockCondition.debug.noBlocksMatch");
+            drone.addDebugEntry("pneumaticcraft.gui.progWidget.blockCondition.debug.noBlocksMatch");
         }
     }
 

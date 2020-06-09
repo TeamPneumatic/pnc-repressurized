@@ -102,7 +102,7 @@ public class SensorHandler implements ISensorRegistry {
     public List<String> getUpgradeInfo() {
         List<String> text = new ArrayList<>();
         text.add("");
-        text.add(I18n.format("gui.universalSensor.upgradeHeader"));
+        text.add(I18n.format("pneumaticcraft.gui.universalSensor.upgradeHeader"));
 
         Set<Set<EnumUpgrade>> upgrades = new HashSet<>();
         for (ISensorSetting sensor : sensors.values()) {

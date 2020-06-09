@@ -4,10 +4,10 @@
       "item": "pneumaticcraft:aerial_interface"
     },
     "title": {
-      "translate": "achievement.aerialInterface"
+      "translate": "pneumaticcraft.achievement.aerialInterface"
     },
     "description": {
-      "translate": "achievement.aerialInterface.desc"
+      "translate": "pneumaticcraft.achievement.aerialInterface.desc"
     }
   },
   "parent": "pneumaticcraft:advanced_pressure_tube",

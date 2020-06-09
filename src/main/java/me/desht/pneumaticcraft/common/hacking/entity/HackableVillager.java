@@ -22,12 +22,12 @@ public class HackableVillager implements IHackableEntity {
 
     @Override
     public void addHackInfo(Entity entity, List<String> curInfo, PlayerEntity player) {
-        curInfo.add("pneumaticHelmet.hacking.result.resetTrades");
+        curInfo.add("pneumaticcraft.armor.hacking.result.resetTrades");
     }
 
     @Override
     public void addPostHackInfo(Entity entity, List<String> curInfo, PlayerEntity player) {
-        curInfo.add("pneumaticHelmet.hacking.finished.resetTrades");
+        curInfo.add("pneumaticcraft.armor.hacking.finished.resetTrades");
     }
 
     @Override

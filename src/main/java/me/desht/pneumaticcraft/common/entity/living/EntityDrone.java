@@ -833,8 +833,8 @@ public class EntityDrone extends EntityDroneBase implements
             int y = (int) Math.floor(getPosY());
             int z = (int) Math.floor(getPosZ());
             ITextComponent msg = hasCustomName() ?
-                    new TranslationTextComponent("death.drone.named", getCustomName().getFormattedText(), x, y, z) :
-                    new TranslationTextComponent("death.drone", x, y, z);
+                    new TranslationTextComponent("pneumaticcraft.death.drone.named", getCustomName().getFormattedText(), x, y, z) :
+                    new TranslationTextComponent("pneumaticcraft.death.drone", x, y, z);
             msg = msg.appendSibling(new StringTextComponent(" - ")).appendSibling(damageSource.getDeathMessage(this));
             owner.sendStatusMessage(msg, false);
         }
@@ -894,8 +894,8 @@ public class EntityDrone extends EntityDroneBase implements
     @Override
     public void printManometerMessage(PlayerEntity player, List<ITextComponent> curInfo) {
         if (hasCustomName()) curInfo.add(getCustomName().applyTextStyle(TextFormatting.AQUA));
-        curInfo.add(xlate("entityTracker.info.tamed", getFakePlayer().getName()));
-        curInfo.add(xlate("gui.tooltip.pressure", PneumaticCraftUtils.roundNumberTo(getAirHandler().getPressure(), 1) + " bar."));
+        curInfo.add(xlate("pneumaticcraft.entityTracker.info.tamed", getFakePlayer().getName()));
+        curInfo.add(xlate("pneumaticcraft.gui.tooltip.pressure", PneumaticCraftUtils.roundNumberTo(getAirHandler().getPressure(), 1) + " bar."));
     }
 
     @Override
@@ -1092,12 +1092,12 @@ public class EntityDrone extends EntityDroneBase implements
     public void addHackInfo(Entity entity, List<String> curInfo, PlayerEntity player) {
         if (ownerUUID.equals(player.getUniqueID())) {
             if (isGoingToOwner()) {
-                curInfo.add("pneumaticHelmet.hacking.result.resumeTasks");
+                curInfo.add("pneumaticcraft.armor.hacking.result.resumeTasks");
             } else {
-                curInfo.add("pneumaticHelmet.hacking.result.callBack");
+                curInfo.add("pneumaticcraft.armor.hacking.result.callBack");
             }
         } else {
-            curInfo.add("pneumaticHelmet.hacking.result.disable");
+            curInfo.add("pneumaticcraft.armor.hacking.result.disable");
         }
     }
 
@@ -1105,12 +1105,12 @@ public class EntityDrone extends EntityDroneBase implements
     public void addPostHackInfo(Entity entity, List<String> curInfo, PlayerEntity player) {
         if (ownerUUID.equals(player.getUniqueID())) {
             if (isGoingToOwner()) {
-                curInfo.add("pneumaticHelmet.hacking.finished.calledBack");
+                curInfo.add("pneumaticcraft.armor.hacking.finished.calledBack");
             } else {
-                curInfo.add("pneumaticHelmet.hacking.finished.resumedTasks");
+                curInfo.add("pneumaticcraft.armor.hacking.finished.resumedTasks");
             }
         } else {
-            curInfo.add("pneumaticHelmet.hacking.finished.disabled");
+            curInfo.add("pneumaticcraft.armor.hacking.finished.disabled");
         }
     }
 

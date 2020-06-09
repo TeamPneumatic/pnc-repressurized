@@ -21,7 +21,7 @@ public class AreaTypeBox extends AreaType {
         private final String name;
 
         EnumBoxType(String name) {
-            this.name = "gui.progWidget.area.type.box.boxType." + name;
+            this.name = "pneumaticcraft.gui.progWidget.area.type.box.boxType." + name;
         }
 
         @Override
@@ -80,7 +80,7 @@ public class AreaTypeBox extends AreaType {
     @Override
     public void addUIWidgets(List<AreaTypeWidget> widgets) {
         super.addUIWidgets(widgets);
-        widgets.add(new AreaTypeWidgetEnum<>("gui.progWidget.area.type.box.boxType", EnumBoxType.class, () -> boxType, boxType -> this.boxType = boxType));
+        widgets.add(new AreaTypeWidgetEnum<>("pneumaticcraft.gui.progWidget.area.type.box.boxType", EnumBoxType.class, () -> boxType, boxType -> this.boxType = boxType));
     }
 
     @Override

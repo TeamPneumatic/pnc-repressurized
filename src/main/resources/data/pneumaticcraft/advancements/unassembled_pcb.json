@@ -4,10 +4,10 @@
       "item": "pneumaticcraft:unassembled_pcb"
     },
     "title": {
-      "translate": "achievement.unassembledPCB"
+      "translate": "pneumaticcraft.achievement.unassembledPCB"
     },
     "description": {
-      "translate": "achievement.unassembledPCB.desc"
+      "translate": "pneumaticcraft.achievement.unassembledPCB.desc"
     }
   },
   "parent": "pneumaticcraft:empty_pcb",

@@ -61,7 +61,7 @@ public class ProgWidgetItemAssign extends ProgWidget implements IVariableSetWidg
     public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
         if (variable.equals("")) {
-            curInfo.add(xlate("gui.progWidget.general.error.emptyVariable"));
+            curInfo.add(xlate("pneumaticcraft.gui.progWidget.general.error.emptyVariable"));
         }
     }
 

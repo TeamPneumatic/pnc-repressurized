@@ -4,10 +4,10 @@
       "item": "pneumaticcraft:programmer"
     },
     "title": {
-      "translate": "achievement.programmer"
+      "translate": "pneumaticcraft.achievement.programmer"
     },
     "description": {
-      "translate": "achievement.programmer.desc"
+      "translate": "pneumaticcraft.achievement.programmer.desc"
     }
   },
   "parent": "pneumaticcraft:printed_circuit_board",

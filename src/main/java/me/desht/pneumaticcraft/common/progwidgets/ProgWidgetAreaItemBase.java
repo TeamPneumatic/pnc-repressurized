@@ -55,11 +55,11 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget
     public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
         if (getConnectedParameters()[0] == null) {
-            curInfo.add(xlate("gui.progWidget.area.error.noArea"));
+            curInfo.add(xlate("pneumaticcraft.gui.progWidget.area.error.noArea"));
         }
         Set<BlockPos> areaSet = getCachedAreaSet();
         if (areaSet.size() > PNCConfig.Common.General.maxProgrammingArea) {
-            curInfo.add(xlate("gui.progWidget.area.error.areaTooBig", PNCConfig.Common.General.maxProgrammingArea));
+            curInfo.add(xlate("pneumaticcraft.gui.progWidget.area.error.areaTooBig", PNCConfig.Common.General.maxProgrammingArea));
         }
         EntityFilterPair.addErrors(this, curInfo);
     }

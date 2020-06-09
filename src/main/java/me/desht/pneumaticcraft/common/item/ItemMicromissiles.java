@@ -109,7 +109,7 @@ public class ItemMicromissiles extends Item {
     public void addInformation(ItemStack stack, World worldIn, List<ITextComponent> curInfo, ITooltipFlag extraInfo) {
         super.addInformation(stack, worldIn, curInfo, extraInfo);
 
-        curInfo.add(xlate("gui.micromissile.remaining", stack.getMaxDamage() - stack.getDamage()));
+        curInfo.add(xlate("pneumaticcraft.gui.micromissile.remaining", stack.getMaxDamage() - stack.getDamage()));
         if (stack.hasTag()) {
             CompoundNBT tag = stack.getTag();
             // padding for ClientEventHandler#renderTooltipEvent() to draw in
@@ -118,15 +118,15 @@ public class ItemMicromissiles extends Item {
             curInfo.add(new StringTextComponent(" "));
             String filter = tag.getString(NBT_FILTER);
             if (!filter.isEmpty()) {
-                curInfo.add(xlate("gui.sentryTurret.targetFilter", filter));
+                curInfo.add(xlate("pneumaticcraft.gui.sentryTurret.targetFilter", filter));
             }
-            curInfo.add(xlate("gui.micromissile.firingMode")
+            curInfo.add(xlate("pneumaticcraft.gui.micromissile.firingMode")
                     .appendText(": " + TextFormatting.AQUA)
-                    .appendSibling(xlate("gui.micromissile.mode." + tag.getString(NBT_FIRE_MODE))));
+                    .appendSibling(xlate("pneumaticcraft.gui.micromissile.mode." + tag.getString(NBT_FIRE_MODE))));
             if (PNCConfig.Common.Micromissiles.damageTerrain) {
-                curInfo.add(xlate("gui.tooltip.terrainWarning"));
+                curInfo.add(xlate("pneumaticcraft.gui.tooltip.terrainWarning"));
             } else {
-                curInfo.add(xlate("gui.tooltip.terrainSafe"));
+                curInfo.add(xlate("pneumaticcraft.gui.tooltip.terrainSafe"));
             }
         }
     }

@@ -4,10 +4,10 @@
       "item": "pneumaticcraft:drone"
     },
     "title": {
-      "translate": "achievement.programDrone"
+      "translate": "pneumaticcraft.achievement.programDrone"
     },
     "description": {
-      "translate": "achievement.programDrone.desc"
+      "translate": "pneumaticcraft.achievement.programDrone.desc"
     },
     "frame": "challenge"
   },

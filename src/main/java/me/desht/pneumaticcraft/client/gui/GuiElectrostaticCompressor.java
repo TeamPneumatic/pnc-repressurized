@@ -32,7 +32,7 @@ public class GuiElectrostaticCompressor extends GuiPneumaticContainerBase<Contai
     @Override
     public void init() {
         super.init();
-        electrostaticStat = addAnimatedStat("gui.tab.info.electrostaticCompressor.title", new ItemStack(ModBlocks.ELECTROSTATIC_COMPRESSOR.get()), 0xFF20A0FF, false);
+        electrostaticStat = addAnimatedStat("pneumaticcraft.gui.tab.info.electrostaticCompressor.title", new ItemStack(ModBlocks.ELECTROSTATIC_COMPRESSOR.get()), 0xFF20A0FF, false);
     }
 
     @Override
@@ -46,7 +46,7 @@ public class GuiElectrostaticCompressor extends GuiPneumaticContainerBase<Contai
         int grounding = PneumaticValues.MAX_REDIRECTION_PER_IRON_BAR * te.ironBarsBeneath;
         int generated = PneumaticValues.PRODUCTION_ELECTROSTATIC_COMPRESSOR / connectedCompressors;
         if (grounding < generated) {
-            textList.add(I18n.format("gui.tab.problems.electrostatic.notEnoughGrounding", grounding, generated));
+            textList.add(I18n.format("pneumaticcraft.gui.tab.problems.electrostatic.notEnoughGrounding", grounding, generated));
         }
     }
 
@@ -69,15 +69,15 @@ public class GuiElectrostaticCompressor extends GuiPneumaticContainerBase<Contai
 
         String col = TextFormatting.BLACK.toString();
         List<String> info = new ArrayList<>();
-        info.add(col + I18n.format("gui.tab.info.electrostatic.generating",
+        info.add(col + I18n.format("pneumaticcraft.gui.tab.info.electrostatic.generating",
                 PneumaticCraftUtils.roundNumberTo(PneumaticValues.PRODUCTION_ELECTROSTATIC_COMPRESSOR / (float) connectedCompressors, 1)));
-        info.add(col + I18n.format("gui.tab.info.electrostatic.connected", connectedCompressors));
-        info.add(col + I18n.format("gui.tab.info.electrostatic.maxRedirection",
+        info.add(col + I18n.format("pneumaticcraft.gui.tab.info.electrostatic.connected", connectedCompressors));
+        info.add(col + I18n.format("pneumaticcraft.gui.tab.info.electrostatic.maxRedirection",
                 PneumaticCraftUtils.roundNumberTo(PneumaticValues.MAX_REDIRECTION_PER_IRON_BAR * te.ironBarsBeneath, 1)));
-        info.add(col + I18n.format("gui.tab.info.electrostatic.lightningRod", te.ironBarsAbove));
-        info.add(col + I18n.format("gui.tab.info.electrostatic.strikeTime",
+        info.add(col + I18n.format("pneumaticcraft.gui.tab.info.electrostatic.lightningRod", te.ironBarsAbove));
+        info.add(col + I18n.format("pneumaticcraft.gui.tab.info.electrostatic.strikeTime",
                 PneumaticCraftUtils.convertTicksToMinutesAndSeconds(te.getStrikeChance(), false)));
-        info.add(col + I18n.format("gui.tab.info.electrostatic.strikeTime.optimal"));
+        info.add(col + I18n.format("pneumaticcraft.gui.tab.info.electrostatic.strikeTime.optimal"));
 
 //        info.add(TextFormatting.WHITE + "Energy production:");
 //        info.add(TextFormatting.BLACK + PneumaticCraftUtils.roundNumberTo(PneumaticValues.PRODUCTION_ELECTROSTATIC_COMPRESSOR / (float) connectedCompressors, 1) + " mL/lightning strike");

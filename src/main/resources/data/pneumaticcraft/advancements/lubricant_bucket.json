@@ -4,10 +4,10 @@
       "item": "pneumaticcraft:lubricant_bucket"
     },
     "title": {
-      "translate": "achievement.lubricantBucket"
+      "translate": "pneumaticcraft.achievement.lubricantBucket"
     },
     "description": {
-      "translate": "achievement.lubricantBucket.desc"
+      "translate": "pneumaticcraft.achievement.lubricantBucket.desc"
     }
   },
   "parent": "pneumaticcraft:tp_plant",

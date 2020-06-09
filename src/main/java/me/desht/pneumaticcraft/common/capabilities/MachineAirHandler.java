@@ -317,7 +317,7 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
 
     @Override
     public void printManometerMessage(PlayerEntity player, List<ITextComponent> curInfo) {
-        curInfo.add(new TranslationTextComponent("gui.tooltip.pressure",
+        curInfo.add(new TranslationTextComponent("pneumaticcraft.gui.tooltip.pressure",
                 PneumaticCraftUtils.roundNumberTo(getPressure(), 1)));
     }
 

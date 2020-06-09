@@ -145,7 +145,7 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
                                 if (drone.getPathNavigator().isGoingToTeleport()) {
                                     return movedToBlockOK(pos);
                                 } else {
-                                    drone.addDebugEntry("gui.progWidget.general.debug.cantNavigate", pos);
+                                    drone.addDebugEntry("pneumaticcraft.gui.progWidget.general.debug.cantNavigate", pos);
                                 }
                             } else {
                                 searching = false;
@@ -205,7 +205,7 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
     }
 
     protected void addEndingDebugEntry() {
-        drone.addDebugEntry("gui.progWidget.blockInteraction.debug.noBlocksValid");
+        drone.addDebugEntry("pneumaticcraft.gui.progWidget.blockInteraction.debug.noBlocksValid");
     }
 
     private int lookupsPerSearch() {

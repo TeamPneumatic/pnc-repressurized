@@ -50,7 +50,7 @@ public class BlockTrackEntryHackable implements IBlockTrackEntry {
             int requiredHackTime = hackableBlock.getHackTime(world, pos, player);
             int percentageComplete = hackTime * 100 / requiredHackTime;
             if (percentageComplete < 100) {
-                infoList.add(I18n.format("pneumaticHelmet.hacking.hacking", percentageComplete));
+                infoList.add(I18n.format("pneumaticcraft.armor.hacking.hacking", percentageComplete));
             } else if (hackTime < requiredHackTime + 20) {
                 hackableBlock.addPostHackInfo(world, pos, infoList, player);
             } else {

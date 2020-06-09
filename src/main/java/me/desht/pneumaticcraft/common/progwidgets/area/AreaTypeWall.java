@@ -91,7 +91,7 @@ public class AreaTypeWall extends AreaType{
     @Override
     public void addUIWidgets(List<AreaTypeWidget> widgets){
         super.addUIWidgets(widgets);
-        widgets.add(new AreaTypeWidgetEnum<>("gui.progWidget.area.type.general.axis", EnumAxis.class, () -> axis, axis -> this.axis = axis));
+        widgets.add(new AreaTypeWidgetEnum<>("pneumaticcraft.gui.progWidget.area.type.general.axis", EnumAxis.class, () -> axis, axis -> this.axis = axis));
     }
     
     @Override

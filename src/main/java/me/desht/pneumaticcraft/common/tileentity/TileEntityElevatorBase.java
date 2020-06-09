@@ -54,8 +54,8 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
         implements IGUITextFieldSensitive, IRedstoneControlled, IMinWorkingPressure, IAirListener, ICamouflageableTE, INamedContainerProvider {
 
     private static final List<String> REDSTONE_LABELS = ImmutableList.of(
-            "gui.tab.redstoneBehaviour.elevator.button.redstone",
-            "gui.tab.redstoneBehaviour.elevator.button.elevatorCallers"
+            "pneumaticcraft.gui.tab.redstoneBehaviour.elevator.button.redstone",
+            "pneumaticcraft.gui.tab.redstoneBehaviour.elevator.button.elevatorCallers"
     );
 
     private static final float BUTTON_HEIGHT = 0.06F;
@@ -679,7 +679,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
 
     @Override
     public String getRedstoneTabTitle() {
-        return "gui.tab.redstoneBehaviour.elevator.controlBy";
+        return "pneumaticcraft.gui.tab.redstoneBehaviour.elevator.controlBy";
     }
 
     @Override

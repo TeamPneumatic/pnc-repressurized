@@ -85,9 +85,9 @@ public class ProgWidgetDropItem extends ProgWidgetInventoryBase implements IItem
     public void getTooltip(List<ITextComponent> curTooltip) {
         super.getTooltip(curTooltip);
         if (pickupDelay) {
-            curTooltip.add(new TranslationTextComponent("gui.progWidget.drop.hasPickupDelay"));
+            curTooltip.add(new TranslationTextComponent("pneumaticcraft.gui.progWidget.drop.hasPickupDelay"));
         } else {
-            curTooltip.add(new TranslationTextComponent("gui.progWidget.drop.noPickupDelay"));
+            curTooltip.add(new TranslationTextComponent("pneumaticcraft.gui.progWidget.drop.noPickupDelay"));
         }
     }
 
@@ -103,6 +103,6 @@ public class ProgWidgetDropItem extends ProgWidgetInventoryBase implements IItem
 
     @Override
     public String getExtraStringInfo() {
-        return I18n.format("gui.progWidget.drop.dropMethod." + (dropStraight() ? "straight" : "random"));
+        return I18n.format("pneumaticcraft.gui.progWidget.drop.dropMethod." + (dropStraight() ? "straight" : "random"));
     }
 }

@@ -31,26 +31,26 @@ public class GuiGasLift extends GuiPneumaticContainerBase<ContainerGasLift,TileE
     public void init() {
         super.init();
         addButton(new WidgetTank(guiLeft + 80, guiTop + 15, te.getTank()));
-        statusStat = addAnimatedStat("gui.tab.status", new ItemStack(ModBlocks.GAS_LIFT.get()), 0xFFFFAA00, false);
+        statusStat = addAnimatedStat("pneumaticcraft.gui.tab.status", new ItemStack(ModBlocks.GAS_LIFT.get()), 0xFFFFAA00, false);
 
-        WidgetAnimatedStat optionStat = addAnimatedStat("gui.tab.gasLift.mode", new ItemStack(ModBlocks.PRESSURE_TUBE.get()), 0xFFFFCC00, false);
+        WidgetAnimatedStat optionStat = addAnimatedStat("pneumaticcraft.gui.tab.gasLift.mode", new ItemStack(ModBlocks.PRESSURE_TUBE.get()), 0xFFFFCC00, false);
         optionStat.addPadding(4, 17);
 
         WidgetButtonExtended button = new WidgetButtonExtended(5, 20, 20, 20, "").withTag(PumpMode.PUMP_EMPTY.toString());
         button.setRenderStacks(new ItemStack(Items.BUCKET));
-        button.setTooltipText(I18n.format("gui.tab.gasLift.mode.pumpEmpty"));
+        button.setTooltipText(I18n.format("pneumaticcraft.gui.tab.gasLift.mode.pumpEmpty"));
         optionStat.addSubWidget(button);
         modeButtons[0] = button;
 
         button = new WidgetButtonExtended(30, 20, 20, 20, "").withTag(PumpMode.PUMP_LEAVE_FLUID.toString());
         button.setRenderStacks(new ItemStack(Items.WATER_BUCKET));
-        button.setTooltipText(I18n.format("gui.tab.gasLift.mode.pumpLeave"));
+        button.setTooltipText(I18n.format("pneumaticcraft.gui.tab.gasLift.mode.pumpLeave"));
         optionStat.addSubWidget(button);
         modeButtons[1] = button;
 
         button = new WidgetButtonExtended(55, 20, 20, 20, "").withTag(PumpMode.RETRACT.toString());
         button.setRenderStacks(new ItemStack(ModBlocks.PRESSURE_TUBE.get()));
-        button.setTooltipText(I18n.format("gui.tab.gasLift.mode.drawIn"));
+        button.setTooltipText(I18n.format("pneumaticcraft.gui.tab.gasLift.mode.drawIn"));
         optionStat.addSubWidget(button);
         modeButtons[2] = button;
     }
@@ -76,10 +76,10 @@ public class GuiGasLift extends GuiPneumaticContainerBase<ContainerGasLift,TileE
 
     private List<String> getStatus() {
         List<String> textList = new ArrayList<>();
-        textList.add(I18n.format("gui.tab.status.gasLift.action"));
-        String status = "gui.tab.status.gasLift.action." + te.status.desc;
+        textList.add(I18n.format("pneumaticcraft.gui.tab.status.gasLift.action"));
+        String status = "pneumaticcraft.gui.tab.status.gasLift.action." + te.status.desc;
         textList.add(I18n.format(status, te.getTank().getFluid() != null ? te.getTank().getFluid().getDisplayName().getFormattedText() : ""));
-        textList.add(I18n.format("gui.tab.status.gasLift.currentDepth", te.currentDepth));
+        textList.add(I18n.format("pneumaticcraft.gui.tab.status.gasLift.currentDepth", te.currentDepth));
         return textList;
     }
 
@@ -88,17 +88,17 @@ public class GuiGasLift extends GuiPneumaticContainerBase<ContainerGasLift,TileE
         super.addProblems(curInfo);
         if (te.pumpMode == PumpMode.PUMP_EMPTY || te.pumpMode == PumpMode.PUMP_LEAVE_FLUID) {
             if (te.getTank().getCapacity() - te.getTank().getFluidAmount() < 1000) {
-                curInfo.add(I18n.format("gui.tab.problems.gasLift.noLiquidSpace"));
+                curInfo.add(I18n.format("pneumaticcraft.gui.tab.problems.gasLift.noLiquidSpace"));
             }
             if (te.getPrimaryInventory().getStackInSlot(0).isEmpty()) {
-                curInfo.add(I18n.format("gui.tab.problems.gasLift.noTubes"));
+                curInfo.add(I18n.format("pneumaticcraft.gui.tab.problems.gasLift.noTubes"));
             }
             if (te.status == TileEntityGasLift.Status.STUCK) {
-                curInfo.add(I18n.format("gui.tab.problems.gasLift.stuck"));
+                curInfo.add(I18n.format("pneumaticcraft.gui.tab.problems.gasLift.stuck"));
             }
         } else {
             if (te.getPrimaryInventory().getStackInSlot(0).getCount() == 64) {
-                curInfo.add(I18n.format("gui.tab.problems.gasLift.noTubeSpace"));
+                curInfo.add(I18n.format("pneumaticcraft.gui.tab.problems.gasLift.noTubeSpace"));
             }
         }
     }

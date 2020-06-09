@@ -26,12 +26,12 @@ public class HackableBlaze implements IHackableEntity {
 
     @Override
     public void addHackInfo(Entity entity, List<String> curInfo, PlayerEntity player) {
-        curInfo.add("pneumaticHelmet.hacking.result.disarm");
+        curInfo.add("pneumaticcraft.armor.hacking.result.disarm");
     }
 
     @Override
     public void addPostHackInfo(Entity entity, List<String> curInfo, PlayerEntity player) {
-        curInfo.add("pneumaticHelmet.hacking.finished.disarmed");
+        curInfo.add("pneumaticcraft.armor.hacking.finished.disarmed");
     }
 
     @Override

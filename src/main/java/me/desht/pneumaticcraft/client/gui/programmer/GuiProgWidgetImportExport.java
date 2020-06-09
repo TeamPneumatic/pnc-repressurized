@@ -33,10 +33,10 @@ public class GuiProgWidgetImportExport<P extends IProgWidget & ISidedWidget & IC
         }
 
         WidgetCheckBox useItemCount = new WidgetCheckBox(guiLeft + 8, guiTop + (showSides() ? 115 : 30), 0xFF404040,
-                I18n.format("gui.progWidget.itemFilter.useItemCount"),
+                I18n.format("pneumaticcraft.gui.progWidget.itemFilter.useItemCount"),
                 b -> { progWidget.setUseCount(b.checked); textField.setEnabled(b.checked); }
         );
-        useItemCount.setTooltip("gui.progWidget.itemFilter.useItemCount.tooltip");
+        useItemCount.setTooltip("pneumaticcraft.gui.progWidget.itemFilter.useItemCount.tooltip");
         useItemCount.checked = progWidget.useCount();
         addButton(useItemCount);
 
@@ -55,7 +55,7 @@ public class GuiProgWidgetImportExport<P extends IProgWidget & ISidedWidget & IC
     public void render(int mouseX, int mouseY, float partialTicks) {
         super.render(mouseX, mouseY, partialTicks);
         if (showSides()) {
-            font.drawString(I18n.format("gui.progWidget.inventory.accessingSides"), guiLeft + 6, guiTop + 20, 0xFF404060);
+            font.drawString(I18n.format("pneumaticcraft.gui.progWidget.inventory.accessingSides"), guiLeft + 6, guiTop + 20, 0xFF404060);
         }
     }
 

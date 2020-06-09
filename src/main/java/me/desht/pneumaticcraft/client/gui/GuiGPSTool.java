@@ -79,7 +79,7 @@ public class GuiGPSTool extends GuiPneumaticScreenBase {
         variableField.setText(oldVarName);
         addButton(variableField);
 
-        String var = I18n.format("gui.progWidget.coordinate.variable") + " #";
+        String var = I18n.format("pneumaticcraft.gui.progWidget.coordinate.variable") + " #";
         addButton(new WidgetLabel(xMiddle - 62 - font.getStringWidth(var), yMiddle + 61, var, 0xc0c0c0));
     }
 

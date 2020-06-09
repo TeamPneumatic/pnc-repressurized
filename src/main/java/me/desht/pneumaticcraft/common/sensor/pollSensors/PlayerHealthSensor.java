@@ -39,7 +39,7 @@ public class PlayerHealthSensor implements IPollSensorSetting {
     @Override
     public List<String> getDescription() {
         List<String> text = new ArrayList<>();
-        text.add("gui.universalSensor.desc.playerHealth");
+        text.add("pneumaticcraft.gui.universalSensor.desc.playerHealth");
         return text;
     }
 

@@ -4,10 +4,10 @@
       "item": "pneumaticcraft:speed_upgrade"
     },
     "title": {
-      "translate": "achievement.speedUpgrade"
+      "translate": "pneumaticcraft.achievement.speedUpgrade"
     },
     "description": {
-      "translate": "achievement.speedUpgrade.desc"
+      "translate": "pneumaticcraft.achievement.speedUpgrade.desc"
     }
   },
   "parent": "pneumaticcraft:lubricant_bucket",

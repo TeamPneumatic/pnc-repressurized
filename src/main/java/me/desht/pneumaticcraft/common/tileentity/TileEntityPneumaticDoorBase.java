@@ -32,9 +32,9 @@ import static me.desht.pneumaticcraft.lib.TileEntityConstants.PNEUMATIC_DOOR_SPE
 public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase
         implements IRedstoneControl, IMinWorkingPressure, ICamouflageableTE, INamedContainerProvider {
     private static final List<String> REDSTONE_LABELS = ImmutableList.of(
-            "gui.tab.redstoneBehaviour.pneumaticDoor.button.playerNearby",
-            "gui.tab.redstoneBehaviour.pneumaticDoor.button.playerNearbyAndLooking",
-            "gui.tab.redstoneBehaviour.pneumaticDoor.button.woodenDoor"
+            "pneumaticcraft.gui.tab.redstoneBehaviour.pneumaticDoor.button.playerNearby",
+            "pneumaticcraft.gui.tab.redstoneBehaviour.pneumaticDoor.button.playerNearbyAndLooking",
+            "pneumaticcraft.gui.tab.redstoneBehaviour.pneumaticDoor.button.woodenDoor"
     );
 
     public static final int INVENTORY_SIZE = 1;
@@ -246,7 +246,7 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase
 
     @Override
     public String getRedstoneTabTitle() {
-        return "gui.tab.redstoneBehaviour.pneumaticDoor.openWhen";
+        return "pneumaticcraft.gui.tab.redstoneBehaviour.pneumaticDoor.openWhen";
     }
 
 

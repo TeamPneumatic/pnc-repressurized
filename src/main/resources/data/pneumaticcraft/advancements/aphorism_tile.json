@@ -4,10 +4,10 @@
       "item": "pneumaticcraft:aphorism_tile"
     },
     "title": {
-      "translate": "achievement.aphorismTile"
+      "translate": "pneumaticcraft.achievement.aphorismTile"
     },
     "description": {
-      "translate": "achievement.aphorismTile.desc"
+      "translate": "pneumaticcraft.achievement.aphorismTile.desc"
     }
   },
   "parent": "pneumaticcraft:assembly_controller",

@@ -4,10 +4,10 @@
       "item": "pneumaticcraft:refinery"
     },
     "title": {
-      "translate": "achievement.refinery"
+      "translate": "pneumaticcraft.achievement.refinery"
     },
     "description": {
-      "translate": "achievement.refinery.desc"
+      "translate": "pneumaticcraft.achievement.refinery.desc"
     }
   },
   "parent": "pneumaticcraft:oil_bucket",

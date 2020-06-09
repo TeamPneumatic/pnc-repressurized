@@ -54,10 +54,10 @@ public class ProgWidgetBlockRightClick extends ProgWidgetPlace implements IBlock
     public void getTooltip(List<ITextComponent> curTooltip) {
         super.getTooltip(curTooltip);
 
-        curTooltip.add(new TranslationTextComponent("gui.progWidget.blockRightClick.clickSide")
+        curTooltip.add(new TranslationTextComponent("pneumaticcraft.gui.progWidget.blockRightClick.clickSide")
                 .appendText(": " + ClientUtils.translateDirection(clickSide)));
         if (sneaking) {
-            curTooltip.add(new TranslationTextComponent("gui.progWidget.blockRightClick.sneaking"));
+            curTooltip.add(new TranslationTextComponent("pneumaticcraft.gui.progWidget.blockRightClick.sneaking"));
         }
     }
 

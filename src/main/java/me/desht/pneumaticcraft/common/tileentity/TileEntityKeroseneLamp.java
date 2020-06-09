@@ -46,10 +46,10 @@ import static me.desht.pneumaticcraft.common.block.BlockKeroseneLamp.LIT;
 public class TileEntityKeroseneLamp extends TileEntityTickableBase implements IRedstoneControlled, ISerializableTanks, INamedContainerProvider {
 
     private static final List<String> REDSTONE_LABELS = ImmutableList.of(
-            "gui.tab.redstoneBehaviour.button.anySignal",
-            "gui.tab.redstoneBehaviour.button.highSignal",
-            "gui.tab.redstoneBehaviour.button.lowSignal",
-            "gui.tab.redstoneBehaviour.keroseneLamp.button.interpolate"
+            "pneumaticcraft.gui.tab.redstoneBehaviour.button.anySignal",
+            "pneumaticcraft.gui.tab.redstoneBehaviour.button.highSignal",
+            "pneumaticcraft.gui.tab.redstoneBehaviour.button.lowSignal",
+            "pneumaticcraft.gui.tab.redstoneBehaviour.keroseneLamp.button.interpolate"
     );
 
     public static final int INVENTORY_SIZE = 2;

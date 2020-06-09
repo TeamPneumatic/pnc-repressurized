@@ -4,10 +4,10 @@
       "item": "pneumaticcraft:minigun"
     },
     "title": {
-      "translate": "achievement.minigun"
+      "translate": "pneumaticcraft.achievement.minigun"
     },
     "description": {
-      "translate": "achievement.minigun.desc"
+      "translate": "pneumaticcraft.achievement.minigun.desc"
     }
   },
   "parent": "pneumaticcraft:pressure_tube",

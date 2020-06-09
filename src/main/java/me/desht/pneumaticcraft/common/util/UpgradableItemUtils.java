@@ -46,10 +46,10 @@ public class UpgradableItemUtils {
         }
         if (isItemEmpty) {
             if (!(iStack.getItem() instanceof BlockItem)) {
-                textList.add(xlate("gui.tooltip.upgrades.empty").applyTextStyle(TextFormatting.DARK_GREEN));
+                textList.add(xlate("pneumaticcraft.gui.tooltip.upgrades.empty").applyTextStyle(TextFormatting.DARK_GREEN));
             }
         } else {
-            textList.add(xlate("gui.tooltip.upgrades.not_empty").applyTextStyle(TextFormatting.GREEN));
+            textList.add(xlate("pneumaticcraft.gui.tooltip.upgrades.not_empty").applyTextStyle(TextFormatting.GREEN));
             PneumaticCraftUtils.sortCombineItemStacksAndToString(textList, inventoryStacks);
         }
     }

@@ -4,10 +4,10 @@
       "item": "pneumaticcraft:flux_compressor"
     },
     "title": {
-      "translate": "achievement.fluxCompressor"
+      "translate": "pneumaticcraft.achievement.fluxCompressor"
     },
     "description": {
-      "translate": "achievement.fluxCompressor.desc"
+      "translate": "pneumaticcraft.achievement.fluxCompressor.desc"
     }
   },
   "parent": "pneumaticcraft:advanced_pressure_tube",

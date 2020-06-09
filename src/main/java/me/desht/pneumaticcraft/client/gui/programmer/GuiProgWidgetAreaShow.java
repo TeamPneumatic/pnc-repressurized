@@ -18,7 +18,7 @@ public class GuiProgWidgetAreaShow<P extends IProgWidget> extends GuiProgWidgetO
 
         if (displayShowAreaButtons()) {
             addButton(new WidgetCheckBox(guiLeft + 8, guiTop + ySize - (font.FONT_HEIGHT + 8), 0x404040,
-                    I18n.format("gui.programmer.button.showArea"), this::previewArea)
+                    I18n.format("pneumaticcraft.gui.programmer.button.showArea"), this::previewArea)
                     .setChecked(AreaRenderManager.getInstance().isShowing(guiProgrammer.te)));
         }
     }

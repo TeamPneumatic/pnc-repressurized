@@ -37,7 +37,7 @@ public class ProgWidgetLiquidFilter extends ProgWidget {
     @Override
     public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
-        if (fluid == Fluids.EMPTY) curInfo.add(xlate("gui.progWidget.liquidFilter.error.noLiquid"));
+        if (fluid == Fluids.EMPTY) curInfo.add(xlate("pneumaticcraft.gui.progWidget.liquidFilter.error.noLiquid"));
     }
 
     @Override
@@ -136,7 +136,7 @@ public class ProgWidgetLiquidFilter extends ProgWidget {
     public String getExtraStringInfo() {
         return fluid != Fluids.EMPTY ?
                 new FluidStack(fluid, 1).getDisplayName().getFormattedText() :
-                I18n.format("gui.progWidget.liquidFilter.noFluid");
+                I18n.format("pneumaticcraft.gui.progWidget.liquidFilter.noFluid");
     }
 
     public void setFluid(Fluid fluid) {

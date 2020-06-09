@@ -21,7 +21,7 @@ public class ProgWidgetLabel extends ProgWidget implements ILabel {
     @Override
     public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
-        if (getConnectedParameters()[0] == null) curInfo.add(xlate("gui.progWidget.label.error.noLabel"));
+        if (getConnectedParameters()[0] == null) curInfo.add(xlate("pneumaticcraft.gui.progWidget.label.error.noLabel"));
     }
 
     @Override

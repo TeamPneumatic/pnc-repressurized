@@ -4,10 +4,10 @@
       "item": "pneumaticcraft:liquid_compressor"
     },
     "title": {
-      "translate": "achievement.liquidCompressor"
+      "translate": "pneumaticcraft.achievement.liquidCompressor"
     },
     "description": {
-      "translate": "achievement.liquidCompressor.desc"
+      "translate": "pneumaticcraft.achievement.liquidCompressor.desc"
     }
   },
   "parent": "pneumaticcraft:refinery",

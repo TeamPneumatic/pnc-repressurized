@@ -29,18 +29,18 @@ public class HackableDoor implements IHackableBlock {
     @Override
     public void addInfo(IBlockReader world, BlockPos pos, List<String> curInfo, PlayerEntity player) {
         if (world.getBlockState(pos).get(getOpenProperty())) {
-            curInfo.add("pneumaticHelmet.hacking.result.close");
+            curInfo.add("pneumaticcraft.armor.hacking.result.close");
         } else {
-            curInfo.add("pneumaticHelmet.hacking.result.open");
+            curInfo.add("pneumaticcraft.armor.hacking.result.open");
         }
     }
 
     @Override
     public void addPostHackInfo(IBlockReader world, BlockPos pos, List<String> curInfo, PlayerEntity player) {
         if (world.getBlockState(pos).get(getOpenProperty())) {
-            curInfo.add("pneumaticHelmet.hacking.finished.opened");
+            curInfo.add("pneumaticcraft.armor.hacking.finished.opened");
         } else {
-            curInfo.add("pneumaticHelmet.hacking.finished.closed");
+            curInfo.add("pneumaticcraft.armor.hacking.finished.closed");
         }
     }
 

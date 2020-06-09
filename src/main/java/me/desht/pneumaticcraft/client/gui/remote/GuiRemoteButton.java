@@ -19,14 +19,14 @@ public class GuiRemoteButton extends GuiRemoteVariable<ActionWidgetButton> {
     public void init() {
         super.init();
 
-        addLabel(I18n.format("gui.remote.button.settingValue"), guiLeft + 10, guiTop + 95);
+        addLabel(I18n.format("pneumaticcraft.gui.remote.button.settingValue"), guiLeft + 10, guiTop + 95);
         addLabel("X:", guiLeft + 10, guiTop + 106);
         addLabel("Y:", guiLeft + 67, guiTop + 106);
         addLabel("Z:", guiLeft + 124, guiTop + 106);
-        addLabel(I18n.format("gui.remote.button.width"), guiLeft + 10, guiTop + 123);
-        addLabel(I18n.format("gui.remote.button.height"), guiLeft + 10, guiTop + 138);
+        addLabel(I18n.format("pneumaticcraft.gui.remote.button.width"), guiLeft + 10, guiTop + 123);
+        addLabel(I18n.format("pneumaticcraft.gui.remote.button.height"), guiLeft + 10, guiTop + 138);
 
-        String valueTooltip = I18n.format("gui.remote.button.value.tooltip");
+        String valueTooltip = I18n.format("pneumaticcraft.gui.remote.button.value.tooltip");
 
         xValueField = new WidgetTextFieldNumber(font, guiLeft + 20, guiTop + 105, 38, 10);
         xValueField.setValue(widget.settingCoordinate.getX());

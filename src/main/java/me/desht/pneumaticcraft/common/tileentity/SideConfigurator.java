@@ -155,7 +155,7 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundNBT> {
     }
 
     public String getTranslationKey() {
-        return "gui.sideConfigurator.title." + id;
+        return "pneumaticcraft.gui.sideConfigurator.title." + id;
     }
 
 
@@ -219,7 +219,7 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundNBT> {
 
     private String getFaceKey(RelativeFace relativeFace) {
         ConnectionEntry<T> c = entries.get(faces[relativeFace.ordinal()]);
-        return c == null ? "gui.sideConfigurator.unconnected" : "gui.sideConfigurator." + id + "." + c.id;
+        return c == null ? "pneumaticcraft.gui.sideConfigurator.unconnected" : "pneumaticcraft.gui.sideConfigurator." + id + "." + c.id;
     }
 
     @Override

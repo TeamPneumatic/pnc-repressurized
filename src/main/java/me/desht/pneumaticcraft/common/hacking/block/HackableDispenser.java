@@ -22,12 +22,12 @@ public class HackableDispenser implements IHackableBlock {
 
     @Override
     public void addInfo(IBlockReader world, BlockPos pos, List<String> curInfo, PlayerEntity player) {
-        curInfo.add("pneumaticHelmet.hacking.result.dispense");
+        curInfo.add("pneumaticcraft.armor.hacking.result.dispense");
     }
 
     @Override
     public void addPostHackInfo(IBlockReader world, BlockPos pos, List<String> curInfo, PlayerEntity player) {
-        curInfo.add("pneumaticHelmet.hacking.finished.dispensed");
+        curInfo.add("pneumaticcraft.armor.hacking.finished.dispensed");
     }
 
     @Override

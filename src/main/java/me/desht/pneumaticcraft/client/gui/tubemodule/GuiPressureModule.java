@@ -71,18 +71,18 @@ public class GuiPressureModule extends GuiTubeModule<TubeModule> {
         graphLeft = guiLeft + 22;
         graphRight = guiLeft + 172;
 
-        addButton(new WidgetTooltipArea(graphLeft - 20, graphHighY, 25, graphLowY - graphHighY, "gui.redstone"));
-        addButton(new WidgetTooltipArea(graphLeft, graphLowY - 5, graphRight - graphLeft, 25, "gui.threshold"));
+        addButton(new WidgetTooltipArea(graphLeft - 20, graphHighY, 25, graphLowY - graphHighY, "pneumaticcraft.gui.redstone"));
+        addButton(new WidgetTooltipArea(graphLeft, graphLowY - 5, graphRight - graphLeft, 25, "pneumaticcraft.gui.threshold"));
 
-        WidgetAnimatedStat stat = new WidgetAnimatedStat(this, "gui.tab.info", WidgetAnimatedStat.StatIcon.of(Textures.GUI_INFO_LOCATION), xStart, yStart + 5, 0xFF8888FF, null, true);
-        stat.setText("gui.tab.info.tubeModule");
+        WidgetAnimatedStat stat = new WidgetAnimatedStat(this, "pneumaticcraft.gui.tab.info", WidgetAnimatedStat.StatIcon.of(Textures.GUI_INFO_LOCATION), xStart, yStart + 5, 0xFF8888FF, null, true);
+        stat.setText("pneumaticcraft.gui.tab.info.tubeModule");
         stat.setBeveled(true);
         addButton(stat);
 
-        WidgetCheckBox advancedMode = new WidgetCheckBox(guiLeft + 6, guiTop + 20, 0xFF404040, "gui.tubeModule.advancedConfig", b -> {
+        WidgetCheckBox advancedMode = new WidgetCheckBox(guiLeft + 6, guiTop + 20, 0xFF404040, "pneumaticcraft.gui.tubeModule.advancedConfig", b -> {
             module.advancedConfig = b.checked;
             NetworkHandler.sendToServer(new PacketUpdatePressureModule(module));
-        }).setTooltip(I18n.format("gui.tubeModule.advancedConfig.tooltip"));
+        }).setTooltip(I18n.format("pneumaticcraft.gui.tubeModule.advancedConfig.tooltip"));
         advancedMode.checked = true;
         addButton(advancedMode);
 
@@ -116,7 +116,7 @@ public class GuiPressureModule extends GuiTubeModule<TubeModule> {
         if (module instanceof TubeModuleRedstoneReceiving) {
             module.onNeighborBlockUpdate();
             hLine(graphLeft + 4, graphRight, graphHighY + (graphLowY - graphHighY) * (15 - ((TubeModuleRedstoneReceiving) module).getReceivingRedstoneLevel()) / 15, 0xFFFF0000);
-            String status = I18n.format("gui.tubeModule.simpleConfig.threshold")
+            String status = I18n.format("pneumaticcraft.gui.tubeModule.simpleConfig.threshold")
                     + " " + PneumaticCraftUtils.roundNumberTo(((TubeModuleRedstoneReceiving) module).getThreshold(), 1) + " bar";
             font.drawString(status, guiLeft + xSize / 2f - font.getStringWidth(status) / 2f, guiTop + 175, 0xFF404040);
         }

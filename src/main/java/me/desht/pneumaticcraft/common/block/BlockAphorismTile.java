@@ -154,9 +154,9 @@ public class BlockAphorismTile extends BlockPneumaticCraft implements ColorHandl
 
     private void sendEditorMessage(PlayerEntity player) {
         ITextComponent msg = new StringTextComponent(TextFormatting.WHITE.toString())
-                .appendSibling(new TranslationTextComponent("gui.aphorismTileEditor"))
+                .appendSibling(new TranslationTextComponent("pneumaticcraft.gui.aphorismTileEditor"))
                 .appendSibling(new StringTextComponent(": "))
-                .appendSibling(new TranslationTextComponent("gui.holdF1forHelp"));
+                .appendSibling(new TranslationTextComponent("pneumaticcraft.gui.holdF1forHelp"));
         player.sendStatusMessage(msg, true);
     }
 

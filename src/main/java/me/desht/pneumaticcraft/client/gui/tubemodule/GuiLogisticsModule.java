@@ -27,7 +27,7 @@ public class GuiLogisticsModule extends GuiTubeModule<ModuleLogistics> {
         ourColor = module.getColorChannel();
 
         WidgetLabel ourColorLabel;
-        addButton(ourColorLabel = new WidgetLabel(guiLeft + 10, guiTop + 25, I18n.format("gui.tubeModule.channel")));
+        addButton(ourColorLabel = new WidgetLabel(guiLeft + 10, guiTop + 25, I18n.format("pneumaticcraft.gui.tubeModule.channel")));
 
         addLabel(getTitle().getFormattedText(), guiLeft + xSize / 2, guiTop + 5, WidgetLabel.Alignment.CENTRE);
 

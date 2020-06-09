@@ -112,20 +112,20 @@ public class EntityTrackHandler {
 
         @Override
         public void addInfo(Entity entity, List<String> curInfo, boolean isLookingAtTarget) {
-            curInfo.add(I18n.format("entityTracker.info.tamed", ((EntityDrone) entity).ownerName));
-            curInfo.add(I18n.format("entityTracker.info.drone.routine", ((EntityDrone) entity).getLabel()));
+            curInfo.add(I18n.format("pneumaticcraft.entityTracker.info.tamed", ((EntityDrone) entity).ownerName));
+            curInfo.add(I18n.format("pneumaticcraft.entityTracker.info.drone.routine", ((EntityDrone) entity).getLabel()));
             PlayerEntity player = ClientUtils.getClientPlayer();
             if (DroneDebugUpgradeHandler.enabledForPlayer(player)) {
                 if (ItemPneumaticArmor.isPlayerDebuggingEntity(player, entity)) {
-                    curInfo.add(TextFormatting.GOLD + I18n.format("entityTracker.info.drone.debugging"));
-                    curInfo.add(TextFormatting.GOLD + I18n.format("entityTracker.info.drone.debugging.key",
+                    curInfo.add(TextFormatting.GOLD + I18n.format("pneumaticcraft.entityTracker.info.drone.debugging"));
+                    curInfo.add(TextFormatting.GOLD + I18n.format("pneumaticcraft.entityTracker.info.drone.debugging.key",
                             KeyHandler.getInstance().keybindOpenOptions.getLocalizedName()));
                     if (isLookingAtTarget) {
-                        curInfo.add(TextFormatting.GOLD + I18n.format("entityTracker.info.drone.stopDebugging.key",
+                        curInfo.add(TextFormatting.GOLD + I18n.format("pneumaticcraft.entityTracker.info.drone.stopDebugging.key",
                                 KeyHandler.getInstance().keybindDebuggingDrone.getLocalizedName()));
                     }
                 } else if (isLookingAtTarget) {
-                    curInfo.add(TextFormatting.GOLD + I18n.format("entityTracker.info.drone.pressDebugKey",
+                    curInfo.add(TextFormatting.GOLD + I18n.format("pneumaticcraft.entityTracker.info.drone.pressDebugKey",
                             KeyHandler.getInstance().keybindDebuggingDrone.getLocalizedName()));
                 }
             }
@@ -143,7 +143,7 @@ public class EntityTrackHandler {
             float pressure = entity.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY)
                     .map(IAirHandler::getPressure)
                     .orElseThrow(IllegalStateException::new);
-            curInfo.add(I18n.format("gui.tooltip.pressure", PneumaticCraftUtils.roundNumberTo(pressure, 1)));
+            curInfo.add(I18n.format("pneumaticcraft.gui.tooltip.pressure", PneumaticCraftUtils.roundNumberTo(pressure, 1)));
         }
     }
 
@@ -156,7 +156,7 @@ public class EntityTrackHandler {
         @Override
         public void addInfo(Entity entity, List<String> curInfo, boolean isLookingAtTarget) {
             int healthPercentage = (int) (((LivingEntity) entity).getHealth() / ((LivingEntity) entity).getMaxHealth() * 100F);
-            curInfo.add(I18n.format("entityTracker.info.health", healthPercentage));
+            curInfo.add(I18n.format("pneumaticcraft.entityTracker.info.health", healthPercentage));
         }
     }
 
@@ -212,11 +212,11 @@ public class EntityTrackHandler {
         public void addInfo(Entity entity, List<String> curInfo, boolean isLookingAtTarget) {
             int growingAge = ((AgeableEntity) entity).getGrowingAge();
             if (growingAge > 0) {
-                curInfo.add(I18n.format("entityTracker.info.canBreedIn", PneumaticCraftUtils.convertTicksToMinutesAndSeconds(growingAge, false)));
+                curInfo.add(I18n.format("pneumaticcraft.entityTracker.info.canBreedIn", PneumaticCraftUtils.convertTicksToMinutesAndSeconds(growingAge, false)));
             } else if (growingAge < 0) {
-                curInfo.add(I18n.format("entityTracker.info.growsUpIn", PneumaticCraftUtils.convertTicksToMinutesAndSeconds(-growingAge, false)));
+                curInfo.add(I18n.format("pneumaticcraft.entityTracker.info.growsUpIn", PneumaticCraftUtils.convertTicksToMinutesAndSeconds(-growingAge, false)));
             } else {
-                curInfo.add(I18n.format("entityTracker.info.canBreedNow"));
+                curInfo.add(I18n.format("pneumaticcraft.entityTracker.info.canBreedNow"));
             }
         }
     }
@@ -231,9 +231,9 @@ public class EntityTrackHandler {
         public void addInfo(Entity entity, List<String> curInfo, boolean isLookingAtTarget) {
             LivingEntity owner = ((TameableEntity) entity).getOwner();
             if (owner != null) {
-                curInfo.add(I18n.format("entityTracker.info.tamed", owner.getDisplayName().getFormattedText()));
+                curInfo.add(I18n.format("pneumaticcraft.entityTracker.info.tamed", owner.getDisplayName().getFormattedText()));
             } else {
-                curInfo.add(I18n.format("entityTracker.info.canTame"));
+                curInfo.add(I18n.format("pneumaticcraft.entityTracker.info.canTame"));
             }
         }
     }
@@ -261,9 +261,9 @@ public class EntityTrackHandler {
         public void addInfo(Entity entity, List<String> curInfo, boolean isLookingAtTarget) {
             if (creeperInFuseTime > 0) {
                 if (((CreeperEntity) entity).getCreeperState() == 1) {
-                    curInfo.add(TextFormatting.RED + I18n.format("entityTracker.info.creeper.fuse", Math.round((30 - creeperInFuseTime) / 20F * 10F) / 10F + "s !"));
+                    curInfo.add(TextFormatting.RED + I18n.format("pneumaticcraft.entityTracker.info.creeper.fuse", Math.round((30 - creeperInFuseTime) / 20F * 10F) / 10F + "s !"));
                 } else {
-                    curInfo.add(TextFormatting.DARK_GREEN + I18n.format("entityTracker.info.creeper.coolDown", Math.round((30 - creeperInFuseTime) / 20F * 10F) / 10F + "s !"));
+                    curInfo.add(TextFormatting.DARK_GREEN + I18n.format("pneumaticcraft.entityTracker.info.creeper.coolDown", Math.round((30 - creeperInFuseTime) / 20F * 10F) / 10F + "s !"));
                 }
             }
         }
@@ -279,8 +279,8 @@ public class EntityTrackHandler {
         public void addInfo(Entity entity, List<String> curInfo, boolean isLookingAtTarget) {
             PlayerEntity player = (PlayerEntity) entity;
 
-            addInventory("entityTracker.info.player.armor", curInfo, player.inventory.armorInventory);
-            addInventory("entityTracker.info.player.holding", curInfo, player.inventory.mainInventory);
+            addInventory("pneumaticcraft.entityTracker.info.player.armor", curInfo, player.inventory.armorInventory);
+            addInventory("pneumaticcraft.entityTracker.info.player.holding", curInfo, player.inventory.mainInventory);
         }
 
         private static void addInventory(String title, List<String> curInfo, NonNullList<ItemStack> stacks) {
@@ -288,7 +288,7 @@ public class EntityTrackHandler {
             List<ITextComponent> l = new ArrayList<>();
             PneumaticCraftUtils.sortCombineItemStacksAndToString(l, asItemStackArray(stacks));
             if (l.isEmpty()) {
-                curInfo.add(I18n.format("gui.misc.no_items"));
+                curInfo.add(I18n.format("pneumaticcraft.gui.misc.no_items"));
             } else {
                 curInfo.addAll(l.stream().map(ITextComponent::getFormattedText).collect(Collectors.toList()));
             }
@@ -324,7 +324,7 @@ public class EntityTrackHandler {
                     int requiredHackTime = hackable.getHackTime(entity, player);
                     int percentageComplete = hackTime * 100 / requiredHackTime;
                     if (percentageComplete < 100) {
-                        curInfo.add(I18n.format("pneumaticHelmet.hacking.hacking", percentageComplete));
+                        curInfo.add(I18n.format("pneumaticcraft.armor.hacking.hacking", percentageComplete));
                     } else if (hackTime < requiredHackTime + 20) {
                         hackable.addPostHackInfo(entity, curInfo, player);
                     } else if (isLookingAtTarget) {
@@ -347,7 +347,7 @@ public class EntityTrackHandler {
             PaintingType art = ((PaintingEntity) entity).art;
 
             if (art != null) {
-                curInfo.add(I18n.format("entityTracker.info.painting.art", art.getRegistryName().getPath()));
+                curInfo.add(I18n.format("pneumaticcraft.entityTracker.info.painting.art", art.getRegistryName().getPath()));
             }
         }
     }
@@ -364,9 +364,9 @@ public class EntityTrackHandler {
             ItemStack stack = frame.getDisplayedItem();
 
             if (!stack.isEmpty()) {
-                curInfo.add(I18n.format("entityTracker.info.itemframe.item", stack.getDisplayName().getFormattedText()));
+                curInfo.add(I18n.format("pneumaticcraft.entityTracker.info.itemframe.item", stack.getDisplayName().getFormattedText()));
                 if (frame.getRotation() != 0) {
-                    curInfo.add(I18n.format("entityTracker.info.itemframe.rotation", frame.getRotation() * 45));
+                    curInfo.add(I18n.format("pneumaticcraft.entityTracker.info.itemframe.rotation", frame.getRotation() * 45));
                 }
             }
         }

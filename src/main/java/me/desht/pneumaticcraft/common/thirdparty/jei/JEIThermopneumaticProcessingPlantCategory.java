@@ -140,7 +140,7 @@ public class JEIThermopneumaticProcessingPlantCategory implements IRecipeCategor
             res.add(HeatUtil.formatHeatString(recipe.getOperatingTemperature().asString(TemperatureScale.CELSIUS)).getFormattedText());
         }
         if (recipe.getRequiredPressure() > 0 && mouseX >= 116 && mouseY >= 22 && mouseX <= 156 && mouseY <= 62) {
-            res.add(I18n.format("gui.tooltip.pressure", recipe.getRequiredPressure()));
+            res.add(I18n.format("pneumaticcraft.gui.tooltip.pressure", recipe.getRequiredPressure()));
         }
         return res;
     }

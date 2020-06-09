@@ -62,9 +62,9 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
         implements IMinWorkingPressure, IRedstoneControl, IGUIButtonSensitive, INamedContainerProvider {
 
     private static final List<String> REDSTONE_LABELS = ImmutableList.of(
-            "gui.tab.redstoneBehaviour.airCannon.button.highSignalAndAngle",
-            "gui.tab.redstoneBehaviour.button.highSignal",
-            "gui.tab.redstoneBehaviour.airCannon.button.highAndSpace"
+            "pneumaticcraft.gui.tab.redstoneBehaviour.airCannon.button.highSignalAndAngle",
+            "pneumaticcraft.gui.tab.redstoneBehaviour.button.highSignal",
+            "pneumaticcraft.gui.tab.redstoneBehaviour.airCannon.button.highAndSpace"
     );
 
     private final AirCannonStackHandler itemHandler = new AirCannonStackHandler(this);
@@ -814,7 +814,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
 
     @Override
     public String getRedstoneTabTitle() {
-        return "gui.tab.redstoneBehaviour.airCannon.fireUpon";
+        return "pneumaticcraft.gui.tab.redstoneBehaviour.airCannon.fireUpon";
     }
 
 }

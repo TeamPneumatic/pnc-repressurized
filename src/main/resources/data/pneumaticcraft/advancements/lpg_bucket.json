@@ -4,10 +4,10 @@
       "item": "pneumaticcraft:lpg_bucket"
     },
     "title": {
-      "translate": "achievement.lpgBucket"
+      "translate": "pneumaticcraft.achievement.lpgBucket"
     },
     "description": {
-      "translate": "achievement.lpgBucket.desc"
+      "translate": "pneumaticcraft.achievement.lpgBucket.desc"
     }
   },
   "parent": "pneumaticcraft:vortex_tube",

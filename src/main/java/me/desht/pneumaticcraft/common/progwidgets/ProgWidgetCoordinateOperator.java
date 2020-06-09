@@ -37,7 +37,7 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
         }
 
         public String getTranslationKey() {
-            return "gui.progWidget.coordinateOperator." + name;
+            return "pneumaticcraft.gui.progWidget.coordinateOperator." + name;
         }
     }
 
@@ -74,18 +74,18 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
     public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
         if (variable.equals("")) {
-            curInfo.add(xlate("gui.progWidget.general.error.emptyVariable"));
+            curInfo.add(xlate("pneumaticcraft.gui.progWidget.general.error.emptyVariable"));
         }
         if (operator == EnumOperator.MAX_MIN) {
             if (getConnectedParameters()[0] == null && getConnectedParameters()[getParameters().size()] == null) {
-                curInfo.add(xlate("gui.progWidget.coordinateOperator.noParameter"));
+                curInfo.add(xlate("pneumaticcraft.gui.progWidget.coordinateOperator.noParameter"));
             }
         } else if (operator == EnumOperator.MULIPLY_DIVIDE) {
             IProgWidget w = getConnectedParameters()[1];
             while (w instanceof ProgWidgetCoordinate) {
                 BlockPos pos = ((ProgWidgetCoordinate) w).getCoordinate();
                 if (pos.getX() == 0 || pos.getY() == 0 || pos.getZ() == 0) {
-                    curInfo.add(xlate("gui.progWidget.coordinateOperator.divideByZero"));
+                    curInfo.add(xlate("pneumaticcraft.gui.progWidget.coordinateOperator.divideByZero"));
                     break;
                 }
                 w = w.getConnectedParameters()[0];

@@ -86,7 +86,7 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
     public void init() {
         super.init();
 
-        String labelStr = I18n.format("gui.sentryTurret.targetFilter");
+        String labelStr = I18n.format("pneumaticcraft.gui.sentryTurret.targetFilter");
         filterLabel = new WidgetLabel(guiLeft + 12, guiTop + 130, labelStr);
         addButton(filterLabel);
         int textBoxX = guiLeft + 12 + font.getStringWidth(labelStr) + 5;
@@ -102,17 +102,17 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
         });
         addButton(textField);
 
-        addButton(new WidgetTooltipArea(guiLeft + 42, guiTop + 9, 35, 9, "gui.micromissile.topSpeed"));
-        addButton(new WidgetTooltipArea(guiLeft + 6, guiTop + 103, 25, 12, "gui.micromissile.turnSpeed"));
-        addButton(new WidgetTooltipArea(guiLeft + 96, guiTop + 103, 15, 15, "gui.micromissile.damage"));
+        addButton(new WidgetTooltipArea(guiLeft + 42, guiTop + 9, 35, 9, "pneumaticcraft.gui.micromissile.topSpeed"));
+        addButton(new WidgetTooltipArea(guiLeft + 6, guiTop + 103, 25, 12, "pneumaticcraft.gui.micromissile.turnSpeed"));
+        addButton(new WidgetTooltipArea(guiLeft + 96, guiTop + 103, 15, 15, "pneumaticcraft.gui.micromissile.damage"));
 
-        String saveLabel = I18n.format("gui.micromissile.saveDefault");
+        String saveLabel = I18n.format("pneumaticcraft.gui.micromissile.saveDefault");
         int buttonWidth = font.getStringWidth(saveLabel) + 10;
         int buttonX = guiLeft + (xSize - buttonWidth) / 2;
         addButton(new WidgetButtonExtended(buttonX, guiTop + 160, buttonWidth, 20, saveLabel, b -> sendSettingsToServer(true)));
 
         modeButton = new WidgetButtonExtended(guiLeft + 123, guiTop + 20, 52, 20, "", b -> modeSwitch());
-        modeButton.setTooltipText("gui.micromissile.modeTooltip");
+        modeButton.setTooltipText("pneumaticcraft.gui.micromissile.modeTooltip");
         addButton(modeButton);
 
         warningButton = new WidgetButtonExtended(guiLeft + 162, guiTop + 123, 20, 20, "");
@@ -136,7 +136,7 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
     private void setupWidgets() {
         textField.setEnabled(fireMode == FireMode.SMART);
         filterLabel.setColor(fireMode == FireMode.SMART ? 0xFF404040 : 0xFFAAAAAA);
-        modeButton.setMessage(I18n.format("gui.micromissile.mode." + fireMode.toString()));
+        modeButton.setMessage(I18n.format("pneumaticcraft.gui.micromissile.mode." + fireMode.toString()));
     }
 
     @Override
@@ -146,9 +146,9 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
 
         if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {
             GuiUtils.showPopupHelpScreen(this, font,
-                    PneumaticCraftUtils.splitString(I18n.format("gui.entityFilter.helpText"), 60));
+                    PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.entityFilter.helpText"), 60));
         } else if (textField.isHovered()) {
-            String str = I18n.format("gui.entityFilter");
+            String str = I18n.format("pneumaticcraft.gui.entityFilter");
             font.drawString(str, guiLeft + (xSize - font.getStringWidth(str)) / 2f, guiTop + ySize + 5, 0x808080);
         }
 

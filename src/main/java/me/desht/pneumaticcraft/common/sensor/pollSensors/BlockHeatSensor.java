@@ -46,7 +46,7 @@ public class BlockHeatSensor implements IBlockAndCoordinatePollSensor {
     @Override
     public List<String> getDescription() {
         List<String> text = new ArrayList<>();
-        text.add(TextFormatting.BLACK + I18n.format("gui.universalSensor.desc.heatSensor"));
+        text.add(TextFormatting.BLACK + I18n.format("pneumaticcraft.gui.universalSensor.desc.heatSensor"));
         return text;
     }
 

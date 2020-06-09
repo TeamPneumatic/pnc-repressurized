@@ -50,14 +50,14 @@ public class GuiSentryTurret extends GuiPneumaticContainerBase<ContainerSentryTu
     protected void drawGuiContainerForegroundLayer(int x, int y) {
         super.drawGuiContainerForegroundLayer(x, y);
 
-        font.drawString(I18n.format("gui.sentryTurret.ammo"), 80, 19, 0x404040);
-        font.drawString(I18n.format("gui.sentryTurret.targetFilter"), 80, 53, 0x404040);
+        font.drawString(I18n.format("pneumaticcraft.gui.sentryTurret.ammo"), 80, 19, 0x404040);
+        font.drawString(I18n.format("pneumaticcraft.gui.sentryTurret.targetFilter"), 80, 53, 0x404040);
         if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {
             GuiUtils.showPopupHelpScreen(this, font,
-                    PneumaticCraftUtils.splitString(I18n.format("gui.entityFilter.helpText"), 60));
+                    PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.entityFilter.helpText"), 60));
         } else if (x >= guiLeft + 76 && y >= guiTop + 51 && x <= guiLeft + 153 && y <= guiTop + 74) {
             // cursor inside the entity filter area
-            String str = I18n.format("gui.entityFilter");
+            String str = I18n.format("pneumaticcraft.gui.entityFilter");
             font.drawString(str, (xSize - font.getStringWidth(str)) / 2f, ySize + 5, 0x808080);
         }
     }
@@ -84,6 +84,6 @@ public class GuiSentryTurret extends GuiPneumaticContainerBase<ContainerSentryTu
                 break;
             }
         }
-        if (!hasAmmo) curInfo.add("gui.tab.problems.sentryTurret.noAmmo");
+        if (!hasAmmo) curInfo.add("pneumaticcraft.gui.tab.problems.sentryTurret.noAmmo");
     }
 }

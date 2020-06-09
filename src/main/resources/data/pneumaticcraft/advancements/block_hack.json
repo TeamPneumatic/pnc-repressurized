@@ -4,10 +4,10 @@
       "item": "pneumaticcraft:block_tracker_upgrade"
     },
     "title": {
-      "translate": "achievement.blockHack"
+      "translate": "pneumaticcraft.achievement.blockHack"
     },
     "description": {
-      "translate": "achievement.blockHack.desc"
+      "translate": "pneumaticcraft.achievement.blockHack.desc"
     }
   },
   "parent": "pneumaticcraft:pneumatic_armor",

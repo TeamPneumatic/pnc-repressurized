@@ -51,7 +51,7 @@ public class GuiTagWorkbench extends GuiPneumaticContainerBase<ContainerTagWorkb
         super.init();
 
         addButton(writeButton = new WidgetButtonExtended(guiLeft + 162, guiTop + 16, 20, 20, "", b -> writeTags())
-                .setRenderStacks(new ItemStack(Items.WRITABLE_BOOK)).setTooltipText(I18n.format("gui.tooltip.tag_workbench.write_button")));
+                .setRenderStacks(new ItemStack(Items.WRITABLE_BOOK)).setTooltipText(I18n.format("pneumaticcraft.gui.tooltip.tag_workbench.write_button")));
         addButton(addButton = new WidgetButtonExtended(guiLeft + 108, guiTop + 90, 13, 13, GuiConstants.TRIANGLE_RIGHT,
                 b -> addAvailable()));
         addButton(removeButton = new WidgetButtonExtended(guiLeft + 108, guiTop + 106, 13, 13, GuiConstants.TRIANGLE_LEFT,

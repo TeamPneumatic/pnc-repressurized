@@ -21,12 +21,12 @@ public class HackableNoteblock implements IHackableBlock {
 
     @Override
     public void addInfo(IBlockReader world, BlockPos pos, List<String> curInfo, PlayerEntity player) {
-        curInfo.add("pneumaticHelmet.hacking.result.makeSound");
+        curInfo.add("pneumaticcraft.armor.hacking.result.makeSound");
     }
 
     @Override
     public void addPostHackInfo(IBlockReader world, BlockPos pos, List<String> curInfo, PlayerEntity player) {
-        curInfo.add("pneumaticHelmet.hacking.finished.makingSound");
+        curInfo.add("pneumaticcraft.armor.hacking.finished.makingSound");
     }
 
     @Override

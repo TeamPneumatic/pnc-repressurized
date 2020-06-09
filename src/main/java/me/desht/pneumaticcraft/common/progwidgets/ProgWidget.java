@@ -48,7 +48,7 @@ public abstract class ProgWidget implements IProgWidget {
     public void getTooltip(List<ITextComponent> curTooltip) {
         curTooltip.add(xlate(getTranslationKey()).applyTextStyles(TextFormatting.DARK_AQUA, TextFormatting.UNDERLINE));
         if (freeToUse()) {
-            curTooltip.add(new TranslationTextComponent("gui.progWidget.comment.tooltip.freeToUse"));
+            curTooltip.add(new TranslationTextComponent("pneumaticcraft.gui.progWidget.comment.tooltip.freeToUse"));
         }
     }
 
@@ -64,7 +64,7 @@ public abstract class ProgWidget implements IProgWidget {
             ((IVariableWidget) this).addVariables(variables);
             for (String variable : variables) {
                 if (!variable.equals("") && !variable.startsWith("#") && !variable.startsWith("$") && !isVariableSetAnywhere(widgets, variable)) {
-                    curInfo.add(xlate("gui.progWidget.general.warning.variableNeverSet", variable));
+                    curInfo.add(xlate("pneumaticcraft.gui.progWidget.general.warning.variableNeverSet", variable));
                 }
             }
         }
@@ -85,7 +85,7 @@ public abstract class ProgWidget implements IProgWidget {
     @Override
     public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
         if (!hasStepInput() && hasStepOutput() && outputStepConnection == null) {
-            curInfo.add(xlate("gui.progWidget.general.error.noPieceConnected"));
+            curInfo.add(xlate("pneumaticcraft.gui.progWidget.general.error.noPieceConnected"));
         }
     }
 

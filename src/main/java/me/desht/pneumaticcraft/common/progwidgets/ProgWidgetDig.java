@@ -52,7 +52,7 @@ public class ProgWidgetDig extends ProgWidgetDigAndPlace implements IToolUser {
         super.getTooltip(curTooltip);
         
         if (requiresTool()) {
-            curTooltip.add(xlate("gui.progWidget.dig.requiresDiggingTool"));
+            curTooltip.add(xlate("pneumaticcraft.gui.progWidget.dig.requiresDiggingTool"));
         }
     }
     

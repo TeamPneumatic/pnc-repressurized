@@ -4,10 +4,10 @@
       "item": "pneumaticcraft:plastic"
     },
     "title": {
-      "translate": "achievement.plastic"
+      "translate": "pneumaticcraft.achievement.plastic"
     },
     "description": {
-      "translate": "achievement.plastic.desc"
+      "translate": "pneumaticcraft.achievement.plastic.desc"
     },
     "frame": "goal"
   },

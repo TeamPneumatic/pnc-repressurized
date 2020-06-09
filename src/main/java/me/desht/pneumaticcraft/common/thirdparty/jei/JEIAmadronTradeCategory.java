@@ -98,9 +98,9 @@ public class JEIAmadronTradeCategory implements IRecipeCategory<AmadronOffer> {
     public List<String> getTooltipStrings(AmadronOffer recipe, double mouseX, double mouseY) {
         List<String> res = new ArrayList<>();
         if (mouseX >= 22 && mouseX <= 51 && mouseY >= 12) {
-            res.add(I18n.format("gui.amadron.amadronWidget.vendor", recipe.getVendor()));
-            res.add(I18n.format("gui.amadron.amadronWidget.selling", recipe.getOutput().toString()));
-            res.add(I18n.format("gui.amadron.amadronWidget.buying", recipe.getInput().toString()));
+            res.add(I18n.format("pneumaticcraft.gui.amadron.amadronWidget.vendor", recipe.getVendor()));
+            res.add(I18n.format("pneumaticcraft.gui.amadron.amadronWidget.selling", recipe.getOutput().toString()));
+            res.add(I18n.format("pneumaticcraft.gui.amadron.amadronWidget.buying", recipe.getInput().toString()));
         }
         return res;
     }

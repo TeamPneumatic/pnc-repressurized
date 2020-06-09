@@ -40,9 +40,9 @@ public abstract class ProgWidgetConditionBase extends ProgWidget implements IJum
         IProgWidget widget = getConnectedParameters()[getParameters().size() - 1];
         IProgWidget widget2 = getConnectedParameters()[getParameters().size() * 2 - 1];
         if (widget == null && widget2 == null) {
-            curInfo.add(xlate("gui.progWidget.condition.error.noFlowControl"));
+            curInfo.add(xlate("pneumaticcraft.gui.progWidget.condition.error.noFlowControl"));
         } else if (widget != null && !(widget instanceof ProgWidgetText) || widget2 != null && !(widget2 instanceof ProgWidgetText)) {
-            curInfo.add(xlate("gui.progWidget.condition.error.shouldConnectTextPieces"));
+            curInfo.add(xlate("pneumaticcraft.gui.progWidget.condition.error.shouldConnectTextPieces"));
         }
     }
 
@@ -62,9 +62,9 @@ public abstract class ProgWidgetConditionBase extends ProgWidget implements IJum
     public IProgWidget getOutputWidget(IDroneBase drone, List<IProgWidget> allWidgets) {
         boolean evaluation = evaluate(drone, this);
         if (evaluation) {
-            drone.addDebugEntry("gui.progWidget.condition.evaluatedTrue");
+            drone.addDebugEntry("pneumaticcraft.gui.progWidget.condition.evaluatedTrue");
         } else {
-            drone.addDebugEntry("gui.progWidget.condition.evaluatedFalse");
+            drone.addDebugEntry("pneumaticcraft.gui.progWidget.condition.evaluatedFalse");
         }
         return ProgWidgetJump.jumpToLabel(drone, allWidgets, this, evaluation);
     }

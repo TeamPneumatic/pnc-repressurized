@@ -83,7 +83,7 @@ public class ItemGPSAreaTool extends Item implements IPositionProvider {
             infoList.add(new StringTextComponent(getMessageText(pos, index)).applyTextStyle(index == 0 ? TextFormatting.RED : TextFormatting.GREEN));
             String varName = getVariable(stack, index);
             if (!varName.isEmpty()) {
-                infoList.add(xlate("gui.tooltip.gpsTool.variable", varName));
+                infoList.add(xlate("pneumaticcraft.gui.tooltip.gpsTool.variable", varName));
             }
         }
         getArea(stack).addAreaTypeTooltip(infoList);

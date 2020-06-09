@@ -59,14 +59,14 @@ public class GuiFluxCompressor extends GuiPneumaticContainerBase<ContainerFluxCo
     @Override
     protected void addPressureStatInfo(List<String> pressureStatText) {
         super.addPressureStatInfo(pressureStatText);
-        pressureStatText.add(TextFormatting.BLACK + I18n.format("gui.tooltip.maxProduction", te.getAirRate()));
+        pressureStatText.add(TextFormatting.BLACK + I18n.format("pneumaticcraft.gui.tooltip.maxProduction", te.getAirRate()));
     }
 
     @Override
     protected void addProblems(List<String> textList) {
         super.addProblems(textList);
         if (te.getInfoEnergyPerTick() > te.getInfoEnergyStored()) {
-            textList.add("gui.tab.problems.fluxCompressor.noRF");
+            textList.add("pneumaticcraft.gui.tab.problems.fluxCompressor.noRF");
         }
     }
 
@@ -74,7 +74,7 @@ public class GuiFluxCompressor extends GuiPneumaticContainerBase<ContainerFluxCo
     protected void addWarnings(List<String> curInfo) {
         super.addWarnings(curInfo);
         if (te.getEfficiency() < 100) {
-            curInfo.add(I18n.format("gui.tab.problems.advancedAirCompressor.efficiency", te.getEfficiency() + "%%"));
+            curInfo.add(I18n.format("pneumaticcraft.gui.tab.problems.advancedAirCompressor.efficiency", te.getEfficiency() + "%%"));
         }
     }
 }

@@ -26,7 +26,7 @@ public class JEIPlasticSolidifyingCategory implements IRecipeCategory<JEIPlastic
     private final IDrawable icon;
 
     JEIPlasticSolidifyingCategory() {
-        localizedName = I18n.format("gui.jei.title.plasticSolidifying");
+        localizedName = I18n.format("pneumaticcraft.gui.jei.title.plasticSolidifying");
         background = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_MISC_RECIPES, 0, 0, 82, 18);
         icon = JEIPlugin.jeiHelpers.getGuiHelper().createDrawableIngredient(new ItemStack(ModItems.PLASTIC.get()));
     }
@@ -83,7 +83,7 @@ public class JEIPlasticSolidifyingCategory implements IRecipeCategory<JEIPlastic
     public List<String> getTooltipStrings(PlasticSolidifyingRecipe recipe, double mouseX, double mouseY) {
         List<String> res = new ArrayList<>();
         if (mouseX >= 23 && mouseX <= 60) {
-            res.add(I18n.format("gui.jei.tooltip.plasticSolidifying"));
+            res.add(I18n.format("pneumaticcraft.gui.jei.tooltip.plasticSolidifying"));
         }
         return res;
     }

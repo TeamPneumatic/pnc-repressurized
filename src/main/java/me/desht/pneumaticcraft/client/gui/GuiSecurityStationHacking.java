@@ -65,8 +65,8 @@ public class GuiSecurityStationHacking extends GuiSecurityStationBase<ContainerS
         int yStart = (height - ySize) / 2;
 
         statusStat = addAnimatedStat("Security Status", new ItemStack(ModBlocks.SECURITY_STATION.get()), 0xFFFFAA00, false);
-        addAnimatedStat("gui.tab.info", Textures.GUI_INFO_LOCATION, 0xFF8888FF, true).setText("gui.tab.info.tile.security_station.hacking");
-        addAnimatedStat("gui.tab.upgrades", Textures.GUI_UPGRADES_LOCATION, 0xFF0000FF, true).setText("gui.tab.upgrades.tile.security_station.hacking");
+        addAnimatedStat("pneumaticcraft.gui.tab.info", Textures.GUI_INFO_LOCATION, 0xFF8888FF, true).setText("pneumaticcraft.gui.tab.info.tile.security_station.hacking");
+        addAnimatedStat("pneumaticcraft.gui.tab.upgrades", Textures.GUI_UPGRADES_LOCATION, 0xFF0000FF, true).setText("pneumaticcraft.gui.tab.upgrades.tile.security_station.hacking");
         addAnimatedStat(ModItems.NUKE_VIRUS.get().getTranslationKey() + ".name", new ItemStack(ModItems.NUKE_VIRUS.get()), 0xFF18c9e8, false).setText("gui.tab.info.tile.security_station.nukeVirus");
         addAnimatedStat(ModItems.STOP_WORM.get().getTranslationKey() + ".name", new ItemStack(ModItems.STOP_WORM.get()), 0xFFc13232, false).setText("gui.tab.info.tile.security_station.stopWorm");
 
@@ -211,12 +211,12 @@ public class GuiSecurityStationHacking extends GuiSecurityStationBase<ContainerS
         if (slot != null) {
             if (hackerBridges.slotHacked[slot.slotNumber]) {
                 if (!hackerBridges.slotFortified[slot.slotNumber]) {
-                    currenttip.add(xlate("gui.tooltip.hacking.detectionChance", te.getDetectionChance()).applyTextStyle(TextFormatting.RED));
-                    currenttip.add(xlate("gui.tooltip.hacking.rightClickFortify").applyTextStyle(TextFormatting.YELLOW));
+                    currenttip.add(xlate("pneumaticcraft.gui.tooltip.hacking.detectionChance", te.getDetectionChance()).applyTextStyle(TextFormatting.RED));
+                    currenttip.add(xlate("pneumaticcraft.gui.tooltip.hacking.rightClickFortify").applyTextStyle(TextFormatting.YELLOW));
                 }
             } else if (hackerBridges.canHackSlot(slot.slotNumber)) {
-                currenttip.add(xlate("gui.tooltip.hacking.detectionChance", te.getDetectionChance()).applyTextStyle(TextFormatting.RED));
-                currenttip.add(xlate("gui.tooltip.hacking.leftClickHack").applyTextStyle(TextFormatting.GREEN));
+                currenttip.add(xlate("pneumaticcraft.gui.tooltip.hacking.detectionChance", te.getDetectionChance()).applyTextStyle(TextFormatting.RED));
+                currenttip.add(xlate("pneumaticcraft.gui.tooltip.hacking.leftClickHack").applyTextStyle(TextFormatting.GREEN));
             }
         }
     }

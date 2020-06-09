@@ -23,7 +23,7 @@ public class AreaTypePyramid extends AreaType {
         private final String name;
 
         EnumAreaTypePyramid(String name) {
-            this.name = "gui.progWidget.area.type.pyramid.pyramidType." + name;
+            this.name = "pneumaticcraft.gui.progWidget.area.type.pyramid.pyramidType." + name;
         }
 
         @Override
@@ -143,8 +143,8 @@ public class AreaTypePyramid extends AreaType {
     @Override
     public void addUIWidgets(List<AreaTypeWidget> widgets) {
         super.addUIWidgets(widgets);
-        widgets.add(new AreaTypeWidgetEnum<>("gui.progWidget.area.type.general.axis", EnumAxis.class, () -> axis, axis -> this.axis = axis));
-        widgets.add(new AreaTypeWidgetEnum<>("gui.progWidget.area.type.pyramid.pyramidType", EnumAreaTypePyramid.class, () -> pyramidType, pyramidType -> this.pyramidType = pyramidType));
+        widgets.add(new AreaTypeWidgetEnum<>("pneumaticcraft.gui.progWidget.area.type.general.axis", EnumAxis.class, () -> axis, axis -> this.axis = axis));
+        widgets.add(new AreaTypeWidgetEnum<>("pneumaticcraft.gui.progWidget.area.type.pyramid.pyramidType", EnumAreaTypePyramid.class, () -> pyramidType, pyramidType -> this.pyramidType = pyramidType));
     }
 
     @Override

@@ -4,10 +4,10 @@
       "item": "pneumaticcraft:air_compressor"
     },
     "title": {
-      "translate": "achievement.airCompressor"
+      "translate": "pneumaticcraft.achievement.airCompressor"
     },
     "description": {
-      "translate": "achievement.airCompressor.desc"
+      "translate": "pneumaticcraft.achievement.airCompressor.desc"
     }
   },
   "parent": "pneumaticcraft:pressure_tube",

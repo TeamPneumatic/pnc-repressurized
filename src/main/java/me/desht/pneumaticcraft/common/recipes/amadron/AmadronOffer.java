@@ -59,7 +59,7 @@ public class AmadronOffer extends AmadronRecipe {
 
     @Override
     public String getVendor() {
-        return xlate("gui.amadron").getFormattedText();
+        return xlate("pneumaticcraft.gui.amadron").getFormattedText();
     }
 
     public int getStock() {

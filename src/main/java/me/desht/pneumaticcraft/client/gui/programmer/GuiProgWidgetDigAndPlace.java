@@ -35,11 +35,11 @@ public abstract class GuiProgWidgetDigAndPlace<P extends ProgWidgetDigAndPlace> 
         }
 
         WidgetCheckBox useMaxActions = new WidgetCheckBox(guiLeft + (moveActionsToSide() ? 64 : 8), guiTop + 115, 0xFF404040,
-                I18n.format("gui.progWidget.digAndPlace.useMaxActions"), b -> {
+                I18n.format("pneumaticcraft.gui.progWidget.digAndPlace.useMaxActions"), b -> {
             progWidget.setUseMaxActions(b.checked);
             textField.setEnabled(progWidget.useMaxActions());
         });
-        useMaxActions.setTooltip("gui.progWidget.digAndPlace.useMaxActions.tooltip");
+        useMaxActions.setTooltip("pneumaticcraft.gui.progWidget.digAndPlace.useMaxActions.tooltip");
         useMaxActions.checked = progWidget.useMaxActions();
         addButton(useMaxActions);
 

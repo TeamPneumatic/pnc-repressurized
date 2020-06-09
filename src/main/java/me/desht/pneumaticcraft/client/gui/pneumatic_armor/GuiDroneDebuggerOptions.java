@@ -79,16 +79,16 @@ public class GuiDroneDebuggerOptions extends IOptionPage.SimpleToggleableOptions
         }
 
         showStart = new WidgetButtonExtended(30, 128, 150, 20,
-                I18n.format("gui.progWidget.debug.showStart"),
+                I18n.format("pneumaticcraft.gui.progWidget.debug.showStart"),
                 b -> programmerUnit.gotoPiece(GuiProgrammer.findWidget(selectedDrone.getProgWidgets(), ProgWidgetStart.class)));
         gui.addWidget(showStart);
 
         showActive = new WidgetButtonExtended(30, 150, 150, 20,
-                I18n.format("gui.progWidget.debug.showActive"),
+                I18n.format("pneumaticcraft.gui.progWidget.debug.showActive"),
                 b -> programmerUnit.gotoPiece(selectedDrone.getActiveWidget()));
         gui.addWidget(showActive);
 
-        followCheckbox = new WidgetCheckBox(30, 176, 0xFFFFFFFF, " " + I18n.format("gui.progWidget.debug.followActive"));
+        followCheckbox = new WidgetCheckBox(30, 176, 0xFFFFFFFF, " " + I18n.format("pneumaticcraft.gui.progWidget.debug.followActive"));
         followCheckbox.x = 180 - followCheckbox.getWidth();
         gui.addWidget(followCheckbox);
 
@@ -207,19 +207,19 @@ public class GuiDroneDebuggerOptions extends IOptionPage.SimpleToggleableOptions
                         .appendText("\"  ")
                         .applyTextStyles(TextFormatting.AQUA, TextFormatting.ITALIC));
                 if (entry.hasCoords()) {
-                    tooltip.add(xlate("gui.progWidget.debug.hasPositions").applyTextStyle(TextFormatting.GREEN));
+                    tooltip.add(xlate("pneumaticcraft.gui.progWidget.debug.hasPositions").applyTextStyle(TextFormatting.GREEN));
                     if (widget != areaShowingWidget)
-                        tooltip.add(xlate("gui.progWidget.debug.clickToShow").applyTextStyle(TextFormatting.GREEN));
+                        tooltip.add(xlate("pneumaticcraft.gui.progWidget.debug.clickToShow").applyTextStyle(TextFormatting.GREEN));
                 }
             }
             if (widget instanceof IAreaProvider) {
                 if (widgetId == areaShowWidgetId) {
                     tooltip.add(new StringTextComponent("Right-Click: ")
-                            .appendSibling(xlate("gui.programmer.button.stopShowingArea"))
+                            .appendSibling(xlate("pneumaticcraft.gui.programmer.button.stopShowingArea"))
                             .applyTextStyle(TextFormatting.GREEN));
                 } else {
                     tooltip.add(new StringTextComponent("Right-Click: ")
-                            .appendSibling(xlate("gui.programmer.button.showArea"))
+                            .appendSibling(xlate("pneumaticcraft.gui.programmer.button.showArea"))
                             .applyTextStyle(TextFormatting.GREEN));
                 }
             }

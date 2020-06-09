@@ -102,7 +102,7 @@ public abstract class ProgWidgetDroneCondition extends ProgWidgetConditionBase i
 
     @Override
     public String getExtraStringInfo() {
-        String anyAll = I18n.format(isAndFunction() ? "gui.progWidget.condition.all" : "gui.progWidget.condition.any");
+        String anyAll = I18n.format(isAndFunction() ? "pneumaticcraft.gui.progWidget.condition.all" : "pneumaticcraft.gui.progWidget.condition.any");
         return anyAll + " " + getOperator().toString() + " " + getRequiredCount();
     }
 

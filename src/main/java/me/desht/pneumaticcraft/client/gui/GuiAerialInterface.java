@@ -44,8 +44,8 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<ContainerAeria
     public void init() {
         super.init();
 
-        addAnimatedStat("gui.tab.info.aerialInterface.interfacingRF.info.title",
-                Textures.GUI_BUILDCRAFT_ENERGY, 0xFFA02222, false).setText("gui.tab.info.aerialInterface.interfacingRF.info");
+        addAnimatedStat("pneumaticcraft.gui.tab.info.aerialInterface.interfacingRF.info.title",
+                Textures.GUI_BUILDCRAFT_ENERGY, 0xFFA02222, false).setText("pneumaticcraft.gui.tab.info.aerialInterface.interfacingRF.info");
 
         te.getCapability(CapabilityEnergy.ENERGY).ifPresent(storage -> addButton(new WidgetEnergy(guiLeft + 20, guiTop + 20, storage)));
 
@@ -53,7 +53,7 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<ContainerAeria
             // Experience Tab
             List<Fluid> availableXp = XPFluidManager.getInstance().getAvailableLiquidXPs();
             if (availableXp.size() > 0) {
-                WidgetAnimatedStat xpStat = addAnimatedStat("gui.tab.info.aerialInterface.liquidXp.info.title",
+                WidgetAnimatedStat xpStat = addAnimatedStat("pneumaticcraft.gui.tab.info.aerialInterface.liquidXp.info.title",
                         new ItemStack(Items.EXPERIENCE_BOTTLE), 0xFF55FF55, false);
                 xpStat.setText(getLiquidXPText());
                 xpButton = new WidgetButtonExtended(20, 15, 20, 20, "", b -> {
@@ -84,12 +84,12 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<ContainerAeria
                 modeButtons[i] = button;
             }
 
-            addAnimatedStat("gui.tab.info.aerialInterface.interfacingFood", new ItemStack(Items.BREAD), 0xFFA0A0A0, false)
-                    .setText("gui.tab.info.aerialInterface.removeDispenser");
+            addAnimatedStat("pneumaticcraft.gui.tab.info.aerialInterface.interfacingFood", new ItemStack(Items.BREAD), 0xFFA0A0A0, false)
+                    .setText("pneumaticcraft.gui.tab.info.aerialInterface.removeDispenser");
 
         } else {
-            addAnimatedStat("gui.tab.info.aerialInterface.interfacingItems", new ItemStack(Blocks.CHEST), 0xFFA0A0A0, false)
-                    .setText("gui.tab.info.aerialInterface.insertDispenser");
+            addAnimatedStat("pneumaticcraft.gui.tab.info.aerialInterface.interfacingItems", new ItemStack(Blocks.CHEST), 0xFFA0A0A0, false)
+                    .setText("pneumaticcraft.gui.tab.info.aerialInterface.insertDispenser");
             Arrays.fill(modeButtons, null);
         }
     }
@@ -127,7 +127,7 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<ContainerAeria
             xpButton.setTooltipText(ImmutableList.of(fluidStack.getDisplayName().getFormattedText(), TextFormatting.ITALIC.toString() + TextFormatting.BLUE + modName));
         } else {
             xpButton.setRenderStacks(new ItemStack(Items.BUCKET));
-            xpButton.setTooltipText(I18n.format("gui.tooltip.aerial_interface.xpDisabled"));
+            xpButton.setTooltipText(I18n.format("pneumaticcraft.gui.tooltip.aerial_interface.xpDisabled"));
         }
     }
 
@@ -136,7 +136,7 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<ContainerAeria
         liquidXpText.add("");
         liquidXpText.add("");
         liquidXpText.add("");
-        liquidXpText.add("gui.tab.info.aerialInterface.liquidXp.info");
+        liquidXpText.add("pneumaticcraft.gui.tab.info.aerialInterface.liquidXp.info");
         liquidXpText.add("");
         List<Fluid> availableXp = XPFluidManager.getInstance().getAvailableLiquidXPs();
         if (availableXp.isEmpty()) {
@@ -163,7 +163,7 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<ContainerAeria
         super.addPressureStatInfo(pressureStatText);
 
         if (te.getPressure() >= te.getMinWorkingPressure() && te.isConnectedToPlayer) {
-            pressureStatText.add(TextFormatting.BLACK + I18n.format("gui.tooltip.airUsage",
+            pressureStatText.add(TextFormatting.BLACK + I18n.format("pneumaticcraft.gui.tooltip.airUsage",
                     PneumaticCraftUtils.roundNumberTo(PneumaticValues.USAGE_AERIAL_INTERFACE, 1)));
         }
     }
@@ -173,16 +173,16 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<ContainerAeria
         super.addProblems(textList);
 
         if (te.playerName.equals("")) {
-            textList.add(I18n.format("gui.tab.problems.aerialInterface.noPlayer"));
+            textList.add(I18n.format("pneumaticcraft.gui.tab.problems.aerialInterface.noPlayer"));
         } else if (!te.isConnectedToPlayer) {
-            textList.add(I18n.format("gui.tab.problems.aerialInterface.playerOffline", te.playerName));
+            textList.add(I18n.format("pneumaticcraft.gui.tab.problems.aerialInterface.playerOffline", te.playerName));
         }
     }
 
     @Override
     protected void addInformation(List<String> curInfo) {
         if (te.playerName != null && !te.playerName.isEmpty()) {
-            curInfo.add(I18n.format("gui.tab.info.aerialInterface.linked", te.playerName));
+            curInfo.add(I18n.format("pneumaticcraft.gui.tab.info.aerialInterface.linked", te.playerName));
         }
     }
 }

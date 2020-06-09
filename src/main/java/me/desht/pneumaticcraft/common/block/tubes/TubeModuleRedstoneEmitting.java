@@ -38,7 +38,7 @@ public abstract class TubeModuleRedstoneEmitting extends TubeModule {
     @Override
     public void addInfo(List<ITextComponent> curInfo) {
         super.addInfo(curInfo);
-        curInfo.add(PneumaticCraftUtils.xlate("waila.redstoneModule.emitting", redstone));
+        curInfo.add(PneumaticCraftUtils.xlate("pneumaticcraft.waila.redstoneModule.emitting", redstone));
     }
 
     @Override

@@ -96,7 +96,7 @@ public class ItemCamoApplicator extends ItemPressurizable {
                     if (newCamo != null && !player.isCreative()) {
                         ItemStack camoStack = ICamouflageableTE.getStackForState(newCamo);
                         if (!PneumaticCraftUtils.consumeInventoryItem(player.inventory, camoStack)) {
-                            player.sendStatusMessage(new TranslationTextComponent("message.camo.notEnoughBlocks")
+                            player.sendStatusMessage(new TranslationTextComponent("pneumaticcraft.message.camo.notEnoughBlocks")
                                     .appendSibling(camoStack.getDisplayName())
                                     .applyTextStyles(TextFormatting.RED), true);
                             NetworkHandler.sendToAllAround(new PacketPlaySound(ModSounds.MINIGUN_STOP.get(), SoundCategory.PLAYERS,

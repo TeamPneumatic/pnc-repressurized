@@ -36,7 +36,7 @@ public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase imp
         for (boolean bool : accessingSides) {
             sideActive |= bool;
         }
-        if (!sideActive) curInfo.add(xlate("gui.progWidget.general.error.noSideActive"));
+        if (!sideActive) curInfo.add(xlate("pneumaticcraft.gui.progWidget.general.error.noSideActive"));
     }
 
     @Override
@@ -72,9 +72,9 @@ public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase imp
     @Override
     public void getTooltip(List<ITextComponent> curTooltip) {
         super.getTooltip(curTooltip);
-        if (isUsingSides()) curTooltip.add(xlate("gui.progWidget.inventory.accessingSides"));
+        if (isUsingSides()) curTooltip.add(xlate("pneumaticcraft.gui.progWidget.inventory.accessingSides"));
         curTooltip.add(new StringTextComponent(GuiConstants.TRIANGLE_RIGHT + " " + getExtraStringInfo()));
-        if (useCount) curTooltip.add(xlate("gui.progWidget.inventory.usingCount", count));
+        if (useCount) curTooltip.add(xlate("pneumaticcraft.gui.progWidget.inventory.usingCount", count));
     }
 
     protected boolean isUsingSides() {

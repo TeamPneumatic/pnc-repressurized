@@ -4,10 +4,10 @@
       "item": "pneumaticcraft:vortex_tube"
     },
     "title": {
-      "translate": "achievement.vortexTube"
+      "translate": "pneumaticcraft.achievement.vortexTube"
     },
     "description": {
-      "translate": "achievement.vortexTube.desc"
+      "translate": "pneumaticcraft.achievement.vortexTube.desc"
     }
   },
   "parent": "pneumaticcraft:refinery",

@@ -162,7 +162,7 @@ public class ItemMinigun extends ItemPressurizable implements IChargeableContain
                     }
                 } else {
                     NetworkHandler.sendToPlayer(new PacketPlaySound(SoundEvents.BLOCK_COMPARATOR_CLICK, SoundCategory.PLAYERS, player.getPosX(), player.getPosY(), player.getPosZ(), 1.0f, 1.0f, false), (ServerPlayerEntity) player);
-                    player.sendStatusMessage(new TranslationTextComponent("message.minigun.outOfAmmo"), true);
+                    player.sendStatusMessage(new TranslationTextComponent("pneumaticcraft.message.minigun.outOfAmmo"), true);
                 }
             }
         }
@@ -204,7 +204,7 @@ public class ItemMinigun extends ItemPressurizable implements IChargeableContain
 
     @Override
     public ITextComponent getInventoryHeader() {
-        return xlate("gui.tooltip.gunAmmo.loaded").applyTextStyle(TextFormatting.GREEN);
+        return xlate("pneumaticcraft.gui.tooltip.gunAmmo.loaded").applyTextStyle(TextFormatting.GREEN);
     }
 
     @Override

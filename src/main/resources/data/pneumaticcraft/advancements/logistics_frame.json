@@ -4,10 +4,10 @@
       "item": "pneumaticcraft:logistics_frame_passive_provider"
     },
     "title": {
-      "translate": "achievement.logisticsFrame"
+      "translate": "pneumaticcraft.achievement.logisticsFrame"
     },
     "description": {
-      "translate": "achievement.logisticsFrame.desc"
+      "translate": "pneumaticcraft.achievement.logisticsFrame.desc"
     }
   },
   "parent": "pneumaticcraft:root",

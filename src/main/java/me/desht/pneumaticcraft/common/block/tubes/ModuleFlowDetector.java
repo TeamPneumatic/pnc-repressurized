@@ -45,7 +45,7 @@ public class ModuleFlowDetector extends TubeModuleRedstoneEmitting implements II
     @Override
     public void addInfo(List<ITextComponent> curInfo) {
         super.addInfo(curInfo);
-        curInfo.add(PneumaticCraftUtils.xlate("waila.flowModule.level", oldFlow));
+        curInfo.add(PneumaticCraftUtils.xlate("pneumaticcraft.waila.flowModule.level", oldFlow));
     }
 
     @Override

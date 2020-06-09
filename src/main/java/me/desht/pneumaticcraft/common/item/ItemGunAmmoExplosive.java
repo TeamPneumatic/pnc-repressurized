@@ -54,9 +54,9 @@ public class ItemGunAmmoExplosive extends ItemGunAmmo {
     public void addInformation(ItemStack stack, World world, List<ITextComponent> infoList, ITooltipFlag extraInfo) {
         super.addInformation(stack, world, infoList, extraInfo);
         if (PNCConfig.Common.Minigun.explosiveAmmoTerrainDamage) {
-            infoList.add(xlate("gui.tooltip.terrainWarning"));
+            infoList.add(xlate("pneumaticcraft.gui.tooltip.terrainWarning"));
         } else {
-            infoList.add(xlate("gui.tooltip.terrainSafe"));
+            infoList.add(xlate("pneumaticcraft.gui.tooltip.terrainSafe"));
         }
     }
 }

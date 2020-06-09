@@ -33,20 +33,20 @@ public class GuiLiquidHopper extends GuiPneumaticContainerBase<ContainerLiquidHo
     public void init() {
         super.init();
         addButton(new WidgetTank(guiLeft + 116, guiTop + 15, te.getTank()));
-        statusStat = addAnimatedStat("gui.tab.hopperStatus", new ItemStack(ModBlocks.LIQUID_HOPPER.get()), 0xFFFFAA00, false);
+        statusStat = addAnimatedStat("pneumaticcraft.gui.tab.hopperStatus", new ItemStack(ModBlocks.LIQUID_HOPPER.get()), 0xFFFFAA00, false);
 
-        WidgetAnimatedStat optionStat = addAnimatedStat("gui.tab.gasLift.mode", new ItemStack(Blocks.LEVER), 0xFFFFCC00, false);
+        WidgetAnimatedStat optionStat = addAnimatedStat("pneumaticcraft.gui.tab.gasLift.mode", new ItemStack(Blocks.LEVER), 0xFFFFCC00, false);
         optionStat.addPadding(4, 14);
 
         WidgetButtonExtended button = new WidgetButtonExtended(5, 20, 20, 20, "").withTag("empty");
         button.setRenderStacks(new ItemStack(Items.BUCKET));
-        button.setTooltipText(I18n.format("gui.tab.liquidHopper.mode.empty"));
+        button.setTooltipText(I18n.format("pneumaticcraft.gui.tab.liquidHopper.mode.empty"));
         optionStat.addSubWidget(button);
         modeButtons[0] = button;
 
         button = new WidgetButtonExtended(30, 20, 20, 20, "").withTag("leave");
         button.setRenderStacks(new ItemStack(Items.WATER_BUCKET));
-        button.setTooltipText(I18n.format("gui.tab.liquidHopper.mode.leaveLiquid"));
+        button.setTooltipText(I18n.format("pneumaticcraft.gui.tab.liquidHopper.mode.leaveLiquid"));
         optionStat.addSubWidget(button);
         modeButtons[1] = button;
     }
@@ -73,10 +73,10 @@ public class GuiLiquidHopper extends GuiPneumaticContainerBase<ContainerLiquidHo
         List<String> textList = new ArrayList<>();
         int itemsPer = te.getMaxItems();
         if (itemsPer > 1) {
-            textList.add(I18n.format("gui.tab.hopperStatus.liquidTransferPerTick", itemsPer * 100));
+            textList.add(I18n.format("pneumaticcraft.gui.tab.hopperStatus.liquidTransferPerTick", itemsPer * 100));
         } else {
             int transferInterval = te.getItemTransferInterval();
-            textList.add(I18n.format("gui.tab.hopperStatus.liquidTransferPerSecond", transferInterval == 0 ? "2000" : PneumaticCraftUtils.roundNumberTo(2000F / transferInterval, 1)));
+            textList.add(I18n.format("pneumaticcraft.gui.tab.hopperStatus.liquidTransferPerSecond", transferInterval == 0 ? "2000" : PneumaticCraftUtils.roundNumberTo(2000F / transferInterval, 1)));
         }
         return textList;
     }
@@ -84,7 +84,7 @@ public class GuiLiquidHopper extends GuiPneumaticContainerBase<ContainerLiquidHo
     @Override
     protected void addExtraUpgradeText(List<String> text) {
         if (PNCConfig.Common.Machines.liquidHopperDispenser) {
-            text.add("gui.tab.upgrades.tile.liquid_hopper.dispenser");
+            text.add("pneumaticcraft.gui.tab.upgrades.tile.liquid_hopper.dispenser");
         }
     }
 }

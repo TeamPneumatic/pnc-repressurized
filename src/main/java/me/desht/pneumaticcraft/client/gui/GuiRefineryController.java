@@ -45,7 +45,7 @@ public class GuiRefineryController extends GuiPneumaticContainerBase<ContainerRe
                 if (te.minTemp > 0) {
                     int temp = logic.map(IHeatExchangerLogic::getTemperatureAsInt).orElseThrow(RuntimeException::new);
                     TextFormatting tf = te.minTemp < temp ? TextFormatting.GREEN : TextFormatting.GOLD;
-                    curTip.add(tf + I18n.format("gui.misc.requiredTemperature", te.minTemp - 273));
+                    curTip.add(tf + I18n.format("pneumaticcraft.gui.misc.requiredTemperature", te.minTemp - 273));
                 }
             }
         };
@@ -122,15 +122,15 @@ public class GuiRefineryController extends GuiPneumaticContainerBase<ContainerRe
         int temp = te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY)
                 .map(IHeatExchangerLogic::getTemperatureAsInt).orElseThrow(RuntimeException::new);
         if (temp < te.minTemp) {
-            curInfo.add("gui.tab.problems.notEnoughHeat");
+            curInfo.add("pneumaticcraft.gui.tab.problems.notEnoughHeat");
         }
         if (te.getInputTank().getFluidAmount() < 10) {
-            curInfo.add("gui.tab.problems.refinery.noOil");
+            curInfo.add("pneumaticcraft.gui.tab.problems.refinery.noOil");
         }
         if (outputs.size() < 2) {
-            curInfo.add("gui.tab.problems.refinery.notEnoughRefineries");
+            curInfo.add("pneumaticcraft.gui.tab.problems.refinery.notEnoughRefineries");
         } else if (outputs.size() > 4) {
-            curInfo.add("gui.tab.problems.refinery.tooManyRefineries");
+            curInfo.add("pneumaticcraft.gui.tab.problems.refinery.tooManyRefineries");
         }
     }
 
@@ -139,10 +139,10 @@ public class GuiRefineryController extends GuiPneumaticContainerBase<ContainerRe
         super.addWarnings(curInfo);
 
         if (te.isBlocked()) {
-            curInfo.add("gui.tab.problems.refinery.outputBlocked");
+            curInfo.add("pneumaticcraft.gui.tab.problems.refinery.outputBlocked");
         }
         if (nExposedFaces > 0) {
-            curInfo.add(I18n.format("gui.tab.problems.exposedFaces", nExposedFaces, outputs.size() * 6));
+            curInfo.add(I18n.format("pneumaticcraft.gui.tab.problems.exposedFaces", nExposedFaces, outputs.size() * 6));
         }
     }
 

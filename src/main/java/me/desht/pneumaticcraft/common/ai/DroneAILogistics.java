@@ -130,7 +130,7 @@ public class DroneAILogistics extends Goal {
         for (Direction d : Direction.VALUES) {
             if (drone.isBlockValidPathfindBlock(pos.offset(d))) return false;
         }
-        drone.addDebugEntry("gui.progWidget.general.debug.cantNavigate", pos);
+        drone.addDebugEntry("pneumaticcraft.gui.progWidget.general.debug.cantNavigate", pos);
         return true;
     }
 

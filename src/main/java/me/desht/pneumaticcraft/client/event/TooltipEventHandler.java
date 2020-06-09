@@ -89,10 +89,10 @@ public class TooltipEventHandler {
                 String translatedInfo = TextFormatting.AQUA + I18n.format(key);
                 curInfo.addAll(PneumaticCraftUtils.asStringComponent(PneumaticCraftUtils.splitString(translatedInfo, 50)));
                 if (!ThirdPartyManager.instance().getDocsProvider().isInstalled()) {
-                    curInfo.add(xlate("gui.tab.info.assistIGW"));
+                    curInfo.add(xlate("pneumaticcraft.gui.tab.info.assistIGW"));
                 }
             } else {
-                curInfo.add(xlate("gui.tooltip.sneakForInfo").applyTextStyle(TextFormatting.AQUA));
+                curInfo.add(xlate("pneumaticcraft.gui.tooltip.sneakForInfo").applyTextStyle(TextFormatting.AQUA));
             }
         }
     }
@@ -108,7 +108,7 @@ public class TooltipEventHandler {
             } else {
                 color = TextFormatting.DARK_GREEN;
             }
-            textList.add(xlate("gui.tooltip.pressure", PneumaticCraftUtils.roundNumberTo(airHandler.getPressure(), 1)).applyTextStyle(color));
+            textList.add(xlate("pneumaticcraft.gui.tooltip.pressure", PneumaticCraftUtils.roundNumberTo(airHandler.getPressure(), 1)).applyTextStyle(color));
         });
     }
 
@@ -134,12 +134,12 @@ public class TooltipEventHandler {
                         .applyTextStyles(prefix));
             }
             if (hasInvalidPrograms) {
-                event.getToolTip().add(xlate("gui.tooltip.programmable.invalidPieces").applyTextStyle(TextFormatting.RED));
+                event.getToolTip().add(xlate("pneumaticcraft.gui.tooltip.programmable.invalidPieces").applyTextStyle(TextFormatting.RED));
             }
             addedEntries.sort(Comparator.comparing(ITextComponent::getFormattedText));
             event.getToolTip().addAll(addedEntries);
             if (ClientUtils.hasShiftDown() && !widgets.isEmpty()) {
-                event.getToolTip().add(xlate("gui.tooltip.programmable.requiredPieces", widgets.size()).applyTextStyles(TextFormatting.GREEN));
+                event.getToolTip().add(xlate("pneumaticcraft.gui.tooltip.programmable.requiredPieces", widgets.size()).applyTextStyles(TextFormatting.GREEN));
             }
         }
     }
@@ -161,7 +161,7 @@ public class TooltipEventHandler {
                     String translatedInfo = TextFormatting.AQUA + I18n.format(key);
                     event.getToolTip().addAll(PneumaticCraftUtils.splitString(prefix + translatedInfo, 40).stream().map(StringTextComponent::new).collect(Collectors.toList()));
                 } else {
-                    event.getToolTip().add(xlate("gui.tooltip.sneakForInfo").applyTextStyles(TextFormatting.AQUA));
+                    event.getToolTip().add(xlate("pneumaticcraft.gui.tooltip.sneakForInfo").applyTextStyles(TextFormatting.AQUA));
                 }
             }
         });
@@ -183,9 +183,9 @@ public class TooltipEventHandler {
             int width = 0;
             FontRenderer fr = event.getFontRenderer();
             int y = event.getY() + fr.FONT_HEIGHT * 2 + 5;
-            width = Math.max(width, renderString(fr, (I18n.format("gui.micromissile.topSpeed")), event.getX(), y));
-            width = Math.max(width, renderString(fr, (I18n.format("gui.micromissile.turnSpeed")), event.getX(), y + fr.FONT_HEIGHT));
-            width = Math.max(width, renderString(fr, (I18n.format("gui.micromissile.damage")), event.getX(), y + fr.FONT_HEIGHT * 2));
+            width = Math.max(width, renderString(fr, (I18n.format("pneumaticcraft.gui.micromissile.topSpeed")), event.getX(), y));
+            width = Math.max(width, renderString(fr, (I18n.format("pneumaticcraft.gui.micromissile.turnSpeed")), event.getX(), y + fr.FONT_HEIGHT));
+            width = Math.max(width, renderString(fr, (I18n.format("pneumaticcraft.gui.micromissile.damage")), event.getX(), y + fr.FONT_HEIGHT * 2));
             int barX = event.getX() + width + 2;
             int barW = event.getWidth() - width - 10;
             RenderSystem.disableTexture();

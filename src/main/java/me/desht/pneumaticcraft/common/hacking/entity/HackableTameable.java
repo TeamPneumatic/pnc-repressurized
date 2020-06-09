@@ -25,12 +25,12 @@ public class HackableTameable implements IHackableEntity {
 
     @Override
     public void addHackInfo(Entity entity, List<String> curInfo, PlayerEntity player) {
-        curInfo.add("pneumaticHelmet.hacking.result.tame");
+        curInfo.add("pneumaticcraft.armor.hacking.result.tame");
     }
 
     @Override
     public void addPostHackInfo(Entity entity, List<String> curInfo, PlayerEntity player) {
-        curInfo.add("pneumaticHelmet.hacking.finished.tamed");
+        curInfo.add("pneumaticcraft.armor.hacking.finished.tamed");
     }
 
     @Override

@@ -4,10 +4,10 @@
       "item": "pneumaticcraft:jet_boots_upgrade_1"
     },
     "title": {
-      "translate": "achievement.flight"
+      "translate": "pneumaticcraft.achievement.flight"
     },
     "description": {
-      "translate": "achievement.flight.desc"
+      "translate": "pneumaticcraft.achievement.flight.desc"
     },
     "frame" : "challenge"
   },

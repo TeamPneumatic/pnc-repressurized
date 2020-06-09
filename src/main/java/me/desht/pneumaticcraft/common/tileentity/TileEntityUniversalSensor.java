@@ -48,8 +48,8 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
         implements IRangeLineShower, IGUITextFieldSensitive, IMinWorkingPressure, IRedstoneControl, INamedContainerProvider {
 
     private static final List<String> REDSTONE_LABELS = ImmutableList.of(
-            "gui.tab.redstoneBehaviour.universalSensor.button.normal",
-            "gui.tab.redstoneBehaviour.universalSensor.button.inverted"
+            "pneumaticcraft.gui.tab.redstoneBehaviour.universalSensor.button.normal",
+            "pneumaticcraft.gui.tab.redstoneBehaviour.universalSensor.button.inverted"
     );
 
     @GuiSynced
@@ -545,7 +545,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
 
     @Override
     public String getRedstoneTabTitle() {
-        return "gui.tab.redstoneBehaviour.universalSensor.redstoneEmission";
+        return "pneumaticcraft.gui.tab.redstoneBehaviour.universalSensor.redstoneEmission";
     }
 
     @Override
@@ -603,7 +603,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
         NO_SENSOR;
 
         public String getTranslationKey() {
-            return "gui.universalSensor.status." + toString().toLowerCase();
+            return "pneumaticcraft.gui.universalSensor.status." + toString().toLowerCase();
         }
     }
 }

@@ -27,12 +27,12 @@ public class HackableCow implements IHackableEntity {
 
     @Override
     public void addHackInfo(Entity entity, List<String> curInfo, PlayerEntity player) {
-        curInfo.add("pneumaticHelmet.hacking.result.fungiInfuse");
+        curInfo.add("pneumaticcraft.armor.hacking.result.fungiInfuse");
     }
 
     @Override
     public void addPostHackInfo(Entity entity, List<String> curInfo, PlayerEntity player) {
-        curInfo.add("pneumaticHelmet.hacking.finished.fungiInfusion");
+        curInfo.add("pneumaticcraft.armor.hacking.finished.fungiInfusion");
     }
 
     @Override

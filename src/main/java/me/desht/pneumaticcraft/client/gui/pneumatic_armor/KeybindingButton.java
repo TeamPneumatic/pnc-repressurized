@@ -21,14 +21,14 @@ class KeybindingButton extends WidgetButtonExtended {
     }
 
     private void addTooltip() {
-        setTooltipText(I18n.format("gui.keybindBoundKey", I18n.format(keyBinding.getKey().getTranslationKey())));
+        setTooltipText(I18n.format("pneumaticcraft.gui.keybindBoundKey", I18n.format(keyBinding.getKey().getTranslationKey())));
     }
 
     void toggleKeybindMode() {
         bindingMode = !bindingMode;
 
         if (bindingMode) {
-            setMessage(I18n.format("gui.setKeybind"));
+            setMessage(I18n.format("pneumaticcraft.gui.setKeybind"));
             setTooltipText("");
         } else {
             setMessage(origButtonText);

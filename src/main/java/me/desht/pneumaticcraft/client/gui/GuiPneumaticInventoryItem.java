@@ -59,13 +59,13 @@ public abstract class GuiPneumaticInventoryItem extends GuiPneumaticContainerBas
         float curPressure = te.chargingItemPressure;
         String col = TextFormatting.BLACK.toString();
 
-        pressureStatText.add(col + I18n.format("gui.tooltip.pressure",
+        pressureStatText.add(col + I18n.format("pneumaticcraft.gui.tooltip.pressure",
                 PneumaticCraftUtils.roundNumberTo(te.chargingItemPressure, 2)));
-        pressureStatText.add(col + I18n.format("gui.tooltip.air", String.format("%,d", Math.round(curPressure * volume))));
-        pressureStatText.add(col + I18n.format("gui.tooltip.baseVolume", String.format("%,d", getDefaultVolume())));
+        pressureStatText.add(col + I18n.format("pneumaticcraft.gui.tooltip.air", String.format("%,d", Math.round(curPressure * volume))));
+        pressureStatText.add(col + I18n.format("pneumaticcraft.gui.tooltip.baseVolume", String.format("%,d", getDefaultVolume())));
         if (volume > getDefaultVolume()) {
             pressureStatText.add(col + GuiConstants.TRIANGLE_RIGHT + " " + upgrades + " x " + EnumUpgrade.VOLUME.getItemStack().getDisplayName().getFormattedText());
-            pressureStatText.add(col + I18n.format("gui.tooltip.effectiveVolume", String.format("%,d",volume)));
+            pressureStatText.add(col + I18n.format("pneumaticcraft.gui.tooltip.effectiveVolume", String.format("%,d",volume)));
         }
     }
 
@@ -122,9 +122,9 @@ public abstract class GuiPneumaticInventoryItem extends GuiPneumaticContainerBas
             if (max > 0) {
                 ItemStack upgradeStack = upgrade.getItemStack();
                 List<String> text = new ArrayList<>();
-                text.add(TextFormatting.GRAY + I18n.format("gui.tab.upgrades.max", max));
+                text.add(TextFormatting.GRAY + I18n.format("pneumaticcraft.gui.tab.upgrades.max", max));
                 for (String w : what) {
-                    String key = "gui.tab.info.item." + w + "." + upgrade.getName() + "Upgrade";
+                    String key = "pneumaticcraft.gui.tab.info.item." + w + "." + upgrade.getName() + "Upgrade";
                     if (I18n.hasKey(key)) {
                         text.addAll(PneumaticCraftUtils.splitString(I18n.format(key)));
                         break;

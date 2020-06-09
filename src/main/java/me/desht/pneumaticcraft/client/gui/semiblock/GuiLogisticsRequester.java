@@ -27,8 +27,8 @@ public class GuiLogisticsRequester extends GuiLogisticsBase<EntityLogisticsReque
     public void init() {
         super.init();
 
-        addAnimatedStat("gui.tab.info.ghostSlotInteraction.title", Textures.GUI_MOUSE_LOCATION, 0xFF00AAFF, true)
-                .setText("gui.tab.info.ghostSlotInteraction");
+        addAnimatedStat("pneumaticcraft.gui.tab.info.ghostSlotInteraction.title", Textures.GUI_MOUSE_LOCATION, 0xFF00AAFF, true)
+                .setText("pneumaticcraft.gui.tab.info.ghostSlotInteraction");
 
 //        if (ModList.get().isLoaded(ModIds.AE2)) {
 //            if (logistics.isPlacedOnInterface()) {
@@ -37,10 +37,10 @@ public class GuiLogisticsRequester extends GuiLogisticsBase<EntityLogisticsReque
 //                     Log.warning("AE2 cable couldn't be found!");
 //                     item = ModItems.LOGISTICS_FRAME_REQUESTER;
 //                 }
-//                 GuiAnimatedStat stat = addAnimatedStat("gui.tab.info.logisticsRequester.aeIntegration.title",
+//                 GuiAnimatedStat stat = addAnimatedStat("pneumaticcraft.gui.tab.info.logisticsRequester.aeIntegration.title",
 //                         new ItemStack(item, 1, 16), 0xFF00AAFF, false);
-//                 stat.setText(ImmutableList.of("", "", "gui.tab.info.logisticsRequester.aeIntegration"));
-//                 stat.addSubWidget(aeIntegration = new GuiCheckBox(1, 16, 13, 0xFF000000, "gui.tab.info.logisticsRequester.aeIntegration.enable"));
+//                 stat.setText(ImmutableList.of("", "", "pneumaticcraft.gui.tab.info.logisticsRequester.aeIntegration"));
+//                 stat.addSubWidget(aeIntegration = new GuiCheckBox(1, 16, 13, 0xFF000000, "pneumaticcraft.gui.tab.info.logisticsRequester.aeIntegration.enable"));
 //             }
 //        }
 
@@ -48,11 +48,11 @@ public class GuiLogisticsRequester extends GuiLogisticsBase<EntityLogisticsReque
     }
 
     private void addMinOrderSizeTab() {
-        WidgetAnimatedStat minAmountStat = addAnimatedStat("gui.logistics_frame.min_amount", new ItemStack(Blocks.CHEST), 0xFFC0C080, false);
+        WidgetAnimatedStat minAmountStat = addAnimatedStat("pneumaticcraft.gui.logistics_frame.min_amount", new ItemStack(Blocks.CHEST), 0xFFC0C080, false);
         minAmountStat.addPadding(7, 21);
 
-        WidgetLabel minItemsLabel = new WidgetLabel(5, 20, I18n.format("gui.logistics_frame.min_items"));
-        minItemsLabel.setTooltipText("gui.logistics_frame.min_items.tooltip");
+        WidgetLabel minItemsLabel = new WidgetLabel(5, 20, I18n.format("pneumaticcraft.gui.logistics_frame.min_items"));
+        minItemsLabel.setTooltipText("pneumaticcraft.gui.logistics_frame.min_items.tooltip");
         minAmountStat.addSubWidget(minItemsLabel);
         minItems = new WidgetTextFieldNumber(font, 5, 30, 30, 12)
                 .setRange(1, 64)
@@ -60,8 +60,8 @@ public class GuiLogisticsRequester extends GuiLogisticsBase<EntityLogisticsReque
         minItems.setResponder(s -> sendDelayed(8));
         minAmountStat.addSubWidget(minItems);
 
-        WidgetLabel minFluidLabel = new WidgetLabel(5, 47, I18n.format("gui.logistics_frame.min_fluid"));
-        minFluidLabel.setTooltipText("gui.logistics_frame.min_fluid.tooltip");
+        WidgetLabel minFluidLabel = new WidgetLabel(5, 47, I18n.format("pneumaticcraft.gui.logistics_frame.min_fluid"));
+        minFluidLabel.setTooltipText("pneumaticcraft.gui.logistics_frame.min_fluid.tooltip");
         minAmountStat.addSubWidget(minFluidLabel);
         minFluid = new WidgetTextFieldNumber(font, 5, 57, 50, 12)
                 .setRange(1, 16000)

@@ -29,7 +29,7 @@ public class GuiUVLightBox extends GuiPneumaticContainerBase<ContainerUVLightBox
     public void init() {
         super.init();
 
-        addButton(slider = new Slider(guiLeft + 10, guiTop + 45, 95, 16, I18n.format("gui.uv_light_box.threshold") + " ", "%", 1, 100, te.getThreshold(), false, true, b -> { }, this));
+        addButton(slider = new Slider(guiLeft + 10, guiTop + 45, 95, 16, I18n.format("pneumaticcraft.gui.uv_light_box.threshold") + " ", "%", 1, 100, te.getThreshold(), false, true, b -> { }, this));
     }
 
     @Override
@@ -61,7 +61,7 @@ public class GuiUVLightBox extends GuiPneumaticContainerBase<ContainerUVLightBox
         super.addProblems(textList);
 
         if (te.getPrimaryInventory().getStackInSlot(TileEntityUVLightBox.PCB_SLOT).isEmpty()) {
-            textList.add(TextFormatting.BLACK + I18n.format("gui.tab.problems.uv_light_box.no_item"));
+            textList.add(TextFormatting.BLACK + I18n.format("pneumaticcraft.gui.tab.problems.uv_light_box.no_item"));
         }
     }
 

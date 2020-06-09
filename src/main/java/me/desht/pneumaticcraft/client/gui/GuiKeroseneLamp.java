@@ -29,7 +29,7 @@ public class GuiKeroseneLamp extends GuiPneumaticContainerBase<ContainerKerosene
         addButton(new WidgetTank(guiLeft + 152, guiTop + 15, te.getTank()));
         addButton(rangeLabel = new WidgetLabel(guiLeft + 20, guiTop + 55, ""));
 
-        addButton(slider = new Slider(guiLeft + 7, guiTop + 30, 118, 20, I18n.format("gui.keroseneLamp.maxRange") + " ", "", 1, TileEntityKeroseneLamp.MAX_RANGE, te.getTargetRange(), false, true, b -> { }, this));
+        addButton(slider = new Slider(guiLeft + 7, guiTop + 30, 118, 20, I18n.format("pneumaticcraft.gui.keroseneLamp.maxRange") + " ", "", 1, TileEntityKeroseneLamp.MAX_RANGE, te.getTargetRange(), false, true, b -> { }, this));
     }
 
     @Override
@@ -42,7 +42,7 @@ public class GuiKeroseneLamp extends GuiPneumaticContainerBase<ContainerKerosene
             slider.updateSlider();
         }
 
-        rangeLabel.setMessage(I18n.format("gui.keroseneLamp.currentRange", te.getRange()));
+        rangeLabel.setMessage(I18n.format("pneumaticcraft.gui.keroseneLamp.currentRange", te.getRange()));
     }
 
     @Override
@@ -64,9 +64,9 @@ public class GuiKeroseneLamp extends GuiPneumaticContainerBase<ContainerKerosene
     protected void addProblems(List<String> curInfo) {
         super.addProblems(curInfo);
         if (te.getTank().getFluidAmount() == 0) {
-            curInfo.add("gui.tab.problems.keroseneLamp.noFuel");
+            curInfo.add("pneumaticcraft.gui.tab.problems.keroseneLamp.noFuel");
         } else if (te.getFuelQuality() == 0) {
-            curInfo.add("gui.tab.problems.keroseneLamp.badFuel");
+            curInfo.add("pneumaticcraft.gui.tab.problems.keroseneLamp.badFuel");
         }
     }
 
@@ -74,7 +74,7 @@ public class GuiKeroseneLamp extends GuiPneumaticContainerBase<ContainerKerosene
     protected void addWarnings(List<String> curInfo) {
         super.addWarnings(curInfo);
         if (te.getTank().getFluidAmount() < 30 && te.getTank().getFluidAmount() > 0) {
-            curInfo.add("gui.tab.problems.keroseneLamp.lowFuel");
+            curInfo.add("pneumaticcraft.gui.tab.problems.keroseneLamp.lowFuel");
         }
     }
 }

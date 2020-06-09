@@ -33,7 +33,7 @@ public class DroneAIHarvest<W extends ProgWidgetAreaItemBase & IToolUser> extend
     private boolean abortIfRequiredHoeIsMissing() {
         if (progWidget.requiresTool() && getDamageableHoe() == null) {
             abort();
-            drone.addDebugEntry("gui.progWidget.harvest.debug.missingHoe");
+            drone.addDebugEntry("pneumaticcraft.gui.progWidget.harvest.debug.missingHoe");
             return true;
         } else {
             return false;

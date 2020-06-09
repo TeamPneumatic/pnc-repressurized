@@ -44,9 +44,9 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
         IRangeLineShower, IRedstoneControl, INamedContainerProvider {
 
     private static final List<String> REDSTONE_LABELS = ImmutableList.of(
-            "gui.tab.redstoneBehaviour.button.never",
-            "gui.tab.redstoneBehaviour.securityStation.button.hacked",
-            "gui.tab.redstoneBehaviour.securityStation.button.doneRebooting"
+            "pneumaticcraft.gui.tab.redstoneBehaviour.button.never",
+            "pneumaticcraft.gui.tab.redstoneBehaviour.securityStation.button.hacked",
+            "pneumaticcraft.gui.tab.redstoneBehaviour.securityStation.button.doneRebooting"
     );
 
     public static final int INV_ROWS = 7;

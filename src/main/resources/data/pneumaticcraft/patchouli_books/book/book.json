@@ -1,6 +1,6 @@
 {
-	"name": "patchouli.book.name",
-	"landing_text": "patchouli.book.landing",
+	"name": "pneumaticcraft.patchouli.book.name",
+	"landing_text": "pneumaticcraft.patchouli.book.landing",
 	"creative_tab": "pneumaticcraft",
 	"advancements_tab": "pneumaticcraft",
 	"advancement_namespaces": [

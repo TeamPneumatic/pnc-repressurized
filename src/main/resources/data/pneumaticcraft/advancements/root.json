@@ -4,10 +4,10 @@
       "item": "pneumaticcraft:ingot_iron_compressed"
     },
     "title": {
-      "translate": "achievement.ingotIronCompressed"
+      "translate": "pneumaticcraft.achievement.ingotIronCompressed"
     },
     "description": {
-      "translate": "achievement.ingotIronCompressed.desc"
+      "translate": "pneumaticcraft.achievement.ingotIronCompressed.desc"
     },
     "background": "pneumaticcraft:textures/gui/advancement_bg.png"
   },

@@ -4,10 +4,10 @@
       "item": "minecraft:bricks"
     },
     "title": {
-      "translate": "achievement.flyIntoWall"
+      "translate": "pneumaticcraft.achievement.flyIntoWall"
     },
     "description": {
-      "translate": "achievement.flyIntoWall.desc"
+      "translate": "pneumaticcraft.achievement.flyIntoWall.desc"
     }
   },
   "parent": "pneumaticcraft:flight",

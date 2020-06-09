@@ -27,7 +27,7 @@ public class JEIHeatFrameCoolingCategory implements IRecipeCategory<HeatFrameCoo
     private final IDrawableAnimated progressBar;
 
     JEIHeatFrameCoolingCategory() {
-        localizedName = I18n.format("gui.nei.title.heatFrameCooling");
+        localizedName = I18n.format("pneumaticcraft.gui.nei.title.heatFrameCooling");
         background = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_MISC_RECIPES, 0, 0, 82, 18);
         icon = JEIPlugin.jeiHelpers.getGuiHelper().createDrawableIngredient(new ItemStack(ModItems.HEAT_FRAME.get()));
         IDrawableStatic d = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_MISC_RECIPES, 82, 0, 38, 17);
@@ -83,9 +83,9 @@ public class JEIHeatFrameCoolingCategory implements IRecipeCategory<HeatFrameCoo
     public List<String> getTooltipStrings(HeatFrameCoolingRecipe recipe, double mouseX, double mouseY) {
         List<String> res = new ArrayList<>();
         if (mouseX >= 23 && mouseX <= 60) {
-            res.addAll(PneumaticCraftUtils.splitString(I18n.format("gui.nei.recipe.heatFrameCooling", recipe.getThresholdTemperature() - 273), 40));
+            res.addAll(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.nei.recipe.heatFrameCooling", recipe.getThresholdTemperature() - 273), 40));
             if (recipe.getBonusMultiplier() > 0f) {
-                String bonus = TextFormatting.YELLOW + I18n.format("gui.nei.recipe.heatFrameCooling.bonus", recipe.getBonusMultiplier() * 100, recipe.getOutput().getDisplayName().getFormattedText(), recipe.getThresholdTemperature() - 273, recipe.getBonusLimit() + 1);
+                String bonus = TextFormatting.YELLOW + I18n.format("pneumaticcraft.gui.nei.recipe.heatFrameCooling.bonus", recipe.getBonusMultiplier() * 100, recipe.getOutput().getDisplayName().getFormattedText(), recipe.getThresholdTemperature() - 273, recipe.getBonusLimit() + 1);
                 res.addAll(PneumaticCraftUtils.splitString(bonus, 40));
             }
         }

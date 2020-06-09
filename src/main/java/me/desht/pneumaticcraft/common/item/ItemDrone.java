@@ -69,7 +69,7 @@ public class ItemDrone extends ItemPressurizable implements IChargeableContainer
             fluidTank.readFromNBT(stack.getTag().getCompound("Tank"));
             FluidStack fluidStack = fluidTank.getFluid();
             if (!fluidStack.isEmpty()) {
-                tooltip.add(new TranslationTextComponent("gui.tooltip.fluid")
+                tooltip.add(new TranslationTextComponent("pneumaticcraft.gui.tooltip.fluid")
                         .appendText(fluidStack.getAmount() + "mB ")
                         .appendSibling(fluidStack.getDisplayName()).applyTextStyle(TextFormatting.GRAY)
                 );

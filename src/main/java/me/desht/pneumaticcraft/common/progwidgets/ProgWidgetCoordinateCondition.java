@@ -41,7 +41,7 @@ public class ProgWidgetCoordinateCondition extends ProgWidgetConditionBase {
     public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
         if (!checkingAxis[0] && !checkingAxis[1] && !checkingAxis[2])
-            curInfo.add(xlate("gui.progWidget.conditionCoordinate.error.noAxisSelected"));
+            curInfo.add(xlate("pneumaticcraft.gui.progWidget.conditionCoordinate.error.noAxisSelected"));
     }
 
     @Override

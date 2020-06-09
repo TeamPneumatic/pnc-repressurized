@@ -168,11 +168,11 @@ public class HUDHandler implements IKeyListener {
                 float pressure = comHudHandler.getArmorPressure(slot);
                 // low/no pressure warnings
                 if (pressure < 0.05F && !gaveEmptyWarning[slot.getIndex()]) {
-                    addMessage(new ArmorMessage(I18n.format("pneumaticHelmet.message.outOfAir", itemName), 100, 0x70FF0000));
+                    addMessage(new ArmorMessage(I18n.format("pneumaticcraft.armor.message.outOfAir", itemName), 100, 0x70FF0000));
                     gaveEmptyWarning[slot.getIndex()] = true;
                 }
                 if (pressure > 0.2F && pressure < 0.5F && !gaveNearlyEmptyWarning[slot.getIndex()]) {
-                    addMessage(new ArmorMessage(I18n.format("pneumaticHelmet.message.almostOutOfAir", itemName), 60, 0x70FF8000));
+                    addMessage(new ArmorMessage(I18n.format("pneumaticcraft.armor.message.almostOutOfAir", itemName), 60, 0x70FF8000));
                     gaveNearlyEmptyWarning[slot.getIndex()] = true;
                 }
                 // all enabled upgrades do their 2D rendering here
@@ -319,12 +319,12 @@ public class HUDHandler implements IKeyListener {
 
         if (comHudHandler.getTicksSinceEquipped(slot) == 1) {
             playArmorInitSound(player, ModSounds.HUD_INIT.get(), 0.5F);
-            addMessage(new ArmorMessage(I18n.format("pneumaticHelmet.message.initStarted", itemName), 50, 0x7000AA00));
+            addMessage(new ArmorMessage(I18n.format("pneumaticcraft.armor.message.initStarted", itemName), 50, 0x7000AA00));
         }
 
         if (comHudHandler.getTicksSinceEquipped(slot) == comHudHandler.getStartupTime(slot)) {
             playArmorInitSound(player, ModSounds.HUD_INIT_COMPLETE.get(), 1.0F);
-            addMessage(new ArmorMessage(I18n.format("pneumaticHelmet.message.initComplete", itemName), 50, 0x7000AA00));
+            addMessage(new ArmorMessage(I18n.format("pneumaticcraft.armor.message.initComplete", itemName), 50, 0x7000AA00));
         }
     }
 
@@ -337,12 +337,12 @@ public class HUDHandler implements IKeyListener {
     }
 
     public void addFeatureToggleMessage(String key, boolean enabled) {
-        HUDHandler.instance().addMessage(I18n.format("pneumaticHelmet.message." + (enabled ? "enable" : "disable") + "Setting", I18n.format(key)), Collections.emptyList(), 60, 0x7000AA00);
+        HUDHandler.instance().addMessage(I18n.format("pneumaticcraft.armor.message." + (enabled ? "enable" : "disable") + "Setting", I18n.format(key)), Collections.emptyList(), 60, 0x7000AA00);
     }
 
     public void addFeatureToggleMessage(IUpgradeRenderHandler handler, String key, boolean enabled) {
         String msg = I18n.format(WidgetKeybindCheckBox.UPGRADE_PREFIX + handler.getUpgradeID()) + ": " + I18n.format(WidgetKeybindCheckBox.UPGRADE_PREFIX + key);
-        HUDHandler.instance().addMessage(I18n.format("pneumaticHelmet.message." + (enabled ? "enable" : "disable") + "Setting", msg), Collections.emptyList(), 60, 0x7000AA00);
+        HUDHandler.instance().addMessage(I18n.format("pneumaticcraft.armor.message." + (enabled ? "enable" : "disable") + "Setting", msg), Collections.emptyList(), 60, 0x7000AA00);
     }
 
     public void addMessage(String title, List<String> message, int duration, int backColor) {

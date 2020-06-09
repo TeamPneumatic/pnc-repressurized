@@ -48,7 +48,7 @@ public class GuiAirCompressor extends GuiPneumaticContainerBase<ContainerAirComp
         super.addPressureStatInfo(pressureStatText);
         if (te.isActive()) {
             float prod = Math.round(te.getBaseProduction() * te.getEfficiency() * te.getSpeedMultiplierFromUpgrades() / 100);
-            pressureStatText.add(TextFormatting.BLACK + I18n.format("gui.tooltip.producingAir", PneumaticCraftUtils.roundNumberTo(prod, 1)));
+            pressureStatText.add(TextFormatting.BLACK + I18n.format("pneumaticcraft.gui.tooltip.producingAir", PneumaticCraftUtils.roundNumberTo(prod, 1)));
         }
     }
 
@@ -56,11 +56,11 @@ public class GuiAirCompressor extends GuiPneumaticContainerBase<ContainerAirComp
     protected void addProblems(List<String> textList) {
         super.addProblems(textList);
         if (te.burnTime <= te.curFuelUsage && !FurnaceTileEntity.isFuel(te.getPrimaryInventory().getStackInSlot(0))) {
-            textList.add(I18n.format("gui.tab.problems.airCompressor.noFuel"));
+            textList.add(I18n.format("pneumaticcraft.gui.tab.problems.airCompressor.noFuel"));
         }
 
         if (te.hasNoConnectedAirHandlers()) {
-            textList.add(I18n.format("gui.tab.problems.airLeak"));
+            textList.add(I18n.format("pneumaticcraft.gui.tab.problems.airLeak"));
         }
     }
 

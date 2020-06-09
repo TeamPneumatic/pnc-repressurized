@@ -4,10 +4,10 @@
       "item": "pneumaticcraft:programmable_controller"
     },
     "title": {
-      "translate": "achievement.programmableController"
+      "translate": "pneumaticcraft.achievement.programmableController"
     },
     "description": {
-      "translate": "achievement.programmableController.desc"
+      "translate": "pneumaticcraft.achievement.programmableController.desc"
     }
   },
   "parent": "pneumaticcraft:advanced_pressure_tube",

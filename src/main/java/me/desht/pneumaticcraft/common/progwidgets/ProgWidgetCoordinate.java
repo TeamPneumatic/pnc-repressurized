@@ -51,7 +51,7 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
     public void addWarnings(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
         super.addWarnings(curInfo, widgets);
         if (!useVariable && x == 0 && y == 0 && z == 0) {
-            curInfo.add(xlate("gui.progWidget.coordinate.warning.noCoordinate"));
+            curInfo.add(xlate("pneumaticcraft.gui.progWidget.coordinate.warning.noCoordinate"));
         }
     }
 
@@ -59,7 +59,7 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
     public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
         if (useVariable && variable.equals("")) {
-            curInfo.add(xlate("gui.progWidget.general.error.emptyVariable"));
+            curInfo.add(xlate("pneumaticcraft.gui.progWidget.general.error.emptyVariable"));
         }
     }
 

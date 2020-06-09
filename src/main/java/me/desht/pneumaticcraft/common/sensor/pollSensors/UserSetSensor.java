@@ -39,7 +39,7 @@ public class UserSetSensor implements IPollSensorSetting {
     @Override
     public List<String> getDescription() {
         List<String> text = new ArrayList<>();
-        text.add("gui.universalSensor.desc.userSetSensor");
+        text.add("pneumaticcraft.gui.universalSensor.desc.userSetSensor");
         return text;
     }
 

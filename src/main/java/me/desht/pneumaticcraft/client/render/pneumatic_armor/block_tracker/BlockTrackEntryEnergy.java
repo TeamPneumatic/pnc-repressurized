@@ -33,7 +33,7 @@ public class BlockTrackEntryEnergy implements IBlockTrackEntry {
     @Override
     public void addInformation(World world, BlockPos pos, TileEntity te, Direction face, List<String> infoList) {
         try {
-            infoList.add("blockTracker.info.rf");
+            infoList.add("pneumaticcraft.blockTracker.info.rf");
             // FIXME: getting capabilities client-side is not a reliable way to do this
             // Need a more formal framework for sync'ing server-side data to the client
             te.getCapability(CapabilityEnergy.ENERGY)

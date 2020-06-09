@@ -132,7 +132,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     }
 
     public void addAreaTypeTooltip(List<ITextComponent> curTooltip) {
-        curTooltip.add(xlate("gui.progWidget.area.type").appendText(type.getName()));
+        curTooltip.add(xlate("pneumaticcraft.gui.progWidget.area.type").appendText(type.getName()));
 
         List<AreaTypeWidget> widgets = new ArrayList<>();
         type.addUIWidgets(widgets);
@@ -145,7 +145,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
         if (coord1Variable.equals("") && coord2Variable.equals("") && x1 == 0 && y1 == 0 && z1 == 0 && x2 == 0 && y2 == 0 && z2 == 0) {
-            curInfo.add(xlate("gui.progWidget.area.error.noArea"));
+            curInfo.add(xlate("pneumaticcraft.gui.progWidget.area.error.noArea"));
         }
     }
 

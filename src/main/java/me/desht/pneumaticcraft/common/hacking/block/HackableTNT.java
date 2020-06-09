@@ -20,12 +20,12 @@ public class HackableTNT implements IHackableBlock {
 
     @Override
     public void addInfo(IBlockReader world, BlockPos pos, List<String> curInfo, PlayerEntity player) {
-        curInfo.add("pneumaticHelmet.hacking.result.explode");
+        curInfo.add("pneumaticcraft.armor.hacking.result.explode");
     }
 
     @Override
     public void addPostHackInfo(IBlockReader world, BlockPos pos, List<String> curInfo, PlayerEntity player) {
-        curInfo.add("pneumaticHelmet.hacking.finished.exploded");
+        curInfo.add("pneumaticcraft.armor.hacking.finished.exploded");
     }
 
     @Override

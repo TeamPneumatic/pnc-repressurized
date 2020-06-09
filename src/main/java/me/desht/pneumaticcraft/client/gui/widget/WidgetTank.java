@@ -72,7 +72,7 @@ public class WidgetTank extends Widget implements ITooltipProvider {
 
         curTip.add(amt + "/" + capacity + " mb");
         if (fluid == Fluids.EMPTY || amt == 0 || capacity == 0) {
-            curTip.add(TextFormatting.GRAY + I18n.format("gui.liquid.empty"));
+            curTip.add(TextFormatting.GRAY + I18n.format("pneumaticcraft.gui.liquid.empty"));
         } else {
             curTip.add(TextFormatting.GRAY + new FluidStack(fluid, amt).getDisplayName().getFormattedText());
         }

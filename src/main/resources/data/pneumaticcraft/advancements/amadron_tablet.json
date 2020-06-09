@@ -4,10 +4,10 @@
       "item": "pneumaticcraft:amadron_tablet"
     },
     "title": {
-      "translate": "achievement.amadronTablet"
+      "translate": "pneumaticcraft.achievement.amadronTablet"
     },
     "description": {
-      "translate": "achievement.amadronTablet.desc"
+      "translate": "pneumaticcraft.achievement.amadronTablet.desc"
     }
   },
   "parent": "pneumaticcraft:plastic",

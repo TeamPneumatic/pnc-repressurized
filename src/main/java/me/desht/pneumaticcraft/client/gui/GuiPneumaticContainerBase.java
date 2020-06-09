@@ -68,10 +68,10 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
 
         lastLeftStat = lastRightStat = null;
         if (shouldAddPressureTab() && te instanceof TileEntityPneumaticBase) {
-            pressureStat = this.addAnimatedStat("gui.tab.pressure", new ItemStack(ModBlocks.PRESSURE_TUBE.get()), 0xFF00AA00, false);
+            pressureStat = this.addAnimatedStat("pneumaticcraft.gui.tab.pressure", new ItemStack(ModBlocks.PRESSURE_TUBE.get()), 0xFF00AA00, false);
         }
         if (shouldAddProblemTab()) {
-            problemTab = addAnimatedStat("gui.tab.problems", 0xFFA0A0A0, false);
+            problemTab = addAnimatedStat("pneumaticcraft.gui.tab.problems", 0xFFA0A0A0, false);
         }
         if (te != null) {
             if (shouldAddInfoTab()) {
@@ -81,9 +81,9 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
                 addRedstoneTab();
             }
             if (te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY).isPresent()) {
-                addAnimatedStat("gui.tab.info.heat.title",
+                addAnimatedStat("pneumaticcraft.gui.tab.info.heat.title",
                         new ItemStack(Items.BLAZE_POWDER), 0xFFFF5500, false)
-                        .setText("gui.tab.info.heat");
+                        .setText("pneumaticcraft.gui.tab.info.heat");
             }
             if (shouldAddUpgradeTab()) {
                 addUpgradeTab();
@@ -141,7 +141,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
     }
 
     private void addRedstoneTab() {
-        redstoneTab = addAnimatedStat("gui.tab.redstoneBehaviour", new ItemStack(Items.REDSTONE), 0xFFCC0000, true);
+        redstoneTab = addAnimatedStat("pneumaticcraft.gui.tab.redstoneBehaviour", new ItemStack(Items.REDSTONE), 0xFFCC0000, true);
         List<String> curInfo = new ArrayList<>();
         curInfo.add(I18n.format(te.getRedstoneTabTitle()));
         int width = getWidestRedstoneLabel();
@@ -154,7 +154,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
     protected void addJeiFilterInfoTab() {
         if (ModList.get().isLoaded("jei")) {
             addAnimatedStat("JEI", Textures.GUI_JEI_LOGO, 0xFFCEEDCE, true)
-                    .setText(TextFormatting.DARK_GRAY + I18n.format("gui.jei.filterDrag"));
+                    .setText(TextFormatting.DARK_GRAY + I18n.format("pneumaticcraft.gui.jei.filterDrag"));
         }
     }
 
@@ -166,14 +166,14 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         List<String> text = new ArrayList<>();
         te.getApplicableUpgrades().forEach((upgrade, max) -> {
             text.add(TextFormatting.WHITE + "" + TextFormatting.UNDERLINE + upgrade.getItemStack().getDisplayName().getFormattedText());
-            text.add(TextFormatting.GRAY + I18n.format("gui.tab.upgrades.max", max));
+            text.add(TextFormatting.GRAY + I18n.format("pneumaticcraft.gui.tab.upgrades.max", max));
             String upgradeName = upgrade.toString().toLowerCase();
-            String k = "gui.tab.upgrades." + upgradeCategory() + "." + upgradeName;
-            text.add(TextFormatting.BLACK + (I18n.hasKey(k) ? I18n.format(k) : I18n.format("gui.tab.upgrades.generic." + upgradeName)));
+            String k = "pneumaticcraft.gui.tab.upgrades." + upgradeCategory() + "." + upgradeName;
+            text.add(TextFormatting.BLACK + (I18n.hasKey(k) ? I18n.format(k) : I18n.format("pneumaticcraft.gui.tab.upgrades.generic." + upgradeName)));
             text.add("");
         });
         if (!text.isEmpty()) {
-            addAnimatedStat("gui.tab.upgrades", Textures.GUI_UPGRADES_LOCATION, 0xFF6060FF, true).setText(text);
+            addAnimatedStat("pneumaticcraft.gui.tab.upgrades", Textures.GUI_UPGRADES_LOCATION, 0xFF6060FF, true).setText(text);
         }
     }
 
@@ -217,10 +217,10 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
     }
 
     protected void addInfoTab(String info) {
-        IGuiAnimatedStat stat = addAnimatedStat("gui.tab.info", Textures.GUI_INFO_LOCATION, 0xFF8888FF, true);
+        IGuiAnimatedStat stat = addAnimatedStat("pneumaticcraft.gui.tab.info", Textures.GUI_INFO_LOCATION, 0xFF8888FF, true);
         stat.setText(info);
         if (!ThirdPartyManager.instance().getDocsProvider().isInstalled()) {
-            stat.appendText(Arrays.asList("", "gui.tab.info.assistIGW"));
+            stat.appendText(Arrays.asList("", "pneumaticcraft.gui.tab.info.assistIGW"));
         }
     }
 
@@ -386,15 +386,15 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
 
         if (nProbs > 0) {
             problemTab.setTexture(Textures.GUI_PROBLEMS_TEXTURE);
-            problemTab.setTitle("gui.tab.problems");
+            problemTab.setTitle("pneumaticcraft.gui.tab.problems");
             problemTab.setBackgroundColor(0xFFFF0000);
         } else if (nWarnings > 0) {
             problemTab.setTexture(Textures.GUI_WARNING_TEXTURE);
-            problemTab.setTitle("gui.tab.problems.warning");
+            problemTab.setTitle("pneumaticcraft.gui.tab.problems.warning");
             problemTab.setBackgroundColor(0xFFC0C000);
         } else {
             problemTab.setTexture(Textures.GUI_NO_PROBLEMS_TEXTURE);
-            problemTab.setTitle("gui.tab.problems.noProblems");
+            problemTab.setTitle("pneumaticcraft.gui.tab.problems.noProblems");
             problemTab.setBackgroundColor(0xFFA0FFA0);
         }
         if (problemText.isEmpty()) problemText.add("");
@@ -409,13 +409,13 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
             int upgrades = te.getUpgrades(EnumUpgrade.VOLUME);
             airHandler.setVolumeUpgrades(upgrades);
 
-            pressureStatText.add(col + I18n.format("gui.tooltip.pressure",
+            pressureStatText.add(col + I18n.format("pneumaticcraft.gui.tooltip.pressure",
                     PneumaticCraftUtils.roundNumberTo(curPressure, 2)));
-            pressureStatText.add(col + I18n.format("gui.tooltip.air", String.format("%,d", Math.round(curPressure * volume))));
-            pressureStatText.add(col + I18n.format("gui.tooltip.baseVolume", String.format("%,d", airHandler.getBaseVolume())));
+            pressureStatText.add(col + I18n.format("pneumaticcraft.gui.tooltip.air", String.format("%,d", Math.round(curPressure * volume))));
+            pressureStatText.add(col + I18n.format("pneumaticcraft.gui.tooltip.baseVolume", String.format("%,d", airHandler.getBaseVolume())));
             if (volume > airHandler.getBaseVolume()) {
                 pressureStatText.add(col + GuiConstants.TRIANGLE_RIGHT + " " + upgrades + " x " + EnumUpgrade.VOLUME.getItemStack().getDisplayName().getFormattedText());
-                pressureStatText.add(col + I18n.format("gui.tooltip.effectiveVolume", String.format("%,d",volume)));
+                pressureStatText.add(col + I18n.format("pneumaticcraft.gui.tooltip.effectiveVolume", String.format("%,d",volume)));
             }
         });
     }
@@ -429,8 +429,8 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         if (te instanceof IMinWorkingPressure) {
             IMinWorkingPressure minWork = (IMinWorkingPressure) te;
             if (((TileEntityPneumaticBase) te).getPressure() < minWork.getMinWorkingPressure()) {
-                curInfo.add("gui.tab.problems.notEnoughPressure");
-                curInfo.add(I18n.format("gui.tab.problems.applyPressure", minWork.getMinWorkingPressure()));
+                curInfo.add("pneumaticcraft.gui.tab.problems.notEnoughPressure");
+                curInfo.add(I18n.format("pneumaticcraft.gui.tab.problems.applyPressure", minWork.getMinWorkingPressure()));
             }
         }
     }
@@ -451,11 +451,11 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
     protected void addWarnings(List<String> curInfo) {
         if (te instanceof IRedstoneControlled && !redstoneAllows) {
             IRedstoneControlled redstoneControlled = (IRedstoneControlled) te;
-            curInfo.add("gui.tab.problems.redstoneDisallows");
+            curInfo.add("pneumaticcraft.gui.tab.problems.redstoneDisallows");
             if (redstoneControlled.getRedstoneMode() == 1) {
-                curInfo.add("gui.tab.problems.provideRedstone");
+                curInfo.add("pneumaticcraft.gui.tab.problems.provideRedstone");
             } else {
-                curInfo.add("gui.tab.problems.removeRedstone");
+                curInfo.add("pneumaticcraft.gui.tab.problems.removeRedstone");
             }
         }
     }

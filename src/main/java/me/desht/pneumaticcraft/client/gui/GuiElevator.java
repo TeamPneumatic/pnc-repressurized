@@ -39,9 +39,9 @@ public class GuiElevator extends GuiPneumaticContainerBase<ContainerElevator, Ti
     public void init() {
         super.init();
 
-        statusStat = addAnimatedStat(I18n.format("gui.tab.status"), new ItemStack(ModBlocks.ELEVATOR_BASE.get()), 0xFFFFAA00, false);
+        statusStat = addAnimatedStat(I18n.format("pneumaticcraft.gui.tab.status"), new ItemStack(ModBlocks.ELEVATOR_BASE.get()), 0xFFFFAA00, false);
 
-        WidgetAnimatedStat floorNameStat = addAnimatedStat(I18n.format("gui.tab.info.elevator.floorNames"),
+        WidgetAnimatedStat floorNameStat = addAnimatedStat(I18n.format("pneumaticcraft.gui.tab.info.elevator.floorNames"),
                 new ItemStack(ModBlocks.ELEVATOR_CALLER.get()), 0xFF005500, false);
         floorNameStat.addPadding(7, 40);
 
@@ -50,7 +50,7 @@ public class GuiElevator extends GuiPneumaticContainerBase<ContainerElevator, Ti
         floorNameField.setResponder(this::updateFloor);  // gui responder
 
         floorNameStat.addSubWidget(floorNameField);
-        floorNameStat.addSubWidget(noFloorsLabel = new WidgetLabel(5, 20, I18n.format("gui.tab.info.elevator.noCallers")).setColor(0xFFFFFFFF));
+        floorNameStat.addSubWidget(noFloorsLabel = new WidgetLabel(5, 20, I18n.format("pneumaticcraft.gui.tab.info.elevator.noCallers")).setColor(0xFFFFFFFF));
         floorNameStat.addSubWidget(floorNumberLabel = new WidgetLabel(85, 40, "").setAlignment(WidgetLabel.Alignment.CENTRE).setColor(0xFFFFFFFF));
         floorNameStat.addSubWidget(cycleDown = new WidgetButtonExtended(5, 35, 20, 20, ARROW_LEFT, button -> cycleFloor(-1)));
         floorNameStat.addSubWidget(cycleUp = new WidgetButtonExtended(145, 35, 20, 20, ARROW_RIGHT, button -> cycleFloor(1)));
@@ -96,15 +96,15 @@ public class GuiElevator extends GuiPneumaticContainerBase<ContainerElevator, Ti
         noFloorsLabel.visible = te.floorHeights.length == 0;
         floorNumberLabel.visible = te.floorHeights.length > 0;
         floorNameField.active = te.floorHeights.length > 0;
-        floorNumberLabel.setMessage(I18n.format("gui.tab.info.elevator.floorNumber", currentEditedFloor + 1, te.floorHeights.length));
+        floorNumberLabel.setMessage(I18n.format("pneumaticcraft.gui.tab.info.elevator.floorNumber", currentEditedFloor + 1, te.floorHeights.length));
     }
 
     private List<String> getStatusText() {
         List<String> text = new ArrayList<>();
 
-        text.add(TextFormatting.BLACK + I18n.format("gui.tab.info.elevator.extension",
+        text.add(TextFormatting.BLACK + I18n.format("pneumaticcraft.gui.tab.info.elevator.extension",
                 PneumaticCraftUtils.roundNumberTo(te.extension, 1)));
-        text.add(TextFormatting.BLACK + I18n.format("gui.tab.info.elevator.maxExtension",
+        text.add(TextFormatting.BLACK + I18n.format("pneumaticcraft.gui.tab.info.elevator.maxExtension",
                 PneumaticCraftUtils.roundNumberTo(te.getMaxElevatorHeight(), 1)));
 
         return text;
@@ -114,7 +114,7 @@ public class GuiElevator extends GuiPneumaticContainerBase<ContainerElevator, Ti
     protected void addWarnings(List<String> textList) {
         super.addWarnings(textList);
         if (te.getMaxElevatorHeight() == te.extension) {
-            textList.add(I18n.format("gui.tab.problems.elevator.fully_extended"));
+            textList.add(I18n.format("pneumaticcraft.gui.tab.problems.elevator.fully_extended"));
         }
     }
 }

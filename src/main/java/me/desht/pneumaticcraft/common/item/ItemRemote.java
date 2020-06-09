@@ -66,10 +66,10 @@ public class ItemRemote extends Item {
                 if (((TileEntitySecurityStation) te).doesAllowPlayer(player)) {
                     GlobalPos gPos = GlobalPos.of(world.getDimension().getType(), pos);
                     setSecurityStationPos(remote, gPos);
-                    player.sendStatusMessage(xlate("gui.remote.boundSecurityStation", gPos.toString()), true);
+                    player.sendStatusMessage(xlate("pneumaticcraft.gui.remote.boundSecurityStation", gPos.toString()), true);
                     return ActionResultType.SUCCESS;
                 } else {
-                    player.sendStatusMessage(xlate("gui.remote.cantBindSecurityStation"), true);
+                    player.sendStatusMessage(xlate("pneumaticcraft.gui.remote.cantBindSecurityStation"), true);
                 }
             }
         }
@@ -83,12 +83,12 @@ public class ItemRemote extends Item {
     @OnlyIn(Dist.CLIENT)
     public void addInformation(ItemStack remote, World world, List<ITextComponent> curInfo, ITooltipFlag moreInfo) {
         super.addInformation(remote, world, curInfo, moreInfo);
-        curInfo.add(xlate("gui.remote.tooltip.sneakRightClickToEdit"));
+        curInfo.add(xlate("pneumaticcraft.gui.remote.tooltip.sneakRightClickToEdit"));
         GlobalPos gPos = getSecurityStationPos(remote);
         if (gPos != null) {
-            curInfo.add(xlate("gui.remote.tooltip.boundToSecurityStation", gPos.toString()));
+            curInfo.add(xlate("pneumaticcraft.gui.remote.tooltip.boundToSecurityStation", gPos.toString()));
         } else {
-            curInfo.add(xlate("gui.remote.tooltip.rightClickToBind"));
+            curInfo.add(xlate("pneumaticcraft.gui.remote.tooltip.rightClickToBind"));
         }
     }
 
@@ -116,7 +116,7 @@ public class ItemRemote extends Item {
             if (te instanceof TileEntitySecurityStation) {
                 boolean canAccess = ((TileEntitySecurityStation) te).doesAllowPlayer(player);
                 if (!canAccess) {
-                    player.sendStatusMessage(new TranslationTextComponent("gui.remote.noEditRights", gPos).applyTextStyle(TextFormatting.RED), false);
+                    player.sendStatusMessage(new TranslationTextComponent("pneumaticcraft.gui.remote.noEditRights", gPos).applyTextStyle(TextFormatting.RED), false);
                 }
                 return canAccess;
             }

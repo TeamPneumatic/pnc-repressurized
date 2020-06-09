@@ -36,11 +36,11 @@ public class GuiPressureChamberInterface extends GuiPneumaticContainerBase<Conta
     public void init() {
         super.init();
 
-        statusStat = addAnimatedStat("gui.pressureChamberInterface.status", new ItemStack(ModBlocks.PRESSURE_CHAMBER_INTERFACE.get()), 0xFFFFAA00, false);
+        statusStat = addAnimatedStat("pneumaticcraft.gui.pressureChamberInterface.status", new ItemStack(ModBlocks.PRESSURE_CHAMBER_INTERFACE.get()), 0xFFFFAA00, false);
 
         exportAnyButton = addButton(new WidgetButtonExtended(guiLeft + 111, guiTop + 32, 60, 20, "")
                 .withTag("export_mode"));
-        exportTypeLabel = addButton(new WidgetLabel(guiLeft + 111, guiTop + 20, I18n.format("gui.pressureChamberInterface.exportLabel")));
+        exportTypeLabel = addButton(new WidgetLabel(guiLeft + 111, guiTop + 20, I18n.format("pneumaticcraft.gui.pressureChamberInterface.exportLabel")));
     }
 
     @Override
@@ -73,13 +73,13 @@ public class GuiPressureChamberInterface extends GuiPneumaticContainerBase<Conta
         exportAnyButton.visible = exporting;
         exportTypeLabel.visible = exporting;
         if (exportAnyButton.visible) {
-            String textKey = "gui.pressureChamberInterface.export." + (te.exportAny ? "any" : "valid");
+            String textKey = "pneumaticcraft.gui.pressureChamberInterface.export." + (te.exportAny ? "any" : "valid");
             exportAnyButton.setMessage(I18n.format(textKey));
             exportAnyButton.setTooltipText(PneumaticCraftUtils.splitString(I18n.format(textKey + ".tooltip"), 35));
         }
 
         statusStat.setText(ImmutableList.of(
-                TextFormatting.WHITE + I18n.format("gui.pressureChamberInterface.mode"),
+                TextFormatting.WHITE + I18n.format("pneumaticcraft.gui.pressureChamberInterface.mode"),
                 TextFormatting.BLACK + I18n.format(te.interfaceMode.getTranslationKey())
         ));
 

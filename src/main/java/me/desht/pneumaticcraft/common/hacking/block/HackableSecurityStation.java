@@ -29,12 +29,12 @@ public class HackableSecurityStation implements IHackableBlock {
 
     @Override
     public void addInfo(IBlockReader world, BlockPos pos, List<String> curInfo, PlayerEntity player) {
-        curInfo.add("pneumaticHelmet.hacking.result.access");
+        curInfo.add("pneumaticcraft.armor.hacking.result.access");
     }
 
     @Override
     public void addPostHackInfo(IBlockReader world, BlockPos pos, List<String> curInfo, PlayerEntity player) {
-        curInfo.add("pneumaticHelmet.hacking.finished.accessed");
+        curInfo.add("pneumaticcraft.armor.hacking.finished.accessed");
     }
 
     @Override

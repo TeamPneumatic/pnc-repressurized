@@ -30,8 +30,8 @@ public abstract class TubeModuleRedstoneReceiving extends TubeModule {
     public void addInfo(List<ITextComponent> curInfo) {
         super.addInfo(curInfo);
 
-        curInfo.add(PneumaticCraftUtils.xlate("waila.redstoneModule.receiving", redstoneLevel));
-        curInfo.add(PneumaticCraftUtils.xlate("waila.tubeModule.threshold", PneumaticCraftUtils.roundNumberTo(getThreshold(), 1)));
+        curInfo.add(PneumaticCraftUtils.xlate("pneumaticcraft.waila.redstoneModule.receiving", redstoneLevel));
+        curInfo.add(PneumaticCraftUtils.xlate("pneumaticcraft.waila.tubeModule.threshold", PneumaticCraftUtils.roundNumberTo(getThreshold(), 1)));
     }
 
     @Override

@@ -16,13 +16,13 @@ public class GuiRemoteVariable<A extends ActionWidgetVariable> extends GuiRemote
     @Override
     public void init() {
         super.init();
-        addLabel(I18n.format("gui.progWidget.coordinate.variableName"), guiLeft + 10, guiTop + 70);
+        addLabel(I18n.format("pneumaticcraft.gui.progWidget.coordinate.variableName"), guiLeft + 10, guiTop + 70);
         addLabel("#", guiLeft + 10, guiTop + 81);
 
         variableField = new WidgetComboBox(font, guiLeft + 18, guiTop + 80, 152, 10);
         variableField.setElements(guiRemote.getContainer().variables);
         variableField.setText(widget.getVariableName());
-        variableField.setTooltip(I18n.format("gui.remote.variable.tooltip"));
+        variableField.setTooltip(I18n.format("pneumaticcraft.gui.remote.variable.tooltip"));
         addButton(variableField);
     }
 

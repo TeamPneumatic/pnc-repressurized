@@ -16,8 +16,8 @@ public class GuiProgWidgetHarvest extends GuiProgWidgetDigAndPlace<ProgWidgetHar
         super.init();
 
         WidgetCheckBox requiresHoe = new WidgetCheckBox(guiLeft + 4, guiTop + 85, 0xFF404040,
-                I18n.format("gui.progWidget.harvest.requiresHoe"), b -> progWidget.setRequiresTool(b.checked));
-        requiresHoe.setTooltip("gui.progWidget.harvest.requiresHoe.tooltip");
+                I18n.format("pneumaticcraft.gui.progWidget.harvest.requiresHoe"), b -> progWidget.setRequiresTool(b.checked));
+        requiresHoe.setTooltip("pneumaticcraft.gui.progWidget.harvest.requiresHoe.tooltip");
         requiresHoe.checked = progWidget.requiresTool();
         addButton(requiresHoe);
     }

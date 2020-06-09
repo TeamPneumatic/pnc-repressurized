@@ -37,6 +37,6 @@ public class GuiProgWidgetForEach<W extends IProgWidget & IVariableSetWidget> ex
     @Override
     public void render(int mouseX, int mouseY, float partialTicks) {
         super.render(mouseX, mouseY, partialTicks);
-        font.drawString(I18n.format("gui.progWidget.coordinate.variableName"), guiLeft + 10, guiTop + 30, 0xFF000000);
+        font.drawString(I18n.format("pneumaticcraft.gui.progWidget.coordinate.variableName"), guiLeft + 10, guiTop + 30, 0xFF000000);
     }
 }

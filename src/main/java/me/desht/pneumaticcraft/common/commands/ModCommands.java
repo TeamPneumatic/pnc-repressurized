@@ -85,15 +85,15 @@ public class ModCommands {
             if (deliveredStacks.size() > 0) {
                 GlobalPos gPos = GlobalPos.of(source.getWorld().dimension.getType(), toPos);
                 PneumaticRegistry.getInstance().getDroneRegistry().deliverItemsAmazonStyle(gPos, deliveredStacks.toArray(new ItemStack[0]));
-                source.sendFeedback(xlate("command.deliverAmazon.success", PneumaticCraftUtils.posToString(fromPos), PneumaticCraftUtils.posToString(toPos)), false);
+                source.sendFeedback(xlate("pneumaticcraft.command.deliverAmazon.success", PneumaticCraftUtils.posToString(fromPos), PneumaticCraftUtils.posToString(toPos)), false);
                 return 1;
             } else {
-                source.sendErrorMessage(xlate("command.deliverAmazon.noItems", PneumaticCraftUtils.posToString(fromPos)));
+                source.sendErrorMessage(xlate("pneumaticcraft.command.deliverAmazon.noItems", PneumaticCraftUtils.posToString(fromPos)));
                 return 0;
             }
         }).orElse(-1);
 
-        if (status == -1) source.sendErrorMessage(xlate("command.deliverAmazon.noInventory", PneumaticCraftUtils.posToString(fromPos)));
+        if (status == -1) source.sendErrorMessage(xlate("pneumaticcraft.command.deliverAmazon.noInventory", PneumaticCraftUtils.posToString(fromPos)));
         return status;
     }
 
@@ -102,7 +102,7 @@ public class ModCommands {
         if (varName.startsWith("#")) varName = varName.substring(1);
         BlockPos pos = GlobalVariableManager.getInstance().getPos(varName);
         ItemStack stack = GlobalVariableManager.getInstance().getItem(varName);
-        source.sendFeedback(xlate("command.getGlobalVariable.output", varName, pos.toString(), stack.getDisplayName().getFormattedText()), false);
+        source.sendFeedback(xlate("pneumaticcraft.command.getGlobalVariable.output", varName, pos.toString(), stack.getDisplayName().getFormattedText()), false);
         return 1;
     }
 
@@ -110,7 +110,7 @@ public class ModCommands {
         CommandSource source = ctx.getSource();
         if (varName.startsWith("#")) varName = varName.substring(1);
         GlobalVariableManager.getInstance().set(varName, pos);
-        source.sendFeedback(xlate("command.setGlobalVariable.output", varName, pos.toString()), false);
+        source.sendFeedback(xlate("pneumaticcraft.command.setGlobalVariable.output", varName, pos.toString()), false);
         return 1;
     }
 }

@@ -134,7 +134,7 @@ public class TOPInfoProvider {
         if (mode == ProbeMode.EXTENDED) {
             for (int i = 0; i < handler.getTanks(); i++) {
                 FluidStack fluidStack = handler.getFluidInTank(i);
-                String fluidDesc = fluidStack.isEmpty() ? L("gui.liquid.empty") : fluidStack.getAmount() + "mB " + L(fluidStack.getTranslationKey());
+                String fluidDesc = fluidStack.isEmpty() ? L("pneumaticcraft.gui.liquid.empty") : fluidStack.getAmount() + "mB " + L(fluidStack.getTranslationKey());
                 probeInfo.text(COLOR + "Tank #" + (i + 1) + ": " + TextFormatting.AQUA + fluidDesc);
             }
         }

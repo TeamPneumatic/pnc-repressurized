@@ -40,26 +40,26 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase<ProgWidgetI
         addButton(new WidgetButtonExtended(guiLeft + 78, guiTop + 24, 100, 20, "Search inventory...", b -> openInventorySearcher()));
 
         addButton(checkBoxUseDurability = new WidgetCheckBox(guiLeft + 8, guiTop + 96, 0xFF404040,
-                I18n.format("gui.logistics_frame.matchDurability"), b -> progWidget.useItemDurability = b.checked)
-                .setTooltip(I18n.format("gui.logistics_frame.matchDurability.tooltip"))
+                I18n.format("pneumaticcraft.gui.logistics_frame.matchDurability"), b -> progWidget.useItemDurability = b.checked)
+                .setTooltip(I18n.format("pneumaticcraft.gui.logistics_frame.matchDurability.tooltip"))
                 .setChecked(progWidget.useItemDurability)
         );
 
         addButton(checkBoxUseNBT = new WidgetCheckBox(guiLeft + 8, guiTop + 108, 0xFF404040,
-                I18n.format("gui.logistics_frame.matchNBT"), b -> progWidget.useNBT = b.checked)
-                .setTooltip(I18n.format("gui.logistics_frame.matchNBT.tooltip"))
+                I18n.format("pneumaticcraft.gui.logistics_frame.matchNBT"), b -> progWidget.useNBT = b.checked)
+                .setTooltip(I18n.format("pneumaticcraft.gui.logistics_frame.matchNBT.tooltip"))
                 .setChecked(progWidget.useNBT)
         );
 
         addButton(checkBoxUseModSimilarity = new WidgetCheckBox(guiLeft + 8, guiTop + 120, 0xFF404040,
-                I18n.format("gui.logistics_frame.matchModId"), b -> progWidget.useModSimilarity = b.checked)
-                .setTooltip(I18n.format("gui.logistics_frame.matchModId.tooltip"))
+                I18n.format("pneumaticcraft.gui.logistics_frame.matchModId"), b -> progWidget.useModSimilarity = b.checked)
+                .setTooltip(I18n.format("pneumaticcraft.gui.logistics_frame.matchModId.tooltip"))
                 .setChecked(progWidget.useModSimilarity)
         );
 
         addButton(checkBoxMatchBlock = new WidgetCheckBox(guiLeft + 8, guiTop + 132, 0xFF404040,
-                I18n.format("gui.logistics_frame.matchBlockstate"), b -> progWidget.matchBlock = b.checked)
-                .setTooltip(I18n.format("gui.logistics_frame.matchBlockstate.tooltip"))
+                I18n.format("pneumaticcraft.gui.logistics_frame.matchBlockstate"), b -> progWidget.matchBlock = b.checked)
+                .setTooltip(I18n.format("pneumaticcraft.gui.logistics_frame.matchBlockstate.tooltip"))
                 .setChecked(progWidget.matchBlock)
         );
 
@@ -106,7 +106,7 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase<ProgWidgetI
         checkBoxUseDurability.active = filter.getMaxDamage() > 0 && !checkBoxUseModSimilarity.checked;
         checkBoxUseNBT.active = filter.hasTag() && !checkBoxUseModSimilarity.checked && !checkBoxMatchBlock.checked;
         checkBoxUseModSimilarity.active = !filter.isEmpty() && !checkBoxMatchBlock.checked;
-        String msg = I18n.format("gui.logistics_frame.matchModId");
+        String msg = I18n.format("pneumaticcraft.gui.logistics_frame.matchModId");
         checkBoxUseModSimilarity.setMessage(filter.isEmpty() ? msg : msg + " (" + filter.getItem().getRegistryName().getNamespace() + ")");
         checkBoxMatchBlock.active = filter.getItem() instanceof BlockItem && !checkBoxUseNBT.checked && !checkBoxUseModSimilarity.checked;
     }
@@ -127,9 +127,9 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase<ProgWidgetI
         RenderSystem.color4f(1, 1, 1, 1);
         blit(guiLeft + 49, guiTop + 51, 186, 0, 18, 18);
         if (PNCConfig.Client.programmerDifficulty == WidgetDifficulty.ADVANCED) {
-            font.drawString(I18n.format("gui.progWidget.itemFilter.variableLabel"), guiLeft + 90, guiTop + 49, 0xFF404040);
+            font.drawString(I18n.format("pneumaticcraft.gui.progWidget.itemFilter.variableLabel"), guiLeft + 90, guiTop + 49, 0xFF404040);
         }
-        String f = I18n.format("gui.progWidget.itemFilter.filterLabel");
+        String f = I18n.format("pneumaticcraft.gui.progWidget.itemFilter.filterLabel");
         font.drawString(f, guiLeft + 48 - font.getStringWidth(f), guiTop + 56, 0xFF404040);
         if (!progWidget.getRawFilter().isEmpty()) {
             GuiUtils.drawItemStack(progWidget.getRawFilter(), guiLeft + 50, guiTop + 52);

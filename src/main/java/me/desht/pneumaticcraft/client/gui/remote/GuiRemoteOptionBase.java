@@ -49,17 +49,17 @@ public class GuiRemoteOptionBase<A extends ActionWidget> extends GuiPneumaticScr
     public void init() {
         super.init();
 
-        addLabel(I18n.format("gui.remote.enable"), guiLeft + 10, guiTop + 150);
+        addLabel(I18n.format("pneumaticcraft.gui.remote.enable"), guiLeft + 10, guiTop + 150);
         String t = title.getFormattedText();
         addLabel(t, width / 2 - font.getStringWidth(t) / 2, guiTop + 5);
         addLabel("#", guiLeft + 10, guiTop + 161);
 
         if (widget instanceof IActionWidgetLabeled) {
-            addLabel(I18n.format("gui.remote.text"), guiLeft + 10, guiTop + 20);
-            addLabel(I18n.format("gui.remote.tooltip"), guiLeft + 10, guiTop + 46);
+            addLabel(I18n.format("pneumaticcraft.gui.remote.text"), guiLeft + 10, guiTop + 20);
+            addLabel(I18n.format("pneumaticcraft.gui.remote.tooltip"), guiLeft + 10, guiTop + 46);
         }
 
-        addLabel(I18n.format("gui.remote.enableValue"), guiLeft + 10, guiTop + 175);
+        addLabel(I18n.format("pneumaticcraft.gui.remote.enableValue"), guiLeft + 10, guiTop + 175);
         addLabel("X:", guiLeft + 10, guiTop + 186);
         addLabel("Y:", guiLeft + 67, guiTop + 186);
         addLabel("Z:", guiLeft + 124, guiTop + 186);
@@ -67,10 +67,10 @@ public class GuiRemoteOptionBase<A extends ActionWidget> extends GuiPneumaticScr
         enableField = new WidgetComboBox(font, guiLeft + 18, guiTop + 160, 152, 10);
         enableField.setElements(guiRemote.getContainer().variables);
         enableField.setText(widget.getEnableVariable());
-        enableField.setTooltip(I18n.format("gui.remote.enable.tooltip"));
+        enableField.setTooltip(I18n.format("pneumaticcraft.gui.remote.enable.tooltip"));
         addButton(enableField);
 
-        String valueTooltip = I18n.format("gui.remote.enableValue.tooltip");
+        String valueTooltip = I18n.format("pneumaticcraft.gui.remote.enableValue.tooltip");
 
         xValueField = new WidgetTextFieldNumber(font, guiLeft + 20, guiTop + 185, 38, 10);
         xValueField.setValue(widget.getEnablingValue().getX());
@@ -90,7 +90,7 @@ public class GuiRemoteOptionBase<A extends ActionWidget> extends GuiPneumaticScr
         if (widget instanceof IActionWidgetLabeled) {
             labelField = new WidgetTextField(font, guiLeft + 10, guiTop + 30, 160, 10);
             labelField.setText(((IActionWidgetLabeled) widget).getText());
-            labelField.setTooltip(I18n.format("gui.remote.label.tooltip"));
+            labelField.setTooltip(I18n.format("pneumaticcraft.gui.remote.label.tooltip"));
             labelField.setMaxStringLength(1000);
             addButton(labelField);
 

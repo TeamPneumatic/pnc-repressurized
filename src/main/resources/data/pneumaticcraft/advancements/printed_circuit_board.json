@@ -4,10 +4,10 @@
       "item": "pneumaticcraft:printed_circuit_board"
     },
     "title": {
-      "translate": "achievement.printedCircuitBoard"
+      "translate": "pneumaticcraft.achievement.printedCircuitBoard"
     },
     "description": {
-      "translate": "achievement.printedCircuitBoard.desc"
+      "translate": "pneumaticcraft.achievement.printedCircuitBoard.desc"
     },
     "frame": "goal"
   },

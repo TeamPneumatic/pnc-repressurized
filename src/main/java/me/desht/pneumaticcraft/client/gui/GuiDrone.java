@@ -21,8 +21,8 @@ public class GuiDrone extends GuiPneumaticInventoryItem {
             return; // should never happen...
         }
 
-        addAnimatedStat("gui.tab.info", Textures.GUI_INFO_LOCATION, 0xFF8888FF, true)
-                .setText("gui.tab.info.item.drone");
+        addAnimatedStat("pneumaticcraft.gui.tab.info", Textures.GUI_INFO_LOCATION, 0xFF8888FF, true)
+                .setText("pneumaticcraft.gui.tab.info.item.drone");
         addUpgradeTabs(itemStack.getItem(), itemStack.getItem().getRegistryName().getPath(), "drone");
     }
 

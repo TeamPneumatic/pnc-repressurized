@@ -4,10 +4,10 @@
       "item": "pneumaticcraft:logistics_drone"
     },
     "title": {
-      "translate": "achievement.logisticsDrone"
+      "translate": "pneumaticcraft.achievement.logisticsDrone"
     },
     "description": {
-      "translate": "achievement.logisticsDrone.desc"
+      "translate": "pneumaticcraft.achievement.logisticsDrone.desc"
     }
   },
   "parent": "pneumaticcraft:logistics_configurator",

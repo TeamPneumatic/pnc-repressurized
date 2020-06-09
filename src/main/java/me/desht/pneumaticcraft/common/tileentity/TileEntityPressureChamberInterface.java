@@ -81,7 +81,7 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
         NONE, IMPORT, EXPORT;
 
         public String getTranslationKey() {
-            return "gui.pressureChamberInterface.mode." + toString().toLowerCase();
+            return "pneumaticcraft.gui.pressureChamberInterface.mode." + toString().toLowerCase();
         }
     }
 
@@ -269,9 +269,9 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
     public List<String> getProblemStat() {
         List<String> textList = new ArrayList<>();
         if (interfaceMode == InterfaceDirection.NONE) {
-            textList.addAll(PneumaticCraftUtils.splitString(I18n.format("gui.tab.problems.pressure_chamber_interface.not_formed")));
+            textList.addAll(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.tab.problems.pressure_chamber_interface.not_formed")));
         } else if (!enoughAir) {
-            textList.addAll(PneumaticCraftUtils.splitString(I18n.format("gui.tab.problems.pressure_chamber_interface.not_enough_pressure")));
+            textList.addAll(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.tab.problems.pressure_chamber_interface.not_enough_pressure")));
         }
         return textList;
     }

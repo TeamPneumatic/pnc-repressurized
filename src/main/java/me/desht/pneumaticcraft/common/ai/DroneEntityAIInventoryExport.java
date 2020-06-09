@@ -54,14 +54,14 @@ public class DroneEntityAIInventoryExport extends DroneAIImExBase<ProgWidgetInve
                             drone.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY)
                                     .ifPresent(h -> h.addAir(-PneumaticValues.DRONE_USAGE_INV));
                         }
-                        else drone.addDebugEntry("gui.progWidget.inventoryExport.debug.filledToMax", pos);
+                        else drone.addDebugEntry("pneumaticcraft.gui.progWidget.inventoryExport.debug.filledToMax", pos);
                     } else {
-                        drone.addDebugEntry("gui.progWidget.inventoryExport.debug.stackdoesntPassFilter", pos);
+                        drone.addDebugEntry("pneumaticcraft.gui.progWidget.inventoryExport.debug.stackdoesntPassFilter", pos);
                     }
                 }
             }
         } else {
-            drone.addDebugEntry("gui.progWidget.inventory.debug.noInventory", pos);
+            drone.addDebugEntry("pneumaticcraft.gui.progWidget.inventory.debug.noInventory", pos);
         }
         return false;
     }

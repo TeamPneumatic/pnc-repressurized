@@ -46,7 +46,7 @@ public class DroneAIPlace<W extends ProgWidgetAreaItemBase & IBlockOrdered /*& I
                 if (droneStack.getItem() instanceof BlockItem && progWidget.isItemValidForFilters(droneStack)) {
                     BlockPos placerPos = findClearSide(pos);
                     if (placerPos == null) {
-                        drone.addDebugEntry("gui.progWidget.place.debug.noClearSides", pos);
+                        drone.addDebugEntry("pneumaticcraft.gui.progWidget.place.debug.noClearSides", pos);
                         failedOnPlacement = true;
                         break;
                     }
@@ -56,11 +56,11 @@ public class DroneAIPlace<W extends ProgWidgetAreaItemBase & IBlockOrdered /*& I
                         if (state.isValidPosition(drone.world(), pos)) {
                             return true;
                         } else {
-                            drone.addDebugEntry("gui.progWidget.place.debug.cantPlaceBlock", pos);
+                            drone.addDebugEntry("pneumaticcraft.gui.progWidget.place.debug.cantPlaceBlock", pos);
                             failedOnPlacement = true;
                         }
                     } else {
-                        drone.addDebugEntry("gui.progWidget.place.debug.entityInWay", pos);
+                        drone.addDebugEntry("pneumaticcraft.gui.progWidget.place.debug.entityInWay", pos);
                         failedOnPlacement = true;
                     }
                 }

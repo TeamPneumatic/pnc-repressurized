@@ -33,7 +33,7 @@ public class JEIPressureChamberRecipeCategory implements IRecipeCategory<Pressur
 //        super(jeiHelpers);
         background = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_PRESSURE_CHAMBER, 5, 11, 166, 130);
         icon = JEIPlugin.jeiHelpers.getGuiHelper().createDrawableIngredient(new ItemStack(ModBlocks.PRESSURE_CHAMBER_WALL.get()));
-        localizedName = I18n.format("gui.pressureChamber");
+        localizedName = I18n.format("pneumaticcraft.gui.pressureChamber");
         tickTimer = JEIPlugin.jeiHelpers.getGuiHelper().createTickTimer(60, 60, false);
     }
 
@@ -99,7 +99,7 @@ public class JEIPressureChamberRecipeCategory implements IRecipeCategory<Pressur
     @Override
     public List<String> getTooltipStrings(PressureChamberRecipe recipe, double mouseX, double mouseY) {
         if (mouseX >= 100 && mouseY >= 7 && mouseX <= 140 && mouseY <= 47) {
-            return ImmutableList.of(I18n.format("gui.tooltip.pressure", recipe.getCraftingPressure()));
+            return ImmutableList.of(I18n.format("pneumaticcraft.gui.tooltip.pressure", recipe.getCraftingPressure()));
         }
         return Collections.emptyList();
     }

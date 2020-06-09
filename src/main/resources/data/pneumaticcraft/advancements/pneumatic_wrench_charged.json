@@ -4,10 +4,10 @@
       "item": "pneumaticcraft:pneumatic_wrench"
     },
     "title": {
-      "translate": "achievement.pneumaticWrenchCharged"
+      "translate": "pneumaticcraft.achievement.pneumaticWrenchCharged"
     },
     "description": {
-      "translate": "achievement.pneumaticWrenchCharged.desc"
+      "translate": "pneumaticcraft.achievement.pneumaticWrenchCharged.desc"
     }
   },
   "parent": "pneumaticcraft:pneumatic_wrench",

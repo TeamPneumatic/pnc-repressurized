@@ -35,7 +35,7 @@ public class GuiProgrammableController extends GuiPneumaticContainerBase<Contain
                 .map(s -> GuiConstants.BULLET + " " + I18n.format("programmingPuzzle." + s.getNamespace() + "." + s.getPath() + ".name"))
                 .sorted()
                 .collect(Collectors.toList());
-        addAnimatedStat("gui.tab.info.programmable_controller.excluded",
+        addAnimatedStat("pneumaticcraft.gui.tab.info.programmable_controller.excluded",
                 new ItemStack(ModItems.DRONE.get()), 0xFFFF5050, true).setText(exc);
     }
 
@@ -52,6 +52,6 @@ public class GuiProgrammableController extends GuiPneumaticContainerBase<Contain
     @Override
     protected void addProblems(List<String> curInfo) {
         super.addProblems(curInfo);
-        if (te.getPrimaryInventory().getStackInSlot(0).isEmpty()) curInfo.add("gui.tab.problems.programmableController.noProgram");
+        if (te.getPrimaryInventory().getStackInSlot(0).isEmpty()) curInfo.add("pneumaticcraft.gui.tab.problems.programmableController.noProgram");
     }
 }

@@ -32,6 +32,6 @@ public class ItemNonDespawning extends Item {
     @OnlyIn(Dist.CLIENT)
     public void addInformation(ItemStack stack, World worldIn, List<ITextComponent> curInfo, ITooltipFlag moreInfo) {
         super.addInformation(stack, worldIn, curInfo, moreInfo);
-        curInfo.add(xlate("gui.tooltip.doesNotDespawn"));
+        curInfo.add(xlate("pneumaticcraft.gui.tooltip.doesNotDespawn"));
     }
 }

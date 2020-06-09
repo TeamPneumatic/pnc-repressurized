@@ -33,7 +33,7 @@ public class GuiLiquidCompressor extends GuiPneumaticContainerBase<ContainerLiqu
     public void init() {
         super.init();
         addButton(new WidgetTank(guiLeft + getFluidOffset(), guiTop + 15, te.getTank()));
-        WidgetAnimatedStat stat = addAnimatedStat("gui.tab.liquidCompressor.fuel", new ItemStack(Items.LAVA_BUCKET), 0xFFFF6600, true);
+        WidgetAnimatedStat stat = addAnimatedStat("pneumaticcraft.gui.tab.liquidCompressor.fuel", new ItemStack(Items.LAVA_BUCKET), 0xFFFF6600, true);
         stat.setTextWithoutCuttingString(getAllFuels());
     }
 
@@ -42,7 +42,7 @@ public class GuiLiquidCompressor extends GuiPneumaticContainerBase<ContainerLiqu
         super.addPressureStatInfo(pressureStatText);
         if (te.isProducing) {
             float prod = te.getBaseProduction() * te.getBurnMultiplier() *  te.getEfficiency() * te.getSpeedMultiplierFromUpgrades() / 100;
-            pressureStatText.add(TextFormatting.BLACK + I18n.format("gui.tooltip.producingAir", PneumaticCraftUtils.roundNumberTo(prod, 2)));
+            pressureStatText.add(TextFormatting.BLACK + I18n.format("pneumaticcraft.gui.tooltip.producingAir", PneumaticCraftUtils.roundNumberTo(prod, 2)));
         }
     }
 
@@ -103,11 +103,11 @@ public class GuiLiquidCompressor extends GuiPneumaticContainerBase<ContainerLiqu
         if (te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).isPresent()) {
             te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).ifPresent(fluidHandler -> {
                 if (!te.isProducing && fluidHandler.getFluidInTank(0).isEmpty()) {
-                    curInfo.add("gui.tab.problems.liquidCompressor.noFuel");
+                    curInfo.add("pneumaticcraft.gui.tab.problems.liquidCompressor.noFuel");
                 }
             });
         } else {
-            curInfo.add("gui.tab.problems.liquidCompressor.noFuel");
+            curInfo.add("pneumaticcraft.gui.tab.problems.liquidCompressor.noFuel");
         }
     }
 }

@@ -50,7 +50,7 @@ public class GuiProgWidgetCoordinateOperator extends GuiProgWidgetAreaShow<ProgW
     @Override
     public void render(int mouseX, int mouseY, float partialTicks) {
         super.render(mouseX, mouseY, partialTicks);
-        font.drawString(I18n.format("gui.progWidget.coordinate.variableName"), guiLeft + 7, guiTop + 88, 0xFF404060);
-        font.drawString(I18n.format("gui.progWidget.coordinateOperator.operator"), guiLeft + 7, guiTop + 30, 0xFF404060);
+        font.drawString(I18n.format("pneumaticcraft.gui.progWidget.coordinate.variableName"), guiLeft + 7, guiTop + 88, 0xFF404060);
+        font.drawString(I18n.format("pneumaticcraft.gui.progWidget.coordinateOperator.operator"), guiLeft + 7, guiTop + 30, 0xFF404060);
     }
 }

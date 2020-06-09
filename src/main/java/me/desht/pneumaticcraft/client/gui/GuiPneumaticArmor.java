@@ -37,7 +37,7 @@ public class GuiPneumaticArmor extends GuiPneumaticInventoryItem {
     @Override
     public void init() {
         super.init();
-        addAnimatedStat("gui.tab.info", Textures.GUI_INFO_LOCATION, 0xFF8888FF, true)
+        addAnimatedStat("pneumaticcraft.gui.tab.info", Textures.GUI_INFO_LOCATION, 0xFF8888FF, true)
                 .setText("gui.tab.info.item." + registryName);
         statusStat = addAnimatedStat("Status", itemStack, 0xFFFFAA00, false);
 

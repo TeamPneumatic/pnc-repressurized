@@ -44,7 +44,7 @@ public class AreaTypeRandom extends AreaType {
     @Override
     public void addUIWidgets(List<AreaTypeWidget> widgets) {
         super.addUIWidgets(widgets);
-        widgets.add(new AreaTypeWidgetInteger("gui.progWidget.area.type.random.blocksSelected", () -> pickedAmount, amount -> pickedAmount = amount));
+        widgets.add(new AreaTypeWidgetInteger("pneumaticcraft.gui.progWidget.area.type.random.blocksSelected", () -> pickedAmount, amount -> pickedAmount = amount));
     }
 
     @Override

@@ -174,6 +174,6 @@ public class ClientUtils {
     }
 
     public static String translateDirection(Direction d) {
-        return I18n.format("gui.tooltip.direction." + d.toString());
+        return I18n.format("pneumaticcraft.gui.tooltip.direction." + d.toString());
     }
 }

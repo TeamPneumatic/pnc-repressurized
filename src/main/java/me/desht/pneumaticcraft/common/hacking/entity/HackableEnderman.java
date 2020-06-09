@@ -25,12 +25,12 @@ public class HackableEnderman implements IHackableEntity {
 
     @Override
     public void addHackInfo(Entity entity, List<String> curInfo, PlayerEntity player) {
-        curInfo.add("pneumaticHelmet.hacking.result.stopTeleport");
+        curInfo.add("pneumaticcraft.armor.hacking.result.stopTeleport");
     }
 
     @Override
     public void addPostHackInfo(Entity entity, List<String> curInfo, PlayerEntity player) {
-        curInfo.add("pneumaticHelmet.hacking.finished.stopTeleporting");
+        curInfo.add("pneumaticcraft.armor.hacking.finished.stopTeleporting");
     }
 
     @Override

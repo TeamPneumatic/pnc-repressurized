@@ -86,14 +86,14 @@ public class WidgetAmadronOffer extends Widget implements ITooltipProvider {
             }
         }
         if (!isInBounds) {
-            curTip.add(I18n.format("gui.amadron.amadronWidget.vendor", offer.getVendor()));
-            curTip.add(I18n.format("gui.amadron.amadronWidget.selling", offer.getOutput().toString()));
-            curTip.add(I18n.format("gui.amadron.amadronWidget.buying", offer.getInput().toString()));
-            curTip.add(I18n.format("gui.amadron.amadronWidget.inBasket", shoppingAmount));
-            if (offer.getStock() >= 0) curTip.add(I18n.format("gui.amadron.amadronWidget.stock", offer.getStock()));
+            curTip.add(I18n.format("pneumaticcraft.gui.amadron.amadronWidget.vendor", offer.getVendor()));
+            curTip.add(I18n.format("pneumaticcraft.gui.amadron.amadronWidget.selling", offer.getOutput().toString()));
+            curTip.add(I18n.format("pneumaticcraft.gui.amadron.amadronWidget.buying", offer.getInput().toString()));
+            curTip.add(I18n.format("pneumaticcraft.gui.amadron.amadronWidget.inBasket", shoppingAmount));
+            if (offer.getStock() >= 0) curTip.add(I18n.format("pneumaticcraft.gui.amadron.amadronWidget.stock", offer.getStock()));
             // todo we should be using UUID here
             if (offer.getVendor().equals(Minecraft.getInstance().player.getGameProfile().getName())) {
-                curTip.addAll(PneumaticCraftUtils.splitString(I18n.format("gui.amadron.amadronWidget.sneakRightClickToRemove"), 40));
+                curTip.addAll(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.amadron.amadronWidget.sneakRightClickToRemove"), 40));
             }
             if (Minecraft.getInstance().gameSettings.advancedItemTooltips) {
                 curTip.add(TextFormatting.DARK_GRAY.toString() + offer.getId());

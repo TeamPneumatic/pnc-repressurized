@@ -59,14 +59,14 @@ public class GuiPneumaticDynamo extends GuiPneumaticContainerBase<ContainerPneum
     @Override
     protected void addPressureStatInfo(List<String> pressureStatText) {
         super.addPressureStatInfo(pressureStatText);
-        pressureStatText.add(TextFormatting.BLACK + I18n.format("gui.tooltip.maxUsage", te.getAirRate()));
+        pressureStatText.add(TextFormatting.BLACK + I18n.format("pneumaticcraft.gui.tooltip.maxUsage", te.getAirRate()));
     }
 
     @Override
     public void addProblems(List<String> curInfo) {
         super.addProblems(curInfo);
         if (te.getEfficiency() < 100) {
-            curInfo.add(I18n.format("gui.tab.problems.advancedAirCompressor.efficiency", te.getEfficiency() + "%%"));
+            curInfo.add(I18n.format("pneumaticcraft.gui.tab.problems.advancedAirCompressor.efficiency", te.getEfficiency() + "%%"));
         }
     }
 }

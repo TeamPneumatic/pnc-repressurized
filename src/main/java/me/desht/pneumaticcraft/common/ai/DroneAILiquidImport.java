@@ -32,7 +32,7 @@ public class DroneAILiquidImport<W extends ProgWidgetInventoryBase & ILiquidFilt
 
     private boolean emptyTank(BlockPos pos, boolean simulate) {
         if (drone.getFluidTank().getFluidAmount() == drone.getFluidTank().getCapacity()) {
-            drone.addDebugEntry("gui.progWidget.liquidImport.debug.fullDroneTank");
+            drone.addDebugEntry("pneumaticcraft.gui.progWidget.liquidImport.debug.fullDroneTank");
             abort();
             return false;
         } else {
@@ -47,7 +47,7 @@ public class DroneAILiquidImport<W extends ProgWidgetInventoryBase & ILiquidFilt
                     }
                 }
                 if (didWork) return true;
-                drone.addDebugEntry("gui.progWidget.liquidImport.debug.emptiedToMax", pos);
+                drone.addDebugEntry("pneumaticcraft.gui.progWidget.liquidImport.debug.emptiedToMax", pos);
             }
 
             // try to pick up a bucket of fluid from the world

@@ -4,10 +4,10 @@
       "item": "pneumaticcraft:pcb_blueprint"
     },
     "title": {
-      "translate": "achievement.pcbBlueprint"
+      "translate": "pneumaticcraft.achievement.pcbBlueprint"
     },
     "description": {
-      "translate": "achievement.pcbBlueprint.desc"
+      "translate": "pneumaticcraft.achievement.pcbBlueprint.desc"
     }
   },
   "parent": "pneumaticcraft:amadron_tablet",

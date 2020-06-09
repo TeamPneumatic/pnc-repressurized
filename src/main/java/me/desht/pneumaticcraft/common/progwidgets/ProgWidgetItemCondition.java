@@ -27,10 +27,10 @@ public class ProgWidgetItemCondition extends ProgWidgetConditionBase {
     public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
         if (getConnectedParameters()[0] == null && getConnectedParameters()[3] == null) {
-            curInfo.add(xlate("gui.progWidget.conditionItem.error.noCheckingItem"));
+            curInfo.add(xlate("pneumaticcraft.gui.progWidget.conditionItem.error.noCheckingItem"));
         }
         if (getConnectedParameters()[1] == null && getConnectedParameters()[4] == null) {
-            curInfo.add(xlate("gui.progWidget.conditionItem.error.noFilter"));
+            curInfo.add(xlate("pneumaticcraft.gui.progWidget.conditionItem.error.noFilter"));
         }
     }
 

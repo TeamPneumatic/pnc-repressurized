@@ -85,8 +85,8 @@ public class PneumaticProvider {
         private void addTipToMachine(List<ITextComponent> tooltip, MachineAirHandler airHandler, float pressure) {
             Map<String, String> values = new HashMap<>();
 
-            values.put("gui.tooltip.pressure", PneumaticCraftUtils.roundNumberTo(pressure, 1));
-            values.put("gui.tooltip.maxPressure", PneumaticCraftUtils.roundNumberTo(airHandler.getDangerPressure(), 1));
+            values.put("pneumaticcraft.gui.tooltip.pressure", PneumaticCraftUtils.roundNumberTo(pressure, 1));
+            values.put("pneumaticcraft.gui.tooltip.maxPressure", PneumaticCraftUtils.roundNumberTo(airHandler.getDangerPressure(), 1));
 
             for (Map.Entry<String, String> entry : values.entrySet()) {
                 tooltip.add(new TranslationTextComponent(entry.getKey(), entry.getValue()));

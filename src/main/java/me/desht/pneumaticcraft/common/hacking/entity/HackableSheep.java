@@ -26,12 +26,12 @@ public class HackableSheep implements IHackableEntity {
 
     @Override
     public void addHackInfo(Entity entity, List<String> curInfo, PlayerEntity player) {
-        curInfo.add("pneumaticHelmet.hacking.result.changeColor");
+        curInfo.add("pneumaticcraft.armor.hacking.result.changeColor");
     }
 
     @Override
     public void addPostHackInfo(Entity entity, List<String> curInfo, PlayerEntity player) {
-        curInfo.add("pneumaticHelmet.hacking.finished.changeColor");
+        curInfo.add("pneumaticcraft.armor.hacking.finished.changeColor");
     }
 
     @Override

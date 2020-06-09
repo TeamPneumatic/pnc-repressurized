@@ -92,13 +92,13 @@ public class ItemGunAmmoStandard extends ItemGunAmmo {
             potion.getItem().addInformation(potion, world, potionInfo, extraInfo);
             String extra = "";
             if (potion.getItem() instanceof SplashPotionItem) {
-                extra = " " + I18n.format("gui.tooltip.gunAmmo.splash");
+                extra = " " + I18n.format("pneumaticcraft.gui.tooltip.gunAmmo.splash");
             } else if (potion.getItem() instanceof LingeringPotionItem) {
-                extra = " " + I18n.format("gui.tooltip.gunAmmo.lingering");
+                extra = " " + I18n.format("pneumaticcraft.gui.tooltip.gunAmmo.lingering");
             }
-            infoList.add(xlate("gui.tooltip.gunAmmo").appendText(" " + potionInfo.get(0).getFormattedText() + extra));
+            infoList.add(xlate("pneumaticcraft.gui.tooltip.gunAmmo").appendText(" " + potionInfo.get(0).getFormattedText() + extra));
         } else {
-            infoList.add(xlate("gui.tooltip.gunAmmo.combineWithPotion"));
+            infoList.add(xlate("pneumaticcraft.gui.tooltip.gunAmmo.combineWithPotion"));
         }
     }
 

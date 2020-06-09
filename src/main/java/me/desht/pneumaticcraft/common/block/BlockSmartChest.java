@@ -78,11 +78,11 @@ public class BlockSmartChest extends BlockPneumaticCraft {
                 CompoundNBT subTag = tag.getCompound("Items");
                 ListNBT l = subTag.getList("Filter", Constants.NBT.TAG_COMPOUND);
                 if (!l.isEmpty()) {
-                    tooltip.add(xlate("gui.tooltip.smartChest.filter", l.size()));
+                    tooltip.add(xlate("pneumaticcraft.gui.tooltip.smartChest.filter", l.size()));
                 }
                 int lastSlot = subTag.getInt("LastSlot");
                 if (lastSlot < TileEntitySmartChest.CHEST_SIZE) {
-                    tooltip.add(xlate("gui.tooltip.smartChest.slotsClosed", TileEntitySmartChest.CHEST_SIZE - lastSlot));
+                    tooltip.add(xlate("pneumaticcraft.gui.tooltip.smartChest.slotsClosed", TileEntitySmartChest.CHEST_SIZE - lastSlot));
                 }
             }
         }

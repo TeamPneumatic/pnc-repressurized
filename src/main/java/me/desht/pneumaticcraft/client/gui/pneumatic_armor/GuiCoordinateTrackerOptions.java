@@ -80,13 +80,13 @@ public class GuiCoordinateTrackerOptions extends IOptionPage.SimpleToggleableOpt
         mc.setGameFocused(true);
         switch (coordHandler.navigateToSurface(mc.player)) {
             case EASY_PATH:
-                HUDHandler.instance().addMessage(new ArmorMessage(I18n.format("pneumaticHelmet.message.coordinateTracker.routeFound"), new ArrayList<>(), 90, 0x7000AA00));
+                HUDHandler.instance().addMessage(new ArmorMessage(I18n.format("pneumaticcraft.armor.message.coordinateTracker.routeFound"), new ArrayList<>(), 90, 0x7000AA00));
                 break;
             case DRONE_PATH:
-                HUDHandler.instance().addMessage(new ArmorMessage(I18n.format("pneumaticHelmet.message.coordinateTracker.harderRouteFound"), new ArrayList<>(), 90, 0x7044AA00));
+                HUDHandler.instance().addMessage(new ArmorMessage(I18n.format("pneumaticcraft.armor.message.coordinateTracker.harderRouteFound"), new ArrayList<>(), 90, 0x7044AA00));
                 break;
             case NO_PATH:
-                HUDHandler.instance().addMessage(new ArmorMessage(I18n.format("pneumaticHelmet.message.coordinateTracker.noRouteFound"), new ArrayList<>(), 90, 0x70FF0000));
+                HUDHandler.instance().addMessage(new ArmorMessage(I18n.format("pneumaticcraft.armor.message.coordinateTracker.noRouteFound"), new ArrayList<>(), 90, 0x70FF0000));
                 break;
         }
     }

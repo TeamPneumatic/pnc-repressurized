@@ -56,11 +56,11 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
         // GPS buttons
         WidgetButtonExtended gpsButton1 = new WidgetButtonExtended(guiLeft + (advancedMode ? 6 : 55), guiTop + 30, 20, 20, "", b -> openInvSearchGUI(0))
                 .setRenderStacks(new ItemStack(ModItems.GPS_TOOL.get()))
-                .setTooltipText(I18n.format("gui.progWidget.area.selectGPS1"));
+                .setTooltipText(I18n.format("pneumaticcraft.gui.progWidget.area.selectGPS1"));
         addButton(gpsButton1);
         WidgetButtonExtended gpsButton2 = new WidgetButtonExtended(guiLeft + (advancedMode ? 133 : 182), guiTop + 30, 20, 20, "", b -> openInvSearchGUI(1))
                 .setRenderStacks(new ItemStack(ModItems.GPS_TOOL.get()))
-                .setTooltipText(I18n.format("gui.progWidget.area.selectGPS2"));
+                .setTooltipText(I18n.format("pneumaticcraft.gui.progWidget.area.selectGPS2"));
         addButton(gpsButton2);
 
         // variable textfields
@@ -77,7 +77,7 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
         }
 
         // type selector radio buttons
-        addLabel(I18n.format("gui.progWidget.area.type"), guiLeft + 8, guiTop + 88);
+        addLabel(I18n.format("pneumaticcraft.gui.progWidget.area.type"), guiLeft + 8, guiTop + 88);
         final int widgetsPerColumn = 5;
         List<WidgetRadioButton> radioButtons = new ArrayList<>();
         for (int i = 0; i < allAreaTypes.size(); i++) {

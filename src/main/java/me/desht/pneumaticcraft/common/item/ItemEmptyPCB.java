@@ -33,14 +33,14 @@ public class ItemEmptyPCB extends ItemNonDespawning implements ICustomDurability
         int etchProgress = getEtchProgress(stack);
 
         if (etchProgress > 0) {
-            infoList.add(xlate("gui.tooltip.item.uvLightBox.etchProgress", etchProgress));
+            infoList.add(xlate("pneumaticcraft.gui.tooltip.item.uvLightBox.etchProgress", etchProgress));
         }
-        infoList.add(xlate("gui.tooltip.item.uvLightBox.successChance", uvProgress));
+        infoList.add(xlate("pneumaticcraft.gui.tooltip.item.uvLightBox.successChance", uvProgress));
         if (uvProgress < 100 && etchProgress == 0) {
-            infoList.add(xlate("gui.tooltip.item.uvLightBox.putInLightBox").applyTextStyle(TextFormatting.GRAY));
+            infoList.add(xlate("pneumaticcraft.gui.tooltip.item.uvLightBox.putInLightBox").applyTextStyle(TextFormatting.GRAY));
         }
         if (uvProgress > 0) {
-            infoList.add(xlate("gui.tooltip.item.uvLightBox.putInAcid").applyTextStyle(TextFormatting.GRAY));
+            infoList.add(xlate("pneumaticcraft.gui.tooltip.item.uvLightBox.putInAcid").applyTextStyle(TextFormatting.GRAY));
         }
     }
 

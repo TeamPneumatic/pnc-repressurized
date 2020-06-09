@@ -36,7 +36,7 @@ public class ProcessorAssemblySystem implements IComponentProcessor {
             case "name":
                 return recipe.getOutput().getDisplayName().getFormattedText();
             case "desc":
-                return I18n.format("patchouli.processor.assembly.desc",
+                return I18n.format("pneumaticcraft.patchouli.processor.assembly.desc",
                         recipe.getOutput().getDisplayName().getFormattedText(),
                         programStack.getDisplayName().getFormattedText()
                 );

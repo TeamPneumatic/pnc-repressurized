@@ -40,7 +40,7 @@ public class PacketCommandGetGlobalVariableOutput extends LocationIntPacket {
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> ClientUtils.getClientPlayer().sendStatusMessage(xlate("command.getGlobalVariable.output",
+        ctx.get().enqueueWork(() -> ClientUtils.getClientPlayer().sendStatusMessage(xlate("pneumaticcraft.command.getGlobalVariable.output",
                         varName,
                         pos.getX(), pos.getY(), pos.getZ(),
                         stack.isEmpty() ? "-" : stack.getDisplayName().getFormattedText()),

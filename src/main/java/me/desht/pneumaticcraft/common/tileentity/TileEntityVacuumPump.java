@@ -142,7 +142,7 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements IRe
     public void printManometerMessage(PlayerEntity player, List<ITextComponent> curInfo) {
         String input = PneumaticCraftUtils.roundNumberTo(airHandler.getPressure(), 1);
         String vac = PneumaticCraftUtils.roundNumberTo(vacuumHandler.getPressure(), 1);
-        curInfo.add(xlate("message.vacuum_pump.manometer", input, vac).applyTextStyle(TextFormatting.GREEN));
+        curInfo.add(xlate("pneumaticcraft.message.vacuum_pump.manometer", input, vac).applyTextStyle(TextFormatting.GREEN));
     }
 
     @Override

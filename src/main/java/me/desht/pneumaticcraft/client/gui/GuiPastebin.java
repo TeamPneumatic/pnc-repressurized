@@ -70,14 +70,14 @@ public class GuiPastebin extends GuiPneumaticScreenBase {
             passwordBox = new WidgetTextField(font, guiLeft + 10, guiTop + 56, 80, 10).setAsPasswordBox();
             addButton(passwordBox);
 
-            WidgetButtonExtended loginButton = new WidgetButtonExtended(guiLeft + 100, guiTop + 30, 60, 20, I18n.format("gui.pastebin.button.login"), b -> login());
+            WidgetButtonExtended loginButton = new WidgetButtonExtended(guiLeft + 100, guiTop + 30, 60, 20, I18n.format("pneumaticcraft.gui.pastebin.button.login"), b -> login());
             loginButton.setTooltipText("Pastebin login is optional");
             addButton(loginButton);
 
-            addLabel(I18n.format("gui.pastebin.username"), guiLeft + 10, guiTop + 20);
-            addLabel(I18n.format("gui.pastebin.password"), guiLeft + 10, guiTop + 46);
+            addLabel(I18n.format("pneumaticcraft.gui.pastebin.username"), guiLeft + 10, guiTop + 20);
+            addLabel(I18n.format("pneumaticcraft.gui.pastebin.password"), guiLeft + 10, guiTop + 46);
         } else {
-            WidgetButtonExtended logoutButton = new WidgetButtonExtended(guiLeft + 60, guiTop + 30, 60, 20, I18n.format("gui.pastebin.button.logout"), b -> logout());
+            WidgetButtonExtended logoutButton = new WidgetButtonExtended(guiLeft + 60, guiTop + 30, 60, 20, I18n.format("pneumaticcraft.gui.pastebin.button.logout"), b -> logout());
             addButton(logoutButton);
         }
 
@@ -93,39 +93,39 @@ public class GuiPastebin extends GuiPneumaticScreenBase {
         };
         addButton(pastebinBox);
 
-        WidgetButtonExtended pasteButton = new WidgetButtonExtended(guiLeft + 31, guiTop + 78, 120, 20, I18n.format("gui.pastebin.button.upload"), b -> sendToPastebin());
+        WidgetButtonExtended pasteButton = new WidgetButtonExtended(guiLeft + 31, guiTop + 78, 120, 20, I18n.format("pneumaticcraft.gui.pastebin.button.upload"), b -> sendToPastebin());
         addButton(pasteButton);
-        WidgetButtonExtended getButton = new WidgetButtonExtended(guiLeft + 31, guiTop + 167, 120, 20, I18n.format("gui.pastebin.button.get"), b -> getFromPastebin());
+        WidgetButtonExtended getButton = new WidgetButtonExtended(guiLeft + 31, guiTop + 167, 120, 20, I18n.format("pneumaticcraft.gui.pastebin.button.get"), b -> getFromPastebin());
         addButton(getButton);
 
         WidgetButtonExtended putInClipBoard = new WidgetButtonExtended(guiLeft + 8, guiTop + 78, 20, 20, "", b -> putToClipboard());
         putInClipBoard.setRenderedIcon(Textures.GUI_COPY_ICON_LOCATION);
-        putInClipBoard.setTooltipText(I18n.format("gui.pastebin.button.copyToClipboard"));
+        putInClipBoard.setTooltipText(I18n.format("pneumaticcraft.gui.pastebin.button.copyToClipboard"));
         addButton(putInClipBoard);
         WidgetButtonExtended retrieveFromClipboard = new WidgetButtonExtended(guiLeft + 8, guiTop + 167, 20, 20, "", b -> getFromClipboard());
         retrieveFromClipboard.setRenderedIcon(Textures.GUI_PASTE_ICON_LOCATION);
-        retrieveFromClipboard.setTooltipText(I18n.format("gui.pastebin.button.loadFromClipboard"));
+        retrieveFromClipboard.setTooltipText(I18n.format("pneumaticcraft.gui.pastebin.button.loadFromClipboard"));
         addButton(retrieveFromClipboard);
 
-        prettyCB = new WidgetCheckBox(0, guiTop + 102, 0xFF404040, I18n.format("gui.pastebin.pretty"),
+        prettyCB = new WidgetCheckBox(0, guiTop + 102, 0xFF404040, I18n.format("pneumaticcraft.gui.pastebin.pretty"),
                 b -> shouldMerge = b.checked);
         prettyCB.x = guiLeft + (170 - prettyCB.getWidth());
-        prettyCB.setTooltip(PneumaticCraftUtils.splitString(I18n.format("gui.pastebin.pretty.tooltip")));
+        prettyCB.setTooltip(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.pastebin.pretty.tooltip")));
         addButton(prettyCB);
 
-        WidgetCheckBox mergeCB = new WidgetCheckBox(0, guiTop + 155, 0xFF404040, I18n.format("gui.pastebin.merge"),
+        WidgetCheckBox mergeCB = new WidgetCheckBox(0, guiTop + 155, 0xFF404040, I18n.format("pneumaticcraft.gui.pastebin.merge"),
                 b -> shouldMerge = b.checked);
         mergeCB.x = guiLeft + (170 - mergeCB.getWidth());
-        mergeCB.setTooltip(PneumaticCraftUtils.splitString(I18n.format("gui.pastebin.merge.tooltip")));
+        mergeCB.setTooltip(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.pastebin.merge.tooltip")));
         addButton(mergeCB);
 
-        addLabel(I18n.format("gui.pastebin.pastebinLink"), guiLeft + 10, guiTop + 120);
+        addLabel(I18n.format("pneumaticcraft.gui.pastebin.pastebinLink"), guiLeft + 10, guiTop + 120);
     }
 
     private void login() {
         PastebinHandler.login(usernameBox.getText(), passwordBox.getText());
         state = EnumState.LOGIN;
-        statusMessage = I18n.format("gui.pastebin.loggingIn");
+        statusMessage = I18n.format("pneumaticcraft.gui.pastebin.loggingIn");
     }
 
     private void logout() {
@@ -136,23 +136,23 @@ public class GuiPastebin extends GuiPneumaticScreenBase {
     private void sendToPastebin() {
         PastebinHandler.put(new NBTToJsonConverter(pastingNBT).convert(prettyCB.checked));
         state = EnumState.PUTTING;
-        statusMessage = I18n.format("gui.pastebin.uploadingToPastebin");
+        statusMessage = I18n.format("pneumaticcraft.gui.pastebin.uploadingToPastebin");
     }
 
     private void getFromPastebin() {
         PastebinHandler.get(pastebinBox.getText());
         state = EnumState.GETTING;
-        statusMessage = I18n.format("gui.pastebin.retrievingFromPastebin");
+        statusMessage = I18n.format("pneumaticcraft.gui.pastebin.retrievingFromPastebin");
     }
 
     private void putToClipboard() {
         minecraft.keyboardListener.setClipboardString(new NBTToJsonConverter(pastingNBT).convert(prettyCB.checked));
-        statusMessage = I18n.format("gui.pastebin.clipboardSetToContents");
+        statusMessage = I18n.format("pneumaticcraft.gui.pastebin.clipboardSetToContents");
     }
 
     private void getFromClipboard() {
         readFromString(minecraft.keyboardListener.getClipboardString());
-        statusMessage = I18n.format("gui.pastebin.retrievedFromClipboard");
+        statusMessage = I18n.format("pneumaticcraft.gui.pastebin.retrievedFromClipboard");
     }
 
     @Override
@@ -172,7 +172,7 @@ public class GuiPastebin extends GuiPneumaticScreenBase {
                     if (pastebinText != null) {
                         readFromString(pastebinText);
                     } else {
-                        statusMessage = I18n.format("gui.pastebin.invalidPastebin");
+                        statusMessage = I18n.format("pneumaticcraft.gui.pastebin.invalidPastebin");
                     }
                     break;
                 case PUTTING:
@@ -183,7 +183,7 @@ public class GuiPastebin extends GuiPneumaticScreenBase {
                         if (pastebinText == null) pastebinText = "<ERROR>";
                         if (pastebinText.contains("pastebin.com")) {
                             pastebinBox.setText(pastebinText);
-                            setTempMessage(I18n.format("gui.pastebin.uploadedToPastebin"));
+                            setTempMessage(I18n.format("pneumaticcraft.gui.pastebin.uploadedToPastebin"));
                         } else {
                             statusMessage = pastebinText;
                         }
@@ -191,7 +191,7 @@ public class GuiPastebin extends GuiPneumaticScreenBase {
                     break;
                 case LOGIN:
                     if (!PastebinHandler.isLoggedIn()) {
-                        statusMessage = I18n.format("gui.pastebin.invalidLogin");
+                        statusMessage = I18n.format("pneumaticcraft.gui.pastebin.invalidLogin");
                     }
                     init();
             }
@@ -213,10 +213,10 @@ public class GuiPastebin extends GuiPneumaticScreenBase {
             if (outputTag.contains("widgets")) {
                 doLegacyConversion(outputTag);
             }
-            setTempMessage(I18n.format("gui.pastebin.retrievedFromPastebin"));
+            setTempMessage(I18n.format("pneumaticcraft.gui.pastebin.retrievedFromPastebin"));
         } catch (Exception e) {
             e.printStackTrace();
-            statusMessage = I18n.format("gui.pastebin.invalidFormattedPastebin");
+            statusMessage = I18n.format("pneumaticcraft.gui.pastebin.invalidFormattedPastebin");
         }
     }
 

@@ -41,8 +41,8 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase i
     private static Block CHISELED_BARS = null;
 
     private static final List<String> REDSTONE_LABELS = ImmutableList.of(
-            "gui.tab.redstoneBehaviour.button.never",
-            "gui.tab.redstoneBehaviour.electrostaticCompressor.button.struckByLightning"
+            "pneumaticcraft.gui.tab.redstoneBehaviour.button.never",
+            "pneumaticcraft.gui.tab.redstoneBehaviour.electrostaticCompressor.button.struckByLightning"
     );
     private static final int MAX_ELECTROSTATIC_GRID_SIZE = 250;
     private static final int MAX_BARS_ABOVE = 10;

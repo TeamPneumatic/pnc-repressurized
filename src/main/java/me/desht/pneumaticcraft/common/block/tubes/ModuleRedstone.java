@@ -237,15 +237,15 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
     public void addInfo(List<ITextComponent> curInfo) {
         super.addInfo(curInfo);
         if (getRedstoneDirection() == EnumRedstoneDirection.INPUT) {
-            curInfo.add(PneumaticCraftUtils.xlate("waila.redstoneModule.receiving", inputLevel));
+            curInfo.add(PneumaticCraftUtils.xlate("pneumaticcraft.waila.redstoneModule.receiving", inputLevel));
         } else {
-            curInfo.add(PneumaticCraftUtils.xlate("waila.redstoneModule.emitting", outputLevel));
+            curInfo.add(PneumaticCraftUtils.xlate("pneumaticcraft.waila.redstoneModule.emitting", outputLevel));
             if (upgraded) addAdvancedInfo(curInfo);
         }
     }
 
     private void addAdvancedInfo(List<ITextComponent> curInfo) {
-        ITextComponent s = new TranslationTextComponent("waila.redstoneModule.op", PneumaticCraftUtils.xlate(operation.getTranslationKey()));
+        ITextComponent s = new TranslationTextComponent("pneumaticcraft.waila.redstoneModule.op", PneumaticCraftUtils.xlate(operation.getTranslationKey()));
         if (operation.useOtherColor) {
             s = s.appendText(" (").appendSibling(PneumaticCraftUtils.xlate(PneumaticCraftUtils.dyeColorDesc(otherColor)).appendText(")"));
         }
@@ -253,7 +253,7 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
             s = s.appendText(" (" + constantVal + ")");
         }
         curInfo.add(s);
-        if (inverted) curInfo.add(PneumaticCraftUtils.xlate("waila.redstoneModule.inverted"));
+        if (inverted) curInfo.add(PneumaticCraftUtils.xlate("pneumaticcraft.waila.redstoneModule.inverted"));
     }
 
     @Override
@@ -328,7 +328,7 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
         }
 
         public String getTranslationKey() {
-            return "gui.redstoneModule." + toString().toLowerCase();
+            return "pneumaticcraft.gui.redstoneModule." + toString().toLowerCase();
         }
     }
 
@@ -354,7 +354,7 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
         }
 
         public String getTranslationKey() {
-            return "gui.redstoneModule.operation_" + this.toString().toLowerCase();
+            return "pneumaticcraft.gui.redstoneModule.operation_" + this.toString().toLowerCase();
         }
 
         public boolean useOtherColor() {

@@ -4,10 +4,10 @@
       "item": "pneumaticcraft:entity_tracker_upgrade"
     },
     "title": {
-      "translate": "achievement.entityHack"
+      "translate": "pneumaticcraft.achievement.entityHack"
     },
     "description": {
-      "translate": "achievement.entityHack.desc"
+      "translate": "pneumaticcraft.achievement.entityHack.desc"
     }
   },
   "parent": "pneumaticcraft:pneumatic_armor",

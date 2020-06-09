@@ -180,7 +180,7 @@ public interface IProgWidget extends IProgWidgetBase {
         }
 
         public String getTranslationKey() {
-            return I18n.format("gui.progWidget.difficulty." + name);
+            return I18n.format("pneumaticcraft.gui.progWidget.difficulty." + name);
         }
     }
 

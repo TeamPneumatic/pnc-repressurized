@@ -40,14 +40,14 @@ public class GuiProgWidgetCoordinate extends GuiProgWidgetAreaShow<ProgWidgetCoo
         List<WidgetRadioButton> radioButtons = new ArrayList<>();
 
         WidgetRadioButton radioButton = new WidgetRadioButton(guiLeft + 7, guiTop + 51, 0xFF404040,
-                I18n.format("gui.progWidget.coordinate.constant"), b -> setUsingVariable(false));
+                I18n.format("pneumaticcraft.gui.progWidget.coordinate.constant"), b -> setUsingVariable(false));
         if (!progWidget.isUsingVariable()) radioButton.checked = true;
         radioButtons.add(radioButton);
         radioButton.otherChoices = radioButtons;
         addButton(radioButton);
 
         radioButton = new WidgetRadioButton(guiLeft + 7, guiTop + 100, 0xFF404040,
-                I18n.format("gui.progWidget.coordinate.variable"), b -> setUsingVariable(true));
+                I18n.format("pneumaticcraft.gui.progWidget.coordinate.variable"), b -> setUsingVariable(true));
         if (progWidget.isUsingVariable()) radioButton.checked = true;
         radioButtons.add(radioButton);
         radioButton.otherChoices = radioButtons;
@@ -55,7 +55,7 @@ public class GuiProgWidgetCoordinate extends GuiProgWidgetAreaShow<ProgWidgetCoo
 
         gpsButton = new WidgetButtonExtended(guiLeft + 100, guiTop + 20, 20, 20, "", b -> openGPSSearcher());
         gpsButton.setRenderStacks(new ItemStack(ModItems.GPS_TOOL.get()));
-        gpsButton.setTooltipText(I18n.format("gui.progWidget.coordinate.selectFromGPS"));
+        gpsButton.setTooltipText(I18n.format("pneumaticcraft.gui.progWidget.coordinate.selectFromGPS"));
         gpsButton.active = !progWidget.isUsingVariable();
         addButton(gpsButton);
         coordFields = new WidgetTextFieldNumber[3];
@@ -111,6 +111,6 @@ public class GuiProgWidgetCoordinate extends GuiProgWidgetAreaShow<ProgWidgetCoo
         font.drawString("x:", guiLeft + 90, guiTop + 51, 0xFF404040);
         font.drawString("y:", guiLeft + 90, guiTop + 64, 0xFF404040);
         font.drawString("z:", guiLeft + 90, guiTop + 77, 0xFF404040);
-        font.drawString(I18n.format("gui.progWidget.coordinate.variableName"), guiLeft + 90, guiTop + 100, 0xFF404060);
+        font.drawString(I18n.format("pneumaticcraft.gui.progWidget.coordinate.variableName"), guiLeft + 90, guiTop + 100, 0xFF404060);
     }
 }

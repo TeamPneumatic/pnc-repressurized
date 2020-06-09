@@ -70,13 +70,13 @@ public class HeatUtil {
     }
 
     public static ITextComponent formatHeatString(String temp) {
-        return PneumaticCraftUtils.xlate("waila.temperature")
+        return PneumaticCraftUtils.xlate("pneumaticcraft.waila.temperature")
                 .appendText(TextFormatting.WHITE.toString() + temp)
                 .applyTextStyles(TextFormatting.GRAY);
     }
 
     public static ITextComponent formatHeatString(Direction face, String temp) {
-        return PneumaticCraftUtils.xlate("waila.temperature." + face.toString().toLowerCase())
+        return PneumaticCraftUtils.xlate("pneumaticcraft.waila.temperature." + face.toString().toLowerCase())
                 .appendText(TextFormatting.WHITE.toString() + temp)
                 .applyTextStyles(TextFormatting.GRAY);
     }

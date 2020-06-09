@@ -60,7 +60,7 @@ public class GuiThermalCompressor extends GuiPneumaticContainerBase<ContainerThe
 
         double prod = te.airProduced(Direction.NORTH) + te.airProduced(Direction.EAST);
         if (prod > 0 && redstoneAllows) {
-            pressureStatText.add(TextFormatting.BLACK + I18n.format("gui.tooltip.producingAir",
+            pressureStatText.add(TextFormatting.BLACK + I18n.format("pneumaticcraft.gui.tooltip.producingAir",
                     PneumaticCraftUtils.roundNumberTo(prod, 1)));
         }
     }
@@ -70,7 +70,7 @@ public class GuiThermalCompressor extends GuiPneumaticContainerBase<ContainerThe
         super.addProblems(curInfo);
 
         if (getTemperatureDifferential(Direction.NORTH) < 10 && getTemperatureDifferential(Direction.EAST) < 10) {
-            curInfo.add(I18n.format("gui.tab.problems.thermal_compressor.no_temp_diff"));
+            curInfo.add(I18n.format("pneumaticcraft.gui.tab.problems.thermal_compressor.no_temp_diff"));
         }
     }
 
@@ -81,7 +81,7 @@ public class GuiThermalCompressor extends GuiPneumaticContainerBase<ContainerThe
         int dns = getTemperatureDifferential(Direction.NORTH);
         int dew = getTemperatureDifferential(Direction.EAST);
         if ((dns < 20 && (dew >= 10 && dew < 20)) || (dew < 20 && (dns >= 10 && dns < 20))) {
-            curInfo.add(I18n.format("gui.tab.problems.thermal_compressor.poor_temp_diff"));
+            curInfo.add(I18n.format("pneumaticcraft.gui.tab.problems.thermal_compressor.poor_temp_diff"));
         }
     }
 

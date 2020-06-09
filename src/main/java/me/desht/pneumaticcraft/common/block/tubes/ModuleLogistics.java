@@ -281,15 +281,15 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
         super.addInfo(curInfo);
         String status;
         if (ticksSinceAction >= 0) {
-            status = "waila.logisticsModule.transporting";
+            status = "pneumaticcraft.waila.logisticsModule.transporting";
         } else if (ticksSinceNotEnoughAir >= 0) {
-            status = "waila.logisticsModule.notEnoughAir";
+            status = "pneumaticcraft.waila.logisticsModule.notEnoughAir";
         } else if (hasPower()) {
-            status = "waila.logisticsModule.powered";
+            status = "pneumaticcraft.waila.logisticsModule.powered";
         } else {
-            status = "waila.logisticsModule.noPower";
+            status = "pneumaticcraft.waila.logisticsModule.noPower";
         }
-        curInfo.add(PneumaticCraftUtils.xlate("hud.msg.state").appendText(": ").appendSibling(PneumaticCraftUtils.xlate(status)));
+        curInfo.add(PneumaticCraftUtils.xlate("pneumaticcraft.hud.msg.state").appendText(": ").appendSibling(PneumaticCraftUtils.xlate(status)));
     }
 
     @Override

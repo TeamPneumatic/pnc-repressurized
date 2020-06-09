@@ -46,7 +46,7 @@ public class PacketAmadronTradeNotifyDeal extends PacketAbstractAmadronTrade {
         ctx.get().enqueueWork(() -> {
             if (PNCConfig.Common.Amadron.notifyOfDealMade)
                 ClientUtils.getClientPlayer().sendStatusMessage(
-                        xlate("message.amadron.playerBought",
+                        xlate("pneumaticcraft.message.amadron.playerBought",
                                 buyingPlayer,
                                 offerAmount,
                                 getOffer().getOutput().toString(),

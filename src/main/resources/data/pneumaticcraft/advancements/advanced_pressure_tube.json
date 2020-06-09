@@ -4,10 +4,10 @@
       "item": "pneumaticcraft:advanced_pressure_tube"
     },
     "title": {
-      "translate": "achievement.advancedPressureTube"
+      "translate": "pneumaticcraft.achievement.advancedPressureTube"
     },
     "description": {
-      "translate": "achievement.advancedPressureTube.desc"
+      "translate": "pneumaticcraft.achievement.advancedPressureTube.desc"
     }
   },
   "parent": "pneumaticcraft:assembly_controller",

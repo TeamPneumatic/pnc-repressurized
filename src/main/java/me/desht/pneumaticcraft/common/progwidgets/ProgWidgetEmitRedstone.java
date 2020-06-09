@@ -53,13 +53,13 @@ public class ProgWidgetEmitRedstone extends ProgWidget implements IRedstoneEmiss
         for (boolean bool : accessingSides) {
             sideActive |= bool;
         }
-        if (!sideActive) curInfo.add(xlate("gui.progWidget.general.error.noSideActive"));
+        if (!sideActive) curInfo.add(xlate("pneumaticcraft.gui.progWidget.general.error.noSideActive"));
     }
 
     @Override
     public void getTooltip(List<ITextComponent> curTooltip) {
         super.getTooltip(curTooltip);
-        curTooltip.add(xlate("gui.progWidget.general.affectingSides"));
+        curTooltip.add(xlate("pneumaticcraft.gui.progWidget.general.affectingSides"));
         curTooltip.add(new StringTextComponent(getExtraStringInfo()));
     }
 

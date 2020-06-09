@@ -114,7 +114,7 @@ public class ClientEventHandler {
             Minecraft mc = Minecraft.getInstance();
             MainWindow mw = mc.getMainWindow();
             FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
-            String warning = TextFormatting.RED + I18n.format("gui.regulatorTube.hudMessage." + (ModuleRegulatorTube.inverted ? "inverted" : "notInLine"));
+            String warning = TextFormatting.RED + I18n.format("pneumaticcraft.gui.regulatorTube.hudMessage." + (ModuleRegulatorTube.inverted ? "inverted" : "notInLine"));
             fontRenderer.drawStringWithShadow(warning, mw.getScaledWidth() / 2f - fontRenderer.getStringWidth(warning) / 2f, mw.getScaledHeight() / 2f + 30, 0xFFFFFFFF);
         }
     }

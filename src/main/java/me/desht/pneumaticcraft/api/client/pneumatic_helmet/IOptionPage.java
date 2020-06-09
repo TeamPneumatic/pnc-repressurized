@@ -115,7 +115,7 @@ public interface IOptionPage {
 
         public SimpleToggleableOptions(IGuiScreen screen, T upgradeHandler) {
             this.screen = screen;
-            this.name = I18n.format("pneumaticHelmet.upgrade." + upgradeHandler.getUpgradeID());
+            this.name = I18n.format("pneumaticcraft.armor.upgrade." + upgradeHandler.getUpgradeID());
             this.upgradeHandler = upgradeHandler;
         }
 

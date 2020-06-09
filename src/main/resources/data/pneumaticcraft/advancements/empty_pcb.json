@@ -4,10 +4,10 @@
       "item": "pneumaticcraft:empty_pcb"
     },
     "title": {
-      "translate": "achievement.emptyPCB"
+      "translate": "pneumaticcraft.achievement.emptyPCB"
     },
     "description": {
-      "translate": "achievement.emptyPCB.desc"
+      "translate": "pneumaticcraft.achievement.emptyPCB.desc"
     }
   },
   "parent": "pneumaticcraft:etchacid_bucket",

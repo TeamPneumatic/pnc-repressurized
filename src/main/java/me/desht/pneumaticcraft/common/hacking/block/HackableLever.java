@@ -23,18 +23,18 @@ public class HackableLever implements IHackableBlock {
     @Override
     public void addInfo(IBlockReader world, BlockPos pos, List<String> curInfo, PlayerEntity player) {
         if (world.getBlockState(pos).get(LeverBlock.POWERED)) {
-            curInfo.add("pneumaticHelmet.hacking.result.deactivate");
+            curInfo.add("pneumaticcraft.armor.hacking.result.deactivate");
         } else {
-            curInfo.add("pneumaticHelmet.hacking.result.activate");
+            curInfo.add("pneumaticcraft.armor.hacking.result.activate");
         }
     }
 
     @Override
     public void addPostHackInfo(IBlockReader world, BlockPos pos, List<String> curInfo, PlayerEntity player) {
         if (world.getBlockState(pos).get(LeverBlock.POWERED)) {
-            curInfo.add("pneumaticHelmet.hacking.finished.activated");
+            curInfo.add("pneumaticcraft.armor.hacking.finished.activated");
         } else {
-            curInfo.add("pneumaticHelmet.hacking.finished.deactivated");
+            curInfo.add("pneumaticcraft.armor.hacking.finished.deactivated");
         }
     }
 

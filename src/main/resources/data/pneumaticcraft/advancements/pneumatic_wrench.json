@@ -4,10 +4,10 @@
       "item": "pneumaticcraft:pneumatic_wrench"
     },
     "title": {
-      "translate": "achievement.pneumaticWrench"
+      "translate": "pneumaticcraft.achievement.pneumaticWrench"
     },
     "description": {
-      "translate": "achievement.pneumaticWrench.desc"
+      "translate": "pneumaticcraft.achievement.pneumaticWrench.desc"
     }
   },
   "parent": "pneumaticcraft:pressure_tube",

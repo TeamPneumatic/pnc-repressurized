@@ -76,11 +76,11 @@ public class BlockSecurityStation extends BlockPneumaticCraft {
                     if (te.isPlayerOnWhiteList(player)) {
                         return super.onBlockActivated(state, world, pos, player, hand, brtr);
                     } else if (!te.hasValidNetwork()) {
-                        player.sendStatusMessage(PneumaticCraftUtils.xlate("message.securityStation.outOfOrder"), false);
+                        player.sendStatusMessage(PneumaticCraftUtils.xlate("pneumaticcraft.message.securityStation.outOfOrder"), false);
                     } else if (te.hasPlayerHacked(player)) {
-                        player.sendStatusMessage(PneumaticCraftUtils.xlate("message.securityStation.alreadyHacked"), false);
+                        player.sendStatusMessage(PneumaticCraftUtils.xlate("pneumaticcraft.message.securityStation.alreadyHacked"), false);
                     } else if (getPlayerHackLevel(player) < te.getSecurityLevel()) {
-                        player.sendStatusMessage(PneumaticCraftUtils.xlate("message.securityStation.cantHack", te.getSecurityLevel()), false);
+                        player.sendStatusMessage(PneumaticCraftUtils.xlate("pneumaticcraft.message.securityStation.cantHack", te.getSecurityLevel()), false);
                     } else {
                         // FIXME reimplement security station hacking
                         player.sendStatusMessage(new StringTextComponent("Sorry, but Security Station hacking is not yet implemented in this release of PneumaticCraft").applyTextStyle(TextFormatting.GOLD), false);

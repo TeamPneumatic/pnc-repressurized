@@ -30,6 +30,6 @@ public class GuiProgWidgetEmitRedstone extends GuiProgWidgetOptionBase<ProgWidge
     public void render(int mouseX, int mouseY, float partialTicks) {
         super.render(mouseX, mouseY, partialTicks);
 
-        font.drawString(I18n.format("gui.progWidget.general.affectingSides"), guiLeft + 8, guiTop + 20, 0xFF604040);
+        font.drawString(I18n.format("pneumaticcraft.gui.progWidget.general.affectingSides"), guiLeft + 8, guiTop + 20, 0xFF604040);
     }
 }

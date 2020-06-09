@@ -60,7 +60,7 @@ public class ItemManometer extends ItemPressurizable {
                 }
                 return ActionResultType.SUCCESS;
             } else {
-                player.sendStatusMessage(xlate("message.misc.outOfAir", stack.getDisplayName().getFormattedText()).applyTextStyles(TextFormatting.RED), true);
+                player.sendStatusMessage(xlate("pneumaticcraft.message.misc.outOfAir", stack.getDisplayName().getFormattedText()).applyTextStyles(TextFormatting.RED), true);
                 return ActionResultType.FAIL;
             }
         }).orElse(ActionResultType.PASS);
@@ -79,7 +79,7 @@ public class ItemManometer extends ItemPressurizable {
                             curInfo.forEach(s -> player.sendStatusMessage(s, false));
                         }
                     } else {
-                        player.sendStatusMessage(xlate("message.misc.outOfAir", iStack.getDisplayName().getFormattedText()).applyTextStyles(TextFormatting.RED), true);
+                        player.sendStatusMessage(xlate("pneumaticcraft.message.misc.outOfAir", iStack.getDisplayName().getFormattedText()).applyTextStyles(TextFormatting.RED), true);
                     }
                     return true;
                 }).orElse(false);

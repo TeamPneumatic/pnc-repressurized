@@ -48,20 +48,20 @@ public class PacketAmadronTradeAddCustom extends PacketAbstractAmadronTrade {
     private void handleServerSide(ServerPlayerEntity player, AmadronPlayerOffer offer) {
         offer.updatePlayerId();
         if (AmadronOfferManager.getInstance().hasSimilarPlayerOffer(offer.getReversedOffer())) {
-            player.sendStatusMessage(xlate("message.amadron.duplicateReversedOffer"), false);
+            player.sendStatusMessage(xlate("pneumaticcraft.message.amadron.duplicateReversedOffer"), false);
         } else if (AmadronOfferManager.getInstance().addPlayerOffer(offer)) {
             if (PNCConfig.Common.Amadron.notifyOfTradeAddition) {
                 NetworkHandler.sendToAll(this);
             }
         } else {
-            player.sendStatusMessage(xlate("message.amadron.duplicateOffer"), false);
+            player.sendStatusMessage(xlate("pneumaticcraft.message.amadron.duplicateOffer"), false);
         }
     }
 
     private void handleClientSide(AmadronPlayerOffer offer) {
         if (PNCConfig.Common.Amadron.notifyOfTradeAddition) {
             ClientUtils.getClientPlayer().sendStatusMessage(
-                    new TranslationTextComponent("message.amadron.playerAddedTrade",
+                    new TranslationTextComponent("pneumaticcraft.message.amadron.playerAddedTrade",
                             offer.getVendor(),
                             offer.getOutput().toString(),
                             offer.getInput().toString()

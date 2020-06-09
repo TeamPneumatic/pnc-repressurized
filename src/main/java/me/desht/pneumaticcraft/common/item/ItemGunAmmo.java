@@ -103,7 +103,7 @@ public abstract class ItemGunAmmo extends Item implements ColorHandlers.ITintabl
     @Override
     @OnlyIn(Dist.CLIENT)
     public void addInformation(ItemStack stack, World world, List<ITextComponent> infoList, ITooltipFlag extraInfo) {
-        infoList.add(xlate("gui.tooltip.gunAmmo.ammoRemaining", stack.getMaxDamage() - stack.getDamage(), stack.getMaxDamage()));
+        infoList.add(xlate("pneumaticcraft.gui.tooltip.gunAmmo.ammoRemaining", stack.getMaxDamage() - stack.getDamage(), stack.getMaxDamage()));
         super.addInformation(stack, world, infoList, extraInfo);
     }
 

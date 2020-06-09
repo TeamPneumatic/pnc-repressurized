@@ -66,20 +66,20 @@ public abstract class ItemLogisticsFrame extends ItemSemiBlock implements ColorH
             if (sneaking) {
                 CompoundNBT tag = stack.getTag().getCompound("EntityTag");
                 if (tag.getBoolean(EntityLogisticsFrame.NBT_INVISIBLE)) {
-                    curInfo.add(bullet().appendSibling(xlate("gui.logistics_frame.invisible")).applyTextStyle(TextFormatting.YELLOW));
+                    curInfo.add(bullet().appendSibling(xlate("pneumaticcraft.gui.logistics_frame.invisible")).applyTextStyle(TextFormatting.YELLOW));
                 }
                 if (tag.getBoolean(EntityLogisticsFrame.NBT_MATCH_DURABILITY)) {
-                    curInfo.add(bullet().appendSibling(xlate("gui.logistics_frame.matchDurability")).applyTextStyle(TextFormatting.YELLOW));
+                    curInfo.add(bullet().appendSibling(xlate("pneumaticcraft.gui.logistics_frame.matchDurability")).applyTextStyle(TextFormatting.YELLOW));
                 }
                 if (tag.getBoolean(EntityLogisticsFrame.NBT_MATCH_NBT)) {
-                    curInfo.add(bullet().appendSibling(xlate("gui.logistics_frame.matchNBT")).applyTextStyle(TextFormatting.YELLOW));
+                    curInfo.add(bullet().appendSibling(xlate("pneumaticcraft.gui.logistics_frame.matchNBT")).applyTextStyle(TextFormatting.YELLOW));
                 }
                 if (tag.getBoolean(EntityLogisticsFrame.NBT_MATCH_MODID)) {
-                    curInfo.add(bullet().appendSibling(xlate("gui.logistics_frame.matchModId")).applyTextStyle(TextFormatting.YELLOW));
+                    curInfo.add(bullet().appendSibling(xlate("pneumaticcraft.gui.logistics_frame.matchModId")).applyTextStyle(TextFormatting.YELLOW));
                 }
 
                 boolean whitelist = tag.getBoolean(EntityLogisticsFrame.NBT_WHITELIST);
-                curInfo.add(xlate("gui.logistics_frame." + (whitelist ? "whitelist" : "blacklist"))
+                curInfo.add(xlate("pneumaticcraft.gui.logistics_frame." + (whitelist ? "whitelist" : "blacklist"))
                         .appendText(":").applyTextStyle(TextFormatting.YELLOW));
 
                 ItemStackHandler handler = new ItemStackHandler();
@@ -90,7 +90,7 @@ public abstract class ItemLogisticsFrame extends ItemSemiBlock implements ColorH
                 }
                 int l = curInfo.size();
                 PneumaticCraftUtils.sortCombineItemStacksAndToString(curInfo, stacks, TextFormatting.YELLOW.toString() + GuiConstants.BULLET + " ");
-                if (curInfo.size() == l) curInfo.add(bullet().applyTextStyle(TextFormatting.YELLOW).appendSibling(xlate("gui.misc.no_items").applyTextStyles(TextFormatting.GOLD, TextFormatting.ITALIC)));
+                if (curInfo.size() == l) curInfo.add(bullet().applyTextStyle(TextFormatting.YELLOW).appendSibling(xlate("pneumaticcraft.gui.misc.no_items").applyTextStyles(TextFormatting.GOLD, TextFormatting.ITALIC)));
                 l = curInfo.size();
 
                 EntityLogisticsFrame.FluidFilter fluidFilter = new EntityLogisticsFrame.FluidFilter();
@@ -101,9 +101,9 @@ public abstract class ItemLogisticsFrame extends ItemSemiBlock implements ColorH
                         curInfo.add(bullet().appendText(fluid.getAmount() + "mB ").appendSibling(fluid.getDisplayName()).applyTextStyle(TextFormatting.YELLOW));
                     }
                 }
-                if (curInfo.size() == l) curInfo.add(bullet().applyTextStyle(TextFormatting.YELLOW).appendSibling(xlate("gui.misc.no_fluids").applyTextStyles(TextFormatting.GOLD, TextFormatting.ITALIC)));
+                if (curInfo.size() == l) curInfo.add(bullet().applyTextStyle(TextFormatting.YELLOW).appendSibling(xlate("pneumaticcraft.gui.misc.no_fluids").applyTextStyles(TextFormatting.GOLD, TextFormatting.ITALIC)));
             } else {
-                curInfo.add(xlate("gui.logistics_frame.hasFilters"));
+                curInfo.add(xlate("pneumaticcraft.gui.logistics_frame.hasFilters"));
             }
         }
     }

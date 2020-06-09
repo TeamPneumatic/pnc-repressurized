@@ -44,7 +44,7 @@ public class DroneEntityAIGoToLocation extends Goal {
             return true;
         } else {
             for (BlockPos c : validArea) {
-                drone.addDebugEntry("gui.progWidget.goto.debug.cantNavigate", c);
+                drone.addDebugEntry("pneumaticcraft.gui.progWidget.goto.debug.cantNavigate", c);
             }
             return false;
         }

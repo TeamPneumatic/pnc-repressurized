@@ -41,7 +41,7 @@ public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implem
     public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
         if (getConnectedParameters()[getParameters().size() - 1] == null && getConnectedParameters()[getParameters().size() * 2 - 1] == null) {
-            curInfo.add(xlate("gui.progWidget.condition.error.noFlowControl"));
+            curInfo.add(xlate("pneumaticcraft.gui.progWidget.condition.error.noFlowControl"));
         }
     }
 
@@ -50,9 +50,9 @@ public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implem
         if (evaluator != null) {
             boolean evaluation = evaluate(drone, this);
             if (evaluation) {
-                drone.addDebugEntry("gui.progWidget.condition.evaluatedTrue");
+                drone.addDebugEntry("pneumaticcraft.gui.progWidget.condition.evaluatedTrue");
             } else {
-                drone.addDebugEntry("gui.progWidget.condition.evaluatedFalse");
+                drone.addDebugEntry("pneumaticcraft.gui.progWidget.condition.evaluatedFalse");
             }
             return ProgWidgetJump.jumpToLabel(drone, allWidgets, this, evaluation);
         } else {
@@ -148,7 +148,7 @@ public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implem
 
     @Override
     public String getExtraStringInfo() {
-        String anyAll = I18n.format(isAndFunction() ? "gui.progWidget.condition.all" : "gui.progWidget.condition.any");
+        String anyAll = I18n.format(isAndFunction() ? "pneumaticcraft.gui.progWidget.condition.all" : "pneumaticcraft.gui.progWidget.condition.any");
         return anyAll + " " + getOperator().toString() + " " + getRequiredCount();
     }
 

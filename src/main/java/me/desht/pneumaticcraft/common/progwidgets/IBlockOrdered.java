@@ -12,7 +12,7 @@ public interface IBlockOrdered {
         }
 
         public String getLocalizedName() {
-            return I18n.format("gui.progWidget.blockOrder." + this);
+            return I18n.format("pneumaticcraft.gui.progWidget.blockOrder." + this);
         }
 
         @Override

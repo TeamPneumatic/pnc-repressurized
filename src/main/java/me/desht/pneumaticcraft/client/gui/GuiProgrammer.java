@@ -135,7 +135,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         int yBottom = getProgrammerBounds().getY() + getProgrammerBounds().getHeight() + 3; // 171 or 427
 
         importButton = new WidgetButtonExtended(xStart + xRight + 2, yStart + 3, 20, 15, GuiConstants.ARROW_LEFT).withTag("import");
-        importButton.setTooltipText(PneumaticCraftUtils.splitString(I18n.format("gui.programmer.button.import"), 40));
+        importButton.setTooltipText(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.programmer.button.import"), 40));
         addButton(importButton);
 
         exportButton = new WidgetButtonExtended(xStart + xRight + 2, yStart + 20, 20, 15, GuiConstants.ARROW_RIGHT).withTag("export");
@@ -145,7 +145,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         addButton(new WidgetButtonExtended(xStart + xRight + 34, yStart + yBottom, 13, 10, GuiConstants.TRIANGLE_RIGHT, b -> adjustPage(1)));
 
         allWidgetsButton = new WidgetButtonExtended(xStart + xRight + 22, yStart + yBottom - 16, 10, 10, GuiConstants.TRIANGLE_UP_LEFT, b -> toggleShowWidgets());
-        allWidgetsButton.setTooltipText(I18n.format("gui.programmer.button.openPanel.tooltip"));
+        allWidgetsButton.setTooltipText(I18n.format("pneumaticcraft.gui.programmer.button.openPanel.tooltip"));
         addButton(allWidgetsButton);
 
         difficultyButtons = new ArrayList<>();
@@ -156,23 +156,23 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
             addButton(dButton);
             difficultyButtons.add(dButton);
             dButton.otherChoices = difficultyButtons;
-            dButton.setTooltip(I18n.format("gui.programmer.difficulty." + difficulty.toString().toLowerCase() + ".tooltip"));
+            dButton.setTooltip(I18n.format("pneumaticcraft.gui.programmer.difficulty." + difficulty.toString().toLowerCase() + ".tooltip"));
         }
 
         addButton(new WidgetButtonExtended(xStart + 5, yStart + yBottom + 4, 87, 20,
-                I18n.format("gui.programmer.button.showStart"), b -> gotoStart())
-                .setTooltipText(I18n.format("gui.programmer.button.showStart.tooltip")));
+                I18n.format("pneumaticcraft.gui.programmer.button.showStart"), b -> gotoStart())
+                .setTooltipText(I18n.format("pneumaticcraft.gui.programmer.button.showStart.tooltip")));
         addButton(new WidgetButtonExtended(xStart + 5, yStart + yBottom + 26, 87, 20,
-                I18n.format("gui.programmer.button.showLatest"), b -> gotoLatest())
-                .setTooltipText(I18n.format("gui.programmer.button.showLatest.tooltip")));
+                I18n.format("pneumaticcraft.gui.programmer.button.showLatest"), b -> gotoLatest())
+                .setTooltipText(I18n.format("pneumaticcraft.gui.programmer.button.showLatest.tooltip")));
         addButton(showInfo = new WidgetCheckBox(xStart + 5, yStart + yBottom + 49, 0xFF404040,
-                "gui.programmer.checkbox.showInfo").setChecked(te.showInfo));
+                "pneumaticcraft.gui.programmer.checkbox.showInfo").setChecked(te.showInfo));
         addButton(showFlow = new WidgetCheckBox(xStart + 5, yStart + yBottom + 61, 0xFF404040,
-                "gui.programmer.checkbox.showFlow").setChecked(te.showFlow));
+                "pneumaticcraft.gui.programmer.checkbox.showFlow").setChecked(te.showFlow));
 
         WidgetButtonExtended pastebinButton = new WidgetButtonExtended(guiLeft - 24, guiTop + 44, 20, 20, "",
                 b -> pastebin());
-        pastebinButton.setTooltipText(I18n.format("gui.remote.button.pastebinButton"));
+        pastebinButton.setTooltipText(I18n.format("pneumaticcraft.gui.remote.button.pastebinButton"));
         pastebinButton.setRenderedIcon(Textures.GUI_PASTEBIN_ICON_LOCATION);
         addButton(pastebinButton);
 
@@ -185,9 +185,9 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         redoButton.setRenderedIcon(Textures.GUI_REDO_ICON_LOCATION);
         clearAllButton.setRenderedIcon(Textures.GUI_DELETE_ICON_LOCATION);
 
-        undoButton.setTooltipText(I18n.format("gui.programmer.button.undoButton.tooltip"));
-        redoButton.setTooltipText(I18n.format("gui.programmer.button.redoButton.tooltip"));
-        clearAllButton.setTooltipText(I18n.format("gui.programmer.button.clearAllButton.tooltip"));
+        undoButton.setTooltipText(I18n.format("pneumaticcraft.gui.programmer.button.undoButton.tooltip"));
+        redoButton.setTooltipText(I18n.format("pneumaticcraft.gui.programmer.button.redoButton.tooltip"));
+        clearAllButton.setTooltipText(I18n.format("pneumaticcraft.gui.programmer.button.clearAllButton.tooltip"));
 
         addButton(undoButton);
         addButton(redoButton);
@@ -205,7 +205,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
 
         addButton(filterField);
 
-        String name = I18n.format("gui.programmer.name");
+        String name = I18n.format("pneumaticcraft.gui.programmer.name");
         addLabel(name, guiLeft + xRight - 102 - font.getStringWidth(name), guiTop + 5, 0xFF404040);
 
         updateVisibleProgWidgets();
@@ -391,7 +391,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
 
         String str = widgetPage + 1 + "/" + maxPage;
         font.drawString(str, xRight + (22 - font.getStringWidth(str) / 2f), yBottom + 4, 0xFF404040);
-        font.drawString(I18n.format("gui.programmer.difficulty"), xRight - 36, yBottom + 20, 0xFF404040);
+        font.drawString(I18n.format("pneumaticcraft.gui.programmer.difficulty"), xRight - 36, yBottom + 20, 0xFF404040);
 
         if (showingWidgetProgress == 0) {
             programmerUnit.renderForeground(x, y, draggingWidget);
@@ -819,27 +819,27 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
 
     private void updateExportButtonTooltip(ItemStack programmedItem, List<ITextComponent> errors, List<ITextComponent> warnings) {
         List<String> exportButtonTooltip = new ArrayList<>();
-        exportButtonTooltip.add(I18n.format("gui.programmer.button.export"));
-        exportButtonTooltip.add(I18n.format("gui.programmer.button.export.programmingWhen", I18n.format("gui.programmer.button.export." + (te.redstoneMode == 0 ? "pressingButton" : "onItemInsert"))));
-        exportButtonTooltip.add(I18n.format("gui.programmer.button.export.pressRToChange"));
+        exportButtonTooltip.add(I18n.format("pneumaticcraft.gui.programmer.button.export"));
+        exportButtonTooltip.add(I18n.format("pneumaticcraft.gui.programmer.button.export.programmingWhen", I18n.format("pneumaticcraft.gui.programmer.button.export." + (te.redstoneMode == 0 ? "pressingButton" : "onItemInsert"))));
+        exportButtonTooltip.add(I18n.format("pneumaticcraft.gui.programmer.button.export.pressRToChange"));
         if (!programmedItem.isEmpty()) {
             int required = te.getRequiredPuzzleCount();
             if (required != 0) exportButtonTooltip.add("");
             int r = minecraft.player.isCreative() ? 0 : required;
             if (required > 0) {
-                exportButtonTooltip.add(I18n.format("gui.tooltip.programmable.requiredPieces", r));
+                exportButtonTooltip.add(I18n.format("pneumaticcraft.gui.tooltip.programmable.requiredPieces", r));
             } else if (required < 0) {
-                exportButtonTooltip.add(I18n.format("gui.tooltip.programmable.returnedPieces", -r));
+                exportButtonTooltip.add(I18n.format("pneumaticcraft.gui.tooltip.programmable.returnedPieces", -r));
             }
             if (required != 0 && minecraft.player.isCreative()) exportButtonTooltip.add("(Creative mode)");
         } else {
-            exportButtonTooltip.add(TextFormatting.GOLD + I18n.format("gui.programmer.button.export.noProgrammableItem"));
+            exportButtonTooltip.add(TextFormatting.GOLD + I18n.format("pneumaticcraft.gui.programmer.button.export.noProgrammableItem"));
         }
 
         if (errors.size() > 0)
-            exportButtonTooltip.add(TextFormatting.RED + I18n.format("gui.programmer.errorCount", errors.size()));
+            exportButtonTooltip.add(TextFormatting.RED + I18n.format("pneumaticcraft.gui.programmer.errorCount", errors.size()));
         if (warnings.size() > 0)
-            exportButtonTooltip.add(TextFormatting.YELLOW + I18n.format("gui.programmer.warningCount", warnings.size()));
+            exportButtonTooltip.add(TextFormatting.YELLOW + I18n.format("pneumaticcraft.gui.programmer.warningCount", warnings.size()));
 
         exportButton.setTooltipText(exportButtonTooltip);
     }
@@ -847,7 +847,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
     private void updateConvertRelativeState() {
         convertToRelativeButton.active = false;
         List<String> tooltip = new ArrayList<>();
-        tooltip.add("gui.programmer.button.convertToRelative.desc");
+        tooltip.add("pneumaticcraft.gui.programmer.button.convertToRelative.desc");
 
         boolean startFound = false;
         for (IProgWidget startWidget : te.progWidgets) {
@@ -861,20 +861,20 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
                             if (generateRelativeOperators(operatorWidget, tooltip, true)) {
                                 convertToRelativeButton.active = true;
                             } else {
-                                tooltip.add("gui.programmer.button.convertToRelative.notEnoughRoom");
+                                tooltip.add("pneumaticcraft.gui.programmer.button.convertToRelative.notEnoughRoom");
                             }
                         } catch (NullPointerException e) {
-                            tooltip.add("gui.programmer.button.convertToRelative.cantHaveVariables");
+                            tooltip.add("pneumaticcraft.gui.programmer.button.convertToRelative.cantHaveVariables");
                         }
                     } else {
-                        tooltip.add("gui.programmer.button.convertToRelative.noVariableName");
+                        tooltip.add("pneumaticcraft.gui.programmer.button.convertToRelative.noVariableName");
                     }
                 } else {
-                    tooltip.add("gui.programmer.button.convertToRelative.noBaseCoordinate");
+                    tooltip.add("pneumaticcraft.gui.programmer.button.convertToRelative.noBaseCoordinate");
                 }
             }
         }
-        if (!startFound) tooltip.add("gui.programmer.button.convertToRelative.noStartPiece");
+        if (!startFound) tooltip.add("pneumaticcraft.gui.programmer.button.convertToRelative.noStartPiece");
 
         List<String> localizedTooltip = new ArrayList<>();
         for (String s : tooltip) {
@@ -907,10 +907,10 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
                     if (PneumaticCraftUtils.distBetween(c, 0, 0, 0) < 64) {
                         // When the coordinate value is close to 0, there's a low chance it means a position, and rather an offset.
                         if (tooltip != null)
-                            tooltip.add(I18n.format("gui.programmer.button.convertToRelative.coordIsNotChangedWarning", chunkString));
+                            tooltip.add(I18n.format("pneumaticcraft.gui.programmer.button.convertToRelative.coordIsNotChangedWarning", chunkString));
                     } else {
                         if (tooltip != null)
-                            tooltip.add(I18n.format("gui.programmer.button.convertToRelative.coordIsChangedWarning", chunkString));
+                            tooltip.add(I18n.format("pneumaticcraft.gui.programmer.button.convertToRelative.coordIsChangedWarning", chunkString));
                         if (!simulate) {
                             BlockPos offset = new BlockPos(c.getX() - baseCoord.getX(), c.getY() - baseCoord.getY(), c.getZ() - baseCoord.getZ());
                             String var = getOffsetVariable(offsetToVariableNames, baseWidget.getVariable(), offset);

@@ -59,10 +59,10 @@ public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest
     public void init() {
         super.init();
 
-        addAnimatedStat("gui.tab.info.smart_chest.slots.title", Textures.GUI_MOUSE_LOCATION, 0xFF00AAFF, true)
-                .setText("gui.tab.info.smart_chest.slots");
+        addAnimatedStat("pneumaticcraft.gui.tab.info.smart_chest.slots.title", Textures.GUI_MOUSE_LOCATION, 0xFF00AAFF, true)
+                .setText("pneumaticcraft.gui.tab.info.smart_chest.slots");
 
-        statusStat = addAnimatedStat("gui.tab.status", new ItemStack(ModBlocks.SMART_CHEST.get()), 0xFFFFAA00, false);
+        statusStat = addAnimatedStat("pneumaticcraft.gui.tab.status", new ItemStack(ModBlocks.SMART_CHEST.get()), 0xFFFFAA00, false);
 
         addPushPullTab();
 
@@ -105,10 +105,10 @@ public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest
             showRangeButton.setVisible(true);
             if (AreaRenderManager.getInstance().isShowing(te)) {
                 showRangeButton.setMessage(TextFormatting.AQUA + "A");
-                showRangeButton.setTooltipText(I18n.format("gui.programmer.button.stopShowingArea"));
+                showRangeButton.setTooltipText(I18n.format("pneumaticcraft.gui.programmer.button.stopShowingArea"));
             } else {
                 showRangeButton.setMessage(TextFormatting.GRAY + "A");
-                showRangeButton.setTooltipText(I18n.format("gui.programmer.button.showArea"));
+                showRangeButton.setTooltipText(I18n.format("pneumaticcraft.gui.programmer.button.showArea"));
             }
         } else {
             showRangeButton.setVisible(false);
@@ -117,14 +117,14 @@ public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest
 
     private List<String> getStatus() {
         List<String> textList = new ArrayList<>();
-        textList.add(I18n.format("gui.tab.smartChestStatus.header"));
-        textList.add(I18n.format("gui.tab.smartChestStatus.itemsPerOperation", te.getMaxItems()));
-        textList.add(I18n.format("gui.tab.smartChestStatus.tickInterval", te.getTickRate()));
+        textList.add(I18n.format("pneumaticcraft.gui.tab.smartChestStatus.header"));
+        textList.add(I18n.format("pneumaticcraft.gui.tab.smartChestStatus.itemsPerOperation", te.getMaxItems()));
+        textList.add(I18n.format("pneumaticcraft.gui.tab.smartChestStatus.tickInterval", te.getTickRate()));
         return textList;
     }
 
     private void addPushPullTab() {
-        WidgetAnimatedStat stat = addAnimatedStat("gui.tab.info.smart_chest.push_pull.title", new ItemStack(ModBlocks.OMNIDIRECTIONAL_HOPPER.get()), 0xFF90C0E0, false);
+        WidgetAnimatedStat stat = addAnimatedStat("pneumaticcraft.gui.tab.info.smart_chest.push_pull.title", new ItemStack(ModBlocks.OMNIDIRECTIONAL_HOPPER.get()), 0xFF90C0E0, false);
         stat.addPadding(7, 16);
 
         int yTop = 15, xLeft = 25;

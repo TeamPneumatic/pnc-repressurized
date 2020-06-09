@@ -60,24 +60,24 @@ public class GuiRedstoneModule extends GuiTubeModule<ModuleRedstone> {
                 getDirText(module), b -> toggleRedstoneDirection())
                 .setTooltipText(ImmutableList.of(
                         I18n.format(module.getRedstoneDirection().getTranslationKey()),
-                        TextFormatting.GRAY + I18n.format("gui.redstoneModule.clickToToggle")
+                        TextFormatting.GRAY + I18n.format("pneumaticcraft.gui.redstoneModule.clickToToggle")
                 ))
         );
 
         addButton(new WidgetLabel(guiLeft + xSize / 2, guiTop + 5, getTitle().getFormattedText()).setAlignment(WidgetLabel.Alignment.CENTRE));
 
         WidgetLabel ourColorLabel;
-        addButton(ourColorLabel = new WidgetLabel(guiLeft + 10, guiTop + 25, I18n.format("gui.tubeModule.channel")));
+        addButton(ourColorLabel = new WidgetLabel(guiLeft + 10, guiTop + 25, I18n.format("pneumaticcraft.gui.tubeModule.channel")));
 
         WidgetLabel opLabel;
-        addButton(opLabel = new WidgetLabel(guiLeft + 10, guiTop + 45, I18n.format("gui.redstoneModule.operation")));
+        addButton(opLabel = new WidgetLabel(guiLeft + 10, guiTop + 45, I18n.format("pneumaticcraft.gui.redstoneModule.operation")));
         opLabel.visible = output;
 
-        otherColorLabel = new WidgetLabel(guiLeft + 10, guiTop + 65, I18n.format("gui.tubeModule.otherChannel"));
+        otherColorLabel = new WidgetLabel(guiLeft + 10, guiTop + 65, I18n.format("pneumaticcraft.gui.tubeModule.otherChannel"));
         otherColorLabel.visible = output;
         addButton(otherColorLabel);
 
-        constLabel = new WidgetLabel(guiLeft + 15, guiTop + 65, I18n.format("gui.redstoneModule.constant"));
+        constLabel = new WidgetLabel(guiLeft + 15, guiTop + 65, I18n.format("pneumaticcraft.gui.redstoneModule.constant"));
         addButton(constLabel);
         constLabel.visible = output;
 
@@ -114,7 +114,7 @@ public class GuiRedstoneModule extends GuiTubeModule<ModuleRedstone> {
         textField.active = upgraded;
         addButton(textField);
 
-        invertCheckBox = new WidgetCheckBox(guiLeft + 10, guiTop + 85, 0xFF404040, I18n.format("gui.redstoneModule.invert")) {
+        invertCheckBox = new WidgetCheckBox(guiLeft + 10, guiTop + 85, 0xFF404040, I18n.format("pneumaticcraft.gui.redstoneModule.invert")) {
             @Override
             public boolean mouseClicked(double mouseX, double mouseY, int button) {
                 if (comboBox.isFocused()) return true;  // it hangs over the button
@@ -122,7 +122,7 @@ public class GuiRedstoneModule extends GuiTubeModule<ModuleRedstone> {
             }
         };
         invertCheckBox.checked = module.isInverted();
-        invertCheckBox.setTooltip(I18n.format("gui.redstoneModule.invert.tooltip"));
+        invertCheckBox.setTooltip(I18n.format("pneumaticcraft.gui.redstoneModule.invert.tooltip"));
         addButton(invertCheckBox);
 
         updateWidgetVisibility();
@@ -164,7 +164,7 @@ public class GuiRedstoneModule extends GuiTubeModule<ModuleRedstone> {
         }
         lowerText.addAll(PneumaticCraftUtils.splitString(s, 30));
         if (!upgraded) {
-            List<String> extra = PneumaticCraftUtils.splitString(I18n.format("gui.redstoneModule.addAdvancedPCB"), 30).stream()
+            List<String> extra = PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.redstoneModule.addAdvancedPCB"), 30).stream()
                     .map(str -> TextFormatting.DARK_BLUE + str)
                     .collect(Collectors.toList());
             lowerText.addAll(extra);

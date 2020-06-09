@@ -267,7 +267,7 @@ public class EntityHeatFrame extends EntitySemiblockBase {
         if (getStatus() != COOKING && cook >= 100) cook = 0;
         if (getStatus() != COOLING && cool >= 100) cool = 0;
         curInfo.add(HeatUtil.formatHeatString(logic.getTemperatureAsInt()));
-        curInfo.add(PneumaticCraftUtils.xlate("waila.heatFrame.cooking", cook).applyTextStyle(TextFormatting.GRAY));
-        curInfo.add(PneumaticCraftUtils.xlate("waila.heatFrame.cooling", cool).applyTextStyle(TextFormatting.GRAY));
+        curInfo.add(PneumaticCraftUtils.xlate("pneumaticcraft.waila.heatFrame.cooking", cook).applyTextStyle(TextFormatting.GRAY));
+        curInfo.add(PneumaticCraftUtils.xlate("pneumaticcraft.waila.heatFrame.cooling", cool).applyTextStyle(TextFormatting.GRAY));
     }
 }

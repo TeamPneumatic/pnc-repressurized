@@ -55,7 +55,7 @@ public class GuiAphorismTile extends Screen {
 
         if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {
             GuiUtils.showPopupHelpScreen(this, font,
-                    PneumaticCraftUtils.splitString(I18n.format("gui.aphorismTile.helpText"), 40));
+                    PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.aphorismTile.helpText"), 40));
         }
     }
 

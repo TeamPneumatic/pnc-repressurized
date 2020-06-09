@@ -37,10 +37,10 @@ public class GuiAirCannon extends GuiPneumaticContainerBase<ContainerAirCannon,T
     public void init() {
         super.init();
 
-        statusStat = this.addAnimatedStat(I18n.format("gui.tab.info.airCannon.status"), 
+        statusStat = this.addAnimatedStat(I18n.format("pneumaticcraft.gui.tab.info.airCannon.status"), 
                 new ItemStack(ModBlocks.AIR_CANNON.get()), 0xFFFF8000, false);
 
-        strengthTab = this.addAnimatedStat(I18n.format("gui.tab.info.airCannon.force", te.forceMult),
+        strengthTab = this.addAnimatedStat(I18n.format("pneumaticcraft.gui.tab.info.airCannon.force", te.forceMult),
                 new ItemStack(ModItems.AIR_CANISTER.get()), 0xFF2080FF, false);
         strengthTab.addPadding(3, 22);
         strengthTab.addSubWidget(new WidgetButtonExtended(16, 16, 20, 20, "--").withTag("--"));
@@ -65,7 +65,7 @@ public class GuiAirCannon extends GuiPneumaticContainerBase<ContainerAirCannon,T
         super.tick();
 
         statusStat.setText(getStatusText());
-        strengthTab.setTitle(I18n.format("gui.tab.info.airCannon.force", te.forceMult));
+        strengthTab.setTitle(I18n.format("pneumaticcraft.gui.tab.info.airCannon.force", te.forceMult));
 
         if (gpsX != te.gpsX || gpsY != te.gpsY || gpsZ != te.gpsZ) {
             gpsX = te.gpsX;
@@ -78,13 +78,13 @@ public class GuiAirCannon extends GuiPneumaticContainerBase<ContainerAirCannon,T
     private List<String> getStatusText() {
         List<String> text = new ArrayList<>();
         if (te.gpsX != 0 || te.gpsY != 0 || te.gpsZ != 0) {
-            text.add(TextFormatting.BLACK + I18n.format("gui.tab.info.airCannon.coord", te.gpsX, te.gpsY, te.gpsZ));
+            text.add(TextFormatting.BLACK + I18n.format("pneumaticcraft.gui.tab.info.airCannon.coord", te.gpsX, te.gpsY, te.gpsZ));
         } else {
-            text.add(TextFormatting.BLACK + I18n.format("gui.tab.info.airCannon.no_coord"));
+            text.add(TextFormatting.BLACK + I18n.format("pneumaticcraft.gui.tab.info.airCannon.no_coord"));
         }
-        text.add(TextFormatting.BLACK + I18n.format("gui.tab.info.airCannon.heading", Math.round(te.rotationAngle)));
-        text.add(TextFormatting.BLACK + I18n.format("gui.tab.info.airCannon.height", Math.round(te.heightAngle)));
-        text.add(TextFormatting.BLACK + I18n.format("gui.tab.info.airCannon.range", Math.round(te.getForce() * 25F)));
+        text.add(TextFormatting.BLACK + I18n.format("pneumaticcraft.gui.tab.info.airCannon.heading", Math.round(te.rotationAngle)));
+        text.add(TextFormatting.BLACK + I18n.format("pneumaticcraft.gui.tab.info.airCannon.height", Math.round(te.heightAngle)));
+        text.add(TextFormatting.BLACK + I18n.format("pneumaticcraft.gui.tab.info.airCannon.range", Math.round(te.getForce() * 25F)));
         return text;
     }
 
@@ -93,19 +93,19 @@ public class GuiAirCannon extends GuiPneumaticContainerBase<ContainerAirCannon,T
         super.addProblems(textList);
 
         if (te.hasNoConnectedAirHandlers()) {
-            textList.add(I18n.format("gui.tab.problems.airLeak"));
+            textList.add(I18n.format("pneumaticcraft.gui.tab.problems.airLeak"));
         }
         if (container.inventorySlots.get(5).getStack().isEmpty() && te.getUpgrades(EnumUpgrade.ENTITY_TRACKER) == 0) {
-            textList.add(I18n.format("gui.tab.problems.air_cannon.no_items"));
+            textList.add(I18n.format("pneumaticcraft.gui.tab.problems.air_cannon.no_items"));
         }
         if (!te.hasCoordinate()) {
-            textList.add(I18n.format("gui.tab.problems.air_cannon.no_coordinate"));
+            textList.add(I18n.format("pneumaticcraft.gui.tab.problems.air_cannon.no_coordinate"));
         } else if (!te.coordWithinReach) {
-            textList.add(I18n.format("gui.tab.problems.air_cannon.out_of_range"));
+            textList.add(I18n.format("pneumaticcraft.gui.tab.problems.air_cannon.out_of_range"));
         } else if (te.getRedstoneMode() == 0 && !te.doneTurning) {
-            textList.add(I18n.format("gui.tab.problems.air_cannon.still_turning"));
+            textList.add(I18n.format("pneumaticcraft.gui.tab.problems.air_cannon.still_turning"));
         } else if (te.getRedstoneMode() == 2 && !te.insertingInventoryHasSpace) {
-            textList.add(I18n.format("gui.tab.problems.air_cannon.inv_space"));
+            textList.add(I18n.format("pneumaticcraft.gui.tab.problems.air_cannon.inv_space"));
         }
     }
 
@@ -113,7 +113,7 @@ public class GuiAirCannon extends GuiPneumaticContainerBase<ContainerAirCannon,T
     protected void addInformation(List<String> curInfo) {
         super.addInformation(curInfo);
         if (curInfo.isEmpty()) {
-            curInfo.add(I18n.format("gui.tooltip.apply_redstone"));
+            curInfo.add(I18n.format("pneumaticcraft.gui.tooltip.apply_redstone"));
         }
     }
 }

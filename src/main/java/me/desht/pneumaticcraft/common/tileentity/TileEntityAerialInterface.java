@@ -339,8 +339,8 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
     }
 
     private static final List<String> REDSTONE_LABELS = ImmutableList.of(
-            "gui.tab.redstoneBehaviour.button.never",
-            "gui.tab.redstoneBehaviour.aerialInterface.button.playerConnected"
+            "pneumaticcraft.gui.tab.redstoneBehaviour.button.never",
+            "pneumaticcraft.gui.tab.redstoneBehaviour.aerialInterface.button.playerConnected"
     );
 
     @Override
@@ -623,11 +623,11 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
         }
 
         public String getTranslationKey() {
-            return "gui.tab.info.aerialInterface.feedMode." + key;
+            return "pneumaticcraft.gui.tab.info.aerialInterface.feedMode." + key;
         }
 
         public String getDescTranslationKey() {
-            return "gui.tab.info.aerialInterface.feedMode." + key + ".desc";
+            return "pneumaticcraft.gui.tab.info.aerialInterface.feedMode." + key + ".desc";
         }
 
         public ItemStack getIconStack() {

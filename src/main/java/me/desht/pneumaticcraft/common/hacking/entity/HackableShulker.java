@@ -25,12 +25,12 @@ public class HackableShulker implements IHackableEntity {
 
     @Override
     public void addHackInfo(Entity entity, List<String> curInfo, PlayerEntity player) {
-        curInfo.add("pneumaticHelmet.hacking.result.neutralize");
+        curInfo.add("pneumaticcraft.armor.hacking.result.neutralize");
     }
 
     @Override
     public void addPostHackInfo(Entity entity, List<String> curInfo, PlayerEntity player) {
-        curInfo.add("pneumaticHelmet.hacking.finished.neutralized");
+        curInfo.add("pneumaticcraft.armor.hacking.finished.neutralized");
     }
 
     @Override

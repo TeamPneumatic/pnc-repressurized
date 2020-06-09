@@ -34,7 +34,7 @@ public class GuiPressureChamber extends GuiPneumaticContainerBase<ContainerPress
     @Override
     protected void drawGuiContainerForegroundLayer(int x, int y) {
         super.drawGuiContainerForegroundLayer(x, y);
-        String containerName = I18n.format("gui.pressureChamberTitle", te.multiBlockSize + "x" + te.multiBlockSize + "x" + te.multiBlockSize);
+        String containerName = I18n.format("pneumaticcraft.gui.pressureChamberTitle", te.multiBlockSize + "x" + te.multiBlockSize + "x" + te.multiBlockSize);
         font.drawString(containerName, xSize / 2f - font.getStringWidth(containerName) / 2f, 6, 4210752);
     }
 
@@ -52,7 +52,7 @@ public class GuiPressureChamber extends GuiPneumaticContainerBase<ContainerPress
     protected void addWarnings(List<String> curInfo) {
         super.addWarnings(curInfo);
         if (!te.isValidRecipeInChamber) {
-            curInfo.add(I18n.format("gui.tab.problems.pressure_chamber.no_recipe"));
+            curInfo.add(I18n.format("pneumaticcraft.gui.tab.problems.pressure_chamber.no_recipe"));
         }
     }
 
@@ -60,11 +60,11 @@ public class GuiPressureChamber extends GuiPneumaticContainerBase<ContainerPress
     protected void addProblems(List<String> curInfo) {
         if (te.isValidRecipeInChamber && !te.isSufficientPressureInChamber) {
             if (te.recipePressure > 0F) {
-                curInfo.add(I18n.format("gui.tab.problems.pressure_chamber.not_enough_pressure"));
+                curInfo.add(I18n.format("pneumaticcraft.gui.tab.problems.pressure_chamber.not_enough_pressure"));
             } else {
-                curInfo.add(I18n.format("gui.tab.problems.pressure_chamber.too_much_pressure"));
+                curInfo.add(I18n.format("pneumaticcraft.gui.tab.problems.pressure_chamber.too_much_pressure"));
             }
-            curInfo.add(I18n.format("gui.tab.problems.pressure_chamber.required_pressure", te.recipePressure));
+            curInfo.add(I18n.format("pneumaticcraft.gui.tab.problems.pressure_chamber.required_pressure", te.recipePressure));
         }
     }
 }

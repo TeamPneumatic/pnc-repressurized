@@ -71,7 +71,7 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
         int yStart = (height - ySize) / 2;
 
         sensorInfoStat = addAnimatedStat("Sensor Info", new ItemStack(ModBlocks.UNIVERSAL_SENSOR.get()), 0xFFFFAA00, false);
-        addAnimatedStat("gui.tab.upgrades", Textures.GUI_UPGRADES_LOCATION, 0xFF6060FF, true).setText(getUpgradeText());
+        addAnimatedStat("pneumaticcraft.gui.tab.upgrades", Textures.GUI_UPGRADES_LOCATION, 0xFF6060FF, true).setText(getUpgradeText());
 
         nameFilterField = new TextFieldWidget(font, xStart + 70, yStart + 58, 98, 10, "");
         nameFilterField.setText(te.getText(0));
@@ -116,7 +116,7 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
 
         if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {
             GuiUtils.showPopupHelpScreen(this, font,
-                    PneumaticCraftUtils.splitString(I18n.format("gui.entityFilter.helpText"), 60));
+                    PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.entityFilter.helpText"), 60));
         }
     }
 
@@ -165,7 +165,7 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
         if (!te.getSensorSetting().equals("")) {
             addButtonLocal(new WidgetButtonExtended(guiLeft + 70, guiTop + 18, 20, 20, ARROW_LEFT_SHORT).withTag("back"));
         } else {
-            addButtonLocal(new WidgetButtonExtended(guiLeft + 70, guiTop + 125, 98, 20, I18n.format("gui.button.showRange"), b -> { onClose(); te.showRangeLines(); }));
+            addButtonLocal(new WidgetButtonExtended(guiLeft + 70, guiTop + 125, 98, 20, I18n.format("pneumaticcraft.gui.button.showRange"), b -> { onClose(); te.showRangeLines(); }));
         }
 
         String[] directories = SensorHandler.getInstance().getDirectoriesAtLocation(te.getSensorSetting());
@@ -247,8 +247,8 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
 
     private List<String> getUpgradeText() {
         List<String> upgradeInfo = new ArrayList<>();
-        upgradeInfo.add("gui.tab.upgrades.generic.volume");
-        upgradeInfo.add("gui.tab.upgrades.generic.security");
+        upgradeInfo.add("pneumaticcraft.gui.tab.upgrades.generic.volume");
+        upgradeInfo.add("pneumaticcraft.gui.tab.upgrades.generic.security");
         upgradeInfo.addAll(SensorHandler.getInstance().getUpgradeInfo());
         return upgradeInfo;
     }
@@ -271,7 +271,7 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
         super.addPressureStatInfo(pressureStatText);
 
         if (te.isSensorActive) {
-            pressureStatText.add(TextFormatting.BLACK + I18n.format("gui.tooltip.airUsage", PneumaticValues.USAGE_UNIVERSAL_SENSOR));
+            pressureStatText.add(TextFormatting.BLACK + I18n.format("pneumaticcraft.gui.tooltip.airUsage", PneumaticValues.USAGE_UNIVERSAL_SENSOR));
         }
     }
 
@@ -280,7 +280,7 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
         super.addWarnings(curInfo);
 
         if (!te.getPrimaryInventory().getStackInSlot(0).isEmpty() && te.outOfRange > 0) {
-            curInfo.addAll(PneumaticCraftUtils.splitString(I18n.format("gui.universalSensor.outOfRange", te.outOfRange)));
+            curInfo.addAll(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.universalSensor.outOfRange", te.outOfRange)));
         }
     }
 
@@ -289,7 +289,7 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
         super.addProblems(curInfo);
 
         if (!te.lastSensorExceptionText.isEmpty()) {
-            curInfo.addAll(PneumaticCraftUtils.splitString(I18n.format("gui.universalSensor.sensorException", te.lastSensorExceptionText)));
+            curInfo.addAll(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.universalSensor.sensorException", te.lastSensorExceptionText)));
         }
         if (te.sensorStatus != SensorStatus.OK) {
             curInfo.addAll(PneumaticCraftUtils.splitString(I18n.format(te.sensorStatus.getTranslationKey())));

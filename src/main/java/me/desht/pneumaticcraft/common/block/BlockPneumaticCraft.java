@@ -342,7 +342,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
             TileEntity te = createTileEntity(getDefaultState(), world);
             if (te instanceof TileEntityPneumaticBase) {
                 float pressure = ((TileEntityPneumaticBase) te).dangerPressure;
-                curInfo.add(xlate("gui.tooltip.maxPressure", pressure).applyTextStyle(TextFormatting.YELLOW));
+                curInfo.add(xlate("pneumaticcraft.gui.tooltip.maxPressure", pressure).applyTextStyle(TextFormatting.YELLOW));
             }
         }
     }

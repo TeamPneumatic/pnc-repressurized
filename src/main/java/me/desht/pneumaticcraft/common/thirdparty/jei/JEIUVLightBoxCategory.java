@@ -95,7 +95,7 @@ public class JEIUVLightBoxCategory implements IRecipeCategory<UVLightBoxRecipe> 
     public List<String> getTooltipStrings(UVLightBoxRecipe recipe, double mouseX, double mouseY) {
         List<String> res = new ArrayList<>();
         if (mouseX >= 23 && mouseX <= 60) {
-            res.addAll(PneumaticCraftUtils.splitString(I18n.format("gui.nei.recipe.uvLightBox"), 32));
+            res.addAll(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.nei.recipe.uvLightBox"), 32));
         }
         return res;
     }

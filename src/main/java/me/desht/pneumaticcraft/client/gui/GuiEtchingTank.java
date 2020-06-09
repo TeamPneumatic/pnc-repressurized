@@ -36,10 +36,10 @@ public class GuiEtchingTank extends GuiPneumaticContainerBase<ContainerEtchingTa
 
                 int interval = te.getTickInterval();
                 int processTimeSecs = interval * 5;
-                curTip.add(TextFormatting.GREEN + I18n.format("gui.tooltip.etching_tank.process_time", processTimeSecs));
+                curTip.add(TextFormatting.GREEN + I18n.format("pneumaticcraft.gui.tooltip.etching_tank.process_time", processTimeSecs));
                 if (logic.orElseThrow(RuntimeException::new).getTemperatureAsInt() > 323) {
                     float usage = (30 - interval) / (5f * interval);
-                    curTip.add(TextFormatting.YELLOW + I18n.format("gui.tooltip.etching_tank.acid_usage", PneumaticCraftUtils.roundNumberTo(usage, 2)));
+                    curTip.add(TextFormatting.YELLOW + I18n.format("pneumaticcraft.gui.tooltip.etching_tank.acid_usage", PneumaticCraftUtils.roundNumberTo(usage, 2)));
                 }
             }
         });
@@ -55,13 +55,13 @@ public class GuiEtchingTank extends GuiPneumaticContainerBase<ContainerEtchingTa
         super.addProblems(curInfo);
 
         if (te.isOutputFull()) {
-            curInfo.add(I18n.format("gui.tab.problems.etching_tank.output_full"));
+            curInfo.add(I18n.format("pneumaticcraft.gui.tab.problems.etching_tank.output_full"));
         }
         if (te.isFailedOutputFull()) {
-            curInfo.add(I18n.format("gui.tab.problems.etching_tank.failed_full"));
+            curInfo.add(I18n.format("pneumaticcraft.gui.tab.problems.etching_tank.failed_full"));
         }
         if (te.getAcidTank().getFluid().isEmpty()) {
-            curInfo.add(I18n.format("gui.tab.problems.etching_tank.no_acid"));
+            curInfo.add(I18n.format("pneumaticcraft.gui.tab.problems.etching_tank.no_acid"));
         }
     }
 }

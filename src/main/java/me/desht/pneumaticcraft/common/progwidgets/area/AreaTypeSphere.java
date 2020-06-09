@@ -21,7 +21,7 @@ public class AreaTypeSphere extends AreaType{
         private final String name;
         
         EnumSphereType(String name){
-            this.name = "gui.progWidget.area.type.sphere.sphereType." + name;
+            this.name = "pneumaticcraft.gui.progWidget.area.type.sphere.sphereType." + name;
         }
         
         @Override
@@ -61,7 +61,7 @@ public class AreaTypeSphere extends AreaType{
     @Override
     public void addUIWidgets(List<AreaTypeWidget> widgets){
         super.addUIWidgets(widgets);
-        widgets.add(new AreaTypeWidgetEnum<>("gui.progWidget.area.type.sphere.sphereType", EnumSphereType.class, () -> sphereType, sphereType -> this.sphereType = sphereType));
+        widgets.add(new AreaTypeWidgetEnum<>("pneumaticcraft.gui.progWidget.area.type.sphere.sphereType", EnumSphereType.class, () -> sphereType, sphereType -> this.sphereType = sphereType));
     }
     
     @Override

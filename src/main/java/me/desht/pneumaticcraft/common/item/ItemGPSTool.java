@@ -39,7 +39,7 @@ public class ItemGPSTool extends Item implements IPositionProvider {
         BlockPos pos = ctx.getPos();
         setGPSLocation(ctx.getPlayer().getHeldItem(ctx.getHand()), pos);
         if (!ctx.getWorld().isRemote)
-            ctx.getPlayer().sendStatusMessage(new TranslationTextComponent("message.gps_tool.targetSet" ,pos.getX(), pos.getY(), pos.getZ()).applyTextStyle(TextFormatting.GREEN), false);
+            ctx.getPlayer().sendStatusMessage(new TranslationTextComponent("pneumaticcraft.message.gps_tool.targetSet" ,pos.getX(), pos.getY(), pos.getZ()).applyTextStyle(TextFormatting.GREEN), false);
         ctx.getPlayer().playSound(ModSounds.CHIRP.get(), 1.0f, 1.5f);
         return ActionResultType.SUCCESS; // we don't want to use the item.
     }
@@ -66,7 +66,7 @@ public class ItemGPSTool extends Item implements IPositionProvider {
             }
             String varName = getVariable(stack);
             if (!varName.equals("")) {
-                infoList.add(xlate("gui.tooltip.gpsTool.variable", varName));
+                infoList.add(xlate("pneumaticcraft.gui.tooltip.gpsTool.variable", varName));
             }
         }
     }

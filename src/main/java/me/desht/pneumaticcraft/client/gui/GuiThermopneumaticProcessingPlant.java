@@ -53,7 +53,7 @@ public class GuiThermopneumaticProcessingPlant extends
                 if (te.minTemperature > 0) {
                     int temp = logic.map(IHeatExchangerLogic::getTemperatureAsInt).orElseThrow(RuntimeException::new);
                     TextFormatting tf = te.minTemperature < temp ? TextFormatting.GREEN : TextFormatting.GOLD;
-                    curTip.add(tf + I18n.format("gui.misc.requiredTemperature", te.minTemperature -273));
+                    curTip.add(tf + I18n.format("pneumaticcraft.gui.misc.requiredTemperature", te.minTemperature -273));
                 }
             }
         };
@@ -61,7 +61,7 @@ public class GuiThermopneumaticProcessingPlant extends
 
         dumpButton = new WidgetButtonExtended(guiLeft + 12, guiTop + 81, 18, 20, "").withTag("dump");
         dumpButton.setRenderedIcon(Textures.GUI_RIGHT_ARROW);
-        dumpButton.setTooltipText(PneumaticCraftUtils.splitString(I18n.format("gui.thermopneumatic.moveInput")));
+        dumpButton.setTooltipText(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.thermopneumatic.moveInput")));
         addButton(dumpButton);
 
         nExposedFaces = HeatUtil.countExposedFaces(Collections.singletonList(te));
@@ -75,10 +75,10 @@ public class GuiThermopneumaticProcessingPlant extends
 
         if (hasShiftDown()) {
             dumpButton.setRenderedIcon(Textures.GUI_X_BUTTON);
-            dumpButton.setTooltipText(PneumaticCraftUtils.splitString(I18n.format("gui.thermopneumatic.dumpInput")));
+            dumpButton.setTooltipText(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.thermopneumatic.dumpInput")));
         } else {
             dumpButton.setRenderedIcon(Textures.GUI_RIGHT_ARROW);
-            dumpButton.setTooltipText(PneumaticCraftUtils.splitString(I18n.format("gui.thermopneumatic.moveInput")));
+            dumpButton.setTooltipText(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.thermopneumatic.moveInput")));
         }
     }
 
@@ -121,12 +121,12 @@ public class GuiThermopneumaticProcessingPlant extends
         super.addProblems(curInfo);
 
         if (!te.hasRecipe) {
-            curInfo.add("gui.tab.problems.thermopneumaticProcessingPlant.noSufficientIngredients");
+            curInfo.add("pneumaticcraft.gui.tab.problems.thermopneumaticProcessingPlant.noSufficientIngredients");
         } else {
             int temp = te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY)
                     .map(IHeatExchangerLogic::getTemperatureAsInt).orElseThrow(RuntimeException::new);
             if (temp < te.minTemperature) {
-                curInfo.add("gui.tab.problems.notEnoughHeat");
+                curInfo.add("pneumaticcraft.gui.tab.problems.notEnoughHeat");
             }
         }
     }
@@ -136,7 +136,7 @@ public class GuiThermopneumaticProcessingPlant extends
         super.addWarnings(curInfo);
 
         if (nExposedFaces > 0) {
-            curInfo.add(I18n.format("gui.tab.problems.exposedFaces", nExposedFaces, 6));
+            curInfo.add(I18n.format("pneumaticcraft.gui.tab.problems.exposedFaces", nExposedFaces, 6));
         }
     }
 }

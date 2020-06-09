@@ -156,7 +156,7 @@ public class EntityTransferGadget extends EntitySemiblockBase implements IDirect
 
     @Override
     public void addTooltip(List<ITextComponent> curInfo, PlayerEntity player, CompoundNBT tag, boolean extended) {
-        curInfo.add(xlate("gui.logistics_frame.facing", getSide()));
+        curInfo.add(xlate("pneumaticcraft.gui.logistics_frame.facing", getSide()));
     }
 
     @Override

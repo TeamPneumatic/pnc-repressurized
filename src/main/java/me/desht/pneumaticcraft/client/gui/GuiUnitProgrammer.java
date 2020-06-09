@@ -91,7 +91,7 @@ public class GuiUnitProgrammer extends Screen {
             List<ITextComponent> errors = new ArrayList<>();
             progWidget.addErrors(errors, progWidgets);
             if (errors.size() > 0) {
-                tooltip.add(xlate("gui.programmer.errors").applyTextStyles(TextFormatting.RED, TextFormatting.UNDERLINE));
+                tooltip.add(xlate("pneumaticcraft.gui.programmer.errors").applyTextStyles(TextFormatting.RED, TextFormatting.UNDERLINE));
                 for (ITextComponent error : errors) {
                     PneumaticCraftUtils.splitString(GuiConstants.TRIANGLE_RIGHT + " " + error.getFormattedText(), 40)
                             .forEach(str -> tooltip.add(new StringTextComponent(str).applyTextStyle(TextFormatting.RED)));
@@ -101,7 +101,7 @@ public class GuiUnitProgrammer extends Screen {
             List<ITextComponent> warnings = new ArrayList<>();
             progWidget.addWarnings(warnings, progWidgets);
             if (warnings.size() > 0) {
-                tooltip.add(xlate("gui.programmer.warnings").applyTextStyles(TextFormatting.YELLOW, TextFormatting.UNDERLINE));
+                tooltip.add(xlate("pneumaticcraft.gui.programmer.warnings").applyTextStyles(TextFormatting.YELLOW, TextFormatting.UNDERLINE));
                 for (ITextComponent warning : warnings) {
                     PneumaticCraftUtils.splitString(GuiConstants.TRIANGLE_RIGHT + " " + warning.getFormattedText(), 40)
                             .forEach(str -> tooltip.add(new StringTextComponent(str).applyTextStyle(TextFormatting.YELLOW)));
