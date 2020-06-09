@@ -165,7 +165,7 @@ dependencies {
     compileOnly "MCMultiPart2:MCMultiPart:${mcmultipart_version}"
     compileOnly "li.cil.oc:OpenComputers:MC1.12.2-${oc_version}:api"
     compileOnly "dan200.computercraft:ComputerCraft:${computercraft_version}"
-    compileOnly "mcp.mobius.waila:Hwyla:${hwyla_version}"
+    compileOnly "mcp.mobius.waila:Hwyla:${hwyla_version}:api"
     compileOnly "mcjty.theoneprobe:TheOneProbe-1.12:${top_version}"
     compileOnly "CraftTweaker2:CraftTweaker2-API:${crafttweaker_version}"
     compileOnly "CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-${crafttweaker_version}"
