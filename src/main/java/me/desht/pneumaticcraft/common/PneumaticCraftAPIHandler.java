@@ -20,7 +20,7 @@ import me.desht.pneumaticcraft.common.item.Itemss;
 import me.desht.pneumaticcraft.common.pressure.AirHandlerSupplier;
 import me.desht.pneumaticcraft.common.recipes.PneumaticRecipeRegistry;
 import me.desht.pneumaticcraft.common.sensor.SensorHandler;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.player.EntityPlayer;
@@ -77,7 +77,7 @@ public class PneumaticCraftAPIHandler implements IPneumaticCraftInterface {
     @Override
     public int getProtectingSecurityStations(World world, BlockPos pos, EntityPlayer player, boolean showRangeLines) {
         Validate.isTrue(!world.isRemote, "This method can only be called from the server side!");
-        return PneumaticCraftUtils.getProtectingSecurityStations(world, pos, player, showRangeLines, false);
+        return TileEntitySecurityStation.getProtectingSecurityStations(world, pos, player, showRangeLines, false);
     }
 
     @Override

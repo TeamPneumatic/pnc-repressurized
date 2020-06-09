@@ -19,15 +19,20 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 public class TileEntitySecurityStation extends TileEntityTickableBase implements IGUITextFieldSensitive,
         IRangeLineShower, IRedstoneControl {
@@ -443,4 +448,44 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
             checkForNetworkValidity();
         }
     }
+
+    /**
+     * Get a count of the number of security stations protecting the given blockpos from the given player.
+     *
+     * @param world the world
+     * @param pos the blockpos whose protection is being checked
+     * @param player the player who is being protected from
+     * @param showRangeLines whether to display the stations' range bounding boxes
+     * @param placementRange true when trying to place a block, false when trying to interact with a block
+     * @return the number of security stations preventing access
+     */
+    public static int getProtectingSecurityStations(World world, BlockPos pos, EntityPlayer player, boolean showRangeLines, boolean placementRange) {
+        int blockingStations = 0;
+        Iterator<TileEntitySecurityStation> iterator = getSecurityStations(world, pos, placementRange).iterator();
+        for (TileEntitySecurityStation station; iterator.hasNext();) {
+            station = iterator.next();
+            if (!station.doesAllowPlayer(player)) {
+                blockingStations++;
+                if (showRangeLines) station.showRangeLines();
+            }
+        }
+        return blockingStations;
+    }
+
+    static Stream<TileEntitySecurityStation> getSecurityStations(final World world, final BlockPos pos, final boolean placementRange) {
+        return GlobalTileEntityCacheManager.getInstance().securityStations
+                .stream()
+                .filter(station -> station.getWorld().provider.getDimension() == world.provider.getDimension()
+                        && isValidAndInRange(pos, placementRange, station));
+    }
+
+    private static boolean isValidAndInRange(BlockPos pos, boolean placementRange, TileEntitySecurityStation station){
+        if (!station.isInvalid() && station.getBlockType() == Blockss.SECURITY_STATION && station.hasValidNetwork()) {
+            AxisAlignedBB aabb = station.getAffectingAABB();
+            if(placementRange) aabb = aabb.grow(16);
+            return aabb.contains(new Vec3d(pos));
+        }
+        return false;
+    }
+
 }

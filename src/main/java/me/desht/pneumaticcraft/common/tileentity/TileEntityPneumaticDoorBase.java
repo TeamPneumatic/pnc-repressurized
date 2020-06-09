@@ -109,7 +109,7 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase
                 AxisAlignedBB aabb = new AxisAlignedBB(getPos().getX() - range, getPos().getY() - range, getPos().getZ() - range, getPos().getX() + range + 1, getPos().getY() + range + 1, getPos().getZ() + range + 1);
                 List<EntityPlayer> players = getWorld().getEntitiesWithinAABB(EntityPlayer.class, aabb);
                 for (EntityPlayer player : players) {
-                    if (PneumaticCraftUtils.getProtectingSecurityStations(getWorld(), getPos(), player, false, false) == 0) {
+                    if (TileEntitySecurityStation.getProtectingSecurityStations(getWorld(), getPos(), player, false, false) == 0) {
                         if (redstoneMode == 0) {
                             return true;
                         } else {

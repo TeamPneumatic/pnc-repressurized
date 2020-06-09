@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.ai;
 import me.desht.pneumaticcraft.api.item.IItemRegistry.EnumUpgrade;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
+import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
 import me.desht.pneumaticcraft.common.util.GlobalTileEntityCacheManager;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -50,7 +51,7 @@ public class DroneGoToChargingStation extends EntityAIBase {
         validChargingStations.sort(Comparator.comparingDouble(arg -> PneumaticCraftUtils.distBetweenSq(arg.getPos().getX(), arg.getPos().getY(), arg.getPos().getZ(), drone.posX, drone.posY, drone.posZ)));
 
         for (TileEntityChargingStation station : validChargingStations) {
-            boolean protect = PneumaticCraftUtils.getProtectingSecurityStations(drone.world, station.getPos(), drone.getFakePlayer(), false, false) > 0;
+            boolean protect = TileEntitySecurityStation.getProtectingSecurityStations(drone.world, station.getPos(), drone.getFakePlayer(), false, false) > 0;
             BlockPos pos = new BlockPos(station.getPos());
             if (protect) {
                 drone.addDebugEntry("gui.progWidget.chargingStation.debug.protected", pos);

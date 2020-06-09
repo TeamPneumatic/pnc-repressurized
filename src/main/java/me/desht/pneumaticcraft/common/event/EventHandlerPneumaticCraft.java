@@ -35,8 +35,8 @@ import me.desht.pneumaticcraft.common.semiblock.SemiBlockManager;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefinery;
+import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -197,7 +197,7 @@ public class EventHandlerPneumaticCraft {
             if (event.getWorld() != null && !event.getWorld().isRemote) {
                 if (interactedBlock != Blockss.SECURITY_STATION || event instanceof PlayerInteractEvent.LeftClickBlock) {
                     boolean tryingToPlaceSecurityStation = heldItem.getItem() instanceof ItemBlock && ((ItemBlock) heldItem.getItem()).getBlock() == Blockss.SECURITY_STATION;
-                    int blockingStations = PneumaticCraftUtils.getProtectingSecurityStations(event.getWorld(), event.getPos(), event.getEntityPlayer(), true, tryingToPlaceSecurityStation);
+                    int blockingStations = TileEntitySecurityStation.getProtectingSecurityStations(event.getWorld(), event.getPos(), event.getEntityPlayer(), true, tryingToPlaceSecurityStation);
                     if (blockingStations > 0) {
                         event.setCanceled(true);
                         event.getEntityPlayer().sendStatusMessage(

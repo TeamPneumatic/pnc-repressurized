@@ -328,7 +328,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
         }
 
         private boolean isExcludedBySecurityStations(EntityPlayer player) {
-            Iterator<TileEntitySecurityStation> iterator = PneumaticCraftUtils.getSecurityStations(getWorld(), getPos(), false).iterator();
+            Iterator<TileEntitySecurityStation> iterator = TileEntitySecurityStation.getSecurityStations(getWorld(), getPos(), false).iterator();
             if (iterator.hasNext()) { //When there are Security Stations, all stations need to be allowing the player.
                 while (iterator.hasNext()) {
                     if (!iterator.next().doesAllowPlayer(player)) return false;

@@ -4,7 +4,6 @@ import me.desht.pneumaticcraft.PneumaticCraftRepressurized;
 import me.desht.pneumaticcraft.api.item.IInventoryItem;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.CoordTrackUpgradeHandler;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
-import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
 import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Names;
@@ -56,7 +55,6 @@ import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.util.*;
-import java.util.stream.Stream;
 
 public class PneumaticCraftUtils {
     private static final List<Item> inventoryItemBlacklist = new ArrayList<>();
@@ -383,44 +381,6 @@ public class PneumaticCraftUtils {
         }
 
         return all.toString();
-    }
-
-    /**
-     * Get a count of the number of security stations protecting the given blockpos from the given player.
-     *
-     * @param world the world
-     * @param pos the blockpos whose protection is being checked
-     * @param player the player who is being protected from
-     * @param showRangeLines whether to display the stations' range bounding boxes
-     * @param placementRange true when trying to place a block, false when trying to interact with a block
-     * @return the number of security stations preventing access
-     */
-    public static int getProtectingSecurityStations(World world, BlockPos pos, EntityPlayer player, boolean showRangeLines, boolean placementRange) {
-        int blockingStations = 0;
-        Iterator<TileEntitySecurityStation> iterator = getSecurityStations(world, pos, placementRange).iterator();
-        for (TileEntitySecurityStation station; iterator.hasNext();) {
-            station = iterator.next();
-            if (!station.doesAllowPlayer(player)) {
-                blockingStations++;
-                if (showRangeLines) station.showRangeLines();
-            }
-        }
-        return blockingStations;
-    }
-
-    public static Stream<TileEntitySecurityStation> getSecurityStations(final World world, final BlockPos pos, final boolean placementRange) {
-        return GlobalTileEntityCacheManager.getInstance().securityStations
-                                                         .stream()
-                                                         .filter(station -> isValidAndInRange(pos, placementRange, station));     
-    }
-    
-    private static boolean isValidAndInRange(BlockPos pos, boolean placementRange, TileEntitySecurityStation station){
-        if (station.hasValidNetwork()) {
-            AxisAlignedBB aabb = station.getAffectingAABB();
-            if(placementRange) aabb = aabb.grow(16);
-            return aabb.contains(new Vec3d(pos));
-        }
-        return false;
     }
 
     public static RayTraceResult getEntityLookedObject(EntityLivingBase entity) {
