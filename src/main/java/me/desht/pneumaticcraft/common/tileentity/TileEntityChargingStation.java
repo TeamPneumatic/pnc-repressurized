@@ -102,10 +102,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
 
             int airToTransfer = (int) (PneumaticValues.CHARGING_STATION_CHARGE_RATE * getSpeedMultiplierFromUpgrades());
 
-            List<IAirHandler> l = findChargeable();
-            for (int i = 0; i < l.size() && airHandler.getAir() > 0; i++) {
-                IAirHandler itemAirHandler = l.get(i);
-
+            for (IAirHandler itemAirHandler : findChargeable()) {
                 float itemPressure = itemAirHandler.getPressure();
                 float itemVolume = itemAirHandler.getVolume();
                 float delta = Math.abs(getPressure() - itemPressure) / 2.0F;
