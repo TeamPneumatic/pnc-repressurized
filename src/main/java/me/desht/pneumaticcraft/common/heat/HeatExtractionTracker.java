@@ -53,14 +53,14 @@ public class HeatExtractionTracker extends WorldSavedData {
     @Override
     public CompoundNBT write(CompoundNBT compound) {
         ListNBT list = new ListNBT();
-        for (Map.Entry<BlockPos, Double> entry : extracted.entrySet()) {
+        extracted.forEach((pos, heat) -> {
             CompoundNBT sub = new CompoundNBT();
-            sub.putInt("x", entry.getKey().getX());
-            sub.putInt("y", entry.getKey().getY());
-            sub.putInt("z", entry.getKey().getZ());
-            sub.putDouble("heat", entry.getValue());
+            sub.putInt("x", pos.getX());
+            sub.putInt("y", pos.getY());
+            sub.putInt("z", pos.getZ());
+            sub.putDouble("heat", heat);
             list.add(sub);
-        }
+        });
         compound.put("extracted", list);
         return compound;
     }
