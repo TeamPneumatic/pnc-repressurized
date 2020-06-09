@@ -6,6 +6,11 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
+### 0.11.15-??? (unreleased)
+#### Fixes
+* Fixed Charging Station not allowing items to discharge into it if the station's pressure was at 0.
+* Made the Electrostatic Compressor item tooltip much shorter (the long text is still visible in the compressor GUI side tab)
+
 ### 0.11.14-395 (18 Apr 2020)
 #### Updates
 * Programmable Controller now stores Forge Energy (up to 100,000 FE).  This allows the Import RF & Export RF programming widgets to work as you'd expect.
