@@ -133,6 +133,7 @@ public class PneumaticCraftRepressurized {
         NetworkHandler.init();
 
         Fluids.init();
+        OreDictionaryHelper.addOreDictEntries();
         CraftingRegistrator.init();
         HackableHandler.addDefaultEntries();
         SensorHandler.getInstance().init();
@@ -149,8 +150,6 @@ public class PneumaticCraftRepressurized {
         if (ConfigHandler.general.enableDungeonLoot) {
             LootTableList.register(RL("inject/simple_dungeon_loot"));
         }
-
-        OreDictionaryHelper.addOreDictEntries();
 
         MinecraftForge.EVENT_BUS.register(Itemss.GPS_AREA_TOOL);
         MinecraftForge.EVENT_BUS.register(CommonArmorHandler.class);
