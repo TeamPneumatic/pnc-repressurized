@@ -11,7 +11,7 @@ Changes are in reverse chronological order; newest changes at the top.
 ### Updates
 * Logistics Core recipe has been changed to create two cores instead of one
 * Did some drone pathfinding optimisation, in particular reducing server-side CPU usage when drones can't find a path
-  * Added some checks to cull a lot of unnecessary searches
+  * Added some checks to cull a lot of unnecessary pathing searches
 * Small visual improvement for the Omnidirection & Liquid Hopppers
   * Output spout is slightly narrower, and the output end is a little darker
 * Pastebin GUI: added "Pretty?" option to control pretty-printing of JSON output to Pastebin/clipboard
@@ -23,9 +23,11 @@ Changes are in reverse chronological order; newest changes at the top.
   * Shown in item tooltip for drones in item form
   * Shown in TOP/Waila display for drone entities
 * It's now possible to attach levers/buttons/etc. to the side of camouflaged blocks (assuming the camouflage is solid, of course)
-  * This is particularly nice for camouflaged Pressure Tubes with Redstone Modules on them
+  * This is particularly nice for camouflaged Pressure Tubes with Redstone Modules
+* Elevators with Charging Upgrades installed will now only add air back if it's safe to do so (pressure < 4.9 bar)  
   
 ### Fixes
+* Fixed Charging Stations at 0 bar not being able to discharge pressure from items into the station
 * Drones should be able to place blocks much more reliably now
 * Fixed Drones (and other entities) sometimes getting badly confused while trying to path across or through some PneumaticCraft blocks
   * Blocks were wrongly reporting themselves suitable for pathing through, when their hitbox actually didn't allow it
