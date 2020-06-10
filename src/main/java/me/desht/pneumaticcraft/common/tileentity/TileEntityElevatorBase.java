@@ -162,7 +162,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
                     NetworkHandler.sendToAllAround(new PacketPlayMovingSound(MovingSounds.Sound.ELEVATOR, getCoreElevator()), tp);
                 }
             }
-            if (getUpgrades(EnumUpgrade.CHARGING) > 0) {
+            if (getUpgrades(EnumUpgrade.CHARGING) > 0 && getPressure() < dangerPressure - 0.1f) {
                 float mul = 0.15f * Math.min(4, getUpgrades(EnumUpgrade.CHARGING));
                 addAir((int) ((oldExtension - extension) * PneumaticValues.USAGE_ELEVATOR * mul * (getSpeedUsageMultiplierFromUpgrades() / speedMultiplier)));
             }
