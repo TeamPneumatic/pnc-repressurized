@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
@@ -7,6 +8,7 @@ import me.desht.pneumaticcraft.common.inventory.ContainerSentryTurret;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateTextfield;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySentryTurret;
+import me.desht.pneumaticcraft.common.util.EntityFilter;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.resources.I18n;
@@ -19,6 +21,7 @@ import java.util.List;
 
 public class GuiSentryTurret extends GuiPneumaticContainerBase<ContainerSentryTurret,TileEntitySentryTurret> {
     private WidgetTextField entityFilter;
+    private WidgetButtonExtended errorButton;
 
     public GuiSentryTurret(ContainerSentryTurret container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
@@ -32,12 +35,37 @@ public class GuiSentryTurret extends GuiPneumaticContainerBase<ContainerSentryTu
     @Override
     public void init() {
         super.init();
+
         addButton(entityFilter = new WidgetTextField(font, guiLeft + 80, guiTop + 63, 70, font.FONT_HEIGHT));
         entityFilter.setMaxStringLength(256);
-        entityFilter.setText(te.getText(0));
-        entityFilter.setResponder(s -> sendDelayed(5));
         entityFilter.setFocused2(true);
         setFocused(entityFilter);
+
+        addButton(errorButton = new WidgetButtonExtended(guiLeft + 155, guiTop + 52, 16, 16, ""));
+        errorButton.setRenderedIcon(Textures.GUI_PROBLEMS_TEXTURE).setVisible(false);
+    }
+
+    @Override
+    public void tick() {
+        if (firstUpdate) {
+            // setting the filter value in the textfield on init() isn't reliable; might not be sync'd in time
+            entityFilter.setText(te.getText(0));
+            entityFilter.setResponder(this::onEntityFilterChanged);
+        }
+
+        super.tick();
+
+        errorButton.visible = !errorButton.getTooltip().isEmpty();
+    }
+
+    private void onEntityFilterChanged(String newText) {
+        try {
+            new EntityFilter(newText);
+            errorButton.setTooltipText("");
+            sendDelayed(5);
+        } catch (IllegalArgumentException e) {
+            errorButton.setTooltipText(e.getMessage());
+        }
     }
 
     @Override

@@ -49,7 +49,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
     private final LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> inventory);
 
     @GuiSynced
-    private String entityFilter = "";
+    private String entityFilter = "@mob";
     @GuiSynced
     private int redstoneMode;
     @DescSynced
