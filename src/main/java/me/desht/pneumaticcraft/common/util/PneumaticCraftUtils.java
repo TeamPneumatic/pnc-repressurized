@@ -21,8 +21,6 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.pathfinding.PathFinder;
-import net.minecraft.pathfinding.WalkNodeProcessor;
 import net.minecraft.util.Direction;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
@@ -49,6 +47,7 @@ import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class PneumaticCraftUtils {
@@ -119,47 +118,44 @@ public class PneumaticCraftUtils {
         }
     }
 
-    public static List<String> splitString(String text) {
-        return splitString(text, GuiConstants.MAX_CHAR_PER_LINE_LEFT);
+    public static List<String> splitString(String text, int maxCharPerLine) {
+        List<String> result = new ArrayList<>();
+
+        StringBuilder builder = new StringBuilder(text.length());
+        String format = "";
+        for (String para : text.split(Pattern.quote("${br}"))) {
+            StringTokenizer tok = new StringTokenizer(para, " ");
+            int lineLen = 0;
+            while (tok.hasMoreTokens()) {
+                String word = tok.nextToken();
+                int idx = word.lastIndexOf("\u00a7");
+                if (idx >= 0 && idx < word.length() - 1) {
+                    // note the formatting sequence so we can apply to next line if any
+                    format = word.substring(idx, idx + 2);
+                    // formatting sequence does not contribute to line length
+                    lineLen -= 2;
+                }
+                if (lineLen + word.length() > maxCharPerLine) {
+                    result.add(builder.toString());
+                    builder.delete(0, builder.length());
+                    builder.append(format);
+                    lineLen = 0;
+                } else if (lineLen > 0) {
+                    builder.append(" ");
+                    lineLen++;
+                }
+                builder.append(word);
+                lineLen += word.length();
+            }
+            result.add(builder.toString());
+            builder.delete(0, builder.length());
+            builder.append(format);
+        }
+        return result;
     }
 
-    /**
-     * This method takes one long string, and cuts it into lines which have
-     * a maxCharPerLine and returns it in a String list.
-     * It also preserves color formats. '\n' can be used to force a carriage
-     * return.
-     */
-    public static List<String> splitString(String text, int maxCharPerLine) {
-        StringTokenizer tok = new StringTokenizer(text, " ");
-        StringBuilder output = new StringBuilder(text.length());
-        List<String> textList = new ArrayList<>();
-        String color = "";
-        int lineLen = 0;
-        while (tok.hasMoreTokens()) {
-            String word = tok.nextToken();
-            if (word.contains("\u00a7")) {
-                // text formatter sequence: not the colour so we can apply it to the start of the next line, if any
-                for (int i = 0; i < word.length() - 1; i++) {
-                    if (word.substring(i, i + 2).contains("\u00a7"))
-                        color = word.substring(i, i + 2); // retrieve the color format
-                }
-                lineLen -= 2; // text formatter sequence does not contribute to the line length
-            }
-            if (lineLen + word.length() > maxCharPerLine || word.contains("\\n")) {
-                word = word.replace("\\n", "");
-                textList.add(output.toString());
-                output.delete(0, output.length());
-                output.append(color);
-                lineLen = 0;
-            } else if (lineLen > 0) {
-                output.append(" ");
-                lineLen++;
-            }
-            output.append(word);
-            lineLen += word.length();
-        }
-        textList.add(output.toString());
-        return textList;
+    public static List<String> splitString(String text) {
+        return splitString(text, GuiConstants.MAX_CHAR_PER_LINE_LEFT);
     }
 
     public static List<ITextComponent> asStringComponent(List<String> l) {
@@ -412,14 +408,6 @@ public class PneumaticCraftUtils {
         return new ImmutablePair<>(entityVec, maxDistVec);
     }
 
-    public static BlockPos getEntityLookedBlock(LivingEntity entity, float maxDistance) {
-        RayTraceResult hit = getEntityLookedObject(entity, maxDistance);
-        if (hit.getType() != RayTraceResult.Type.BLOCK) {
-            return null;
-        }
-        return ((BlockRayTraceResult) hit).getPos();
-    }
-
     public static double distBetween(double x1, double y1, double z1, double x2, double y2, double z2) {
         return Math.sqrt(distBetweenSq(x1, y1, z1, x2, y2, z2));
     }
@@ -450,14 +438,6 @@ public class PneumaticCraftUtils {
 
     public static double distBetween(Vec3i pos1, Vec3i pos2) {
         return distBetween(pos1, pos2.getX() + 0.5, pos2.getY() + 0.5, pos2.getZ() + 0.5);
-    }
-
-    public static double distBetween(Vec3d vec, double x, double y, double z) {
-        return distBetween(vec.x, vec.y, vec.z, x, y, z);
-    }
-
-    public static double distBetween(Vec3d vec1, Vec3d vec2) {
-        return distBetween(vec1, vec2.x, vec2.y, vec2.z);
     }
 
     public static boolean doesItemMatchFilter(@Nonnull ItemStack filterStack, @Nonnull ItemStack stack, boolean checkDurability, boolean checkNBT, boolean checkModSimilarity) {
@@ -589,12 +569,6 @@ public class PneumaticCraftUtils {
             result = new EntityRayTraceResult(focusedEntity, hitVec);
         }
         return result;
-    }
-
-    public static PathFinder getPathFinder() {
-        WalkNodeProcessor processor = new WalkNodeProcessor();
-        processor.setCanEnterDoors(true);
-        return new PathFinder(processor, CoordTrackUpgradeHandler.SEARCH_RANGE * 16);
     }
 
     /**

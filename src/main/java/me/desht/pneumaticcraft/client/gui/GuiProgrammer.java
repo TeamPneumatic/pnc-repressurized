@@ -904,7 +904,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
                 if (!coordinate.isUsingVariable()) {
                     BlockPos c = coordinate.getCoordinate();
                     String chunkString = "(" + c.getX() + ", " + c.getY() + ", " + c.getZ() + ")";
-                    if (PneumaticCraftUtils.distBetween(c, 0, 0, 0) < 64) {
+                    if (PneumaticCraftUtils.distBetweenSq(c, 0, 0, 0) < 4096) {
                         // When the coordinate value is close to 0, there's a low chance it means a position, and rather an offset.
                         if (tooltip != null)
                             tooltip.add(I18n.format("pneumaticcraft.gui.programmer.button.convertToRelative.coordIsNotChangedWarning", chunkString));

@@ -988,6 +988,7 @@ public class EntityDrone extends EntityDroneBase implements
         return ownerUUID;
     }
 
+    @Override
     public int getUpgrades(EnumUpgrade upgrade) {
         return upgradeCache.getUpgrades(upgrade);
     }

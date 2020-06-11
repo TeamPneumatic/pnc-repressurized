@@ -29,7 +29,6 @@ public class RenderNavigator {
         PlayerEntity player = Minecraft.getInstance().player;
         MobEntity e = PneumaticCraftUtils.createDummyEntity(player);
         path = e.getNavigator().getPathToPos(targetPos, 0);
-//        path = PneumaticCraftUtils.getPathFinder().findPath(player.world, PneumaticCraftUtils.createDummyEntity(player), targetPos.getX() + 0.5, targetPos.getY() + 0.5, targetPos.getZ() + 0.5, CoordTrackUpgradeHandler.SEARCH_RANGE);
         // TODO: this just doesn't work anymore
         if (!tracedToDestination()) {
             path = CoordTrackUpgradeHandler.getDronePath(player, targetPos);

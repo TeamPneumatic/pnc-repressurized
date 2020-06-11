@@ -161,7 +161,6 @@ public class CoordTrackUpgradeHandler implements IUpgradeRenderHandler {
         BlockPos navigatingPos = world.getHeight(Heightmap.Type.WORLD_SURFACE, new BlockPos(player));
         MobEntity e = PneumaticCraftUtils.createDummyEntity(player);
         Path path = e.getNavigator().getPathToPos(navigatingPos, 0);
-//        Path path = PneumaticCraftUtils.getPathFinder().findPath(world, PneumaticCraftUtils.createDummyEntity(player), navigatingPos.getX(), navigatingPos.getY(), navigatingPos.getZ(), (float)SEARCH_RANGE);
         if (path != null) {
             for (int i = 0; i < path.getCurrentPathLength(); i++) {
                 PathPoint pathPoint = path.getPathPointFromIndex(i);

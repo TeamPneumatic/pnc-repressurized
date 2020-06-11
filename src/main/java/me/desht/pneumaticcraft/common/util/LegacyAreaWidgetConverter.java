@@ -8,7 +8,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Exists to support saved drone programs from 1.12 and older versions of PneumaticCraft
+ * Exists to support saved drone programs from 1.12 and older versions of PneumaticCraft, and also to support
+ * the Computer Control progwidget's "addArea" and "removeArea" methods.
  */
 public class LegacyAreaWidgetConverter {
     private static final Map<EnumOldAreaType, String> oldFormatToAreaTypes = new HashMap<>();

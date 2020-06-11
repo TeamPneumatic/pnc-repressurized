@@ -12,7 +12,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.BoatEntity;
 import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
+import net.minecraft.entity.item.PaintingEntity;
+import net.minecraft.entity.item.minecart.MinecartEntity;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.CatEntity;
@@ -41,6 +42,19 @@ public class EntityFilter implements Predicate<Entity>, com.google.common.base.P
     private static final EntityFilter ALLOW_FILTER = EntityFilter.allow();
     private static final EntityFilter DENY_FILTER = EntityFilter.deny();
 
+    private static final Map<String,Class<?>> ENTITY_CLASSES = new HashMap<>();
+    static {
+        ENTITY_CLASSES.put("mob", IMob.class);
+        ENTITY_CLASSES.put("animal", AnimalEntity.class);
+        ENTITY_CLASSES.put("living", LivingEntity.class);
+        ENTITY_CLASSES.put("player", PlayerEntity.class);
+        ENTITY_CLASSES.put("item", ItemEntity.class);
+        ENTITY_CLASSES.put("drone", EntityDrone.class);
+        ENTITY_CLASSES.put("boat", BoatEntity.class);
+        ENTITY_CLASSES.put("minecart", MinecartEntity.class);
+        ENTITY_CLASSES.put("painting", PaintingEntity.class);
+    }
+
     private final List<EntityMatcher> matchers = new ArrayList<>();
     private final boolean sense;
     private final String rawFilter;
@@ -64,8 +78,8 @@ public class EntityFilter implements Predicate<Entity>, com.google.common.base.P
         if (widget.getParameters().size() > 1) {
             int pos = widget.getEntityFilterPosition();
             IProgWidget w = widget.getConnectedParameters()[whitelist ? pos : widget.getParameters().size() + pos];
-            List<String> l = new ArrayList<>();
             if (w instanceof ProgWidgetText) {
+                List<String> l = new ArrayList<>();
                 while (w instanceof ProgWidgetText) {
                     String str = ((ProgWidgetText) w).string;
                     Validate.isTrue(!str.startsWith("!"), "'!' negation can't be used here (put blacklist filters on left of widget)");
@@ -178,7 +192,6 @@ public class EntityFilter implements Predicate<Entity>, com.google.common.base.P
         private final List<Pair<Modifier,String>> modifiers = new ArrayList<>();
 
         private EntityMatcher(String element) {
-
             String[] splits = ELEMENT_SUBDIVIDER.split(element);
             for (int i = 0; i < splits.length; i++) {
                 splits[i] = splits[i].trim();
@@ -189,7 +202,8 @@ public class EntityFilter implements Predicate<Entity>, com.google.common.base.P
                 if (StringUtils.countMatches(element, "(") != StringUtils.countMatches(element, ")")) {
                     throw new IllegalArgumentException("Mismatched opening/closing braces");
                 }
-                typeClass = getClassFor(sub);
+                typeClass = ENTITY_CLASSES.get(sub);
+                Validate.isTrue(typeClass != null, "Unknown entity type specifier: @" + sub);
                 regex = null;
             } else {
                 typeClass = null;
@@ -232,39 +246,6 @@ public class EntityFilter implements Predicate<Entity>, com.google.common.base.P
                 }
             }
             return true;
-        }
-
-        private Class<?> getClassFor(String substring) {
-            Class<?> typeClass;
-            switch (substring) {
-                case "mob":
-                    typeClass = IMob.class;  // IMob matches some hostile creatures that EntityMob doesn't
-                    break;
-                case "animal":
-                    typeClass = AnimalEntity.class;
-                    break;
-                case "living":
-                    typeClass = LivingEntity.class;
-                    break;
-                case "player":
-                    typeClass = PlayerEntity.class;
-                    break;
-                case "item":
-                    typeClass = ItemEntity.class;
-                    break;
-                case "minecart":
-                    typeClass = AbstractMinecartEntity.class;
-                    break;
-                case "drone":
-                    typeClass = EntityDrone.class;
-                    break;
-                case "boat":
-                    typeClass = BoatEntity.class;
-                    break;
-                default:
-                    throw new IllegalArgumentException("Unknown entity type specifier: @" + substring);
-            }
-            return typeClass;
         }
     }
 

@@ -18,7 +18,7 @@ public enum ApplicableUpgradesDB {
 
     // lookup table: 2 * sqrt(n) for 0..25
     private static final float[] VOLUME_MULT = new float[] {
-            1f,
+            1f,  // special case ... 2 * sqrt(0) is 0, but we need 1 here
             2f,
             2.82842712474619f,
             3.46410161513775f,

@@ -11,9 +11,10 @@ import java.util.Map;
 public interface IUpgradeAcceptor {
     /**
      * This method is called right when an instance of this interface is registered, be aware.
-     * It should return an set of all upgrades that are applicable for this machine/item/...
+     * It should return a map which maps the collection of accepted upgrades for this machine/item to the
+     * maximum number of each upgrade which can be inserted.
      *
-     * @return a set of the items which will be accepted as upgrades
+     * @return a map of the accepted upgrades and their maximum count
      */
     Map<EnumUpgrade, Integer> getApplicableUpgrades();
 

@@ -32,7 +32,7 @@ public class DroneProgramBuilder {
             // Add whitelist pieces
             if (!instruction.whitelist.isEmpty()) {
                 for (int paramIdx = 0; paramIdx < instruction.mainInstruction.getParameters().size(); paramIdx++) {
-                    ProgWidgetType type = instruction.mainInstruction.getParameters().get(paramIdx);
+                    ProgWidgetType<?> type = instruction.mainInstruction.getParameters().get(paramIdx);
                     List<IProgWidget> whitelist = instruction.whitelist.stream()
                             .filter(w -> type == w.getType())
                             .collect(Collectors.toList());
@@ -57,7 +57,6 @@ public class DroneProgramBuilder {
         final List<IProgWidget> whitelist;
 
         DroneInstruction(IProgWidget mainInstruction, List<IProgWidget> whitelist) {
-            sanityCheck(mainInstruction, whitelist);
             this.mainInstruction = mainInstruction;
             this.whitelist = whitelist;
         }
@@ -65,18 +64,6 @@ public class DroneProgramBuilder {
         void addToWidgets(List<IProgWidget> widgets) {
             widgets.add(mainInstruction);
             widgets.addAll(whitelist);
-        }
-
-        private void sanityCheck(IProgWidget mainInstruction, List<IProgWidget> whitelist) {
-//            int nParams = mainInstruction.getParameters().size();
-//            Validate.isTrue(whitelist.size() <= nParams, "Must supply at most " + nParams + " parameters for the whitelist!");
-//            for (int i = 0; i < whitelist.size(); i++) {
-//                Validate.isTrue(whitelist.get(i).getType() == mainInstruction.getParameters().get(i),
-//                        String.format("Expected type %s, got %s for param %d",
-//                                mainInstruction.getParameters().get(i).getRegistryName(),
-//                                whitelist.get(i).getTypeID(), i));
-//
-//            }
         }
     }
 }
