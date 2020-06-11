@@ -8,7 +8,6 @@ import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.client.gui.IGuiDrone;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.core.ModRegistries;
 import me.desht.pneumaticcraft.common.item.ICustomTooltipName;
 import me.desht.pneumaticcraft.common.item.ItemMicromissiles;
@@ -183,31 +182,34 @@ public class TooltipEventHandler {
             int width = 0;
             FontRenderer fr = event.getFontRenderer();
             int y = event.getY() + fr.FONT_HEIGHT * 2 + 5;
+
+            RenderSystem.translated(0, 0, 300);
             width = Math.max(width, renderString(fr, (I18n.format("pneumaticcraft.gui.micromissile.topSpeed")), event.getX(), y));
             width = Math.max(width, renderString(fr, (I18n.format("pneumaticcraft.gui.micromissile.turnSpeed")), event.getX(), y + fr.FONT_HEIGHT));
             width = Math.max(width, renderString(fr, (I18n.format("pneumaticcraft.gui.micromissile.damage")), event.getX(), y + fr.FONT_HEIGHT * 2));
+            RenderSystem.translated(0, 0, -300);
+
             int barX = event.getX() + width + 2;
             int barW = event.getWidth() - width - 10;
             RenderSystem.disableTexture();
             RenderSystem.lineWidth(10);
             GL11.glEnable(GL11.GL_LINE_STIPPLE);
             GL11.glLineStipple(1, (short)0xFEFE);
-            GuiUtils.glColorHex(0x00C000, 255);
-
+            RenderSystem.shadeModel(GL11.GL_SMOOTH);
             drawLine(barX, y, (int) (barW * NBTUtil.getFloat(stack, ItemMicromissiles.NBT_TOP_SPEED)));
             drawLine(barX, y + fr.FONT_HEIGHT, (int) (barW * NBTUtil.getFloat(stack, ItemMicromissiles.NBT_TURN_SPEED)));
             drawLine(barX, y + 2 * fr.FONT_HEIGHT, (int) (barW * NBTUtil.getFloat(stack, ItemMicromissiles.NBT_DAMAGE)));
-
             RenderSystem.lineWidth(1);
             GL11.glDisable(GL11.GL_LINE_STIPPLE);
+            RenderSystem.shadeModel(GL11.GL_FLAT);
         }
     }
 
     private static void drawLine(int x, int y, int length) {
         BufferBuilder bb = Tessellator.getInstance().getBuffer();
-        bb.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION);
-        bb.pos(x, y + 4, 0);
-        bb.pos(x + length, y + 4, 0);
+        bb.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR);
+        bb.pos(x, y + 4, 0).color(128, 128, 0, 255).endVertex();
+        bb.pos(x + length, y + 4, 0).color(0, 192, 0, 255).endVertex();
         Tessellator.getInstance().draw();
     }
 
