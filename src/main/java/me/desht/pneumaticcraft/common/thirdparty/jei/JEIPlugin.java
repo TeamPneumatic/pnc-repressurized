@@ -95,7 +95,7 @@ public class JEIPlugin implements IModPlugin {
     }
 
     private void addStackInfo(IRecipeRegistration registry, ItemStack stack) {
-        String k = ICustomTooltipName.getTranslationKey(stack);
+        String k = ICustomTooltipName.getTranslationKey(stack, false);
         if (I18n.hasKey(k)) {
             String raw = TextFormatting.getTextWithoutFormattingCodes(I18n.format(k));
             registry.addIngredientInfo(stack, VanillaTypes.ITEM, raw.split(" \\\\n"));

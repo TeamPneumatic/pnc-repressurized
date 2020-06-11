@@ -137,12 +137,13 @@ public class PneumaticCraftUtils {
         int lineLen = 0;
         while (tok.hasMoreTokens()) {
             String word = tok.nextToken();
-            if (word.contains("\u00a7")) { // if there is a text formatter present.
+            if (word.contains("\u00a7")) {
+                // text formatter sequence: not the colour so we can apply it to the start of the next line, if any
                 for (int i = 0; i < word.length() - 1; i++) {
                     if (word.substring(i, i + 2).contains("\u00a7"))
                         color = word.substring(i, i + 2); // retrieve the color format
                 }
-                lineLen -= 2;// don't count a color formatter with the line length.
+                lineLen -= 2; // text formatter sequence does not contribute to the line length
             }
             if (lineLen + word.length() > maxCharPerLine || word.contains("\\n")) {
                 word = word.replace("\\n", "");

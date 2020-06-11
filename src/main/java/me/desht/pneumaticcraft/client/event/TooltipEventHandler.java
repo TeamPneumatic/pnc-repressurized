@@ -83,13 +83,13 @@ public class TooltipEventHandler {
             PneumaticCraftUtils.sortCombineItemStacksAndToString(curInfo, stacks.toArray(new ItemStack[0]), item.getTooltipPrefix(stack));
         }
 
-        String key = ICustomTooltipName.getTranslationKey(stack);
+        String key = ICustomTooltipName.getTranslationKey(stack, true);
         if (I18n.hasKey(key)) {
             if (ClientUtils.hasShiftDown()) {
                 String translatedInfo = TextFormatting.AQUA + I18n.format(key);
                 curInfo.addAll(PneumaticCraftUtils.asStringComponent(PneumaticCraftUtils.splitString(translatedInfo, 50)));
                 if (!ThirdPartyManager.instance().getDocsProvider().isInstalled()) {
-                    curInfo.add(xlate("pneumaticcraft.gui.tab.info.assistIGW"));
+                    curInfo.add(xlate("pneumaticcraft.gui.tab.info.installDocsProvider"));
                 }
             } else {
                 curInfo.add(xlate("pneumaticcraft.gui.tooltip.sneakForInfo").applyTextStyle(TextFormatting.AQUA));
