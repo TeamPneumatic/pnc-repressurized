@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.common.config.subconfig.MicromissileDefaults;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.entity.projectile.EntityMicromissile;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -54,6 +55,11 @@ public class ItemMicromissiles extends Item {
     @Override
     public int getMaxDamage(ItemStack stack) {
         return PNCConfig.Common.Micromissiles.missilePodSize;
+    }
+
+    @Override
+    public boolean getIsRepairable(ItemStack toRepair, ItemStack repair) {
+        return toRepair.getItem() == this && repair.getItem() == Blocks.TNT.asItem();
     }
 
     @Override
