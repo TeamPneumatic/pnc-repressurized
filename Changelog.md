@@ -6,7 +6,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.12.2
 
-### 0.11.15-??? (unreleased)
+### 0.11.15-398 (12 Jun 2020)
 #### Fixes
 * Fixed Charging Station not allowing items to discharge into it if the station's pressure was at 0.
 * Made the Electrostatic Compressor item tooltip much shorter (the long text is still visible in the compressor GUI side tab)
