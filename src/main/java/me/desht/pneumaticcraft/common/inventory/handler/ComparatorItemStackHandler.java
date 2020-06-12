@@ -17,8 +17,8 @@ public class ComparatorItemStackHandler extends BaseItemStackHandler {
 
     @Override
     protected void onContentsChanged(int slot) {
-        super.onContentsChanged(slot);
         signalLevel = -1;
+        super.onContentsChanged(slot);
     }
 
     @Override
