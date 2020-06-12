@@ -120,7 +120,7 @@ public class TooltipEventHandler {
             Map<ResourceLocation, Integer> widgetMap = getPuzzleSummary(widgets);
             for (Map.Entry<ResourceLocation, Integer> entry : widgetMap.entrySet()) {
                 TextFormatting[] prefix = new TextFormatting[0];
-                ProgWidgetType widgetType = ModRegistries.PROG_WIDGETS.getValue(entry.getKey());
+                ProgWidgetType<?> widgetType = ModRegistries.PROG_WIDGETS.getValue(entry.getKey());
                 Screen curScreen = Minecraft.getInstance().currentScreen;
                 if (curScreen instanceof IGuiDrone) {
                     if (!((IGuiDrone) curScreen).getDrone().isProgramApplicable(widgetType)) {
@@ -178,11 +178,13 @@ public class TooltipEventHandler {
     @SubscribeEvent
     public static void renderTooltipEvent(RenderTooltipEvent.PostText event) {
         ItemStack stack = event.getStack();
-        if (stack.getItem() instanceof ItemMicromissiles && stack.hasTag()) {
+        if (stack.getItem() instanceof ItemMicromissiles
+                && stack.hasTag()
+                && ItemMicromissiles.getFireMode(stack) == ItemMicromissiles.FireMode.SMART)
+        {
             int width = 0;
             FontRenderer fr = event.getFontRenderer();
             int y = event.getY() + fr.FONT_HEIGHT * 2 + 5;
-
             RenderSystem.translated(0, 0, 300);
             width = Math.max(width, renderString(fr, (I18n.format("pneumaticcraft.gui.micromissile.topSpeed")), event.getX(), y));
             width = Math.max(width, renderString(fr, (I18n.format("pneumaticcraft.gui.micromissile.turnSpeed")), event.getX(), y + fr.FONT_HEIGHT));
@@ -194,7 +196,7 @@ public class TooltipEventHandler {
             RenderSystem.disableTexture();
             RenderSystem.lineWidth(10);
             GL11.glEnable(GL11.GL_LINE_STIPPLE);
-            GL11.glLineStipple(1, (short)0xFEFE);
+            GL11.glLineStipple(1, (short) 0xFEFE);
             RenderSystem.shadeModel(GL11.GL_SMOOTH);
             drawLine(barX, y, (int) (barW * NBTUtil.getFloat(stack, ItemMicromissiles.NBT_TOP_SPEED)));
             drawLine(barX, y + fr.FONT_HEIGHT, (int) (barW * NBTUtil.getFloat(stack, ItemMicromissiles.NBT_TURN_SPEED)));
@@ -214,7 +216,7 @@ public class TooltipEventHandler {
     }
 
     private static int renderString(FontRenderer fr, String s, int x, int y) {
-        fr.drawStringWithShadow(s, x, y, 0xFFAAAAAA);
+        fr.drawStringWithShadow(s, x, y, 0xFFFFFFFF);
         return fr.getStringWidth(s);
     }
 

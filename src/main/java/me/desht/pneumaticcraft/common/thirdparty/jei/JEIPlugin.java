@@ -28,6 +28,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.RegistryObject;
 
+import java.util.regex.Pattern;
+
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
 @JeiPlugin
@@ -90,7 +92,7 @@ public class JEIPlugin implements IModPlugin {
         }
     }
 
-    private void addRecipeType(IRecipeRegistration registration, PneumaticCraftRecipeType type, ResourceLocation id) {
+    private void addRecipeType(IRecipeRegistration registration, PneumaticCraftRecipeType<?> type, ResourceLocation id) {
         registration.addRecipes(type.getRecipes(Minecraft.getInstance().world).values(), id);
     }
 
@@ -98,7 +100,7 @@ public class JEIPlugin implements IModPlugin {
         String k = ICustomTooltipName.getTranslationKey(stack, false);
         if (I18n.hasKey(k)) {
             String raw = TextFormatting.getTextWithoutFormattingCodes(I18n.format(k));
-            registry.addIngredientInfo(stack, VanillaTypes.ITEM, raw.split(" \\\\n"));
+            registry.addIngredientInfo(stack, VanillaTypes.ITEM, raw.split(Pattern.quote("${br}")));
         }
     }
 

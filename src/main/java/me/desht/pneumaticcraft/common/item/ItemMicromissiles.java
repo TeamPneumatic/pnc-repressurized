@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.common.config.subconfig.MicromissileDefaults;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.entity.projectile.EntityMicromissile;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
@@ -22,6 +23,10 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import net.minecraftforge.event.entity.player.AnvilRepairEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import org.apache.commons.lang3.Validate;
 
 import java.util.List;
 
@@ -45,6 +50,10 @@ public class ItemMicromissiles extends Item {
             } catch (IllegalArgumentException e) {
                 return SMART;
             }
+        }
+
+        public String getTranslationKey() {
+            return "pneumaticcraft.gui.micromissile.mode." + this.toString().toLowerCase();
         }
     }
 
@@ -117,18 +126,23 @@ public class ItemMicromissiles extends Item {
 
         curInfo.add(xlate("pneumaticcraft.gui.micromissile.remaining", stack.getMaxDamage() - stack.getDamage()));
         if (stack.hasTag()) {
-            CompoundNBT tag = stack.getTag();
-            // padding for ClientEventHandler#renderTooltipEvent() to draw in
-            curInfo.add(new StringTextComponent(" "));
-            curInfo.add(new StringTextComponent(" "));
-            curInfo.add(new StringTextComponent(" "));
-            String filter = tag.getString(NBT_FILTER);
-            if (!filter.isEmpty()) {
-                curInfo.add(xlate("pneumaticcraft.gui.sentryTurret.targetFilter", filter));
+            FireMode mode = getFireMode(stack);
+            if (mode == FireMode.SMART) {
+                CompoundNBT tag = stack.getTag();
+                // padding for ClientEventHandler#renderTooltipEvent() to draw in
+                curInfo.add(new StringTextComponent(" "));
+                curInfo.add(new StringTextComponent(" "));
+                curInfo.add(new StringTextComponent(" "));
+                String filter = tag.getString(NBT_FILTER);
+                if (!filter.isEmpty()) {
+                    curInfo.add(xlate("pneumaticcraft.gui.sentryTurret.targetFilter")
+                            .appendText(": ")
+                            .appendText(TextFormatting.AQUA + filter));
+                }
             }
             curInfo.add(xlate("pneumaticcraft.gui.micromissile.firingMode")
                     .appendText(": " + TextFormatting.AQUA)
-                    .appendSibling(xlate("pneumaticcraft.gui.micromissile.mode." + tag.getString(NBT_FIRE_MODE))));
+                    .appendSibling(xlate(mode.getTranslationKey())));
             if (PNCConfig.Common.Micromissiles.damageTerrain) {
                 curInfo.add(xlate("pneumaticcraft.gui.tooltip.terrainWarning"));
             } else {
@@ -146,5 +160,21 @@ public class ItemMicromissiles extends Item {
             }
         }
         super.inventoryTick(stack, worldIn, entityIn, itemSlot, isSelected);
+    }
+
+    public static FireMode getFireMode(ItemStack stack) {
+        Validate.isTrue(stack.getItem() instanceof ItemMicromissiles);
+        return stack.hasTag() ? FireMode.fromString(stack.getTag().getString(ItemMicromissiles.NBT_FIRE_MODE)) : FireMode.SMART;
+    }
+
+    @Mod.EventBusSubscriber(modid = Names.MOD_ID)
+    public static class Listener {
+        @SubscribeEvent
+        public static void onMissilesRepair(AnvilRepairEvent event) {
+            // allow repeated repairing without XP costs spiralling
+            if (event.getItemResult().getItem() instanceof ItemMicromissiles && event.getItemResult().hasTag()) {
+                event.getItemResult().setRepairCost(0);
+            }
+        }
     }
 }

@@ -93,6 +93,7 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
         int textBoxWidth = xSize - (textBoxX - guiLeft) - 20;
         textField = new WidgetTextField(font, textBoxX, guiTop + 128, textBoxWidth, 10);
         textField.setText(entityFilter);
+        setFocused(textField);
         textField.setFocused2(true);
         textField.setResponder(s -> {
             entityFilter = s;
@@ -112,7 +113,7 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
         addButton(new WidgetButtonExtended(buttonX, guiTop + 160, buttonWidth, 20, saveLabel, b -> sendSettingsToServer(true)));
 
         modeButton = new WidgetButtonExtended(guiLeft + 123, guiTop + 20, 52, 20, "", b -> modeSwitch());
-        modeButton.setTooltipText("pneumaticcraft.gui.micromissile.modeTooltip");
+        modeButton.setTooltipText(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.micromissile.modeTooltip"), 40));
         addButton(modeButton);
 
         warningButton = new WidgetButtonExtended(guiLeft + 162, guiTop + 123, 20, 20, "");
@@ -136,7 +137,7 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
     private void setupWidgets() {
         textField.setEnabled(fireMode == FireMode.SMART);
         filterLabel.setColor(fireMode == FireMode.SMART ? 0xFF404040 : 0xFFAAAAAA);
-        modeButton.setMessage(I18n.format("pneumaticcraft.gui.micromissile.mode." + fireMode.toString()));
+        modeButton.setMessage(I18n.format(fireMode.getTranslationKey()));
     }
 
     @Override
@@ -162,7 +163,6 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
         if (point != null) {
             double px = point.x;
             double py = point.y;
-            GuiUtils.glColorHex(0x2020A0, 255);
             RenderSystem.pushMatrix();
             RenderSystem.translated(guiLeft + SELECTOR_BOUNDS.getX(), guiTop + SELECTOR_BOUNDS.getY(), 0);
 
@@ -170,47 +170,39 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
             int size = dragging ? 5 : 3;
             RenderSystem.lineWidth(2);
 
-            wr.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION);
-            wr.pos(px - size, py, 0).endVertex();
-            wr.pos(px + size, py, 0).endVertex();
-            wr.pos(px, py - size, 0).endVertex();
-            wr.pos(px, py + size, 0).endVertex();
+            wr.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR);
+            wr.pos(px - size, py, 0).color(32, 32, 32, 255).endVertex();
+            wr.pos(px + size, py, 0).color(32, 32, 32, 255).endVertex();
+            wr.pos(px, py - size, 0).color(32, 32, 32, 255).endVertex();
+            wr.pos(px, py + size, 0).color(32, 32, 32, 255).endVertex();
             Tessellator.getInstance().draw();
 
-            GL11.glEnable(GL11.GL_LINE_STIPPLE);
-            GL11.glLineStipple(1, (short)0xAAAA);
-
-            wr.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION);
+            RenderSystem.enableBlend();
+            RenderSystem.defaultBlendFunc();
+            RenderSystem.lineWidth(1);
+            wr.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR);
             // speed line
-            wr.pos(px, py, 0).endVertex();
-            wr.pos(SELECTOR_BOUNDS.getWidth() / 2.0, 0, 0).endVertex();
+            wr.pos(px, py, 0).color(32, 32, 32, 128).endVertex();
+            wr.pos(SELECTOR_BOUNDS.getWidth() / 2.0, 0, 0).color(32, 32, 32, 128).endVertex();
             // turn speed line
-            wr.pos(px, py, 0).endVertex();
-            wr.pos(0, SELECTOR_BOUNDS.getHeight(), 0).endVertex();
+            wr.pos(px, py, 0).color(32, 32, 32, 128).endVertex();
+            wr.pos(0, SELECTOR_BOUNDS.getHeight(), 0).color(32, 32, 32, 128).endVertex();
             // damage line
-            wr.pos(px, py, 0).endVertex();
-            wr.pos(SELECTOR_BOUNDS.getWidth(), SELECTOR_BOUNDS.getHeight(), 0).endVertex();
+            wr.pos(px, py, 0).color(32, 32, 32, 128).endVertex();
+            wr.pos(SELECTOR_BOUNDS.getWidth(), SELECTOR_BOUNDS.getHeight(), 0).color(32, 32, 32, 128).endVertex();
             Tessellator.getInstance().draw();
+            RenderSystem.disableBlend();
 
-            GL11.glDisable(GL11.GL_LINE_STIPPLE);
             RenderSystem.popMatrix();
-            GuiUtils.glColorHex(0xffffff, 255);
         }
 
         RenderSystem.pushMatrix();
         RenderSystem.translated(guiLeft, guiTop, 0);
-        RenderSystem.lineWidth(10);
-        GL11.glEnable(GL11.GL_LINE_STIPPLE);
-        GL11.glLineStipple(1, (short)0xFEFE);
-
-        hLine(125, 125 + (int) (49 * topSpeed), 51, 0xFF00C000);
-        hLine(125, 125 + (int) (49 * turnSpeed), 71, 0xFF00C000);
-        hLine(125, 125 + (int) (49 * damage), 91, 0xFF00C000);
-
+        fill(125, 48, 125 + (int) (49 * topSpeed), 54, 0xFF00C000);
+        fill(125, 68, 125 + (int) (49 * turnSpeed), 74, 0xFF00C000);
+        fill(125, 88, 125 + (int) (49 * damage), 94, 0xFF00C000);
         RenderSystem.popMatrix();
 
-        GL11.glDisable(GL11.GL_LINE_STIPPLE);
-        RenderSystem.lineWidth(1);
         RenderSystem.enableLighting();
 
         RenderSystem.enableTexture();

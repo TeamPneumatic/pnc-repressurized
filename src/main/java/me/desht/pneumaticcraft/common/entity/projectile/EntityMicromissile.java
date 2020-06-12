@@ -148,7 +148,7 @@ public class EntityMicromissile extends ThrowableEntity {
             double mul = velSq > maxVelocitySq ? maxVelocitySq / velSq : accel;
             setMotion(getMotion().scale(mul));
 
-            if (getEntityWorld().isRemote) {
+            if (getEntityWorld().isRemote && getEntityWorld().rand.nextBoolean()) {
                 Vec3d m = getMotion();
                 world.addParticle(AirParticleData.DENSE, getPosX(), getPosY(), getPosZ(), -m.x/2, -m.y/2, -m.z/2);
             }
@@ -197,14 +197,25 @@ public class EntityMicromissile extends ThrowableEntity {
     @Override
     protected void onImpact(RayTraceResult result) {
         if (ticksExisted > 5 && !getEntityWorld().isRemote && isAlive()) {
-            explode();
+            explode(result instanceof EntityRayTraceResult ? ((EntityRayTraceResult) result).getEntity() : null);
         }
     }
 
-    private void explode() {
+    private void explode(Entity e) {
         remove();
         Explosion.Mode mode = PNCConfig.Common.Micromissiles.damageTerrain ? Explosion.Mode.BREAK : Explosion.Mode.NONE;
-        getEntityWorld().createExplosion(this, getPosX(), getPosY(), getPosZ(), (float) PNCConfig.Common.Micromissiles.baseExplosionDamage * explosionPower, false, mode);
+        double x, y, z;
+        if (e == null) {
+            x = getPosX();
+            y = getPosY();
+            z = getPosZ();
+        } else {
+            // make the explosion closer to the target entity (a fast projectile's position could be a little distance away)
+            x = MathHelper.lerp(0.25f, e.getPosX(), getPosX());
+            y = MathHelper.lerp(0.25f, e.getPosY(), getPosY());
+            z = MathHelper.lerp(0.25f, e.getPosZ(), getPosZ());
+        }
+        getEntityWorld().createExplosion(this, x, y, z, (float) PNCConfig.Common.Micromissiles.baseExplosionDamage * explosionPower, false, mode);
     }
 
     @Override
