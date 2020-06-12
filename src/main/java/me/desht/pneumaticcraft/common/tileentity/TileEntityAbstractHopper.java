@@ -61,7 +61,6 @@ public abstract class TileEntityAbstractHopper extends TileEntityTickableBase
 
             if (lastComparatorValue != getComparatorValueInternal()) {
                 lastComparatorValue = getComparatorValueInternal();
-                updateNeighbours();
             }
         }
     }
