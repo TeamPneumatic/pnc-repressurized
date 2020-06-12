@@ -6,32 +6,41 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.15.2
 
-## 1.2.3-?? (unreleased)
+## 1.3.0-33 (12 Jun 2020)
 
 ### Updates
 * Logistics Core recipe has been changed to create two cores instead of one
-* Did some drone pathfinding optimisation, in particular reducing server-side CPU usage when drones can't find a path
+* Some drone pathfinding optimisation, in particular reducing server-side CPU usage when drones can't find a path
   * Added some checks to cull a lot of unnecessary pathing searches
 * Small visual improvement for the Omnidirection & Liquid Hopppers
   * Output spout is slightly narrower, and the output end is a little darker
 * Pastebin GUI: added "Pretty?" option to control pretty-printing of JSON output to Pastebin/clipboard
-  * Default is now not to pretty-print JSON, so saved drone programs & remote layouts are a lot more compact
+  * Default is now *not* to pretty-print JSON, so saved drone programs & remote layouts are a lot more compact
 * Redstone Module I/O direction can now be configured in the module's GUI
   * This does not require an Advanced PCB to be installed
-  * Toggling I/O with a Wrench still works too
+  * Toggling I/O with a Wrench still works too, as it used to
 * Drones (both entity and item form) now show their carried fluid, if any
   * Shown in item tooltip for drones in item form
   * Shown in TOP/Waila display for drone entities
 * It's now possible to attach levers/buttons/etc. to the side of camouflaged blocks (assuming the camouflage is solid, of course)
   * This is particularly nice for camouflaged Pressure Tubes with Redstone Modules
 * Elevators with Charging Upgrades installed will now only add air back if it's safe to do so (pressure < 4.9 bar)  
+* Some Micromissiles improvements
+  * Micromissiles now do more damage on direct entity hit (explosion position was further from the target entity than it should have been) 
+  * Micromissiles can now be "repaired" in an Anvil with TNT (1 TNT restores 25 missile shots)
+  * Micromissile smoke particles are a bit less dense now
+  * Reduced default cooldown time from 15 ticks to 10 ticks (still adjustable in config)
+* Some Sentry Turret improvements
+  * Default entity filter for newly placed Sentry Turrets is now `@mob` - avoids pain & suffering if players load the turret and forget to set a filter
+  * Fixed the entity filter string not showing in GUI the first time it's opened
+  * Better filter validation and error display in the GUI
   
 ### Fixes
 * Fixed Charging Stations at 0 bar not being able to discharge pressure from items into the station
 * Drones should be able to place blocks much more reliably now
 * Fixed Drones (and other entities) sometimes getting badly confused while trying to path across or through some PneumaticCraft blocks
   * Blocks were wrongly reporting themselves suitable for pathing through, when their hitbox actually didn't allow it
-* Fixed the clientside "drama_splash" config option not being properly honoured when set to false
+* Fixed the clientside `drama_splash` config option not being properly honoured when set to false
 * Some Programmer GUI fixes:
   * Fixed widget area dragging behaviour when dragging items from inventory slots across it
   * Fixed Area widgets in the programmer GUI not being sync'd to server when clicked with a GPS (or Area GPS) Tool
@@ -39,7 +48,12 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed Pastebin communication (now using HTTPS exclusively, looks like HTTP is no longer accepted) 
 * Fixed client crash caused by wrongly attempting to send some server->client sync packets
   * Caused sometimes when breaking off camouflage blocks
-  
+* Performance fix: Omnidirectional and Liquid Hoppers were causing some unnecessary block updates when their comparator output level changed 
+* Fixed Omnidirectional Hopper comparator output being inaccurate under certain circumstances
+* All translation keys are now properly namespaced
+  * No player-visible change here but eliminates the risk of translation key clashes with other mods
+* Electrostatic Compressor item tooltip is much shorter now (long tooltip still visible in JEI and GUI side tab)
+
 ## 1.2.2-30 (1 Jun 2020)
 
 ### New
