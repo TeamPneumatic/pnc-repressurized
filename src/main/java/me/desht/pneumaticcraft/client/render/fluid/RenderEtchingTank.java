@@ -6,7 +6,7 @@ import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 
-import java.util.List;
+import java.util.Collection;
 
 public class RenderEtchingTank extends AbstractFluidTESR<TileEntityEtchingTank> {
     private static final AxisAlignedBB TANK_BOUNDS = new AxisAlignedBB(2.5/16f, 2/16f, 2.5/16f, 13.5/16f, 15/16f, 13.5/16f);
@@ -16,7 +16,7 @@ public class RenderEtchingTank extends AbstractFluidTESR<TileEntityEtchingTank> 
     }
 
     @Override
-    List<TankRenderInfo> getTanksToRender(TileEntityEtchingTank te) {
+    Collection<TankRenderInfo> getTanksToRender(TileEntityEtchingTank te) {
         return ImmutableList.of(new TankRenderInfo(te.getAcidTank(), TANK_BOUNDS).without(Direction.DOWN));
     }
 }

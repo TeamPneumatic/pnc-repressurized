@@ -8,6 +8,7 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -27,12 +28,12 @@ public class RenderLiquidHopper extends AbstractFluidTESR<TileEntityLiquidHopper
     }
 
     @Override
-    List<TankRenderInfo> getTanksToRender(TileEntityLiquidHopper te) {
+    Collection<TankRenderInfo> getTanksToRender(TileEntityLiquidHopper te) {
         return ImmutableList.of(new TankRenderInfo(te.getTank(), BOUNDS[te.getInputDirection().getIndex()]).without(te.getInputDirection().getOpposite()));
     }
 
     public static class ItemRenderInfoProvider implements IFluidItemRenderInfoProvider {
-        private final AxisAlignedBB BOUNDS_UP = BOUNDS[Direction.UP.getIndex()];  // item model is always oriented with input UP
+        private static final AxisAlignedBB BOUNDS_UP = BOUNDS[Direction.UP.getIndex()];  // item model is always oriented with input UP
 
         @Override
         public List<TankRenderInfo> getTanksToRender(ItemStack stack) {

@@ -8,7 +8,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.Matrix4f;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
@@ -17,10 +16,9 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.world.World;
 import net.minecraftforge.fluids.IFluidTank;
 
-import java.util.List;
+import java.util.Collection;
 
 public abstract class AbstractFluidTESR<T extends TileEntityBase> extends TileEntityRenderer<T> {
     AbstractFluidTESR(TileEntityRendererDispatcher dispatcher) {
@@ -34,16 +32,15 @@ public abstract class AbstractFluidTESR<T extends TileEntityBase> extends TileEn
 
             Matrix4f posMat = matrixStack.getLast().getMatrix();
             for (TankRenderInfo tankRenderInfo : getTanksToRender(te)) {
-                doRender(te, builder, tankRenderInfo, posMat);
+                doRender(builder, tankRenderInfo, posMat, combinedLightIn);
             }
         }
     }
 
-    private void doRender(T te, IVertexBuilder builder, TankRenderInfo tankRenderInfo, Matrix4f posMat) {
+    private void doRender(IVertexBuilder builder, TankRenderInfo tankRenderInfo, Matrix4f posMat, int combinedLight) {
         IFluidTank tank = tankRenderInfo.getTank();
         if (tank.getFluidAmount() == 0) return;
 
-        World w = Minecraft.getInstance().world;
         Fluid fluid = tank.getFluid().getFluid();
         ResourceLocation texture = fluid.getAttributes().getStillTexture(tank.getFluid());
         //noinspection deprecation
@@ -65,75 +62,69 @@ public abstract class AbstractFluidTESR<T extends TileEntityBase> extends TileEn
         double bz2 = bounds.maxZ * 16;
 
         if (tankRenderInfo.shouldRender(Direction.DOWN)) {
-            int downCombined = WorldRenderer.getCombinedLight(w, te.getPos().down());
             float u1 = still.getInterpolatedU(bx1);
             float u2 = still.getInterpolatedU(bx2);
             float v1 = still.getInterpolatedV(bz1);
             float v2 = still.getInterpolatedV(bz2);
-            builder.pos(posMat, x1, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v2).lightmap(downCombined).normal(0f, -1f, 0f).endVertex();
-            builder.pos(posMat, x1, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v1).lightmap(downCombined).normal(0f, -1f, 0f).endVertex();
-            builder.pos(posMat, x2, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v1).lightmap(downCombined).normal(0f, -1f, 0f).endVertex();
-            builder.pos(posMat, x2, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v2).lightmap(downCombined).normal(0f, -1f, 0f).endVertex();
+            builder.pos(posMat, x1, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v2).lightmap(combinedLight).normal(0f, -1f, 0f).endVertex();
+            builder.pos(posMat, x1, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v1).lightmap(combinedLight).normal(0f, -1f, 0f).endVertex();
+            builder.pos(posMat, x2, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v1).lightmap(combinedLight).normal(0f, -1f, 0f).endVertex();
+            builder.pos(posMat, x2, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v2).lightmap(combinedLight).normal(0f, -1f, 0f).endVertex();
         }
 
         if (tankRenderInfo.shouldRender(Direction.UP)) {
-            int upCombined = WorldRenderer.getCombinedLight(w, te.getPos().up());
             float u1 = still.getInterpolatedU(bx1);
             float u2 = still.getInterpolatedU(bx2);
             float v1 = still.getInterpolatedV(bz1);
             float v2 = still.getInterpolatedV(bz2);
-            builder.pos(posMat, x1, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v2).lightmap(upCombined).normal(0f, 1f, 0f).endVertex();
-            builder.pos(posMat, x2, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v2).lightmap(upCombined).normal(0f, 1f, 0f).endVertex();
-            builder.pos(posMat, x2, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v1).lightmap(upCombined).normal(0f, 1f, 0f).endVertex();
-            builder.pos(posMat, x1, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v1).lightmap(upCombined).normal(0f, 1f, 0f).endVertex();
+            builder.pos(posMat, x1, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v2).lightmap(combinedLight).normal(0f, 1f, 0f).endVertex();
+            builder.pos(posMat, x2, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v2).lightmap(combinedLight).normal(0f, 1f, 0f).endVertex();
+            builder.pos(posMat, x2, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v1).lightmap(combinedLight).normal(0f, 1f, 0f).endVertex();
+            builder.pos(posMat, x1, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v1).lightmap(combinedLight).normal(0f, 1f, 0f).endVertex();
         }
 
         if (tankRenderInfo.shouldRender(Direction.NORTH)) {
-            int northCombined = WorldRenderer.getCombinedLight(w, te.getPos().north());
             float u1 = still.getInterpolatedU(bx1);
             float u2 = still.getInterpolatedU(bx2);
             float v1 = still.getInterpolatedV(by1);
             float v2 = still.getInterpolatedV(by2);
-            builder.pos(posMat, x1, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v1).lightmap(northCombined).normal(0f, 0f, -1f).endVertex();
-            builder.pos(posMat, x1, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v2).lightmap(northCombined).normal(0f, 0f, -1f).endVertex();
-            builder.pos(posMat, x2, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v2).lightmap(northCombined).normal(0f, 0f, -1f).endVertex();
-            builder.pos(posMat, x2, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v1).lightmap(northCombined).normal(0f, 0f, -1f).endVertex();
+            builder.pos(posMat, x1, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v1).lightmap(combinedLight).normal(0f, 0f, -1f).endVertex();
+            builder.pos(posMat, x1, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v2).lightmap(combinedLight).normal(0f, 0f, -1f).endVertex();
+            builder.pos(posMat, x2, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v2).lightmap(combinedLight).normal(0f, 0f, -1f).endVertex();
+            builder.pos(posMat, x2, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v1).lightmap(combinedLight).normal(0f, 0f, -1f).endVertex();
         }
 
         if (tankRenderInfo.shouldRender(Direction.SOUTH)) {
-            int southCombined = WorldRenderer.getCombinedLight(w, te.getPos().south());
             float u1 = still.getInterpolatedU(bx1);
             float u2 = still.getInterpolatedU(bx2);
             float v1 = still.getInterpolatedV(by1);
             float v2 = still.getInterpolatedV(by2);
-            builder.pos(posMat, x2, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v1).lightmap(southCombined).normal(0f, 0f, 1f).endVertex();
-            builder.pos(posMat, x2, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v2).lightmap(southCombined).normal(0f, 0f, 1f).endVertex();
-            builder.pos(posMat, x1, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v2).lightmap(southCombined).normal(0f, 0f, 1f).endVertex();
-            builder.pos(posMat, x1, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v1).lightmap(southCombined).normal(0f, 0f, 1f).endVertex();
+            builder.pos(posMat, x2, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v1).lightmap(combinedLight).normal(0f, 0f, 1f).endVertex();
+            builder.pos(posMat, x2, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v2).lightmap(combinedLight).normal(0f, 0f, 1f).endVertex();
+            builder.pos(posMat, x1, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v2).lightmap(combinedLight).normal(0f, 0f, 1f).endVertex();
+            builder.pos(posMat, x1, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v1).lightmap(combinedLight).normal(0f, 0f, 1f).endVertex();
         }
 
         if (tankRenderInfo.shouldRender(Direction.WEST)) {
-            int westCombined = WorldRenderer.getCombinedLight(w, te.getPos().west());
             float u1 = still.getInterpolatedU(by1);
             float u2 = still.getInterpolatedU(by2);
             float v1 = still.getInterpolatedV(bz1);
             float v2 = still.getInterpolatedV(bz2);
-            builder.pos(posMat, x1, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v2).lightmap(westCombined).normal(-1f, 0f, 0f).endVertex();
-            builder.pos(posMat, x1, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v2).lightmap(westCombined).normal(-1f, 0f, 0f).endVertex();
-            builder.pos(posMat, x1, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v1).lightmap(westCombined).normal(-1f, 0f, 0f).endVertex();
-            builder.pos(posMat, x1, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v1).lightmap(westCombined).normal(-1f, 0f, 0f).endVertex();
+            builder.pos(posMat, x1, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v2).lightmap(combinedLight).normal(-1f, 0f, 0f).endVertex();
+            builder.pos(posMat, x1, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v2).lightmap(combinedLight).normal(-1f, 0f, 0f).endVertex();
+            builder.pos(posMat, x1, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v1).lightmap(combinedLight).normal(-1f, 0f, 0f).endVertex();
+            builder.pos(posMat, x1, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v1).lightmap(combinedLight).normal(-1f, 0f, 0f).endVertex();
         }
 
         if (tankRenderInfo.shouldRender(Direction.EAST)) {
-            int eastCombined = WorldRenderer.getCombinedLight(w, te.getPos().east());
             float u1 = still.getInterpolatedU(by1);
             float u2 = still.getInterpolatedU(by2);
             float v1 = still.getInterpolatedV(bz1);
             float v2 = still.getInterpolatedV(bz2);
-            builder.pos(posMat, x2, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v1).lightmap(eastCombined).normal(1f, 0f, 0f).endVertex();
-            builder.pos(posMat, x2, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v1).lightmap(eastCombined).normal(1f, 0f, 0f).endVertex();
-            builder.pos(posMat, x2, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v2).lightmap(eastCombined).normal(1f, 0f, 0f).endVertex();
-            builder.pos(posMat, x2, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v2).lightmap(eastCombined).normal(1f, 0f, 0f).endVertex();
+            builder.pos(posMat, x2, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v1).lightmap(combinedLight).normal(1f, 0f, 0f).endVertex();
+            builder.pos(posMat, x2, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v1).lightmap(combinedLight).normal(1f, 0f, 0f).endVertex();
+            builder.pos(posMat, x2, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v2).lightmap(combinedLight).normal(1f, 0f, 0f).endVertex();
+            builder.pos(posMat, x2, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v2).lightmap(combinedLight).normal(1f, 0f, 0f).endVertex();
         }
     }
 
@@ -159,5 +150,5 @@ public abstract class AbstractFluidTESR<T extends TileEntityBase> extends TileEn
         }
     }
 
-    abstract List<TankRenderInfo> getTanksToRender(T te);
+    abstract Collection<TankRenderInfo> getTanksToRender(T te);
 }

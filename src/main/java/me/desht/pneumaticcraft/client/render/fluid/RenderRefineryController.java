@@ -5,8 +5,8 @@ import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 public class RenderRefineryController extends AbstractFluidTESR<TileEntityRefineryController> {
     private static final AxisAlignedBB[] BOUNDS = new AxisAlignedBB[4];
@@ -22,7 +22,7 @@ public class RenderRefineryController extends AbstractFluidTESR<TileEntityRefine
     }
 
     @Override
-    List<TankRenderInfo> getTanksToRender(TileEntityRefineryController te) {
+    Collection<TankRenderInfo> getTanksToRender(TileEntityRefineryController te) {
         int rot = te.getRotation().getHorizontalIndex();
         if (rot >= 0 && rot < 4) {
             return Collections.singletonList(new TankRenderInfo(te.getInputTank(), BOUNDS[te.getRotation().getHorizontalIndex()], te.getRotation().getOpposite(), Direction.UP));

@@ -9,6 +9,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class RenderFluidTank extends AbstractFluidTESR<TileEntityFluidTank> {
     }
 
     @Override
-    List<TankRenderInfo> getTanksToRender(TileEntityFluidTank te) {
+    Collection<TankRenderInfo> getTanksToRender(TileEntityFluidTank te) {
         boolean up = te.getBlockState().get(BlockPneumaticCraft.UP);
         boolean down = te.getBlockState().get(BlockPneumaticCraft.DOWN);
         AxisAlignedBB bounds;

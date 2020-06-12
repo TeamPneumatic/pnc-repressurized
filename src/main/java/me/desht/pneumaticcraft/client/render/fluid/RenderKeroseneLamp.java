@@ -6,7 +6,7 @@ import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 
-import java.util.List;
+import java.util.Collection;
 
 public class RenderKeroseneLamp extends AbstractFluidTESR<TileEntityKeroseneLamp> {
     private static final AxisAlignedBB TANK_BOUNDS = new AxisAlignedBB(6/16f, 1/16f, 6/16f, 10/16f, 9/16f, 10/16f);
@@ -16,7 +16,7 @@ public class RenderKeroseneLamp extends AbstractFluidTESR<TileEntityKeroseneLamp
     }
 
     @Override
-    List<TankRenderInfo> getTanksToRender(TileEntityKeroseneLamp te) {
+    Collection<TankRenderInfo> getTanksToRender(TileEntityKeroseneLamp te) {
         return ImmutableList.of(new TankRenderInfo(te.getTank(), TANK_BOUNDS).without(Direction.DOWN));
     }
 }

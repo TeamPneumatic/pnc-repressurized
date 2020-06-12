@@ -6,7 +6,7 @@ import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 
-import java.util.List;
+import java.util.Collection;
 
 public class RenderThermopneumaticProcessingPlant extends AbstractFluidTESR<TileEntityThermopneumaticProcessingPlant> {
     private static final AxisAlignedBB TANK_BOUNDS_1 = new AxisAlignedBB(10 / 16f, 1 / 16f, 1 / 16f, 15 / 16f, 11 / 16f, 6 / 16f);
@@ -32,7 +32,7 @@ public class RenderThermopneumaticProcessingPlant extends AbstractFluidTESR<Tile
     }
 
     @Override
-    List<TankRenderInfo> getTanksToRender(TileEntityThermopneumaticProcessingPlant te) {
+    Collection<TankRenderInfo> getTanksToRender(TileEntityThermopneumaticProcessingPlant te) {
         return ImmutableList.of(
                 new TankRenderInfo(te.getInputTank(), BOUNDS_IN[te.getRotation().getHorizontalIndex()]).without(Direction.DOWN),
                 new TankRenderInfo(te.getOutputTank(), BOUNDS_OUT[te.getRotation().getHorizontalIndex()]).without(Direction.DOWN)
