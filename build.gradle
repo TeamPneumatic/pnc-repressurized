@@ -206,6 +206,7 @@ dependencies {
     runtime fg.deobf("vazkii.botania:Botania:${botania_version}")
     compile fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}")
     compile fg.deobf("org.squiddev:cc-tweaked-1.15.2:${cc_tweaked_version}")
+    compile fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:${immersive_engineering_version}")
 //    compileOnly "cofh:RedstoneFlux:1.12-${redstone_flux_version}:universal"
 //    compileOnly("mekanism:Mekanism:${mekanism_version}:api") { exclude group: "mezz.jei" }
 //    compileOnly "cofh:CoFHCore:1.12.2-${cofhcore_version}:deobf"
@@ -220,7 +221,6 @@ dependencies {
 //    compileOnly "team.chisel.ctm:CTM:${ctm_version}:api"
 //    compileOnly("appeng:appliedenergistics2:${ae2_version}:api")
 //    //compileOnly "elucent:albedo:${albedo_version}"
-//    compileOnly "blusunrize:ImmersiveEngineering:${immersive_engineering_version}"
 //    compileOnly "com.azanor.baubles:Baubles:${baubles_version}"
 //    compileOnly "com.github.glitchfiend.biomesoplenty:ToughAsNails:${tan_version}:universal"
 }

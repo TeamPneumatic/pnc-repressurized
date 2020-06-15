@@ -23,7 +23,7 @@
       "type": "spotlight",
       "flag": "mod:immersiveengineering",
       "title": "Immersive Engineering",
-      "item": "immersiveengineering:wirecoil",
+      "item": "immersiveengineering:wirecoil_copper",
       "text": "The $(item)Security Upgrade/$ will also provide protection from uninsulated $(l:https://minecraft.curseforge.com/projects/immersive-engineering)Immersive Engineering/$ wiring; you will not be injured by electric shocks from such wires, but this does cost air from the chestplate, proportional to the damage negated. This doesn't prevent any knockbacks."
     },
     {

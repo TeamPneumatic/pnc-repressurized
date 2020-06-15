@@ -133,7 +133,7 @@ public class PneumaticCraftRepressurized {
         POIFixup.fixup();
         VillageStructures.init();
         ModNameCache.init();
-        ThirdPartyManager.instance().init();
+//        ThirdPartyManager.instance().init();
 
         // stuff to do after every other mod is done initialising
         DeferredWorkQueue.runLater(() -> {

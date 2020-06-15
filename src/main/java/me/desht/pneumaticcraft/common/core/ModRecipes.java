@@ -31,10 +31,10 @@ public class ModRecipes {
             = RECIPES.register(PneumaticCraftRecipeTypes.PRESSURE_CHAMBER,
             () -> new PressureChamberRecipeImpl.Serializer<>(PressureChamberRecipeImpl::new));
     public static final RegistryObject<SpecialRecipeSerializer<PressureEnchantingRecipe>> PRESSURE_CHAMBER_ENCHANTING
-            = RECIPES.register("pressure_chamber_enchanting",
+            = RECIPES.register(PressureEnchantingRecipe.ID.getPath(),
             () -> new SpecialRecipeSerializer<>(PressureEnchantingRecipe::new));
     public static final RegistryObject<SpecialRecipeSerializer<PressureDisenchantingRecipe>> PRESSURE_CHAMBER_DISENCHANTING
-            = RECIPES.register("pressure_chamber_disenchanting",
+            = RECIPES.register(PressureDisenchantingRecipe.ID.getPath(),
             () -> new SpecialRecipeSerializer<>(PressureDisenchantingRecipe::new));
 
     public static final RegistryObject<IRecipeSerializer<ExplosionCraftingRecipe>> EXPLOSION_CRAFTING
