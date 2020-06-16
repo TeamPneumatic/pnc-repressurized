@@ -6,6 +6,22 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.15.2
 
+## 1.3.1-?? (unreleased)
+### New
+* Immersive Engineering integration has been added back (note: at time of writing, Immersive Engineering is in alpha status on 1.15.2)
+  * Harvesting Drones (and Harvest programming widget) recognise Hemp as a harvestable crop
+  * External Heater can be used to heat PneumaticCraft blocks (energy usage and efficiency can be adjusted or disabled in PNC config)
+  * Immersive Engineering Hammer can be used as a wrench to rotate/drop PneumaticCraft blocks
+  * PneumaticCraft Diesel can be used in the IE Diesel Generator, and IE Biodiesel can be used in PNC liquid compressors
+  * Pneumatic Chestplate with Security Upgrade installed will protect you from uninsulated wiring damage (at an air cost)
+  * IE Uranium Blocks function as a PneumaticCraft heat source (not very hot, but last a *long* time, eventually turning to Lead Blocks)
+  
+### Updates
+* All sound effects have been converted to mono, since Minecraft doesn't do distance-based attenuation on stereo sounds
+  * This fixes the problem of sentry turrets, air leaks, etc. sounding much too loud from a distance
+  * Because of this, some default sound volumes have been adjusted upwards in the mod config `pneumaticcraft-client.toml`
+  * If you're updating from a previous version (rather than a fresh install) some sounds might seem too quiet; if so, you can review there volume in the above config file on your client
+  
 ## 1.3.0-33 (12 Jun 2020)
 
 ### Updates
