@@ -1011,6 +1011,7 @@
   "gui.pastebin.retrievedFromPastebin": "Retrieved from Pastebin",
   "gui.pastebin.clipboardSetToContents": "Clipboard set to contents.",
   "gui.pastebin.retrievedFromClipboard": "Retrieved from clipboard",
+  "gui.pastebin.uploadedToPastebin" : "Uploaded to Pastebin",
   "gui.securityStation.test": "Test Security",
   "gui.logistics_frame_requester.itemFilters": "Requesting Items",
   "gui.logistics_frame_requester.fluidFilters": "Requesting Fluids",
