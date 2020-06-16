@@ -37,14 +37,18 @@ public enum FuelRegistry implements IFuelRegistry {
         Validate.isTrue(burnRateMultiplier > 0f, "burnRate can't be <= 0!");
 
         if (liquidFuels.containsKey(fluid.getRegistryName())) {
-            Log.info("Overriding liquid fuel entry " + new FluidStack(fluid, 1).getDisplayName().getFormattedText()
-                    + " (" + fluid.getRegistryName() + ") with a fuel value of " + mLPerBucket
-                    + " (previous value: " + liquidFuels.get(fluid.getRegistryName()) + ")");
+            Log.warning("Overriding liquid fuel entry %s (%s) with a fuel value of %d (previous value %d)",
+                    new FluidStack(fluid, 1).getDisplayName().getFormattedText(),
+                    fluid.getRegistryName().toString(), mLPerBucket, liquidFuels.get(fluid.getRegistryName()));
             if (mLPerBucket == 0) {
                 liquidFuels.remove(fluid.getRegistryName());
             }
         }
-        if (mLPerBucket > 0) liquidFuels.put(fluid.getRegistryName(), Pair.of(mLPerBucket, burnRateMultiplier));
+        if (mLPerBucket > 0) {
+            liquidFuels.put(fluid.getRegistryName(), Pair.of(mLPerBucket, burnRateMultiplier));
+            Log.info("Registering liquid fuel entry '%s': %d mL air/bucket, burn rate %f",
+                    fluid.getRegistryName(), mLPerBucket, burnRateMultiplier);
+        }
 
     }
 

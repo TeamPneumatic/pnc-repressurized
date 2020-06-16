@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityDisplayTable;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -56,9 +55,7 @@ public class BlockDisplayTable extends BlockPneumaticCraft {
     public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
         TileEntity te = world.getTileEntity(pos);
         ItemStack heldStack = player.getHeldItem(hand);
-        if (player.isSneaking() || te instanceof INamedContainerProvider
-                || heldStack.getItem() == ModItems.PNEUMATIC_WRENCH.get() || ModdedWrenchUtils.getInstance().isModdedWrench(heldStack))
-        {
+        if (player.isSneaking() || te instanceof INamedContainerProvider || ModdedWrenchUtils.getInstance().isWrench(heldStack)) {
             return super.onBlockActivated(state, world, pos, player, hand, brtr);
         } else if (te instanceof TileEntityDisplayTable) {
             if (!world.isRemote) {

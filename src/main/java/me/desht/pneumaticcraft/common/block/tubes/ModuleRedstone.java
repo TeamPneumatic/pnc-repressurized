@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.block.tubes;
 
 import me.desht.pneumaticcraft.common.config.PNCConfig;
-import me.desht.pneumaticcraft.common.item.ItemPneumaticWrench;
 import me.desht.pneumaticcraft.common.item.ItemTubeModule;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketOpenTubeModuleGui;
@@ -267,7 +266,7 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
                 heldStack.shrink(1);
             }
             return true;
-        } else if (heldStack.getItem() instanceof ItemPneumaticWrench || ModdedWrenchUtils.getInstance().isModdedWrench(heldStack)) {
+        } else if (ModdedWrenchUtils.getInstance().isWrench(heldStack)) {
             redstoneDirection = redstoneDirection == EnumRedstoneDirection.INPUT ? EnumRedstoneDirection.OUTPUT : EnumRedstoneDirection.INPUT;
             updateNeighbors();
             if (!updateInputLevel()) {

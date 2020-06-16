@@ -18,7 +18,7 @@ ModIds {
     public static final String TOP = "theoneprobe";
     public static final String JEI = "jei";
     public static final String CRAFTTWEAKER = "crafttweaker";
-    public static final String IMMERSIVEENGINEERING = "immersiveengineering";
+    public static final String IMMERSIVE_ENGINEERING = "immersiveengineering";
     public static final String BOTANIA = "botania";
     public static final String IMMERSIVE_PETROLEUM = "immersivepetroleum";
     public static final String PATCHOULI = "patchouli";

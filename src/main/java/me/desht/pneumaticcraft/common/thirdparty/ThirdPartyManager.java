@@ -48,7 +48,7 @@ public class ThirdPartyManager {
             thirdPartyClasses.put(ModIds.BOTANIA, () -> new Botania());
             thirdPartyClasses.put(ModIds.PATCHOULI, () -> new Patchouli());
             thirdPartyClasses.put(ModIds.JEI, () -> DUMMY_HANDLER);  // implicit initialisation
-            thirdPartyClasses.put(ModIds.IMMERSIVEENGINEERING, () -> new ImmersiveEngineering());
+            thirdPartyClasses.put(ModIds.IMMERSIVE_ENGINEERING, () -> new ImmersiveEngineering());
 
             // these were supported 1.12.2 and may or may not come back...
 

@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.core.ModBlocks;
-import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -45,8 +44,7 @@ public class BlockThermalLagging extends BlockPneumaticCraft {
     public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext selectionContext) {
         if (selectionContext.getEntity() instanceof LivingEntity) {
             ItemStack stack = ((LivingEntity) selectionContext.getEntity()).getHeldItemMainhand();
-            return stack.getItem() == ModItems.PNEUMATIC_WRENCH.get()
-                    || ModdedWrenchUtils.getInstance().isModdedWrench(stack)
+            return ModdedWrenchUtils.getInstance().isWrench(stack)
                     || stack.getToolTypes().contains(ToolType.PICKAXE)
                     || selectionContext.getEntity().isSneaking() ?
                     SHAPES[getRotation(state).getIndex()] : VoxelShapes.empty();
