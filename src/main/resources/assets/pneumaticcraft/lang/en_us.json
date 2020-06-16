@@ -1,5 +1,4 @@
 {
-  "_comment": "Blocks",
   "block.pneumaticcraft.pressure_tube": "Pressure Tube",
   "block.pneumaticcraft.drill_pipe": "Drill Pipe",
   "block.pneumaticcraft.air_compressor": "Air Compressor",
@@ -94,7 +93,6 @@
   "block.pneumaticcraft.display_table": "Display Table",
   "block.pneumaticcraft.tag_workbench": "Tag Workbench",
 
-  "_comment": "Items",
   "item.pneumaticcraft.pressure_tube": "Pressure Tube",
   "item.pneumaticcraft.advanced_pressure_tube": "Advanced Pressure Tube",
   "item.pneumaticcraft.gps_tool": "GPS Tool",
@@ -210,7 +208,6 @@
   "item.pneumaticcraft.memory_stick": "Memory Stick",
   "item.pneumaticcraft.tag_filter": "Tag Filter",
 
-  "_comment": "Fluid",
   "fluid.pneumaticcraft.plastic": "Molten Plastic",
   "fluid.pneumaticcraft.etching_acid": "Etching Acid",
   "fluid.pneumaticcraft.lpg": "LPG",
@@ -221,7 +218,6 @@
   "fluid.pneumaticcraft.lubricant": "Lubricant",
   "fluid.pneumaticcraft.memory_essence": "Memory Essence",
 
-  "_comment": "Tube Modules",
   "item.pneumaticcraft.safety_tube_module": "Safety Tube Module",
   "item.pneumaticcraft.pressure_gauge_module": "Pressure Gauge Tube Module",
   "item.pneumaticcraft.flow_detector_module": "Flow Detector Tube Module",
@@ -231,7 +227,6 @@
   "item.pneumaticcraft.logistics_module": "Logistics Module",
   "item.pneumaticcraft.redstone_module": "Redstone Module",
 
-  "_comment": "Programming Puzzles",
   "programmingPuzzle.pneumaticcraft.comment.name": "Comment",
   "programmingPuzzle.pneumaticcraft.start.name": "Start",
   "programmingPuzzle.pneumaticcraft.entity_attack.name": "Entity Attack",
@@ -289,7 +284,6 @@
   "programmingPuzzle.pneumaticcraft.condition_rf.name": "Condition: RF",
   "programmingPuzzle.pneumaticcraft.drone_condition_rf.name": "Drone Condition: RF",
 
-  "_comment": "Remote elements",
   "gui.remote.noEditRights": "A Security Station at %s is preventing you from editing the Remote.",
   "gui.remote.boundSecurityStation": "%s has been bound to this Remote. Only players with access to this Station can modify it.",
   "gui.remote.cantBindSecurityStation": "§cYou can't bind this Remote to this Security Station: You don't have access to it.",
@@ -326,7 +320,6 @@
   "gui.remote.dropdown.sort": "Sorted",
   "gui.remote.dropdown.sort.tooltip": "If checked, sort the list of elements in alphabetical order. Otherwise, elements are added in the order you provided.",
 
-  "_comment": "entities",
   "entity.pneumaticcraft.drone": "Drone",
   "entity.pneumaticcraft.logistics_drone": "Logistic Drone",
   "entity.pneumaticcraft.harvesting_drone": "Harvesting Drone",
@@ -344,7 +337,6 @@
   "entity.pneumaticcraft.logistics_frame_requester": "Logistics Requester Frame",
   "entity.minecraft.villager.pneumaticcraft.mechanic": "Pressure Mechanic",
 
-  "_comment": "Helmet hacking",
   "pneumaticHelmet.hacking.hacking": "Hacking (%d%%%%)...",
 
   "pneumaticHelmet.hacking.result.disarm": "Hack to disarm",
@@ -387,9 +379,7 @@
   "pneumaticHelmet.hacking.finished.killed": "Killed",
   "pneumaticHelmet.hacking.finished.resetTrades": "Trades reset",
 
-  "_comment": "######### GUI tabs",
 
-  "_comment": "Info",
   "gui.tab.info": "Information",
   "gui.tab.info.assistIGW": "For more detailed info, install Patchouli.",
 
@@ -555,10 +545,8 @@
   "gui.tab.info.logistic_frame_storage": "§0Storage frames can receive resources from Active Providers and supply resources to Requesters. \\n \\nBy default the framed inventory accepts any item from providing inventories. By adding items to this filter, only items specified can be inserted via the logistics network. Add items from your inventory or search for an item/fluid by right clicking an empty slot.",
   "gui.tab.info.logistic_frame_default_storage": "§0Default Storage frames can receive resources from Active Providers and supply resources to Requesters and Storage Frames. They have a lower priority than Storage frames, which will be always be used first if possible. \\n \\nBy default the framed inventory will accept any resources from providing inventories. By adding items to this filter, only items specified can be inserted via the logistics network. Add items from your inventory or search for an item/fluid by right clicking an empty slot.",
 
-  "_comment": "Pressure",
   "gui.tab.pressure": "Pressure",
 
-  "_comment": "Problems",
   "gui.tab.problems": "Problems",
   "gui.tab.problems.warning": "Warnings",
   "gui.tab.problems.noProblems": "No Problems",
@@ -624,7 +612,6 @@
   "gui.tab.problems.etching_tank.failed_full": "§7Failed Output Full \\n§0No further items can be etched until the failed output is cleared.",
   "gui.tab.problems.etching_tank.no_acid": "§7No Etching Acid \\n§0Fill the tank with some Etching Acid.",
 
-  "_comment": "Upgrades",
   "gui.tab.upgrades": "Upgrades",
   "gui.tab.upgrades.max": "Max Upgrades: %d",
   "gui.tab.upgrades.generic.volume": "Increases the air capacity of the machine by 2 * √U, where U = the number of Volume Upgrades. \\nAdding Volume Upgrades will increase the air that can be stored, causing a pressure drop.  Removing upgrades will keep the pressure constant, losing air from the machine.",
@@ -677,7 +664,6 @@
   "gui.tab.upgrades.smart_chest.magnet": "With a Magnet Upgrade installed, sides configured to pull items will absorb nearby items in the world if there's no inventory present on that side. The default range is a 3x3x3 cube centered 2 blocks from the side in question, but can be increased with Range Upgrades.",
   "gui.tab.upgrades.smart_chest.range": "Each Range Upgrade increases the Magnet Upgrade's range by one block.",
 
-  "_comment": "Redstone Behaviour",
   "gui.tab.redstoneBehaviour": "Redstone Behaviour",
   "gui.tab.redstoneBehaviour.enableOn": "Enable on",
   "gui.tab.redstoneBehaviour.emitRedstoneWhen": "Emit Redstone When",
@@ -711,7 +697,6 @@
   "gui.tab.redstoneBehaviour.uvLightBox.button.chance.100": "Success Chance = 100%%",
   "gui.tab.redstoneBehaviour.keroseneLamp.button.interpolate": "Interpolate Signal",
 
-  "_comment": "misc",
   "gui.tab.hopperStatus": "Hopper Status",
   "gui.tab.hopperStatus.itemTransferPerTick": "§fItem Transfer Speed: \\n§0%s items/tick",
   "gui.tab.hopperStatus.itemTransferPerSecond": "§fItem Transfer Speed: \\n§0%s items/s",
@@ -748,7 +733,6 @@
   "gui.tab.smartChestStatus.itemsPerOperation": "§fItem Transfer: \\n§0%d item(s)/operation",
   "gui.tab.smartChestStatus.tickInterval": "§fTick Rate: \\n§0%d tick(s)",
 
-  "_comment": "Universal Sensor descriptions",
   "gui.universalSensor.desc.userSetSensor": "This is a 'sensor' you can use to emit a constant redstone value. The value emitted is the numeric value inserted into the textbox.",
   "gui.universalSensor.desc.heatSensor": "The coordinate(s) marked by the GPS Tool(s) is/are monitored for heat. When the temperature of the monitored block is higher than the temperature put in the text box (in °C) the sensor will emit a redstone strength of 15 and 0 if not. If the textbox is empty, the output level is proportional to the temperature, scaling from 0°C (redstone 0) through 400°C (redstone 15). In case of multiple positions, the position with the highest temperature is used.",
   "gui.universalSensor.desc.playerHealth": "This sensor option emits a redstone signal proportional to the player's health, where 0 health = 0 and full health = 15. The player's name must be entered into the textbox.",
@@ -759,7 +743,6 @@
   "gui.universalSensor.status.missing_gps": "§fMissing GPS Tool \\n§0The selected sensor requires a configured GPS or Area GPS Tool to be inserted in the GPS slot.",
   "gui.universalSensor.status.missing_upgrade": "§fMissing Upgrade \\n§0An upgrade required for the current sensor must have been removed. Re-insert it.",
 
-  "_comment": "GUI strings",
   "gui.holdF1forHelp": "Hold §6F1§r for help",
   "gui.aphorismTileEditor": "Aphorism Tile Editor",
   "gui.aphorismTile.helpText": "§a§nAphorism Tile Editor \\n \\n§eCursor Up:§r move up a line \\n§eCursor Down:§r move down a line \\n§eReturn:§r new line \\n§eBackspace:§r delete character \\n§eDelete:§r delete line \\n§e Shift-Delete:§r delete all lines §eEscape:§r finish editing \\n§eAlt + §ochr§r: insert control code \\n §7- codes: 0-9, a-f, l, m, n, o, r",
@@ -1078,10 +1061,7 @@
   "gui.uv_light_box.threshold": "Threshold:",
 
   "key.pneumaticcraft.category": "PneumaticCraft",
-  "_comment": "gui.enableModule.coreComponents=Enable Helmet",
 
-  "_comment": "All armor pieces use \"pneumaticHelmet.\" as a prefix for historical reasons...",
-  "_comment": "Pneumatic Helmet upgrades",
   "pneumaticHelmet.upgrade.blockTracker": "Block Tracker",
   "pneumaticHelmet.upgrade.entityTracker": "Entity Tracker",
   "pneumaticHelmet.upgrade.itemSearcher": "Item Search",
@@ -1090,15 +1070,12 @@
   "pneumaticHelmet.upgrade.coreComponents": "Core Components",
   "pneumaticHelmet.upgrade.droneDebugger": "Drone Debugger",
   "pneumaticHelmet.upgrade.nightVision": "Night Vision",
-  "_comment": "Pneumatic Chestplate upgrades",
   "pneumaticHelmet.upgrade.magnet": "Magnet",
   "pneumaticHelmet.upgrade.charging": "Auto-Charger",
   "pneumaticHelmet.upgrade.launcher": "Item Launcher",
   "pneumaticHelmet.upgrade.airConditioning": "Air Conditioning",
-  "_comment": "Pneumatic Legs upgrades",
   "pneumaticHelmet.upgrade.runSpeed": "Run Speed",
   "pneumaticHelmet.upgrade.jumpBoost": "Jump Boost",
-  "_comment": "Pneumatic Boots upgrades",
   "pneumaticHelmet.upgrade.kick": "Pneumatic Kick",
   "pneumaticHelmet.upgrade.stepAssist": "Step Assist",
   "pneumaticHelmet.upgrade.jetBoots": "Jet Boots",
@@ -1165,7 +1142,6 @@
 
   "blockTracker.message.stopSpam": "Stopped spam on %s",
 
-  "_comment": "Tooltips",
   "gui.tooltip.programmable.invalidPieces": "Pieces displayed in red are not valid here.",
   "gui.tooltip.programmable.requiredPieces": "Required puzzle pieces: %d",
   "gui.tooltip.programmable.returnedPieces": "Returned puzzle pieces: %d",
@@ -1199,7 +1175,6 @@
   "gui.tooltip.charging_station.manageUpgrades": "Manage Upgrades for the %s",
   "gui.tooltip.memory_stick.xp_stored": "Stored: %d XP (%d levels)",
 
-  "_comment": "Item tooltips",
   "gui.tooltip.item.pneumaticcraft.plastic": "Pour into the world or chill in an inventory with a Heat Frame to solidify into Plastic Sheets. Using a Heat Frame might get you better results...",
   "gui.tooltip.item.pneumaticcraft.etching_acid": "Put this into an Etching Tank to produce Unassembled PCB's from Empty PCB's.",
   "gui.tooltip.item.pneumaticcraft.lpg": "Used in a Thermopneumatic Processing Plant together with Coal to produce Plastic. A superior liquid fuel. Can be placed in a Furnace.",
@@ -1299,14 +1274,12 @@
   "gui.tooltip.tag_filter.header": "Configured Tags:",
 
 
-  "_comment": "Keybindings screen",
   "pneumaticcraft.armor.options": "Pneumatic Armor General Options",
   "pneumaticcraft.helmet.hack": "Pneumatic Helmet Hacking",
   "pneumaticcraft.helmet.debugging.drone": "Pneumatic Helmet Drone Debugging",
   "pneumaticcraft.boots.kick": "Pneumatic Boots Kick",
   "pneumaticcraft.chestplate.launcher": "Pneumatic Chestplate Launcher",
 
-  "_comment": "Config Screen",
   "gui.config.category.general": "General",
   "gui.config.category.pneumaticArmor": "Pneumatic Armor",
   "gui.config.category.machine": "Machine",
@@ -1318,7 +1291,6 @@
   "gui.config.category.micromissile": "Micromissiles",
   "gui.config.category.integration": "Mod Integration",
 
-  "_comment": "Side Configurator tabs",
   "gui.sideConfigurator.unconnected": "§oUnconnected",
   "gui.sideConfigurator.title.items": "Side Configuration: Items",
   "gui.sideConfigurator.items.mainInv": "Main Inventory",
@@ -1329,7 +1301,6 @@
   "gui.sideConfigurator.items.curiosInv": "Curios Slots",
   "gui.sideConfigurator.items.programmableInv": "Programmable Slot",
 
-  "_comment": "Waila/TOP",
   "hud.msg.state": "State",
   "hud.msg.active": "Active",
   "hud.msg.inactive": "Inactive",
@@ -1357,7 +1328,6 @@
   "waila.heatFrame.cooking": "Cooking: §f%d%%",
   "waila.heatFrame.cooling": "Cooling: §f%d%%",
 
-  "_comment": "Misc",
   "message.vacuum_pump.manometer": "Input Pressure: %s bar. Vacuum Pressure: %s bar.",
   "itemGroup.pneumaticcraft": "PneumaticCraft: Repressurized",
   "message.date.ironman": "Today an Iron Man movie went in premiere!",
@@ -1377,7 +1347,6 @@
   "gui.regulatorTube.hudMessage.inverted": "§cA Regulator Tube Module only regulates air in the direction of the arrow.",
   "gui.search": "Search:",
 
-  "_comment": "Death Messages",
   "death.attack.pressure1": "%1$s is as flat as a pancake!",
   "death.attack.pressure2": "%1$s was compressed to death!",
   "death.attack.acid1": "%1$s was etched to death!",
@@ -1394,7 +1363,6 @@
   "death.drone.overload.wrenched": "Dismantled by wrench",
   "death.drone.overload.suicide": "Executed a Suicide puzzle piece",
 
-  "_comment": "IGW pages",
   "igwtab.entry.oil": "Oil",
   "igwtab.entry.worldgen": "Worldgen",
   "igwtab.entry.base_concepts": "Base Concepts",
@@ -1414,14 +1382,12 @@
   "igwtab.entry.cc_integration": "Computercraft/Open Computers Integration",
   "igwmod.pressureChamber.requiredPressure": "Required Pressure",
 
-  "_comment": "commands",
   "command.deliverAmazon.noItems": "The inventory at %s has no items.",
   "command.deliverAmazon.noInventory": "No inventory at %s.",
   "command.deliverAmazon.success": "Delivering items from %s to %s!",
   "command.getGlobalVariable.output": "Variable name: \"%s\". Coordinate: %s. Item: %s",
   "command.setGlobalVariable.output": "Variable \"%s\" has been set to %s.",
 
-  "_comment": "Advancements (formerly known as achievements)",
   "achievement.ingotIronCompressed": "The First Explosion (of many)",
   "achievement.ingotIronCompressed.desc": "Throw Iron on the ground and create an explosion close to it.",
   "achievement.airCompressor": "Building up the Pressure!",
@@ -1506,7 +1472,6 @@
   "achievement.dw9x9": "The Perfect Size",
   "achievement.dw9x9.desc": "Build a 9x9 house made out of Cobblestone, the perfect size according to Direwolf20.",
 
-  "_comment": "JEI",
   "gui.nei.recipe.etchingAcid": "Create a pool of Etching Acid (one bucket is enough). Throw in an Empty PCB which has been exposed in a UV Light Box. This process will take 5 minutes.",
   "gui.nei.recipe.uvLightBox": "Create a UV Light Box, provide pressure, and insert an Empty PCB. Speed Upgrades are recommended; this process can be rather slow.",
   "gui.nei.recipe.explosionCrafting": "Throw some of the input material on the ground, and set off an explosion next to it. \\n \\n§eAverage material loss rate: %d%%",
@@ -1525,7 +1490,6 @@
   "gui.jei.title.plasticSolidifying": "In-world Solidifying",
   "gui.jei.filterDrag": "Tip: Items and fluids can be dragged straight from JEI to the filter slots.",
 
-  "_comment": "Amadron",
   "drone.amadronDeliveryDrone": "Amadron Delivery Drone",
   "gui.amadron.title": "Welcome to Amadron!",
   "gui.amadron": "Amadron",
@@ -1558,7 +1522,6 @@
   "message.amadron.duplicateReversedOffer": "§c[Amadron] Can't add trade: You have a trade already with reversed trading items.",
   "message.amadron.playerBought": "§a[Amadron] §6%s§b bought from you §6%d§b order(s) of: §6%s§b for §6%s§b.",
 
-  "_comment": "Camo Applicator",
   "message.camo.notEnoughBlocks": "§4Out of ",
   "message.camo.invalidBlock": "§4Invalid camo block: §c%s !",
 
@@ -1567,7 +1530,6 @@
 
   "message.gps_tool.targetSet": "[GPS Tool] Set Coordinates to %d,%d,%d",
 
-  "_comment": "Patchouli",
   "patchouli.book.name": "PNC:R Manual",
   "patchouli.book.landing": "This manual is a complete reference guide to $(#228)PneumaticCraft: Repressurized/$.",
   "patchouli.processor.assembly.desc": "$(item)%s/$ production requires an $(l:manufacturing/assembly_system)Assembly Controller/$ with a $(item)%s/$ installed."
