@@ -10,12 +10,17 @@ This release brings a very major internal rewrite and many many major new and mo
 
 ## 1.0.7-19 (16 Jun 2020)
 
+### Updates
+* Pastebin GUI: added "Pretty?" option to control pretty-printing of JSON output to Pastebin/clipboard
+  * Default is now *not* to pretty-print JSON, so saved drone programs & remote layouts are a lot more compact
+  
 ### Fixes
-
 * Fixed Charging Stations at 0 bar not being able to discharge pressure from items into the station
 * Fixed incompatibility with ShetiphianCore and Platforms mods which caused odd random strings to be added to some stat windows
 * Performance fix: Omnidirectional and Liquid Hoppers were causing some unnecessary block updates when their comparator output level changed 
 * Fixed Omnidirectional Hopper comparator output being inaccurate under certain circumstances
+* Fixed Area widgets in the programmer GUI jumping away when clicked with a GPS area tool
+* Fixed programmer GUI dragging behaviour when dragging items across the GUI
 
 ## 1.0.6-18 (1 Jun 2020)
 
