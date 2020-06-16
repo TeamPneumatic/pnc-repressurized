@@ -8,6 +8,15 @@ Changes are in reverse chronological order; newest changes at the top.
 
 This release brings a very major internal rewrite and many many major new and modified gameplay elements. See also https://gist.github.com/desht/b604bd670f7f718bb4e6f20ff53893e2
 
+## 1.0.7-19 (16 Jun 2020)
+
+### Fixes
+
+* Fixed Charging Stations at 0 bar not being able to discharge pressure from items into the station
+* Fixed incompatibility with ShetiphianCore and Platforms mods which caused odd random strings to be added to some stat windows
+* Performance fix: Omnidirectional and Liquid Hoppers were causing some unnecessary block updates when their comparator output level changed 
+* Fixed Omnidirectional Hopper comparator output being inaccurate under certain circumstances
+
 ## 1.0.6-18 (1 Jun 2020)
 
 ### Updates
