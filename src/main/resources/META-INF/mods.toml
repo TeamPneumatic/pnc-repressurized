@@ -40,3 +40,9 @@ PneumaticCraft: Repressurized: doing cool stuff with compressed air.
     versionRange="[1.14.4]"
     ordering="NONE"
     side="BOTH"
+[[dependencies.pneumaticcraft]]
+    modId="patchouli"
+    mandatory=false
+    versionRange="[1.1-26,)"
+    ordering="NONE"
+    side="BOTH"

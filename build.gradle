@@ -216,7 +216,7 @@ dependencies {
 //    compileOnly fg.deobf("vazkii.botania:Botania:${botania_version}")
 //    compileOnly("appeng:appliedenergistics2:${ae2_version}:api")
 //    //compileOnly "elucent:albedo:${albedo_version}"
-    compile fg.deobf("vazkii.patchouli:Patchouli-1.14.4:${patchouli_version}")
+    compile fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}")
 //    compileOnly "blusunrize:ImmersiveEngineering:${immersive_engineering_version}"
 //    compileOnly "com.azanor.baubles:Baubles:${baubles_version}"
 //    compileOnly "com.github.glitchfiend.biomesoplenty:ToughAsNails:${tan_version}:universal"
