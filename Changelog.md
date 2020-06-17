@@ -8,6 +8,13 @@ Changes are in reverse chronological order; newest changes at the top.
 
 This release brings a very major internal rewrite and many many major new and modified gameplay elements. See also https://gist.github.com/desht/b604bd670f7f718bb4e6f20ff53893e2
 
+## 1.0.8-?? (unreleased)
+
+### Fixes
+* Fixed crash with Patchouli when pressing 'I' on a widget in the Programmer GUI
+  * Patchouli 1.1-26 or newer is now a requirement
+* Fixed some bad translations in Universal Sensor GUI
+
 ## 1.0.7-19 (16 Jun 2020)
 
 ### Updates
