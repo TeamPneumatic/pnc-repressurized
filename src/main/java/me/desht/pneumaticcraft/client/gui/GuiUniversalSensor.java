@@ -247,9 +247,19 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
 
     private List<String> getUpgradeText() {
         List<String> upgradeInfo = new ArrayList<>();
+
+        upgradeInfo.add(TextFormatting.WHITE + "" + TextFormatting.UNDERLINE + EnumUpgrade.VOLUME.getItemStack().getDisplayName().getString());
+        upgradeInfo.add(TextFormatting.GRAY + I18n.format("pneumaticcraft.gui.tab.upgrades.max", 10));
         upgradeInfo.add("pneumaticcraft.gui.tab.upgrades.generic.volume");
+        upgradeInfo.add("");
+
+        upgradeInfo.add(TextFormatting.WHITE + "" + TextFormatting.UNDERLINE + EnumUpgrade.SECURITY.getItemStack().getDisplayName().getFormattedText());
+        upgradeInfo.add(TextFormatting.GRAY + I18n.format("pneumaticcraft.gui.tab.upgrades.max", 1));
         upgradeInfo.add("pneumaticcraft.gui.tab.upgrades.generic.security");
+        upgradeInfo.add("");
+
         upgradeInfo.addAll(SensorHandler.getInstance().getUpgradeInfo());
+
         return upgradeInfo;
     }
 
