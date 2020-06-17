@@ -713,7 +713,7 @@ public class TileEntityDroneInterface extends TileEntity implements ITickableTil
 
     public void setDrone(EntityDrone drone) {
         this.drone = drone;
-        ComputerEventSender.getInstance().sendEvents(this, drone != null ? "droneConnected" : "droneDisconnected");
+        ComputerEventManager.getInstance().sendEvents(this, drone != null ? "droneConnected" : "droneDisconnected");
         BlockState state = getWorld().getBlockState(getPos());
         getWorld().notifyBlockUpdate(getPos(), state, state, Constants.BlockFlags.DEFAULT);
     }

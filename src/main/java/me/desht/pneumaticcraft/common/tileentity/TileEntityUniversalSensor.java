@@ -17,6 +17,8 @@ import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketRenderRangeLines;
 import me.desht.pneumaticcraft.common.sensor.SensorHandler;
+import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
+import me.desht.pneumaticcraft.common.thirdparty.computer_common.ComputerEventManager;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethod;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethodRegistry;
 import me.desht.pneumaticcraft.common.util.GlobalTileEntityCacheManager;
@@ -33,6 +35,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
@@ -56,7 +59,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
     private String sensorSetting = "";
     private int tickTimer;
     public int redstoneStrength;
-    private int eventTimer;
+    private int redstonePulseCounter;
     public float dishRotation;
     public float oldDishRotation;
     private float dishSpeed;
@@ -70,16 +73,11 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
     private String sensorGuiText = ""; //optional parameter text for sensors.
     @GuiSynced
     public SensorStatus sensorStatus = SensorStatus.OK;
-    // todo 1.14 computercraft
-//    private boolean requestPollPullEvent;
+    private boolean requestPollPullEvent;  // computer support
     private final Set<BlockPos> positions = new HashSet<>();
 
     private int oldSensorRange; // range used by the range line renderer, to figure out if the range has been changed.
     public final RangeLines rangeLines = new RangeLines(0x600060FF);
-
-    // todo 1.14 computercraft
-    // keep track of the computers so we can raise a os.pullevent.
-//    private final CopyOnWriteArrayList<IComputerAccess> attachedComputers = new CopyOnWriteArrayList<>();
 
     private final ItemStackHandler itemHandler = new UniversalSensorItemHandler();
     private final LazyOptional<IItemHandler> inventoryCap = LazyOptional.of(() -> itemHandler);
@@ -123,10 +121,9 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
                             if (invertedRedstone) newRedstoneStrength = 15 - newRedstoneStrength;
                             if (newRedstoneStrength != redstoneStrength) {
                                 redstoneStrength = newRedstoneStrength;
-                                // todo 1.14 computercraft
-//                                if (requestPollPullEvent) {
-//                                    notifyComputers(redstoneStrength);
-//                                }
+                                if (requestPollPullEvent) {
+                                    notifyComputers(redstoneStrength);
+                                }
                                 updateNeighbours();
                             }
                             tickTimer = 0;
@@ -134,11 +131,11 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
                             lastSensorExceptionText = e.getMessage();
                         }
                     }
-                    eventTimer = 0;
+                    redstonePulseCounter = 0;
                 } else {
-                    if (eventTimer > 0) {
-                        eventTimer--;
-                        if (eventTimer == 0 && redstoneStrength != (invertedRedstone ? 15 : 0)) {
+                    if (redstonePulseCounter > 0) {
+                        redstonePulseCounter--;
+                        if (redstonePulseCounter == 0 && redstoneStrength != (invertedRedstone ? 15 : 0)) {
                             redstoneStrength = invertedRedstone ? 15 : 0;
                             updateNeighbours();
                         }
@@ -152,6 +149,10 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
                 }
             }
         }
+    }
+
+    private void notifyComputers(Object... params) {
+        ComputerEventManager.getInstance().sendEvents(this, "universalSensor", params);
     }
 
     private SensorStatus updateStatus(ISensorSetting sensor) {
@@ -207,17 +208,16 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
         ISensorSetting sensor = SensorHandler.getInstance().getSensorFromPath(sensorSetting);
         if (sensor instanceof IEventSensorSetting && getPressure() > PneumaticValues.MIN_PRESSURE_UNIVERSAL_SENSOR) {
             int newRedstoneStrength = ((IEventSensorSetting) sensor).emitRedstoneOnEvent(event, this, getRange(), sensorGuiText);
-            if (newRedstoneStrength != 0) eventTimer = ((IEventSensorSetting) sensor).getRedstonePulseLength();
+            if (newRedstoneStrength != 0) redstonePulseCounter = ((IEventSensorSetting) sensor).getRedstonePulseLength();
             if (invertedRedstone) newRedstoneStrength = 15 - newRedstoneStrength;
-            // todo 1.14 computercraft
-//            if (eventTimer > 0 && ThirdPartyManager.computerCraftLoaded) {
-//                if (event instanceof PlayerInteractEvent) {
-//                    PlayerInteractEvent e = (PlayerInteractEvent) event;
-//                    notifyComputers(newRedstoneStrength, e.getPos().getX(), e.getPos().getY(), e.getPos().getZ());
-//                } else {
-//                    notifyComputers(newRedstoneStrength);
-//                }
-//            }
+            if (redstonePulseCounter > 0 && ThirdPartyManager.instance().isModTypeLoaded(ThirdPartyManager.ModType.COMPUTER)) {
+                if (event instanceof PlayerInteractEvent) {
+                    PlayerInteractEvent e = (PlayerInteractEvent) event;
+                    notifyComputers(newRedstoneStrength, e.getPos().getX(), e.getPos().getY(), e.getPos().getZ());
+                } else {
+                    notifyComputers(newRedstoneStrength);
+                }
+            }
             if (newRedstoneStrength != redstoneStrength) {
                 redstoneStrength = newRedstoneStrength;
                 updateNeighbours();
@@ -373,14 +373,6 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
         return sensorGuiText;
     }
 
-    /*
-     * COMPUTERCRAFT API
-     */
-//    @Override
-//    public String getType() {
-//        return "universalSensor";
-//    }
-
     @Override
     public void addLuaMethods(LuaMethodRegistry registry) {
         super.addLuaMethods(registry);
@@ -453,7 +445,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
                 requireNoArgs(args);
                 ISensorSetting s = SensorHandler.getInstance().getSensorFromPath(getSensorSetting());
                 if (s instanceof IPollSensorSetting) {
-//                    requestPollPullEvent = true;
+                    requestPollPullEvent = true;
                     return new Object[]{redstoneStrength};
                 } else if (s != null) {
                     throw new IllegalArgumentException("The selected sensor is pull event based. You can't poll the value.");
@@ -475,7 +467,6 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
                     return new Object[]{false};
                 }
             }
-
         });
 
         registry.registerLuaMethod(new LuaMethod("getGPSToolCoordinate") {
@@ -507,31 +498,6 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
     protected LazyOptional<IItemHandler> getInventoryCap() {
         return inventoryCap;
     }
-
-// todo 1.14 computercraft
-//    @Override
-//    @Optional.Method(modid = ModIds.COMPUTERCRAFT)
-//    public void attach(IComputerAccess computer){
-//        attachedComputers.add(computer);
-//    }
-//
-//    @Override
-//    @Optional.Method(modid = ModIds.COMPUTERCRAFT)
-//    public void detach(IComputerAccess computer){
-//        attachedComputers.remove(computer);
-//    }
-//
-//    /**
-//     * Called on a event sensor
-//     *
-//     * @param arguments
-//     */
-//    @Optional.Method(modid = ModIds.COMPUTERCRAFT)
-//    private void notifyComputers(Object... arguments) {
-//        for (IComputerAccess computer : attachedComputers) {
-//            computer.queueEvent(getType(), arguments);
-//        }
-//    }
 
     @Override
     public int getRedstoneMode() {

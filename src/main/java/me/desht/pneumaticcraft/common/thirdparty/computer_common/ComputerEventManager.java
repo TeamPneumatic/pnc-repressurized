@@ -8,12 +8,12 @@ import java.util.List;
 /**
  * Mod-agnostic class for sending events to computers.
  */
-public enum ComputerEventSender {
+public enum ComputerEventManager {
     INSTANCE;
 
     private final List<IComputerEventSender> senders = new ArrayList<>();
 
-    public static ComputerEventSender getInstance() {
+    public static ComputerEventManager getInstance() {
         return INSTANCE;
     }
 
@@ -25,6 +25,7 @@ public enum ComputerEventSender {
         senders.forEach(s -> s.sendEvent(te, name, params));
     }
 
+    @FunctionalInterface
     public interface IComputerEventSender {
         void sendEvent(TileEntity te, String name, Object... params);
     }

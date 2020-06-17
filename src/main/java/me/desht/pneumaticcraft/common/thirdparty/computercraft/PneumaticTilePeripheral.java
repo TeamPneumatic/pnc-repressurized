@@ -7,7 +7,7 @@ import dan200.computercraft.api.lua.MethodResult;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import dan200.computercraft.api.peripheral.IDynamicPeripheral;
 import dan200.computercraft.api.peripheral.IPeripheral;
-import me.desht.pneumaticcraft.common.thirdparty.computer_common.ComputerEventSender;
+import me.desht.pneumaticcraft.common.thirdparty.computer_common.ComputerEventManager;
 import me.desht.pneumaticcraft.common.tileentity.ILuaMethodProvider;
 import net.minecraft.tileentity.TileEntity;
 
@@ -15,7 +15,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class PneumaticTilePeripheral implements IDynamicPeripheral, ComputerEventSender.IComputerEventSender {
+public class PneumaticTilePeripheral implements IDynamicPeripheral, ComputerEventManager.IComputerEventSender {
     private final ILuaMethodProvider provider;
     private final CopyOnWriteArrayList<IComputerAccess> attachedComputers = new CopyOnWriteArrayList<>();
 

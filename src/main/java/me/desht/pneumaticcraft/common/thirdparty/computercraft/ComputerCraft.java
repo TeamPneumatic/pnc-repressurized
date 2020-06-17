@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.thirdparty.computercraft;
 import dan200.computercraft.api.peripheral.IPeripheral;
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
-import me.desht.pneumaticcraft.common.thirdparty.computer_common.ComputerEventSender;
+import me.desht.pneumaticcraft.common.thirdparty.computer_common.ComputerEventManager;
 import me.desht.pneumaticcraft.common.tileentity.ILuaMethodProvider;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.capabilities.Capability;
@@ -21,9 +21,9 @@ public class ComputerCraft implements IThirdParty {
 
     @Override
     public void init() {
-        ComputerEventSender.getInstance().registerSender((te, name, params) -> te.getCapability(PERIPHERAL_CAPABILITY).ifPresent(handler -> {
-            if (handler instanceof ComputerEventSender.IComputerEventSender) {
-                ((ComputerEventSender.IComputerEventSender) handler).sendEvent(te, name, params);
+        ComputerEventManager.getInstance().registerSender((te, name, params) -> te.getCapability(PERIPHERAL_CAPABILITY).ifPresent(handler -> {
+            if (handler instanceof ComputerEventManager.IComputerEventSender) {
+                ((ComputerEventManager.IComputerEventSender) handler).sendEvent(te, name, params);
             }
         }));
     }
