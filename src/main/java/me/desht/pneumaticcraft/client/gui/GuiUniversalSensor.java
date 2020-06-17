@@ -165,7 +165,7 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
         if (!te.getSensorSetting().equals("")) {
             addButtonLocal(new WidgetButtonExtended(guiLeft + 70, guiTop + 18, 20, 20, ARROW_LEFT_SHORT).withTag("back"));
         } else {
-            addButtonLocal(new WidgetButtonExtended(guiLeft + 70, guiTop + 125, 98, 20, I18n.format("gui.universalSensor.button.showRange"), b -> { onClose(); te.showRangeLines(); }));
+            addButtonLocal(new WidgetButtonExtended(guiLeft + 70, guiTop + 125, 98, 20, I18n.format("gui.button.showRange"), b -> { onClose(); te.showRangeLines(); }));
         }
 
         String[] directories = SensorHandler.getInstance().getDirectoriesAtLocation(te.getSensorSetting());
@@ -247,9 +247,19 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
 
     private List<String> getUpgradeText() {
         List<String> upgradeInfo = new ArrayList<>();
-        upgradeInfo.add("gui.tab.upgrades.volume");
-        upgradeInfo.add("gui.tab.upgrades.security");
+
+        upgradeInfo.add(TextFormatting.WHITE + "" + TextFormatting.UNDERLINE + EnumUpgrade.VOLUME.getItemStack().getDisplayName().getFormattedText());
+        upgradeInfo.add(TextFormatting.GRAY + I18n.format("gui.tab.upgrades.max", 10));
+        upgradeInfo.add("gui.tab.upgrades.generic.volume");
+        upgradeInfo.add("");
+
+        upgradeInfo.add(TextFormatting.WHITE + "" + TextFormatting.UNDERLINE + EnumUpgrade.SECURITY.getItemStack().getDisplayName().getFormattedText());
+        upgradeInfo.add(TextFormatting.GRAY + I18n.format("gui.tab.upgrades.max", 1));
+        upgradeInfo.add("gui.tab.upgrades.generic.security");
+        upgradeInfo.add("");
+
         upgradeInfo.addAll(SensorHandler.getInstance().getUpgradeInfo());
+
         return upgradeInfo;
     }
 
@@ -280,7 +290,7 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
         super.addWarnings(curInfo);
 
         if (!te.getPrimaryInventory().getStackInSlot(0).isEmpty() && te.outOfRange > 0) {
-            curInfo.addAll(PneumaticCraftUtils.splitString(I18n.format("gui.universalSensor.outOfRange")));
+            curInfo.addAll(PneumaticCraftUtils.splitString(I18n.format("gui.universalSensor.outOfRange", te.outOfRange)));
         }
     }
 
