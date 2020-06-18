@@ -36,7 +36,9 @@ public interface IBlockAndCoordinatePollSensor {
      *
      * @return
      */
-    List<String> getDescription();
+    default List<String> getDescription() {
+        return ISensorSetting._getDescription(getSensorPath());
+    }
 
     /**
      * See {@link IPollSensorSetting#getRedstoneValue(World, BlockPos, int, String)} , but this has the GPS tracked coordinates

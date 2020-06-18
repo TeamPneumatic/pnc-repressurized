@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.api.universal_sensor;
 
+import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.util.math.BlockPos;
@@ -13,7 +14,7 @@ public interface ISensorSetting {
      * Should return the button path the player has to follow in which this setting is stored.
      * For instance, when the sensor should be located in player and is called speed, you should return "player/speed".
      *
-     * @return
+     * @return a string path to the sensor
      */
     String getSensorPath();
 
@@ -21,21 +22,21 @@ public interface ISensorSetting {
      * Should return the required items in the upgrade slots of a Universal Sensor. This will automatically include a
      * GPS Tool for sensors that require a location.
      *
-     * @return
+     * @return a set of upgrades
      */
     Set<EnumUpgrade> getRequiredUpgrades();
 
     /**
-     * When returned true, the GUI will enable the textbox writing, otherwise not.
+     * Should this sensor's GUI display a text box for extra information to be entered?
      *
-     * @return
+     * @return true if this sensor needs a text box, false otherwise
      */
     boolean needsTextBox();
 
     /**
      * Called by GuiScreen#drawScreen this method can be used to render additional things like status/info text.
      *
-     * @param fontRenderer
+     * @param fontRenderer the font renderer
      */
     void drawAdditionalInfo(FontRenderer fontRenderer);
 
@@ -43,13 +44,16 @@ public interface ISensorSetting {
      * Should return the description of this sensor displayed in the GUI stat. Information should at least include
      * when this sensor emits redstone and how (analog (1 through 15), or digital).
      *
-     * @return
+     * @return some description text for this sensor (translation keys will be auto-processed)
      */
-    List<String> getDescription();
+    default List<String> getDescription() {
+        return _getDescription(getSensorPath());
+    }
 
     /**
-     * Get the air usage (per tick) for this sensor.  Default is 1mL/tick.
-     * @return
+     * Get the air usage for this sensor.
+     * 
+     * @return the sensor air usage in mL air per tick
      */
     default int getAirUsage(World world, BlockPos pos) {
         return 1;
@@ -67,5 +71,15 @@ public interface ISensorSetting {
      */
     default boolean needsGPSTool() {
         return false;
+    }
+
+    /**
+     * Don't call this directly; used internally by {@link #getDescription()}
+     * @param path the sensor path
+     * @return some description text for the sensor
+     */
+    static List<String> _getDescription(String path) {
+        String key = path.toLowerCase().replaceAll("[/ ]", "_").replace(".", "");
+        return ImmutableList.of("pneumaticcraft.gui.universalSensor.desc." + key);
     }
 }

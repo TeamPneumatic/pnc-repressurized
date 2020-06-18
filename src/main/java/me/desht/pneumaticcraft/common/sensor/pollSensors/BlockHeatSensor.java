@@ -7,18 +7,14 @@ import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.universal_sensor.IBlockAndCoordinatePollSensor;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.apache.commons.lang3.math.NumberUtils;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 public class BlockHeatSensor implements IBlockAndCoordinatePollSensor {
@@ -41,13 +37,6 @@ public class BlockHeatSensor implements IBlockAndCoordinatePollSensor {
     @Override
     public boolean needsTextBox() {
         return true;
-    }
-
-    @Override
-    public List<String> getDescription() {
-        List<String> text = new ArrayList<>();
-        text.add(TextFormatting.BLACK + I18n.format("pneumaticcraft.gui.universalSensor.desc.heatSensor"));
-        return text;
     }
 
     @Override

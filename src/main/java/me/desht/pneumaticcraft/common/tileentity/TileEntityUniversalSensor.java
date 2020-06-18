@@ -128,7 +128,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
                             }
                             tickTimer = 0;
                         } catch (Exception e) {
-                            lastSensorExceptionText = e.getMessage();
+                            lastSensorExceptionText = e.getMessage() == null ? "" : e.getMessage();
                         }
                     }
                     redstonePulseCounter = 0;
@@ -186,7 +186,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
     }
 
     /**
-     * Will initiate the wireframe rendering. When invoked on the server, it sends a packet to every client to render the box.
+     * On client, initiate the wireframe rendering. On server, send a packet to every nearby client to render the box.
      */
     @Override
     public void showRangeLines() {
@@ -199,14 +199,14 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
 
     @Override
     public AxisAlignedBB getRenderBoundingBox() {
-        if (rangeLines == null || !rangeLines.shouldRender()) return super.getRenderBoundingBox();
-        int range = getRange();
-        return new AxisAlignedBB(getPos().getX() - range, getPos().getY() - range, getPos().getZ() - range, getPos().getX() + 1 + range, getPos().getY() + 1 + range, getPos().getZ() + 1 + range);
+        return rangeLines == null || !rangeLines.shouldRender() ?
+                super.getRenderBoundingBox() :
+                new AxisAlignedBB(getPos()).grow(getRange());
     }
 
     public void onEvent(Event event) {
         ISensorSetting sensor = SensorHandler.getInstance().getSensorFromPath(sensorSetting);
-        if (sensor instanceof IEventSensorSetting && getPressure() > PneumaticValues.MIN_PRESSURE_UNIVERSAL_SENSOR) {
+        if (sensor instanceof IEventSensorSetting && getPressure() >= getMinWorkingPressure()) {
             int newRedstoneStrength = ((IEventSensorSetting) sensor).emitRedstoneOnEvent(event, this, getRange(), sensorGuiText);
             if (newRedstoneStrength != 0) redstonePulseCounter = ((IEventSensorSetting) sensor).getRedstonePulseLength();
             if (invertedRedstone) newRedstoneStrength = 15 - newRedstoneStrength;
@@ -362,7 +362,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
                 lastSensorExceptionText = "";
                 sensor.notifyTextChange(sensorGuiText);
             } catch (Exception e) {
-                lastSensorExceptionText = e.getMessage();
+                lastSensorExceptionText = e.getMessage() == null ? "" : e.getMessage();
             }
         }
         if (!getWorld().isRemote) scheduleDescriptionPacket();

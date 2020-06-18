@@ -2,12 +2,11 @@ package me.desht.pneumaticcraft.common.sensor.pollSensors.entity;
 
 import me.desht.pneumaticcraft.common.util.EntityFilter;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class EntityInRangeSensor extends EntityPollSensor {
@@ -30,33 +29,21 @@ public class EntityInRangeSensor extends EntityPollSensor {
             filter = new EntityFilter(textboxText);
         }
 
-        int entitiesFound = 0;
-        if (textboxText.equals("")) {
-            return Math.min(15, entities.size());
-        } else {
-            for (Entity entity : entities) {
-                if (filter.test(entity)) entitiesFound++;
-            }
-        }
+        int entitiesFound = textboxText.isEmpty() ?
+                entities.size() :
+                (int) entities.stream().filter(entity -> filter.test(entity)).count();
         return Math.min(15, entitiesFound);
     }
 
     @Override
-    public List<String> getDescription() {
-        List<String> text = new ArrayList<>();
-        text.add(TextFormatting.BLACK + "Emits a redstone level for every entity within range. You can select a specific entity by filling in its name in the textbox. Hold F1 to get detailed help on entity filter syntax.");
-        return text;
-    }
-
-    @Override
-    public Class getEntityTracked() {
+    public Class<? extends Entity> getEntityTracked() {
         return Entity.class;
     }
 
     @Override
     @OnlyIn(Dist.CLIENT)
     public void drawAdditionalInfo(FontRenderer fontRenderer) {
-        fontRenderer.drawString("Entity filter", 70, 48, 0x404040);
+        fontRenderer.drawString(I18n.format("pneumaticcraft.gui.entityFilter"), 70, 48, 0x404040);
     }
 
     @Override

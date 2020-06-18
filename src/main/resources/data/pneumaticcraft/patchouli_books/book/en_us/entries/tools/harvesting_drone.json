@@ -20,7 +20,7 @@
     },
     {
       "type": "crafting",
-      "text": "Note that Harvesting Drones have figured out how to chop down trees without an axe; they're clever like that.",
+      "text": "Note that Harvesting Drones have figured out how to chop down trees with a hoe instead of an axe; they're clever like that.",
       "recipe": "pneumaticcraft:harvesting_drone"
     }
   ]

@@ -30,7 +30,7 @@ abstract class EntityPollSensor implements IPollSensorSetting {
         return getRedstoneValue(world.getEntitiesWithinAABB(getEntityTracked(), aabb), textBoxText);
     }
 
-    protected abstract Class getEntityTracked();
+    protected abstract Class<? extends Entity> getEntityTracked();
 
     protected abstract int getRedstoneValue(List<Entity> entities, String textBoxText);
 

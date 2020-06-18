@@ -33,6 +33,7 @@ import org.lwjgl.glfw.GLFW;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.lib.GuiConstants.*;
 
@@ -71,7 +72,6 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
         int yStart = (height - ySize) / 2;
 
         sensorInfoStat = addAnimatedStat("Sensor Info", new ItemStack(ModBlocks.UNIVERSAL_SENSOR.get()), 0xFFFFAA00, false);
-        addAnimatedStat("pneumaticcraft.gui.tab.upgrades", Textures.GUI_UPGRADES_LOCATION, 0xFF6060FF, true).setText(getUpgradeText());
 
         nameFilterField = new TextFieldWidget(font, xStart + 70, yStart + 58, 98, 10, "");
         nameFilterField.setText(te.getText(0));
@@ -79,11 +79,6 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
         addButton(nameFilterField);
 
         updateButtons();
-    }
-
-    @Override
-    protected boolean shouldAddUpgradeTab() {
-        return false;
     }
 
     @Override
@@ -162,13 +157,15 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
         });
         sensorButtons.clear();
 
-        if (!te.getSensorSetting().equals("")) {
+        String[] directories = SensorHandler.getInstance().getDirectoriesAtLocation(te.getSensorSetting());
+
+        if (!te.getSensorSetting().isEmpty()) {
             addButtonLocal(new WidgetButtonExtended(guiLeft + 70, guiTop + 18, 20, 20, ARROW_LEFT_SHORT).withTag("back"));
-        } else {
+        }
+        if (directories.length == 0 || te.getSensorSetting().isEmpty()) {
             addButtonLocal(new WidgetButtonExtended(guiLeft + 70, guiTop + 125, 98, 20, I18n.format("pneumaticcraft.gui.button.showRange"), b -> { onClose(); te.showRangeLines(); }));
         }
 
-        String[] directories = SensorHandler.getInstance().getDirectoriesAtLocation(te.getSensorSetting());
         maxPage = (directories.length - 1) / MAX_SENSORS_PER_PAGE + 1;
         if (page > maxPage) page = maxPage;
         if (page < 1) page = 1;
@@ -236,7 +233,7 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
     public void tick() {
         super.tick();
 
-        if (te.getSensorSetting().equals("") && ticksExisted++ > 5) {
+        if (te.getSensorSetting().isEmpty() && ticksExisted++ > 5) {
             ticksExisted = 0;
             updateButtons();
         }
@@ -245,31 +242,13 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
         }
     }
 
-    private List<String> getUpgradeText() {
-        List<String> upgradeInfo = new ArrayList<>();
-
-        upgradeInfo.add(TextFormatting.WHITE + "" + TextFormatting.UNDERLINE + EnumUpgrade.VOLUME.getItemStack().getDisplayName().getString());
-        upgradeInfo.add(TextFormatting.GRAY + I18n.format("pneumaticcraft.gui.tab.upgrades.max", 10));
-        upgradeInfo.add("pneumaticcraft.gui.tab.upgrades.generic.volume");
-        upgradeInfo.add("");
-
-        upgradeInfo.add(TextFormatting.WHITE + "" + TextFormatting.UNDERLINE + EnumUpgrade.SECURITY.getItemStack().getDisplayName().getFormattedText());
-        upgradeInfo.add(TextFormatting.GRAY + I18n.format("pneumaticcraft.gui.tab.upgrades.max", 1));
-        upgradeInfo.add("pneumaticcraft.gui.tab.upgrades.generic.security");
-        upgradeInfo.add("");
-
-        upgradeInfo.addAll(SensorHandler.getInstance().getUpgradeInfo());
-
-        return upgradeInfo;
-    }
-
     private List<String> getSensorInfo() {
         List<String> text = new ArrayList<>();
         ISensorSetting sensor = SensorHandler.getInstance().getSensorFromPath(te.getSensorSetting());
         if (sensor != null) {
             String[] folders = te.getSensorSetting().split("/");
             text.add(TextFormatting.WHITE + folders[folders.length - 1]);
-            text.addAll(sensor.getDescription());
+            text.addAll(sensor.getDescription().stream().map(s -> TextFormatting.BLACK + I18n.format(s)).collect(Collectors.toList()));
         } else {
             text.add(TextFormatting.BLACK + "No sensor selected.");
         }

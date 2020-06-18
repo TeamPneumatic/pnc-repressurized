@@ -54,7 +54,9 @@ public interface IBlockAndCoordinateEventSensor {
      *
      * @return
      */
-    List<String> getDescription();
+    default List<String> getDescription() {
+        return ISensorSetting._getDescription(getSensorPath());
+    }
 
     /**
      * Called by GuiScreen#drawScreen this method can be used to render additional things like status/info text.

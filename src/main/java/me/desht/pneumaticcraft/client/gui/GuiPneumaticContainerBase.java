@@ -39,10 +39,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.ModList;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase<T>, T extends TileEntityBase> extends ContainerScreen<C> {
@@ -164,14 +161,17 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
 
     private void addUpgradeTab() {
         List<String> text = new ArrayList<>();
-        te.getApplicableUpgrades().forEach((upgrade, max) -> {
-            text.add(TextFormatting.WHITE + "" + TextFormatting.UNDERLINE + upgrade.getItemStack().getDisplayName().getFormattedText());
-            text.add(TextFormatting.GRAY + I18n.format("pneumaticcraft.gui.tab.upgrades.max", max));
-            String upgradeName = upgrade.toString().toLowerCase();
-            String k = "pneumaticcraft.gui.tab.upgrades." + upgradeCategory() + "." + upgradeName;
-            text.add(TextFormatting.BLACK + (I18n.hasKey(k) ? I18n.format(k) : I18n.format("pneumaticcraft.gui.tab.upgrades.generic." + upgradeName)));
-            text.add("");
-        });
+        te.getApplicableUpgrades().keySet().stream()
+                .sorted(Comparator.comparing(o -> o.getItemStack().getDisplayName().getFormattedText()))
+                .forEach(upgrade -> {
+                    int max = te.getApplicableUpgrades().get(upgrade);
+                    text.add(TextFormatting.WHITE + "" + TextFormatting.UNDERLINE + upgrade.getItemStack().getDisplayName().getFormattedText());
+                    text.add(TextFormatting.GRAY + I18n.format("pneumaticcraft.gui.tab.upgrades.max", max));
+                    String upgradeName = upgrade.toString().toLowerCase();
+                    String k = "pneumaticcraft.gui.tab.upgrades." + upgradeCategory() + "." + upgradeName;
+                    text.add(TextFormatting.BLACK + (I18n.hasKey(k) ? I18n.format(k) : I18n.format("pneumaticcraft.gui.tab.upgrades.generic." + upgradeName)));
+                    text.add("");
+                });
         if (!text.isEmpty()) {
             addAnimatedStat("pneumaticcraft.gui.tab.upgrades", Textures.GUI_UPGRADES_LOCATION, 0xFF6060FF, true).setText(text);
         }

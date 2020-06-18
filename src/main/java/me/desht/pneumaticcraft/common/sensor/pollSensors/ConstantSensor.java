@@ -10,11 +10,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
-public class UserSetSensor implements IPollSensorSetting {
+public class ConstantSensor implements IPollSensorSetting {
 
     @Override
     public String getSensorPath() {
@@ -34,13 +32,6 @@ public class UserSetSensor implements IPollSensorSetting {
     @Override
     public boolean needsTextBox() {
         return true;
-    }
-
-    @Override
-    public List<String> getDescription() {
-        List<String> text = new ArrayList<>();
-        text.add("pneumaticcraft.gui.universalSensor.desc.userSetSensor");
-        return text;
     }
 
     @Override

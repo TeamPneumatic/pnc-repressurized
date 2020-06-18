@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.sensor;
 
 import com.google.common.collect.ImmutableSet;
-import joptsimple.internal.Strings;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.universal_sensor.*;
 import me.desht.pneumaticcraft.common.sensor.eventSensors.BlockInteractSensor;
@@ -10,19 +9,16 @@ import me.desht.pneumaticcraft.common.sensor.eventSensors.PlayerItemPickupSensor
 import me.desht.pneumaticcraft.common.sensor.pollSensors.*;
 import me.desht.pneumaticcraft.common.sensor.pollSensors.entity.EntityInRangeSensor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUniversalSensor;
-import me.desht.pneumaticcraft.lib.GuiConstants;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.eventbus.api.Event;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class SensorHandler implements ISensorRegistry {
     private static final SensorHandler INSTANCE = new SensorHandler();
@@ -50,7 +46,7 @@ public class SensorHandler implements ISensorRegistry {
         registerSensor(new BlockRedstoneSensor());
         registerSensor(new BlockLightLevelSensor());
         registerSensor(new BlockHeatSensor());
-        registerSensor(new UserSetSensor());
+        registerSensor(new ConstantSensor());
         registerSensor(new TwitchStreamerSensor());
         registerSensor(new PlayerHealthSensor());
     }
@@ -99,25 +95,6 @@ public class SensorHandler implements ISensorRegistry {
         return null;
     }
 
-    public List<String> getUpgradeInfo() {
-        List<String> text = new ArrayList<>();
-        text.add("");
-        text.add(I18n.format("pneumaticcraft.gui.universalSensor.upgradeHeader"));
-
-        Set<Set<EnumUpgrade>> upgrades = new HashSet<>();
-        for (ISensorSetting sensor : sensors.values()) {
-            upgrades.add(sensor.getRequiredUpgrades());
-        }
-
-        for (Set<EnumUpgrade> requiredStacks : upgrades) {
-            String s = Strings.join(requiredStacks.stream()
-                    .map(upgrade -> I18n.format(upgrade.getItem().getTranslationKey()))
-                    .collect(Collectors.toList()), " & ");
-            text.add(TextFormatting.BLACK + GuiConstants.BULLET + " " + s);
-        }
-        return text;
-    }
-
     public Set<EnumUpgrade> getUniversalSensorUpgrades() {
         Set<EnumUpgrade> upgrades = new HashSet<>();
         for (ISensorSetting sensor : sensors.values()) {
@@ -130,10 +107,9 @@ public class SensorHandler implements ISensorRegistry {
         List<String> directories = new ArrayList<>();
         for (String sensorPath : sensors.keySet()) {
             if (sensorPath.startsWith(path) && !sensorPath.equals(path)) {
-
                 //if path equals "entityTracker/player/" and sensor path equals "entityTracker/player/speed", to directories will "speed" be added.
                 String[] folders = sensorPath.substring(path.length()).split("/");
-                if (folders[0].equals("") && folders.length > 1) {
+                if (folders[0].isEmpty() && folders.length > 1) {
                     if (!directories.contains(folders[1])) directories.add(folders[1]);
                 } else {
                     if (!directories.contains(folders[0])) directories.add(folders[0]);
@@ -162,11 +138,6 @@ public class SensorHandler implements ISensorRegistry {
     public Set<EnumUpgrade> getRequiredStacksFromText(String path) {
         List<ISensorSetting> sensors = getSensorsFromPath(path);
         return sensors.isEmpty() ? Collections.emptySet() : sensors.get(0).getRequiredUpgrades();
-    }
-
-    public boolean needsGPSTool(String path) {
-        List<ISensorSetting> sensors = getSensorsFromPath(path);
-        return !sensors.isEmpty() && sensors.get(0).needsGPSTool();
     }
 
     @Override

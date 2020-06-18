@@ -1,25 +1,32 @@
 package me.desht.pneumaticcraft.api.universal_sensor;
 
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.event.entity.player.AttackEntityEvent;
+import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.Event;
 
 public interface IEventSensorSetting extends ISensorSetting {
-
     /**
-     * This method is only invoked when a subscribed event is triggered.
+     * This method is called when a Forge event of interest is triggered.  Events of interest are:
+     * <ul>
+     *     <li>{@link PlayerInteractEvent}</li>
+     *     <li>{@link EntityItemPickupEvent}</li>
+     *     <li>{@link AttackEntityEvent}</li>
+     * </ul>
      *
-     * @param event
-     * @param sensor
-     * @param range
-     * @param textboxText
-     * @return Redstone strength for the given event.
+     * @param event the Forge event (one of PlayerInteractEvent, EntityItemPickupEvent or AttackEntityEvent)
+     * @param sensor the Universal Sensor tile entity
+     * @param range the Universal Sensor's range, in blocks
+     * @param textboxText any text which was entered in the sensor configuration's textfield
+     * @return the redstone strength which should be emitted
      */
     int emitRedstoneOnEvent(Event event, TileEntity sensor, int range, String textboxText);
 
     /**
-     * Should return how long a pulse should hold in ticks. By default this is 5 ticks (1/4 second).
+     * How long should an emitted pulse last for?  5 ticks is a suitable value.
      *
-     * @return
+     * @return a redstone pulse length, in ticks
      */
     int getRedstonePulseLength();
 }

@@ -10,8 +10,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 public class PlayerHealthSensor implements IPollSensorSetting {
@@ -34,13 +32,6 @@ public class PlayerHealthSensor implements IPollSensorSetting {
     @Override
     public void drawAdditionalInfo(FontRenderer fontRenderer) {
 
-    }
-
-    @Override
-    public List<String> getDescription() {
-        List<String> text = new ArrayList<>();
-        text.add("pneumaticcraft.gui.universalSensor.desc.playerHealth");
-        return text;
     }
 
     @Override

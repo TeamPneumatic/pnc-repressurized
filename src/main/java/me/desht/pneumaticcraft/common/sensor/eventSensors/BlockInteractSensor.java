@@ -6,14 +6,11 @@ import me.desht.pneumaticcraft.api.universal_sensor.IBlockAndCoordinateEventSens
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.Event;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 public class BlockInteractSensor implements IBlockAndCoordinateEventSensor {
@@ -31,13 +28,6 @@ public class BlockInteractSensor implements IBlockAndCoordinateEventSensor {
     @Override
     public boolean needsTextBox() {
         return false;
-    }
-
-    @Override
-    public List<String> getDescription() {
-        List<String> text = new ArrayList<>();
-        text.add(TextFormatting.BLACK + "Emits a redstone pulse when a player right clicks the block at the coordinate(s) selected by the GPS Tool(s) (within range).");
-        return text;
     }
 
     @Override

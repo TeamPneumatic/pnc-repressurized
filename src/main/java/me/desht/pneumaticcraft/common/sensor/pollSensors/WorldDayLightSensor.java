@@ -7,14 +7,11 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 public class WorldDayLightSensor implements IPollSensorSetting {
@@ -32,13 +29,6 @@ public class WorldDayLightSensor implements IPollSensorSetting {
     @Override
     public boolean needsTextBox() {
         return false;
-    }
-
-    @Override
-    public List<String> getDescription() {
-        List<String> text = new ArrayList<>();
-        text.add(TextFormatting.BLACK + "A straight copy of the Daylight Sensor.");
-        return text;
     }
 
     @Override

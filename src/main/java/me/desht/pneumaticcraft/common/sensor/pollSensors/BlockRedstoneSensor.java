@@ -6,13 +6,10 @@ import me.desht.pneumaticcraft.api.universal_sensor.IBlockAndCoordinatePollSenso
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 public class BlockRedstoneSensor implements IBlockAndCoordinatePollSensor {
@@ -35,13 +32,6 @@ public class BlockRedstoneSensor implements IBlockAndCoordinatePollSensor {
     @Override
     public boolean needsTextBox() {
         return false;
-    }
-
-    @Override
-    public List<String> getDescription() {
-        List<String> text = new ArrayList<>();
-        text.add(TextFormatting.BLACK + "This sensor could be used as a wireless redstone device, as it emits the same redstone signal as being applied at the GPS Tool's saved location. In case of multiple locations, the location with the highest redstone value is emitted.");
-        return text;
     }
 
     @Override
