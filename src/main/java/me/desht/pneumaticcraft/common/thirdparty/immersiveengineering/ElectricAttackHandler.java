@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.thirdparty.immersiveengineering;
 
-import blusunrize.immersiveengineering.common.util.IEDamageSources;
+import blusunrize.immersiveengineering.api.Lib;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.core.ModSounds;
@@ -26,7 +26,7 @@ public class ElectricAttackHandler {
 
     @SubscribeEvent
     public static void onElectricalAttack(LivingHurtEvent event) {
-        if (!(event.getSource() instanceof IEDamageSources.ElectricDamageSource)) return;
+        if (!event.getSource().getDamageType().equals(Lib.DMG_WireShock)) return;
 
         if (event.getEntityLiving() instanceof EntityDrone) {
             EntityDrone drone = (EntityDrone) event.getEntityLiving();
