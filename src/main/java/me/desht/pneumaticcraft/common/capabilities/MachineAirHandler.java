@@ -12,6 +12,7 @@ import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
@@ -116,11 +117,11 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
             if (hasSecurityUpgrade) {
                 if (!safetyLeak && getPressure() >= dangerPressure) {
                     safetyLeak = true;
-                } else if (safetyLeak && getPressure() < dangerPressure - 0.25) {
+                } else if (safetyLeak && getPressure() < dangerPressure - 0.2) {
                     safetyLeak = false;
                 }
             } else if (world.getServer().getTickCounter() > 20) {
-                // little kludge: no overpressure checks right after server starts up (let things settle down)
+                // little kludge: no overpressure checks right after server starts up (just to be safe)
                 doOverpressureChecks(ownerTE, world, pos);
             }
 
@@ -143,9 +144,9 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
     private Direction anyClearDirection(World w, BlockPos pos) {
         for (Direction d : Direction.VALUES) {
             BlockPos pos2 = pos.offset(d);
-            if (!w.getBlockState(pos2).isSolid()) return d;
+            if (!Block.hasSolidSide(w.getBlockState(pos2), w, pos2, d.getOpposite())) return d;
         }
-        return Direction.UP; // abitrary
+        return Direction.UP; // arbitrary
     }
 
     private Direction anyConnectedFace() {

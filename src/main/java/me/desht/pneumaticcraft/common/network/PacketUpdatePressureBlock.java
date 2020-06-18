@@ -36,7 +36,7 @@ public class PacketUpdatePressureBlock extends LocationIntPacket {
 
     public PacketUpdatePressureBlock(PacketBuffer buffer) {
         super(buffer);
-        this.currentAir = buffer.readVarInt();
+        this.currentAir = buffer.readInt();
         byte idx = buffer.readByte();
         this.handlerDir = idx >= 0 && idx < 6 ? Direction.byIndex(idx) : null;
         idx = buffer.readByte();
@@ -46,9 +46,9 @@ public class PacketUpdatePressureBlock extends LocationIntPacket {
     @Override
     public void toBytes(PacketBuffer buf) {
         super.toBytes(buf);
-        buf.writeVarInt(currentAir);
-        buf.writeVarInt(handlerDir == null ? NO_DIRECTION : handlerDir.getIndex());
-        buf.writeVarInt(leakDir == null ? NO_DIRECTION : leakDir.getIndex());
+        buf.writeInt(currentAir);
+        buf.writeByte(handlerDir == null ? NO_DIRECTION : handlerDir.getIndex());
+        buf.writeByte(leakDir == null ? NO_DIRECTION : leakDir.getIndex());
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {

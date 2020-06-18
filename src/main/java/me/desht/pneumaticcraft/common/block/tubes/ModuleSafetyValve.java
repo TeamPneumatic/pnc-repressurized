@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.block.tubes;
 
 import me.desht.pneumaticcraft.common.item.ItemTubeModule;
+import me.desht.pneumaticcraft.lib.PneumaticValues;
 
 public class ModuleSafetyValve extends TubeModuleRedstoneReceiving {
 
@@ -20,6 +21,10 @@ public class ModuleSafetyValve extends TubeModuleRedstoneReceiving {
 
     @Override
     public float getThreshold() {
-        return upgraded ? super.getThreshold() : getTube().dangerPressure - 0.1f;
+        if (upgraded) return super.getThreshold();
+
+        // 4.92 instead of 4.9 because if the system is being fed via regulator from a high pressure line,
+        // then it will be at 4.9 bar, which would cause safety modules to leak unnecessarily...
+        return getTube().dangerPressure == PneumaticValues.DANGER_PRESSURE_ADVANCED_PRESSURE_TUBE ? 19.9f : 4.92f;
     }
 }
