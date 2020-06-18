@@ -144,7 +144,9 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
     }
 
     private void doSecurityAirChecks(TileEntity ownerTE) {
-        if (getPressure() >= dangerPressure - 0.1) {
+        // 0.08 instead of 0.1 because if the system is being fed via regulator from a high pressure line,
+        // then it will be at 4.9 bar, which would cause machines with security upgrades to leak...
+        if (getPressure() >= dangerPressure - 0.08) {
             airLeak(ownerTE, Direction.UP);
         }
 
