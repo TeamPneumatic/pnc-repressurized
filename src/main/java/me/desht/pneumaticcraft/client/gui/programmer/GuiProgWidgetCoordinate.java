@@ -99,10 +99,10 @@ public class GuiProgWidgetCoordinate extends GuiProgWidgetAreaShow<ProgWidgetCoo
 
     @Override
     public void onClose() {
-        super.onClose();
-
         progWidget.setCoordinate(new BlockPos(coordFields[0].getValue(), coordFields[1].getValue(), coordFields[2].getValue()));
         progWidget.setVariable(variableField.getText());
+
+        super.onClose();
     }
 
     @Override
