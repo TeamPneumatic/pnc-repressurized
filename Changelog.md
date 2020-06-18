@@ -13,7 +13,8 @@ Changes are in reverse chronological order; newest changes at the top.
   * External Heater can be used to heat PneumaticCraft blocks (energy usage and efficiency can be adjusted or disabled in PNC config)
   * Immersive Engineering Hammer can be used as a wrench to rotate/drop PneumaticCraft blocks
   * PneumaticCraft Diesel can be used in the IE Diesel Generator, and IE Biodiesel can be used in PNC liquid compressors
-  * Pneumatic Chestplate with Security Upgrade installed will protect you from uninsulated wiring damage (at an air cost)
+    * They are equivalent to each other in fuel quality
+  * Pneumatic Chestplate with Security Upgrade installed will protect you from uninsulated wiring damage (at an air cost proportional to the damage prevented)
   * IE Uranium Blocks function as a PneumaticCraft heat source (not very hot, but last a *long* time, eventually turning to Lead Blocks)
   
 ### Updates
@@ -21,7 +22,16 @@ Changes are in reverse chronological order; newest changes at the top.
   * This fixes the problem of sentry turrets, air leaks, etc. sounding much too loud from a distance
   * Because of this, some default sound volumes have been adjusted upwards in the mod config `pneumaticcraft-client.toml`
   * If you're updating from a previous version (rather than a fresh install) some sounds might seem too quiet; if so, you can review there volume in the above config file on your client
+* Universal Sensor GUI cleanup
+  * ComputerCraft event support - `os.pullEvent('universalSensor')` - should work now 
+  * All sensor description texts are now localised, and tidied up
+  * GPS Tool icon in the GPS slot is now shaped more like the item
+  * Fixed up the somewhat broken upgrades tab
   
+### Fixes
+* Programmer GUI: fixed updates to Coordinate widgets not getting sync'd to server
+* All GUI upgrade tabs: the upgrade list is now sorted by upgrade name instead of being completely arbitrary
+
 ## 1.3.0-33 (12 Jun 2020)
 
 ### Updates
