@@ -27,7 +27,7 @@ class EntityFilterPair<T extends IProgWidget & IEntityProvider> {
     }
 
     public static <T extends IProgWidget & IEntityProvider> void addErrors(T widget, List<ITextComponent> errors) {
-        EntityFilterPair filter = new EntityFilterPair<>(widget);
+        EntityFilterPair<T> filter = new EntityFilterPair<>(widget);
         if (!filter.errorWhite.isEmpty()) {
             errors.add(new StringTextComponent("Invalid whitelist filter: " + filter.errorWhite));
         }

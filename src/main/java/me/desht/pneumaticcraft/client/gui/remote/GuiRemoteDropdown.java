@@ -25,26 +25,26 @@ public class GuiRemoteDropdown extends GuiRemoteVariable<ActionWidgetDropdown> {
 
         dropDownElementsField = new WidgetTextField(font, guiLeft + 10, guiTop + 50, 160, 10);
         dropDownElementsField.setMaxStringLength(1024);
-        dropDownElementsField.setText(widget.getDropDownElements());
+        dropDownElementsField.setText(actionWidget.getDropDownElements());
         dropDownElementsField.setTooltip(I18n.format("pneumaticcraft.gui.remote.dropdown.dropDownElements.tooltip"));
         addButton(dropDownElementsField);
 
         widthField = new WidgetTextFieldNumber(font, guiLeft + 50, guiTop + 99, 30, 10);
-        widthField.setValue(widget.getWidth());
+        widthField.setValue(actionWidget.getWidth());
         widthField.minValue = 10;
         addButton(widthField);
 
         sortCheckBox = new WidgetCheckBox(guiLeft + 10, guiTop + 120, 0x404040, I18n.format("pneumaticcraft.gui.remote.dropdown.sort"));
-        sortCheckBox.checked = widget.getSorted();
+        sortCheckBox.checked = actionWidget.getSorted();
         sortCheckBox.setTooltip(I18n.format("pneumaticcraft.gui.remote.dropdown.sort.tooltip"));
         addButton(sortCheckBox);
     }
 
     @Override
     public void onClose() {
-        widget.setDropDownElements(dropDownElementsField.getText());
-        widget.setWidth(widthField.getValue());
-        widget.setSorted(sortCheckBox.checked);
+        actionWidget.setDropDownElements(dropDownElementsField.getText());
+        actionWidget.setWidth(widthField.getValue());
+        actionWidget.setSorted(sortCheckBox.checked);
 
         super.onClose();
     }

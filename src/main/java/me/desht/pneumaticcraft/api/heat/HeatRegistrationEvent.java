@@ -41,7 +41,7 @@ public class HeatRegistrationEvent extends Event {
      * @param id a unique for this heat behaviour
      * @param heatBehaviour a heat behaviour supplier
      */
-    public void registerHeatBehaviour(ResourceLocation id, Supplier<? extends HeatBehaviour> heatBehaviour) {
+    public void registerHeatBehaviour(ResourceLocation id, Supplier<? extends HeatBehaviour<?>> heatBehaviour) {
         registry.registerHeatBehaviour(id, heatBehaviour);
     }
 }

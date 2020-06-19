@@ -41,7 +41,7 @@ public class ProgWidgetEntityImport extends ProgWidget implements IProgWidget, I
     }
 
     @Override
-    public ProgWidgetType returnType() {
+    public ProgWidgetType<?> returnType() {
         return null;
     }
 

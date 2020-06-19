@@ -30,7 +30,7 @@ public class ProgWidgetRename extends ProgWidget implements IRenamingWidget, IVa
     }
 
     @Override
-    public ProgWidgetType returnType() {
+    public ProgWidgetType<?> returnType() {
         return null;
     }
 

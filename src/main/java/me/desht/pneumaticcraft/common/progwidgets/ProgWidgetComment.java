@@ -16,7 +16,7 @@ public class ProgWidgetComment extends ProgWidgetText {
     }
 
     @Override
-    public ProgWidgetType returnType() {
+    public ProgWidgetType<?> returnType() {
         return null;
     }
 

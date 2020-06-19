@@ -38,7 +38,7 @@ public class ProgWidgetItemAssign extends ProgWidget implements IVariableSetWidg
     }
 
     @Override
-    public ProgWidgetType returnType() {
+    public ProgWidgetType<?> returnType() {
         return null;
     }
 

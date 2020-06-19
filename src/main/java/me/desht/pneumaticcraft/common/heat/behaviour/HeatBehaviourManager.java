@@ -19,7 +19,7 @@ import java.util.function.Supplier;
 public enum HeatBehaviourManager {
     INSTANCE;
 
-    private final Map<ResourceLocation, Supplier<? extends HeatBehaviour>> behaviourRegistry = new HashMap<>();
+    private final Map<ResourceLocation, Supplier<? extends HeatBehaviour<?>>> behaviourRegistry = new HashMap<>();
 
     public static HeatBehaviourManager getInstance() {
         return INSTANCE;
@@ -35,15 +35,15 @@ public enum HeatBehaviourManager {
         registerBehaviour(HeatBehaviourCustomTransition.ID, HeatBehaviourCustomTransition::new);
     }
 
-    public void registerBehaviour(ResourceLocation id, Supplier<? extends HeatBehaviour> behaviour) {
+    public void registerBehaviour(ResourceLocation id, Supplier<? extends HeatBehaviour<?>> behaviour) {
         Validate.notNull(behaviour);
 
-        Supplier<? extends HeatBehaviour> existing = behaviourRegistry.put(id, behaviour);
+        Supplier<? extends HeatBehaviour<?>> existing = behaviourRegistry.put(id, behaviour);
         if (existing != null) Log.warning("Overriding heat behaviour " + id);
     }
 
-    public <T extends HeatBehaviour> T createBehaviour(ResourceLocation id) {
-        Supplier<? extends HeatBehaviour> behaviour = behaviourRegistry.get(id);
+    public <T extends HeatBehaviour<?>> T createBehaviour(ResourceLocation id) {
+        Supplier<? extends HeatBehaviour<?>> behaviour = behaviourRegistry.get(id);
         if (behaviour != null) {
             //noinspection unchecked
             return (T) behaviour.get();
@@ -53,11 +53,11 @@ public enum HeatBehaviourManager {
         }
     }
 
-    public int addHeatBehaviours(World world, BlockPos pos, Direction direction, BiPredicate<IWorld, BlockPos> blockFilter, IHeatExchangerLogic logic, List<HeatBehaviour> list) {
+    public int addHeatBehaviours(World world, BlockPos pos, Direction direction, BiPredicate<IWorld, BlockPos> blockFilter, IHeatExchangerLogic logic, List<HeatBehaviour<?>> list) {
         if (!blockFilter.test(world, pos)) return 0;
         int s = list.size();
-        for (Supplier<? extends HeatBehaviour> bSup : behaviourRegistry.values()) {
-            HeatBehaviour behaviour = bSup.get().initialize(logic, world, pos, direction);
+        for (Supplier<? extends HeatBehaviour<?>> bSup : behaviourRegistry.values()) {
+            HeatBehaviour<?> behaviour = bSup.get().initialize(logic, world, pos, direction);
             if (behaviour.isApplicable()) {
                 list.add(behaviour);
             }

@@ -254,7 +254,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
             }
         }
         int i = 0;
-        for (ProgWidgetType type : ModProgWidgets.Sorted.WIDGET_LIST) {
+        for (ProgWidgetType<?> type : ModProgWidgets.Sorted.WIDGET_LIST) {
             IProgWidget widget = IProgWidget.create(type);
             if (widget.isAvailable() && difficulty >= widget.getDifficulty().ordinal()) {
                 widget.setY(y + 40);
@@ -614,7 +614,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
      */
     private void handlePuzzleMargins() {
         // Check for connection to the left of the dragged widget.
-        ProgWidgetType returnValue = draggingWidget.returnType();
+        ProgWidgetType<?> returnValue = draggingWidget.returnType();
         if (returnValue != null) {
             for (IProgWidget widget : te.progWidgets) {
                 if (widget != draggingWidget && Math.abs(widget.getX() + widget.getWidth() / 2 - draggingWidget.getX()) <= FAULT_MARGIN) {
@@ -886,6 +886,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
     private boolean generateRelativeOperators(ProgWidgetCoordinateOperator baseWidget, List<String> tooltip, boolean simulate) {
         BlockPos baseCoord = ProgWidgetCoordinateOperator.calculateCoordinate(baseWidget, 0, baseWidget.getOperator());
         Map<BlockPos, String> offsetToVariableNames = new HashMap<>();
+
         for (IProgWidget widget : te.progWidgets) {
             if (widget instanceof ProgWidgetArea) {
                 ProgWidgetArea area = (ProgWidgetArea) widget;
@@ -902,17 +903,17 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
             } else if (widget instanceof ProgWidgetCoordinate && baseWidget.getConnectedParameters()[0] != widget) {
                 ProgWidgetCoordinate coordinate = (ProgWidgetCoordinate) widget;
                 if (!coordinate.isUsingVariable()) {
-                    BlockPos c = coordinate.getCoordinate();
-                    String chunkString = "(" + c.getX() + ", " + c.getY() + ", " + c.getZ() + ")";
-                    if (PneumaticCraftUtils.distBetweenSq(c, 0, 0, 0) < 4096) {
+                    BlockPos coord = coordinate.getCoordinate();
+                    String coordStr = PneumaticCraftUtils.posToString(coord);
+                    if (PneumaticCraftUtils.distBetweenSq(coord, 0, 0, 0) < 4096) {
                         // When the coordinate value is close to 0, there's a low chance it means a position, and rather an offset.
                         if (tooltip != null)
-                            tooltip.add(I18n.format("pneumaticcraft.gui.programmer.button.convertToRelative.coordIsNotChangedWarning", chunkString));
+                            tooltip.add(I18n.format("pneumaticcraft.gui.programmer.button.convertToRelative.coordIsNotChangedWarning", coordStr));
                     } else {
                         if (tooltip != null)
-                            tooltip.add(I18n.format("pneumaticcraft.gui.programmer.button.convertToRelative.coordIsChangedWarning", chunkString));
+                            tooltip.add(I18n.format("pneumaticcraft.gui.programmer.button.convertToRelative.coordIsChangedWarning", coordStr));
                         if (!simulate) {
-                            BlockPos offset = new BlockPos(c.getX() - baseCoord.getX(), c.getY() - baseCoord.getY(), c.getZ() - baseCoord.getZ());
+                            BlockPos offset = coord.subtract(baseCoord);
                             String var = getOffsetVariable(offsetToVariableNames, baseWidget.getVariable(), offset);
                             coordinate.setVariable(var);
                             coordinate.setUsingVariable(true);
@@ -921,7 +922,8 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
                 }
             }
         }
-        if (offsetToVariableNames.size() > 0) {
+
+        if (!offsetToVariableNames.isEmpty()) {
             ProgWidgetCoordinateOperator firstOperator = null;
             ProgWidgetCoordinateOperator prevOperator = baseWidget;
             int x = baseWidget.getX();
@@ -959,10 +961,8 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
                 NetworkHandler.sendToServer(new PacketProgrammerUpdate(te));
                 TileEntityProgrammer.updatePuzzleConnections(te.progWidgets);
             }
-            return true;
-        } else {
-            return true; //When there's nothing to place there's always room.
         }
+        return true;
     }
 
     private String getOffsetVariable(Map<BlockPos, String> offsetToVariableNames, String baseVariable, BlockPos offset) {

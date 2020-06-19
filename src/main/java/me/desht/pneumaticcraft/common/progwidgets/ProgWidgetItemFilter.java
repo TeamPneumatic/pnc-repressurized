@@ -110,7 +110,7 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
     }
 
     @Override
-    public ProgWidgetType returnType() {
+    public ProgWidgetType<?> returnType() {
         return ModProgWidgets.ITEM_FILTER;
     }
 

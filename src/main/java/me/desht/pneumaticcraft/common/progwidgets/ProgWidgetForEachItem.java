@@ -131,7 +131,7 @@ public class ProgWidgetForEachItem extends ProgWidget implements IJumpBackWidget
     }
 
     @Override
-    public ProgWidgetType returnType() {
+    public ProgWidgetType<?> returnType() {
         return null;
     }
 

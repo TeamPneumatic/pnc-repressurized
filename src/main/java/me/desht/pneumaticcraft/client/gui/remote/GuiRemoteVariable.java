@@ -5,12 +5,12 @@ import me.desht.pneumaticcraft.client.gui.remote.actionwidget.ActionWidgetVariab
 import me.desht.pneumaticcraft.client.gui.widget.WidgetComboBox;
 import net.minecraft.client.resources.I18n;
 
-public class GuiRemoteVariable<A extends ActionWidgetVariable> extends GuiRemoteOptionBase<A> {
+public class GuiRemoteVariable<A extends ActionWidgetVariable<?>> extends GuiRemoteOptionBase<A> {
 
     private WidgetComboBox variableField;
 
-    public GuiRemoteVariable(A widget, GuiRemoteEditor guiRemote) {
-        super(widget, guiRemote);
+    public GuiRemoteVariable(A actionWidget, GuiRemoteEditor guiRemote) {
+        super(actionWidget, guiRemote);
     }
 
     @Override
@@ -21,14 +21,14 @@ public class GuiRemoteVariable<A extends ActionWidgetVariable> extends GuiRemote
 
         variableField = new WidgetComboBox(font, guiLeft + 18, guiTop + 80, 152, 10);
         variableField.setElements(guiRemote.getContainer().variables);
-        variableField.setText(widget.getVariableName());
+        variableField.setText(actionWidget.getVariableName());
         variableField.setTooltip(I18n.format("pneumaticcraft.gui.remote.variable.tooltip"));
         addButton(variableField);
     }
 
     @Override
     public void onClose() {
-        widget.setVariableName(variableField.getText());
+        actionWidget.setVariableName(variableField.getText());
 
         super.onClose();
     }

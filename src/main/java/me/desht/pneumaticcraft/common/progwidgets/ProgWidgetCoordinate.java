@@ -38,7 +38,7 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
     }
 
     @Override
-    public ProgWidgetType returnType() {
+    public ProgWidgetType<?> returnType() {
         return ModProgWidgets.COORDINATE;
     }
 

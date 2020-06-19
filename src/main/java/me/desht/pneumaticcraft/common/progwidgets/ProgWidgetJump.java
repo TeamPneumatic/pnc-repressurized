@@ -89,7 +89,7 @@ public class ProgWidgetJump extends ProgWidget implements IJump {
     }
 
     @Override
-    public ProgWidgetType returnType() {
+    public ProgWidgetType<?> returnType() {
         return null;
     }
 

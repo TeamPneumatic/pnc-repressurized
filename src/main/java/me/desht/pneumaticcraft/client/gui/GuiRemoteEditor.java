@@ -36,8 +36,8 @@ import java.util.List;
 public class GuiRemoteEditor extends GuiRemote {
     private GuiInventorySearcher invSearchGui;
     private GuiPastebin pastebinGui;
-    private final List<ActionWidget> widgetTray = new ArrayList<>();
-    private ActionWidget draggingWidget;
+    private final List<ActionWidget<?>> widgetTray = new ArrayList<>();
+    private ActionWidget<?> draggingWidget;
     private int dragMouseStartX, dragMouseStartY;
     private int dragWidgetStartX, dragWidgetStartY;
     private int oldGuiLeft, oldGuiTop;
@@ -82,7 +82,7 @@ public class GuiRemoteEditor extends GuiRemote {
         widgetTray.add(new ActionWidgetButton(new WidgetButtonExtended(guiLeft + 200, guiTop + 53, 50, 20, I18n.format("pneumaticcraft.gui.remote.tray.button.name"))));
         widgetTray.add(new ActionWidgetDropdown(new WidgetComboBox(font, guiLeft + 200, guiTop + 80, 70, font.FONT_HEIGHT + 1).setFixedOptions()));
 
-        for (ActionWidget actionWidget : widgetTray) {
+        for (ActionWidget<?> actionWidget : widgetTray) {
             addButton(actionWidget.getWidget());
         }
 
@@ -143,7 +143,7 @@ public class GuiRemoteEditor extends GuiRemote {
         return new PointXY(-50, 0);
     }
 
-    private boolean isOutsideProgrammingArea(ActionWidget actionWidget) {
+    private boolean isOutsideProgrammingArea(ActionWidget<?> actionWidget) {
         Widget w = actionWidget.getWidget();
         return w.x < guiLeft || w.y < guiTop || w.x + w.getWidth() > guiLeft + 183 || w.y + w.getHeight() > guiTop + ySize;
     }
@@ -156,7 +156,7 @@ public class GuiRemoteEditor extends GuiRemote {
         switch (mouseButton) {
             case 0:
                 // left click - drag widget
-                for (ActionWidget actionWidget : widgetTray) {
+                for (ActionWidget<?> actionWidget : widgetTray) {
                     if (actionWidget.getWidget().isHovered()) {
                         // create new widget from tray
                         startDrag(actionWidget.copy(), x, y);
@@ -166,7 +166,7 @@ public class GuiRemoteEditor extends GuiRemote {
                     }
                 }
                 if (draggingWidget == null) {
-                    for (ActionWidget actionWidget : remoteLayout.getActionWidgets()) {
+                    for (ActionWidget<?> actionWidget : remoteLayout.getActionWidgets()) {
                         if (actionWidget.getWidget().isHovered()) {
                             // move existing widget
                             startDrag(actionWidget, x, y);
@@ -177,7 +177,7 @@ public class GuiRemoteEditor extends GuiRemote {
                 break;
             case 1:
                 // right click - configure widget
-                for (ActionWidget actionWidget : remoteLayout.getActionWidgets()) {
+                for (ActionWidget<?> actionWidget : remoteLayout.getActionWidgets()) {
                     if (!isOutsideProgrammingArea(actionWidget)) {
                         if (actionWidget.getWidget().isHovered()) {
                             Screen screen = actionWidget.getGui(this);
@@ -189,7 +189,7 @@ public class GuiRemoteEditor extends GuiRemote {
                 break;
             case 2:
                 // middle click - copy existing widget
-                for (ActionWidget actionWidget : remoteLayout.getActionWidgets()) {
+                for (ActionWidget<?> actionWidget : remoteLayout.getActionWidgets()) {
                     if (actionWidget.getWidget().isHovered()) {
                         startDrag(actionWidget.copy(), x, y);
                         remoteLayout.addWidget(draggingWidget);
@@ -202,7 +202,7 @@ public class GuiRemoteEditor extends GuiRemote {
         return super.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
-    private void startDrag(ActionWidget widget, int x, int y) {
+    private void startDrag(ActionWidget<?> widget, int x, int y) {
         draggingWidget = widget;
         dragMouseStartX = x;
         dragMouseStartY = y;

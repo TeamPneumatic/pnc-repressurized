@@ -35,7 +35,7 @@ public class ProgWidgetLabel extends ProgWidget implements ILabel {
     }
 
     @Override
-    public ProgWidgetType returnType() {
+    public ProgWidgetType<?> returnType() {
         return null;
     }
 

@@ -37,7 +37,7 @@ public class ProgWidgetSuicide extends ProgWidget {
     }
 
     @Override
-    public ProgWidgetType returnType() {
+    public ProgWidgetType<?> returnType() {
         return null;
     }
 

@@ -14,9 +14,9 @@ import net.minecraftforge.fluids.FluidStack;
 import java.util.Collections;
 import java.util.List;
 
-public class LogisticsFilterGhost implements IGhostIngredientHandler<GuiLogisticsBase> {
+public class LogisticsFilterGhost implements IGhostIngredientHandler<GuiLogisticsBase<?>> {
     @Override
-    public <I> List<Target<I>> getTargets(GuiLogisticsBase gui, I ingredient, boolean doStart) {
+    public <I> List<Target<I>> getTargets(GuiLogisticsBase<?> gui, I ingredient, boolean doStart) {
         if (ingredient instanceof ItemStack) {
             ImmutableList.Builder<Target<I>> builder = ImmutableList.builder();
             for (Slot slot : gui.getContainer().inventorySlots) {
@@ -43,9 +43,9 @@ public class LogisticsFilterGhost implements IGhostIngredientHandler<GuiLogistic
 
     private static class ItemStackTarget implements Target<ItemStack> {
         final SlotPhantom slot;
-        final GuiLogisticsBase gui;
+        final GuiLogisticsBase<?> gui;
 
-        ItemStackTarget(SlotPhantom slot, GuiLogisticsBase gui) {
+        ItemStackTarget(SlotPhantom slot, GuiLogisticsBase<?> gui) {
             this.slot = slot;
             this.gui = gui;
         }
@@ -63,9 +63,9 @@ public class LogisticsFilterGhost implements IGhostIngredientHandler<GuiLogistic
 
     private static class FluidStackTarget implements Target<FluidStack> {
         final int slotNumber;
-        final GuiLogisticsBase gui;
+        final GuiLogisticsBase<?> gui;
 
-        FluidStackTarget(int slotNumber, GuiLogisticsBase gui) {
+        FluidStackTarget(int slotNumber, GuiLogisticsBase<?> gui) {
             this.slotNumber = slotNumber;
             this.gui = gui;
         }

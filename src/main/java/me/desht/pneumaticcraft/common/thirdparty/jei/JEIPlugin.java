@@ -17,6 +17,7 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityUVLightBox;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.VanillaTypes;
+import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter;
 import mezz.jei.api.registration.*;
@@ -132,7 +133,7 @@ public class JEIPlugin implements IModPlugin {
         registration.addGuiScreenHandler(GuiProgWidgetItemFilter.class, Helpers::getGuiProperties);
 
         registration.addGhostIngredientHandler(GuiAmadronAddTrade.class, new AmadronAddTradeGhost());
-        registration.addGhostIngredientHandler(GuiLogisticsBase.class, new LogisticsFilterGhost());
+        registration.addGhostIngredientHandler(GuiLogisticsBase.class, (IGhostIngredientHandler) new LogisticsFilterGhost());
         registration.addGhostIngredientHandler(GuiProgWidgetItemFilter.class, new ProgWidgetItemFilterGhost());
     }
 

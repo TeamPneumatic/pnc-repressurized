@@ -108,7 +108,7 @@ public interface IProgWidget extends IProgWidgetBase {
      *
      * @return the widget being connected to, or null if this widget isn't an "auxiliary" widget.
      */
-    ProgWidgetType returnType();
+    ProgWidgetType<?> returnType();
 
     /**
      * Get the types of the widgets which connect to this widget on the right, in order (top to bottom). Note that the
@@ -162,7 +162,7 @@ public interface IProgWidget extends IProgWidgetBase {
 
     WidgetDifficulty getDifficulty();
 
-    ProgWidgetType getType();
+    ProgWidgetType<?> getType();
 
     void readFromPacket(PacketBuffer buf);
 

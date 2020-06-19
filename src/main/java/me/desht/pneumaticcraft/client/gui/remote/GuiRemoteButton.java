@@ -29,27 +29,27 @@ public class GuiRemoteButton extends GuiRemoteVariable<ActionWidgetButton> {
         String valueTooltip = I18n.format("pneumaticcraft.gui.remote.button.value.tooltip");
 
         xValueField = new WidgetTextFieldNumber(font, guiLeft + 20, guiTop + 105, 38, 10);
-        xValueField.setValue(widget.settingCoordinate.getX());
+        xValueField.setValue(actionWidget.settingCoordinate.getX());
         xValueField.setTooltip(valueTooltip);
         addButton(xValueField);
 
         yValueField = new WidgetTextFieldNumber(font, guiLeft + 78, guiTop + 105, 38, 10);
-        yValueField.setValue(widget.settingCoordinate.getY());
+        yValueField.setValue(actionWidget.settingCoordinate.getY());
         yValueField.setTooltip(valueTooltip);
         addButton(yValueField);
 
         zValueField = new WidgetTextFieldNumber(font, guiLeft + 136, guiTop + 105, 38, 10);
-        zValueField.setValue(widget.settingCoordinate.getZ());
+        zValueField.setValue(actionWidget.settingCoordinate.getZ());
         zValueField.setTooltip(valueTooltip);
         addButton(zValueField);
 
         widthField = new WidgetTextFieldNumber(font, guiLeft + 100, guiTop + 123, 60, 10);
-        widthField.setValue(widget.getWidth());
+        widthField.setValue(actionWidget.getWidth());
         widthField.minValue = 10;
         addButton(widthField);
 
         heightField = new WidgetTextFieldNumber(font, guiLeft + 100, guiTop + 138, 60, 10);
-        heightField.setValue(widget.getHeight());
+        heightField.setValue(actionWidget.getHeight());
         heightField.minValue = 10;
         heightField.maxValue = 20;
         addButton(heightField);
@@ -58,9 +58,9 @@ public class GuiRemoteButton extends GuiRemoteVariable<ActionWidgetButton> {
 
     @Override
     public void onClose() {
-        widget.settingCoordinate = new BlockPos(xValueField.getValue(), yValueField.getValue(), zValueField.getValue());
-        widget.setWidth(widthField.getValue());
-        widget.setHeight(heightField.getValue());
+        actionWidget.settingCoordinate = new BlockPos(xValueField.getValue(), yValueField.getValue(), zValueField.getValue());
+        actionWidget.setWidth(widthField.getValue());
+        actionWidget.setHeight(heightField.getValue());
 
         super.onClose();
     }

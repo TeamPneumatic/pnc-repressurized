@@ -279,7 +279,7 @@ public abstract class ProgWidget implements IProgWidget {
 
     public static IProgWidget fromPacket(PacketBuffer buf) {
         ResourceLocation typeID = buf.readResourceLocation();
-        ProgWidgetType type = ModRegistries.PROG_WIDGETS.getValue(typeID);
+        ProgWidgetType<?> type = ModRegistries.PROG_WIDGETS.getValue(typeID);
         if (type != null) {
             IProgWidget newWidget = IProgWidget.create(type);
             newWidget.readFromPacket(buf);

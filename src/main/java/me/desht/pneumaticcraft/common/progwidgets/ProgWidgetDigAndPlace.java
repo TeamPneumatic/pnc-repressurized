@@ -30,7 +30,7 @@ public abstract class ProgWidgetDigAndPlace extends ProgWidgetAreaItemBase imple
         curTooltip.add(new StringTextComponent("Order: " + order.getLocalizedName()));
     }
 
-    ProgWidgetDigAndPlace(ProgWidgetType type, EnumOrder order) {
+    ProgWidgetDigAndPlace(ProgWidgetType<?> type, EnumOrder order) {
         super(type);
         this.order = order;
     }

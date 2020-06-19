@@ -53,7 +53,7 @@ public class ProgWidgetText extends ProgWidget {
     }
 
     @Override
-    public ProgWidgetType returnType() {
+    public ProgWidgetType<?> returnType() {
         return ModProgWidgets.TEXT;
     }
 

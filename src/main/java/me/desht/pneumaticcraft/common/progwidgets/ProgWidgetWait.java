@@ -24,7 +24,7 @@ public class ProgWidgetWait extends ProgWidget {
     }
 
     @Override
-    public ProgWidgetType returnType() {
+    public ProgWidgetType<?> returnType() {
         return null;
     }
 

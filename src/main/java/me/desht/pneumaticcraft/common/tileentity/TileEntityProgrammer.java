@@ -200,7 +200,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
         for (int i = 0; i < widgetTags.size(); i++) {
             CompoundNBT widgetTag = widgetTags.getCompound(i);
             ResourceLocation typeID = new ResourceLocation(widgetTag.getString("name"));
-            ProgWidgetType type = ModRegistries.PROG_WIDGETS.getValue(typeID);
+            ProgWidgetType<?> type = ModRegistries.PROG_WIDGETS.getValue(typeID);
             if (type != null) {
                 IProgWidget addedWidget = IProgWidget.create(type);
                 if (addedWidget.isAvailable()) {

@@ -29,7 +29,7 @@ public class ProgWidgetStart extends ProgWidget {
     }
 
     @Override
-    public ProgWidgetType returnType() {
+    public ProgWidgetType<?> returnType() {
         return null;
     }
 

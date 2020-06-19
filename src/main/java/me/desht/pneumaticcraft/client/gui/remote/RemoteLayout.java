@@ -14,8 +14,8 @@ import java.util.Map;
 
 public class RemoteLayout {
 
-    private final List<ActionWidget> actionWidgets = new ArrayList<>();
-    private static final Map<String, Class<? extends ActionWidget>> registeredWidgets = new HashMap<>();
+    private final List<ActionWidget<?>> actionWidgets = new ArrayList<>();
+    private static final Map<String, Class<? extends ActionWidget<?>>> registeredWidgets = new HashMap<>();
 
     static {
         registerWidget(ActionWidgetCheckBox.class);
@@ -24,9 +24,9 @@ public class RemoteLayout {
         registerWidget(ActionWidgetDropdown.class);
     }
 
-    private static void registerWidget(Class<? extends ActionWidget> widgetClass) {
+    private static void registerWidget(Class<? extends ActionWidget<?>> widgetClass) {
         try {
-            ActionWidget widget = widgetClass.newInstance();
+            ActionWidget<?> widget = widgetClass.newInstance();
             registeredWidgets.put(widget.getId(), widgetClass);
             return;
         } catch (InstantiationException | IllegalAccessException e) {
@@ -42,9 +42,9 @@ public class RemoteLayout {
             for (int i = 0; i < tagList.size(); i++) {
                 CompoundNBT widgetTag = tagList.getCompound(i);
                 String id = widgetTag.getString("id");
-                Class<? extends ActionWidget> clazz = registeredWidgets.get(id);
+                Class<? extends ActionWidget<?>> clazz = registeredWidgets.get(id);
                 try {
-                    ActionWidget widget = clazz.newInstance();
+                    ActionWidget<?> widget = clazz.newInstance();
                     widget.readFromNBT(widgetTag, guiLeft, guiTop);
                     actionWidgets.add(widget);
                 } catch (Exception e) {
@@ -58,24 +58,24 @@ public class RemoteLayout {
         CompoundNBT tag = new CompoundNBT();
 
         ListNBT tagList = new ListNBT();
-        for (ActionWidget actionWidget : actionWidgets) {
+        for (ActionWidget<?> actionWidget : actionWidgets) {
             tagList.add(actionWidget.toNBT(guiLeft, guiTop));
         }
         tag.put("actionWidgets", tagList);
         return tag;
     }
 
-    public void addWidget(ActionWidget widget) {
+    public void addWidget(ActionWidget<?> widget) {
         actionWidgets.add(widget);
     }
 
-    public List<ActionWidget> getActionWidgets() {
+    public List<ActionWidget<?>> getActionWidgets() {
         return actionWidgets;
     }
 
     public List<Widget> getWidgets(boolean filterDisabledWidgets) {
         List<Widget> widgets = new ArrayList<>();
-        for (ActionWidget actionWidget : actionWidgets) {
+        for (ActionWidget<?> actionWidget : actionWidgets) {
             if (!filterDisabledWidgets || actionWidget.isEnabled()) {
                 widgets.add(actionWidget.getWidget());
             }

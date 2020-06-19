@@ -60,7 +60,7 @@ public enum HeatExchangerManager implements IHeatRegistry {
     }
 
     @Override
-    public void registerHeatBehaviour(ResourceLocation id, Supplier<? extends HeatBehaviour> heatBehaviour) {
+    public void registerHeatBehaviour(ResourceLocation id, Supplier<? extends HeatBehaviour<?>> heatBehaviour) {
         HeatBehaviourManager.getInstance().registerBehaviour(id, heatBehaviour);
     }
 

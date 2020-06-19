@@ -46,7 +46,7 @@ public class ProgWidgetLiquidFilter extends ProgWidget {
     }
 
     @Override
-    public ProgWidgetType returnType() {
+    public ProgWidgetType<?> returnType() {
         return ModProgWidgets.LIQUID_FILTER;
     }
 

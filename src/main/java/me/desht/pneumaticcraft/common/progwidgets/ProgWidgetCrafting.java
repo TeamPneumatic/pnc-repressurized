@@ -68,7 +68,7 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
     }
 
     @Override
-    public ProgWidgetType returnType() {
+    public ProgWidgetType<?> returnType() {
         return null;
     }
 
