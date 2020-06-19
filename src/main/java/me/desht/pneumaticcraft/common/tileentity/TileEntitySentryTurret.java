@@ -349,7 +349,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
         public boolean apply(Entity entity) {
             if (entity instanceof PlayerEntity) {
                 PlayerEntity player = (PlayerEntity) entity;
-                if (player.isCreative() || isExcludedBySecurityStations(player)) return false;
+                if (player.isCreative() || player.isSpectator() || isExcludedBySecurityStations(player)) return false;
             }
             return super.apply(entity) && inRange(entity) && canSeeEntity(entity);
         }

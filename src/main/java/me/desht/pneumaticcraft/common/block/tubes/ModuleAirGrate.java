@@ -134,7 +134,7 @@ public class ModuleAirGrate extends TubeModule {
 
     private boolean ignoreEntity(Entity entity) {
         if (entity instanceof PlayerEntity) {
-            return ((PlayerEntity) entity).isCreative() || entity.isSneaking();
+            return ((PlayerEntity) entity).isCreative() || entity.isSneaking() || entity.isSpectator();
         } else {
             return false;
         }
