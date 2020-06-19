@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.common.progwidgets.ProgWidget;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.TargetGoal;
+import net.minecraft.entity.player.PlayerEntity;
 
 import java.util.Comparator;
 import java.util.EnumSet;
@@ -22,7 +23,7 @@ public class DroneAINearestAttackableTarget extends TargetGoal {
 
     private LivingEntity targetEntity;
 
-    public DroneAINearestAttackableTarget(EntityDrone drone, int par3, boolean checkSight, ProgWidget widget) {
+    public DroneAINearestAttackableTarget(EntityDrone drone, boolean checkSight, ProgWidget widget) {
         this(drone, checkSight, false, widget);
     }
 
@@ -46,12 +47,16 @@ public class DroneAINearestAttackableTarget extends TargetGoal {
         List<Entity> list = ((IEntityProvider) widget).getValidEntities(drone.world);
         list.sort(theNearestAttackableTargetSorter);
         for (Entity entity : list) {
-            if (entity != goalOwner && entity instanceof LivingEntity) {
+            if (entity != goalOwner && entity instanceof LivingEntity && !shouldIgnore(entity)) {
                 targetEntity = (LivingEntity) entity;
                 return true;
             }
         }
         return false;
+    }
+
+    private boolean shouldIgnore(Entity entity) {
+        return entity.isSpectator() || entity instanceof PlayerEntity && ((PlayerEntity) entity).isCreative();
     }
 
     /**

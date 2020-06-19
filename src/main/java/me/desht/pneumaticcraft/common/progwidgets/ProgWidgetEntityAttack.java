@@ -51,7 +51,7 @@ public class ProgWidgetEntityAttack extends ProgWidget implements IAreaProvider,
 
     @Override
     public Goal getWidgetTargetAI(IDroneBase drone, IProgWidget widget) {
-        return new DroneAINearestAttackableTarget((EntityDrone) drone, 0, false, (ProgWidget) widget);
+        return new DroneAINearestAttackableTarget((EntityDrone) drone, false, (ProgWidget) widget);
     }
 
     @Override
