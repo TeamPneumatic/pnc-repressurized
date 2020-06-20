@@ -727,4 +727,14 @@ public class PneumaticCraftUtils {
             return null;
         }
     }
+
+    public static <T extends TileEntity> Optional<T> getTileEntityAt(IBlockReader w, BlockPos pos, Class<T> cls) {
+        TileEntity te = w.getTileEntity(pos);
+        if (cls.isAssignableFrom(te.getClass())) {
+            //noinspection unchecked
+            return Optional.of((T) te);
+        } else {
+            return Optional.empty();
+        }
+    }
 }

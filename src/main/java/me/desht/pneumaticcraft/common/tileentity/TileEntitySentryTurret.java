@@ -44,6 +44,7 @@ import java.util.List;
 
 public class TileEntitySentryTurret extends TileEntityTickableBase implements IRedstoneControlled, IGUITextFieldSensitive, INamedContainerProvider {
     private static final int INVENTORY_SIZE = 4;
+    public static final String NBT_ENTITY_FILTER = "entityFilter";
 
     private final ItemStackHandler inventory = new TurretItemStackHandler(this);
     private final LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> inventory);
@@ -66,6 +67,8 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
     private final SentryTurretEntitySelector entitySelector = new SentryTurretEntitySelector();
     private double rangeSq;
     private Vec3d tileVec;
+    @DescSynced
+    public float idleYaw;
 
     public TileEntitySentryTurret() {
         super(ModTileEntities.SENTRY_TURRET.get(), 4);
@@ -76,6 +79,9 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
         super.tick();
         if (!getWorld().isRemote) {
             if (getMinigun().getAttackTarget() == null && redstoneAllows()) {
+                if (!MathHelper.epsilonEquals(getMinigun().minigunYaw, getMinigun().getIdleYaw())) {
+                    getMinigun().setReturning(true);
+                }
                 getMinigun().setSweeping(true);
                 if ((getWorld().getGameTime() & 0xF) == 0) {
                     List<LivingEntity> entities = getWorld().getEntitiesWithinAABB(LivingEntity.class, getTargetingBoundingBox(), entitySelector);
@@ -94,6 +100,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
             if (target != null) {
                 if (!redstoneAllows() || !entitySelector.apply(target)) {
                     getMinigun().setAttackTarget(null);
+                    getMinigun().minigunYaw = idleYaw;
                     targetEntityId = -1;
                 } else {
                     if ((getWorld().getGameTime() & 0x7) == 0) {
@@ -113,6 +120,11 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
             }
         }
         getMinigun().update(getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5);
+    }
+
+    @Override
+    public void serializeExtraItemData(CompoundNBT blockEntityTag) {
+        blockEntityTag.putString(NBT_ENTITY_FILTER, getText(0));
     }
 
     private boolean canSeeEntity(Entity entity) {
@@ -144,11 +156,13 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
     @Override
     public void onDescUpdate() {
         super.onDescUpdate();
+
         Entity entity = getWorld().getEntityByID(targetEntityId);
         if (entity instanceof LivingEntity) {
             getMinigun().setAttackTarget((LivingEntity) entity);
         } else {
             getMinigun().setAttackTarget(null);
+            getMinigun().setReturning(true);
         }
     }
 
@@ -159,6 +173,8 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
             if (!getWorld().isRemote) {
                 minigun.setPlayer(getFakePlayer());
             }
+            minigun.minigunYaw = idleYaw;
+            minigun.setIdleYaw(idleYaw);
         }
         return minigun;
     }
@@ -176,7 +192,8 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
         super.write(tag);
         tag.put("Items", inventory.serializeNBT());
         tag.putByte("redstoneMode", (byte) redstoneMode);
-        tag.putString("entityFilter", entityFilter);
+        tag.putString(NBT_ENTITY_FILTER, entityFilter);
+        tag.putFloat("idleYaw", idleYaw);
         return tag;
     }
 
@@ -185,7 +202,8 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
         super.read(tag);
         inventory.deserializeNBT(tag.getCompound("Items"));
         redstoneMode = tag.getByte("redstoneMode");
-        setText(0, tag.getString("entityFilter"));
+        idleYaw = tag.getFloat("idleYaw");
+        setText(0, tag.getString(NBT_ENTITY_FILTER));
     }
 
     @Override

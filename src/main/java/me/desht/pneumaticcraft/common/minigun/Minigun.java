@@ -43,6 +43,7 @@ public abstract class Minigun {
     public float minigunYaw, oldMinigunYaw;
     public float minigunPitch, oldMinigunPitch;
     private boolean sweeping; // When true, the yaw of the minigun will sweep with a sinus pattern when not targeting.
+    private boolean returning; // When true, the minigun is returning to its idle position.
     private double sweepingProgress;
 
     private boolean gunAimedAtTarget;
@@ -54,6 +55,7 @@ public abstract class Minigun {
     protected PlayerEntity player;
     protected World world;
     private LivingEntity attackTarget;
+    private float idleYaw;
 
     public Minigun(boolean requiresTarget) {
         this.requiresTarget = requiresTarget;
@@ -187,6 +189,22 @@ public abstract class Minigun {
         return sweeping;
     }
 
+    public boolean isReturning() {
+        return returning;
+    }
+
+    public void setReturning(boolean returning) {
+        this.returning = returning;
+    }
+
+    public float getIdleYaw() {
+        return idleYaw;
+    }
+
+    public void setIdleYaw(float idleYaw) {
+        this.idleYaw = idleYaw;
+    }
+
     public boolean isGunAimedAtTarget() {
         return gunAimedAtTarget;
     }
@@ -295,11 +313,16 @@ public abstract class Minigun {
             minigunPitch = moveToward(minigunPitch, (float) targetPitch, MAX_GUN_PITCH_CHANGE);
             minigunYaw = minigunPitch < -80 || minigunPitch > 80 ? (float) targetYaw : moveToward(minigunYaw, (float) targetYaw, MAX_GUN_YAW_CHANGE);
             gunAimedAtTarget = MathHelper.epsilonEquals(minigunYaw, targetYaw) && MathHelper.epsilonEquals(minigunPitch, targetPitch);
+        } else if (isReturning()) {
+            minigunYaw = moveToward(minigunYaw, idleYaw, MAX_GUN_YAW_CHANGE);
+            if (MathHelper.epsilonEquals(minigunYaw, idleYaw)) {
+                setReturning(false);
+            }
+            minigunPitch = moveToward(minigunPitch, (float) targetPitch, MAX_GUN_PITCH_CHANGE);
         } else if (isSweeping()) {
             minigunYaw -= Math.cos(sweepingProgress) * 22;
             sweepingProgress += 0.05D;
             minigunYaw += Math.cos(sweepingProgress) * 22;
-
             minigunPitch = moveToward(minigunPitch, (float) targetPitch, MAX_GUN_PITCH_CHANGE);
         }
 
