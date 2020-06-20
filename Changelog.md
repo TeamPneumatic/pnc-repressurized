@@ -26,11 +26,18 @@ Changes are in reverse chronological order; newest changes at the top.
   * ComputerCraft event support - `os.pullEvent('universalSensor')` - should work now 
   * All sensor description texts are now localised, and tidied up
   * GPS Tool icon in the GPS slot is now shaped more like the item
-  * Fixed up the somewhat broken upgrades tab
-  
+* Sentry Turrets now point the same direction you're facing when you place them (when they're idle, of course)
+* Sentry Turret entity filter is now preserved if you break the turret with a wrench (sneak + right-click)
+* Safety Valve Modules on basic Pressure Tubes now leak at 4.92 bar instead of 4.9 bar
+  * This avoids unwanted leaks if you're pressurising a tier 1 network from a tier 2 network with Regulator Module (4.9 bar)
+
 ### Fixes
 * Programmer GUI: fixed updates to Coordinate widgets not getting sync'd to server
 * All GUI upgrade tabs: the upgrade list is now sorted by upgrade name instead of being completely arbitrary
+* Fixed Sentry Turret bullet tracers rendering slightly too low for some targets
+* Universal Sensor block is now recognised as a redstone emitter by drone Redstone Condition widget
+* Fixed up the Universal Sensor GUI upgrades tab (it was a big mess)
+* Players in spectator mode are now ignored by Air Grate Modules and Sentry Turrets
 
 ## 1.3.0-33 (12 Jun 2020)
 
