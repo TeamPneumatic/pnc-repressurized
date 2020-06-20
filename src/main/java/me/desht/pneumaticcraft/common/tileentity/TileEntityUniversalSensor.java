@@ -226,7 +226,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
     }
 
     public int getRange() {
-        return getUpgrades(EnumUpgrade.RANGE) + 2;
+        return getUpgrades(EnumUpgrade.RANGE) + 8;
     }
 
     private void setSensorSetting(String sensorPath) {

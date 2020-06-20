@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUniversalSensor;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.state.StateContainer;
@@ -45,13 +46,14 @@ public class BlockUniversalSensor extends BlockPneumaticCraft {
 
     @Override
     public int getStrongPower(BlockState blockState, IBlockReader blockAccess, BlockPos pos, Direction side) {
-        return 0;
+        TileEntityUniversalSensor te = PneumaticCraftUtils.getTileEntity(blockAccess, pos, TileEntityUniversalSensor.class);
+        return te != null && side == Direction.UP ? te.redstoneStrength : 0;
     }
 
     @Override
     public int getWeakPower(BlockState blockState, IBlockReader blockAccess, BlockPos pos, Direction side) {
-        TileEntity te = blockAccess.getTileEntity(pos);
-        return te instanceof TileEntityUniversalSensor ? ((TileEntityUniversalSensor) te).redstoneStrength : 0;
+        TileEntityUniversalSensor te = PneumaticCraftUtils.getTileEntity(blockAccess, pos, TileEntityUniversalSensor.class);
+        return te != null ? te.redstoneStrength : 0;
     }
 
     @Override

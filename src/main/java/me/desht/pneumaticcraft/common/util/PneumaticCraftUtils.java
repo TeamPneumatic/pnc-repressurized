@@ -21,6 +21,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
@@ -29,6 +30,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.util.BlockSnapshot;
@@ -714,5 +716,15 @@ public class PneumaticCraftUtils {
 
     public static String posToString(BlockPos pos) {
         return String.format("%d,%d,%d", pos.getX(), pos.getY(), pos.getZ());
+    }
+
+    public static <T extends TileEntity> T getTileEntity(IBlockReader w, BlockPos pos, Class<T> cls) {
+        TileEntity te = w.getTileEntity(pos);
+        if (cls.isAssignableFrom(te.getClass())) {
+            //noinspection unchecked
+            return (T) te;
+        } else {
+            return null;
+        }
     }
 }
