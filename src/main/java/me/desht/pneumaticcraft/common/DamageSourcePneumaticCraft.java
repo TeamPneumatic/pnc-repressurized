@@ -69,7 +69,7 @@ public class DamageSourcePneumaticCraft extends DamageSource {
 
         @Override
         public ITextComponent getDeathMessage(LivingEntity par1EntityLivingBase) {
-            return new TranslationTextComponent("death.drone.overload." + msgKey, params);
+            return new TranslationTextComponent("pneumaticcraft.death.drone.overload." + msgKey, params);
         }
     }
 }
