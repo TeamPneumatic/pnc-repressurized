@@ -6,7 +6,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.15.2
 
-## 1.3.1-?? (unreleased)
+## 1.3.1-36 (22 Jun 2020)
 ### New
 * Immersive Engineering integration has been added back (note: at time of writing, Immersive Engineering is in alpha status on 1.15.2)
   * Harvesting Drones (and Harvest programming widget) recognise Hemp as a harvestable crop
@@ -39,6 +39,10 @@ Changes are in reverse chronological order; newest changes at the top.
 * Universal Sensor block is now recognised as a redstone emitter by drone Redstone Condition widget
 * Fixed up the Universal Sensor GUI upgrades tab (it was a big mess)
 * Players in spectator mode are now ignored by Air Grate Modules and Sentry Turrets
+* Fixed Liquid Hoppers not being able to absorb fluid from buckets in front of their input
+* Fixed a couple of fluid dupe issues:
+  * Tanks may now only be used as crafting ingredients when completely empty (item must have no NBT, so newly-crafted is recommended)
+  * Emptying a stack of full tanks into another larger tank would transfer twice the fluid (actually a Forge bug but worked around in PNC)
 
 ## 1.3.0-33 (12 Jun 2020)
 
