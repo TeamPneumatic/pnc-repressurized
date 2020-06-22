@@ -13,7 +13,9 @@
       "tag": "forge:glass_panes"
     },
     "B": {
-      "item": "pneumaticcraft:small_tank"
+      "type": "forge:nbt",
+      "item": "pneumaticcraft:small_tank",
+      "count": 1
     }
   },
   "result": {

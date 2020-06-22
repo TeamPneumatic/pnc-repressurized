@@ -22,7 +22,8 @@ Changes are in reverse chronological order; newest changes at the top.
   * This fixes the problem of sentry turrets, air leaks, etc. sounding much too loud from a distance
   * Because of this, some default sound volumes have been adjusted upwards in the mod config `pneumaticcraft-client.toml`
   * If you're updating from a previous version (rather than a fresh install) some sounds might seem too quiet; if so, you can review there volume in the above config file on your client
-* Universal Sensor GUI cleanup
+* Universal Sensor work
+  * Base range (with no Range Upgrades) has been increased from 2 to 8 blocks
   * ComputerCraft event support - `os.pullEvent('universalSensor')` - should work now 
   * All sensor description texts are now localised, and tidied up
   * GPS Tool icon in the GPS slot is now shaped more like the item

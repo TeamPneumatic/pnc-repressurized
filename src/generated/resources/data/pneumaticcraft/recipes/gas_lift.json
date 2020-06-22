@@ -10,7 +10,9 @@
       "item": "pneumaticcraft:pressure_tube"
     },
     "G": {
-      "item": "pneumaticcraft:small_tank"
+      "type": "forge:nbt",
+      "item": "pneumaticcraft:small_tank",
+      "count": 1
     },
     "S": {
       "item": "pneumaticcraft:reinforced_stone_slab"

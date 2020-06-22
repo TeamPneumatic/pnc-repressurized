@@ -9,7 +9,9 @@
       "item": "pneumaticcraft:pressure_tube"
     },
     "B": {
-      "item": "pneumaticcraft:small_tank"
+      "type": "forge:nbt",
+      "item": "pneumaticcraft:small_tank",
+      "count": 1
     },
     "L": {
       "tag": "forge:leather"

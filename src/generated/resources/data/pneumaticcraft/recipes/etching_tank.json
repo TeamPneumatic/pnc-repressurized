@@ -13,7 +13,9 @@
       "item": "pneumaticcraft:reinforced_brick_wall"
     },
     "T": {
-      "item": "pneumaticcraft:small_tank"
+      "type": "forge:nbt",
+      "item": "pneumaticcraft:small_tank",
+      "count": 1
     },
     "S": {
       "item": "pneumaticcraft:reinforced_brick_slab"

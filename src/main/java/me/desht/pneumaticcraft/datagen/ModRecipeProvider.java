@@ -291,7 +291,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 "OGO/WTW/SSS",
                 'O', Tags.Blocks.OBSIDIAN,
                 'W', ModBlocks.REINFORCED_BRICK_WALL.get(),
-                'T', ModBlocks.TANK_SMALL.get(),
+                'T', IngredientNBTWrapper.fromItemStack(new ItemStack(ModBlocks.TANK_SMALL.get())),
                 'S', ModBlocks.REINFORCED_BRICK_SLAB.get(),
                 'G', Tags.Items.GLASS_PANES
         ).build(consumer);
@@ -316,7 +316,7 @@ public class ModRecipeProvider extends RecipeProvider {
         shaped(ModBlocks.GAS_LIFT.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
                 " T /TGT/SSS",
                 'T', ModBlocks.PRESSURE_TUBE.get(),
-                'G', ModBlocks.TANK_SMALL.get(),
+                'G', IngredientNBTWrapper.fromItemStack(new ItemStack(ModBlocks.TANK_SMALL.get())),
                 'S', ModBlocks.REINFORCED_STONE_SLAB.get()
         ).build(consumer);
 
@@ -379,20 +379,20 @@ public class ModRecipeProvider extends RecipeProvider {
                 " I /G G/IBI",
                 'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
                 'G', Tags.Items.GLASS_PANES,
-                'B', ModBlocks.TANK_SMALL.get()
+                'B', IngredientNBTWrapper.fromItemStack(new ItemStack(ModBlocks.TANK_SMALL.get()))
         ).build(consumer);
 
         shaped(ModBlocks.LIQUID_COMPRESSOR.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
                 "PBP/LCL",
                 'P', ModBlocks.PRESSURE_TUBE.get(),
-                'B', ModBlocks.TANK_SMALL.get(),
+                'B', IngredientNBTWrapper.fromItemStack(new ItemStack(ModBlocks.TANK_SMALL.get())),
                 'L', Tags.Items.LEATHER,
                 'C', ModBlocks.AIR_COMPRESSOR.get()
         ).build(consumer);
 
         shaped(ModBlocks.LIQUID_HOPPER.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
                 "T/H",
-                'T', ModBlocks.TANK_SMALL.get(),
+                'T', IngredientNBTWrapper.fromItemStack(new ItemStack(ModBlocks.TANK_SMALL.get())),
                 'H', Blocks.HOPPER
         ).build(consumer);
 
@@ -609,7 +609,7 @@ public class ModRecipeProvider extends RecipeProvider {
         shaped(ModBlocks.REFINERY.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
                 "SSS/RTR/SSS",
                 'S', ModBlocks.REINFORCED_STONE_SLAB.get(),
-                'T', ModBlocks.TANK_SMALL.get(),
+                'T', IngredientNBTWrapper.fromItemStack(new ItemStack(ModBlocks.TANK_SMALL.get())),
                 'R', Tags.Items.DUSTS_REDSTONE
         ).build(consumer);
 
@@ -717,14 +717,14 @@ public class ModRecipeProvider extends RecipeProvider {
         shaped(ModBlocks.TANK_MEDIUM.get(), ModItems.PLASTIC.get(),
                 "PSP/ITI/PSP",
                 'P', PneumaticCraftTags.Items.PLASTIC_SHEETS,
-                'S', ModBlocks.TANK_SMALL.get(),
+                'S', IngredientNBTWrapper.fromItemStack(new ItemStack(ModBlocks.TANK_SMALL.get())),
                 'I', Tags.Items.INGOTS_GOLD,
                 'T', ModBlocks.PRESSURE_TUBE.get()
         ).build(consumer);
 
         shaped(ModBlocks.TANK_LARGE.get(), ModBlocks.ADVANCED_PRESSURE_TUBE.get(),
                 "PMP/DTD/PMP",
-                'M', ModBlocks.TANK_MEDIUM.get(),
+                'M', IngredientNBTWrapper.fromItemStack(new ItemStack(ModBlocks.TANK_MEDIUM.get())),
                 'P', PneumaticCraftTags.Items.PLASTIC_SHEETS,
                 'D', Tags.Items.GEMS_DIAMOND,
                 'T', ModBlocks.ADVANCED_PRESSURE_TUBE.get()
@@ -747,7 +747,7 @@ public class ModRecipeProvider extends RecipeProvider {
         shaped(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
                 "SSS/TPT/SSS",
                 'S', ModBlocks.REINFORCED_STONE_SLAB.get(),
-                'T', ModBlocks.TANK_SMALL.get(),
+                'T', IngredientNBTWrapper.fromItemStack(new ItemStack(ModBlocks.TANK_SMALL.get())),
                 'P', ModBlocks.PRESSURE_TUBE.get()
         ).build(consumer);
 
