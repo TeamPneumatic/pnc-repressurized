@@ -79,7 +79,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
         super.tick();
         if (!getWorld().isRemote) {
             if (getMinigun().getAttackTarget() == null && redstoneAllows()) {
-                if (!MathHelper.epsilonEquals(getMinigun().minigunYaw, getMinigun().getIdleYaw())) {
+                if (!PneumaticCraftUtils.areFloatsEqual(getMinigun().minigunYaw, getMinigun().getIdleYaw())) {
                     getMinigun().setReturning(true);
                 }
                 getMinigun().setSweeping(true);

@@ -315,7 +315,7 @@ public abstract class Minigun {
             gunAimedAtTarget = MathHelper.epsilonEquals(minigunYaw, targetYaw) && MathHelper.epsilonEquals(minigunPitch, targetPitch);
         } else if (isReturning()) {
             minigunYaw = moveToward(minigunYaw, idleYaw, MAX_GUN_YAW_CHANGE);
-            if (MathHelper.epsilonEquals(minigunYaw, idleYaw)) {
+            if (PneumaticCraftUtils.areFloatsEqual(minigunYaw, idleYaw)) {
                 setReturning(false);
             }
             minigunPitch = moveToward(minigunPitch, (float) targetPitch, MAX_GUN_PITCH_CHANGE);
