@@ -26,8 +26,11 @@ import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.wrapper.PlayerInvWrapper;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import static net.minecraftforge.fluids.FluidAttributes.BUCKET_VOLUME;
@@ -108,7 +111,7 @@ public class FluidUtils {
                 return te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, face).map(handler -> {
                     PlayerInvWrapper invWrapper = new PlayerInvWrapper(player.inventory);
                     FluidActionResult result = isInserting ?
-                            FluidUtil.tryEmptyContainerAndStow(player.getHeldItem(hand), handler, invWrapper, capacity, player, true) :
+                            FluidUtils.tryEmptyContainerAndStow(player.getHeldItem(hand), handler, invWrapper, capacity, player, true) :
                             FluidUtil.tryFillContainerAndStow(player.getHeldItem(hand), handler, invWrapper, capacity, player, true);
                     if (result.isSuccess()) {
                         player.setHeldItem(hand, result.getResult());
@@ -301,5 +304,86 @@ public class FluidUtils {
 
     public static boolean matchFluid(FluidIngredient fluidIngredient, Fluid fluid, boolean matchTags) {
         return fluidIngredient.testFluid(fluid);
+    }
+
+    //------------------------------- temp methods copied from Forge FluidUtil to work around a bug there ------------------
+    // TODO remove when Forge is updated for PR 6797 and we're building against it
+
+    @Nonnull
+    private static FluidActionResult tryEmptyContainerAndStow(@Nonnull ItemStack container, IFluidHandler fluidDestination, IItemHandler inventory, int maxAmount, @Nullable PlayerEntity player, boolean doDrain)
+    {
+        if (container.isEmpty())
+        {
+            return FluidActionResult.FAILURE;
+        }
+
+        if (player != null && player.abilities.isCreativeMode)
+        {
+            FluidActionResult emptiedReal = tryEmptyContainer(container, fluidDestination, maxAmount, player, doDrain);
+            if (emptiedReal.isSuccess())
+            {
+                return new FluidActionResult(container); // creative mode: item does not change
+            }
+        }
+        else if (container.getCount() == 1) // don't need to stow anything, just fill and edit the container stack
+        {
+            FluidActionResult emptiedReal = tryEmptyContainer(container, fluidDestination, maxAmount, player, doDrain);
+            if (emptiedReal.isSuccess())
+            {
+                return emptiedReal;
+            }
+        }
+        else
+        {
+            FluidActionResult emptiedSimulated = tryEmptyContainer(container, fluidDestination, maxAmount, player, false);
+            if (emptiedSimulated.isSuccess())
+            {
+                // check if we can give the itemStack to the inventory
+                ItemStack remainder = ItemHandlerHelper.insertItemStacked(inventory, emptiedSimulated.getResult(), true);
+                if (remainder.isEmpty() || player != null)
+                {
+                    FluidActionResult emptiedReal = tryEmptyContainer(container, fluidDestination, maxAmount, player, doDrain);
+                    remainder = ItemHandlerHelper.insertItemStacked(inventory, emptiedReal.getResult(), !doDrain);
+
+                    // give it to the player or drop it at their feet
+                    if (!remainder.isEmpty() && player != null && doDrain)
+                    {
+                        ItemHandlerHelper.giveItemToPlayer(player, remainder);
+                    }
+
+                    ItemStack containerCopy = container.copy();
+                    containerCopy.shrink(1);
+                    return new FluidActionResult(containerCopy);
+                }
+            }
+        }
+
+        return FluidActionResult.FAILURE;
+    }
+
+    // copied from FluidUtil.tryEmptyContainer() to work around a bug where tryFluidTransfer() is always called with doTransfer=true
+    // even for simulations
+    @Nonnull
+    private static FluidActionResult tryEmptyContainer(@Nonnull ItemStack container, IFluidHandler fluidDestination, int maxAmount, @Nullable PlayerEntity player, boolean doDrain)
+    {
+        ItemStack containerCopy = ItemHandlerHelper.copyStackWithSize(container, 1); // do not modify the input
+        return FluidUtil.getFluidHandler(containerCopy)
+                .map(containerFluidHandler -> {
+
+                    // We are acting on a COPY of the stack, so performing changes is acceptable even if we are simulating.
+                    FluidStack transfer = FluidUtil.tryFluidTransfer(fluidDestination, containerFluidHandler, maxAmount, doDrain);
+                    if (transfer.isEmpty())
+                        return FluidActionResult.FAILURE;
+
+                    if (doDrain && player != null)
+                    {
+                        SoundEvent soundevent = transfer.getFluid().getAttributes().getEmptySound(transfer);
+                        player.world.playSound(null, player.getPosX(), player.getPosY() + 0.5, player.getPosZ(), soundevent, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                    }
+
+                    ItemStack resultContainer = containerFluidHandler.getContainer();
+                    return new FluidActionResult(resultContainer);
+                })
+                .orElse(FluidActionResult.FAILURE);
     }
 }
