@@ -45,7 +45,8 @@ public class BlockUniversalSensor extends BlockPneumaticCraft {
 
     @Override
     public int getStrongPower(BlockState blockState, IBlockReader blockAccess, BlockPos pos, Direction side) {
-        return 0;
+        TileEntity te = blockAccess.getTileEntity(pos);
+        return te instanceof TileEntityUniversalSensor && side == Direction.UP ? ((TileEntityUniversalSensor) te).redstoneStrength : 0;
     }
 
     @Override
