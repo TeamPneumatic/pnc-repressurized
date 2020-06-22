@@ -6,7 +6,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.15.2
 
-## 1.3.1-36 (22 Jun 2020)
+## 1.3.1-39 (22 Jun 2020)
 ### New
 * Immersive Engineering integration has been added back (note: at time of writing, Immersive Engineering is in alpha status on 1.15.2)
   * Harvesting Drones (and Harvest programming widget) recognise Hemp as a harvestable crop
