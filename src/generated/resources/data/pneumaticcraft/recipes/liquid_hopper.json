@@ -6,7 +6,9 @@
   ],
   "key": {
     "T": {
-      "item": "pneumaticcraft:small_tank"
+      "type": "forge:nbt",
+      "item": "pneumaticcraft:small_tank",
+      "count": 1
     },
     "H": {
       "item": "minecraft:hopper"

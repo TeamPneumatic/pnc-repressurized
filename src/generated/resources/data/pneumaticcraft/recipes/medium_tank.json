@@ -10,7 +10,9 @@
       "item": "pneumaticcraft:plastic"
     },
     "S": {
-      "item": "pneumaticcraft:small_tank"
+      "type": "forge:nbt",
+      "item": "pneumaticcraft:small_tank",
+      "count": 1
     },
     "I": {
       "tag": "forge:ingots/gold"

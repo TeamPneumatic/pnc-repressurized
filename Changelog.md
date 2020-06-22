@@ -6,6 +6,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.14.4
 
+<<<<<<< HEAD
 This release brings a very major internal rewrite and many many major new and modified gameplay elements. See also https://gist.github.com/desht/b604bd670f7f718bb4e6f20ff53893e2
 
 ## 1.0.8-?? (unreleased)
