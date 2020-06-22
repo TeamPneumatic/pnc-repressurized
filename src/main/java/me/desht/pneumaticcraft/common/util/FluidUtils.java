@@ -18,11 +18,11 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidActionResult;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
@@ -167,19 +167,6 @@ public class FluidUtils {
         return !state.isEmpty() && !state.isSource() && (fluid == null || fluid == state.getFluid());
     }
 
-//    /**
-//     * Get a fluidstack for the fluid at the given position, possibly also draining it.
-//     *
-//     * @param world the world
-//     * @param pos the blockpos
-//     * @param doDrain true if the fluid at the position should be drained
-//     * @return a fluidstack of the fluid, or null if no fluid could be drained
-//     */
-//    public static FluidStack getFluidAt(World world, BlockPos pos, boolean doDrain) {
-//        return FluidUtil.getFluidHandler(world, pos, Direction.UP)
-//                .map(handler -> handler.drain(FluidAttributes.BUCKET_VOLUME, doDrain)).orElse(null);
-//    }
-
     /**
      * Attempt to pick up 1000mB (one bucket) fluid from the world and stow it in the given fluid handler.
      *
@@ -272,7 +259,7 @@ public class FluidUtils {
                         if (isNotSolid || isReplaceable) {
                             world.destroyBlock(pos, true);
                         }
-                        world.setBlockState(pos, fluid.getDefaultState().getBlockState(), 3);
+                        world.setBlockState(pos, fluid.getDefaultState().getBlockState(), Constants.BlockFlags.DEFAULT);
                     }
                 }
                 return true;
@@ -314,23 +301,5 @@ public class FluidUtils {
 
     public static boolean matchFluid(FluidIngredient fluidIngredient, Fluid fluid, boolean matchTags) {
         return fluidIngredient.testFluid(fluid);
-    }
-
-//    public static boolean matchFluid(FluidStack fluid, FluidStack fluid2, boolean matchTags) {
-//        return matchFluid(fluid.getFluid(), fluid2.getFluid(), matchTags);
-//    }
-//
-//    public static boolean matchFluid(Fluid fluid, Fluid fluid2, boolean matchTags) {
-//        return fluid == fluid2 || matchTags && !Sets.intersection(fluid.getTags(), fluid2.getTags()).isEmpty();
-//    }
-//
-//    public static boolean matchFluid(Fluid fluid, Fluid fluid2, boolean matchTags) {
-//        return fluid == fluid2 || matchTags && !Sets.intersection(fluid.getTags(), fluid2.getTags()).isEmpty();
-//    }
-
-    public static FluidTank copyTank(IFluidTank tank) {
-        FluidTank res = new FluidTank(tank.getCapacity());
-        res.fill(tank.getFluid(), IFluidHandler.FluidAction.EXECUTE);
-        return res;
     }
 }

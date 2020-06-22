@@ -121,16 +121,19 @@ public class TileEntityOmnidirectionalHopper extends TileEntityAbstractHopper {
             }).orElse(false);
         }
 
-        // Suck in item entities
-        for (ItemEntity entity : getNeighborItems(this, inputDir)) {
-            ItemStack remainder = IOHelper.insert(this, entity.getItem(), null, false);
-            if (remainder.isEmpty()) {
-                entity.remove();
-                success = true;
-            } else if (remainder.getCount() < entity.getItem().getCount()) {
-                // some but not all were inserted
-                entity.setItem(remainder);
-                success = true;
+        BlockPos inputPos = pos.offset(inputDir);
+        if (!Block.hasSolidSide(world.getBlockState(inputPos), world, inputPos, inputDir.getOpposite())) {
+            // Suck in item entities
+            for (ItemEntity entity : getNeighborItems()) {
+                ItemStack remainder = ItemHandlerHelper.insertItem(itemHandler, entity.getItem(), false); //IOHelper.insert(this, entity.getItem(), null, false);
+                if (remainder.isEmpty()) {
+                    entity.remove();
+                    success = true;
+                } else if (remainder.getCount() < entity.getItem().getCount()) {
+                    // some but not all were inserted
+                    entity.setItem(remainder);
+                    success = true;
+                }
             }
         }
 

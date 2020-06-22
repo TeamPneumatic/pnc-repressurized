@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAbstractHopper;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityOmnidirectionalHopper;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
 import net.minecraft.block.Block;
@@ -57,6 +58,7 @@ public class BlockOmnidirectionalHopper extends BlockPneumaticCraft implements C
     private static final VoxelShape[] OUTPUT_SHAPES = {
             OUTPUT_DOWN, OUTPUT_UP, OUTPUT_NORTH, OUTPUT_SOUTH, OUTPUT_WEST, OUTPUT_EAST
     };
+    private static final VoxelShape[] SHAPE_CACHE = new VoxelShape[36];
 
     // standard FACING property is used for the output direction
     public static final EnumProperty<Direction> INPUT_FACING = EnumProperty.create("input", Direction.class);
@@ -72,12 +74,14 @@ public class BlockOmnidirectionalHopper extends BlockPneumaticCraft implements C
 
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-        // TODO cache (only 30 possible combinations)
-        return VoxelShapes.combineAndSimplify(
-                INPUT_SHAPES[state.get(INPUT_FACING).getIndex()],
-                OUTPUT_SHAPES[state.get(directionProperty()).ordinal()],
-                IBooleanFunction.OR
-        );
+        int idx = state.get(INPUT_FACING).getIndex() + state.get(directionProperty()).getIndex() * 6;
+        if (SHAPE_CACHE[idx] == null) {
+            SHAPE_CACHE[idx] = VoxelShapes.combineAndSimplify(
+                    INPUT_SHAPES[state.get(INPUT_FACING).getIndex()],
+                    OUTPUT_SHAPES[state.get(directionProperty()).ordinal()],
+                    IBooleanFunction.OR);
+        }
+        return SHAPE_CACHE[idx];
     }
 
     @Override
@@ -121,6 +125,7 @@ public class BlockOmnidirectionalHopper extends BlockPneumaticCraft implements C
             if (inputDir == getRotation(world, pos)) inputDir = Direction.byIndex(inputDir.ordinal() + 1);
             world.setBlockState(pos, state.with(INPUT_FACING, inputDir));
         }
+        PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityAbstractHopper.class).ifPresent(TileEntityAbstractHopper::onBlockRotated);
         return true;
     }
 
@@ -129,11 +134,9 @@ public class BlockOmnidirectionalHopper extends BlockPneumaticCraft implements C
         if (world != null && pos != null) {
             switch (tintIndex) {
                 case 0:
-                    TileEntity te = world.getTileEntity(pos);
-                    if (te instanceof TileEntityAbstractHopper) {
-                        return ((TileEntityAbstractHopper) te).isCreative ? 0xFFFF80FF : 0xFFFFFFFF;
-                    }
-                    break;
+                    return PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityAbstractHopper.class)
+                            .filter(te -> te.isCreative)
+                            .map(te -> 0xFFFF80FF).orElse(0xFFFFFFFF);
                 case 1:
                     return 0xFFA0A0A0;
             }

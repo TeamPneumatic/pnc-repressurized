@@ -15,6 +15,7 @@ import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
+import net.minecraft.item.BucketItem;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
@@ -93,7 +94,7 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper implements 
 
         // try to fill any fluid-handling items in front of the output
         if (getWorld().isAirBlock(getPos().offset(dir))) {
-            for (ItemEntity entity : getNeighborItems(this, dir)) {
+            for (ItemEntity entity : getNeighborItems()) {
                 FluidActionResult res = FluidUtil.tryFillContainer(entity.getItem(), tank, maxItems * 100, null, true);
                 if (res.success) {
                     entity.setItem(res.result);
@@ -104,8 +105,7 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper implements 
 
         // try to pour fluid into the world
         if (PNCConfig.Common.Machines.liquidHopperDispenser && getUpgrades(EnumUpgrade.DISPENSER) > 0) {
-            return FluidUtils.tryPourOutFluid(getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dir),
-                    world, getPos().offset(dir), false, false, FluidAction.EXECUTE);
+            return FluidUtils.tryPourOutFluid(outputCap, world, getPos().offset(dir), false, false, FluidAction.EXECUTE);
         }
 
         return false;
@@ -133,8 +133,10 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper implements 
         }
 
         if (getWorld().isAirBlock(getPos().offset(inputDir))) {
-            for (ItemEntity entity : getNeighborItems(this, inputDir)) {
-                FluidActionResult res = FluidUtil.tryEmptyContainer(entity.getItem(), tank, maxItems * 100, null, true);
+            for (ItemEntity entity : getNeighborItems()) {
+                // special case: buckets can only drain 1000 mB at a time
+                int max = entity.getItem().getItem() instanceof BucketItem ? 1000 : maxItems * 100;
+                FluidActionResult res = FluidUtil.tryEmptyContainer(entity.getItem(), tank, max, null, true);
                 if (res.success) {
                     entity.setItem(res.result);
                     return true;
@@ -144,8 +146,7 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper implements 
 
         if (PNCConfig.Common.Machines.liquidHopperDispenser && getUpgrades(EnumUpgrade.DISPENSER) > 0) {
             BlockPos neighborPos = getPos().offset(inputDir);
-            LazyOptional<IFluidHandler> cap = getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, inputDir);
-            return !FluidUtils.tryPickupFluid(cap, world, neighborPos, false, FluidAction.EXECUTE).isEmpty();
+            return !FluidUtils.tryPickupFluid(inputCap, world, neighborPos, false, FluidAction.EXECUTE).isEmpty();
         }
 
         return false;
@@ -153,12 +154,6 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper implements 
 
     public HopperTank getTank() {
         return tank;
-    }
-
-    @Override
-    public CompoundNBT write(CompoundNBT tag) {
-        super.write(tag);
-        return tag;
     }
 
     @Override

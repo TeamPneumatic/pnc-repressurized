@@ -8,13 +8,13 @@ import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.EntityPredicates;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.text.ITextComponent;
 
+import java.util.Collections;
 import java.util.List;
 
 public abstract class TileEntityAbstractHopper extends TileEntityTickableBase
@@ -29,6 +29,7 @@ public abstract class TileEntityAbstractHopper extends TileEntityTickableBase
     public boolean isCreative; // has a creative upgrade installed
     private boolean wasCreative = false;
     Direction inputDir = Direction.UP;
+    private AxisAlignedBB inputAABB; // region to check for item entities
 
     TileEntityAbstractHopper(TileEntityType type) {
         super(type, 4);
@@ -43,13 +44,31 @@ public abstract class TileEntityAbstractHopper extends TileEntityTickableBase
         super.onFirstServerTick();
 
         isCreative = getUpgrades(EnumUpgrade.CREATIVE) > 0;
+        setupInputAABB();
+    }
+
+    private void setupInputAABB() {
+        // The 0.625 and 1.375 values here ensure an accurate bounding box; the input bowl of the hopper's blockspace
+        // plus the block in front of the input direction. Items in the hopper's blockspace but not in the input bowl
+        // won't get sucked in.
+        inputDir = getInputDirection();
+        inputAABB = new AxisAlignedBB(pos)
+                .offset(inputDir.getXOffset() * 0.625, inputDir.getYOffset() * 0.625, inputDir.getZOffset() * 0.625)
+                .expand(inputDir.getXOffset() * 1.375, inputDir.getYOffset() * 1.375, inputDir.getZOffset() * 1.375);
+    }
+
+    @Override
+    public void onBlockRotated() {
+        super.onBlockRotated();
+
+        setupInputAABB();
     }
 
     @Override
     public void tick() {
-        super.tick();
-
         inputDir = getInputDirection();
+
+        super.tick();
 
         if (!getWorld().isRemote && --cooldown <= 0 && redstoneAllows()) {
             int maxItems = getMaxItems();
@@ -155,15 +174,12 @@ public abstract class TileEntityAbstractHopper extends TileEntityTickableBase
         return true;
     }
 
-
     @Override
     public ITextComponent getDisplayName() {
         return getDisplayNameInternal();
     }
 
-    static List<ItemEntity> getNeighborItems(TileEntity te, Direction dir) {
-        AxisAlignedBB box = new AxisAlignedBB(te.getPos()).expand(dir.getXOffset(), dir.getYOffset(), dir.getZOffset());
-        return te.getWorld().getEntitiesWithinAABB(ItemEntity.class, box, EntityPredicates.IS_ALIVE);
+    List<ItemEntity> getNeighborItems() {
+        return inputAABB == null ? Collections.emptyList() : world.getEntitiesWithinAABB(ItemEntity.class, inputAABB, EntityPredicates.IS_ALIVE);
     }
-
 }
