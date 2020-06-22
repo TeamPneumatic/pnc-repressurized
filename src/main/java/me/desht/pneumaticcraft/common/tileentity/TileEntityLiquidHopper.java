@@ -15,6 +15,7 @@ import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
+import net.minecraft.item.BucketItem;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
@@ -134,7 +135,9 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper implements 
 
         if (getWorld().isAirBlock(getPos().offset(inputDir))) {
             for (ItemEntity entity : getNeighborItems(this, inputDir)) {
-                FluidActionResult res = FluidUtil.tryEmptyContainer(entity.getItem(), tank, maxItems * 100, null, true);
+                // special case for buckets, which can only transfer 1000mB at a time
+                int max = entity.getItem().getItem() instanceof BucketItem ? 1000 : maxItems * 100;
+                FluidActionResult res = FluidUtil.tryEmptyContainer(entity.getItem(), tank, max, null, true);
                 if (res.success) {
                     entity.setItem(res.result);
                     return true;
