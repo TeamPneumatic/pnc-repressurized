@@ -9,13 +9,23 @@ Changes are in reverse chronological order; newest changes at the top.
 <<<<<<< HEAD
 This release brings a very major internal rewrite and many many major new and modified gameplay elements. See also https://gist.github.com/desht/b604bd670f7f718bb4e6f20ff53893e2
 
-## 1.0.8-?? (unreleased)
+## 1.0.8-22 (22 Jun 2020)
+
+### Updates
+* Universal Sensor now has a base range of 8 blocks, raised from 2 blocks
 
 ### Fixes
+* Programmer GUI: fixed updates to Coordinate widgets not getting sync'd to server
+* Universal Sensor block is now recognised as a redstone emitter by drone Redstone Condition widget
+* Players in spectator mode are now ignored by Air Grate Modules and Sentry Turrets
+* Fixed Liquid Hoppers not being able to absorb fluid from buckets in front of their input
 * Fixed crash with Patchouli when pressing 'I' on a widget in the Programmer GUI
   * Patchouli 1.1-26 or newer is now a requirement
 * Fixed some bad translations in Universal Sensor GUI
-
+* Fixed a couple of fluid dupe issues:
+  * Tanks may now only be used as crafting ingredients when completely empty (item must have no NBT, so newly-crafted is recommended)
+  * Emptying a stack of full tanks into another larger tank would transfer twice the fluid (actually a Forge bug but worked around in PNC)
+  
 ## 1.0.7-19 (16 Jun 2020)
 
 ### Updates
