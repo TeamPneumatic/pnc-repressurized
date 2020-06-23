@@ -1,21 +1,20 @@
 package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.common.progwidgets.ISidedWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetPlace;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.SoundType;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
+import net.minecraft.pathfinding.PathType;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
-import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceContext;
@@ -38,16 +37,22 @@ public class DroneAIPlace extends DroneAIBlockInteraction<ProgWidgetPlace> {
     @Override
     protected boolean isValidPosition(BlockPos pos) {
         if (drone.world().getBlockState(pos).getMaterial().isReplaceable()) {
+            if (PneumaticCraftUtils.getBlockCentre(pos).squareDistanceTo(drone.getDronePos()) < 1.2) {
+                // too close - placement could be blocked by the drone
+                return false;
+            }
             boolean failedOnPlacement = false;
             for (int i = 0; i < drone.getInv().getSlots(); i++) {
                 ItemStack droneStack = drone.getInv().getStackInSlot(i);
                 if (droneStack.getItem() instanceof BlockItem && progWidget.isItemValidForFilters(droneStack)) {
-                    Direction side = ProgWidgetPlace.getDirForSides(((ISidedWidget) progWidget).getSides());
-                    BlockPos placerPos = pos.offset(side);
-                    BlockRayTraceResult brtr = drone.world().rayTraceBlocks(new RayTraceContext(PneumaticCraftUtils.getBlockCentre(placerPos), PneumaticCraftUtils.getBlockCentre(pos), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, drone.getFakePlayer()));
-                    BlockItemUseContext ctx = new BlockItemUseContext(new ItemUseContext(drone.getFakePlayer(), Hand.MAIN_HAND, brtr));
+                    BlockPos placerPos = findClearSide(pos);
+                    if (placerPos == null) {
+                        drone.addDebugEntry("gui.progWidget.place.debug.noClearSides", pos);
+                        failedOnPlacement = true;
+                        break;
+                    }
                     Block placingBlock = ((BlockItem) droneStack.getItem()).getBlock();
-                    BlockState state = placingBlock.getStateForPlacement(ctx);
+                    BlockState state = placingBlock.getStateForPlacement(getPlacementContext(placerPos, pos, droneStack));
                     if (worldCache.checkNoEntityCollision(null, state.getShape(drone.world(), pos))) {
                         if (state.isValidPosition(drone.world(), pos)) {
                             return true;
@@ -66,29 +71,21 @@ public class DroneAIPlace extends DroneAIBlockInteraction<ProgWidgetPlace> {
         return false;
     }
 
-    //TODO 1.8 test
     @Override
     protected boolean doBlockInteraction(BlockPos pos, double distToBlock) {
-//        if (drone.getPathNavigator().hasNoPath()) {
         if (distToBlock < 2) {
-            Direction side = ProgWidgetPlace.getDirForSides(((ISidedWidget) progWidget).getSides());
-            for (int i = 0; i < drone.getInv().getSlots(); i++) {
-                ItemStack droneStack = drone.getInv().getStackInSlot(i);
+            for (int slot = 0; slot < drone.getInv().getSlots(); slot++) {
+                ItemStack droneStack = drone.getInv().getStackInSlot(slot);
                 if (droneStack.getItem() instanceof BlockItem && progWidget.isItemValidForFilters(droneStack)) {
                     BlockItem blockItem = (BlockItem) droneStack.getItem();
-                    BlockRayTraceResult brtr = drone.world().rayTraceBlocks(new RayTraceContext(PneumaticCraftUtils.getBlockCentre(pos), PneumaticCraftUtils.getBlockCentre(pos), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, drone.getFakePlayer()));
-                    BlockItemUseContext ctx = new BlockItemUseContext(new ItemUseContext(drone.getFakePlayer(), Hand.MAIN_HAND, brtr));
-                    Block placingBlock = blockItem.getBlock();
-                    BlockState state = placingBlock.getStateForPlacement(ctx);
+                    BlockItemUseContext ctx = getPlacementContext(pos, pos, droneStack);
                     ActionResultType res = blockItem.tryPlace(ctx);
                     if (res == ActionResultType.SUCCESS) {
                         drone.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY)
                                 .ifPresent(h -> h.addAir(-PneumaticValues.DRONE_USAGE_PLACE));
-                        SoundType soundType = placingBlock.getSoundType(state, drone.world(), pos, drone.getFakePlayer());
-                        drone.world().playSound(pos.getX() + 0.5F, pos.getY() + 0.5F, pos.getZ() + 0.5F, soundType.getPlaceSound(), SoundCategory.BLOCKS, (soundType.getVolume() + 1.0F) / 2.0F, soundType.getPitch() * 0.8F, false);
-                        if (i == 0 && drone.getInv().getStackInSlot(i).isEmpty()) {
+                        if (slot == 0 && drone.getInv().getStackInSlot(slot).isEmpty()) {
                             // kludge to force update of visible held item
-                            drone.getInv().setStackInSlot(i, ItemStack.EMPTY);
+                            drone.getInv().setStackInSlot(slot, ItemStack.EMPTY);
                         }
                         return false;
                     }
@@ -97,6 +94,32 @@ public class DroneAIPlace extends DroneAIBlockInteraction<ProgWidgetPlace> {
             return false;
         } else {
             return true;
+        }
+    }
+
+    private BlockPos findClearSide(BlockPos pos) {
+        for (Direction side : Direction.VALUES) {
+            BlockPos pos2 = pos.offset(side);
+            if (drone.world().getBlockState(pos.offset(side)).allowsMovement(drone.world(), pos2, PathType.AIR)) {
+                return pos2;
+            }
+        }
+        return null;
+    }
+
+    private BlockItemUseContext getPlacementContext(BlockPos placerPos, BlockPos targetPos, ItemStack droneStack) {
+        BlockRayTraceResult brtr = drone.world().rayTraceBlocks(new RayTraceContext(
+                PneumaticCraftUtils.getBlockCentre(placerPos),
+                PneumaticCraftUtils.getBlockCentre(targetPos),
+                RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE,
+                drone.getFakePlayer()
+        ));
+        return new BlockItemUseContext(new DroneBlockItemUseContext(drone.getFakePlayer(), droneStack, brtr));
+    }
+
+    private static class DroneBlockItemUseContext extends ItemUseContext {
+        protected DroneBlockItemUseContext(PlayerEntity droneFakePlayer, ItemStack heldItem, BlockRayTraceResult rayTraceResultIn) {
+            super(droneFakePlayer.world, droneFakePlayer, Hand.MAIN_HAND, heldItem, rayTraceResultIn);
         }
     }
 }

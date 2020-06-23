@@ -7,6 +7,10 @@ public interface ISidedWidget {
 
     boolean[] getSides();
 
+    default boolean isSideSelected(Direction side) {
+        return getSides()[side.getIndex()];
+    }
+
     static boolean checkSide(ISidedWidget progWidget, Direction side) {
         return progWidget.getSides()[side.getIndex()];
     }
