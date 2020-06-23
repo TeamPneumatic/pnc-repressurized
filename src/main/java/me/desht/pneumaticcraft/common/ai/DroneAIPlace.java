@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
@@ -18,6 +19,8 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceContext;
+
+import javax.annotation.Nullable;
 
 public class DroneAIPlace<W extends ProgWidgetAreaItemBase & IBlockOrdered /*& ISidedWidget*/> extends DroneAIBlockInteraction<W> {
     /**
@@ -51,7 +54,7 @@ public class DroneAIPlace<W extends ProgWidgetAreaItemBase & IBlockOrdered /*& I
                         break;
                     }
                     Block placingBlock = ((BlockItem) droneStack.getItem()).getBlock();
-                    BlockState state = placingBlock.getStateForPlacement(getPlacementContext(placerPos, pos));
+                    BlockState state = placingBlock.getStateForPlacement(getPlacementContext(placerPos, pos, droneStack));
                     if (worldCache.checkNoEntityCollision(null, state.getShape(drone.world(), pos))) {
                         if (state.isValidPosition(drone.world(), pos)) {
                             return true;
@@ -77,7 +80,7 @@ public class DroneAIPlace<W extends ProgWidgetAreaItemBase & IBlockOrdered /*& I
                 ItemStack droneStack = drone.getInv().getStackInSlot(slot);
                 if (droneStack.getItem() instanceof BlockItem && progWidget.isItemValidForFilters(droneStack)) {
                     BlockItem blockItem = (BlockItem) droneStack.getItem();
-                    BlockItemUseContext ctx = getPlacementContext(pos, pos);
+                    BlockItemUseContext ctx = getPlacementContext(pos, pos, droneStack);
                     ActionResultType res = blockItem.tryPlace(ctx);
                     if (res == ActionResultType.SUCCESS) {
                         drone.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY)
@@ -106,13 +109,19 @@ public class DroneAIPlace<W extends ProgWidgetAreaItemBase & IBlockOrdered /*& I
         return null;
     }
 
-    private BlockItemUseContext getPlacementContext(BlockPos placerPos, BlockPos targetPos) {
+    private BlockItemUseContext getPlacementContext(BlockPos placerPos, BlockPos targetPos, ItemStack droneStack) {
         BlockRayTraceResult brtr = drone.world().rayTraceBlocks(new RayTraceContext(
                 PneumaticCraftUtils.getBlockCentre(placerPos),
                 PneumaticCraftUtils.getBlockCentre(targetPos),
                 RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE,
                 drone.getFakePlayer()
         ));
-        return new BlockItemUseContext(new ItemUseContext(drone.getFakePlayer(), Hand.MAIN_HAND, brtr));
+        return new BlockItemUseContext(new DroneBlockItemUseContext(drone.getFakePlayer(), droneStack, brtr));
+    }
+
+    private static class DroneBlockItemUseContext extends ItemUseContext {
+        protected DroneBlockItemUseContext(@Nullable PlayerEntity droneFakePlayer, ItemStack heldItem, BlockRayTraceResult rayTraceResultIn) {
+            super(droneFakePlayer.world, droneFakePlayer, Hand.MAIN_HAND, heldItem, rayTraceResultIn);
+        }
     }
 }
