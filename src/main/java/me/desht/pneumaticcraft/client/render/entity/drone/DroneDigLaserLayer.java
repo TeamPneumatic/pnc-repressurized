@@ -25,18 +25,16 @@ public class DroneDigLaserLayer extends LayerRenderer<EntityDroneBase, ModelDron
 
     @Override
     public void render(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn, EntityDroneBase entityIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
-        matrixStackIn.push();
-
-        matrixStackIn.rotate(Vector3f.XP.rotationDegrees(180));
-        matrixStackIn.translate(0, -1, 0);
         BlockPos diggingPos = entityIn.getDugBlock();
         if (diggingPos != null) {
+            matrixStackIn.push();
+            matrixStackIn.rotate(Vector3f.XP.rotationDegrees(180));
+            matrixStackIn.translate(0, -1, 0);
             renderLaser(matrixStackIn, bufferIn, partialTicks, entityIn,
                     0, -entityIn.getLaserOffsetY(), 0,
                     diggingPos.getX() + 0.5 - entityIn.getPosX(), diggingPos.getY() + 0.45 - entityIn.getPosY(), diggingPos.getZ() + 0.5 - entityIn.getPosZ());
+            matrixStackIn.pop();
         }
-
-        matrixStackIn.pop();
     }
 
     @SuppressWarnings("SameParameterValue")
@@ -62,7 +60,7 @@ public class DroneDigLaserLayer extends LayerRenderer<EntityDroneBase, ModelDron
         matrixStack.rotate(Vector3f.YP.rotationDegrees(drone.ticksExisted + partialTicks));
 
         matrixStack.push();
-        matrixStack.scale(1f, laserLength / LASER_SIZE, 1f);
+        matrixStack.scale(1f, laserLength / LASER_SIZE * 2, 1f);
 
         int[] cols = RenderUtils.decomposeColor(drone.getLaserColor());
 
