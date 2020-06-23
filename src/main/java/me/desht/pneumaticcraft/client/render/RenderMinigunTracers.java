@@ -33,7 +33,7 @@ public class RenderMinigunTracers {
         minigunFire.startY = y + vec.y;
         minigunFire.startZ = z + vec.z;
         Random rand = target.getEntityWorld().rand;
-        IVertexBuilder builder = buffer.getBuffer(ModRenderTypes.BLOCK_TRACKER);
+        IVertexBuilder builder = buffer.getBuffer(ModRenderTypes.getBlockHilightLine(false));
         for (int i = 0; i < 5; i++) {
             minigunFire.endX = target.getPosX() + rand.nextDouble() * 0.8 - 0.4;
             minigunFire.endY = target.getPosY() + target.getHeight() / 2 + rand.nextDouble() * 0.8 - 0.4;
