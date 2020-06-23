@@ -6,6 +6,12 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.15.2
 
+## 1.3.2-?? (unreleased)
+
+### Fixes
+* Fixed minigun tracers rendering behind other blocks
+* Fixed drone block placing (Place widget) not consuming items when item was not in drone's inventory slot 0
+
 ## 1.3.1-39 (22 Jun 2020)
 ### New
 * Immersive Engineering integration has been added back (note: at time of writing, Immersive Engineering is in alpha status on 1.15.2)
