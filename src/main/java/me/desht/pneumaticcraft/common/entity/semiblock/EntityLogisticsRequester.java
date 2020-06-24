@@ -108,7 +108,9 @@ public class EntityLogisticsRequester extends EntityLogisticsFrame implements IS
                 int count = 0;
                 for (int i = 0; i < itemHandler.getSlots(); i++) {
                     ItemStack s = itemHandler.getStackInSlot(i);
-                    if (!s.isEmpty() && getItemFilterHandler().matchOneItem(s, stack)) {
+                    // important that the request stack is passed first to matchOneItem()
+                    // otherwise tag filters in the dest inventory will count as that item, messing up amounts
+                    if (!s.isEmpty() && getItemFilterHandler().matchOneItem(stack, s)) {
                         count += s.getCount();
                     }
                 }
