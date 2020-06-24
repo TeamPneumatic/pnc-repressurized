@@ -49,7 +49,6 @@ public class BlockKeroseneLamp extends BlockPneumaticCraft {
 
     @Override
     public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
-//        worldIn.getChunkProvider().getLightManager().checkBlock(currentPos);
         return stateIn.with(CONNECTED, getConnectedDirection(worldIn, currentPos));
     }
 

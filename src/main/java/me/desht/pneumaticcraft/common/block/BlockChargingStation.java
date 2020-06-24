@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.state.BooleanProperty;
@@ -57,10 +58,7 @@ public class BlockChargingStation extends BlockPneumaticCraftCamo {
 
     @Override
     public int getWeakPower(BlockState blockState, IBlockReader blockAccess, BlockPos pos, Direction side) {
-        TileEntity te = blockAccess.getTileEntity(pos);
-        if (te instanceof TileEntityChargingStation) {
-            return ((TileEntityChargingStation) te).shouldEmitRedstone() ? 15 : 0;
-        }
-        return 0;
+        return PneumaticCraftUtils.getTileEntityAt(blockAccess, pos, TileEntityChargingStation.class)
+                .map(teCS -> teCS.shouldEmitRedstone() ? 15 : 0).orElse(0);
     }
 }

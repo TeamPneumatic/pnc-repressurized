@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammableController;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -42,13 +43,9 @@ public class BlockProgrammableController extends BlockPneumaticCraft {
      * when checking the bottom of the block.
      */
     @Override
-    public int getWeakPower(BlockState state, IBlockReader par1IBlockAccess, BlockPos pos, Direction side) {
-        TileEntity te = par1IBlockAccess.getTileEntity(pos);
-        if (te instanceof TileEntityProgrammableController) {
-            return ((TileEntityProgrammableController) te).getEmittingRedstone(side.getOpposite());
-        }
-
-        return 0;
+    public int getWeakPower(BlockState state, IBlockReader blockReader, BlockPos pos, Direction side) {
+        return PneumaticCraftUtils.getTileEntityAt(blockReader, pos, TileEntityProgrammableController.class)
+                .map(te -> te.getEmittingRedstone(side.getOpposite())).orElse(0);
     }
 
     @Override
@@ -58,9 +55,9 @@ public class BlockProgrammableController extends BlockPneumaticCraft {
 
     @Override
     public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity entity, ItemStack stack) {
-        TileEntity te = world.getTileEntity(pos);
-        if (te instanceof TileEntityProgrammableController && entity instanceof PlayerEntity) {
-            ((TileEntityProgrammableController) te).setOwner((PlayerEntity) entity);
+        if (entity instanceof PlayerEntity) {
+            PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityProgrammableController.class)
+                    .ifPresent(te -> te.setOwner((PlayerEntity) entity));
         }
         super.onBlockPlacedBy(world, pos, state, entity, stack);
     }

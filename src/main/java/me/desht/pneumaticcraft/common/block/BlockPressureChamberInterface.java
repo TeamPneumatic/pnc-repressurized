@@ -4,6 +4,8 @@ import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberInterface;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberValve;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberWall;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -55,16 +57,15 @@ public class BlockPressureChamberInterface extends BlockPneumaticCraft implement
         Direction dir = getRotation(state);
         VoxelShape main = SHAPES[dir.getAxis().ordinal()];
 
-        TileEntity te = worldIn.getTileEntity(pos);
-        if (te instanceof TileEntityPressureChamberInterface) {
-            TileEntityPressureChamberInterface teI = (TileEntityPressureChamberInterface) te;
+        return PneumaticCraftUtils.getTileEntityAt(worldIn, pos, TileEntityPressureChamberInterface.class).map(teI -> {
             if (teI.outputProgress < TileEntityPressureChamberInterface.MAX_PROGRESS) {
-                main = VoxelShapes.combineAndSimplify(main, DOORS[dir.getIndex()], IBooleanFunction.OR);
+                return VoxelShapes.combineAndSimplify(main, DOORS[dir.getIndex()], IBooleanFunction.OR);
             } else if (teI.inputProgress < TileEntityPressureChamberInterface.MAX_PROGRESS) {
-                main = VoxelShapes.combineAndSimplify(main, DOORS[dir.getOpposite().getIndex()], IBooleanFunction.OR);
+                return VoxelShapes.combineAndSimplify(main, DOORS[dir.getOpposite().getIndex()], IBooleanFunction.OR);
+            } else {
+                return main;
             }
-        }
-        return main;
+        }).orElse(main);
     }
 
     @Override
@@ -95,26 +96,10 @@ public class BlockPressureChamberInterface extends BlockPneumaticCraft implement
 
     @Override
     public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (state.getBlock() != newState.getBlock()) {
-            TileEntity te = world.getTileEntity(pos);
-            if (te instanceof TileEntityPressureChamberInterface && !world.isRemote) {
-                ((TileEntityPressureChamberInterface) te).onBlockBreak();
-            }
+        if (state.getBlock() != newState.getBlock() && !world.isRemote) {
+            PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityPressureChamberInterface.class)
+                    .ifPresent(TileEntityPressureChamberWall::onBlockBreak);
         }
         super.onReplaced(state, world, pos, newState, isMoving);
     }
-
-//    @Override
-//    @Optional.Method(modid = "theoneprobe")
-//    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
-//        super.addProbeInfo(mode, probeInfo, player, world, blockState, data);
-//
-//        TileEntity te = world.getTileEntity(data.getPos());
-//        if (te instanceof TileEntityPressureChamberInterface) {
-//            InterfaceDirection interfaceMode = ((TileEntityPressureChamberInterface) te).interfaceMode;
-//            String text = TextFormatting.GRAY + "Interface mode: " + TextFormatting.WHITE
-//                    + PneumaticCraftUtils.xlate("waila.interface.mode." + interfaceMode.toString().toLowerCase());
-//            probeInfo.text(text);
-//        }
-//    }
 }

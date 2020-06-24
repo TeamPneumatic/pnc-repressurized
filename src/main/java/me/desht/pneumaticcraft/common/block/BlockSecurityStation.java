@@ -53,10 +53,11 @@ public class BlockSecurityStation extends BlockPneumaticCraft {
      */
     @Override
     public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity entityLiving, ItemStack iStack) {
-        TileEntity te = world.getTileEntity(pos);
-        if (te instanceof TileEntitySecurityStation && entityLiving != null) {
-            ((TileEntitySecurityStation) te).sharedUsers.add(((PlayerEntity) entityLiving).getGameProfile());
+        if (entityLiving instanceof PlayerEntity) {
+            PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntitySecurityStation.class)
+                    .ifPresent(te -> te.sharedUsers.add(((PlayerEntity) entityLiving).getGameProfile()));
         }
+
         super.onBlockPlacedBy(world, pos, state, entityLiving, iStack);
     }
 

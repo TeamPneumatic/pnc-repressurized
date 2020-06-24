@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticDoor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticDoorBase;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
@@ -39,27 +40,25 @@ public class BlockPneumaticDoorBase extends BlockPneumaticCraftCamo {
 
     @Override
     public void neighborChanged(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
-        TileEntity te = world.getTileEntity(pos);
-        if (te instanceof TileEntityPneumaticDoorBase) {
-            updateDoorSide((TileEntityPneumaticDoorBase) te);
-            Direction dir = ((TileEntityPneumaticDoorBase) te).getRotation();
+        PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityPneumaticDoorBase.class).ifPresent(teDoorBase -> {
+            updateDoorSide(teDoorBase);
+            Direction dir = teDoorBase.getRotation();
             if (world.getBlockState(pos.offset(dir)).getBlock() == ModBlocks.PNEUMATIC_DOOR.get()) {
                 ModBlocks.PNEUMATIC_DOOR.get().neighborChanged(world.getBlockState(pos.offset(dir)), world, pos, block, pos.offset(dir), isMoving);
             }
-        }
+        });
     }
 
     private void updateDoorSide(TileEntityPneumaticDoorBase doorBase) {
-        TileEntity teDoor = doorBase.getWorld().getTileEntity(doorBase.getPos().offset(doorBase.getRotation()));
-        if (teDoor instanceof TileEntityPneumaticDoor) {
-            TileEntityPneumaticDoor door = (TileEntityPneumaticDoor) teDoor;
-            if (doorBase.getRotation().rotateY() == door.getRotation() && door.rightGoing
-                    || doorBase.getRotation().rotateYCCW() == door.getRotation() && !door.rightGoing) {
-                door.rightGoing = !door.rightGoing;
-                door.setRotationAngle(0);
-                door.markDirty();
-            }
-        }
+        PneumaticCraftUtils.getTileEntityAt(doorBase.getWorld(), doorBase.getPos().offset(doorBase.getRotation()), TileEntityPneumaticDoor.class)
+                .ifPresent(teDoor -> {
+                    if (doorBase.getRotation().rotateY() == teDoor.getRotation() && teDoor.rightGoing
+                            || doorBase.getRotation().rotateYCCW() == teDoor.getRotation() && !teDoor.rightGoing) {
+                        teDoor.rightGoing = !teDoor.rightGoing;
+                        teDoor.setRotationAngle(0);
+                        teDoor.markDirty();
+                    }
+                });
     }
 
     @Override

@@ -3,12 +3,12 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberValve;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
@@ -62,23 +62,23 @@ public class BlockPressureChamberValve extends BlockPneumaticCraft implements IB
         if (player.isSneaking()) {
             return ActionResultType.PASS;
         }
-        TileEntity te = world.getTileEntity(pos);
-        if (!world.isRemote && te instanceof TileEntityPressureChamberValve) {
-            if (((TileEntityPressureChamberValve) te).multiBlockSize > 0) {
-                NetworkHooks.openGui((ServerPlayerEntity) player, (INamedContainerProvider) te, pos);
-            } else if (((TileEntityPressureChamberValve) te).accessoryValves.size() > 0) {
-                // when this isn't the core valve, track down the core valve
-                //  System.out.println("size: " + ((TileEntityPressureChamberValve)te).accessoryValves.size());
-                for (TileEntityPressureChamberValve valve : ((TileEntityPressureChamberValve) te).accessoryValves) {
-                    if (valve.multiBlockSize > 0) {
-                        NetworkHooks.openGui((ServerPlayerEntity) player, valve, valve.getPos());
-                        break;
+        if (!world.isRemote) {
+            return PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityPressureChamberValve.class).map(te -> {
+                if (te.multiBlockSize > 0) {
+                    NetworkHooks.openGui((ServerPlayerEntity) player, te, pos);
+                } else if (te.accessoryValves.size() > 0) {
+                    // when this isn't the core valve, track down the core valve
+                    for (TileEntityPressureChamberValve valve : te.accessoryValves) {
+                        if (valve.multiBlockSize > 0) {
+                            NetworkHooks.openGui((ServerPlayerEntity) player, valve, valve.getPos());
+                            break;
+                        }
                     }
+                } else {
+                    return ActionResultType.PASS;
                 }
-            } else {
-                return ActionResultType.PASS;
-            }
-            return ActionResultType.SUCCESS;
+                return ActionResultType.SUCCESS;
+            }).orElse(ActionResultType.SUCCESS);
         }
         return ActionResultType.SUCCESS;
     }
@@ -92,18 +92,17 @@ public class BlockPressureChamberValve extends BlockPneumaticCraft implements IB
     }
 
     private void invalidateMultiBlock(World world, BlockPos pos) {
-        TileEntity te = world.getTileEntity(pos);
-        if (te instanceof TileEntityPressureChamberValve && !world.isRemote) {
-            if (((TileEntityPressureChamberValve) te).multiBlockSize > 0) {
-                ((TileEntityPressureChamberValve) te).onMultiBlockBreak();
-            } else if (((TileEntityPressureChamberValve) te).accessoryValves.size() > 0) {
-                for (TileEntityPressureChamberValve valve : ((TileEntityPressureChamberValve) te).accessoryValves) {
-                    if (valve.multiBlockSize > 0) {
-                        valve.onMultiBlockBreak();
-                        break;
-                    }
+        if (!world.isRemote) {
+            PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityPressureChamberValve.class).ifPresent(teValve -> {
+                if (teValve.multiBlockSize > 0) {
+                    teValve.onMultiBlockBreak();
+                } else if (teValve.accessoryValves.size() > 0) {
+                    teValve.accessoryValves.stream()
+                            .filter(valve -> valve.multiBlockSize > 0)
+                            .findFirst()
+                            .ifPresent(TileEntityPressureChamberValve::onMultiBlockBreak);
                 }
-            }
+            });
         }
     }
 }

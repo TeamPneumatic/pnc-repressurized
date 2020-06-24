@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberValve;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberWall;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -37,24 +38,21 @@ public abstract class BlockPressureChamberWallBase extends BlockPneumaticCraft i
     @Override
     public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
         // forward activation to the pressure chamber valve, which will open the GUI
-        TileEntity te = world.getTileEntity(pos);
-        if (te instanceof TileEntityPressureChamberWall) {
-            TileEntityPressureChamberValve valve = ((TileEntityPressureChamberWall) te).getCore();
+        return PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityPressureChamberWall.class).map(te -> {
+            TileEntityPressureChamberValve valve = te.getCore();
             if (valve != null) {
                 if (!world.isRemote) NetworkHooks.openGui((ServerPlayerEntity) player, valve, valve.getPos());
                 return ActionResultType.SUCCESS;
             }
-        }
-        return ActionResultType.PASS;
+            return ActionResultType.PASS;
+        }).orElse(ActionResultType.PASS);
     }
 
     @Override
     public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (state.getBlock() != newState.getBlock()) {
-            TileEntity te = world.getTileEntity(pos);
-            if (te instanceof TileEntityPressureChamberWall && !world.isRemote) {
-                ((TileEntityPressureChamberWall) te).onBlockBreak();
-            }
+        if (state.getBlock() != newState.getBlock() && !world.isRemote) {
+            PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityPressureChamberWall.class)
+                    .ifPresent(TileEntityPressureChamberWall::onBlockBreak);
         }
         super.onReplaced(state, world, pos, newState, isMoving);
     }

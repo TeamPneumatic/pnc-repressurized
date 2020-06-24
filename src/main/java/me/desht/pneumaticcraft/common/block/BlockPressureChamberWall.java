@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberValve;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberWall;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.state.EnumProperty;
@@ -33,21 +34,16 @@ public class BlockPressureChamberWall extends BlockPressureChamberWallBase {
     }
 
     public BlockState updateState(BlockState state, IBlockReader world, BlockPos pos) {
-        state = super.getExtendedState(state, world, pos);
-        TileEntityPressureChamberWall wall = (TileEntityPressureChamberWall) world.getTileEntity(pos);
-        EnumWallState wallState;
-        if (wall != null) {
+        return PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityPressureChamberWall.class).map(wall -> {
+            EnumWallState wallState = EnumWallState.NONE;
             TileEntityPressureChamberValve core = wall.getCore();
             if (core != null) {
-                int x = pos.getX();
-                int y = pos.getY();
-                int z = pos.getZ();
-                boolean xMin = x == core.multiBlockX;
-                boolean yMin = y == core.multiBlockY;
-                boolean zMin = z == core.multiBlockZ;
-                boolean xMax = x == core.multiBlockX + core.multiBlockSize - 1;
-                boolean yMax = y == core.multiBlockY + core.multiBlockSize - 1;
-                boolean zMax = z == core.multiBlockZ + core.multiBlockSize - 1;
+                boolean xMin = pos.getX() == core.multiBlockX;
+                boolean yMin = pos.getY() == core.multiBlockY;
+                boolean zMin = pos.getZ() == core.multiBlockZ;
+                boolean xMax = pos.getX() == core.multiBlockX + core.multiBlockSize - 1;
+                boolean yMax = pos.getY() == core.multiBlockY + core.multiBlockSize - 1;
+                boolean zMax = pos.getZ() == core.multiBlockZ + core.multiBlockSize - 1;
 
                 //Corners
                 if (xMin && yMin && zMin || xMax && yMax && zMax) {
@@ -73,13 +69,8 @@ public class BlockPressureChamberWall extends BlockPressureChamberWallBase {
                 } else {
                     wallState = EnumWallState.CENTER;
                 }
-            } else {
-                wallState = EnumWallState.NONE;
             }
-        } else {
-            wallState = EnumWallState.NONE;
-        }
-        state = state.with(WALL_STATE, wallState);
-        return state;
+            return state.with(WALL_STATE, wallState);
+        }).orElse(state);
     }
 }

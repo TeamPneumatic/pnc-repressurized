@@ -16,15 +16,6 @@ public class BlockFluidEtchingAcid extends FlowingFluidBlock {
         super(() -> (FlowingFluid) ModFluids.ETCHING_ACID.get(), props);
     }
 
-//    public BlockFluidEtchingAcid(Fluid fluid) {
-//        super(fluid, new MaterialLiquid(MaterialColor.EMERALD) {
-//            @Override
-//            public PushReaction getPushReaction() {
-//                return PushReaction.DESTROY;
-//            }
-//        });
-//    }
-
     @Override
     public void onEntityCollision(BlockState state, World worldIn, BlockPos pos, Entity entity) {
         if (entity instanceof LivingEntity && entity.ticksExisted % 10 == 0) {

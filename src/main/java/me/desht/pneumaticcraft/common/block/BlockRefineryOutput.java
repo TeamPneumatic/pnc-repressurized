@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.api.crafting.recipe.RefineryRecipe;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefineryController;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefineryOutput;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -49,11 +50,10 @@ public class BlockRefineryOutput extends BlockPneumaticCraft {
 
     @Override
     public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
-        TileEntity te = world.getTileEntity(pos);
-        if (te instanceof TileEntityRefineryOutput) {
+        return PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityRefineryOutput.class).map(te -> {
             // normally, activating any refinery block would open the controller TE's gui, but if we
             // activate with a fluid tank in hand (which can actually transfer fluid out),
-            // then we should activate the actual refinery output that was clicked
+            // then we must activate the actual refinery output that was clicked
             boolean canTransferFluid = FluidUtil.getFluidHandler(ItemHandlerHelper.copyStackWithSize(player.getHeldItem(hand), 1))
                     .map(heldHandler -> FluidUtil.getFluidHandler(world, pos, brtr.getFace())
                             .map(refineryHandler -> couldTransferFluidOut(heldHandler, refineryHandler))
@@ -62,14 +62,13 @@ public class BlockRefineryOutput extends BlockPneumaticCraft {
             if (canTransferFluid) {
                 return super.onBlockActivated(state, world, pos, player, hand, brtr);
             } else if (!world.isRemote) {
-                TileEntityRefineryController master = ((TileEntityRefineryOutput) te).getRefineryController();
+                TileEntityRefineryController master = te.getRefineryController();
                 if (master != null) {
                     NetworkHooks.openGui((ServerPlayerEntity) player, master, master.getPos());
                 }
             }
             return ActionResultType.SUCCESS;
-        }
-        return ActionResultType.PASS;
+        }).orElse(ActionResultType.PASS);
     }
 
     private boolean couldTransferFluidOut(IFluidHandler h1, IFluidHandler h2) {
@@ -104,10 +103,9 @@ public class BlockRefineryOutput extends BlockPneumaticCraft {
     }
 
     private void recache(IWorld world, BlockPos pos) {
-        TileEntity te = world.getTileEntity(pos);
-        if (te instanceof TileEntityRefineryOutput) {
-            TileEntityRefineryController teC = ((TileEntityRefineryOutput) te).getRefineryController();
+        PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityRefineryOutput.class).ifPresent(te -> {
+            TileEntityRefineryController teC = te.getRefineryController();
             if (teC != null) teC.cacheRefineryOutputs();
-        }
+        });
     }
 }

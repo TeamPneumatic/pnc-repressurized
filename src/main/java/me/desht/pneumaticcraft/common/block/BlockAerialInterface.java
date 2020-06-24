@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAerialInterface;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -33,12 +34,12 @@ public class BlockAerialInterface extends BlockPneumaticCraft {
     }
 
     @Override
-    public void onBlockPlacedBy(World par1World, BlockPos pos, BlockState state, LivingEntity entity, ItemStack par6ItemStack) {
-        TileEntity te = par1World.getTileEntity(pos);
-        if (te instanceof TileEntityAerialInterface && entity instanceof PlayerEntity) {
-            ((TileEntityAerialInterface) te).setPlayer(((PlayerEntity) entity));
-        }
-        super.onBlockPlacedBy(par1World, pos, state, entity, par6ItemStack);
+    public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity entity, ItemStack par6ItemStack) {
+        PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityAerialInterface.class).ifPresent(teAI -> {
+            if (entity instanceof PlayerEntity) teAI.setPlayer((PlayerEntity) entity);
+        });
+
+        super.onBlockPlacedBy(world, pos, state, entity, par6ItemStack);
     }
 
     @Override
@@ -48,10 +49,7 @@ public class BlockAerialInterface extends BlockPneumaticCraft {
 
     @Override
     public int getWeakPower(BlockState blockState, IBlockReader blockAccess, BlockPos pos, Direction side) {
-        TileEntity te = blockAccess.getTileEntity(pos);
-        if (te instanceof TileEntityAerialInterface) {
-            return ((TileEntityAerialInterface)te ).shouldEmitRedstone() ? 15 : 0;
-        }
-        return 0;
+        return PneumaticCraftUtils.getTileEntityAt(blockAccess, pos, TileEntityAerialInterface.class)
+                .map(teAI -> teAI.shouldEmitRedstone() ? 15 : 0).orElse(0);
     }
 }
