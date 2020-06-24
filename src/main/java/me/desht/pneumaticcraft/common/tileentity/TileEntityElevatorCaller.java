@@ -2,23 +2,16 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.common.block.BlockElevatorCaller;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
-import me.desht.pneumaticcraft.common.network.DescSynced;
 import net.minecraft.block.BlockState;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.items.IItemHandler;
-
-import javax.annotation.Nonnull;
 
 public class TileEntityElevatorCaller extends TileEntityTickableBase implements ICamouflageableTE {
     private ElevatorButton[] floors = new ElevatorButton[0];
     private int thisFloor;
     private boolean emittingRedstone;
     private boolean shouldUpdateNeighbors;
-    @DescSynced
-    @Nonnull
-    private ItemStack camoStack = ItemStack.EMPTY;
     private BlockState camoState;
 
     public TileEntityElevatorCaller() {
@@ -41,13 +34,6 @@ public class TileEntityElevatorCaller extends TileEntityTickableBase implements 
         }
     }
 
-    @Override
-    public void onDescUpdate() {
-        camoState = ICamouflageableTE.getStateForStack(camoStack);
-
-        super.onDescUpdate();
-    }
-
     public boolean getEmittingRedstone() {
         return emittingRedstone;
     }
@@ -57,8 +43,6 @@ public class TileEntityElevatorCaller extends TileEntityTickableBase implements 
         super.read(tag);
         emittingRedstone = tag.getBoolean("emittingRedstone");
         thisFloor = tag.getInt("thisFloor");
-        camoStack = ICamouflageableTE.readCamoStackFromNBT(tag);
-        camoState = ICamouflageableTE.getStateForStack(camoStack);
         shouldUpdateNeighbors = tag.getBoolean("shouldUpdateNeighbors");
     }
 
@@ -67,7 +51,6 @@ public class TileEntityElevatorCaller extends TileEntityTickableBase implements 
         super.write(tag);
         tag.putBoolean("emittingRedstone", emittingRedstone);
         tag.putInt("thisFloor", thisFloor);
-        ICamouflageableTE.writeCamoStackToNBT(camoStack, tag);
         tag.putBoolean("shouldUpdateNeighbors", shouldUpdateNeighbors);
         return tag;
     }
@@ -80,6 +63,7 @@ public class TileEntityElevatorCaller extends TileEntityTickableBase implements 
         for (int i = 0; i < floorAmount; i++) {
             floors[i] = new ElevatorButton(tag.getCompound("floor" + i));
         }
+        camoState = ICamouflageableTE.readCamo(tag);
     }
 
     @Override
@@ -89,6 +73,7 @@ public class TileEntityElevatorCaller extends TileEntityTickableBase implements 
         for (ElevatorButton floor : floors) {
             tag.put("floor" + floor.floorNumber, floor.writeToNBT(new CompoundNBT()));
         }
+        ICamouflageableTE.writeCamo(tag, camoState);
     }
 
     @Override
@@ -128,11 +113,7 @@ public class TileEntityElevatorCaller extends TileEntityTickableBase implements 
     @Override
     public void setCamouflage(BlockState state) {
         camoState = state;
-        camoStack = ICamouflageableTE.getStackForState(state);
-        if (world != null && !world.isRemote) {
-            sendDescriptionPacket();
-            markDirty();
-        }
+        ICamouflageableTE.syncToClient(this);
     }
 
     public static class ElevatorButton {

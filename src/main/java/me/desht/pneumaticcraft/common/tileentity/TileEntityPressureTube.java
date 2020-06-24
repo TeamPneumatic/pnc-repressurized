@@ -16,7 +16,6 @@ import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.tileentity.TileEntity;
@@ -37,8 +36,6 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     @DescSynced
     public final boolean[] sidesClosed = new boolean[6];
     public TubeModule[] modules = new TubeModule[6];
-    @DescSynced
-    private ItemStack camoStack = ItemStack.EMPTY;
     private BlockState camoState;
     private AxisAlignedBB renderBoundingBox = null;
     private Direction inLineModuleDir = null;  // only one inline module allowed
@@ -59,8 +56,6 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
         for (int i = 0; i < 6; i++) {
             sidesClosed[i] = ((closed & 1 << i) != 0);
         }
-        camoStack = ICamouflageableTE.readCamoStackFromNBT(nbt);
-        camoState = ICamouflageableTE.getStateForStack(camoStack);
     }
 
     @Override
@@ -73,14 +68,15 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
         }
         nbt.putByte("sidesConnected", connected);
         nbt.putByte("sidesClosed", closed);
-        ICamouflageableTE.writeCamoStackToNBT(camoStack, nbt);
         return nbt;
     }
 
     @Override
     public void writeToPacket(CompoundNBT tag) {
         super.writeToPacket(tag);
+
         writeModulesToNBT(tag);
+        ICamouflageableTE.writeCamo(tag, camoState);
     }
 
     public void writeModulesToNBT(CompoundNBT tag) {
@@ -100,6 +96,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     @Override
     public void readFromPacket(CompoundNBT tag) {
         super.readFromPacket(tag);
+
         modules = new TubeModule[6];
         ListNBT moduleList = tag.getList("modules", 10);
         for (int i = 0; i < moduleList.size(); i++) {
@@ -119,6 +116,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
         if (hasWorld() && getWorld().isRemote) {
             rerenderTileEntity();
         }
+        camoState = ICamouflageableTE.readCamo(tag);
     }
 
     private void updateRenderBoundingBox() {
@@ -277,18 +275,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     @Override
     public void setCamouflage(BlockState state) {
         camoState = state;
-        camoStack = ICamouflageableTE.getStackForState(state);
-        if (world != null && !world.isRemote) {
-            sendDescriptionPacket();
-            markDirty();
-        }
-    }
-
-    @Override
-    public void onDescUpdate() {
-        camoState = ICamouflageableTE.getStateForStack(camoStack);
-
-        super.onDescUpdate();
+        ICamouflageableTE.syncToClient(this);
     }
 
     public static TileEntityPressureTube getTube(TileEntity te) {

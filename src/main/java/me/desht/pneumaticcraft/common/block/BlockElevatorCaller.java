@@ -62,11 +62,6 @@ public class BlockElevatorCaller extends BlockPneumaticCraftCamo {
     }
 
     @Override
-    protected boolean doesCamoOverrideBounds() {
-        return false;  // need to be able to highlight the buttons
-    }
-
-    @Override
     public VoxelShape getUncamouflagedShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext ctx) {
         return VoxelShapes.fullCube();
     }

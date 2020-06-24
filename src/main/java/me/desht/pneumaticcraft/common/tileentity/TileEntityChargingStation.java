@@ -65,20 +65,11 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     @GuiSynced
     public int redstoneMode;
     private boolean oldRedstoneStatus;
-    @DescSynced
-    private ItemStack camoStack = ItemStack.EMPTY;
     private BlockState camoState;
 
     public TileEntityChargingStation() {
         super(ModTileEntities.CHARGING_STATION.get(), PneumaticValues.DANGER_PRESSURE_CHARGING_STATION, PneumaticValues.MAX_PRESSURE_CHARGING_STATION, PneumaticValues.VOLUME_CHARGING_STATION, 4);
         itemHandler = new ChargingStationHandler();
-    }
-
-    @Override
-    public void onDescUpdate() {
-        camoState = ICamouflageableTE.getStateForStack(camoStack);
-
-        super.onDescUpdate();
     }
 
     @Nonnull
@@ -230,9 +221,6 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
         if (chargeSlot.getItem() instanceof IChargeableContainerProvider) {
             chargeableInventory = new ChargeableItemHandler(this);
         }
-
-        camoStack = ICamouflageableTE.readCamoStackFromNBT(tag);
-        camoState = ICamouflageableTE.getStateForStack(camoStack);
     }
 
     @Override
@@ -243,8 +231,21 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
         }
         tag.putInt(NBTKeys.NBT_REDSTONE_MODE, redstoneMode);
         tag.put("Items", itemHandler.serializeNBT());
-        ICamouflageableTE.writeCamoStackToNBT(camoStack, tag);
         return tag;
+    }
+
+    @Override
+    public void writeToPacket(CompoundNBT tag) {
+        super.writeToPacket(tag);
+
+        ICamouflageableTE.writeCamo(tag, camoState);
+    }
+
+    @Override
+    public void readFromPacket(CompoundNBT tag) {
+        super.readFromPacket(tag);
+
+        camoState = ICamouflageableTE.readCamo(tag);
     }
 
     @Override
@@ -288,11 +289,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     @Override
     public void setCamouflage(BlockState state) {
         camoState = state;
-        camoStack = ICamouflageableTE.getStackForState(state);
-        if (world != null && !world.isRemote) {
-            sendDescriptionPacket();
-            markDirty();
-        }
+        ICamouflageableTE.syncToClient(this);
     }
     
     @Override

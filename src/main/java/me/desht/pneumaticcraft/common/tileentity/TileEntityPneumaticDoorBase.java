@@ -14,7 +14,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
@@ -51,8 +50,6 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase
     @DescSynced
     private boolean opening;
     public boolean wasPowered;
-    @DescSynced
-    private ItemStack camoStack = ItemStack.EMPTY;
     private BlockState camoState;
     @GuiSynced
     public int redstoneMode;
@@ -185,8 +182,6 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase
         opening = tag.getBoolean("opening");
         redstoneMode = tag.getInt(NBTKeys.NBT_REDSTONE_MODE);
         rightGoing = tag.getBoolean("rightGoing");
-        camoStack  = ICamouflageableTE.readCamoStackFromNBT(tag);
-        camoState = ICamouflageableTE.getStateForStack(camoStack);
     }
 
     @Override
@@ -196,8 +191,21 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase
         tag.putBoolean("opening", opening);
         tag.putInt(NBTKeys.NBT_REDSTONE_MODE, redstoneMode);
         tag.putBoolean("rightGoing", rightGoing);
-        ICamouflageableTE.writeCamoStackToNBT(camoStack, tag);
         return tag;
+    }
+
+    @Override
+    public void writeToPacket(CompoundNBT tag) {
+        super.writeToPacket(tag);
+
+        ICamouflageableTE.writeCamo(tag, camoState);
+    }
+
+    @Override
+    public void readFromPacket(CompoundNBT tag) {
+        super.readFromPacket(tag);
+
+        camoState = ICamouflageableTE.readCamo(tag);
     }
 
     @Override
@@ -231,25 +239,13 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase
     @Override
     public void setCamouflage(BlockState state) {
         camoState = state;
-        camoStack = ICamouflageableTE.getStackForState(state);
-        if (world != null && !world.isRemote) {
-            sendDescriptionPacket();
-            markDirty();
-        }
-    }
-
-    @Override
-    public void onDescUpdate() {
-        camoState = ICamouflageableTE.getStateForStack(camoStack);
-
-        super.onDescUpdate();
+        ICamouflageableTE.syncToClient(this);
     }
 
     @Override
     public String getRedstoneTabTitle() {
         return "pneumaticcraft.gui.tab.redstoneBehaviour.pneumaticDoor.openWhen";
     }
-
 
     @Override
     protected List<String> getRedstoneButtonLabels() {

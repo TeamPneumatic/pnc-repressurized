@@ -4,10 +4,8 @@ import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
-import me.desht.pneumaticcraft.common.network.DescSynced;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FlowingFluidBlock;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.util.Direction;
@@ -22,8 +20,6 @@ public class TileEntityHeatPipe extends TileEntityTickableBase implements ICamou
     private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
     private final LazyOptional<IHeatExchangerLogic> heatCap = LazyOptional.of(() -> heatExchanger);
 
-    @DescSynced
-    private ItemStack camoStack = ItemStack.EMPTY;
     private BlockState camoState;
 
     public TileEntityHeatPipe() {
@@ -66,20 +62,17 @@ public class TileEntityHeatPipe extends TileEntityTickableBase implements ICamou
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tag) {
-        super.write(tag);
+    public void writeToPacket(CompoundNBT tag) {
+        super.writeToPacket(tag);
 
-        ICamouflageableTE.writeCamoStackToNBT(camoStack, tag);
-
-        return tag;
+        ICamouflageableTE.writeCamo(tag, camoState);
     }
 
     @Override
-    public void read(CompoundNBT tag) {
-        super.read(tag);
+    public void readFromPacket(CompoundNBT tag) {
+        super.readFromPacket(tag);
 
-        camoStack = ICamouflageableTE.readCamoStackFromNBT(tag);
-        camoState = ICamouflageableTE.getStateForStack(camoStack);
+        camoState = ICamouflageableTE.readCamo(tag);
     }
 
     @Override
@@ -90,17 +83,6 @@ public class TileEntityHeatPipe extends TileEntityTickableBase implements ICamou
     @Override
     public void setCamouflage(BlockState state) {
         camoState = state;
-        camoStack = ICamouflageableTE.getStackForState(state);
-        if (world != null && !world.isRemote) {
-            sendDescriptionPacket();
-            markDirty();
-        }
-    }
-
-    @Override
-    public void onDescUpdate() {
-        camoState = ICamouflageableTE.getStateForStack(camoStack);
-
-        super.onDescUpdate();
+        ICamouflageableTE.syncToClient(this);
     }
 }

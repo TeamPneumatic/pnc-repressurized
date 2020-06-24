@@ -38,6 +38,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.items.IItemHandler;
@@ -84,9 +85,8 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     @GuiSynced
     private int maxFloorHeight;
     private int redstoneInputLevel; // current redstone input level
-    @DescSynced
-    private ItemStack camoStack = ItemStack.EMPTY;
     private BlockState camoState;
+    private BlockState prevCamoState;
     public float[] fakeFloorTextureUV;
 
     public TileEntityElevatorBase() {
@@ -112,6 +112,10 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
             speedMultiplier = syncedSpeedMult = getSpeedMultiplierFromUpgrades();
         } else {
             speedMultiplier = (float) (syncedSpeedMult * PacketServerTickTime.tickTimeMultiplier);
+            if (prevCamoState != camoState) {
+                fakeFloorTextureUV = ClientUtils.getTextureUV(camoState, Direction.UP);
+                prevCamoState = camoState;
+            }
         }
 
         SoundEvent soundName = null;
@@ -277,7 +281,6 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
         maxFloorHeight = Math.min(i, elevatorBases * PNCConfig.Common.Machines.elevatorBaseBlocksPerBase);
     }
 
-    // NBT methods-----------------------------------------------
     @Override
     public void read(CompoundNBT tag) {
         super.read(tag);
@@ -289,8 +292,6 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
         } else {
             maxFloorHeight = tag.getInt("maxFloorHeight");
         }
-        camoStack = ICamouflageableTE.readCamoStackFromNBT(tag);
-        camoState = ICamouflageableTE.getStateForStack(camoStack);
     }
 
     @Override
@@ -300,17 +301,18 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
         tag.putFloat("targetExtension", targetExtension);
         tag.putInt(NBTKeys.NBT_REDSTONE_MODE, redstoneMode);
         tag.putInt("maxFloorHeight", maxFloorHeight);
-        ICamouflageableTE.writeCamoStackToNBT(camoStack, tag);
         return tag;
     }
 
     @Override
     public void readFromPacket(CompoundNBT tag) {
         super.readFromPacket(tag);
+
+        camoState = ICamouflageableTE.readCamo(tag);
         floorHeights = tag.getIntArray("floorHeights");
 
         floorNames.clear();
-        ListNBT floorNameList = tag.getList("floorNames", 10);
+        ListNBT floorNameList = tag.getList("floorNames", Constants.NBT.TAG_COMPOUND);
         for (int i = 0; i < floorNameList.size(); i++) {
             CompoundNBT floorName = floorNameList.getCompound(i);
             floorNames.put(floorName.getInt("floorHeight"), floorName.getString("floorName"));
@@ -320,22 +322,18 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     @Override
     public void writeToPacket(CompoundNBT tag) {
         super.writeToPacket(tag);
+
+        ICamouflageableTE.writeCamo(tag, camoState);
         tag.putIntArray("floorHeights", floorHeights);
 
         ListNBT floorNameList = new ListNBT();
-        for (int key : floorNames.keySet()) {
+        floorNames.forEach((height, name) -> {
             CompoundNBT floorNameTag = new CompoundNBT();
-            floorNameTag.putInt("floorHeight", key);
-            floorNameTag.putString("floorName", floorNames.get(key));
+            floorNameTag.putInt("floorHeight", height);
+            floorNameTag.putString("floorName", name);
             floorNameList.add(floorNameTag);
-        }
+        });
         tag.put("floorNames", floorNameList);
-    }
-
-    @Override
-    public void onNeighborTileUpdate() {
-        super.onNeighborTileUpdate();
-        updateConnections();
     }
 
     private void connectAsMultiblock() {
@@ -369,18 +367,6 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
         updateConnections();
     }
 
-    @Override
-    public void onDescUpdate() {
-        BlockState oldCamo = camoState;
-        camoState = ICamouflageableTE.getStateForStack(camoStack);
-        if (oldCamo != camoState) {
-            // cache the UV's for the camouflaged texture (top face of the camo block)
-            // for efficiently rendering it on the moving elevator floor
-            fakeFloorTextureUV = ClientUtils.getTextureUV(camoState, Direction.UP);
-        }
-        super.onDescUpdate();
-    }
-
     /**
      * Called when a block neighbour changes: if this elevator has no elevators above it, set it as a core
      * elevator, and inform all elevators below us of that fact.
@@ -404,7 +390,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     public void moveUpgradesFromAbove() {
         TileEntity brokenTE = getWorld().getTileEntity(getPos().offset(Direction.UP));
         if (brokenTE instanceof TileEntityElevatorBase) {
-            camoStack = ((TileEntityElevatorBase) brokenTE).camoStack;
+            camoState = ((TileEntityElevatorBase) brokenTE).camoState;
             sendDescriptionPacket();
 
             for (int i = 0; i < getUpgradeHandler().getSlots(); i++) {
@@ -671,11 +657,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     @Override
     public void setCamouflage(BlockState state) {
         camoState = state;
-        camoStack = ICamouflageableTE.getStackForState(state);
-        if (world != null && !world.isRemote) {
-            sendDescriptionPacket();
-            markDirty();
-        }
+        ICamouflageableTE.syncToClient(this);
     }
 
     @Override

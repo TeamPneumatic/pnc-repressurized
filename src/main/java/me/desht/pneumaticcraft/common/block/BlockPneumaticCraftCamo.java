@@ -31,16 +31,6 @@ public abstract class BlockPneumaticCraftCamo extends BlockPneumaticCraft /*impl
         super(props);
     }
 
-    /**
-     * When camouflaged, should getBoundingBox() return the bounding box of the camo block?  Override this
-     * to return false if the subclass needs to be able to highlight subsections, e.g. elevator caller buttons
-     *
-     * @return true if camouflage block's bounding box should always be used
-     */
-    protected boolean doesCamoOverrideBounds() {
-        return true;
-    }
-
     @Override
     public boolean removedByPlayer(BlockState state, World world, BlockPos pos, PlayerEntity player, boolean willHarvest, IFluidState fluid) {
         TileEntity te = world.getTileEntity(pos);

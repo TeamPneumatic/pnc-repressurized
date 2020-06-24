@@ -612,14 +612,5 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
         public String getName() {
             return name;
         }
-
-        VoxelShape getShape(Direction dir) {
-            switch (this) {
-                case UNCONNECTED: return VoxelShapes.empty();
-                case CONNECTED: return ARM_CONNECTED[dir.getIndex()];
-                case CLOSED: return ARM_CLOSED[dir.getIndex()];
-            }
-            return VoxelShapes.empty();  // not reached
-        }
     }
 }

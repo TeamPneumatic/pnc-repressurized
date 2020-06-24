@@ -65,38 +65,6 @@ public class CamoModel implements IDynamicBakedModel {
         }
     }
 
-//    @Override
-//    public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, Random rand, IModelData data) {
-//        if (state == null || !(state.getBlock() instanceof BlockPneumaticCraftCamo)) {
-//            return originalModel.getQuads(state, side, rand, data);
-//        }
-//
-//        BlockState camoState = data.getData(BlockPneumaticCraftCamo.CAMO_STATE);
-//        IEnviromentBlockReader blockAccess = data.getData(BlockPneumaticCraftCamo.BLOCK_ACCESS);
-//        BlockPos pos = data.getData(BlockPneumaticCraftCamo.BLOCK_POS);
-//        if (blockAccess == null || pos == null) {
-//            return originalModel.getQuads(state, side, rand, data);
-//        }
-//
-//        BlockRenderLayer layer = MinecraftForgeClient.getRenderLayer();
-//        if (layer == null) {
-//            layer = BlockRenderLayer.SOLID; // workaround for when this isn't set (digging, etc.)
-//        }
-//        if (camoState == null && layer == BlockRenderLayer.SOLID) {
-//            // No camo
-//            return originalModel.getQuads(state, side, rand, data);
-//        } else if (camoState != null && camoState.getBlock().canRenderInLayer(camoState, layer)) {
-//            // Steal camo's model
-//            IBakedModel model = Minecraft.getInstance().getBlockRendererDispatcher().getBlockModelShapes().getModel(camoState);
-//
-//            // Their model can be smart too
-//            return model.getQuads(camoState, side, rand, data);
-//        }
-//
-//        return ImmutableList.of(); // Nothing renders
-//    }
-
-
     @Override
     public boolean isAmbientOcclusion() {
         return originalModel.isAmbientOcclusion();
