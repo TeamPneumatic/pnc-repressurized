@@ -13,6 +13,7 @@ import me.desht.pneumaticcraft.common.network.LazySynced;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerEntity;
@@ -289,7 +290,7 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
         inputProgress = tag.getFloat("inputProgress");
         interfaceMode = InterfaceDirection.values()[tag.getInt("interfaceMode")];
         exportAny = tag.getBoolean("exportAny");
-        redstoneMode = tag.getInt("redstoneMode");
+        redstoneMode = tag.getInt(NBTKeys.NBT_REDSTONE_MODE);
     }
 
     @Override
@@ -300,7 +301,7 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
         tag.putFloat("inputProgress", inputProgress);
         tag.putInt("interfaceMode", interfaceMode.ordinal());
         tag.putBoolean("exportAny", exportAny);
-        tag.putInt("redstoneMode", redstoneMode);
+        tag.putInt(NBTKeys.NBT_REDSTONE_MODE, redstoneMode);
         return tag;
     }
 

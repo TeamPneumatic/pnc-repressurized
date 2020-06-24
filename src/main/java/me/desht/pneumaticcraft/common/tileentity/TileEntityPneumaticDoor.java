@@ -89,8 +89,8 @@ public class TileEntityPneumaticDoor extends TileEntityTickableBase {
     }
 
     @Override
-    public void serializeExtraItemData(CompoundNBT blockEntityTag) {
-        super.serializeExtraItemData(blockEntityTag);
+    public void serializeExtraItemData(CompoundNBT blockEntityTag, boolean preserveState) {
+        super.serializeExtraItemData(blockEntityTag, preserveState);
 
         blockEntityTag.putInt("color", color);
     }

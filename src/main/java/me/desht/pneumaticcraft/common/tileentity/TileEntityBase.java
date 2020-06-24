@@ -627,8 +627,9 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
      * the item's NBT data, so will be automatically deserialized into the TE when the itemblock is next placed.
      *
      * @param blockEntityTag the existing "BlockEntityTag" subtag to add data to
+     * @param preserveState true when dropped with a wrench, false when broken with a pickaxe etc.
      */
-    public void serializeExtraItemData(CompoundNBT blockEntityTag) {
+    public void serializeExtraItemData(CompoundNBT blockEntityTag, boolean preserveState) {
     }
 
     public class UpgradeHandler extends BaseItemStackHandler {

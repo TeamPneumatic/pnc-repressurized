@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -29,7 +30,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class TileEntityAirCompressor extends TileEntityPneumaticBase implements IRedstoneControlled, INamedContainerProvider {
-
     private static final int INVENTORY_SIZE = 1;
 
     private final AirCompressorFuelHandler itemHandler = new AirCompressorFuelHandler();
@@ -182,7 +182,7 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
         super.read(nbtTagCompound);
         burnTime = nbtTagCompound.getInt("burnTime");
         maxBurnTime = nbtTagCompound.getInt("maxBurn");
-        redstoneMode = nbtTagCompound.getInt("redstoneMode");
+        redstoneMode = nbtTagCompound.getInt(NBTKeys.NBT_REDSTONE_MODE);
         itemHandler.deserializeNBT(nbtTagCompound.getCompound("Items"));
     }
 
@@ -191,7 +191,7 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
         super.write(nbtTagCompound);
         nbtTagCompound.putInt("burnTime", burnTime);
         nbtTagCompound.putInt("maxBurn", maxBurnTime);
-        nbtTagCompound.putInt("redstoneMode", redstoneMode);
+        nbtTagCompound.putInt(NBTKeys.NBT_REDSTONE_MODE, redstoneMode);
         nbtTagCompound.put("Items", itemHandler.serializeNBT());
         return nbtTagCompound;
     }

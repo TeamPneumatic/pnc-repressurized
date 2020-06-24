@@ -13,6 +13,7 @@ import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
+import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -220,7 +221,7 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
 
         tag.put("Items", itemHandler.serializeNBT());
         tag.put("Output", outputItemHandler.serializeNBT());
-        tag.putByte("redstoneMode", (byte) redstoneMode);
+        tag.putByte(NBTKeys.NBT_REDSTONE_MODE, (byte) redstoneMode);
         tag.putInt("craftingProgress", craftingProgress);
         return tag;
     }
@@ -231,7 +232,7 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
 
         itemHandler.deserializeNBT(tag.getCompound("Items"));
         outputItemHandler.deserializeNBT(tag.getCompound("Output"));
-        redstoneMode = tag.getByte("redstoneMode");
+        redstoneMode = tag.getByte(NBTKeys.NBT_REDSTONE_MODE);
         craftingProgress = tag.getInt("craftingProgress");
     }
 

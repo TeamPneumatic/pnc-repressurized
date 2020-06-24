@@ -19,6 +19,7 @@ import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethodRegist
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorCaller.ElevatorButton;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
+import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
 import net.minecraft.block.BlockState;
@@ -282,7 +283,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
         super.read(tag);
         extension = tag.getFloat("extension");
         targetExtension = tag.getFloat("targetExtension");
-        redstoneMode = tag.getInt("redstoneMode");
+        redstoneMode = tag.getInt(NBTKeys.NBT_REDSTONE_MODE);
         if (!tag.contains("maxFloorHeight")) {//backwards compatibility implementation.
             updateMaxElevatorHeight();
         } else {
@@ -297,7 +298,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
         super.write(tag);
         tag.putFloat("extension", extension);
         tag.putFloat("targetExtension", targetExtension);
-        tag.putInt("redstoneMode", redstoneMode);
+        tag.putInt(NBTKeys.NBT_REDSTONE_MODE, redstoneMode);
         tag.putInt("maxFloorHeight", maxFloorHeight);
         ICamouflageableTE.writeCamoStackToNBT(camoStack, tag);
         return tag;

@@ -12,6 +12,7 @@ import me.desht.pneumaticcraft.common.thirdparty.curios.Curios;
 import me.desht.pneumaticcraft.common.tileentity.SideConfigurator.RelativeFace;
 import me.desht.pneumaticcraft.common.util.EnchantmentUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
@@ -263,7 +264,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
     public void read(CompoundNBT tag) {
         super.read(tag);
 
-        redstoneMode = tag.getInt("redstoneMode");
+        redstoneMode = tag.getInt(NBTKeys.NBT_REDSTONE_MODE);
         feedMode = FeedMode.valueOf(tag.getString("feedMode"));
         setPlayerId(tag.getString("playerName"), tag.getString("playerUUID"));
         curXpFluid = tag.contains("curXpFluid") ? ForgeRegistries.FLUIDS.getValue(new ResourceLocation(tag.getString("curXpFluid"))) : Fluids.EMPTY;
@@ -278,7 +279,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
     public CompoundNBT write(CompoundNBT tag) {
         super.write(tag);
 
-        tag.putInt("redstoneMode", redstoneMode);
+        tag.putInt(NBTKeys.NBT_REDSTONE_MODE, redstoneMode);
         tag.putString("feedMode", feedMode.toString());
         tag.putString("playerName", playerName);
         tag.putString("playerUUID", playerUUID);

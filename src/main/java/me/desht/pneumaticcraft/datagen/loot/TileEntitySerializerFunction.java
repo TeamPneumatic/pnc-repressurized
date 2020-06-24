@@ -4,10 +4,7 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
-import me.desht.pneumaticcraft.common.tileentity.ISerializableTanks;
-import me.desht.pneumaticcraft.common.tileentity.ISideConfigurable;
-import me.desht.pneumaticcraft.common.tileentity.SideConfigurator;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
+import me.desht.pneumaticcraft.common.tileentity.*;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.NBTKeys;
@@ -46,6 +43,7 @@ public class TileEntitySerializerFunction extends LootFunction {
     }
 
     private ItemStack applyTEdata(ItemStack teStack, TileEntity te) {
+        // augment existing BlockEntityTag if present, otherwise create a new one
         CompoundNBT nbt = teStack.getChildTag(NBTKeys.BLOCK_ENTITY_TAG);
         final CompoundNBT subTag = nbt == null ? new CompoundNBT() : nbt;
 
@@ -65,30 +63,38 @@ public class TileEntitySerializerFunction extends LootFunction {
             }
         }
 
-        if (te instanceof TileEntityBase && ((TileEntityBase) te).shouldPreserveStateOnBreak()) {
-            // upgrades (only when wrenched)
-            TileEntityBase.UpgradeHandler upgradeHandler = ((TileEntityBase) te).getUpgradeHandler();
-            for (int i = 0; i < upgradeHandler.getSlots(); i++) {
-                if (!upgradeHandler.getStackInSlot(i).isEmpty()) {
-                    // store creative status directly since it's queried for item model rendering (performance)
-                    if (((TileEntityBase) te).getUpgrades(EnumUpgrade.CREATIVE) > 0) {
-                        NBTUtil.setBoolean(teStack, UpgradableItemUtils.NBT_CREATIVE, true);
-                    } else {
-                        NBTUtil.removeTag(teStack, UpgradableItemUtils.NBT_CREATIVE);
+        // redstone mode
+        if (te instanceof IRedstoneControl) {
+            subTag.putInt(NBTKeys.NBT_REDSTONE_MODE, ((IRedstoneControl) te).getRedstoneMode());
+        }
+
+        if (te instanceof TileEntityBase) {
+            TileEntityBase teB = (TileEntityBase) te;
+            if (teB.shouldPreserveStateOnBreak()) {
+                // upgrades (only when wrenched)
+                TileEntityBase.UpgradeHandler upgradeHandler = teB.getUpgradeHandler();
+                for (int i = 0; i < upgradeHandler.getSlots(); i++) {
+                    if (!upgradeHandler.getStackInSlot(i).isEmpty()) {
+                        // store creative status directly since it's queried for item model rendering (performance)
+                        if (teB.getUpgrades(EnumUpgrade.CREATIVE) > 0) {
+                            NBTUtil.setBoolean(teStack, UpgradableItemUtils.NBT_CREATIVE, true);
+                        } else {
+                            NBTUtil.removeTag(teStack, UpgradableItemUtils.NBT_CREATIVE);
+                        }
+                        subTag.put(UpgradableItemUtils.NBT_UPGRADE_TAG, upgradeHandler.serializeNBT());
+                        break;
                     }
-                    subTag.put(UpgradableItemUtils.NBT_UPGRADE_TAG, upgradeHandler.serializeNBT());
-                    break;
                 }
+
+                // saved air (only when wrenched)
+                te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).ifPresent(h -> {
+                    if (h.getPressure() != 0f) {
+                        subTag.putInt(NBT_AIR_AMOUNT, h.getAir());
+                    }
+                });
             }
 
-            // saved air (only when wrenched)
-            te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).ifPresent(h -> {
-                if (h.getPressure() != 0f) {
-                    subTag.putInt(NBT_AIR_AMOUNT, h.getAir());
-                }
-            });
-
-            ((TileEntityBase) te).serializeExtraItemData(subTag);
+            teB.serializeExtraItemData(subTag, teB.shouldPreserveStateOnBreak());
         }
 
         if (!subTag.isEmpty()) {

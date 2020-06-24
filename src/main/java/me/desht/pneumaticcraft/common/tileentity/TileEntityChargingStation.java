@@ -14,6 +14,7 @@ import me.desht.pneumaticcraft.common.item.IChargeableContainerProvider;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.GlobalTileEntityCacheManager;
+import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -221,7 +222,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     @Override
     public void read(CompoundNBT tag) {
         super.read(tag);
-        redstoneMode = tag.getInt("redstoneMode");
+        redstoneMode = tag.getInt(NBTKeys.NBT_REDSTONE_MODE);
         itemHandler = new ChargingStationHandler();
         itemHandler.deserializeNBT(tag.getCompound("Items"));
 
@@ -240,7 +241,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
         if (chargeableInventory != null) {
             chargeableInventory.writeToNBT();
         }
-        tag.putInt("redstoneMode", redstoneMode);
+        tag.putInt(NBTKeys.NBT_REDSTONE_MODE, redstoneMode);
         tag.put("Items", itemHandler.serializeNBT());
         ICamouflageableTE.writeCamoStackToNBT(camoStack, tag);
         return tag;

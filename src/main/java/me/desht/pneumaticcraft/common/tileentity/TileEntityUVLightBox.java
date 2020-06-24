@@ -9,6 +9,7 @@ import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.item.ItemEmptyPCB;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.IOHelper;
+import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -152,7 +153,7 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
     @Override
     public void read(CompoundNBT nbt) {
         super.read(nbt);
-        redstoneMode = nbt.getInt("redstoneMode");
+        redstoneMode = nbt.getInt(NBTKeys.NBT_REDSTONE_MODE);
         threshold = nbt.getInt("threshold");
         inputHandler.deserializeNBT(nbt.getCompound("Items"));
     }
@@ -161,7 +162,7 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
     public CompoundNBT write(CompoundNBT nbt) {
         super.write(nbt);
         nbt.putInt("threshold", threshold);
-        nbt.putInt("redstoneMode", redstoneMode);
+        nbt.putInt(NBTKeys.NBT_REDSTONE_MODE, redstoneMode);
         nbt.put("Items", inputHandler.serializeNBT());
         return nbt;
     }

@@ -15,6 +15,7 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.fakeplayer.FakeNetHandlerPlayerServer;
+import me.desht.pneumaticcraft.lib.NBTKeys;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -123,7 +124,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
     }
 
     @Override
-    public void serializeExtraItemData(CompoundNBT blockEntityTag) {
+    public void serializeExtraItemData(CompoundNBT blockEntityTag, boolean preserveState) {
         blockEntityTag.putString(NBT_ENTITY_FILTER, getText(0));
     }
 
@@ -191,7 +192,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
     public CompoundNBT write(CompoundNBT tag) {
         super.write(tag);
         tag.put("Items", inventory.serializeNBT());
-        tag.putByte("redstoneMode", (byte) redstoneMode);
+        tag.putByte(NBTKeys.NBT_REDSTONE_MODE, (byte) redstoneMode);
         tag.putString(NBT_ENTITY_FILTER, entityFilter);
         tag.putFloat("idleYaw", idleYaw);
         return tag;
@@ -201,7 +202,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
     public void read(CompoundNBT tag) {
         super.read(tag);
         inventory.deserializeNBT(tag.getCompound("Items"));
-        redstoneMode = tag.getByte("redstoneMode");
+        redstoneMode = tag.getByte(NBTKeys.NBT_REDSTONE_MODE);
         idleYaw = tag.getFloat("idleYaw");
         setText(0, tag.getString(NBT_ENTITY_FILTER));
     }

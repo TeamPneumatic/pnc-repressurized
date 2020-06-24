@@ -8,6 +8,7 @@ import me.desht.pneumaticcraft.common.inventory.ContainerLiquidCompressor;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -128,7 +129,7 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
         super.write(tag);
 
         tag.put("Items", itemHandler.serializeNBT());
-        tag.putByte("redstoneMode", (byte) redstoneMode);
+        tag.putByte(NBTKeys.NBT_REDSTONE_MODE, (byte) redstoneMode);
         tag.putDouble("internalFuelBuffer", internalFuelBuffer);
         tag.putFloat("burnMultiplier", burnMultiplier);
 
@@ -140,7 +141,7 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
         super.read(tag);
 
         itemHandler.deserializeNBT(tag.getCompound("Items"));
-        redstoneMode = tag.getByte("redstoneMode");
+        redstoneMode = tag.getByte(NBTKeys.NBT_REDSTONE_MODE);
         internalFuelBuffer = tag.getDouble("internalFuelBuffer");
         burnMultiplier = tag.getFloat("burnMultiplier");
     }

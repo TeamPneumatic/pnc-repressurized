@@ -9,6 +9,7 @@ import me.desht.pneumaticcraft.common.heat.SyncedTemperature;
 import me.desht.pneumaticcraft.common.inventory.ContainerThermalCompressor;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -164,7 +165,7 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase
         }
         tag.put("connector1", connector1.serializeNBT());
         tag.put("connector2", connector2.serializeNBT());
-        tag.putInt("redstoneMode", redstoneMode);
+        tag.putInt(NBTKeys.NBT_REDSTONE_MODE, redstoneMode);
         return tag;
     }
 
@@ -176,7 +177,7 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase
         }
         connector1.deserializeNBT(tag.getCompound("connector1"));
         connector2.deserializeNBT(tag.getCompound("connector2"));
-        redstoneMode = tag.getInt("redstoneMode");
+        redstoneMode = tag.getInt(NBTKeys.NBT_REDSTONE_MODE);
     }
 
     @Override

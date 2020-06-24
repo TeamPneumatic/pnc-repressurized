@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerElectrostaticCompressor;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -177,13 +178,13 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase i
     @Override
     public void read(CompoundNBT nbtTagCompound) {
         super.read(nbtTagCompound);
-        redstoneMode = nbtTagCompound.getInt("redstoneMode");
+        redstoneMode = nbtTagCompound.getInt(NBTKeys.NBT_REDSTONE_MODE);
     }
 
     @Override
     public CompoundNBT write(CompoundNBT nbtTagCompound) {
         super.write(nbtTagCompound);
-        nbtTagCompound.putInt("redstoneMode", redstoneMode);
+        nbtTagCompound.putInt(NBTKeys.NBT_REDSTONE_MODE, redstoneMode);
         return nbtTagCompound;
     }
 

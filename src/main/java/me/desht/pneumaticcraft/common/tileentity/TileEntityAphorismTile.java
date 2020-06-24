@@ -42,7 +42,7 @@ public class TileEntityAphorismTile extends TileEntityBase {
     }
 
     @Override
-    public void serializeExtraItemData(CompoundNBT blockEntityTag) {
+    public void serializeExtraItemData(CompoundNBT blockEntityTag, boolean preserveState) {
         writeToPacket(blockEntityTag);
     }
 

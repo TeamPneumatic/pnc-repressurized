@@ -14,6 +14,7 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketRenderRangeLines;
 import me.desht.pneumaticcraft.common.util.GlobalTileEntityCacheManager;
 import me.desht.pneumaticcraft.lib.Log;
+import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -228,7 +229,7 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
     @Override
     public void read(CompoundNBT tag) {
         super.read(tag);
-        redstoneMode = tag.getInt("redstoneMode");
+        redstoneMode = tag.getInt(NBTKeys.NBT_REDSTONE_MODE);
         rebootTimer = tag.getInt("startupTimer");
         inventory.deserializeNBT(tag.getCompound("Items"));
         checkForNetworkValidity();
@@ -237,7 +238,7 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
     @Override
     public CompoundNBT write(CompoundNBT tag) {
         super.write(tag);
-        tag.putInt("redstoneMode", redstoneMode);
+        tag.putInt(NBTKeys.NBT_REDSTONE_MODE, redstoneMode);
         tag.putInt("startupTimer", rebootTimer);
         tag.put("Items", inventory.serializeNBT());
         return tag;

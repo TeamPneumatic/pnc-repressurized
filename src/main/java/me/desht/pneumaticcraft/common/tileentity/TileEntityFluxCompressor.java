@@ -8,6 +8,7 @@ import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.inventory.ContainerEnergy;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -93,7 +94,7 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase implements
     public CompoundNBT write(CompoundNBT tag){
         super.write(tag);
         energy.writeToNBT(tag);
-        tag.putByte("redstoneMode", (byte)redstoneMode);
+        tag.putByte(NBTKeys.NBT_REDSTONE_MODE, (byte)redstoneMode);
         return tag;
     }
 
@@ -101,7 +102,7 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase implements
     public void read(CompoundNBT tag){
         super.read(tag);
         energy.readFromNBT(tag);
-        redstoneMode = tag.getByte("redstoneMode");
+        redstoneMode = tag.getByte(NBTKeys.NBT_REDSTONE_MODE);
     }
 
     @Override

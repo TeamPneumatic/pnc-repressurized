@@ -14,6 +14,7 @@ import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.tileentity.SideConfigurator.RelativeFace;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.NBTKeys;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.item.ItemEntity;
@@ -301,7 +302,7 @@ public class TileEntitySmartChest extends TileEntityTickableBase
     @Override
     public CompoundNBT write(CompoundNBT tag) {
         tag.put(NBT_ITEMS, inventory.serializeNBT());
-        tag.putInt("redstoneMode", redstoneMode);
+        tag.putInt(NBTKeys.NBT_REDSTONE_MODE, redstoneMode);
         tag.putInt("pushPull", pushPullModes);
 
         return super.write(tag);
@@ -311,14 +312,14 @@ public class TileEntitySmartChest extends TileEntityTickableBase
     public void read(CompoundNBT tag) {
         super.read(tag);
 
-        redstoneMode = tag.getInt("redstoneMode");
+        redstoneMode = tag.getInt(NBTKeys.NBT_REDSTONE_MODE);
         inventory.deserializeNBT(tag.getCompound(NBT_ITEMS));
         pushPullModes = tag.getInt("pushPull");
     }
 
     @Override
-    public void serializeExtraItemData(CompoundNBT blockEntityTag) {
-        super.serializeExtraItemData(blockEntityTag);
+    public void serializeExtraItemData(CompoundNBT blockEntityTag, boolean preserveState) {
+        super.serializeExtraItemData(blockEntityTag, preserveState);
 
         boolean shouldSave = inventory.lastSlot < CHEST_SIZE || redstoneMode != 0;
         if (!shouldSave) {
@@ -330,7 +331,7 @@ public class TileEntitySmartChest extends TileEntityTickableBase
         }
         if (shouldSave) {
             blockEntityTag.put(NBT_ITEMS, inventory.serializeNBT());
-            blockEntityTag.putInt("redstoneMode", redstoneMode);
+            blockEntityTag.putInt(NBTKeys.NBT_REDSTONE_MODE, redstoneMode);
         }
     }
 

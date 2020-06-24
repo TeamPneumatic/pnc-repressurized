@@ -1,8 +1,9 @@
 package me.desht.pneumaticcraft.common.capabilities;
 
-import me.desht.pneumaticcraft.common.tileentity.ISerializableTanks;
+import me.desht.pneumaticcraft.lib.NBTKeys;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
@@ -34,6 +35,55 @@ public class FluidItemWrapper implements ICapabilityProvider {
         this(stack, tankName, capacity, fluid -> true);
     }
 
+    /**
+     * Serialize some tank data onto an ItemStack.  Used by the item's fluid handler capability.  If the tank is empty,
+     * it will be removed from the stack's NBT to keep it clean (helps with stackability)
+     * <p>
+     * Data is serialized under the "BlockEntityTag" sub-tag, so will
+     * be automatically deserialized back into the tile entity when this item (assuming it's from a block,
+     * of course) is placed back down.
+     *
+     * @param tank the fluid tank
+     * @param stack the itemstack to save to
+     * @param tagName name of the subtag in the itemstack's NBT to store the tank data
+     */
+     static void serializeTank(FluidTank tank, ItemStack stack, String tagName) {
+         CompoundNBT tag = stack.getOrCreateChildTag(NBTKeys.BLOCK_ENTITY_TAG);
+         CompoundNBT subTag = tag.getCompound(NBTKeys.NBT_SAVED_TANKS);
+         if (!tank.getFluid().isEmpty()) {
+             subTag.put(tagName, tank.writeToNBT(new CompoundNBT()));
+         } else {
+             subTag.remove(tagName);
+         }
+         if (!subTag.isEmpty()) {
+             tag.put(NBTKeys.NBT_SAVED_TANKS, subTag);
+         } else {
+             tag.remove(NBTKeys.NBT_SAVED_TANKS);
+             if (tag.isEmpty()) {
+                 stack.getTag().remove(NBTKeys.BLOCK_ENTITY_TAG);
+             }
+         }
+    }
+
+    /**
+     * Deserialize some fluid tank data from an ItemStack into a fluid tank.  Used by the
+     * item's fluid handler capability.
+     *
+     * @param stack the itemstack to load from
+     * @param tagName name of the subtag in the itemstack's NBT which holds the saved tank data
+     * @param capacity capacity of the created tank
+     * @return the deserialized tank, or null
+     */
+    static FluidTank deserializeTank(ItemStack stack, String tagName, int capacity) {
+        CompoundNBT tag = stack.getChildTag(NBTKeys.BLOCK_ENTITY_TAG);
+        if (tag != null && tag.contains(NBTKeys.NBT_SAVED_TANKS)) {
+            FluidTank tank = new FluidTank(capacity);
+            CompoundNBT subTag = tag.getCompound(NBTKeys.NBT_SAVED_TANKS);
+            return tank.readFromNBT(subTag.getCompound(tagName));
+        }
+        return null;
+    }
+
     @Override
     @Nonnull
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> capability, @Nullable Direction facing)
@@ -45,7 +95,7 @@ public class FluidItemWrapper implements ICapabilityProvider {
         private final FluidTank fluidTank;
 
         Handler() {
-            FluidTank tank = ISerializableTanks.deserializeTank(stack, tankName, capacity);
+            FluidTank tank = deserializeTank(stack, tankName, capacity);
             fluidTank = tank == null ? new FluidTank(capacity) : tank;
         }
 
@@ -81,7 +131,7 @@ public class FluidItemWrapper implements ICapabilityProvider {
             if (fluidTank == null) return 0;
             int filled = fluidTank.fill(resource, doFill);
             if (filled > 0 && doFill == FluidAction.EXECUTE) {
-                ISerializableTanks.serializeTank(fluidTank, stack, tankName);
+                serializeTank(fluidTank, stack, tankName);
             }
             return filled;
         }
@@ -91,7 +141,7 @@ public class FluidItemWrapper implements ICapabilityProvider {
             if (fluidTank == null) return FluidStack.EMPTY;
             FluidStack drained = fluidTank.drain(resource, doDrain);
             if (!drained.isEmpty() && doDrain == FluidAction.EXECUTE) {
-                ISerializableTanks.serializeTank(fluidTank, stack, tankName);
+                serializeTank(fluidTank, stack, tankName);
             }
             return drained;
         }
@@ -101,7 +151,7 @@ public class FluidItemWrapper implements ICapabilityProvider {
             if (fluidTank == null) return FluidStack.EMPTY;
             FluidStack drained = fluidTank.drain(maxDrain, doDrain);
             if (!drained.isEmpty() && doDrain == FluidAction.EXECUTE) {
-                ISerializableTanks.serializeTank(fluidTank, stack, tankName);
+                serializeTank(fluidTank, stack, tankName);
             }
             return drained;
         }

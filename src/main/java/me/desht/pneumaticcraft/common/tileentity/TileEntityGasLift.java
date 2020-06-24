@@ -9,6 +9,7 @@ import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -292,7 +293,7 @@ public class TileEntityGasLift extends TileEntityPneumaticBase
         super.write(tag);
 
         tag.put("Items", inventory.serializeNBT());
-        tag.putByte("redstoneMode", (byte) redstoneMode);
+        tag.putByte(NBTKeys.NBT_REDSTONE_MODE, (byte) redstoneMode);
         tag.putString("mode", pumpMode.toString());
         tag.putInt("currentDepth", currentDepth);
         return tag;
@@ -303,7 +304,7 @@ public class TileEntityGasLift extends TileEntityPneumaticBase
         super.read(tag);
 
         inventory.deserializeNBT(tag.getCompound("Items"));
-        redstoneMode = tag.getByte("redstoneMode");
+        redstoneMode = tag.getByte(NBTKeys.NBT_REDSTONE_MODE);
         if (tag.contains("mode")) pumpMode = PumpMode.valueOf(tag.getString("mode"));
         currentDepth = tag.getInt("currentDepth");
     }

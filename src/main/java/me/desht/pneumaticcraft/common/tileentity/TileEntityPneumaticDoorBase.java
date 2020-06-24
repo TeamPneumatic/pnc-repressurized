@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerPneumaticDoorBase;
 import me.desht.pneumaticcraft.common.network.*;
+import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
 import net.minecraft.block.BlockState;
@@ -182,7 +183,7 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase
         super.read(tag);
         progress = tag.getFloat("extension");
         opening = tag.getBoolean("opening");
-        redstoneMode = tag.getInt("redstoneMode");
+        redstoneMode = tag.getInt(NBTKeys.NBT_REDSTONE_MODE);
         rightGoing = tag.getBoolean("rightGoing");
         camoStack  = ICamouflageableTE.readCamoStackFromNBT(tag);
         camoState = ICamouflageableTE.getStateForStack(camoStack);
@@ -193,7 +194,7 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase
         super.write(tag);
         tag.putFloat("extension", progress);
         tag.putBoolean("opening", opening);
-        tag.putInt("redstoneMode", redstoneMode);
+        tag.putInt(NBTKeys.NBT_REDSTONE_MODE, redstoneMode);
         tag.putBoolean("rightGoing", rightGoing);
         ICamouflageableTE.writeCamoStackToNBT(camoStack, tag);
         return tag;

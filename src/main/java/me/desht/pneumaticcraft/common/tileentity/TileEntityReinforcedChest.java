@@ -68,8 +68,8 @@ public class TileEntityReinforcedChest extends TileEntityBase implements INamedC
     }
 
     @Override
-    public void serializeExtraItemData(CompoundNBT blockEntityTag) {
-        super.serializeExtraItemData(blockEntityTag);
+    public void serializeExtraItemData(CompoundNBT blockEntityTag, boolean preserveState) {
+        super.serializeExtraItemData(blockEntityTag, preserveState);
 
         for (int i = 0; i < inventory.getSlots(); i++) {
             if (!inventory.getStackInSlot(i).isEmpty()) {

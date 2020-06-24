@@ -12,6 +12,7 @@ import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
+import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -298,7 +299,7 @@ public class TileEntityRefineryController extends TileEntityTickableBase
     public CompoundNBT write(CompoundNBT tag) {
         super.write(tag);
 
-        tag.putByte("redstoneMode", (byte) redstoneMode);
+        tag.putByte(NBTKeys.NBT_REDSTONE_MODE, (byte) redstoneMode);
 
         return tag;
     }
@@ -307,7 +308,7 @@ public class TileEntityRefineryController extends TileEntityTickableBase
     public void read(CompoundNBT tag) {
         super.read(tag);
 
-        redstoneMode = tag.getByte("redstoneMode");
+        redstoneMode = tag.getByte(NBTKeys.NBT_REDSTONE_MODE);
     }
 
     @Override

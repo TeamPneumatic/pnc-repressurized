@@ -17,6 +17,7 @@ import me.desht.pneumaticcraft.common.network.PacketProgrammerUpdate;
 import me.desht.pneumaticcraft.common.progwidgets.*;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.lib.Log;
+import me.desht.pneumaticcraft.lib.NBTKeys;
 import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -81,7 +82,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
     @Override
     public void read(CompoundNBT tag) {
         super.read(tag);
-        redstoneMode = tag.getInt("redstoneMode");
+        redstoneMode = tag.getInt(NBTKeys.NBT_REDSTONE_MODE);
         inventory.deserializeNBT(tag.getCompound("Items"));
         history = tag.getList("history", 10);
         if (history.size() == 0) saveToHistory();
@@ -96,7 +97,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
     @Override
     public CompoundNBT write(CompoundNBT tag) {
         super.write(tag);
-        tag.putInt("redstoneMode", redstoneMode);
+        tag.putInt(NBTKeys.NBT_REDSTONE_MODE, redstoneMode);
         tag.put("Items", inventory.serializeNBT());
         tag.put("history", history);
         writeProgWidgetsToNBT(tag);

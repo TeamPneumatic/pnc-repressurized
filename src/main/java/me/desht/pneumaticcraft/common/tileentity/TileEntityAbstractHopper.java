@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.block.BlockOmnidirectionalHopper;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.lib.NBTKeys;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.container.INamedContainerProvider;
@@ -113,7 +114,7 @@ public abstract class TileEntityAbstractHopper extends TileEntityTickableBase
     @Override
     public CompoundNBT write(CompoundNBT tag) {
         super.write(tag);
-        tag.putInt("redstoneMode", redstoneMode);
+        tag.putInt(NBTKeys.NBT_REDSTONE_MODE, redstoneMode);
         tag.putInt("leaveMaterialCount", leaveMaterialCount);
         return tag;
     }
@@ -121,7 +122,7 @@ public abstract class TileEntityAbstractHopper extends TileEntityTickableBase
     @Override
     public void read(CompoundNBT tag) {
         super.read(tag);
-        redstoneMode = tag.getInt("redstoneMode");
+        redstoneMode = tag.getInt(NBTKeys.NBT_REDSTONE_MODE);
         if (tag.contains("leaveMaterial")) {
             leaveMaterialCount = (byte)(tag.getBoolean("leaveMaterial") ? 1 : 0);
         } else {

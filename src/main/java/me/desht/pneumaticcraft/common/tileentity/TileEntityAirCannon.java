@@ -16,6 +16,7 @@ import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethodRegist
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.fakeplayer.FakeNetHandlerPlayerServer;
+import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
 import net.minecraft.block.Blocks;
@@ -410,7 +411,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
         gpsX = tag.getInt("gpsX");
         gpsY = tag.getInt("gpsY");
         gpsZ = tag.getInt("gpsZ");
-        redstoneMode = tag.getByte("redstoneMode");
+        redstoneMode = tag.getByte(NBTKeys.NBT_REDSTONE_MODE);
         coordWithinReach = tag.getBoolean("targetWithinReach");
         itemHandler.deserializeNBT(tag.getCompound("Items"));
         forceMult = tag.getInt("forceMult");
@@ -441,7 +442,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
         tag.putInt("gpsX", gpsX);
         tag.putInt("gpsY", gpsY);
         tag.putInt("gpsZ", gpsZ);
-        tag.putByte("redstoneMode", (byte) redstoneMode);
+        tag.putByte(NBTKeys.NBT_REDSTONE_MODE, (byte) redstoneMode);
         tag.putBoolean("targetWithinReach", coordWithinReach);
         tag.put("Items", itemHandler.serializeNBT());
         tag.putInt("forceMult", forceMult);

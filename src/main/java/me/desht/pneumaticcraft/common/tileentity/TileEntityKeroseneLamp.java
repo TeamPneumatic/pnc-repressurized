@@ -12,6 +12,7 @@ import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.NBTKeys;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
@@ -275,7 +276,7 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements IR
     public CompoundNBT write(CompoundNBT tag) {
         super.write(tag);
         tag.put("lights", managingLights.stream().map(NBTUtil::writeBlockPos).collect(Collectors.toCollection(ListNBT::new)));
-        tag.putByte("redstoneMode", (byte) redstoneMode);
+        tag.putByte(NBTKeys.NBT_REDSTONE_MODE, (byte) redstoneMode);
         tag.putByte("targetRange", (byte) targetRange);
         tag.putByte("range", (byte) range);
         tag.put("Items", inventory.serializeNBT());
@@ -291,7 +292,7 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements IR
             managingLights.add(NBTUtil.readBlockPos(lights.getCompound(i)));
         }
         recalculateFuelQuality();
-        redstoneMode = tag.getByte("redstoneMode");
+        redstoneMode = tag.getByte(NBTKeys.NBT_REDSTONE_MODE);
         targetRange = tag.getByte("targetRange");
         range = tag.getByte("range");
         inventory.deserializeNBT(tag.getCompound("Items"));

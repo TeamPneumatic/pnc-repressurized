@@ -41,7 +41,6 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
@@ -318,7 +317,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
         if (stack.hasTag()) {
             int savedAir = getSavedAir(stack);
             if (savedAir != 0) {
-                curInfo.add(new StringTextComponent("Stored Air: " + savedAir + "mL").applyTextStyle(TextFormatting.GREEN));
+                curInfo.add(xlate("pneumaticcraft.gui.tooltip.air", Integer.toString(savedAir)).applyTextStyle(TextFormatting.GREEN));
             }
             if (stack.getItem() instanceof BlockItem && ((BlockItem) stack.getItem()).getBlock() instanceof IUpgradeAcceptor) {
                 UpgradableItemUtils.addUpgradeInformation(stack, curInfo, flag);
@@ -332,7 +331,9 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
                     tank.readFromNBT(tankTag);
                     FluidStack fluidStack = tank.getFluid();
                     if (!fluidStack.isEmpty()) {
-                        curInfo.add(fluidStack.getDisplayName().appendText(": " + fluidStack.getAmount() + "mB"));
+                        curInfo.add(xlate("pneumaticcraft.gui.tooltip.fluid")
+                                .appendText(fluidStack.getAmount() + "mB ")
+                                .appendSibling(fluidStack.getDisplayName()).applyTextStyle(TextFormatting.GREEN));
                     }
                 }
             }

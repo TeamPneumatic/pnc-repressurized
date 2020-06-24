@@ -9,6 +9,7 @@ import me.desht.pneumaticcraft.common.inventory.ContainerVacuumPump;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -118,7 +119,7 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements IRe
         super.write(tag);
         tag.put("vacuum", vacuumHandler.serializeNBT());
         tag.putBoolean("turning", turning);
-        tag.putInt("redstoneMode", redstoneMode);
+        tag.putInt(NBTKeys.NBT_REDSTONE_MODE, redstoneMode);
         return tag;
     }
 
@@ -127,7 +128,7 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements IRe
         super.read(tag);
         vacuumHandler.deserializeNBT(tag.getCompound("vacuum"));
         turning = tag.getBoolean("turning");
-        redstoneMode = tag.getInt("redstoneMode");
+        redstoneMode = tag.getInt(NBTKeys.NBT_REDSTONE_MODE);
     }
 
     @Override
