@@ -246,7 +246,7 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase {
     public int getIncomingItems(ItemStack stack) {
         int count = 0;
         for (ItemStack s : incomingStacks.keySet()) {
-            if (itemFilterHandler.matchOneItem(s, stack)) {
+            if (itemFilterHandler.matchOneItem(stack, s)) {
                 count += s.getCount();
             }
         }
@@ -437,6 +437,14 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase {
             return count;
         }
 
+        /**
+         * Match against a filter stack. It's important that the filter stack is passed <em>first</em> here; since if
+         * it's a {@link me.desht.pneumaticcraft.common.item.ItemTagFilter}, it will have some special handling.
+         *
+         * @param filterStack the stack to filter against, which is treated specially if it's a Tag Filter - beware
+         * @param stack the stack being tested
+         * @return true if the stack being tested matches the filter
+         */
         boolean matchOneItem(ItemStack filterStack, ItemStack stack) {
             return !filterStack.isEmpty()
                     && PneumaticCraftUtils.doesItemMatchFilter(filterStack, stack, isMatchDurability(), isMatchNBT(), isMatchModId());
