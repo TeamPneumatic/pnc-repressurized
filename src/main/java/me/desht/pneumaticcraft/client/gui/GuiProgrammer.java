@@ -991,6 +991,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
                         tag.putInt("x", hovered.getX());
                         tag.putInt("y", hovered.getY());
                         hovered.readFromNBT(tag);
+                        NetworkHandler.sendToServer(new PacketProgrammerUpdate(te));
                     } else if (heldItem.getItem() == ModItems.GPS_TOOL.get()) {
                         if (hovered instanceof ProgWidgetCoordinate) {
                             ((ProgWidgetCoordinate) hovered).loadFromGPSTool(heldItem);
@@ -1003,6 +1004,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
                             areaHovered.setCoord1Variable(var);
                             areaHovered.setCoord2Variable("");
                         }
+                        NetworkHandler.sendToServer(new PacketProgrammerUpdate(te));
                     }
                 } else {
                     // clicked on an empty area: create a new area or coordinate widget
