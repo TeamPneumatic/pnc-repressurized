@@ -9,13 +9,15 @@ Changes are in reverse chronological order; newest changes at the top.
 ## 1.3.2-?? (unreleased)
 
 ### Updates
-* Block camouflage now properly the blockstate recorded on the Camouflage Applicator, e.g. the rotation of log block, and not just the block's default state
+* Block camouflage now properly mimics the blockstate recorded on the Camouflage Applicator
+  * e.g. for rotatable blocks like Logs, the rotation is now used, not just the log's default blockstate
 * Breaking any machine with redstone settings now preserves those settings (even when broken with a pick)
 
 ### Fixes
 * Fixed minigun tracers rendering behind other blocks
 * Fixed drone block placing (Place widget) not consuming items when item was not in drone's inventory slot 0
 * Fixed NPE with tile entity moving under certain circumstances (see https://github.com/TeamPneumatic/pnc-repressurized/issues/540)
+* Fixed Tag Filters in inventories with Requester Frames wrongly counting as requested items
 
 ## 1.3.1-39 (22 Jun 2020)
 ### New

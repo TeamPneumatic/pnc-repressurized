@@ -916,8 +916,10 @@ public class EntityDrone extends EntityDroneBase implements
         fluidTank.writeToNBT(tag);
 
         tag.putString("owner", ownerName);
-        tag.putLong("ownerUUID_M", ownerUUID.getMostSignificantBits());
-        tag.putLong("ownerUUID_L", ownerUUID.getLeastSignificantBits());
+        if (ownerUUID != null) {
+            tag.putLong("ownerUUID_M", ownerUUID.getMostSignificantBits());
+            tag.putLong("ownerUUID_L", ownerUUID.getLeastSignificantBits());
+        }
 
         if (!displacedLiquids.isEmpty()) {
             ListNBT disp = new ListNBT();
