@@ -207,8 +207,9 @@ dependencies {
     compile fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}")
     compile fg.deobf("org.squiddev:cc-tweaked-1.15.2:${cc_tweaked_version}")
     compile fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:${immersive_engineering_version}")
+    compileOnly fg.deobf("mekanism:MekanismAll:${mekanism_version}:api")
+    runtime fg.deobf("mekanism:Mekanism:${mekanism_version}")
 //    compileOnly "cofh:RedstoneFlux:1.12-${redstone_flux_version}:universal"
-//    compileOnly("mekanism:Mekanism:${mekanism_version}:api") { exclude group: "mezz.jei" }
 //    compileOnly "cofh:CoFHCore:1.12.2-${cofhcore_version}:deobf"
 //    compileOnly "li.cil.oc:OpenComputers:MC1.12.2-${oc_version}:api"
 //    compileOnly "dan200.computercraft:ComputerCraft:${computercraft_version}"

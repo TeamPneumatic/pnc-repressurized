@@ -43,10 +43,10 @@ public class CommonConfig {
         ForgeConfigSpec.IntValue armorStartupTime;
     }
     public static class Integration {
+        ForgeConfigSpec.DoubleValue mekThermalEfficiencyFactor;
         ForgeConfigSpec.DoubleValue ieExternalHeaterHeatPerRF;
         ForgeConfigSpec.IntValue ieExternalHeaterRFperTick;
-        ForgeConfigSpec.DoubleValue mekHeatEfficiency;
-        ForgeConfigSpec.DoubleValue mekThermalResistanceMult;
+        ForgeConfigSpec.DoubleValue mekThermalResistanceFactor;
         ForgeConfigSpec.DoubleValue tanAirConAirUsageMultiplier;
         ForgeConfigSpec.DoubleValue tanHeatDivider;
         ForgeConfigSpec.IntValue tanRefreshInterval;
@@ -411,14 +411,14 @@ public class CommonConfig {
                 .comment("Immersive Engineering: External Heater RF/t. Set to 0 to disable External Heater integration entirely.")
                 .translation("pneumaticcraft.config.common.integration.ie_external_heater_r_fper_tick")
                 .defineInRange("ie_external_heater_r_fper_tick", 100, 0, Integer.MAX_VALUE);
-        integration.mekHeatEfficiency = builder
-                .comment("Mekanism heat conversion efficiency.  Smaller values mean Mekanism heat is worth less PneumaticCraft heat. Set to 0.0 to disable Mekanism heat integration entirely.")
-                .translation("pneumaticcraft.config.common.integration.mek_heat_efficiency")
-                .defineInRange("mek_heat_efficiency", 0.4, 0.0, Double.MAX_VALUE);
-        integration.mekThermalResistanceMult = builder
-                .comment("Mekanism thermal resistance multiplier. Larger values mean slower heat transfer.")
-                .translation("pneumaticcraft.config.common.integration.mek_thermal_resistance_mult")
-                .defineInRange("mek_thermal_resistance_mult", 100.0, 1.0, Double.MAX_VALUE);
+        integration.mekThermalResistanceFactor = builder
+                .comment("Mekanism thermal resistance multiplier. Larger values mean slower heat transfer between Mekanism and PneumaticCraft blocks.")
+                .translation("pneumaticcraft.config.common.integration.mek_thermal_resistance_factor")
+                .defineInRange("mek_thermal_resistance_factor", 5.0, 1.0, Double.MAX_VALUE);
+        integration.mekThermalEfficiencyFactor = builder
+                .comment("Mekanism <-> PneumaticCraft heat conversion efficiency. Note that Mekanism and PNC use a similar heat system, but scale things quite differently (Mekanism heaters produces a LOT of heat by PneumaticCraft standards), so conversion efficiency tuning is important for inter-mod balance.")
+                .translation("pneumaticcraft.config.common.integration.mek_thermal_efficiency_factor")
+                .defineInRange("mek_thermal_conversion_efficiency", 0.01, 0.0, 2.0);
         integration.tanAirConAirUsageMultiplier = builder
                 .comment("ToughAsNails: air usage multiplier for the Pneumatic Chestplate Air Conditioning Upgrade.")
                 .translation("pneumaticcraft.config.common.integration.tan_air_con_air_usage_multiplier")

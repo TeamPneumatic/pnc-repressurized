@@ -83,8 +83,8 @@ public class PNCConfig {
         public static class Integration {
             public static double ieExternalHeaterHeatPerRF;
             public static int ieExternalHeaterRFperTick;
-            public static double mekHeatEfficiency;
-            public static double mekThermalResistanceMult;
+            public static double mekThermalResistanceFactor;
+            public static double mekThermalEfficiencyFactor;
             public static double tanAirConAirUsageMultiplier;
             public static double tanHeatDivider;
             public static int tanRefreshInterval;

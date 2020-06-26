@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.common.thirdparty.botania.Botania;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.ComputerCraft;
 import me.desht.pneumaticcraft.common.thirdparty.curios.Curios;
 import me.desht.pneumaticcraft.common.thirdparty.immersiveengineering.ImmersiveEngineering;
+import me.desht.pneumaticcraft.common.thirdparty.mekanism.Mekanism;
 import me.desht.pneumaticcraft.common.thirdparty.patchouli.Patchouli;
 import me.desht.pneumaticcraft.common.thirdparty.theoneprobe.TheOneProbe;
 import me.desht.pneumaticcraft.common.thirdparty.waila.Waila;
@@ -49,6 +50,7 @@ public class ThirdPartyManager {
             thirdPartyClasses.put(ModIds.PATCHOULI, () -> new Patchouli());
             thirdPartyClasses.put(ModIds.JEI, () -> DUMMY_HANDLER);  // implicit initialisation
             thirdPartyClasses.put(ModIds.IMMERSIVE_ENGINEERING, () -> new ImmersiveEngineering());
+            thirdPartyClasses.put(ModIds.MEKANISM, () -> new Mekanism());
 
             // these were supported 1.12.2 and may or may not come back...
 
@@ -65,7 +67,6 @@ public class ThirdPartyManager {
 //            thirdPartyClasses.put(ModIds.INDUSTRIALCRAFT, IC2.class);
 //            thirdPartyClasses.put(ModIds.THAUMCRAFT, Thaumcraft.class);
 //            thirdPartyClasses.put(ModIds.IMMERSIVE_PETROLEUM, ImmersivePetroleum.class);
-//            thirdPartyClasses.put(ModIds.MEKANISM, Mekanism.class);
 //            thirdPartyClasses.put(ModIds.BAUBLES, Baubles.class);
 //            thirdPartyClasses.put(ModIds.TOUGH_AS_NAILS, ToughAsNails.class);
         } catch (Throwable e) {

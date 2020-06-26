@@ -79,7 +79,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
             }
             if (te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY).isPresent()) {
                 addAnimatedStat("pneumaticcraft.gui.tab.info.heat.title",
-                        new ItemStack(Items.BLAZE_POWDER), 0xFFFF5500, false)
+                        new ItemStack(Items.BLAZE_POWDER), 0xFFE05500, false)
                         .setText("pneumaticcraft.gui.tab.info.heat");
             }
             if (shouldAddUpgradeTab()) {

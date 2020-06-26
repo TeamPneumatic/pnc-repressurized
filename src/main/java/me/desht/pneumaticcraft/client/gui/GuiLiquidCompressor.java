@@ -33,7 +33,7 @@ public class GuiLiquidCompressor extends GuiPneumaticContainerBase<ContainerLiqu
     public void init() {
         super.init();
         addButton(new WidgetTank(guiLeft + getFluidOffset(), guiTop + 15, te.getTank()));
-        WidgetAnimatedStat stat = addAnimatedStat("pneumaticcraft.gui.tab.liquidCompressor.fuel", new ItemStack(ModItems.LPG_BUCKET.get()), 0xFFFF6600, true);
+        WidgetAnimatedStat stat = addAnimatedStat("pneumaticcraft.gui.tab.liquidCompressor.fuel", new ItemStack(ModItems.LPG_BUCKET.get()), 0xFFC04400, true);
         stat.setTextWithoutCuttingString(getAllFuels());
     }
 

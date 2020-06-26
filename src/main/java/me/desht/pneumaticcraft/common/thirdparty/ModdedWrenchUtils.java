@@ -32,6 +32,8 @@ public enum ModdedWrenchUtils {
     private static Item IC2_WRENCH = null;
     @ObjectHolder("chiselsandbits:wrench_wood")
     private static Item CB_WRENCH_WOOD = null;
+    @ObjectHolder("mekanism:configurator")
+    private static Item MEK_CONFIGURATOR = null;
 
     private final Set<Item> wrenches = new HashSet<>();
 
@@ -50,6 +52,7 @@ public enum ModdedWrenchUtils {
         registerWrench(TESLA_WRENCH);
         registerWrench(IC2_WRENCH);
         registerWrench(CB_WRENCH_WOOD);
+        registerWrench(MEK_CONFIGURATOR);
     }
 
     private void registerWrench(Item wrench) {

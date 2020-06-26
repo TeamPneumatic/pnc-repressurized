@@ -1,20 +1,31 @@
 package me.desht.pneumaticcraft.common.thirdparty.mekanism;
 
-import me.desht.pneumaticcraft.common.thirdparty.IHeatDisperser;
+import me.desht.pneumaticcraft.api.PneumaticRegistry;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
-import me.desht.pneumaticcraft.common.util.TileEntityCache;
+import me.desht.pneumaticcraft.lib.ModIds;
+import me.desht.pneumaticcraft.lib.Names;
+import mekanism.api.heat.IHeatHandler;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityInject;
+import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.registries.ObjectHolder;
 
-public class Mekanism implements IThirdParty, IHeatDisperser {
-    // TODO 1.14
-//    @CapabilityInject(IHeatTransfer.class)
-//    public static Capability<IHeatTransfer> CAPABILITY_HEAT_TRANSFER = null;
-//
-//    @CapabilityInject(IGridTransmitter.class)
-//    public static Capability<IGridTransmitter> CAPABILITY_GRID_TRANSMITTER = null;
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
-    private static final MekanismHeatAdapter adapter = null;
+@Mod.EventBusSubscriber
+public class Mekanism implements IThirdParty {
+    @CapabilityInject(IHeatHandler.class)
+    public static final Capability<IHeatHandler> CAPABILITY_HEAT_HANDLER = null;
+
+    @ObjectHolder("mekanism:ethene")
+    private static Fluid ETHENE = null;
+    @ObjectHolder("mekanism:hydrogen")
+    private static Fluid HYDROGEN = null;
 
     public static boolean available = false;
 
@@ -22,45 +33,25 @@ public class Mekanism implements IThirdParty, IHeatDisperser {
     public void init() {
         available = true;
 
-        TileEntityBase.registerHeatDisperser(this);
+        if (ETHENE != null) {
+            // takes some effort to make, so it's as good as LPG
+            PneumaticRegistry.getInstance().getFuelRegistry().registerFuel(ETHENE, 1800000, 1.25f);
+        }
+        if (HYDROGEN != null) {
+            // low fuel value, but burns fast
+            PneumaticRegistry.getInstance().getFuelRegistry().registerFuel(HYDROGEN, 300000, 2f);
+        }
     }
 
-    @Override
-    public void disperseHeat(TileEntity te, TileEntityCache[] tileCache) {
-//        IHeatTransfer source = te.getCapability(CAPABILITY_HEAT_TRANSFER, null);
-//        if (source != null) {
-//            for (Direction side : Direction.VALUES) {
-//                // don't push heat to PneumaticCraft TE's even though they provide the Mek IHeatTransfer capability
-//                // - heat dispersal to native TE's is handled via IHeatExchangerLogic
-//                if (tileCache[side.getIndex()].getTileEntity() instanceof TileEntityBase) continue;
-//
-//                IHeatTransfer sink = source.getAdjacent(side);
-//                if (sink != null && source.getTemp() > sink.getTemp() + 300) {
-//                    double invConduction = sink.getInverseConductionCoefficient() + source.getInverseConductionCoefficient();
-//                    double heatToTransfer = (source.getTemp() - (sink.getTemp() + 300)) / invConduction;
-//                    source.transferHeatTo(-heatToTransfer);
-//                    sink.transferHeatTo(heatToTransfer * ConfigHandler.integration.mekHeatEfficiency);
-//                }
-//            }
-//        }
+    @SubscribeEvent
+    public static void attachHeatAdapters(AttachCapabilitiesEvent<TileEntity> event) {
+        if (PNCConfig.Common.Integration.mekThermalEfficiencyFactor != 0 && CAPABILITY_HEAT_HANDLER != null) {
+            if (event.getObject().getType().getRegistryName().getNamespace().equals(Names.MOD_ID)) {
+                event.addCapability(RL("pnc2mek_heat_adapter"), new PNC2MekHeatProvider(event.getObject()));
+            }
+            if (event.getObject().getType().getRegistryName().getNamespace().equals(ModIds.MEKANISM)) {
+                event.addCapability(RL("mek2pnc_heat_adapter"), new Mek2PNCHeatProvider(event.getObject()));
+            }
+        }
     }
-
-    /**
-     * Get a Mekanism->PneumaticCraft heat adapter, to allow Mekanism TE's to disperse heat to us.  This adapter is
-     * provided via a capability.  Don't cache this adapter! It's only valid in the method from which it's obtained.
-     *
-     * @param te the PneumaticCraft tile entity
-     * @param side side on which the capability is requested
-     * @return a Mekanism IHeatTransfer object
-     */
-//    public static LazyOptional<IHeatTransfer> getHeatAdapter(TileEntityBase te, Direction side) {
-//        if (adapter == null) {
-//            adapter = new MekanismHeatAdapter();
-//        }
-//        if (te instanceof IHeatExchanger) {
-//            return adapter.setup(te, side);
-//        } else {
-//            return null;
-//        }
-//    }
 }
