@@ -6,16 +6,16 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.15.2
 
-## 1.3.2-?? (unreleased)
+## 1.3.2-42 (26 Jun 2020)
 
 ### Updates
-* Block camouflage now properly mimics the blockstate recorded on the Camouflage Applicator
-  * e.g. for rotatable blocks like Logs, the rotation is now used, not just the log's default blockstate
-* Breaking any machine with redstone settings now preserves those settings (even when broken with a pick)
+* Block camouflage now properly mimics the complete blockstate recorded on the Camouflage Applicator
+  * e.g. for rotatable blocks like Logs, the rotated log is now mimicked, not just the log's default (unrotated) blockstate
+* Breaking any machine with redstone settings now preserves those settings (even when broken with a pickaxe)
 
 ### Fixes
 * Fixed minigun tracers rendering behind other blocks
-* Fixed drone block placing (Place widget) not consuming items when item was not in drone's inventory slot 0
+* Fixed drone block placing (Place widget) not consuming items when block item being placed was not in drone's inventory slot 0
 * Fixed NPE with tile entity moving under certain circumstances (see https://github.com/TeamPneumatic/pnc-repressurized/issues/540)
 * Fixed Tag Filters in inventories with Requester Frames wrongly counting as requested items
 
