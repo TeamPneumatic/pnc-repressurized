@@ -36,7 +36,7 @@ public class PacketHackingBlockFinish extends LocationIntPacket {
             IHackableBlock hackableBlock = HackableHandler.getHackableForBlock(player.world, pos, player);
             if (hackableBlock != null) {
                 hackableBlock.onHackComplete(player.world, pos, player);
-                HackTickHandler.instance().trackBlock(new WorldAndCoord(player.world, pos), hackableBlock);
+                HackTickHandler.instance().trackBlock(player.world, pos, hackableBlock);
                 CommonArmorHandler.getHandlerForPlayer(player).setHackedBlockPos(null);
                 player.playSound(ModSounds.HELMET_HACK_FINISH.get(), 1.0F, 1.0F);
             }

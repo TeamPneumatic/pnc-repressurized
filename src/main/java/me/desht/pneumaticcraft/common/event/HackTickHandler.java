@@ -3,70 +3,63 @@ package me.desht.pneumaticcraft.common.event;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableBlock;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
-import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.hacking.WorldAndCoord;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public enum HackTickHandler {
     INSTANCE;
 
-    private final Map<WorldAndCoord, IHackableBlock> hackedBlocks = new HashMap<>();
+    private final Map<ResourceLocation, Map<BlockPos, IHackableBlock>> hackedBlocks = new HashMap<>();
+    private final Map<ResourceLocation, Set<Entity>> hackedEntities = new HashMap<>();
 
     public static HackTickHandler instance() {
         return INSTANCE;
     }
 
     @SubscribeEvent
-    public void onServerTick(TickEvent.ServerTickEvent event) {
-        if (event.phase == TickEvent.Phase.END) {
-            //                boolean found = false;
-            //                for (Map.Entry<Block, Class<? extends IHackableBlock>> registeredEntry : PneumaticHelmetRegistry.getInstance().hackableBlocks.entrySet()) {
-            //                    if (hackableBlock.getClass() == registeredEntry.getValue() && loc.getBlock() == registeredEntry.getKey()) {
-            //                        if (!hackableBlock.afterHackTick((World) loc.world, loc.pos)) {
-            //                            blockIterator.remove();
-            //                        }
-            //                        found = true;
-            //                        break;
-            //                    }
-            //                }
-            //                if (!found) blockIterator.remove();
-            hackedBlocks.entrySet().removeIf(entry -> !entry.getValue().afterHackTick(entry.getKey().world, entry.getKey().pos));
-        }
-    }
-
-    @SubscribeEvent
     public void worldTick(TickEvent.WorldTickEvent event) {
         if (event.phase == TickEvent.Phase.END) {
-            try {
-                for (Entity entity : getAllEntities(event.world)) {
-                    entity.getCapability(PNCCapabilities.HACKING_CAPABILITY, null).ifPresent(h -> {
-                        if (!h.getCurrentHacks().isEmpty()) h.update(entity);
-                    });
-                }
-            } catch (Throwable e) {
-                // Catching a CME which I have no clue on what might cause it.
+            ResourceLocation worldKey = event.world.getDimension().getType().getRegistryName();
+
+            if (hackedBlocks.containsKey(worldKey)) {
+                hackedBlocks.get(worldKey).entrySet().removeIf(entry -> !entry.getValue().afterHackTick(event.world, entry.getKey()));
+            }
+
+            if (hackedEntities.containsKey(worldKey)) {
+                Set<Entity> entities = hackedEntities.get(worldKey);
+                // IHacking#update() will remove any no-longer-applicable hacks from the entity
+                entities.forEach(entity -> entity.getCapability(PNCCapabilities.HACKING_CAPABILITY).ifPresent(hacking -> {
+                    if (entity.isAlive() && !hacking.getCurrentHacks().isEmpty()) hacking.update(entity);
+                }));
+                // Remove the entity from the tracker if it has no more applicable hacks
+                entities.removeIf(e -> !e.isAlive() ||
+                        e.getCapability(PNCCapabilities.HACKING_CAPABILITY).map(hacking -> hacking.getCurrentHacks().isEmpty()).orElse(true)
+                );
             }
         }
     }
 
-    private Iterable<? extends Entity> getAllEntities(World world) {
-        return world.isRemote ? ClientUtils.getAllEntities(world) : ((ServerWorld)world).getEntities()::iterator;
-    }
-
-    public void trackBlock(WorldAndCoord coord, IHackableBlock iHackable) {
-        hackedBlocks.put(coord, iHackable);
+    public void trackBlock(World world, BlockPos pos, IHackableBlock iHackable) {
+        ResourceLocation k = world.getDimension().getType().getRegistryName();
+        hackedBlocks.computeIfAbsent(k, k1 -> new HashMap<>()).put(pos, iHackable);
     }
 
     public void trackEntity(Entity entity, IHackableEntity iHackable) {
         if (iHackable.getHackableId() != null) {
-            entity.getCapability(PNCCapabilities.HACKING_CAPABILITY, null).ifPresent(h -> h.addHackable(iHackable));
+            entity.getCapability(PNCCapabilities.HACKING_CAPABILITY).ifPresent(hacking -> {
+                hacking.addHackable(iHackable);
+                ResourceLocation worldKey = entity.world.getDimension().getType().getRegistryName();
+                hackedEntities.computeIfAbsent(worldKey, k -> new HashSet<>()).add(entity);
+            });
         }
     }
 }

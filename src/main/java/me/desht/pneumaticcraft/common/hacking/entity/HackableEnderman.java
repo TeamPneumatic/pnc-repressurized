@@ -45,7 +45,7 @@ public class HackableEnderman implements IHackableEntity {
 
     @Override
     public boolean afterHackTick(Entity entity) {
-        return true;
+        return entity.isAlive();
     }
 
     /**

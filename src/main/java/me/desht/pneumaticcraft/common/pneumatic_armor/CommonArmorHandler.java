@@ -486,11 +486,10 @@ public class CommonArmorHandler {
         if (hackedBlockPos != null) {
             IHackableBlock hackableBlock = HackableHandler.getHackableForBlock(hackedBlockPos.world, hackedBlockPos.pos, player);
             if (hackableBlock != null) {
-//                World world = GlobalPosUtils.getWorldForGlobalPos(hackedBlockPos);
                 IBlockReader world = hackedBlockPos.world;
                 if (world != null && ++hackTime >= hackableBlock.getHackTime(world, hackedBlockPos.pos, player)) {
                     hackableBlock.onHackComplete(player.world, hackedBlockPos.pos, player);
-                    HackTickHandler.instance().trackBlock(hackedBlockPos, hackableBlock);
+                    HackTickHandler.instance().trackBlock(player.world, hackedBlockPos.pos, hackableBlock);
                     NetworkHandler.sendToAllAround(new PacketHackingBlockFinish(hackedBlockPos), player.world);
                     setHackedBlockPos(null);
                     AdvancementTriggers.BLOCK_HACK.trigger((ServerPlayerEntity) player);  // safe to cast, this is server-side
