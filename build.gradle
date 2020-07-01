@@ -195,24 +195,23 @@ minecraft {
 dependencies {
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
     compileOnly fg.deobf("mcp.mobius.waila:Hwyla:${hwyla_version}:api")
-    runtime fg.deobf("mcp.mobius.waila:Hwyla:${hwyla_version}")
+    runtimeOnly fg.deobf("mcp.mobius.waila:Hwyla:${hwyla_version}")
     compileOnly fg.deobf ("mcjty.theoneprobe:TheOneProbe-1.15:${top_version}:api")
-    runtime fg.deobf ("mcjty.theoneprobe:TheOneProbe-1.15:${top_version}")
+    runtimeOnly fg.deobf ("mcjty.theoneprobe:TheOneProbe-1.15:${top_version}")
     compileOnly fg.deobf("mezz.jei:jei-1.15.2:${jei_version}:api")
-    runtime fg.deobf("mezz.jei:jei-1.15.2:${jei_version}")
+    runtimeOnly fg.deobf("mezz.jei:jei-1.15.2:${jei_version}")
     compileOnly fg.deobf("top.theillusivec4.curios:curios:${curios_version}:api")
-    runtime fg.deobf("top.theillusivec4.curios:curios:${curios_version}")
+    runtimeOnly fg.deobf("top.theillusivec4.curios:curios:${curios_version}")
     compileOnly fg.deobf("vazkii.botania:Botania:${botania_version}:api")
-    runtime fg.deobf("vazkii.botania:Botania:${botania_version}")
+    runtimeOnly fg.deobf("vazkii.botania:Botania:${botania_version}")
     compile fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}")
     compile fg.deobf("org.squiddev:cc-tweaked-1.15.2:${cc_tweaked_version}")
     compile fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:${immersive_engineering_version}")
     compileOnly fg.deobf("mekanism:MekanismAll:${mekanism_version}:api")
-//    runtime fg.deobf("mekanism:Mekanism:${mekanism_version}")
+    runtimeOnly fg.deobf("mekanism:Mekanism:${mekanism_version}")
 //    compileOnly "cofh:RedstoneFlux:1.12-${redstone_flux_version}:universal"
 //    compileOnly "cofh:CoFHCore:1.12.2-${cofhcore_version}:deobf"
 //    compileOnly "li.cil.oc:OpenComputers:MC1.12.2-${oc_version}:api"
-//    compileOnly "dan200.computercraft:ComputerCraft:${computercraft_version}"
 //    compileOnly "CraftTweaker2:CraftTweaker2-API:${crafttweaker_version}"
 //    compileOnly fg.deobf("com.blamejared.crafttweaker:CraftTweaker-1.14.4:${crafttweaker_version}")
 //    compileOnly "CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-${crafttweaker_version}"
