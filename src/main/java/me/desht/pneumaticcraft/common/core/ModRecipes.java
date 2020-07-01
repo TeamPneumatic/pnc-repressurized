@@ -14,7 +14,7 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public class ModRecipes {
-    public static final DeferredRegister<IRecipeSerializer<?>> RECIPES = new DeferredRegister<>(ForgeRegistries.RECIPE_SERIALIZERS, Names.MOD_ID);
+    public static final DeferredRegister<IRecipeSerializer<?>> RECIPES = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, Names.MOD_ID);
 
     public static final RegistryObject<IRecipeSerializer<AmadronRecipe>> AMADRON_OFFERS
             = RECIPES.register(PneumaticCraftRecipeTypes.AMADRON_OFFERS,

@@ -10,7 +10,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import java.util.function.Supplier;
 
 public class ModFluids {
-    public static final DeferredRegister<Fluid> FLUIDS = new DeferredRegister<>(ForgeRegistries.FLUIDS, Names.MOD_ID);
+    public static final DeferredRegister<Fluid> FLUIDS = DeferredRegister.create(ForgeRegistries.FLUIDS, Names.MOD_ID);
 
     public static final RegistryObject<Fluid> OIL = register("oil", FluidOil.Source::new);
     public static final RegistryObject<Fluid> OIL_FLOWING = register("oil_flowing", FluidOil.Flowing::new);

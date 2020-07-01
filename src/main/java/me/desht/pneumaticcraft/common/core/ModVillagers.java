@@ -15,8 +15,8 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 public class ModVillagers {
-    public static final DeferredRegister<PointOfInterestType> POI = new DeferredRegister<>(ForgeRegistries.POI_TYPES, Names.MOD_ID);
-    public static final DeferredRegister<VillagerProfession> PROFESSIONS = new DeferredRegister<>(ForgeRegistries.PROFESSIONS, Names.MOD_ID);
+    public static final DeferredRegister<PointOfInterestType> POI = DeferredRegister.create(ForgeRegistries.POI_TYPES, Names.MOD_ID);
+    public static final DeferredRegister<VillagerProfession> PROFESSIONS = DeferredRegister.create(ForgeRegistries.PROFESSIONS, Names.MOD_ID);
 
     public static final RegistryObject<PointOfInterestType> MECHANIC_POI = POI.register("mechanic",
             () -> new PointOfInterestType("mechanic", getAllStates(ModBlocks.CHARGING_STATION.get()), 1, 1));

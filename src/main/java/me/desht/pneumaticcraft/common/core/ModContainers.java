@@ -11,7 +11,7 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public class ModContainers {
-    public static final DeferredRegister<ContainerType<?>> CONTAINERS = new DeferredRegister<>(ForgeRegistries.CONTAINERS, Names.MOD_ID);
+    public static final DeferredRegister<ContainerType<?>> CONTAINERS = DeferredRegister.create(ForgeRegistries.CONTAINERS, Names.MOD_ID);
 
     public static final RegistryObject<ContainerType<ContainerAdvancedAirCompressor>> ADVANCED_AIR_COMPRESSOR
             = register("advanced_air_compressor", ContainerAdvancedAirCompressor::new);

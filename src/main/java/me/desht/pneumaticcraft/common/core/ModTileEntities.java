@@ -12,7 +12,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import java.util.function.Supplier;
 
 public class ModTileEntities {
-    public static final DeferredRegister<TileEntityType<?>> TILE_ENTITIES = new DeferredRegister<>(ForgeRegistries.TILE_ENTITIES, Names.MOD_ID);
+    public static final DeferredRegister<TileEntityType<?>> TILE_ENTITIES = DeferredRegister.create(ForgeRegistries.TILE_ENTITIES, Names.MOD_ID);
 
     public static final RegistryObject<TileEntityType<TileEntityPressureTube>> PRESSURE_TUBE
             = register("pressure_tube", () -> new TileEntityType<>(TileEntityPressureTube::new, ImmutableSet.of(ModBlocks.PRESSURE_TUBE.get()), null));

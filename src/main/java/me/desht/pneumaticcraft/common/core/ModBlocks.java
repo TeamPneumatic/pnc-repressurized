@@ -23,7 +23,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class ModBlocks {
-    public static final DeferredRegister<Block> BLOCKS = new DeferredRegister<>(ForgeRegistries.BLOCKS, Names.MOD_ID);
+    public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, Names.MOD_ID);
     public static final DeferredRegister<Item> ITEMS = ModItems.ITEMS;
 
     private static <T extends Block> RegistryObject<T> register(String name, Supplier<? extends T> sup) {

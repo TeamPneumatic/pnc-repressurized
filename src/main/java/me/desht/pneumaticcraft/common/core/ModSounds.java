@@ -9,7 +9,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
 public class ModSounds {
-    public static final DeferredRegister<SoundEvent> SOUNDS = new DeferredRegister<>(ForgeRegistries.SOUND_EVENTS, Names.MOD_ID);
+    public static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, Names.MOD_ID);
 
     public static final RegistryObject<SoundEvent> AIR_CANNON = register("air_cannon");
     public static final RegistryObject<SoundEvent> CREAK = register("creak");

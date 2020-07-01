@@ -24,7 +24,7 @@ import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
 public class ModItems {
-    public static final DeferredRegister<Item> ITEMS = new DeferredRegister<>(ForgeRegistries.ITEMS, Names.MOD_ID);
+    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Names.MOD_ID);
 
     public static final RegistryObject<Item> COMPRESSED_IRON_INGOT = register("ingot_iron_compressed");
     public static final RegistryObject<Item> PRESSURE_GAUGE = register("pressure_gauge");
