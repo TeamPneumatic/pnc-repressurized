@@ -41,6 +41,11 @@ public class CommonConfig {
     public static class Armor {
         ForgeConfigSpec.IntValue jetBootsAirUsage;
         ForgeConfigSpec.IntValue armorStartupTime;
+        ForgeConfigSpec.DoubleValue flippersSpeedBoostGround;
+        ForgeConfigSpec.DoubleValue flippersSpeedBoostFloating;
+        ForgeConfigSpec.IntValue repairAirUsage;
+        ForgeConfigSpec.IntValue magnetAirUsage;
+        ForgeConfigSpec.IntValue scubaMultiplier;
     }
     public static class Integration {
         ForgeConfigSpec.DoubleValue mekThermalEfficiencyFactor;
@@ -167,7 +172,7 @@ public class CommonConfig {
                 .translation("pneumaticcraft.config.common.general.use_up_dyes_when_coloring")
                 .define("use_up_dyes_when_coloring", false);
         general.dronesRenderHeldItem = builder
-                .comment("Drones render their held item (the item in slot 0 of their inventory) ?")
+                .comment("Drones render their held item (the item in slot 0 of their inventory) ?  Note: this is in common config since if enabled, server needs to sync the item data to the client.")
                 .translation("pneumaticcraft.config.client.general.drones_render_held_item")
                 .define("drones_render_held_item", true);
         builder.pop();
@@ -256,6 +261,26 @@ public class CommonConfig {
                 .comment("Base Pneumatic Armor startup time in ticks (before Speed Upgrades)")
                 .translation("pneumaticcraft.config.common.armor.armor_startup_time")
                 .defineInRange("armor_startup_time", 200, 20, Integer.MAX_VALUE);
+        armor.flippersSpeedBoostGround = builder
+                .comment("Flippers Upgrade speed boost when in water and feet on ground")
+                .translation("pneumaticcraft.config.common.armor.flippers_speed_boost_ground")
+                .defineInRange("flippers_speed_boost_ground", 0.03, 0, 1);
+        armor.flippersSpeedBoostFloating = builder
+                .comment("Flippers Upgrade speed boost when floating in water")
+                .translation("pneumaticcraft.config.common.armor.flippers_speed_boost_floating")
+                .defineInRange("flippers_speed_boost_floating", 0.045, 0, 1);
+        armor.repairAirUsage = builder
+                .comment("Air usage for armor repair, in mL per Item Life Upgrade per point of damage repaired")
+                .translation("pneumaticcraft.config.common.armor.repair_air_usage")
+                .defineInRange("repair_air_usage", PneumaticValues.PNEUMATIC_ARMOR_REPAIR_USAGE, 0, Integer.MAX_VALUE);
+        armor.magnetAirUsage = builder
+                .comment("Air usage for Magnet Upgrade, in mL per item or XP orb attracted")
+                .translation("pneumaticcraft.config.common.armor.magnet_air_usage")
+                .defineInRange("magnet_air_usage", PneumaticValues.MAGNET_AIR_USAGE, 0, Integer.MAX_VALUE);
+        armor.scubaMultiplier = builder
+                .comment("Air used per point of 'player air' restored by the Scuba Upgrade")
+                .translation("pneumaticcraft.config.common.armor.scuba_multiplier")
+                .defineInRange("scuba_multiplier", PneumaticValues.PNEUMATIC_HELMET_SCUBA_MULTIPLIER, 1, Integer.MAX_VALUE);
         builder.pop();
 
         builder.push("Advanced");
@@ -413,21 +438,9 @@ public class CommonConfig {
                 .translation("pneumaticcraft.config.common.integration.mek_thermal_resistance_factor")
                 .defineInRange("mek_thermal_resistance_factor", 5.0, 1.0, Double.MAX_VALUE);
         integration.mekThermalEfficiencyFactor = builder
-                .comment("Mekanism <-> PneumaticCraft heat conversion efficiency. Note that Mekanism and PNC use a similar heat system, but scale things quite differently (Mekanism heaters produces a LOT of heat by PneumaticCraft standards), so conversion efficiency tuning is important for inter-mod balance.")
+                .comment("Mekanism <-> PneumaticCraft heat conversion efficiency. Set to 0 to disable Mekanism heat integration entirely. Note that Mekanism and PNC use a similar heat system, but scale things quite differently (Mekanism heaters produces a LOT of heat by PneumaticCraft standards), so conversion efficiency tuning is important for inter-mod balance.")
                 .translation("pneumaticcraft.config.common.integration.mek_thermal_efficiency_factor")
                 .defineInRange("mek_thermal_conversion_efficiency", 0.01, 0.0, 2.0);
-//        integration.tanAirConAirUsageMultiplier = builder
-//                .comment("ToughAsNails: air usage multiplier for the Pneumatic Chestplate Air Conditioning Upgrade.")
-//                .translation("pneumaticcraft.config.common.integration.tan_air_con_air_usage_multiplier")
-//                .defineInRange("tan_air_con_air_usage_multiplier", 1.5, 0.0, Double.MAX_VALUE);
-//        integration.tanHeatDivider = builder
-//                .comment("Tough As Nails temperature divider; smaller values make PneumaticCraft heat sources have a more pronounced effect on your temperature. Set to 0 to ignore PneumaticCraft heat sources.")
-//                .translation("pneumaticcraft.config.common.integration.tan_heat_divider")
-//                .defineInRange("tan_heat_divider", 10.0, 1.0f, Double.MAX_VALUE);
-//        integration.tanRefreshInterval = builder
-//                .comment("Interval in ticks with which to refresh heat information from PneumaticCraft heat sources to Tough As Nails. A larger interval is kinder to the server but will provide less precise temperature data to TAN.")
-//                .translation("pneumaticcraft.config.common.integration.tan_refresh_interval")
-//                .defineInRange("tan_refresh_interval", 40, 1, 200);
         builder.pop();
 
         builder.push("Recipes");
@@ -447,7 +460,7 @@ public class CommonConfig {
                 .translation("pneumaticcraft.config.common.amadron.num_periodic_offers")
                 .defineInRange("numPeriodicOffers", 20,0, Integer.MAX_VALUE);
         amadron.reshuffleInterval = builder
-                .comment("Time in ticks between each periodic offer reshuffle (24000 ticks = one day)")
+                .comment("Time in ticks between each periodic offer reshuffle (24000 ticks = one Minecraft day)")
                 .translation("pneumaticcraft.config.common.amadron.reshuffle_interval")
                 .defineInRange("reshuffleInterval", 24000,1000, Integer.MAX_VALUE);
         amadron.maxTradesPerPlayer = builder

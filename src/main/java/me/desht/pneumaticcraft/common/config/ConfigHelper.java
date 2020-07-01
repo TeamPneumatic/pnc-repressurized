@@ -85,6 +85,11 @@ public class ConfigHelper {
 
         PNCConfig.Common.Armor.jetBootsAirUsage = common.armor.jetBootsAirUsage.get();
         PNCConfig.Common.Armor.armorStartupTime = common.armor.armorStartupTime.get();
+        PNCConfig.Common.Armor.flippersSpeedBoostGround = common.armor.flippersSpeedBoostGround.get();
+        PNCConfig.Common.Armor.flippersSpeedBoostFloating = common.armor.flippersSpeedBoostFloating.get();
+        PNCConfig.Common.Armor.repairAirUsage = common.armor.repairAirUsage.get();
+        PNCConfig.Common.Armor.magnetAirUsage = common.armor.magnetAirUsage.get();
+        PNCConfig.Common.Armor.scubaMultiplier = common.armor.scubaMultiplier.get();
 
         PNCConfig.Common.Integration.ieExternalHeaterHeatPerRF = common.integration.ieExternalHeaterHeatPerRF.get();
         PNCConfig.Common.Integration.ieExternalHeaterRFperTick = common.integration.ieExternalHeaterRFperTick.get();

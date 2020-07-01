@@ -78,6 +78,11 @@ public class PNCConfig {
         public static class Armor {
             public static int jetBootsAirUsage;
             public static int armorStartupTime;
+            public static double flippersSpeedBoostGround;
+            public static double flippersSpeedBoostFloating;
+            public static int repairAirUsage;
+            public static int magnetAirUsage;
+            public static int scubaMultiplier;
         }
 
         public static class Integration {

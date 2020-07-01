@@ -12,7 +12,7 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.*;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
-import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.PNCConfig.Common.Armor;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.event.HackTickHandler;
 import me.desht.pneumaticcraft.common.hacking.HackableHandler;
@@ -64,7 +64,7 @@ public class CommonArmorHandler {
 
     private static final Vec3d FORWARD = new Vec3d(0, 0, 1);
 
-    private final HashMap<UUID, CommonArmorHandler> playerHudHandlers = new HashMap<>();
+    private final HashMap<UUID, CommonArmorHandler> playerHandlers = new HashMap<>();
     private PlayerEntity player;
     private int magnetRadius;
     private int magnetRadiusSq;
@@ -121,7 +121,7 @@ public class CommonArmorHandler {
     }
 
     public static CommonArmorHandler getHandlerForPlayer(PlayerEntity player) {
-        return getManagerInstance(player).playerHudHandlers.computeIfAbsent(player.getUniqueID(), v -> new CommonArmorHandler(player));
+        return getManagerInstance(player).playerHandlers.computeIfAbsent(player.getUniqueID(), v -> new CommonArmorHandler(player));
     }
 
     public static CommonArmorHandler getHandlerForPlayer() {
@@ -140,14 +140,14 @@ public class CommonArmorHandler {
         @SubscribeEvent
         public static void onPlayerLeave(PlayerEvent.PlayerLoggedOutEvent event) {
             // called server side when player logs off
-            clearHUDHandlerForPlayer(event.getPlayer());
+            clearHandlerForPlayer(event.getPlayer());
         }
 
         @SubscribeEvent
         public static void onPlayerJoinWorld(EntityJoinWorldEvent event) {
             if (event.getEntity() instanceof PlayerEntity) {
                 PlayerEntity player = (PlayerEntity) event.getEntity();
-                CommonArmorHandler handler = getManagerInstance(player).playerHudHandlers.get(player.getUniqueID());
+                CommonArmorHandler handler = getManagerInstance(player).playerHandlers.get(player.getUniqueID());
                 if (handler != null) handler.player = player;
             }
         }
@@ -160,14 +160,14 @@ public class CommonArmorHandler {
             // called client side when client disconnects
             PlayerEntity player = ClientUtils.getClientPlayer();
             if (player != null) {
-                clearHUDHandlerForPlayer(player);
+                clearHandlerForPlayer(player);
             }
         }
     }
 
-    private static void clearHUDHandlerForPlayer(PlayerEntity player) {
+    private static void clearHandlerForPlayer(PlayerEntity player) {
         CommonArmorHandler h = getManagerInstance(player);
-        h.playerHudHandlers.computeIfPresent(player.getUniqueID(), (name, val) -> { val.invalidate(); return null; } );
+        h.playerHandlers.computeIfPresent(player.getUniqueID(), (name, val) -> { val.invalidate(); return null; } );
     }
 
     private void tick() {
@@ -293,10 +293,10 @@ public class CommonArmorHandler {
 
             int vol = ApplicableUpgradesDB.getInstance().getUpgradedVolume(((ItemPneumaticArmor) helmetStack.getItem()).getBaseVolume(), getUpgradeCount(EquipmentSlotType.HEAD, EnumUpgrade.VOLUME));
             float airInHelmet = getArmorPressure(EquipmentSlotType.HEAD) * vol;
-            int playerAir = (int) Math.min(300 - player.getAir(), airInHelmet / PneumaticValues.PNEUMATIC_HELMET_SCUBA_MULTIPLIER);
+            int playerAir = (int) Math.min(300 - player.getAir(), airInHelmet / Armor.scubaMultiplier);
             player.setAir(player.getAir() + playerAir);
 
-            int airUsed = playerAir * PneumaticValues.PNEUMATIC_HELMET_SCUBA_MULTIPLIER;
+            int airUsed = playerAir * Armor.scubaMultiplier;
             addAir(EquipmentSlotType.HEAD, -airUsed);
             NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.SCUBA.get(), SoundCategory.PLAYERS, player.getPosition(), 1.5f, 1.0f, false), (ServerPlayerEntity) player);
             Vec3d eyes = player.getEyePosition(1.0f).add(player.getLookVec().scale(0.5));
@@ -344,7 +344,7 @@ public class CommonArmorHandler {
         if (player.world.isRemote && player.isInWater() && player.moveForward > 0) {
             // doing this client-side only appears to be effective
             if (isArmorReady(EquipmentSlotType.FEET) && getUpgradeCount(EquipmentSlotType.FEET, EnumUpgrade.FLIPPERS) > 0) {
-                player.moveRelative(player.onGround ? 0.03f : 0.05f, FORWARD);
+                player.moveRelative((float) (player.onGround ? Armor.flippersSpeedBoostGround : Armor.flippersSpeedBoostFloating), FORWARD);
             }
         }
     }
@@ -365,7 +365,7 @@ public class CommonArmorHandler {
                 if (jetBootsBuilderMode && jetbootsCount >= JetBootsUpgradeHandler.BUILDER_MODE_LEVEL) {
                     // builder mode - rise vertically (or hover if sneaking and firing)
                     setYMotion(player, player.isSneaking() ? 0 : 0.15 + 0.15 * (jetbootsCount - 3));
-                    jetbootsAirUsage = (int) (PNCConfig.Common.Armor.jetBootsAirUsage * jetbootsCount / 2.5F);
+                    jetbootsAirUsage = (int) (Armor.jetBootsAirUsage * jetbootsCount / 2.5F);
                 } else {
                     // jetboots firing - move in direction of looking
                     Vec3d lookVec = player.getLookVec().scale(0.3 * jetbootsCount);
@@ -374,7 +374,7 @@ public class CommonArmorHandler {
                     lookVec = lookVec.scale(flightAccel * jetBootsPower);
                     if (jetBootsActiveTicks < 10) lookVec = lookVec.scale(jetBootsActiveTicks * 0.1);
                     player.setMotion(lookVec.x, player.onGround ? 0 : lookVec.y, lookVec.z);
-                    jetbootsAirUsage = (int) (PNCConfig.Common.Armor.jetBootsAirUsage * jetbootsCount * jetBootsPower);
+                    jetbootsAirUsage = (int) (Armor.jetBootsAirUsage * jetbootsCount * jetBootsPower);
                 }
                 if (player.isInWater()) jetbootsAirUsage *= 4;
                 jetBootsActiveTicks++;
@@ -382,7 +382,7 @@ public class CommonArmorHandler {
                 // jetboots not firing, but enabled - slowly descend (or hover if enough upgrades)
                 setYMotion(player, player.isSneaking() ? -0.45 : -0.1 + 0.02 * jetbootsCount);
                 player.fallDistance = 0;
-                jetbootsAirUsage = (int) (PNCConfig.Common.Armor.jetBootsAirUsage * (player.isSneaking() ? 0.25F : 0.5F));
+                jetbootsAirUsage = (int) (Armor.jetBootsAirUsage * (player.isSneaking() ? 0.25F : 0.5F));
                 flightAccel = 1.0F;
             } else {
                 flightAccel = 1.0F;
@@ -449,7 +449,7 @@ public class CommonArmorHandler {
     private void handleItemRepair(EquipmentSlotType slot) {
         int upgrades = getUpgradeCount(slot, EnumUpgrade.ITEM_LIFE, PneumaticValues.ARMOR_REPAIR_MAX_UPGRADES);
         int interval = 120 - (20 * upgrades);
-        int airUsage = PneumaticValues.PNEUMATIC_ARMOR_REPAIR_USAGE * upgrades;
+        int airUsage = Armor.repairAirUsage * upgrades;
 
         ItemStack armorStack = player.getItemStackFromSlot(slot);
         if (armorStack.getDamage() > 0
@@ -479,7 +479,7 @@ public class CommonArmorHandler {
                 if (getArmorPressure(EquipmentSlotType.CHEST) < 0.1F) break;
                 item.setPosition(player.getPosX(), player.getPosY(), player.getPosZ());
                 if (item instanceof ItemEntity) ((ItemEntity) item).setPickupDelay(0);
-                addAir(EquipmentSlotType.CHEST, -PneumaticValues.MAGNET_AIR_USAGE);
+                addAir(EquipmentSlotType.CHEST, -Armor.magnetAirUsage);
             }
         }
     }
@@ -544,7 +544,7 @@ public class CommonArmorHandler {
                 upgradeMatrix[slot.getIndex()][item.getUpgradeType().ordinal()] += stack.getCount() * item.getTier();
             }
         }
-        startupTimes[slot.getIndex()] = (int) (PNCConfig.Common.Armor.armorStartupTime * Math.pow(0.8, getSpeedFromUpgrades(slot) - 1));
+        startupTimes[slot.getIndex()] = (int) (Armor.armorStartupTime * Math.pow(0.8, getSpeedFromUpgrades(slot) - 1));
 
         // some slot-specific setup
         switch (slot) {
