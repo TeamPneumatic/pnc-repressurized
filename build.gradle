@@ -8,6 +8,9 @@ buildscript {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
     }
 }
+plugins {
+    id "com.wynprice.cursemaven" version "2.1.5"
+}
 apply plugin: 'net.minecraftforge.gradle'
 
 repositories {
@@ -49,7 +52,7 @@ repositories {
         url = "http://maven.tterrag.com/"
     }
     maven {
-        name = 'BlameJared - Crafttweaker/Patchouli/Botania'
+        name = 'BlameJared - Crafttweaker/Patchouli/Botania/Immersive Engineering'
         url = 'http://maven.blamejared.com/'
     }
     maven {
@@ -207,8 +210,7 @@ dependencies {
     compile fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}")
     compile fg.deobf("org.squiddev:cc-tweaked-1.15.2:${cc_tweaked_version}")
     compile fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:${immersive_engineering_version}")
-    compileOnly fg.deobf("mekanism:MekanismAll:${mekanism_version}:api")
-    runtimeOnly fg.deobf("mekanism:Mekanism:${mekanism_version}")
+    compile fg.deobf("curse.maven:mekanism:${mekanism_curse_id}")
 //    compileOnly "cofh:RedstoneFlux:1.12-${redstone_flux_version}:universal"
 //    compileOnly "cofh:CoFHCore:1.12.2-${cofhcore_version}:deobf"
 //    compileOnly "li.cil.oc:OpenComputers:MC1.12.2-${oc_version}:api"
