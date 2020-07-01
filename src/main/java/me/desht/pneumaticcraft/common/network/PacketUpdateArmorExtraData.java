@@ -35,6 +35,7 @@ public class PacketUpdateArmorExtraData {
         addKey(EquipmentSlotType.LEGS, ItemPneumaticArmor.NBT_SPEED_BOOST, NBT.TAG_INT);
         addKey(EquipmentSlotType.LEGS, ItemPneumaticArmor.NBT_JUMP_BOOST, NBT.TAG_INT);
         addKey(EquipmentSlotType.FEET, ItemPneumaticArmor.NBT_BUILDER_MODE, NBT.TAG_BYTE);
+        addKey(EquipmentSlotType.FEET, ItemPneumaticArmor.NBT_JET_BOOTS_POWER, NBT.TAG_INT);
     }
 
     private EquipmentSlotType slot;
@@ -70,7 +71,7 @@ public class PacketUpdateArmorExtraData {
                     INBT dataTag = data.get(key);
                     if (isKeyOKForSlot(key, slot, dataTag.getId())) {
                         stack.getTag().put(key, dataTag);
-                        handler.onDataFieldUpdated(slot, key, dataTag);
+                        handler.onDataFieldUpdated(key, dataTag);
                     }
                 }
             }

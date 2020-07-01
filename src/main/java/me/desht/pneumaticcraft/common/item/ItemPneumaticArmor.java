@@ -41,6 +41,7 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -86,6 +87,7 @@ public class ItemPneumaticArmor extends ArmorItem
     public static final String NBT_JUMP_BOOST = "jumpBoost";
     public static final String NBT_SPEED_BOOST = "speedBoost";
     public static final String NBT_BUILDER_MODE = "JetBootsBuilderMode";
+    public static final String NBT_JET_BOOTS_POWER = "JetBootsPower";
 
     public ItemPneumaticArmor(EquipmentSlotType equipmentSlotIn) {
         super(COMPRESSED_IRON_MATERIAL, equipmentSlotIn, ModItems.defaultProps());
@@ -195,6 +197,14 @@ public class ItemPneumaticArmor extends ArmorItem
     public static int getIntData(ItemStack stack, String key, int def) {
         if (stack.getItem() instanceof ItemPneumaticArmor && stack.hasTag() && stack.getTag().contains(key, Constants.NBT.TAG_INT)) {
             return stack.getTag().getInt(key);
+        } else {
+            return def;
+        }
+    }
+
+    public static int getIntData(ItemStack stack, String key, int def, int min, int max) {
+        if (stack.getItem() instanceof ItemPneumaticArmor && stack.hasTag() && stack.getTag().contains(key, Constants.NBT.TAG_INT)) {
+            return MathHelper.clamp(stack.getTag().getInt(key), min, max);
         } else {
             return def;
         }

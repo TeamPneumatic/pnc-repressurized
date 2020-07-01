@@ -112,7 +112,6 @@ public class EventHandlerPneumaticArmor {
                 return;  // thrusting into the ground hurts at hard difficulty!
             }
 
-//            ItemPneumaticArmor boots = (ItemPneumaticArmor) stack.getItem();
             float airNeeded = event.getDistance() * PneumaticValues.PNEUMATIC_ARMOR_FALL_USAGE;
             int vol = stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).map(IAirHandler::getVolume).orElse(0);
             float airAvailable = vol * handler.getArmorPressure(EquipmentSlotType.FEET);
@@ -201,7 +200,7 @@ public class EventHandlerPneumaticArmor {
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
             if (!handler.isJetBootsEnabled() && handler.isArmorReady(EquipmentSlotType.LEGS)
                     && handler.isJumpBoostEnabled() && handler.getArmorPressure(EquipmentSlotType.LEGS) > 0.01F) {
-                float power = ItemPneumaticArmor.getIntData(stack, ItemPneumaticArmor.NBT_JUMP_BOOST, 100) / 100.0f;
+                float power = ItemPneumaticArmor.getIntData(stack, ItemPneumaticArmor.NBT_JUMP_BOOST, 100, 0, 100) / 100.0f;
                 int rangeUpgrades = handler.getUpgradeCount(EquipmentSlotType.LEGS, EnumUpgrade.JUMPING,
                         player.isSneaking() ? 1 : PneumaticValues.PNEUMATIC_LEGS_MAX_JUMP);
                 float actualBoost = Math.max(1.0f, rangeUpgrades * power);

@@ -109,7 +109,7 @@ public class JetBootsUpgradeHandler extends IUpgradeRenderHandler.SimpleToggleab
             fr.drawStringWithShadow(r3, xr - widestR, y + fr.FONT_HEIGHT * 2, 0x404040);
 
             if (drawShovel) {
-                GuiUtils.drawItemStack(new ItemStack(Items.GOLDEN_SHOVEL), xr - 30, jbStat.getBaseY());
+                GuiUtils.drawItemStack(new ItemStack(Items.DIAMOND_PICKAXE), xr - 30, jbStat.getBaseY());
             }
         }
     }

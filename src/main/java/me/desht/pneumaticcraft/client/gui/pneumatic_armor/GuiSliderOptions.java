@@ -32,20 +32,26 @@ public abstract class GuiSliderOptions<T extends IUpgradeRenderHandler> extends 
         return Pair.of(0, 100);
     }
 
+    /**
+     * The NBT tag on the armor item under which this slider value should be saved.  The item used is determined
+     * by {@link #getSlot()}.
+     */
     protected abstract String getTagName();
-
-    protected abstract EquipmentSlotType getSlot();
 
     protected abstract String getPrefix();
 
     protected abstract String getSuffix();
 
+    EquipmentSlotType getSlot() {
+        return getUpgradeHandler().getEquipmentSlot();
+    }
+
     public void populateGui(IGuiScreen gui) {
         Pair<Integer,Integer> range = getRange();
         int initVal = range.getRight();
         if (Minecraft.getInstance().player != null) {
-            ItemStack leggings = Minecraft.getInstance().player.getItemStackFromSlot(getSlot());
-            initVal = ItemPneumaticArmor.getIntData(leggings, getTagName(), range.getRight());
+            ItemStack stack = Minecraft.getInstance().player.getItemStackFromSlot(getSlot());
+            initVal = ItemPneumaticArmor.getIntData(stack, getTagName(), range.getRight());
         }
         PointXY pos = getSliderPos();
         slider = new Slider(pos.x, pos.y, 150, 20,  getPrefix(), getSuffix(),
@@ -65,7 +71,7 @@ public abstract class GuiSliderOptions<T extends IUpgradeRenderHandler> extends 
             tag.putInt(getTagName(), pendingVal);
             NetworkHandler.sendToServer(new PacketUpdateArmorExtraData(getSlot(), tag));
             // also update the clientside handler
-            CommonArmorHandler.getHandlerForPlayer().onDataFieldUpdated(getSlot(), getTagName(), tag.get(getTagName()));
+            CommonArmorHandler.getHandlerForPlayer().onDataFieldUpdated(getTagName(), tag.get(getTagName()));
             pendingVal = null;
         }
     }

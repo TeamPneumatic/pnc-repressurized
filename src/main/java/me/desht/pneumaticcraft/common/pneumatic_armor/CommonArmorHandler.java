@@ -90,7 +90,7 @@ public class CommonArmorHandler {
     private boolean entityTrackerEnabled;
     private boolean nightVisionEnabled;
     private boolean scubaEnabled;
-    private boolean airConEnabled;
+//    private boolean airConEnabled;
     private boolean jetBootsEnabled;  // are jet boots switched on?
     private boolean jetBootsActive;  // are jet boots actually firing (player rising) ?
     private float flightAccel = 1.0F;  // increases while diving, decreases while climbing
@@ -99,6 +99,7 @@ public class CommonArmorHandler {
     private boolean wasNightVisionEnabled;
     private float speedBoostMult;
     private boolean jetBootsBuilderMode;
+    private float jetBootsPower;
 
     private CommonArmorHandler(PlayerEntity player) {
         this.player = player;
@@ -370,10 +371,10 @@ public class CommonArmorHandler {
                     Vec3d lookVec = player.getLookVec().scale(0.3 * jetbootsCount);
                     float div = lookVec.y > 0 ? -64f : -16f;
                     flightAccel = MathHelper.clamp(flightAccel + (float)lookVec.y / div, 0.8F, 4.2F);
-                    lookVec = lookVec.scale(flightAccel);
+                    lookVec = lookVec.scale(flightAccel * jetBootsPower);
                     if (jetBootsActiveTicks < 10) lookVec = lookVec.scale(jetBootsActiveTicks * 0.1);
                     player.setMotion(lookVec.x, player.onGround ? 0 : lookVec.y, lookVec.z);
-                    jetbootsAirUsage = PNCConfig.Common.Armor.jetBootsAirUsage * jetbootsCount;
+                    jetbootsAirUsage = (int) (PNCConfig.Common.Armor.jetBootsAirUsage * jetbootsCount * jetBootsPower);
                 }
                 if (player.isInWater()) jetbootsAirUsage *= 4;
                 jetBootsActiveTicks++;
@@ -553,10 +554,11 @@ public class CommonArmorHandler {
                 magnetRadiusSq = magnetRadius * magnetRadius;
                 break;
             case LEGS:
-                speedBoostMult = ItemPneumaticArmor.getIntData(armorStack, ItemPneumaticArmor.NBT_SPEED_BOOST, 100) / 100f;
+                speedBoostMult = ItemPneumaticArmor.getIntData(armorStack, ItemPneumaticArmor.NBT_SPEED_BOOST, 100, 0, 100) / 100f;
                 break;
             case FEET:
                 jetBootsBuilderMode = ItemPneumaticArmor.getBooleanData(armorStack, ItemPneumaticArmor.NBT_BUILDER_MODE, false);
+                jetBootsPower = ItemPneumaticArmor.getIntData(armorStack, ItemPneumaticArmor.NBT_JET_BOOTS_POWER, 100, 0, 100) / 100f;
                 JetBootsStateTracker.getTracker(player).setJetBootsState(player, isJetBootsEnabled(), isJetBootsActive(), jetBootsBuilderMode);
                 break;
         }
@@ -603,9 +605,10 @@ public class CommonArmorHandler {
             nightVisionEnabled = state;
         } else if (handler instanceof ScubaUpgradeHandler) {
             scubaEnabled = state;
-        } else if (handler instanceof AirConUpgradeHandler) {
-            airConEnabled = state;
         }
+        /*else if (handler instanceof AirConUpgradeHandler) {
+            airConEnabled = state;
+        }*/
     }
 
     public int getTicksSinceEquipped(EquipmentSlotType slot) {
@@ -662,9 +665,9 @@ public class CommonArmorHandler {
         return jumpBoostEnabled;
     }
 
-    public boolean isAirConEnabled() {
-        return airConEnabled;
-    }
+//    public boolean isAirConEnabled() {
+//        return airConEnabled;
+//    }
 
     public float getArmorPressure(EquipmentSlotType slot) {
         return airHandlers.get(slot.getIndex()).map(IAirHandler::getPressure).orElse(0F);
@@ -714,18 +717,20 @@ public class CommonArmorHandler {
      * Called both client- and server-side when a custom NBT field in an armor item has been updated.  Used to
      * cache data (e.g. legs speed boost %) for performance reasons.
      *
-     * @param slot the armor slot
      * @param key the data key
-     * @param dataTag the data item, to be interpreted depending on the key
+     * @param dataTag the NBT data, to be interpreted depending on the key
      */
-    public void onDataFieldUpdated(EquipmentSlotType slot, String key, INBT dataTag) {
+    public void onDataFieldUpdated(String key, INBT dataTag) {
         switch (key) {
             case ItemPneumaticArmor.NBT_SPEED_BOOST:
-                speedBoostMult = MathHelper.clamp(((IntNBT) dataTag).getInt() / 100f, 0.0f, 1.0f);
+                speedBoostMult = MathHelper.clamp(((IntNBT) dataTag).getInt() / 100f, 0f, 1f);
                 break;
             case ItemPneumaticArmor.NBT_BUILDER_MODE:
                 jetBootsBuilderMode = ((ByteNBT) dataTag).getByte() == 1;
                 JetBootsStateTracker.getTracker(player).getJetBootsState(player).setBuilderMode(jetBootsBuilderMode);
+                break;
+            case ItemPneumaticArmor.NBT_JET_BOOTS_POWER:
+                jetBootsPower = MathHelper.clamp(((IntNBT) dataTag).getInt() / 100f, 0f, 1f);
                 break;
         }
     }
