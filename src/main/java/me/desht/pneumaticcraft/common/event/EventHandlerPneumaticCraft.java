@@ -51,6 +51,8 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
+import net.minecraft.world.storage.loot.LootPool;
+import net.minecraft.world.storage.loot.TableLootEntry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.LootTableLoadEvent;
@@ -131,7 +133,7 @@ public class EventHandlerPneumaticCraft {
             MinecraftForge.EVENT_BUS.post(new DroneConstructingEvent((IDroneBase) event.getEntity()));
         }
     }
-    
+
     @SubscribeEvent
     public void onEntityJoinWorld(EntityJoinWorldEvent event) {
         if (!event.getWorld().isRemote) {
@@ -185,8 +187,8 @@ public class EventHandlerPneumaticCraft {
                     if (blockingStations > 0) {
                         event.setCanceled(true);
                         event.getPlayer().sendStatusMessage(new TranslationTextComponent(
-                                        tryingToPlaceSecurityStation ? "pneumaticcraft.message.securityStation.stationPlacementPrevented" : "pneumaticcraft.message.securityStation.accessPrevented",
-                                        blockingStations), false);
+                                tryingToPlaceSecurityStation ? "pneumaticcraft.message.securityStation.stationPlacementPrevented" : "pneumaticcraft.message.securityStation.accessPrevented",
+                                blockingStations), false);
                     }
                 }
             }
@@ -265,19 +267,23 @@ public class EventHandlerPneumaticCraft {
                     case "desert_pyramid":
                     case "jungle_temple":
                     case "simple_dungeon":
-                    case "spawn_bonus_chest":
                     case "stronghold_corridor":
                     case "village_blacksmith":
-                        // todo 1.14 loot tables are in datapack
-//                        ILootGenerator entry = new TableLootEntry(RL("inject/simple_dungeon_loot"), 1, 0,  new ILootCondition[0], "pneumaticcraft_inject_entry");
-//                        LootPool pool = new LootPool(new LootEntry[0], new ILootCondition[0], new RandomValueRange(1), new RandomValueRange(0, 1), "pneumaticcraft_inject_pool");
-//                        event.getTable().addPool(pool);
+                        event.getTable().addPool(buildLootPool("simple_dungeon_loot"));
                         break;
                     default:
                         break;
                 }
             }
         }
+    }
+
+    private LootPool buildLootPool(String name) {
+        return LootPool.builder()
+                .addEntry(TableLootEntry.builder(RL("inject/" + name)).weight(1))
+                .bonusRolls(0, 1)
+                .name("pneumaticcraft_inject")
+                .build();
     }
 
     @SubscribeEvent
