@@ -352,7 +352,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
         // (should only be an issue for very low scaled X resolution)
         int availableWidth;
         if (gui instanceof ContainerScreen) {
-            ContainerScreen gc = (ContainerScreen) gui;
+            ContainerScreen<?> gc = (ContainerScreen<?>) gui;
             availableWidth = leftSided ? gc.getGuiLeft() : gc.width - (gc.getGuiLeft() + gc.getXSize());
         } else {
             availableWidth = Minecraft.getInstance().getMainWindow().getScaledWidth();
@@ -553,7 +553,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
         isClicked = !isClicked;
         if (isClicked && gui instanceof GuiPneumaticContainerBase) {
             // close any open stats on the same side
-            List<IGuiAnimatedStat> widgets = ((GuiPneumaticContainerBase) gui).getStatWidgets();
+            List<IGuiAnimatedStat> widgets = ((GuiPneumaticContainerBase<?,?>) gui).getStatWidgets();
             widgets.stream()
                     .filter(stat -> this != stat && stat.isLeftSided() == isLeftSided()) // when the stat is on the same side, close it.
                     .forEach(IGuiAnimatedStat::closeWindow);
