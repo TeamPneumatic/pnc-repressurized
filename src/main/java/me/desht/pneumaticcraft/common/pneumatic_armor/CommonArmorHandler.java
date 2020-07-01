@@ -368,7 +368,8 @@ public class CommonArmorHandler {
                 } else {
                     // jetboots firing - move in direction of looking
                     Vec3d lookVec = player.getLookVec().scale(0.3 * jetbootsCount);
-                    flightAccel = MathHelper.clamp(flightAccel + (float)lookVec.y / -16.0F, 0.8F, 4.2F);
+                    float div = lookVec.y > 0 ? -64f : -16f;
+                    flightAccel = MathHelper.clamp(flightAccel + (float)lookVec.y / div, 0.8F, 4.2F);
                     lookVec = lookVec.scale(flightAccel);
                     if (jetBootsActiveTicks < 10) lookVec = lookVec.scale(jetBootsActiveTicks * 0.1);
                     player.setMotion(lookVec.x, player.onGround ? 0 : lookVec.y, lookVec.z);
