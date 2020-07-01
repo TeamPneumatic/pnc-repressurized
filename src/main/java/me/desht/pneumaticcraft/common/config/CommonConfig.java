@@ -47,9 +47,6 @@ public class CommonConfig {
         ForgeConfigSpec.DoubleValue ieExternalHeaterHeatPerRF;
         ForgeConfigSpec.IntValue ieExternalHeaterRFperTick;
         ForgeConfigSpec.DoubleValue mekThermalResistanceFactor;
-        ForgeConfigSpec.DoubleValue tanAirConAirUsageMultiplier;
-        ForgeConfigSpec.DoubleValue tanHeatDivider;
-        ForgeConfigSpec.IntValue tanRefreshInterval;
     }
     public static class Advanced {
         ForgeConfigSpec.BooleanValue disableKeroseneLampFakeAirBlock;
@@ -419,18 +416,18 @@ public class CommonConfig {
                 .comment("Mekanism <-> PneumaticCraft heat conversion efficiency. Note that Mekanism and PNC use a similar heat system, but scale things quite differently (Mekanism heaters produces a LOT of heat by PneumaticCraft standards), so conversion efficiency tuning is important for inter-mod balance.")
                 .translation("pneumaticcraft.config.common.integration.mek_thermal_efficiency_factor")
                 .defineInRange("mek_thermal_conversion_efficiency", 0.01, 0.0, 2.0);
-        integration.tanAirConAirUsageMultiplier = builder
-                .comment("ToughAsNails: air usage multiplier for the Pneumatic Chestplate Air Conditioning Upgrade.")
-                .translation("pneumaticcraft.config.common.integration.tan_air_con_air_usage_multiplier")
-                .defineInRange("tan_air_con_air_usage_multiplier", 1.5, 0.0, Double.MAX_VALUE);
-        integration.tanHeatDivider = builder
-                .comment("Tough As Nails temperature divider; smaller values make PneumaticCraft heat sources have a more pronounced effect on your temperature. Set to 0 to ignore PneumaticCraft heat sources.")
-                .translation("pneumaticcraft.config.common.integration.tan_heat_divider")
-                .defineInRange("tan_heat_divider", 10.0, 1.0f, Double.MAX_VALUE);
-        integration.tanRefreshInterval = builder
-                .comment("Interval in ticks with which to refresh heat information from PneumaticCraft heat sources to Tough As Nails. A larger interval is kinder to the server but will provide less precise temperature data to TAN.")
-                .translation("pneumaticcraft.config.common.integration.tan_refresh_interval")
-                .defineInRange("tan_refresh_interval", 40, 1, 200);
+//        integration.tanAirConAirUsageMultiplier = builder
+//                .comment("ToughAsNails: air usage multiplier for the Pneumatic Chestplate Air Conditioning Upgrade.")
+//                .translation("pneumaticcraft.config.common.integration.tan_air_con_air_usage_multiplier")
+//                .defineInRange("tan_air_con_air_usage_multiplier", 1.5, 0.0, Double.MAX_VALUE);
+//        integration.tanHeatDivider = builder
+//                .comment("Tough As Nails temperature divider; smaller values make PneumaticCraft heat sources have a more pronounced effect on your temperature. Set to 0 to ignore PneumaticCraft heat sources.")
+//                .translation("pneumaticcraft.config.common.integration.tan_heat_divider")
+//                .defineInRange("tan_heat_divider", 10.0, 1.0f, Double.MAX_VALUE);
+//        integration.tanRefreshInterval = builder
+//                .comment("Interval in ticks with which to refresh heat information from PneumaticCraft heat sources to Tough As Nails. A larger interval is kinder to the server but will provide less precise temperature data to TAN.")
+//                .translation("pneumaticcraft.config.common.integration.tan_refresh_interval")
+//                .defineInRange("tan_refresh_interval", 40, 1, 200);
         builder.pop();
 
         builder.push("Recipes");
