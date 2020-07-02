@@ -6,6 +6,28 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.15.2
 
+## 1.4.0-?? (unreleased)
+
+### New
+* Mekanism integration, still fairly experimental and subject to rebalancing
+  * Mekanism and PneumaticCraft blocks will now exchange heat
+  * Mekanism Fuelwood and Resistive Heaters can be used to heat PNC:R machines like the Refinery or Thermopneumatic Processing Plant
+  * PNC:R Vortex Tube can be used to heat the Mekanism boiler
+  * Heat cables (PNC:R Heat Pipes and Mekanism Thermodynamic Conductors will connect to Mekanism and PNC:R machines, respectively)
+  * Mekanism Liquid Ethylene and Liquid Hydrogen can be used as fuels in PNC:R Liquid Compressors
+  * Mekanism Configurator can be used to wrench PNC:R block
+
+### Updates
+* PNC:R loot items (Stop! Worm, Nuke Virus and Spawner Agitator) should be turning up again in dungeon loot
+  * This is still under review to potentially add other PNC:R loot
+* More Pneumatic Armor settings (primarily around air usage) are now tunable via mod config
+* Jet Boots GUI now offers a throttle control slider bar (default is 100% power)
+  * Reducing this might be useful if you have fast jet boots in a tight space, like caves...
+  
+### Fixes
+* Fixed performance issue when world has a large number of entities
+  (an event handler was running which scanned all entities every tick, when it only needed to scan a few)
+
 ## 1.3.2-42 (26 Jun 2020)
 
 ### Updates
@@ -34,7 +56,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * All sound effects have been converted to mono, since Minecraft doesn't do distance-based attenuation on stereo sounds
   * This fixes the problem of sentry turrets, air leaks, etc. sounding much too loud from a distance
   * Because of this, some default sound volumes have been adjusted upwards in the mod config `pneumaticcraft-client.toml`
-  * If you're updating from a previous version (rather than a fresh install) some sounds might seem too quiet; if so, you can review there volume in the above config file on your client
+  * If you're updating from a previous version (rather than a fresh install) some sounds might seem too quiet; if so, you can review their volume in the above config file on your client
 * Universal Sensor work
   * Base range (with no Range Upgrades) has been increased from 2 to 8 blocks
   * ComputerCraft event support - `os.pullEvent('universalSensor')` - should work now 
