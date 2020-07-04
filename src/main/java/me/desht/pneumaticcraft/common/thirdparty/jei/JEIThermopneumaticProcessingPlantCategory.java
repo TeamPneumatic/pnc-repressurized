@@ -119,16 +119,15 @@ public class JEIThermopneumaticProcessingPlantCategory implements IRecipeCategor
     public void draw(ThermoPlantRecipe recipe, double mouseX, double mouseY) {
         if (recipe.getRequiredPressure() != 0) {
             float pressure = recipe.getRequiredPressure() * ((float) tickTimer.getValue() / tickTimer.getMaxValue());
-            PressureGaugeRenderer.drawPressureGauge(Minecraft.getInstance().fontRenderer, -1, PneumaticValues.MAX_PRESSURE_TIER_ONE, PneumaticValues.DANGER_PRESSURE_TIER_ONE, recipe.getRequiredPressure(), pressure, 136, 42);
+            PressureGaugeRenderer.drawPressureGauge(Minecraft.getInstance().fontRenderer, -1, PneumaticValues.MAX_PRESSURE_TIER_ONE, PneumaticValues.DANGER_PRESSURE_TIER_ONE, recipe.getRequiredPressure(), pressure, 141, 42);
         }
 
         if (!recipe.getOperatingTemperature().isAny()) {
             WidgetTemperature w = tempWidgets.computeIfAbsent(recipe.getId(),
-                    id -> Helpers.makeTemperatureWidget(92, 12, recipe.getOperatingTemperature().getMin()));
-            w.setTemperature(tickTimer.getValue() * (w.getScales()[0] - 273.0) / tickTimer.getMaxValue() + 273.0);
+                    id -> WidgetTemperature.fromOperatingRange(100, 12, recipe.getOperatingTemperature()));
+            w.setTemperature(w.getTotalRange().getMin() + (w.getTotalRange().getMax() - w.getTotalRange().getMin()) * tickTimer.getValue() / tickTimer.getMaxValue());
             w.render((int) mouseX, (int) mouseY, 0f);
         }
-
         progressBar.draw(25, 20);
     }
 

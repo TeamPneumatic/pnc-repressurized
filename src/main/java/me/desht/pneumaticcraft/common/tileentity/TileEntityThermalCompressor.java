@@ -102,7 +102,7 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase
         }
     }
 
-    private IHeatExchangerLogic getHeatExchanger(Direction side) {
+    public IHeatExchangerLogic getHeatExchanger(Direction side) {
         return heatExchangers[side.getHorizontalIndex()];
     }
 

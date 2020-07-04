@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableMap;
-import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.common.PneumaticCraftTags;
@@ -163,6 +162,11 @@ public class TileEntityEtchingTank extends TileEntityTickableBase
         return acidTank;
     }
 
+    @Override
+    public LazyOptional<IHeatExchangerLogic> getHeatCap(Direction side) {
+        return heatCap;
+    }
+
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
@@ -176,9 +180,9 @@ public class TileEntityEtchingTank extends TileEntityTickableBase
             }
         } else if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
             return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.orEmpty(cap, fluidCap);
-        } else if (cap == PNCCapabilities.HEAT_EXCHANGER_CAPABILITY) {
+        } /*else if (cap == PNCCapabilities.HEAT_EXCHANGER_CAPABILITY) {
             return PNCCapabilities.HEAT_EXCHANGER_CAPABILITY.orEmpty(cap, heatCap);
-        }
+        }*/
         return super.getCapability(cap, side);
     }
 

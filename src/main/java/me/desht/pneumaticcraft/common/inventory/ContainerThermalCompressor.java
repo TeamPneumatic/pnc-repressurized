@@ -15,7 +15,7 @@ public class ContainerThermalCompressor extends ContainerPneumaticBase<TileEntit
     public ContainerThermalCompressor(int i, PlayerInventory playerInventory, BlockPos pos) {
         super(ModContainers.THERMAL_COMPRESSOR.get(), i, playerInventory, pos);
 
-        addUpgradeSlots(23, 29);
+        addUpgradeSlots(12, 29);
         addPlayerSlots(playerInventory, 84);
     }
 }

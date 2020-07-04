@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
+import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
@@ -15,7 +16,6 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
@@ -36,19 +36,20 @@ public class GuiRefineryController extends GuiPneumaticContainerBase<ContainerRe
     public void init() {
         super.init();
 
-        widgetTemperature = new WidgetTemperature(guiLeft + 32, guiTop + 32, 273, 673,
-                te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY))
-        {
-            @Override
-            public void addTooltip(double mouseX, double mouseY, List<String> curTip, boolean shift) {
-                super.addTooltip(mouseX, mouseY, curTip, shift);
-                if (te.minTemp > 0) {
-                    int temp = logic.map(IHeatExchangerLogic::getTemperatureAsInt).orElseThrow(RuntimeException::new);
-                    TextFormatting tf = te.minTemp < temp ? TextFormatting.GREEN : TextFormatting.GOLD;
-                    curTip.add(tf + I18n.format("pneumaticcraft.gui.misc.requiredTemperature", te.minTemp - 273));
-                }
-            }
-        };
+//        widgetTemperature = new WidgetTemperature(guiLeft + 32, guiTop + 32, 273, 673,
+//                te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY))
+//        {
+//            @Override
+//            public void addTooltip(double mouseX, double mouseY, List<String> curTip, boolean shift) {
+//                super.addTooltip(mouseX, mouseY, curTip, shift);
+//                if (te.minTemp > 0) {
+//                    int temp = logic.map(IHeatExchangerLogic::getTemperatureAsInt).orElseThrow(RuntimeException::new);
+//                    TextFormatting tf = te.minTemp < temp ? TextFormatting.GREEN : TextFormatting.GOLD;
+//                    curTip.add(tf + I18n.format("pneumaticcraft.gui.misc.requiredTemperature", te.minTemp - 273));
+//                }
+//            }
+//        };
+        widgetTemperature = new WidgetTemperature(guiLeft + 32, guiTop + 32, TemperatureRange.of(273, 673), 273, 50);
         addButton(widgetTemperature);
 
         addButton(new WidgetTank(guiLeft + 8, guiTop + 25, te.getInputTank()));
@@ -82,11 +83,19 @@ public class GuiRefineryController extends GuiPneumaticContainerBase<ContainerRe
     public void tick() {
         super.tick();
 
-        if (te.minTemp > 0) {
-            widgetTemperature.setScales(te.minTemp);
+        if (te.maxTemp > te.minTemp) {
+            widgetTemperature.setOperatingRange(TemperatureRange.of(te.minTemp, te.maxTemp));
         } else {
-            widgetTemperature.setScales();
+            widgetTemperature.setOperatingRange(null);
         }
+        te.getHeatCap(null).ifPresent(l -> widgetTemperature.setTemperature(l.getTemperatureAsInt()));
+        widgetTemperature.autoScaleForTemperature();
+
+//        if (te.minTemp > 0) {
+//            widgetTemperature.setScales(te.minTemp);
+//        } else {
+//            widgetTemperature.setScales();
+//        }
     }
 
     @Override

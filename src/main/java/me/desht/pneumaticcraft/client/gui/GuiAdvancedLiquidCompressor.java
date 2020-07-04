@@ -1,7 +1,9 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
+import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
+import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.inventory.ContainerLiquidCompressor;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.resources.I18n;
@@ -12,6 +14,7 @@ import net.minecraft.util.text.ITextComponent;
 import java.util.List;
 
 public class GuiAdvancedLiquidCompressor extends GuiLiquidCompressor {
+    private WidgetTemperature tempWidget;
 
     public GuiAdvancedLiquidCompressor(ContainerLiquidCompressor container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
@@ -20,8 +23,17 @@ public class GuiAdvancedLiquidCompressor extends GuiLiquidCompressor {
     @Override
     public void init() {
         super.init();
-        addButton(new WidgetTemperature(guiLeft + 92, guiTop + 20, 273, 675,
-                te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY), 325, 625));
+
+        addButton(tempWidget = new WidgetTemperature(guiLeft + 100, guiTop + 20, TemperatureRange.of(273, 673), 273, 50)
+                .setOperatingRange(TemperatureRange.of(323, 625)).setShowOperatingRange(false));
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+
+        te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY).ifPresent(h -> tempWidget.setTemperature(h.getTemperatureAsInt()));
+        tempWidget.autoScaleForTemperature();
     }
 
     @Override
@@ -36,6 +48,10 @@ public class GuiAdvancedLiquidCompressor extends GuiLiquidCompressor {
         if (te.getEfficiency() < 100) {
             curInfo.add(I18n.format("pneumaticcraft.gui.tab.problems.advancedAirCompressor.efficiency", te.getEfficiency() + "%%"));
         }
+    }
+    @Override
+    protected PointXY getGaugeLocation() {
+        return super.getGaugeLocation().add(5, 0);
     }
 
     @Override

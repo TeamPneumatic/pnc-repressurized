@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
+import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
@@ -16,7 +17,6 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
 
 import java.util.Collections;
 import java.util.List;
@@ -30,7 +30,7 @@ public class GuiThermopneumaticProcessingPlant extends
 
     public GuiThermopneumaticProcessingPlant(ContainerThermopneumaticProcessingPlant container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
-        ySize = 197;
+        ySize = 212;
     }
 
     @Override
@@ -42,24 +42,13 @@ public class GuiThermopneumaticProcessingPlant extends
     public void init() {
         super.init();
 
-        addButton(new WidgetTank(guiLeft + 13, guiTop + 14, te.getInputTank()));
-        addButton(new WidgetTank(guiLeft + 79, guiTop + 14, te.getOutputTank()));
+        addButton(new WidgetTank(guiLeft + 13, guiTop + 19, te.getInputTank()));
+        addButton(new WidgetTank(guiLeft + 79, guiTop + 19, te.getOutputTank()));
 
-        tempWidget = new WidgetTemperature(guiLeft + 98, guiTop + 15, 273, 673,
-                te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY), te.minTemperature) {
-            @Override
-            public void addTooltip(double mouseX, double mouseY, List<String> curTip, boolean shift) {
-                super.addTooltip(mouseX, mouseY, curTip, shift);
-                if (te.minTemperature > 0) {
-                    int temp = logic.map(IHeatExchangerLogic::getTemperatureAsInt).orElseThrow(RuntimeException::new);
-                    TextFormatting tf = te.minTemperature < temp ? TextFormatting.GREEN : TextFormatting.GOLD;
-                    curTip.add(tf + I18n.format("pneumaticcraft.gui.misc.requiredTemperature", te.minTemperature -273));
-                }
-            }
-        };
+        tempWidget = new WidgetTemperature(guiLeft + 105, guiTop + 25, TemperatureRange.of(273, 673), 273, 50);
         addButton(tempWidget);
 
-        dumpButton = new WidgetButtonExtended(guiLeft + 12, guiTop + 81, 18, 20, "").withTag("dump");
+        dumpButton = new WidgetButtonExtended(guiLeft + 12, guiTop + 86, 18, 20, "").withTag("dump");
         dumpButton.setRenderedIcon(Textures.GUI_RIGHT_ARROW);
         dumpButton.setTooltipText(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.thermopneumatic.moveInput")));
         addButton(dumpButton);
@@ -71,7 +60,13 @@ public class GuiThermopneumaticProcessingPlant extends
     public void tick() {
         super.tick();
 
-        tempWidget.setScales(te.minTemperature);
+        if (te.maxTemperature > te.minTemperature) {
+            tempWidget.setOperatingRange(TemperatureRange.of(te.minTemperature, te.maxTemperature));
+        } else {
+            tempWidget.setOperatingRange(null);
+        }
+        te.getHeatCap(null).ifPresent(l -> tempWidget.setTemperature(l.getTemperatureAsInt()));
+        tempWidget.autoScaleForTemperature();
 
         if (hasShiftDown()) {
             dumpButton.setRenderedIcon(Textures.GUI_X_BUTTON);
@@ -90,15 +85,15 @@ public class GuiThermopneumaticProcessingPlant extends
         double progress = te.getCraftingPercentage();
         int progressWidth = (int) (progress * 48);
         bindGuiTexture();
-        blit(guiLeft + 30, guiTop + 31, xSize, 0, progressWidth, 30);
+        blit(guiLeft + 30, guiTop + 36, xSize, 0, progressWidth, 30);
     }
 
     @Override
     protected void drawGuiContainerForegroundLayer(int x, int y) {
         String containerName = title.getFormattedText();
         RenderSystem.pushMatrix();
-        RenderSystem.scaled(0.95, 0.97, 1);
-        font.drawString(containerName, xSize / 2f - font.getStringWidth(containerName) / 2f + 1, 5, 0x404040);
+        RenderSystem.scaled(0.95, 1.0, 1);
+        font.drawString(containerName, xSize / 2f - font.getStringWidth(containerName) / 2.1f , 5, 0x404040);
         RenderSystem.popMatrix();
         super.drawGuiContainerForegroundLayer(x, y);
 
@@ -113,7 +108,7 @@ public class GuiThermopneumaticProcessingPlant extends
     protected PointXY getGaugeLocation() {
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
-        return new PointXY(xStart + xSize * 3 / 4 + 10, yStart + ySize / 4);
+        return new PointXY(xStart + xSize * 3 / 4 + 14, yStart + ySize / 4 - 2);
     }
 
     @Override

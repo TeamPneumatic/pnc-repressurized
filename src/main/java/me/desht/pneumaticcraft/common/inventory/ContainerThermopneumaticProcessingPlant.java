@@ -19,11 +19,11 @@ public class ContainerThermopneumaticProcessingPlant extends
 
         // add upgrade slots
         for (int i = 0; i < 4; i++) {
-            addSlot(new SlotUpgrade(te, i, 80 + i * 18, 93));
+            addSlot(new SlotUpgrade(te, i, 98 + i * 18, 106));
         }
-        addSlot(new SlotItemHandler(te.getPrimaryInventory(), 0, 38, 14));
-        addSlot(new SlotOutput(te.getOutputInventory(), 0, 53, 62));
+        addSlot(new SlotItemHandler(te.getPrimaryInventory(), 0, 38, 19));
+        addSlot(new SlotOutput(te.getOutputInventory(), 0, 53, 67));
 
-        addPlayerSlots(playerInventory, 115);
+        addPlayerSlots(playerInventory, 130);
     }
 }

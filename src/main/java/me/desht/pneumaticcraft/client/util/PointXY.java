@@ -32,4 +32,8 @@ public class PointXY {
         double py = p2.y - this.y;
         return Math.sqrt(px * px + py * py);
     }
+
+    public PointXY add(int x, int y) {
+        return new PointXY(this.x + x, this.y + y);
+    }
 }

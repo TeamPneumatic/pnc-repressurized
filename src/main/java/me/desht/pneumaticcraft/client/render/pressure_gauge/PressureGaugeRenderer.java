@@ -97,7 +97,7 @@ public class PressureGaugeRenderer {
             if (i == GAUGE_POINTS - (int) ((currentScale - minPressure) / (maxPressure - minPressure) * GAUGE_POINTS)) {
                 double x = Math.cos(angle);
                 double y = Math.sin(angle);
-                textScalers.add(new TextScaler(currentScale, (int) (x * RADIUS * 1.3D), (int) (y * RADIUS * 1.3D)));
+                textScalers.add(new TextScaler(currentScale, (int) (x * RADIUS * 1.25D), (int) (y * RADIUS * 1.25D)));
                 currentScale--;
                 double r1 = maxPressure > 10 && textScalers.size() % 5 == 1 ? 0.8D : 0.92D;
                 double r2 = maxPressure > 10 && textScalers.size() % 5 == 1 ? 1.15D : 1.08D;

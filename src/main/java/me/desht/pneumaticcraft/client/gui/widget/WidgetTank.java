@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.client.gui.widget;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
+import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.renderer.Rectangle2d;
@@ -75,6 +76,7 @@ public class WidgetTank extends Widget implements ITooltipProvider {
             curTip.add(TextFormatting.GRAY + I18n.format("pneumaticcraft.gui.liquid.empty"));
         } else {
             curTip.add(TextFormatting.GRAY + new FluidStack(fluid, amt).getDisplayName().getFormattedText());
+            curTip.add(TextFormatting.BLUE + "" + TextFormatting.ITALIC + ModNameCache.getModName(fluid.getRegistryName().getNamespace()));
         }
     }
 

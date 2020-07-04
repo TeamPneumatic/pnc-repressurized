@@ -190,4 +190,16 @@ public class GuiUtils {
     public static void glColorHex(int color, int alpha) {
         glColorHex(color | alpha << 24);
     }
+
+    public static void drawScaledText(FontRenderer fr, String text, int x, int y, int color, float scale) {
+        if (scale != 1.0f) {
+            RenderSystem.pushMatrix();
+            RenderSystem.translated(x, y, 0);
+            RenderSystem.scaled(scale, scale, scale);
+            fr.drawString(text, 0, 0, color);
+            RenderSystem.popMatrix();
+        } else {
+            fr.drawString(text, x, y, color);
+        }
+    }
 }

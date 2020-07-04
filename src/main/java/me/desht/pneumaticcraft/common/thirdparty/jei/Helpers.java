@@ -1,9 +1,7 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticScreenBase;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -11,7 +9,6 @@ import mezz.jei.api.gui.handlers.IGuiProperties;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resources.I18n;
-import net.minecraftforge.common.util.LazyOptional;
 
 import java.util.List;
 
@@ -31,11 +28,6 @@ class Helpers {
         for (int i = 0; i < text.size(); i++) {
             Minecraft.getInstance().fontRenderer.drawString(text.get(i), x, y + i * h, 0xFF404040);
         }
-    }
-
-    static WidgetTemperature makeTemperatureWidget(int x, int y, int temperature) {
-        return new WidgetTemperature(x, y, 273, 673,
-                LazyOptional.of(() -> PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic()), temperature);
     }
 
     static IDrawable makeTankOverlay(int height) {

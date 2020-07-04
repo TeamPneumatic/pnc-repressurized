@@ -126,7 +126,7 @@ public class JEIPlugin implements IModPlugin {
         registration.addRecipeClickArea(GuiAssemblyController.class, 110, 10, 50, 50, ModCategoryUid.ASSEMBLY_CONTROLLER);
         registration.addRecipeClickArea(GuiPressureChamber.class, 100, 7, 60, 60, ModCategoryUid.PRESSURE_CHAMBER);
         registration.addRecipeClickArea(GuiRefineryController.class, 47, 33, 27, 47, ModCategoryUid.REFINERY);
-        registration.addRecipeClickArea(GuiThermopneumaticProcessingPlant.class, 30, 31, 48, 20, ModCategoryUid.THERMO_PLANT);
+        registration.addRecipeClickArea(GuiThermopneumaticProcessingPlant.class, 30, 36, 48, 30, ModCategoryUid.THERMO_PLANT);
 
         registration.addGlobalGuiHandler(new GuiTabHandler());
 

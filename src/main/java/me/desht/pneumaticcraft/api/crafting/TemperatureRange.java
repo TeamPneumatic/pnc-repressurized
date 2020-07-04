@@ -137,6 +137,14 @@ public class TemperatureRange {
         return this == TemperatureRange.ANY;
     }
 
+    public boolean hasMin() {
+        return min > 0;
+    }
+
+    public boolean hasMax() {
+        return max < Integer.MAX_VALUE;
+    }
+
     public void write(PacketBuffer buffer) {
         buffer.writeVarInt(min);
         buffer.writeVarInt(max);

@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
+import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
@@ -19,6 +19,8 @@ import net.minecraft.util.text.TextFormatting;
 import java.util.List;
 
 public class GuiThermalCompressor extends GuiPneumaticContainerBase<ContainerThermalCompressor,TileEntityThermalCompressor> {
+    private final WidgetTemperatureSided[] tempWidgets = new WidgetTemperatureSided[4];
+
     public GuiThermalCompressor(ContainerThermalCompressor container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
     }
@@ -27,11 +29,11 @@ public class GuiThermalCompressor extends GuiPneumaticContainerBase<ContainerThe
     public void init() {
         super.init();
 
-        addButton(new WidgetTemperatureSided(Direction.NORTH, 63));
-        addButton(new WidgetTemperatureSided(Direction.SOUTH, 73));
+        addButton(tempWidgets[0] = new WidgetTemperatureSided(Direction.NORTH, 55).setDrawText(false));
+        addButton(tempWidgets[1] = new WidgetTemperatureSided(Direction.SOUTH, 65).setDrawText(false));
 
-        addButton(new WidgetTemperatureSided(Direction.WEST, 88));
-        addButton(new WidgetTemperatureSided(Direction.EAST, 98));
+        addButton(tempWidgets[2] = new WidgetTemperatureSided(Direction.WEST, 88).setDrawText(true));
+        addButton(tempWidgets[3] = new WidgetTemperatureSided(Direction.EAST, 98).setDrawText(false));
     }
 
     @Override
@@ -85,19 +87,34 @@ public class GuiThermalCompressor extends GuiPneumaticContainerBase<ContainerThe
         }
     }
 
+    @Override
+    public void tick() {
+        super.tick();
+
+        int min = Integer.MAX_VALUE, max = Integer.MIN_VALUE;
+        for (Direction d : PneumaticCraftUtils.HORIZONTALS) {
+            int t = te.getHeatExchanger(d).getTemperatureAsInt();
+            tempWidgets[d.getHorizontalIndex()].setTemperature(t);
+            min = Math.min(min, t);
+            max = Math.max(max, t);
+        }
+        for (WidgetTemperatureSided temp : tempWidgets) {
+            temp.setTotalRange(TemperatureRange.of(Math.max(0, min - 50), Math.min(2273, max + 50)));
+            temp.autoScaleForTemperature();
+        }
+    }
+
     private class WidgetTemperatureSided extends WidgetTemperature {
         private final Direction side;
 
         WidgetTemperatureSided(Direction side, int x) {
-            super(guiLeft + x, guiTop + 20, 0, 2000,
-                    te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY, side));
+            super(guiLeft + x, guiTop + 20, TemperatureRange.of(0, 2000), 273, 200);
             this.side = side;
         }
 
         @Override
         public void addTooltip(double mouseX, double mouseY, List<String> curTip, boolean shift) {
-            int temp = logic.map(IHeatExchangerLogic::getTemperatureAsInt).orElseThrow(RuntimeException::new);
-            curTip.add(HeatUtil.formatHeatString(side, temp).getFormattedText());
+            curTip.add(HeatUtil.formatHeatString(side, getTemperature()).getFormattedText());
         }
     }
 }

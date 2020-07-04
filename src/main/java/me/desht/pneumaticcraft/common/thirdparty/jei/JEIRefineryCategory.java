@@ -88,8 +88,8 @@ public class JEIRefineryCategory implements IRecipeCategory<RefineryRecipe> {
     @Override
     public void draw(RefineryRecipe recipe, double mouseX, double mouseY) {
         WidgetTemperature w = tempWidgets.computeIfAbsent(recipe.getId(),
-                id -> Helpers.makeTemperatureWidget(26, 18, recipe.getOperatingTemp().getMin()));
-        w.setTemperature(tickTimer.getValue() * (w.getScales()[0] - 273.0) / tickTimer.getMaxValue() + 273.0);
+                id -> WidgetTemperature.fromOperatingRange(26, 18, recipe.getOperatingTemp()));
+        w.setTemperature(w.getTotalRange().getMin() + (w.getTotalRange().getMax() - w.getTotalRange().getMin()) * tickTimer.getValue() / tickTimer.getMaxValue());
         w.renderButton((int)mouseX, (int)mouseY, 0f);
     }
 

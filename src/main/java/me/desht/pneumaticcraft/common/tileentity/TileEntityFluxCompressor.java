@@ -142,6 +142,6 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase implements
     @Nullable
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        return new ContainerEnergy(ModContainers.FLUX_COMPRESSOR.get(), i, playerInventory, getPos());
+        return new ContainerEnergy<>(ModContainers.FLUX_COMPRESSOR.get(), i, playerInventory, getPos());
     }
 }
