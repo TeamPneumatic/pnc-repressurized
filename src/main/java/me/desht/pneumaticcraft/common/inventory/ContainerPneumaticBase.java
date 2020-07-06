@@ -13,23 +13,21 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ContainerPneumaticBase<T extends TileEntityBase> extends Container implements IGUIButtonSensitive {
-    private static final String[] ARMOR_SLOT_TEXTURES = new String[]{
-            "item/empty_armor_slot_boots",
-            "item/empty_armor_slot_leggings",
-            "item/empty_armor_slot_chestplate",
-            "item/empty_armor_slot_helmet"
-    };
+//    private static final String[] ARMOR_SLOT_TEXTURES = new String[]{
+//            "item/empty_armor_slot_boots",
+//            "item/empty_armor_slot_leggings",
+//            "item/empty_armor_slot_chestplate",
+//            "item/empty_armor_slot_helmet"
+//    };
 
     public final T te;
-    private final List<SyncedField> syncedFields = new ArrayList<>();
+    private final List<SyncedField<?>> syncedFields = new ArrayList<>();
     private boolean firstTick = true;
     int playerSlotsStart;
 
@@ -61,19 +59,18 @@ public class ContainerPneumaticBase<T extends TileEntityBase> extends Container 
         return extraData.readBlockPos();
     }
 
-    void addSyncedField(SyncedField field) {
+    void addSyncedField(SyncedField<?> field) {
         syncedFields.add(field);
         field.setLazy(false);
     }
 
     void addSyncedFields(Object annotatedObject) {
-        List<SyncedField> fields = NetworkUtils.getSyncedFields(annotatedObject, GuiSynced.class);
-        for (SyncedField field : fields)
+        List<SyncedField<?>> fields = NetworkUtils.getSyncedFields(annotatedObject, GuiSynced.class);
+        for (SyncedField<?> field : fields)
             addSyncedField(field);
     }
 
     public void updateField(int index, Object value) {
-        //noinspection unchecked
         syncedFields.get(index).setValue(value);
         if (te != null) te.onGuiUpdate();
     }
@@ -137,28 +134,31 @@ public class ContainerPneumaticBase<T extends TileEntityBase> extends Container 
      * that packet to be sent continually, causing a horrible item-equip sound loop to be played (and using unnecessary
      * network bandwith).
      */
+    @SuppressWarnings("SameParameterValue")
     void addArmorSlots(PlayerInventory inventoryPlayer, int xBase, int yBase) {
         for (int i = 0; i < 4; ++i) {
             final EquipmentSlotType entityequipmentslot = VALID_EQUIPMENT_SLOTS[i];
             this.addSlot(new Slot(inventoryPlayer, 36 + (3 - i), xBase, yBase + i * 18) {
-
+                @Override
                 public int getSlotStackLimit() {
                     return 1;
                 }
 
+                @Override
                 public boolean isItemValid(ItemStack stack) {
                     return stack.canEquip(entityequipmentslot, inventoryPlayer.player);
                 }
 
+                @Override
                 public boolean canTakeStack(PlayerEntity playerIn) {
                     ItemStack itemstack = this.getStack();
                     return (itemstack.isEmpty() || playerIn.isCreative() || !EnchantmentHelper.hasBindingCurse(itemstack)) && super.canTakeStack(playerIn);
                 }
 
-                @OnlyIn(Dist.CLIENT)
-                public String getSlotTexture() {
-                    return ARMOR_SLOT_TEXTURES[entityequipmentslot.getIndex()];
-                }
+//                @OnlyIn(Dist.CLIENT)
+//                public String getSlotTexture() {
+//                    return ARMOR_SLOT_TEXTURES[entityequipmentslot.getIndex()];
+//                }
             });
         }
     }

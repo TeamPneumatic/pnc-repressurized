@@ -20,9 +20,9 @@ public class NetworkUtils {
      * @param searchedAnnotation the annotation type to search for
      * @return a list of all the fields annotated with the given type
      */
-    public static List<SyncedField> getSyncedFields(Object syncable, Class<? extends Annotation> searchedAnnotation) {
-        List<SyncedField> syncedFields = new ArrayList<>();
-        Class examinedClass = syncable.getClass();
+    public static List<SyncedField<?>> getSyncedFields(Object syncable, Class<? extends Annotation> searchedAnnotation) {
+        List<SyncedField<?>> syncedFields = new ArrayList<>();
+        Class<?> examinedClass = syncable.getClass();
         while (examinedClass != null) {
             for (Field field : examinedClass.getDeclaredFields()) {
                 if (field.getAnnotation(searchedAnnotation) != null) {
@@ -37,13 +37,12 @@ public class NetworkUtils {
         return syncedFields;
     }
 
-    private static List<SyncedField> getSyncedFieldsForField(Field field, Object te, Class<? extends Annotation> searchedAnnotation) {
+    private static List<SyncedField<?>> getSyncedFieldsForField(Field field, Object te, Class<? extends Annotation> searchedAnnotation) {
         boolean isLazy = field.getAnnotation(LazySynced.class) != null;
-        List<SyncedField> syncedFields = new ArrayList<>();
-        SyncedField syncedField = getSyncedFieldForField(field, te);
+        List<SyncedField<?>> syncedFields = new ArrayList<>();
+        SyncedField<?> syncedField = getSyncedFieldForField(field, te);
         if (syncedField != null) {
             syncedFields.add(syncedField.setLazy(isLazy));
-            return syncedFields;
         } else {
             Object o;
             try {
@@ -161,11 +160,11 @@ public class NetworkUtils {
                 e.printStackTrace();
             }
             Log.warning("Field " + field + " didn't produce any syncable fields!");
-            return syncedFields;
         }
+        return syncedFields;
     }
 
-    private static SyncedField getSyncedFieldForField(Field field, Object te) {
+    private static SyncedField<?> getSyncedFieldForField(Field field, Object te) {
         if (int.class.isAssignableFrom(field.getType())) return new SyncedInt(te, field);
         if (float.class.isAssignableFrom(field.getType())) return new SyncedFloat(te, field);
         if (double.class.isAssignableFrom(field.getType())) return new SyncedDouble(te, field);

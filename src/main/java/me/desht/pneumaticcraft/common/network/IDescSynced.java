@@ -6,7 +6,7 @@ import net.minecraft.util.math.BlockPos;
 import java.util.List;
 
 public interface IDescSynced {
-    List<SyncedField> getDescriptionFields();
+    List<SyncedField<?>> getDescriptionFields();
 
     void writeToPacket(CompoundNBT tag);
 

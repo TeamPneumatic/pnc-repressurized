@@ -3,8 +3,6 @@ package me.desht.pneumaticcraft.common.network;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
@@ -18,7 +16,7 @@ public abstract class SyncedField<T> {
     private T lastValue;
     private int arrayIndex = -1;
     private boolean isLazy;
-    private Class annotation;
+    private Class<?> annotation;
 
     SyncedField(Object te, Field field) {
         this.field = field;
@@ -88,8 +86,7 @@ public abstract class SyncedField<T> {
         return lastValue;
     }
 
-    @OnlyIn(Dist.CLIENT)
-    public void setValue(T value) {
+    private void setValueInternal(T value) {
         try {
             if (arrayIndex >= 0) {
                 setValueForArray(field.get(te), arrayIndex, value);
@@ -102,11 +99,16 @@ public abstract class SyncedField<T> {
         }
     }
 
-    public void setAnnotation(Class annotation) {
+    public void setValue(Object value) {
+        //noinspection unchecked
+        setValueInternal((T) value);
+    }
+
+    public void setAnnotation(Class<?> annotation) {
         this.annotation = annotation;
     }
 
-    public Class getAnnotation() {
+    public Class<?> getAnnotation() {
         return annotation;
     }
 
@@ -329,7 +331,7 @@ public abstract class SyncedField<T> {
 
     /*************** Utility Methods ***************************/
 
-    public static byte getType(SyncedField syncedField) {
+    public static byte getType(SyncedField<?> syncedField) {
         if (syncedField instanceof SyncedInt) return 0;
         else if (syncedField instanceof SyncedFloat) return 1;
         else if (syncedField instanceof SyncedDouble) return 2;

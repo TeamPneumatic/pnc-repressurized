@@ -10,7 +10,6 @@ import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.*;
-import me.desht.pneumaticcraft.common.thirdparty.IHeatDisperser;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethod;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethodRegistry;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -57,8 +56,6 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
             "pneumaticcraft.gui.tab.redstoneBehaviour.button.lowSignal"
     );
 
-    private static final List<IHeatDisperser> moddedDispersers = new ArrayList<>();
-
     private final UpgradeCache upgradeCache = new UpgradeCache(this);
 
     @GuiSynced
@@ -68,7 +65,7 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
 
     boolean firstRun = true;  // True only the first time updateEntity invokes in a session
     private boolean forceFullSync;
-    private List<SyncedField> descriptionFields;
+    private List<SyncedField<?>> descriptionFields;
     private TileEntityCache[] tileCache;
     private boolean preserveStateOnBreak = false; // set to true if shift-wrenched to keep upgrades in the block
     private float actualSpeedMult = PneumaticValues.DEF_SPEED_UPGRADE_MULTIPLIER;
@@ -134,11 +131,11 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
     }
 
     @Override
-    public List<SyncedField> getDescriptionFields() {
+    public List<SyncedField<?>> getDescriptionFields() {
         if (descriptionFields == null) {
             descriptionFields = NetworkUtils.getSyncedFields(this, DescSynced.class);
             fieldsToSync = new BitSet(descriptionFields.size());
-            for (SyncedField field : descriptionFields) {
+            for (SyncedField<?> field : descriptionFields) {
                 field.update();
             }
         }
@@ -165,15 +162,6 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
         forceFullSync = true;
     }
 
-    /**
-     * A way of dispersing heat to other mods which have their own heat API.
-     *
-     * @param disperser a heat disperser adapter object
-     */
-    public static void registerHeatDisperser(IHeatDisperser disperser) {
-        moddedDispersers.add(disperser);
-    }
-
     /*
      * Even though this class doesn't implement ITickableTileEntity, we'll keep the base update() logic here; classes
      * which extend non-tickable subclasses might need it (e.g. TileEntityPressureChamberInterface)
@@ -189,12 +177,7 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
         upgradeCache.validate();
 
         if (!world.isRemote) {
-            getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY).ifPresent(logic -> {
-                logic.tick();
-                for (IHeatDisperser disperser : moddedDispersers) {
-                    disperser.disperseHeat(this, tileCache);
-                }
-            });
+            getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY).ifPresent(IHeatExchangerLogic::tick);
 
             if (this instanceof IAutoFluidEjecting && getUpgrades(EnumUpgrade.DISPENSER) > 0) {
                 ((IAutoFluidEjecting) this).autoExportFluid(this);

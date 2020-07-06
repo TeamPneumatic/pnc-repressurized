@@ -33,7 +33,7 @@ public class PacketDescription extends LocationIntPacket {
         super(te.getPosition());
 
         this.fullSync = fullSync;
-        List<SyncedField> descFields = te.getDescriptionFields();
+        List<SyncedField<?>> descFields = te.getDescriptionFields();
         for (int i = 0; i < descFields.size(); i++) {
             if (fullSync || te.shouldSyncField(i)) {
                 fields.add(new IndexedField(i, SyncedField.getType(descFields.get(i)), descFields.get(i).getValue()));
@@ -80,7 +80,7 @@ public class PacketDescription extends LocationIntPacket {
             TileEntity syncable = ClientUtils.getClientTE(pos);
             if (syncable instanceof IDescSynced) {
                 IDescSynced descSynced = (IDescSynced) syncable;
-                List<SyncedField> descFields = descSynced.getDescriptionFields();
+                List<SyncedField<?>> descFields = descSynced.getDescriptionFields();
                 if (descFields != null) {
                     for (IndexedField indexedField : fields) {
                         if (indexedField.idx < descFields.size()) {
