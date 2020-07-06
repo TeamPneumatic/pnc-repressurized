@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenCustomHashMap;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.client.ClientSetup;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
@@ -54,7 +53,7 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
         if (!KeyDispatcher.id2checkBox.containsKey(upgradeID)) {
             this.checked = ArmorFeatureStatus.INSTANCE.isUpgradeEnabled(upgradeID);
             if (keyBinding != null) {
-                KeyDispatcher.dispatchMap.put(keyBinding, this);
+                KeyDispatcher.addKeybind(keyBinding, this);
             }
             KeyDispatcher.id2checkBox.put(this.upgradeID, this);
             if (upgradeID.equals("coreComponents")) {
@@ -141,7 +140,7 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
     }
 
     private void clearKeybinding() {
-        if (keyBinding != null) KeyDispatcher.dispatchMap.remove(keyBinding);
+        if (keyBinding != null) KeyDispatcher.removeKeybind(keyBinding);
 
         KeyBinding[] keyBindings = Minecraft.getInstance().gameSettings.keyBindings;
         Set<Integer> idx = new HashSet<>();
@@ -169,17 +168,16 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (isAwaitingKey) {
             InputMappings.Input input = InputMappings.Type.KEYSYM.getOrMakeInput(keyCode);
-            if (KeyModifier.isKeyCodeModifier(input)) {
-                return true;
-            } else {
+            if (!KeyModifier.isKeyCodeModifier(input)) {
                 isAwaitingKey = false;
                 keyBinding = setOrAddKeybind(keyCode, KeyModifier.getActiveModifier());
-                // we don't use "this" here because we must the id->checkbox and keybind->checkbox
-                // maps MUST continue to refer to the same object:
-                KeyDispatcher.dispatchMap.put(keyBinding, fromKeyBindingName(upgradeID));
+                KeyDispatcher.cleanupKeybind(upgradeID);
+                // NOTE: we can't use "this" here because the id->checkbox and keybind->checkbox
+                // maps MUST continue to refer to the same object!
+                KeyDispatcher.addKeybind(keyBinding, WidgetKeybindCheckBox.fromKeyBindingName(upgradeID));
                 setMessage(oldCheckboxText);
-                return true;
             }
+            return true;
         }
         return false;
     }
@@ -242,35 +240,33 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
 
     @Mod.EventBusSubscriber(Dist.CLIENT)
     public static class KeyDispatcher {
+        // maps upgrade ID to keybind widget
         private static final Map<String, WidgetKeybindCheckBox> id2checkBox = new HashMap<>();
-        private static final Map<KeyBinding, WidgetKeybindCheckBox> dispatchMap = new KeyBindMap();
+        // maps "<keycode>/<modifier>" to keybind widget
+        private static final Map<String, WidgetKeybindCheckBox> dispatchMap = new HashMap<>();
 
         @SubscribeEvent
         public static void onKeyPress(InputEvent.KeyInputEvent event) {
             if (event.getAction() == GLFW.GLFW_PRESS) {
-                KeyBinding synthetic = new KeyBinding("synthetic", KeyConflictContext.IN_GAME, KeyBindMap.intToKeyModifier(event.getModifiers()), InputMappings.Type.KEYSYM, event.getKey(), Names.PNEUMATIC_KEYBINDING_CATEGORY);
-                WidgetKeybindCheckBox cb = dispatchMap.get(synthetic);
+                WidgetKeybindCheckBox cb = dispatchMap.get(event.getKey() + "/" + event.getModifiers());
                 if (cb != null) {
                     cb.handleClick(0, 0, 0);
                 }
             }
         }
-    }
 
-    private static class KeyBindMap extends Object2ObjectOpenCustomHashMap<KeyBinding, WidgetKeybindCheckBox> {
-        KeyBindMap() {
-            super(new Strategy<KeyBinding>() {
-                @Override
-                public int hashCode(KeyBinding o) {
-                    return o == null ? 0 : Objects.hash(o.getKey().getKeyCode(), keyModifierToInt(o.getKeyModifier()));
-                }
+        static void addKeybind(KeyBinding keyBinding, WidgetKeybindCheckBox widget) {
+            String key = keyBinding.getKey().getKeyCode() + "/" + keyModifierToInt(keyBinding.getKeyModifier());
+            dispatchMap.put(key, widget);
+        }
 
-                @Override
-                public boolean equals(KeyBinding a, KeyBinding b) {
-                    if (a == null || b == null) return false;
-                    return a.getKeyModifier() == b.getKeyModifier() && a.getKey().getKeyCode() == b.getKey().getKeyCode();
-                }
-            });
+        static void removeKeybind(KeyBinding keyBinding) {
+            String key = keyBinding.getKey().getKeyCode() + "/" + keyModifierToInt(keyBinding.getKeyModifier());
+            dispatchMap.remove(key);
+        }
+
+        static void cleanupKeybind(String upgradeID) {
+            dispatchMap.values().removeIf(w -> w.upgradeID.equals(upgradeID));
         }
 
         private static int keyModifierToInt(KeyModifier km) {
@@ -280,13 +276,6 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
                 case ALT: return GLFW.GLFW_MOD_ALT;
                 default: return 0;
             }
-        }
-
-        private static KeyModifier intToKeyModifier(int i) {
-            if ((i & GLFW.GLFW_MOD_SHIFT) != 0) return KeyModifier.SHIFT;
-            else if ((i & GLFW.GLFW_MOD_CONTROL) != 0) return KeyModifier.CONTROL;
-            else if ((i & GLFW.GLFW_MOD_ALT) != 0) return KeyModifier.ALT;
-            else return KeyModifier.NONE;
         }
     }
 }

@@ -350,7 +350,7 @@ public class ClientEventHandler {
         // custom durability bars
         RenderSystem.disableTexture();
         BufferBuilder bb = Tessellator.getInstance().getBuffer();
-        ContainerScreen container = event.getGuiContainer();
+        ContainerScreen<?> container = event.getGuiContainer();
         for (Slot s : container.getContainer().inventorySlots) {
             if (s.getStack().getItem() instanceof ICustomDurabilityBar) {
                 ICustomDurabilityBar custom = (ICustomDurabilityBar) s.getStack().getItem();
