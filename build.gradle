@@ -196,8 +196,8 @@ minecraft {
 
 dependencies {
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
-    compileOnly fg.deobf("mcp.mobius.waila:Hwyla:${hwyla_version}:api")
-    runtimeOnly fg.deobf("mcp.mobius.waila:Hwyla:${hwyla_version}")
+//    compileOnly fg.deobf("mcp.mobius.waila:Hwyla:${hwyla_version}:api")
+//    runtimeOnly fg.deobf("mcp.mobius.waila:Hwyla:${hwyla_version}")
     compileOnly fg.deobf ("mcjty.theoneprobe:TheOneProbe-1.15:${top_version}:api")
     runtimeOnly fg.deobf ("mcjty.theoneprobe:TheOneProbe-1.15:${top_version}")
     compileOnly fg.deobf("mezz.jei:jei-1.15.2:${jei_version}:api")
@@ -210,6 +210,7 @@ dependencies {
     compile fg.deobf("org.squiddev:cc-tweaked-1.15.2:${cc_tweaked_version}")
     compile fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:${immersive_engineering_version}")
     compile fg.deobf("curse.maven:mekanism:${mekanism_curse_id}")
+    compile fg.deobf("curse.maven:hwyla:${hwyla_curse_id}")
 //    compileOnly "cofh:RedstoneFlux:1.12-${redstone_flux_version}:universal"
 //    compileOnly "cofh:CoFHCore:1.12.2-${cofhcore_version}:deobf"
 //    compileOnly "li.cil.oc:OpenComputers:MC1.12.2-${oc_version}:api"
