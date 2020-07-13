@@ -186,6 +186,10 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
             ISidedWidget w = progWidget instanceof ISidedWidget ? (ISidedWidget) progWidget : null;
             for (Direction dir : Direction.VALUES) {
                 BlockPos pos2 = curPos.offset(dir);
+                if (drone.getDronePos().squareDistanceTo(pos2.getX() + 0.5, pos2.getY() + 0.5, pos2.getZ() + 0.5) < 0.5) {
+                    // consider that close enough already
+                    return movedToBlockOK(pos);
+                }
                 if ((w == null || w.isSideSelected(dir))
                         && worldCache.getBlockState(pos2).allowsMovement(worldCache, pos2, PathType.AIR)
                         && drone.getPathNavigator().moveToXYZ(pos2.getX(), pos2.getY() + 0.5, pos2.getZ())) {
