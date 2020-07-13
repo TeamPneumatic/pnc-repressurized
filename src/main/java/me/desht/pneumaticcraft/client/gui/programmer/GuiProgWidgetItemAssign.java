@@ -28,8 +28,8 @@ public class GuiProgWidgetItemAssign extends GuiProgWidgetOptionBase<ProgWidgetI
 
     @Override
     public void onClose() {
-        super.onClose();
-
         progWidget.setVariable(textfield.getText());
+
+        super.onClose();
     }
 }

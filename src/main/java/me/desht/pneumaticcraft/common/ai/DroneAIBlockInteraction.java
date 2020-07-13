@@ -5,8 +5,10 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
-import me.desht.pneumaticcraft.common.progwidgets.*;
-import me.desht.pneumaticcraft.common.progwidgets.IBlockOrdered.EnumOrder;
+import me.desht.pneumaticcraft.common.progwidgets.IBlockOrdered;
+import me.desht.pneumaticcraft.common.progwidgets.IBlockOrdered.Ordering;
+import me.desht.pneumaticcraft.common.progwidgets.ISidedWidget;
+import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetAreaItemBase;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.ThreadedSorter;
 import net.minecraft.entity.ai.goal.Goal;
@@ -29,7 +31,7 @@ import java.util.List;
 public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> extends Goal {
     protected final IDroneBase drone;
     protected final W progWidget;
-    private final EnumOrder order;
+    private final Ordering order;
     private BlockPos curPos;
     private final List<BlockPos> area;
     final ICollisionReader worldCache;
@@ -41,7 +43,7 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
     private boolean aborted;
 
     private boolean searching; //true while the drone is searching for a coordinate, false if traveling/processing a coordinate.
-    private int searchIndex;//The current index in the area list the drone is searching at.
+    private int searchIndex; //The current index in the area list the drone is searching at.
     private static final int LOOKUPS_PER_SEARCH_TICK = 30; //How many blocks does the drone access per AI update.
     private int totalActions;
     private int maxActions = -1;
@@ -54,7 +56,7 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
         this.drone = drone;
         setMutexFlags(EnumSet.allOf(Flag.class)); // exclusive to all other AI tasks
         this.progWidget = progWidget;
-        order = progWidget instanceof IBlockOrdered ? ((IBlockOrdered) progWidget).getOrder() : EnumOrder.CLOSEST;
+        order = progWidget instanceof IBlockOrdered ? ((IBlockOrdered) progWidget).getOrder() : Ordering.CLOSEST;
         area = progWidget.getCachedAreaList();
         worldCache = ProgWidgetAreaItemBase.getCache(area, drone.world());
         if (area.size() > 0) {
@@ -66,9 +68,9 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
                 minY = Math.min(minY, pos.getY());
                 maxY = Math.max(maxY, pos.getY());
             }
-            if (order == EnumOrder.HIGH_TO_LOW) {
+            if (order == Ordering.HIGH_TO_LOW) {
                 curY = maxY;
-            } else if (order == EnumOrder.LOW_TO_HIGH) {
+            } else if (order == Ordering.LOW_TO_HIGH) {
                 curY = minY;
             }
         }
@@ -98,15 +100,15 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
 
     private void updateY() {
         searchIndex = 0;
-        if (order == ProgWidgetPlace.EnumOrder.LOW_TO_HIGH) {
+        if (order == Ordering.LOW_TO_HIGH) {
             if (++curY > maxY) curY = minY;
-        } else if (order == ProgWidgetPlace.EnumOrder.HIGH_TO_LOW) {
+        } else if (order == Ordering.HIGH_TO_LOW) {
             if (--curY < minY) curY = maxY;
         }
     }
 
     private boolean isYValid(int y) {
-        return order == ProgWidgetPlace.EnumOrder.CLOSEST || y == curY;
+        return order == Ordering.CLOSEST || y == curY;
     }
 
     public DroneAIBlockInteraction<W> setMaxActions(int maxActions) {
@@ -114,8 +116,26 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
         return this;
     }
 
+    /**
+     * Check if the given blockpos is valid for the purposes of this operation; generally the operation that is
+     * carried out by {@link #doBlockInteraction(BlockPos, double)} should be attempted as a simulation.  If this
+     * method returns true, then the drone will attempt to move there (if appropriate) and call
+     * {@link #doBlockInteraction(BlockPos, double)} to actually carry out the operation.
+     *
+     * @param pos the block pos to examine
+     * @return true if this pos is valid, false otherwise
+     */
     protected abstract boolean isValidPosition(BlockPos pos);
 
+    /**
+     * Carry out the actual interaction operation.  Beware the return value: returning false is usually the right
+     * thing to do when the operation succeeded, to indicate to the drone that it shouldn't keep trying this, but
+     * instead move on to the next progwidget.
+     *
+     * @param pos the block pos to work on
+     * @param distToBlock distance from the drone to the block
+     * @return false if we're done and should stop trying, true to try again next time
+     */
     protected abstract boolean doBlockInteraction(BlockPos pos, double distToBlock);
 
     /**
@@ -125,10 +145,10 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
     public boolean shouldContinueExecuting() {
         if (aborted) return false;
         if (searching) {
-            if (!sorter.isDone()) return true;//Wait until the area is sorted from closest to furtherest.
+            if (!sorter.isDone()) return true; // wait until the area is sorted from closest to furthest.
             boolean firstRun = true;
-            int searchedBlocks = 0; //keeps track of the looked up blocks, and stops searching when we reach our quota.
-            while (curPos == null && curY != lastSuccessfulY && order != ProgWidgetDigAndPlace.EnumOrder.CLOSEST || firstRun) {
+            int searchedBlocks = 0; // tracks the number of inspected blocks; stop searching when LOOKUPS_PER_SEARCH_TICK is reached
+            while (curPos == null && curY != lastSuccessfulY && order != Ordering.CLOSEST || firstRun) {
                 firstRun = false;
                 while (!shouldAbort() && searchIndex < area.size()) {
                     BlockPos pos = area.get(searchIndex);

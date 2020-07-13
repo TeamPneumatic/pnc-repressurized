@@ -36,10 +36,4 @@ public class GuiProgWidgetGoToLocation<T extends ProgWidgetGoToLocation> extends
         radioButtons.add(radioButton2);
         radioButton2.otherChoices = radioButtons;
     }
-
-    @Override
-    public void render(int mouseX, int mouseY, float partialTicks) {
-        super.render(mouseX, mouseY, partialTicks);
-    }
-
 }

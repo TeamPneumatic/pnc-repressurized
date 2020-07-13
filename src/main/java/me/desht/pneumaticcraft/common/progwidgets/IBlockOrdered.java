@@ -1,27 +1,28 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
-import net.minecraft.client.resources.I18n;
+import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 
 public interface IBlockOrdered {
-    enum EnumOrder {
+    enum Ordering implements ITranslatableEnum {
         CLOSEST("closest"), LOW_TO_HIGH("lowToHigh"), HIGH_TO_LOW("highToLow");
         public final String name;
 
-        EnumOrder(String name) {
+        Ordering(String name) {
             this.name = name;
-        }
-
-        public String getLocalizedName() {
-            return I18n.format("pneumaticcraft.gui.progWidget.blockOrder." + this);
         }
 
         @Override
         public String toString() {
             return name;
         }
+
+        @Override
+        public String getTranslationKey() {
+            return "pneumaticcraft.gui.progWidget.blockOrder." + this;
+        }
     }
 
-    EnumOrder getOrder();
+    Ordering getOrder();
 
-    void setOrder(EnumOrder order);
+    void setOrder(Ordering order);
 }

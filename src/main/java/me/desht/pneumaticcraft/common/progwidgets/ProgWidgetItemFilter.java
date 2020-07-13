@@ -94,11 +94,11 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
             if (useModSimilarity) {
                 curTooltip.add(new StringTextComponent("- Using Mod Similarity").applyTextStyle(TextFormatting.DARK_AQUA));
             } else {
-                curTooltip.add(new StringTextComponent((useItemDurability ? "Using" : "Ignoring") + " item damage").applyTextStyle(TextFormatting.DARK_AQUA));
+                curTooltip.add(new StringTextComponent((useItemDurability ? "- Using" : "- Ignoring") + " item damage").applyTextStyle(TextFormatting.DARK_AQUA));
                 if (matchBlock) {
                     curTooltip.add(new StringTextComponent("- Matching by block").applyTextStyle(TextFormatting.DARK_AQUA));
                 } else {
-                    curTooltip.add(new StringTextComponent(useNBT ? "Using NBT" : "Ignoring NBT").applyTextStyle(TextFormatting.DARK_AQUA));
+                    curTooltip.add(new StringTextComponent(useNBT ? "- Using NBT" : "- Ignoring NBT").applyTextStyle(TextFormatting.DARK_AQUA));
                 }
             }
         }

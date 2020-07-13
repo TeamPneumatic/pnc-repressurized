@@ -26,6 +26,7 @@ public abstract class GuiProgWidgetOptionBase<P extends IProgWidget> extends Gui
     @Override
     public void init() {
         super.init();
+
         String title = I18n.format(progWidget.getTranslationKey());
         addLabel(title, width / 2 - font.getStringWidth(title) / 2, guiTop + 5);
     }
@@ -33,6 +34,7 @@ public abstract class GuiProgWidgetOptionBase<P extends IProgWidget> extends Gui
     @Override
     public void render(int mouseX, int mouseY, float partialTicks) {
         renderBackground();
+
         super.render(mouseX, mouseY, partialTicks);
     }
 

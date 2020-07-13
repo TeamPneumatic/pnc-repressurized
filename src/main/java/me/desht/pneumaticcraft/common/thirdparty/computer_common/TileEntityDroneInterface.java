@@ -12,7 +12,7 @@ import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketShowArea;
 import me.desht.pneumaticcraft.common.network.PacketSpawnRing;
-import me.desht.pneumaticcraft.common.progwidgets.IBlockOrdered.EnumOrder;
+import me.desht.pneumaticcraft.common.progwidgets.IBlockOrdered.Ordering;
 import me.desht.pneumaticcraft.common.progwidgets.ICondition;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidget;
@@ -188,7 +188,7 @@ public class TileEntityDroneInterface extends TileEntity implements ITickableTil
             public Object[] call(Object[] args) {
                 requireArgs(args, 1, "'closest'/'highToLow'/'lowToHigh'");
                 String arg = (String) args[0];
-                for (EnumOrder order : EnumOrder.values()) {
+                for (Ordering order : Ordering.values()) {
                     if (order.toString().equalsIgnoreCase(arg)) {
                         getWidget().setOrder(order);
                         return null;

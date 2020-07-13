@@ -11,11 +11,11 @@ import net.minecraft.util.ResourceLocation;
 
 public class ProgWidgetPlace extends ProgWidgetDigAndPlace {
     public ProgWidgetPlace() {
-        super(ModProgWidgets.PLACE, ProgWidgetDigAndPlace.EnumOrder.LOW_TO_HIGH);
+        super(ModProgWidgets.PLACE, Ordering.LOW_TO_HIGH);
     }
 
     ProgWidgetPlace(ProgWidgetType<?> type) {
-        super(type, EnumOrder.LOW_TO_HIGH);
+        super(type, Ordering.LOW_TO_HIGH);
     }
 
     @Override

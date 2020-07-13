@@ -33,7 +33,7 @@ import java.util.function.Predicate;
 public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrdered, IGotoWidget,
         IEntityProvider, ITextWidget, ICondition, IItemDropper, ILiquidFiltered, IRedstoneEmissionWidget,
         IRenamingWidget, ICraftingWidget, IMaxActions, IBlockRightClicker, ILiquidExport, ISignEditWidget, IToolUser {
-    private EnumOrder order = EnumOrder.CLOSEST;
+    private Ordering order = Ordering.CLOSEST;
     private boolean[] sides = new boolean[6];
     private final Set<BlockPos> area = new HashSet<>();
     private final List<ProgWidgetItemFilter> itemWhitelist = new ArrayList<>();
@@ -57,6 +57,7 @@ public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrder
     private boolean requiresTool;
     String[] signText = new String[0];
     private boolean pickupDelay;
+    private RightClickType clickType = RightClickType.CLICK_ITEM;
 
     public ProgWidgetCC() {
         super(ModProgWidgets.COMPUTER_CONTROL);
@@ -99,12 +100,12 @@ public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrder
     }
 
     @Override
-    public void setOrder(EnumOrder order) {
+    public void setOrder(Ordering order) {
         this.order = order;
     }
 
     @Override
-    public EnumOrder getOrder() {
+    public Ordering getOrder() {
         return order;
     }
 
@@ -467,6 +468,11 @@ public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrder
     @Override
     public boolean isSneaking() {
         return sneaking;
+    }
+
+    @Override
+    public RightClickType getClickType() {
+        return clickType;
     }
 
     @Override

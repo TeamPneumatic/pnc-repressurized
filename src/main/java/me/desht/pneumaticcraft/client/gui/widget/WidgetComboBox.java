@@ -1,11 +1,14 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
+import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.lib.GuiConstants;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.resources.I18n;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class WidgetComboBox extends WidgetTextField implements IDrawAfterRender {
@@ -53,9 +56,9 @@ public class WidgetComboBox extends WidgetTextField implements IDrawAfterRender 
 
     private List<String> getApplicableElements() {
 //        if (applicable == null) {
-            applicable = elements.stream()
-                    .filter(element -> fixedOptions || element.toLowerCase().contains(getText().toLowerCase()))
-                    .collect(Collectors.toList());
+        applicable = elements.stream()
+                .filter(element -> fixedOptions || element.toLowerCase().contains(getText().toLowerCase()))
+                .collect(Collectors.toList());
 //        }
         return applicable;
     }
@@ -155,4 +158,33 @@ public class WidgetComboBox extends WidgetTextField implements IDrawAfterRender 
         }
     }
 
+    /**
+     * Convenience method: set up a combo box to display the values of an enum
+     * @param initialValue the initial value to display
+     * @param xlate a function which gets the string representation of a given value of the enum
+     * @param <T> enum type
+     * @return the combo box
+     */
+    public final <T extends Enum<T>> WidgetComboBox initFromEnum(T initialValue, Function<T, String> xlate) {
+        @SuppressWarnings("unchecked")
+        List<T> values = Arrays.stream(initialValue.getClass().getEnumConstants())
+                .filter(val -> initialValue.getClass().isAssignableFrom(val.getClass()))
+                .map(val -> (T) val)
+                .collect(Collectors.toList());
+
+        List<String> s = values.stream().map(xlate).collect(Collectors.toList());
+        setShouldSort(false);
+        setElements(s);
+        setFixedOptions();
+        selectElement(initialValue.ordinal());
+        return this;
+    }
+
+    public final <T extends Enum<T>> WidgetComboBox initFromEnum(T initialValue) {
+        if (initialValue instanceof ITranslatableEnum) {
+            return initFromEnum(initialValue, e -> I18n.format(((ITranslatableEnum) e).getTranslationKey()));
+        } else {
+            throw new IllegalArgumentException(initialValue + " must implement ITranslatableEnum!");
+        }
+    }
 }

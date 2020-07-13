@@ -92,13 +92,8 @@ public class GuiRedstoneModule extends GuiTubeModule<ModuleRedstone> {
 
         if (!output) return;
 
-        List<String> ops = new ArrayList<>();
-        for (Operation op : Operation.values()) {
-            ops.add(I18n.format(op.getTranslationKey()));
-        }
         comboBox = new WidgetComboBox(font, xBase, guiTop + 43, xSize - xBase + guiLeft - 10, 12)
-                .setFixedOptions().setShouldSort(false).setElements(ops);
-        comboBox.selectElement(module.getOperation().ordinal());
+                .initFromEnum(module.getOperation());
         comboBox.active = upgraded;
         addButton(comboBox);
 

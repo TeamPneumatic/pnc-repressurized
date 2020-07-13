@@ -42,9 +42,9 @@ public class GuiProgWidgetCoordinateOperator extends GuiProgWidgetAreaShow<ProgW
 
     @Override
     public void onClose() {
-        super.onClose();
-
         progWidget.setVariable(variableField.getText());
+
+        super.onClose();
     }
 
     @Override

@@ -113,9 +113,9 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase<ProgWidgetI
 
     @Override
     public void onClose() {
-        progWidget.setVariable(variableField.getText());
-
         super.onClose();
+
+        progWidget.setVariable(variableField.getText());
     }
     
     @Override

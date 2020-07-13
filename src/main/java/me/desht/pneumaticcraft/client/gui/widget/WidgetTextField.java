@@ -42,6 +42,11 @@ public class WidgetTextField extends TextFieldWidget implements ITooltipProvider
         Collections.addAll(this.tooltip, tooltip);
     }
 
+    public void setTooltip(List<String> tooltip) {
+        this.tooltip.clear();
+        this.tooltip.addAll(tooltip);
+    }
+
     @Override
     public void addTooltip(double mouseX, double mouseY, List<String> curTip, boolean shift) {
         if (!isFocused()) {

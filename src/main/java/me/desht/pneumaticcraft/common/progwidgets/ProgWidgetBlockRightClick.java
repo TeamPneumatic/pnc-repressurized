@@ -18,6 +18,7 @@ import java.util.List;
 public class ProgWidgetBlockRightClick extends ProgWidgetPlace implements IBlockRightClicker, ISidedWidget {
     private Direction clickSide = Direction.UP;
     private boolean sneaking;
+    private RightClickType clickType = RightClickType.CLICK_ITEM;
 
     public ProgWidgetBlockRightClick() {
         super(ModProgWidgets.BLOCK_RIGHT_CLICK);
@@ -30,7 +31,12 @@ public class ProgWidgetBlockRightClick extends ProgWidgetPlace implements IBlock
 
     @Override
     public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
-        return setupMaxActions(new DroneAIRightClickBlock(drone, (ProgWidgetAreaItemBase) widget), (IMaxActions) widget);
+        return setupMaxActions(new DroneAIRightClickBlock(drone, (ProgWidgetBlockRightClick) widget), (IMaxActions) widget);
+    }
+
+    @Override
+    public boolean supportsMaxActions() {
+        return false;
     }
 
     @Override
@@ -40,6 +46,15 @@ public class ProgWidgetBlockRightClick extends ProgWidgetPlace implements IBlock
 
     public void setSneaking(boolean sneaking) {
         this.sneaking = sneaking;
+    }
+
+    @Override
+    public RightClickType getClickType() {
+        return clickType;
+    }
+
+    public void setClickType(RightClickType clickType) {
+        this.clickType = clickType;
     }
 
     public Direction getClickSide() {
@@ -59,6 +74,9 @@ public class ProgWidgetBlockRightClick extends ProgWidgetPlace implements IBlock
         if (sneaking) {
             curTooltip.add(new TranslationTextComponent("pneumaticcraft.gui.progWidget.blockRightClick.sneaking"));
         }
+        curTooltip.add(new TranslationTextComponent("pneumaticcraft.gui.progWidget.blockRightClick.operation")
+                .appendText(": ")
+                .appendSibling(new TranslationTextComponent(clickType.getTranslationKey())));
     }
 
     @Override
@@ -66,6 +84,7 @@ public class ProgWidgetBlockRightClick extends ProgWidgetPlace implements IBlock
         super.writeToNBT(tag);
         tag.putBoolean("sneaking", sneaking);
         tag.putInt("dir", clickSide.ordinal());
+        tag.putString("clickType", clickType.toString());
     }
 
     @Override
@@ -73,6 +92,7 @@ public class ProgWidgetBlockRightClick extends ProgWidgetPlace implements IBlock
         super.readFromNBT(tag);
         sneaking = tag.getBoolean("sneaking");
         clickSide = Direction.byIndex(tag.getInt("dir"));
+        clickType = tag.contains("clickType") ? RightClickType.valueOf(tag.getString("clickType")) : RightClickType.CLICK_ITEM;
     }
 
     @Override
@@ -80,6 +100,7 @@ public class ProgWidgetBlockRightClick extends ProgWidgetPlace implements IBlock
         super.writeToPacket(buf);
         buf.writeBoolean(sneaking);
         buf.writeByte(clickSide.ordinal());
+        buf.writeByte(clickType.ordinal());
     }
 
     @Override
@@ -87,6 +108,7 @@ public class ProgWidgetBlockRightClick extends ProgWidgetPlace implements IBlock
         super.readFromPacket(buf);
         sneaking = buf.readBoolean();
         clickSide = Direction.byIndex(buf.readByte());
+        clickType = RightClickType.values()[buf.readByte()];
     }
 
     @Override

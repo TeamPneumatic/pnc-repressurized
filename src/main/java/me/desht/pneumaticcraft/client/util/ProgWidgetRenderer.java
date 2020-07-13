@@ -67,11 +67,12 @@ public class ProgWidgetRenderer {
     }
 
     public static void renderExtras(IProgWidget progWidget) {
-        if (progWidget.getExtraStringInfo() != null && !progWidget.getExtraStringInfo().isEmpty()) {
+        String info = progWidget.getExtraStringInfo();
+        if (info != null && !info.isEmpty()) {
             RenderSystem.pushMatrix();
             RenderSystem.scaled(0.5, 0.5, 0.5);
             FontRenderer fr = Minecraft.getInstance().fontRenderer;
-            List<String> splittedInfo = PneumaticCraftUtils.splitString(progWidget.getExtraStringInfo(), 20);
+            List<String> splittedInfo = PneumaticCraftUtils.splitString(info, 20);
             for (int i = 0; i < splittedInfo.size(); i++) {
                 int stringLength = fr.getStringWidth(splittedInfo.get(i));
                 int startX = progWidget.getWidth() / 2 - stringLength / 4;

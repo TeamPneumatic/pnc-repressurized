@@ -35,11 +35,6 @@ public class GuiProgWidgetString<T extends ProgWidgetText> extends GuiProgWidget
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        return super.keyPressed(keyCode, scanCode, modifiers);
-    }
-
-    @Override
     public void onClose() {
         progWidget.string = textfield.getText();
 

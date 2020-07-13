@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketOpenTubeModuleGui;
 import me.desht.pneumaticcraft.common.network.PacketSyncRedstoneModuleToClient;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
+import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -331,7 +332,7 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
         }
     }
 
-    public enum Operation {
+    public enum Operation implements ITranslatableEnum {
         PASSTHROUGH(false, false),
         AND(true, false),
         OR(true, false),
@@ -352,6 +353,7 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
             this.useConst = useConst;
         }
 
+        @Override
         public String getTranslationKey() {
             return "pneumaticcraft.gui.redstoneModule.operation_" + this.toString().toLowerCase();
         }

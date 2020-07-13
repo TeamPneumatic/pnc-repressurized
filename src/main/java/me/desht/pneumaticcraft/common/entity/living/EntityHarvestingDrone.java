@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.entity.living;
 
 import me.desht.pneumaticcraft.common.core.ModEntities;
-import me.desht.pneumaticcraft.common.progwidgets.IBlockOrdered.EnumOrder;
+import me.desht.pneumaticcraft.common.progwidgets.IBlockOrdered.Ordering;
 import me.desht.pneumaticcraft.common.progwidgets.*;
 import me.desht.pneumaticcraft.common.util.DroneProgramBuilder;
 import me.desht.pneumaticcraft.common.util.IOHelper;
@@ -29,7 +29,7 @@ public class EntityHarvestingDrone extends EntityBasicDrone {
         TileEntity te = world.getTileEntity(clickPos);
         ProgWidgetHarvest harvestPiece = new ProgWidgetHarvest();
         harvestPiece.setRequiresTool(IOHelper.getInventoryForTE(te, facing).isPresent());
-        harvestPiece.setOrder(EnumOrder.HIGH_TO_LOW);
+        harvestPiece.setOrder(Ordering.HIGH_TO_LOW);
         
         DroneProgramBuilder builder = new DroneProgramBuilder();
         builder.add(new ProgWidgetStart());
