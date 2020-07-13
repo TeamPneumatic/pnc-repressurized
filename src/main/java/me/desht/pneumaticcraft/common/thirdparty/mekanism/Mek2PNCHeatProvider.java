@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.common.config.PNCConfig.Common.Integration;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicAmbient;
 import mekanism.api.heat.IHeatHandler;
 import mekanism.api.transmitters.ITransmitter;
+import mekanism.common.tile.TileEntityQuantumEntangloporter;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
@@ -45,7 +46,7 @@ public class Mek2PNCHeatProvider implements ICapabilityProvider {
         }
 
         if (handlers.isEmpty()) {
-            // lazy init of the handlers list; this cap could be attached to any TE
+            // lazy init of the handlers list; this cap could be attached to any TE so let's not use more memory than necessary
             for (int i = 0; i < 7; i++) {  // 6 faces plus null face
                 handlers.add(LazyOptional.empty());
             }
@@ -59,7 +60,7 @@ public class Mek2PNCHeatProvider implements ICapabilityProvider {
                 heatHandler.addListener(l -> handlers.set(idx, LazyOptional.empty()));
                 Mek2PNCHeatAdapter adapter = new Mek2PNCHeatAdapter(side, heatHandler,
                         HeatExchangerLogicAmbient.atPosition(te.getWorld(), te.getPos()).getAmbientTemperature(),
-                        te instanceof ITransmitter);
+                        getResistanceMultiplier(te));
                 handlers.set(idx, LazyOptional.of(() -> adapter));
             }
         }
@@ -68,17 +69,34 @@ public class Mek2PNCHeatProvider implements ICapabilityProvider {
         return (LazyOptional<T>) handlers.get(idx);
     }
 
+    // Mekanism transmitters (i.e. Thermodynamic Conductors or TC's) get special treatment, due to the
+    // way Mek handles heat; Mek heater TE's will continue to push heat out to reduce their own
+    // temperature back to 300K (Mek ambient), regardless of how hot the sink is.
+    // TC's, with a heat capacity of only 1.0, get very hot very fast.
+    // This poses a problem for PNC:R, since it handles heat by temperature delta between the two blocks, and
+    // TC's will overheat PNC machines really really quickly.  As a kludge, we give TC's a very high thermal
+    // resistance when connected to PNC:R blocks, limiting the rate with which a PNC:R heat exchanger will
+    // equalise heat directly. This doesn't stop the TC from *pushing* heat, though.
+    private double getResistanceMultiplier(TileEntity te) {
+        // FIXME using non-API way of checking if tile entity is an Entangloporter
+        if (te instanceof ITransmitter || te instanceof TileEntityQuantumEntangloporter) {
+            return 10000000;
+        } else {
+            return 1;
+        }
+    }
+
     public static class Mek2PNCHeatAdapter implements IHeatExchangerLogic {
         private final Direction side;
         private final LazyOptional<IHeatHandler> heatHandler;
         private final double ambientTemperature;
-        private final boolean isTransmitter;
+        private final double thermalResistanceMult;
 
-        public Mek2PNCHeatAdapter(Direction side, LazyOptional<IHeatHandler> heatHandler, double ambientTemperature, boolean isTransmitter) {
+        public Mek2PNCHeatAdapter(Direction side, LazyOptional<IHeatHandler> heatHandler, double ambientTemperature, double thermalResistanceMult) {
             this.side = side;
             this.heatHandler = heatHandler;
             this.ambientTemperature = ambientTemperature;
-            this.isTransmitter = isTransmitter;
+            this.thermalResistanceMult = thermalResistanceMult;
         }
 
         @Override
@@ -127,16 +145,7 @@ public class Mek2PNCHeatProvider implements ICapabilityProvider {
 
         @Override
         public double getThermalResistance() {
-            // Mekanism transmitters (i.e. Thermodynamic Conductors or TC's) get special treatment, due to the
-            // way Mek handles heat; Mek heater TE's will continue to push heat out to reduce their own
-            // temperature back to 300K (Mek ambient), regardless of how hot the sink is.
-            // TC's, with a heat capacity of only 1.0, get very hot very fast.
-            // This poses a problem for PNC:R, since it handles heat by temperature delta between the two blocks, and
-            // TC's will overheat PNC machines really really quickly.  As a kludge, we give TC's a very high thermal
-            // resistance when connected to PNC:R blocks, limiting the rate with which a PNC:R heat exchanger will
-            // equalise heat directly. This doesn't stop the TC from *pushing* heat, though.
-            double mult = isTransmitter ? 100000000 : 1;
-            return heatHandler.map(h -> h.getInverseConduction(0) * mult).orElse(1d);
+            return heatHandler.map(h -> h.getInverseConduction(0) * thermalResistanceMult).orElse(1d);
         }
 
         @Override
