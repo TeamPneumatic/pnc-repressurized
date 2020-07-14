@@ -24,6 +24,7 @@ import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.item.crafting.SpecialRecipeSerializer;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.potion.Potions;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.Tag;
 import net.minecraft.util.IItemProvider;
@@ -1063,11 +1064,11 @@ public class ModRecipeProvider extends RecipeProvider {
                 .build(consumer, RL("explosion_crafting/compressed_iron_block"));
 
         // heat frame cooling
-        heatFrameCooling(Ingredient.fromItems(Items.WATER_BUCKET), 273,
+        heatFrameCooling(FluidIngredient.of(1000, FluidTags.WATER), 273,
                 new ItemStack(Blocks.ICE))
                 .build(consumer, RL("heat_frame_cooling/ice"));
-        heatFrameCooling(Ingredient.fromItems(Items.LAVA_BUCKET), 273,
-                new ItemStack(Blocks.OBSIDIAN))
+        heatFrameCooling(FluidIngredient.of(1000, FluidTags.LAVA), 273,
+                new ItemStack(Blocks.OBSIDIAN), 0.025f, 0.5f)
                 .build(consumer, RL("heat_frame_cooling/obsidian"));
         heatFrameCooling(FluidIngredient.of(1000, PneumaticCraftTags.Fluids.PLASTIC), 273,
                 new ItemStack(ModItems.PLASTIC.get()), 0.01f, 0.75f)

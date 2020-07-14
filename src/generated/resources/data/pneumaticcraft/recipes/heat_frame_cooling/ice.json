@@ -1,7 +1,9 @@
 {
   "type": "pneumaticcraft:heat_frame_cooling",
   "input": {
-    "item": "minecraft:water_bucket"
+    "type": "pneumaticcraft:fluid",
+    "tag": "minecraft:water",
+    "amount": 1000
   },
   "max_temp": 273,
   "result": {
