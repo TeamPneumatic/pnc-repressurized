@@ -23,10 +23,15 @@ Changes are in reverse chronological order; newest changes at the top.
 * More Pneumatic Armor settings (primarily around air usage) are now tunable via mod config
 * Jet Boots GUI now offers a throttle control slider bar (default is 100% power)
   * Reducing this might be useful if you have fast jet boots in a tight space, like caves...
-  
+* Improved visual appearance of temperature gauges in machine GUI's
+
 ### Fixes
 * Fixed performance issue when world has a large number of entities
   (an event handler was running which scanned all entities every tick, when it only needed to scan a few)
+* Fixed bug where upgrades weren't properly processed in chunkloaded machines in other dimensions
+  * Caused machines with volume upgrades to explode on world reload
+* Fixed pathing bug making Amadrones unable to collect more than two stacks of items
+* Fixed keybind handling bug causing modifiers (shift/control/alt) to be ignored in some circumstances
 
 ## 1.3.2-42 (26 Jun 2020)
 

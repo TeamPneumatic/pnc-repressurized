@@ -199,7 +199,7 @@ public class CommonConfig {
                 .translation("pneumaticcraft.config.common.machine_properties.elevator_base_blocks_per_base")
                 .defineInRange("elevator_base_blocks_per_base", 4, 1, 256);
         machines.fluxCompressorEfficiency = builder
-                .comment("Changing this value will alter the pressurized air production of the Flux Compressor. The input, RF, will stay the same")
+                .comment("The amount of air produced by using 100 FE (Forge Energy) in the flux compressor")
                 .translation("pneumaticcraft.config.common.machine_properties.flux_compressor_efficiency")
                 .defineInRange("flux_compressor_efficiency", 40, 0, Integer.MAX_VALUE);
         machines.keroseneLampCanUseAnyFuel = builder
@@ -211,7 +211,7 @@ public class CommonConfig {
                 .translation("pneumaticcraft.config.common.machine_properties.kerosene_lamp_fuel_efficiency")
                 .defineInRange("kerosene_lamp_fuel_efficiency", 1.0, 0, Double.MAX_VALUE);
         machines.kineticCompressorEfficiency = builder
-                .comment("Changing this value will alter the pressurized air production of the Kinetic Compressor. The input, MJ, will stay the same")
+                .comment("The amount of air produced by using 100 MJ (Minecraft Joules) in the flux compressor")
                 .translation("pneumaticcraft.config.common.machine_properties.kinetic_compressor_efficiency")
                 .defineInRange("kinetic_compressor_efficiency", 40, 0, Integer.MAX_VALUE);
         machines.liquidHopperDispenser = builder
@@ -227,11 +227,11 @@ public class CommonConfig {
                 .translation("pneumaticcraft.config.common.machine_properties.plastic_mixer_plastic_ratio")
                 .defineInRange("plastic_mixer_plastic_ratio", 1000, 0, Integer.MAX_VALUE);
         machines.pneumaticDynamoEfficiency = builder
-                .comment("Changing this value will alter the pressurized air usage of the Pneumatic Dynamo. The output, RF, will stay the same")
+                .comment("The amount of FE (Forge Energy) produced by using 100mL of air in the Pneumatic Dynamo")
                 .translation("pneumaticcraft.config.common.machine_properties.pneumatic_dynamo_efficiency")
                 .defineInRange("pneumatic_dynamo_efficiency", 40, 0, Integer.MAX_VALUE);
         machines.pneumaticEngineEfficiency = builder
-                .comment("Changing this value will alter the pressurized air usage of the Pneumatic Engine. The output, MJ, will stay the same")
+                .comment("The amount of MJ (Minecraft Joules) produced by using 100mL of air in the Pneumatic Dynamo")
                 .translation("pneumaticcraft.config.common.machine_properties.pneumatic_engine_efficiency")
                 .defineInRange("pneumatic_engine_efficiency", 40, 0, Integer.MAX_VALUE);
         machines.pneumaticGeneratorEfficiency = builder

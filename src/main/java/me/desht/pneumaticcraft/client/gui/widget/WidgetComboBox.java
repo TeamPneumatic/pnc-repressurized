@@ -167,14 +167,14 @@ public class WidgetComboBox extends WidgetTextField implements IDrawAfterRender 
      */
     public final <T extends Enum<T>> WidgetComboBox initFromEnum(T initialValue, Function<T, String> xlate) {
         @SuppressWarnings("unchecked")
-        List<T> values = Arrays.stream(initialValue.getClass().getEnumConstants())
+        List<String> labels = Arrays.stream(initialValue.getClass().getEnumConstants())
                 .filter(val -> initialValue.getClass().isAssignableFrom(val.getClass()))
                 .map(val -> (T) val)
+                .map(xlate)
                 .collect(Collectors.toList());
 
-        List<String> s = values.stream().map(xlate).collect(Collectors.toList());
         setShouldSort(false);
-        setElements(s);
+        setElements(labels);
         setFixedOptions();
         selectElement(initialValue.ordinal());
         return this;
