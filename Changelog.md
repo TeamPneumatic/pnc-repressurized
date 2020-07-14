@@ -6,7 +6,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.15.2
 
-## 1.4.0-?? (unreleased)
+## 1.4.0-53 (14 Jul 2020)
 
 ### New
 * Mekanism integration, still fairly experimental and subject to rebalancing
@@ -25,6 +25,11 @@ Changes are in reverse chronological order; newest changes at the top.
 * Jet Boots GUI now offers a throttle control slider bar (default is 100% power)
   * Reducing this might be useful if you have fast jet boots in a tight space, like caves...
 * Improved visual appearance of temperature gauges in machine GUI's
+* Heat Frame Cooling improvements
+  * Making Ice and Obsidian can now be done with tanks (PNC, but also some other modded tanks) containing Water or Lava respectively, not just buckets
+  * Made recipes with bonus output a bit more obvious in JEI (spot the big yellow "+" icon!)
+  * Recipes taking fluid ingredients now show the ingredient in buckets and in tanks in JEI, for a visual clue
+  * Added bonus output for Lava->Obsidian, up to 25% depending on Heat Frame temperature
 
 ### Fixes
 * Fixed performance issue when world has a large number of entities
