@@ -18,10 +18,6 @@ repositories {
     flatDir {
         dir 'libs/'
     }
-//    maven {
-//        name = "CoFH Maven"
-//        url = "http://maven.covers1624.net"
-//    }
     maven {
         name = "JEI"
         url = "http://dvs1.progwml6.com/files/maven"
@@ -47,16 +43,12 @@ repositories {
         url = "https://maven.theillusivec4.top/"
     }
 //    maven {
+//        name = "CoFH Maven"
+//        url = "http://maven.covers1624.net"
+//    }
+//    maven {
 //        name = "OpenComputers"
 //        url = "http://maven.cil.li/"
-//    }
-//    maven {
-//        name = "ComputerCraft"
-//        url = "http://cc.crzd.me/maven"
-//    }
-//    maven {
-//        name = "hwyla-temp"
-//        url = "https://github.com/TehNut/temporary-maven-thing/tree/master/maven"
 //    }
 //    maven {
 //        name = "K-4u Mod maven"
@@ -65,17 +57,6 @@ repositories {
 //    maven {
 //        name = "ic2"
 //        url = "http://maven.ic2.player.to/"
-//    }
-//    maven {
-//        name = "Curseforge"
-//        url = "https://minecraft.curseforge.com/api/maven/"
-//    }
-//    maven { // Albedo Lights
-//        url = 'https://repo.elytradev.com/'
-//    }
-//    maven { // Baubles
-//        name = "thiakil"
-//        url = "http://maven.thiakil.com"
 //    }
 }
 
@@ -196,8 +177,6 @@ minecraft {
 
 dependencies {
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
-//    compileOnly fg.deobf("mcp.mobius.waila:Hwyla:${hwyla_version}:api")
-//    runtimeOnly fg.deobf("mcp.mobius.waila:Hwyla:${hwyla_version}")
     compileOnly fg.deobf ("mcjty.theoneprobe:TheOneProbe-1.15:${top_version}:api")
     runtimeOnly fg.deobf ("mcjty.theoneprobe:TheOneProbe-1.15:${top_version}")
     compileOnly fg.deobf("mezz.jei:jei-1.15.2:${jei_version}:api")
@@ -211,6 +190,8 @@ dependencies {
     compile fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:${immersive_engineering_version}")
     compile fg.deobf("curse.maven:mekanism:${mekanism_curse_id}")
     compile fg.deobf("curse.maven:hwyla:${hwyla_curse_id}")
+//    compileOnly fg.deobf("mcp.mobius.waila:Hwyla:${hwyla_version}:api")
+//    runtimeOnly fg.deobf("mcp.mobius.waila:Hwyla:${hwyla_version}")
 //    compileOnly "cofh:RedstoneFlux:1.12-${redstone_flux_version}:universal"
 //    compileOnly "cofh:CoFHCore:1.12.2-${cofhcore_version}:deobf"
 //    compileOnly "li.cil.oc:OpenComputers:MC1.12.2-${oc_version}:api"
