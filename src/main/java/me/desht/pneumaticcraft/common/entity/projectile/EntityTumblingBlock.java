@@ -120,12 +120,13 @@ public class EntityTumblingBlock extends ThrowableEntity {
     @Override
     protected void onImpact(RayTraceResult result) {
         if (!world.isRemote) {
+            remove();
             if (result.getType() == RayTraceResult.Type.BLOCK) {
-                remove();
-                BlockRayTraceResult brtr = (BlockRayTraceResult) result;
-                if (!tryPlaceAsBlock(brtr)) {
+                if (!tryPlaceAsBlock((BlockRayTraceResult) result)) {
                     dropAsItem();
                 }
+            } else {
+                dropAsItem();
             }
         }
     }
@@ -139,7 +140,7 @@ public class EntityTumblingBlock extends ThrowableEntity {
         Direction face = brtr.getFace();
         PlayerEntity placer = getThrower() instanceof PlayerEntity ? (PlayerEntity) getThrower() : getFakePlayer();
         BlockState state = world.getBlockState(pos0);
-        BlockItemUseContext ctx = new BlockItemUseContext(new ItemUseContext(placer, Hand.MAIN_HAND, brtr));
+        BlockItemUseContext ctx = new LocalBlockItemUseContext(new ItemUseContext(placer, Hand.MAIN_HAND, brtr));
         BlockPos pos = state.isReplaceable(ctx) ? pos0 : pos0.offset(face);
 
         if (world.getBlockState(pos).isReplaceable(ctx)) {
@@ -166,5 +167,24 @@ public class EntityTumblingBlock extends ThrowableEntity {
         fakePlayer.setPosition(getPosX(), getPosY(), getPosZ());
         fakePlayer.setHeldItem(Hand.MAIN_HAND, getStack());
         return fakePlayer;
+    }
+
+    /**
+     * Stores a copy of the item being used, so the player's held version doesn't get modified when
+     * {@link BlockItem#tryPlace(BlockItemUseContext)} is called by {@link #tryPlaceAsBlock(BlockRayTraceResult)}
+     * (the item has already been taken from the player, when the entity was created)
+     */
+    private static class LocalBlockItemUseContext extends BlockItemUseContext {
+        private final ItemStack stack;
+
+        public LocalBlockItemUseContext(ItemUseContext context) {
+            super(context);
+            stack = context.getItem().copy();
+        }
+
+        @Override
+        public ItemStack getItem() {
+            return stack;
+        }
     }
 }

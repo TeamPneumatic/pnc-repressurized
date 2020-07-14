@@ -13,8 +13,8 @@ import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethod;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethodRegistry;
+import me.desht.pneumaticcraft.common.util.EntityDistanceComparator;
 import me.desht.pneumaticcraft.common.util.IOHelper;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.fakeplayer.FakeNetHandlerPlayerServer;
 import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -708,21 +708,13 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     }
 
     private Entity getCloseEntityIfUpgraded() {
-        int entityUpgrades = getUpgrades(EnumUpgrade.ENTITY_TRACKER);
+        int entityUpgrades = Math.min(5, getUpgrades(EnumUpgrade.ENTITY_TRACKER));
         if (entityUpgrades > 0) {
-            entityUpgrades = Math.min(entityUpgrades, 5);
-            List<LivingEntity> entities = getWorld().getEntitiesWithinAABB(LivingEntity.class, new AxisAlignedBB(getPos().add(-entityUpgrades, -entityUpgrades, -entityUpgrades), getPos().add(1 + entityUpgrades, 1 + entityUpgrades, 1 + entityUpgrades)));
-            if (entities.isEmpty()) return null;
-            Entity closest = entities.get(0);
-            Vec3d pos = PneumaticCraftUtils.getBlockCentre(getPos());
-            for (Entity entity : entities) {
-                double d1 = PneumaticCraftUtils.distBetweenSq(closest.getPosX(), closest.getPosY(), closest.getPosZ(), pos.x, pos.y, pos.z);
-                double d2 = PneumaticCraftUtils.distBetweenSq(entity.getPosX(), entity.getPosY(), entity.getPosZ(), pos.x, pos.y, pos.z);
-                if (d1 > d2) {
-                    closest = entity;
-                }
+            List<LivingEntity> entities = getWorld().getEntitiesWithinAABB(LivingEntity.class, new AxisAlignedBB(getPos()).grow(entityUpgrades));
+            if (!entities.isEmpty()) {
+                entities.sort(new EntityDistanceComparator(getPos()));
+                return entities.get(0);
             }
-            return closest;
         }
         return null;
     }

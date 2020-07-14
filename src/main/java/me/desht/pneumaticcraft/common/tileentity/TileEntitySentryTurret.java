@@ -13,6 +13,7 @@ import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
+import me.desht.pneumaticcraft.common.util.EntityDistanceComparator;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.fakeplayer.FakeNetHandlerPlayerServer;
 import me.desht.pneumaticcraft.lib.NBTKeys;
@@ -39,7 +40,6 @@ import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -87,7 +87,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
                 if ((getWorld().getGameTime() & 0xF) == 0) {
                     List<LivingEntity> entities = getWorld().getEntitiesWithinAABB(LivingEntity.class, getTargetingBoundingBox(), entitySelector);
                     if (entities.size() > 0) {
-                        entities.sort(new TargetSorter());
+                        entities.sort(new EntityDistanceComparator(getPos()));
                         getMinigun().setAttackTarget(entities.get(0));
                         targetEntityId = entities.get(0).getEntityId();
                     } else {
@@ -345,21 +345,6 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
         @Override
         public boolean isValid() {
             return !TileEntitySentryTurret.this.isRemoved();
-        }
-    }
-
-    private class TargetSorter implements Comparator<Entity> {
-        private final BlockPos pos;
-
-        TargetSorter() {
-            pos = new BlockPos(getPos().getX(), getPos().getY(), getPos().getZ());
-        }
-
-        @Override
-        public int compare(Entity arg0, Entity arg1) {
-            double dist1 = PneumaticCraftUtils.distBetweenSq(pos, arg0.getPosition());
-            double dist2 = PneumaticCraftUtils.distBetweenSq(pos, arg1.getPosition());
-            return Double.compare(dist1, dist2);
         }
     }
 
