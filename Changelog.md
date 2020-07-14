@@ -11,11 +11,12 @@ Changes are in reverse chronological order; newest changes at the top.
 ### New
 * Mekanism integration, still fairly experimental and subject to rebalancing
   * Mekanism and PneumaticCraft blocks will now exchange heat
+    * See `config/pneumaticcraft-common.toml`, "Integration" section, for some settings on heat exchange properties
   * Mekanism Fuelwood and Resistive Heaters can be used to heat PNC:R machines like the Refinery or Thermopneumatic Processing Plant
   * PNC:R Vortex Tube can be used to heat the Mekanism boiler
   * Heat cables (PNC:R Heat Pipes and Mekanism Thermodynamic Conductors will connect to Mekanism and PNC:R machines, respectively)
   * Mekanism Liquid Ethylene and Liquid Hydrogen can be used as fuels in PNC:R Liquid Compressors
-  * Mekanism Configurator can be used to wrench PNC:R block
+  * Mekanism Configurator can be used to wrench PNC:R blocks
 
 ### Updates
 * PNC:R loot items (Stop! Worm, Nuke Virus and Spawner Agitator) should be turning up again in dungeon loot
@@ -28,10 +29,11 @@ Changes are in reverse chronological order; newest changes at the top.
 ### Fixes
 * Fixed performance issue when world has a large number of entities
   (an event handler was running which scanned all entities every tick, when it only needed to scan a few)
-* Fixed bug where upgrades weren't properly processed in chunkloaded machines in other dimensions
+* Fixed bug where upgrades weren't always properly processed in chunkloaded machines
   * Caused machines with volume upgrades to explode on world reload
-* Fixed pathing bug making Amadrones unable to collect more than two stacks of items
+* Fixed pathfinding bug making Amadrones unable to collect more than two stacks of items
 * Fixed keybind handling bug causing modifiers (shift/control/alt) to be ignored in some circumstances
+* Fixed buggy Chestplate Launcher behaviour (wrongly consuming the mainhand item)
 
 ## 1.3.2-42 (26 Jun 2020)
 

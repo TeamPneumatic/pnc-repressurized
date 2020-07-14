@@ -70,7 +70,8 @@ public class JEIExplosionCraftingCategory implements IRecipeCategory<ExplosionCr
 
     @Override
     public void draw(ExplosionCraftingRecipe recipe, double mouseX, double mouseY) {
-        Helpers.drawIconAt(icon,30, 0);
+        icon.draw(30, 0);
+//        Helpers.drawIconAt(icon,30, 0);
     }
 
     @Override

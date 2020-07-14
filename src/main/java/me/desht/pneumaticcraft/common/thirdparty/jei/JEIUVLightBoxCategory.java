@@ -88,7 +88,7 @@ public class JEIUVLightBoxCategory implements IRecipeCategory<UVLightBoxRecipe> 
     @Override
     public void draw(UVLightBoxRecipe recipe, double mouseX, double mouseY) {
         progressBar.draw(22, 0);
-        Helpers.drawIconAt(icon, 30, -2);
+        icon.draw(30, -2);
     }
 
     @Override

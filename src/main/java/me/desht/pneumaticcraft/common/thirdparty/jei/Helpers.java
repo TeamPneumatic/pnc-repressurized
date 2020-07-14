@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticScreenBase;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -14,12 +14,12 @@ import java.util.List;
 
 class Helpers {
     static void drawIconAt(IDrawable icon, int x, int y) {
-        GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-        GlStateManager.disableDepthTest();
-        GlStateManager.enableAlphaTest();
+        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.disableDepthTest();
+        RenderSystem.enableAlphaTest();
         icon.draw(x, y);
-        GlStateManager.enableDepthTest();
-        GlStateManager.disableAlphaTest();
+        RenderSystem.enableDepthTest();
+        RenderSystem.disableAlphaTest();
     }
 
     static void drawTextAt(String translationKey, int x, int y) {

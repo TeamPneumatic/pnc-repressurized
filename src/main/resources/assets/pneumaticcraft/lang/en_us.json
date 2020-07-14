@@ -694,7 +694,7 @@
    "pneumaticcraft.gui.misc.requiredTemperature" : "Required Temperature: %d°C",
    "pneumaticcraft.gui.misc.requiredTemperatureString" : "Required Temperature: %s",
    "pneumaticcraft.gui.nei.recipe.explosionCrafting" : "Throw some of the input material on the ground, and set off an explosion next to it.${br}${br}§eAverage material loss rate: %d%%",
-   "pneumaticcraft.gui.nei.recipe.heatFrameCooling.bonus" : "Bonus output: %5.2f%% chance of an extra %s per degree below %d°C (multiplier limit: x%5.2f)",
+   "pneumaticcraft.gui.nei.recipe.heatFrameCooling.bonus" : "${br}Bonus output chance!${br}%5.2f%% chance of an extra %s per degree below %d°C${br} (multiplier limit: x%5.2f)",
    "pneumaticcraft.gui.nei.recipe.heatFrameCooling" : "Put the input material in an inventory with a Heat Frame attached, and chill the Heat Frame to below %d°C.",
    "pneumaticcraft.gui.nei.recipe.uvLightBox" : "Create a UV Light Box, provide pressure, and insert an Empty PCB. Speed Upgrades are recommended; this process can be rather slow.",
    "pneumaticcraft.gui.nei.title.explosionCrafting" : "Explosion Crafting",

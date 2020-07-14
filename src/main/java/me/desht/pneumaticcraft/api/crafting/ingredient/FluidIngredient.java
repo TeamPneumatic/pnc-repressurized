@@ -4,6 +4,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+import me.desht.pneumaticcraft.common.core.ModBlocks;
+import net.minecraft.block.Block;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
@@ -16,6 +18,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.crafting.IIngredientSerializer;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
@@ -85,12 +89,26 @@ public class FluidIngredient extends Ingredient {
     @Override
     public ItemStack[] getMatchingStacks() {
         if (cachedStacks == null) {
-            cachedStacks = getFluidList().stream()
-                    .map(fluid -> FluidUtil.getFilledBucket(new FluidStack(fluid, 1000)))
-                    .filter(stack -> !stack.isEmpty())
-                    .toArray(ItemStack[]::new);
+            List<ItemStack> l = new ArrayList<>();
+            for (Fluid f : getFluidList()) {
+                FluidStack fluidStack = new FluidStack(f, 1000);
+                ItemStack bucket = FluidUtil.getFilledBucket(fluidStack);
+                if (!bucket.isEmpty()) l.add(bucket);
+                maybeAddTank(l, ModBlocks.TANK_SMALL.get(), fluidStack);
+                maybeAddTank(l, ModBlocks.TANK_MEDIUM.get(), fluidStack);
+                maybeAddTank(l, ModBlocks.TANK_LARGE.get(), fluidStack);
+            }
+            cachedStacks = l.toArray(new ItemStack[0]);
         }
         return cachedStacks;
+    }
+
+    private void maybeAddTank(List<ItemStack> l, Block tankBlock, FluidStack stack) {
+        ItemStack tank = new ItemStack(tankBlock);
+        tank.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).ifPresent(h -> {
+            h.fill(stack, IFluidHandler.FluidAction.EXECUTE);
+            l.add(tank);
+        });
     }
 
     public boolean testFluid(FluidStack fluidStack) {

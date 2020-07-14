@@ -24,6 +24,7 @@ public class JEIHeatFrameCoolingCategory implements IRecipeCategory<HeatFrameCoo
     private final String localizedName;
     private final IDrawable background;
     private final IDrawable icon;
+    private final IDrawable bonusIcon;
     private final IDrawableAnimated progressBar;
 
     JEIHeatFrameCoolingCategory() {
@@ -31,7 +32,11 @@ public class JEIHeatFrameCoolingCategory implements IRecipeCategory<HeatFrameCoo
         background = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_MISC_RECIPES, 0, 0, 82, 18);
         icon = JEIPlugin.jeiHelpers.getGuiHelper().createDrawableIngredient(new ItemStack(ModItems.HEAT_FRAME.get()));
         IDrawableStatic d = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_MISC_RECIPES, 82, 0, 38, 17);
-        progressBar = JEIPlugin.jeiHelpers.getGuiHelper().createAnimatedDrawable(d, 60, IDrawableAnimated.StartDirection.LEFT, false);
+        progressBar = JEIPlugin.jeiHelpers.getGuiHelper().createAnimatedDrawable(d, 30, IDrawableAnimated.StartDirection.LEFT, false);
+        bonusIcon = JEIPlugin.jeiHelpers.getGuiHelper()
+                .drawableBuilder(Textures.GUI_JEI_BONUS, 0, 0, 16, 16)
+                .setTextureSize(16, 16)
+                .build();
     }
 
     @Override
@@ -62,6 +67,9 @@ public class JEIHeatFrameCoolingCategory implements IRecipeCategory<HeatFrameCoo
     @Override
     public void draw(HeatFrameCoolingRecipe recipe, double mouseX, double mouseY) {
         progressBar.draw(22, 0);
+        if (recipe.getBonusMultiplier() > 0f) {
+            bonusIcon.draw(30, 0);
+        }
     }
 
     @Override
