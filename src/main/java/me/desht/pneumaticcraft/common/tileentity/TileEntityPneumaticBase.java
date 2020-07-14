@@ -74,6 +74,9 @@ public abstract class TileEntityPneumaticBase extends TileEntityTickableBase {
     public void onUpgradesChanged() {
         super.onUpgradesChanged();
 
+        airHandler.setVolumeUpgrades(getUpgrades(EnumUpgrade.VOLUME));
+        airHandler.setHasSecurityUpgrade(getUpgrades(EnumUpgrade.SECURITY) > 0);
+
         airHandlerMap.keySet().forEach(h -> {
             h.setVolumeUpgrades(getUpgrades(EnumUpgrade.VOLUME));
             h.setHasSecurityUpgrade(getUpgrades(EnumUpgrade.SECURITY) > 0);
