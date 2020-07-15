@@ -61,6 +61,9 @@ public class FluidItemWrapper implements ICapabilityProvider {
              tag.remove(NBTKeys.NBT_SAVED_TANKS);
              if (tag.isEmpty()) {
                  stack.getTag().remove(NBTKeys.BLOCK_ENTITY_TAG);
+                 if (stack.getTag().isEmpty()) {
+                     stack.setTag(null);
+                 }
              }
          }
     }

@@ -64,8 +64,11 @@ public class ModCommands {
         CommandSource source = ctx.getSource();
         if (source.getEntity() instanceof PlayerEntity) {
             ItemStack held = ((PlayerEntity) source.getEntity()).getHeldItemMainhand();
-            if (!held.hasTag()) {
+            if (held.getTag() == null) {
                 source.sendErrorMessage(new StringTextComponent("No NBT"));
+                return 0;
+            } else if (!held.getTag().isEmpty()) {
+                source.sendErrorMessage(new StringTextComponent("Empty NBT"));
                 return 0;
             }
             source.sendFeedback(new StringTextComponent(held.getTag().toString()), false);

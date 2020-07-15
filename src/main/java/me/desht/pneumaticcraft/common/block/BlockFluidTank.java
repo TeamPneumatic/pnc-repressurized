@@ -34,7 +34,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 
 import javax.annotation.Nullable;
@@ -156,18 +155,16 @@ public class BlockFluidTank extends BlockPneumaticCraft implements ColorHandlers
         public boolean hasContainerItem(ItemStack stack) {
             // the tank is a container item if it's being used in fluid crafting
             // but an empty tank used in crafting is not a container item
-            return stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY)
-                    .map(h -> !h.drain(Integer.MAX_VALUE, IFluidHandler.FluidAction.SIMULATE).isEmpty())
-                    .orElse(false);
+            return FluidUtil.getFluidContained(stack).map(f -> !f.isEmpty()).orElse(false);
         }
 
         @Override
         public ItemStack getContainerItem(ItemStack itemStack) {
             boolean creative = UpgradableItemUtils.hasCreativeUpgrade(itemStack);
-            return FluidUtil.getFluidHandler(itemStack).map(handler -> {
+            return FluidUtil.getFluidHandler(itemStack.copy()).map(handler -> {
                 // TODO can (or indeed should) we support recipes which drain amounts other than 1000mB?
                 handler.drain(1000, creative ? IFluidHandler.FluidAction.SIMULATE : IFluidHandler.FluidAction.EXECUTE);
-                return handler.getContainer().copy();
+                return handler.getContainer();
             }).orElseThrow(RuntimeException::new);
         }
 
@@ -184,6 +181,12 @@ public class BlockFluidTank extends BlockPneumaticCraft implements ColorHandlers
         public IFluidItemRenderInfoProvider getFluidItemRenderer() {
             if (renderInfoProvider == null) renderInfoProvider = new RenderFluidTank.ItemRenderInfoProvider();
             return renderInfoProvider;
+        }
+
+        @Override
+        public int getItemStackLimit(ItemStack stack) {
+            // empty tanks may stack, but not filled tanks (even if filled to the same level)
+            return hasContainerItem(stack) ? 1 : 64;
         }
 
         @Nullable

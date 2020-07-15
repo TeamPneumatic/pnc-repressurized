@@ -27,6 +27,8 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -165,7 +167,7 @@ public class EntityHeatFrame extends EntitySemiblockBase {
             Inventory inv = new Inventory(1);
             inv.setInventorySlotContents(0, stack);
             return world.getRecipeManager().getRecipe(IRecipeType.SMELTING, inv, this.world).map(recipe -> {
-                ItemStack result = recipe.getRecipeOutput();
+                ItemStack result = recipe.getRecipeOutput().copy();
                 if (!result.isEmpty()) {
                     ItemStack remainder = ItemHandlerHelper.insertItem(handler, result, true);
                     if (remainder.isEmpty()) {
@@ -215,18 +217,19 @@ public class EntityHeatFrame extends EntitySemiblockBase {
 
         if (recipe != null) {
             ItemStack containerItem = stack.getItem().getContainerItem(stack);
-            if (!containerItem.isEmpty() && stack.getCount() > 1) return false;
-            ItemStack result = ItemHandlerHelper.copyStackWithSize(recipe.getOutput(), recipe.calculateOutputQuantity(logic.getTemperature()));
-
-            ItemStack remainder = ItemHandlerHelper.insertItem(handler, result, true);
-            if (remainder.isEmpty()) {
-                handler.extractItem(slot, 1, false);
-                if (!containerItem.isEmpty()) {
-                    handler.insertItem(slot, containerItem, false);
+            // if stack contains any fluid, there must be only 1 item in the stack
+            if (stack.getCount() == 1 || FluidUtil.getFluidContained(stack).map(FluidStack::isEmpty).orElse(true)) {
+                ItemStack result = ItemHandlerHelper.copyStackWithSize(recipe.getOutput(), recipe.calculateOutputQuantity(logic.getTemperature()));
+                ItemStack remainder = ItemHandlerHelper.insertItem(handler, result, true);
+                if (remainder.isEmpty()) {
+                    handler.extractItem(slot, 1, false);
+                    if (!containerItem.isEmpty()) {
+                        handler.insertItem(slot, containerItem, false);
+                    }
+                    ItemHandlerHelper.insertItem(handler, result, false);
+                    lastValidSlot = slot;
+                    return true;
                 }
-                ItemHandlerHelper.insertItem(handler, result, false);
-                lastValidSlot = slot;
-                return true;
             }
         }
         return false;
