@@ -67,7 +67,7 @@ public class ModCommands {
             if (held.getTag() == null) {
                 source.sendErrorMessage(new StringTextComponent("No NBT"));
                 return 0;
-            } else if (!held.getTag().isEmpty()) {
+            } else if (held.getTag().isEmpty()) {
                 source.sendErrorMessage(new StringTextComponent("Empty NBT"));
                 return 0;
             }
