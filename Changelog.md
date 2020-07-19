@@ -6,6 +6,14 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.15.2
 
+## 1.4.1-?? (unreleased)
+
+### Fixes
+* Fixed clientside crash related to minigun tracer rendering with multiple players involved
+* Heat Frame fixes: item dupe and loss issues under some circumstances with both cooking and cooling
+* Fluid tanks with any fluid will now never stack, even with identical fluid & amount (empty Fluid Tanks will still stack)
+* Fixed empty Fluid Tank items being unstackable with other empty tanks after draining in item form (e.g. during heat frame cooling)
+
 ## 1.4.0-53 (14 Jul 2020)
 
 ### New
