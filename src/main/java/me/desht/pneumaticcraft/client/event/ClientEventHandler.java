@@ -13,7 +13,6 @@ import me.desht.pneumaticcraft.client.gui.widget.IDrawAfterRender;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
-import me.desht.pneumaticcraft.client.util.ProgressingLine;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleRegulatorTube;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
@@ -63,13 +62,12 @@ import java.util.Random;
 
 @Mod.EventBusSubscriber(modid = Names.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ClientEventHandler {
-    private static final double MINIGUN_RADIUS = 1.1D;
+//    private static final double MINIGUN_RADIUS = 1.1D;
     private static final double MINIGUN_TEXT_SIZE = 0.55D;
     private static final float MAX_SCREEN_ROLL = 25F;  // max roll in degrees when flying with jetboots
 
     private static float currentScreenRoll = 0F;
 
-    private final static ProgressingLine minigunFire = new ProgressingLine().setProgress(1);
     private static int lastWidth = -1;
     private static int lastHeight = -1;
 
@@ -190,42 +188,31 @@ public class ClientEventHandler {
     }
 
     @SubscribeEvent
-    public static void renderThirdPersonMinigunTraces(RenderWorldLastEvent event) {
-        // render everyone else's (and ours in 3rd person camera) minigun bullet traces
-        PlayerEntity thisPlayer = Minecraft.getInstance().player;
-        MatrixStack matrixStack = event.getMatrixStack();
-        IRenderTypeBuffer.Impl buffer = Minecraft.getInstance().getRenderTypeBuffers().getBufferSource();
-        IVertexBuilder builder = buffer.getBuffer(RenderType.LINES);
+    public static void renderThirdPersonMinigunTraces(RenderPlayerEvent.Post event) {
+        // render everyone else's (and ours, in 3rd person camera) minigun bullet traces
+        PlayerEntity player = event.getPlayer();
+        if (player == Minecraft.getInstance().player && Minecraft.getInstance().gameSettings.thirdPersonView == 0) return;
 
-        matrixStack.push();
-        Vec3d projectedView = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
-        matrixStack.translate(-projectedView.x, -projectedView.y, -projectedView.z);
-
-        for (PlayerEntity player : Minecraft.getInstance().world.getPlayers()) {
-            if (thisPlayer == player && Minecraft.getInstance().gameSettings.thirdPersonView == 0) continue;
-            ItemStack curItem = player.getHeldItemMainhand();
-            if (curItem.getItem() == ModItems.MINIGUN.get()) {
-                Minigun minigun = ModItems.MINIGUN.get().getMinigun(curItem, player);
-                if (minigun.isMinigunActivated() && minigun.getMinigunSpeed() == Minigun.MAX_GUN_SPEED) {
-                    matrixStack.push();
-                    Vec3d startVec = player.getPositionVec().add(0, player.getEyeHeight() / 2, 0).add(player.getLookVec());
-                    Vec3d endVec = startVec.add(player.getLookVec().scale(20));
-                    minigunFire.startX = startVec.x;
-                    minigunFire.startY = startVec.y;
-                    minigunFire.startZ = startVec.z;
-                    for (int i = 0; i < 5; i++) {
-                        minigunFire.endX = endVec.x + + player.getRNG().nextDouble() - 0.5;
-                        minigunFire.endY = endVec.y + + player.getRNG().nextDouble() - 0.5;
-                        minigunFire.endZ = endVec.z + + player.getRNG().nextDouble() - 0.5;
-                        RenderUtils.renderProgressingLine(minigunFire, matrixStack, builder, 0xFF000000 | minigun.getAmmoColor());
-                    }
-                    buffer.finish(RenderType.LINES);
-                    matrixStack.pop();
+        ItemStack curItem = player.getHeldItemMainhand();
+        if (curItem.getItem() == ModItems.MINIGUN.get()) {
+            Minigun minigun = ModItems.MINIGUN.get().getMinigun(curItem, player);
+            if (minigun.isMinigunActivated() && minigun.getMinigunSpeed() == Minigun.MAX_GUN_SPEED) {
+                IVertexBuilder builder = event.getBuffers().getBuffer(RenderType.LINES);
+                // FIXME: this just doesn't place the start of the line where it should... why?
+                Vec3d startVec = new Vec3d(0, player.getEyeHeight() / 2, 0).add(player.getLookVec());
+                Vec3d endVec = startVec.add(player.getLookVec().scale(20));
+                int[] cols = RenderUtils.decomposeColor(minigun.getAmmoColor());
+                Matrix4f posMat = event.getMatrixStack().getLast().getMatrix();
+                for (int i = 0; i < 5; i++) {
+                    RenderUtils.posF(builder, posMat, startVec.x, startVec.y, startVec.z)
+                            .color(cols[1], cols[2], cols[3], 64)
+                            .endVertex();
+                    RenderUtils.posF(builder, posMat, endVec.x + player.getRNG().nextDouble() - 0.5, endVec.y + player.getRNG().nextDouble() - 0.5, endVec.z + player.getRNG().nextDouble() - 0.5)
+                            .color(cols[1], cols[2], cols[3], 64)
+                            .endVertex();
                 }
             }
         }
-
-        matrixStack.pop();
     }
 
     @SubscribeEvent
