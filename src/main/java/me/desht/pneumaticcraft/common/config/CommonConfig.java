@@ -17,6 +17,7 @@ public class CommonConfig {
         ForgeConfigSpec.IntValue minFluidFuelTemperature;
         ForgeConfigSpec.BooleanValue useUpDyesWhenColoring;
         ForgeConfigSpec.BooleanValue dronesRenderHeldItem;
+        ForgeConfigSpec.BooleanValue dronesCanImportXPOrbs;
     }
     public static class Machines {
         ForgeConfigSpec.BooleanValue aerialInterfaceArmorCompat;
@@ -175,6 +176,10 @@ public class CommonConfig {
                 .comment("Drones render their held item (the item in slot 0 of their inventory) ?  Note: this is in common config since if enabled, server needs to sync the item data to the client.")
                 .translation("pneumaticcraft.config.client.general.drones_render_held_item")
                 .define("drones_render_held_item", true);
+        general.dronesCanImportXPOrbs = builder
+                .comment("Are drones allowed to import Experience Orbs and convert them to Memory Essence fluid?")
+                .translation("pneumaticcraft.config.client.general.drones_can_import_xp_orbs")
+                .define("drones_can_import_xp_orbs", true);
         builder.pop();
 
         builder.push("Machine Properties");

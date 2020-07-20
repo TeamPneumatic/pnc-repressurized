@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.thirdparty.curios.Curios;
 import me.desht.pneumaticcraft.common.util.EnchantmentUtils;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -189,14 +190,8 @@ public class ItemMemoryStick extends Item implements ColorHandlers.ITintableItem
             ItemStack stack = findMemoryStick(event.getPlayer());
             if (!stack.isEmpty()) {
                 stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).ifPresent(handler -> {
-                    int ratio = XPFluidManager.getInstance().getXPRatio(ModFluids.MEMORY_ESSENCE.get());
-                    int xp = event.getOrb().getXpValue();
-                    int fluidAmount = xp * ratio;
-                    FluidStack toFill = new FluidStack(ModFluids.MEMORY_ESSENCE.get(), fluidAmount);
-                    int filled = handler.fill(toFill, IFluidHandler.FluidAction.SIMULATE);
-                    if (filled >= ratio) {
-                        // orb's xp can fit in the memory stick: add it to the stick, remove the entity, cancel the event
-                        handler.fill(new FluidStack(ModFluids.MEMORY_ESSENCE.get(), filled), IFluidHandler.FluidAction.EXECUTE);
+                    if (PneumaticCraftUtils.fillTankWithOrb(handler, event.getOrb(), IFluidHandler.FluidAction.EXECUTE)) {
+                        // orb's xp can fit in the memory stick: remove the entity, cancel the event
                         event.getOrb().remove();
                         event.setCanceled(true);
                     }

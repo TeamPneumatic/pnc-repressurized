@@ -11,6 +11,7 @@ import net.minecraft.entity.AgeableEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.BoatEntity;
+import net.minecraft.entity.item.ExperienceOrbEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.item.PaintingEntity;
 import net.minecraft.entity.item.minecart.MinecartEntity;
@@ -53,6 +54,7 @@ public class EntityFilter implements Predicate<Entity>, com.google.common.base.P
         ENTITY_CLASSES.put("boat", BoatEntity.class);
         ENTITY_CLASSES.put("minecart", MinecartEntity.class);
         ENTITY_CLASSES.put("painting", PaintingEntity.class);
+        ENTITY_CLASSES.put("orb", ExperienceOrbEntity.class);
     }
 
     private final List<EntityMatcher> matchers = new ArrayList<>();

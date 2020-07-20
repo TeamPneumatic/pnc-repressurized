@@ -3,6 +3,8 @@ package me.desht.pneumaticcraft.common.util;
 import me.desht.pneumaticcraft.api.item.IInventoryItem;
 import me.desht.pneumaticcraft.api.item.ITagFilteringItem;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.CoordTrackUpgradeHandler;
+import me.desht.pneumaticcraft.common.XPFluidManager;
+import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.Log;
@@ -14,6 +16,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.item.ExperienceOrbEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.monster.ZombieEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -35,6 +38,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.util.BlockSnapshot;
 import net.minecraftforge.event.ForgeEventFactory;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
@@ -727,5 +733,26 @@ public class PneumaticCraftUtils {
             }
         }
         return Optional.empty();
+    }
+
+    /**
+     * Try to transfer the XP from the given XP orb entity into the given fluid handler.  If the handler has enough
+     * room to store only part of the orb's XP, it will reduce the orb's XP by the amount taken (assuming the action is
+     * execute).
+     *
+     * @param handler the fluid handler
+     * @param orb the XP orb
+     * @param action whether or not to simulate the action
+     * @return true if the XP orb was (or could be) fully absorbed into the fluid handler
+     */
+    public static boolean fillTankWithOrb(IFluidHandler handler, ExperienceOrbEntity orb, FluidAction action) {
+        int ratio = XPFluidManager.getInstance().getXPRatio(ModFluids.MEMORY_ESSENCE.get());
+        int fluidAmount = orb.getXpValue() * ratio;
+        FluidStack toFill = new FluidStack(ModFluids.MEMORY_ESSENCE.get(), fluidAmount);
+        int filled = handler.fill(toFill, action);
+        if (filled > 0 && filled < fluidAmount && action.execute()) {
+            orb.xpValue = orb.xpValue - Math.max(1, filled / ratio);  // partial fill, adjust the orb
+        }
+        return filled == fluidAmount;
     }
 }

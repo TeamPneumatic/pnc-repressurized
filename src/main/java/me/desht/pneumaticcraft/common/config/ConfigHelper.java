@@ -63,6 +63,7 @@ public class ConfigHelper {
                 .stream().map(ResourceLocation::new).collect(Collectors.toSet());
         PNCConfig.Common.General.useUpDyesWhenColoring = common.general.useUpDyesWhenColoring.get();
         PNCConfig.Common.General.dronesRenderHeldItem = common.general.dronesRenderHeldItem.get();
+        PNCConfig.Common.General.dronesCanImportXPOrbs = common.general.dronesCanImportXPOrbs.get();
 
         PNCConfig.Common.Machines.aerialInterfaceArmorCompat = common.machines.aerialInterfaceArmorCompat.get();
         PNCConfig.Common.Machines.cropSticksGrowthBoostChance = common.machines.cropSticksGrowthBoostChance.get();

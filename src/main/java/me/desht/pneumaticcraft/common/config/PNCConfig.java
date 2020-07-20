@@ -52,6 +52,7 @@ public class PNCConfig {
             public static int minFluidFuelTemperature;
             public static boolean useUpDyesWhenColoring;
             public static boolean dronesRenderHeldItem;
+            public static boolean dronesCanImportXPOrbs;
         }
 
         public static class Machines {
