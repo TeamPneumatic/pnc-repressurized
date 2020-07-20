@@ -6,8 +6,17 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.15.2
 
-## 1.4.1-?? (unreleased)
+## 1.4.1-56 (20 Jul 2020)
 
+### Updates
+* Drones can now absorb Experience Orbs
+  * Use the Entity Import puzzle piece to do this
+  * Added a "@orb" entity filter to whitelist or blacklist XP orbs
+  * Imported orbs are auto-converted to Memory Essence fluid and stored in the drone's internal fluid tank
+  * Conversion is at the standard rate: 1 XP point = 20mB Memory Essence 
+  * Use a Fluid Export puzzle piece to deposit imported Memory Essence into any fluid tank
+  * Added config option `drones_can_import_xp_orbs` (default true) to disable this feature entirely if desired
+    
 ### Fixes
 * Fixed clientside crash related to minigun tracer rendering with multiple players involved
 * Heat Frame fixes: item dupe and loss issues under some circumstances with both cooking and cooling
