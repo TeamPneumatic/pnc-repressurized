@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.ContainerOmnidirectionalHopper;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityOmnidirectionalHopper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.resources.I18n;
@@ -15,6 +16,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextFormatting;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +24,7 @@ import java.util.List;
 public class GuiOmnidirectionalHopper extends GuiPneumaticContainerBase<ContainerOmnidirectionalHopper,TileEntityOmnidirectionalHopper> {
     private WidgetAnimatedStat statusStat;
     private final WidgetButtonExtended[] modeButtons = new WidgetButtonExtended[2];
+    private WidgetButtonExtended rrButton;
 
     public GuiOmnidirectionalHopper(ContainerOmnidirectionalHopper container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
@@ -46,6 +49,8 @@ public class GuiOmnidirectionalHopper extends GuiPneumaticContainerBase<Containe
         button.setTooltipText(I18n.format("pneumaticcraft.gui.tab.omnidirectionalHopper.mode.leaveItem"));
         optionStat.addSubWidget(button);
         modeButtons[1] = button;
+
+        addButton(rrButton = new WidgetButtonExtended(guiLeft + 143, guiTop + 55, 14, 14, "").withTag("rr"));
     }
 
     @Override
@@ -56,9 +61,12 @@ public class GuiOmnidirectionalHopper extends GuiPneumaticContainerBase<Containe
     @Override
     public void tick() {
         super.tick();
+
         statusStat.setText(getStatus());
         modeButtons[0].active = te.doesLeaveMaterial();
         modeButtons[1].active = !te.doesLeaveMaterial();
+        rrButton.setMessage(te.roundRobin ? TextFormatting.GREEN + GuiConstants.CIRCULAR_ARROW : GuiConstants.ARROW_RIGHT);
+        rrButton.setTooltipText(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.tooltip.omnidirectional_hopper.roundRobin." + (te.roundRobin ? "on" : "off"), 40)));
     }
 
     private List<String> getStatus() {

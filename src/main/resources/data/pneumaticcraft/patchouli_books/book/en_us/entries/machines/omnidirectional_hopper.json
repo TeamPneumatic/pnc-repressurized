@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "The $(item)Omnidirectional Hopper/$ behaves rather like the vanilla $(item)Hopper/$. However, this Hopper can be oriented in $(italic)any/$ direction, not just up. On top of that, it accepts $(l:base_concepts/upgrades)Upgrades/$, which can be used to speed up the Hopper considerably. It has a custom hitbox, so you can access blocks behind it. It doesn't use $(l:base_concepts/pressure)air/$, so it's a very useful early game device."
+      "text": "The $(item)Omnidirectional Hopper/$ behaves rather like the vanilla $(item)Hopper/$. However, this Hopper can be oriented in $(italic)any/$ direction, not just up. On top of that, it accepts $(l:base_concepts/upgrades)Upgrades/$, which can be used to speed up the Hopper considerably. It doesn't use $(l:base_concepts/pressure)air/$, so it's a very useful early game device."
     },
     {
       "type": "spotlight",

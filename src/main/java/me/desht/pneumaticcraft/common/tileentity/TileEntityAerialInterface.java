@@ -28,6 +28,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
@@ -485,6 +486,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
 
             int startValue = stack.getCount();
             ItemStack remainingItem = stack;
+            ItemStack copy = stack.copy();
             while (stack.getCount() > 0) {
                 remainingItem = stack.onItemUseFinish(player.world, player);
                 remainingItem = ForgeEventFactory.onItemUseFinish(player, stack, 0, remainingItem);
@@ -493,6 +495,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
                         player.dropItem(remainingItem, false);
                     }
                 }
+                player.sendStatusMessage(new TranslationTextComponent("pneumaticcraft.gui.aerial_interface.fedItem", copy.getDisplayName().getFormattedText()), true);
                 if (stack.getCount() == startValue) break;
             }
             return remainingItem.getCount() > 0 ? remainingItem : ItemStack.EMPTY;

@@ -19,6 +19,7 @@ public class GuiConstants {
     public static final String INFINITY = "\u221E";
     public static final String TRIANGLE_UP_LEFT = "\u25e4";
     public static final String TRIANGLE_DOWN_RIGHT = "\u25e2";
+    public static final String CIRCULAR_ARROW = "\u293e";
 
     public static ITextComponent bullet() {
         return new StringTextComponent(BULLET + " ");

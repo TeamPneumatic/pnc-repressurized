@@ -135,10 +135,6 @@ public class ClientUtils {
         return mw.getScaledWidth() > 700 && mw.getScaledHeight() > 512;
     }
 
-    public static Iterable<? extends Entity> getAllEntities(World world) {
-        return ((ClientWorld) world).getAllEntities();
-    }
-
     public static float getBrightnessAtWorldHeight() {
         PlayerEntity player = getClientPlayer();
         BlockPos pos = new BlockPos.Mutable(player.getPosX(), player.world.getMaxHeight(), player.getPosZ());
