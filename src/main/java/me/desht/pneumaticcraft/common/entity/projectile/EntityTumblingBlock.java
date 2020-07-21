@@ -184,7 +184,7 @@ public class EntityTumblingBlock extends ThrowableEntity {
 
         @Override
         public ItemStack getItem() {
-            return stack;
+            return stack == null ? ItemStack.EMPTY : stack;
         }
     }
 }
