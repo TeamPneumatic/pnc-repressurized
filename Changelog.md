@@ -6,6 +6,23 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.15.2
 
+## 1.4.2-?? (unreleased)
+
+### Updates
+* Smart Chest filter slots can now also limit the number of items allowed in a slot
+  * Default limit is the size of the itemstack in the slot when filtering is enabled
+  * Use Alt + mouse wheel (or Alt + key UP/DOWN) to adjust the limit
+    * Hold Shift as well for fast adjustment
+  * Existing Smart Chests from previous worlds will use a limit of 64 (or whatever the item's max stack size is) to avoid changing existing behaviour
+* Omnidirectional Hopper can now use round-robin when exporting items
+  * Default is to try leftmost item first, as before
+  * Use button in GUI to toggle to round-robin export
+  * Could be useful for example when feeding the player via Aerial Interface for a varied diet
+* Aerial Interface in player feed mode now informs the player what they just ate
+    
+### Fixes
+* Fixed NPE when throwing some blocks with chestplate launcher
+
 ## 1.4.1-56 (20 Jul 2020)
 
 ### Updates
