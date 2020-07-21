@@ -161,6 +161,9 @@ public class WidgetTemperature extends Widget implements ITooltipProvider {
         } else if (temperature < 273) {
             setTotalRange(TemperatureRange.of(123, 373));
             setTickInterval(25);
+        } else if (temperature < 373) {
+            setTotalRange(TemperatureRange.of(273, 373));
+            setTickInterval(25);
         } else if (temperature < 473) {
             setTotalRange(TemperatureRange.of(273, 473));
             setTickInterval(25);
