@@ -13,6 +13,7 @@ import me.desht.pneumaticcraft.common.network.PacketSyncSmartChest;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.tileentity.SideConfigurator.RelativeFace;
 import me.desht.pneumaticcraft.common.util.IOHelper;
+import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.NBTKeys;
 import net.minecraft.block.Block;
@@ -23,7 +24,6 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
@@ -154,7 +154,7 @@ public class TileEntitySmartChest extends TileEntityTickableBase
             int idx = dir.ordinal();
             ItemStack toPull = findNextItem(srcHandler, pullSlots, idx);
             if (toPull.isEmpty()) {
-                // empty inventory
+                // source inventory is empty
                 return false;
             }
             ItemStack excess = ItemHandlerHelper.insertItem(inventory, toPull, false);
@@ -164,8 +164,8 @@ public class TileEntitySmartChest extends TileEntityTickableBase
                 srcHandler.extractItem(pullSlots[idx], transferred, false);
                 return true;
             } else {
-                // this item can't be pulled... move on
-                findNextItem(srcHandler, pullSlots, idx);
+                // this item can't be inserted into this chest... move on to next item next tick
+                pullSlots[idx] = scanForward(srcHandler, pullSlots[idx]);
             }
             return false;
         }).orElse(false);
@@ -364,20 +364,20 @@ public class TileEntitySmartChest extends TileEntityTickableBase
         inventory.setLastSlot(lastSlot);
     }
 
-    public List<Pair<Integer, Item>> getFilter() {
-        List<Pair<Integer, Item>> res = new ArrayList<>();
+    public List<Pair<Integer, ItemStack>> getFilter() {
+        List<Pair<Integer, ItemStack>> res = new ArrayList<>();
         for (int i = 0; i < inventory.getSlots(); i++) {
             if (!inventory.filter[i].isEmpty()) {
-                res.add(Pair.of(i, inventory.filter[i].getItem()));
+                res.add(Pair.of(i, inventory.filter[i].copy()));
             }
         }
         return res;
     }
 
-    public void setFilter(List<Pair<Integer, Item>> l) {
+    public void setFilter(List<Pair<Integer, ItemStack>> l) {
         Arrays.fill(inventory.filter, ItemStack.EMPTY);
-        for (Pair<Integer, Item> p : l) {
-            inventory.setFilter(p.getLeft(), new ItemStack(p.getRight()));
+        for (Pair<Integer, ItemStack> p : l) {
+            inventory.setFilter(p.getLeft(), p.getRight());
         }
     }
 
@@ -399,7 +399,7 @@ public class TileEntitySmartChest extends TileEntityTickableBase
         return inventory.getComparatorValue();
     }
 
-    public enum PushPullMode {
+    public enum PushPullMode implements ITranslatableEnum {
         NONE("none"),
         PUSH("push"),
         PULL("pull");
@@ -410,6 +410,7 @@ public class TileEntitySmartChest extends TileEntityTickableBase
             this.key = key;
         }
 
+        @Override
         public String getTranslationKey() {
             return "pneumaticcraft.gui.tooltip.smartChest.mode." + key;
         }
@@ -434,6 +435,11 @@ public class TileEntitySmartChest extends TileEntityTickableBase
         @Override
         public int getSlots() {
             return Math.min(CHEST_SIZE, lastSlot);
+        }
+
+        @Override
+        public int getSlotLimit(int slot) {
+            return filter[slot].isEmpty() ? super.getSlotLimit(slot) : filter[slot].getCount();
         }
 
         int getLastSlot() {
@@ -475,6 +481,7 @@ public class TileEntitySmartChest extends TileEntityTickableBase
                 }
             }
             tag.put("Filter", l);
+            tag.putBoolean("V2", true);
             return tag;
         }
 
@@ -484,9 +491,12 @@ public class TileEntitySmartChest extends TileEntityTickableBase
 
             lastSlot = nbt.getInt("LastSlot");
             ListNBT l = nbt.getList("Filter", Constants.NBT.TAG_COMPOUND);
+            boolean isV2 = nbt.getBoolean("V2");
             for (int i = 0; i < l.size(); i++) {
                 CompoundNBT tag = l.getCompound(i);
-                filter[tag.getInt("Slot")] = ItemStack.read(tag);
+                ItemStack stack = ItemStack.read(tag);
+                if (!isV2 && stack.getCount() == 1) stack.setCount(stack.getMaxStackSize());
+                filter[tag.getInt("Slot")] = stack;
             }
         }
     }

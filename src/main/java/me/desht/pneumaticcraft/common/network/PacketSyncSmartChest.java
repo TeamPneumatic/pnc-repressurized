@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySmartChest;
-import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -21,7 +21,7 @@ import java.util.function.Supplier;
  */
 public class PacketSyncSmartChest extends LocationIntPacket {
     private int lastSlot;
-    private List<Pair<Integer, Item>> filter;
+    private List<Pair<Integer, ItemStack>> filter;
 
     public PacketSyncSmartChest() {
     }
@@ -41,8 +41,9 @@ public class PacketSyncSmartChest extends LocationIntPacket {
         filter = new ArrayList<>();
         for (int i = 0; i < nFilters; i++) {
             int slot = buffer.readVarInt();
-            Item item = Item.getItemById(buffer.readVarInt());
-            filter.add(Pair.of(slot, item));
+//            Item item = Item.getItemById(buffer.readVarInt());
+            ItemStack stack = buffer.readItemStack();
+            filter.add(Pair.of(slot, stack));
         }
     }
 
@@ -52,9 +53,10 @@ public class PacketSyncSmartChest extends LocationIntPacket {
 
         buf.writeVarInt(lastSlot);
         buf.writeVarInt(filter.size());
-        for (Pair<Integer,Item> p: filter) {
+        for (Pair<Integer,ItemStack> p: filter) {
             buf.writeVarInt(p.getLeft());
-            buf.writeVarInt(Item.getIdFromItem(p.getRight().getItem()));
+            buf.writeItemStack(p.getRight(), true);
+//            buf.writeVarInt(Item.getIdFromItem(p.getRight().getItem()));
         }
     }
 

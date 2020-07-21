@@ -1010,6 +1010,7 @@
    "pneumaticcraft.gui.sideConfigurator.items.programmableInv" : "Programmable Slot",
    "pneumaticcraft.gui.sideConfigurator.title.items" : "Side Configuration: Items",
    "pneumaticcraft.gui.sideConfigurator.unconnected" : "§oUnconnected",
+   "pneumaticcraft.gui.smart_chest.filter" : "§fFilter${br}§7%s${br}§7Item limit: %d${br}§3▶ Alt + left-click: clear filter${br}§3▶ Alt + Mouse-wheel: adjust item limit${br}§3▶ Alt + Shift + Mouse-wheel: fast adjust",
    "pneumaticcraft.gui.tab.amadron.customTrades" : "Custom Trades",
    "pneumaticcraft.gui.tab.amadron.disclaimer" : "Amadron cannot accept responsibility for any loss or damage arising from the use of the delivery service. When a partial payment arrives at Amadron it has the right to keep the items that would have been sold to the buyer otherwise.",
    "pneumaticcraft.gui.tab.amadron.disclaimer.title" : "Disclaimer",
