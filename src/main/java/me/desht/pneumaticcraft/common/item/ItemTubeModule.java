@@ -35,7 +35,7 @@ public class ItemTubeModule extends Item {
         super.addInformation(par1ItemStack, par2EntityPlayer, par3List, par4);
         TubeModule module = createModule();
         if (module != null) {
-            par3List.add(new StringTextComponent("In line: " + (module.isInline() ? "Yes" : "No")).applyTextStyle(TextFormatting.DARK_AQUA));
+            par3List.add(new StringTextComponent("In line: " + (module.isInline() ? "Yes" : "No")).mergeStyle(TextFormatting.DARK_AQUA));
         }
     }
 }

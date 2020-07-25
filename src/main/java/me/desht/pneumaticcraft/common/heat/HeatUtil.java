@@ -71,14 +71,14 @@ public class HeatUtil {
 
     public static ITextComponent formatHeatString(String temp) {
         return PneumaticCraftUtils.xlate("pneumaticcraft.waila.temperature")
-                .appendText(TextFormatting.WHITE.toString() + temp)
-                .applyTextStyles(TextFormatting.GRAY);
+                .appendString(TextFormatting.WHITE.toString() + temp)
+                .mergeStyle(TextFormatting.GRAY);
     }
 
     public static ITextComponent formatHeatString(Direction face, String temp) {
         return PneumaticCraftUtils.xlate("pneumaticcraft.waila.temperature." + face.toString().toLowerCase())
-                .appendText(TextFormatting.WHITE.toString() + temp)
-                .applyTextStyles(TextFormatting.GRAY);
+                .appendString(TextFormatting.WHITE.toString() + temp)
+                .mergeStyle(TextFormatting.GRAY);
     }
 
     public static int countExposedFaces(Collection<? extends TileEntity> teList) {

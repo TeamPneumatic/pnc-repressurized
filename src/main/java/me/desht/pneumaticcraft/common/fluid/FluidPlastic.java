@@ -6,7 +6,7 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.fluid.IFluidState;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorldReader;
@@ -37,7 +37,7 @@ public abstract class FluidPlastic {
         }
 
         @Override
-        public void tick(World worldIn, BlockPos pos, IFluidState state) {
+        public void tick(World worldIn, BlockPos pos, FluidState state) {
             ItemEntity item = new ItemEntity(worldIn, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, new ItemStack(ModItems.PLASTIC.get()));
             worldIn.addEntity(item);
             worldIn.setBlockState(pos, Blocks.AIR.getDefaultState(), Constants.BlockFlags.DEFAULT);

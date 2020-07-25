@@ -1,10 +1,13 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.fluid.Fluid;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -24,23 +27,24 @@ public class WidgetFluidFilter extends Widget implements ITooltipProvider {
     }
 
     WidgetFluidFilter(int x, int y, FluidStack fluidStack, Consumer<WidgetFluidFilter> pressable) {
-        super(x, y, 16, 16, "");
+        super(x, y, 16, 16, StringTextComponent.EMPTY);
         this.pressable = pressable;
         this.fluidStack = fluidStack;
     }
 
     @Override
-    public void renderButton(int mouseX, int mouseY, float partialTick) {
+    public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTick) {
         if (!fluidStack.isEmpty()) {
-            GuiUtils.drawFluid(new Rectangle2d(x, y, 16, 16), new FluidStack(fluidStack, 1000), null);
+            GuiUtils.drawFluid(matrixStack, new Rectangle2d(x, y, 16, 16), new FluidStack(fluidStack, 1000), null);
         }
     }
 
     @Override
-    public void addTooltip(double mouseX, double mouseY, List<String> curTip, boolean shiftPressed) {
+    public void addTooltip(double mouseX, double mouseY, List<ITextComponent> curTip, boolean shiftPressed) {
         if (!fluidStack.isEmpty()) {
-            curTip.add(new FluidStack(fluidStack, 1).getDisplayName().getFormattedText());
-            curTip.add(TextFormatting.BLUE + "" + TextFormatting.ITALIC + ModNameCache.getModName(fluidStack.getFluid().getRegistryName().getNamespace()));
+            curTip.add(new FluidStack(fluidStack, 1).getDisplayName());
+            curTip.add(new StringTextComponent(ModNameCache.getModName(fluidStack.getFluid()))
+                    .mergeStyle(TextFormatting.BLUE, TextFormatting.ITALIC));
         }
     }
 

@@ -13,6 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ public class GuiElectrostaticCompressor extends GuiPneumaticContainerBase<Contai
     @Override
     public void init() {
         super.init();
-        electrostaticStat = addAnimatedStat("pneumaticcraft.gui.tab.info.electrostaticCompressor.title", new ItemStack(ModBlocks.ELECTROSTATIC_COMPRESSOR.get()), 0xFF20A0FF, false);
+        electrostaticStat = addAnimatedStat(new StringTextComponent("pneumaticcraft.gui.tab.info.electrostaticCompressor.title"), new ItemStack(ModBlocks.ELECTROSTATIC_COMPRESSOR.get()), 0xFF20A0FF, false);
     }
 
     @Override

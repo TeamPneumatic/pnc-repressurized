@@ -16,6 +16,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
@@ -30,22 +31,20 @@ import java.io.IOException;
 import java.util.*;
 import java.util.function.Consumer;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
 public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipProvider {
     public static final String UPGRADE_PREFIX = "pneumaticcraft.armor.upgrade.";
-
-    // for backwards compat (used in keybind names); migrate to UPGRADE_PREFIX in 1.16
-    @Deprecated
-    public static final String UPGRADE_PREFIX_OLD = "pneumaticHelmet.upgrade.";
 
     private static WidgetKeybindCheckBox coreComponents;
 
     private final String upgradeID;
     private boolean isAwaitingKey;
-    private String oldCheckboxText;
+    private ITextComponent oldCheckboxText;
     private KeyBinding keyBinding;
 
     public WidgetKeybindCheckBox(int x, int y, int color, String upgradeID, Consumer<WidgetCheckBox> pressable) {
-        super(x, y, color, I18n.format("pneumaticcraft.gui.enableModule", I18n.format(UPGRADE_PREFIX + upgradeID)), pressable);
+        super(x, y, color, xlate("pneumaticcraft.gui.enableModule", xlate(UPGRADE_PREFIX + upgradeID)), pressable);
 
         this.upgradeID = upgradeID;
         this.keyBinding = findSavedKeybind();
@@ -66,7 +65,7 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
     }
 
     private KeyBinding makeKeyBinding(int keyCode, KeyModifier modifier) {
-        return new KeyBinding(UPGRADE_PREFIX_OLD + upgradeID, KeyConflictContext.IN_GAME, modifier,
+        return new KeyBinding(UPGRADE_PREFIX + upgradeID, KeyConflictContext.IN_GAME, modifier,
                 InputMappings.Type.KEYSYM, keyCode, Names.PNEUMATIC_KEYBINDING_CATEGORY);
     }
 
@@ -131,7 +130,7 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
                 isAwaitingKey = !isAwaitingKey;
                 if (isAwaitingKey) {
                     oldCheckboxText = getMessage();
-                    setMessage(I18n.format("pneumaticcraft.gui.setKeybind"));
+                    setMessage(xlate("pneumaticcraft.gui.setKeybind"));
                 } else {
                     setMessage(oldCheckboxText);
                 }
@@ -192,7 +191,7 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
      * @return the key binding
      */
     private KeyBinding setOrAddKeybind(int keyCode, KeyModifier modifier) {
-        String keybindName = UPGRADE_PREFIX_OLD + upgradeID;
+        String keybindName = UPGRADE_PREFIX + upgradeID;
 
         GameSettings gameSettings = Minecraft.getInstance().gameSettings;
         for (KeyBinding keyBinding : gameSettings.keyBindings) {
@@ -225,17 +224,21 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
     }
 
     @Override
-    public void addTooltip(double mouseX, double mouseY, List<String> curTooltip, boolean shiftPressed) {
+    public void addTooltip(double mouseX, double mouseY, List<ITextComponent> curTooltip, boolean shiftPressed) {
         if (keyBinding != null) {
             String s = keyBinding.getKeyModifier() != KeyModifier.NONE ? keyBinding.getKeyModifier() + " + " : "";
-            curTooltip.add(I18n.format("pneumaticcraft.gui.keybindBoundKey", s + I18n.format(keyBinding.getKey().getTranslationKey())));
+            curTooltip.add(xlate("pneumaticcraft.gui.keybindBoundKey", s + I18n.format(keyBinding.getKey().getTranslationKey())));
         }
         if (!isAwaitingKey) {
-            curTooltip.add("pneumaticcraft.gui.keybindRightClickToSet");
+            curTooltip.add(xlate("pneumaticcraft.gui.keybindRightClickToSet"));
             if (keyBinding != null && keyBinding.getKey().getKeyCode() != GLFW.GLFW_KEY_UNKNOWN) {
-                curTooltip.add("pneumaticcraft.gui.keybindShiftRightClickToClear");
+                curTooltip.add(xlate("pneumaticcraft.gui.keybindShiftRightClickToClear"));
             }
         }
+    }
+
+    public String getUpgradeId() {
+        return upgradeID;
     }
 
     @Mod.EventBusSubscriber(Dist.CLIENT)

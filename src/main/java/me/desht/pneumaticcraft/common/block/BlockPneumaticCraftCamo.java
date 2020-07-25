@@ -4,7 +4,7 @@ import me.desht.pneumaticcraft.common.tileentity.ICamouflageableTE;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.fluid.IFluidState;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -12,7 +12,6 @@ import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
-import net.minecraft.world.ILightReader;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.data.ModelProperty;
 import net.minecraftforge.common.util.Constants;
@@ -24,7 +23,7 @@ import net.minecraftforge.common.util.Constants;
 //@Optional.Interface (iface = "team.chisel.ctm.api.IFacade", modid = "ctm-api")
 public abstract class BlockPneumaticCraftCamo extends BlockPneumaticCraft /*implements IFacade*/ {
     public static final ModelProperty<BlockState> CAMO_STATE = new ModelProperty<>();
-    public static final ModelProperty<ILightReader> BLOCK_ACCESS = new ModelProperty<>();
+    public static final ModelProperty<IBlockReader> BLOCK_ACCESS = new ModelProperty<>();
     public static final ModelProperty<BlockPos> BLOCK_POS = new ModelProperty<>();
 
     protected BlockPneumaticCraftCamo(Properties props) {
@@ -32,7 +31,7 @@ public abstract class BlockPneumaticCraftCamo extends BlockPneumaticCraft /*impl
     }
 
     @Override
-    public boolean removedByPlayer(BlockState state, World world, BlockPos pos, PlayerEntity player, boolean willHarvest, IFluidState fluid) {
+    public boolean removedByPlayer(BlockState state, World world, BlockPos pos, PlayerEntity player, boolean willHarvest, FluidState fluid) {
         TileEntity te = world.getTileEntity(pos);
         if (te instanceof ICamouflageableTE && !player.isCreative()) {
             BlockState camoState = ((ICamouflageableTE) te).getCamouflage();
@@ -63,7 +62,7 @@ public abstract class BlockPneumaticCraftCamo extends BlockPneumaticCraft /*impl
     @Override
     public VoxelShape getRaytraceShape(BlockState state, IBlockReader worldIn, BlockPos pos) {
         ICamouflageableTE camo = getCamoState(worldIn, pos);
-        return camo == null ? getUncamouflagedRaytraceShape(state, worldIn, pos) : camo.getCamouflage().getRaytraceShape(worldIn, pos);
+        return camo == null ? getUncamouflagedRaytraceShape(state, worldIn, pos) : camo.getCamouflage().getRaytraceShape(worldIn, pos, ISelectionContext.dummy());
     }
 
     @Override

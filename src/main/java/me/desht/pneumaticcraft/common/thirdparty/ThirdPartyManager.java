@@ -9,7 +9,6 @@ import me.desht.pneumaticcraft.common.thirdparty.immersiveengineering.ImmersiveE
 import me.desht.pneumaticcraft.common.thirdparty.mekanism.Mekanism;
 import me.desht.pneumaticcraft.common.thirdparty.patchouli.Patchouli;
 import me.desht.pneumaticcraft.common.thirdparty.theoneprobe.TheOneProbe;
-import me.desht.pneumaticcraft.common.thirdparty.waila.Waila;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.ModIds;
 import net.minecraftforge.fml.ModList;
@@ -43,7 +42,7 @@ public class ThirdPartyManager {
         try {
             // Not using method refs here, because that can cause early class loading and we don't want that
             thirdPartyClasses.put(ModIds.COMPUTERCRAFT, () -> new ComputerCraft());
-            thirdPartyClasses.put(ModIds.WAILA, () -> new Waila());
+//            thirdPartyClasses.put(ModIds.WAILA, () -> new Waila());  no 1.16 yet...
             thirdPartyClasses.put(ModIds.TOP, () -> new TheOneProbe());
             thirdPartyClasses.put(ModIds.CURIOS, () -> new Curios());
             thirdPartyClasses.put(ModIds.BOTANIA, () -> new Botania());

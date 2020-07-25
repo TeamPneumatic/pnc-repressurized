@@ -7,8 +7,10 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.progwidgets.ICountWidget;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ISidedWidget;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.util.Direction;
+import net.minecraft.util.text.ITextComponent;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiProgWidgetImportExport<P extends IProgWidget & ISidedWidget & ICountWidget> extends GuiProgWidgetAreaShow<P> {
 
@@ -24,7 +26,7 @@ public class GuiProgWidgetImportExport<P extends IProgWidget & ISidedWidget & IC
 
         if (showSides()) {
             for (Direction dir : Direction.VALUES) {
-                String sideName = ClientUtils.translateDirection(dir);
+                ITextComponent sideName = ClientUtils.translateDirectionComponent(dir);
                 WidgetCheckBox checkBox = new WidgetCheckBox(guiLeft + 8, guiTop + 32 + dir.getIndex() * 12, 0xFF404040,
                         sideName, b -> progWidget.getSides()[dir.getIndex()] = b.checked);
                 checkBox.checked = progWidget.getSides()[dir.getIndex()];
@@ -33,10 +35,10 @@ public class GuiProgWidgetImportExport<P extends IProgWidget & ISidedWidget & IC
         }
 
         WidgetCheckBox useItemCount = new WidgetCheckBox(guiLeft + 8, guiTop + (showSides() ? 115 : 30), 0xFF404040,
-                I18n.format("pneumaticcraft.gui.progWidget.itemFilter.useItemCount"),
+                xlate("pneumaticcraft.gui.progWidget.itemFilter.useItemCount"),
                 b -> { progWidget.setUseCount(b.checked); textField.setEnabled(b.checked); }
         );
-        useItemCount.setTooltip("pneumaticcraft.gui.progWidget.itemFilter.useItemCount.tooltip");
+        useItemCount.setTooltip(xlate("pneumaticcraft.gui.progWidget.itemFilter.useItemCount.tooltip"));
         useItemCount.checked = progWidget.useCount();
         addButton(useItemCount);
 
@@ -45,18 +47,11 @@ public class GuiProgWidgetImportExport<P extends IProgWidget & ISidedWidget & IC
         textField.setEnabled(useItemCount.checked);
         textField.setResponder(s -> progWidget.setCount(textField.getValue()));
         addButton(textField);
+
+        addLabel(xlate("pneumaticcraft.gui.progWidget.inventory.accessingSides"), guiLeft + 6, guiTop + 20);
     }
 
     protected boolean showSides() {
         return true;
     }
-
-    @Override
-    public void render(int mouseX, int mouseY, float partialTicks) {
-        super.render(mouseX, mouseY, partialTicks);
-        if (showSides()) {
-            font.drawString(I18n.format("pneumaticcraft.gui.progWidget.inventory.accessingSides"), guiLeft + 6, guiTop + 20, 0xFF404060);
-        }
-    }
-
 }

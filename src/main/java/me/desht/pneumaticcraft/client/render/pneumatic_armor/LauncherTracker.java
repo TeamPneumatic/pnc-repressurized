@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.KeyHandler;
@@ -11,6 +12,7 @@ import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.util.HandSide;
+import net.minecraft.util.math.vector.Vector3f;
 
 public enum LauncherTracker {
     INSTANCE;
@@ -48,20 +50,20 @@ public enum LauncherTracker {
         launcherProgress = 0;
     }
 
-    public void render(MainWindow sr, float partialTicks) {
-        RenderSystem.pushMatrix();
+    public void render(MatrixStack matrixStack, MainWindow sr, float partialTicks) {
+        matrixStack.push();
         RenderSystem.disableTexture();
         if (Minecraft.getInstance().player.getPrimaryHand() == HandSide.LEFT) {
-            RenderSystem.translated(sr.getScaledWidth() - 30, sr.getScaledHeight() - 30, -90);
-            RenderSystem.scaled(-1, 1, 1);
+            matrixStack.translate(sr.getScaledWidth() - 30, sr.getScaledHeight() - 30, -90);
+            matrixStack.scale(-1, 1, 1);
         } else {
-            RenderSystem.translated(30, sr.getScaledHeight() - 30, -90);
+            matrixStack.translate(30, sr.getScaledHeight() - 30, -90);
         }
-        RenderSystem.rotatef(-60, 0, 0, 1);
+        matrixStack.rotate(Vector3f.ZP.rotationDegrees(-60));
         float progress = Math.min(100f, (launcherProgress + partialTicks) * 100f / LauncherTracker.MAX_PROGRESS);
-        RenderProgressBar.render2d(0, 0, sr.getScaledWidth() / 6.0 - 30, 12, 0,
+        RenderProgressBar.render2d(matrixStack, 0, 0, sr.getScaledWidth() / 6f - 30, 12, 0,
                 progress, 0xAA0000A0, 0xAA40A0FF);
         RenderSystem.enableTexture();
-        RenderSystem.popMatrix();
+        matrixStack.pop();
     }
 }

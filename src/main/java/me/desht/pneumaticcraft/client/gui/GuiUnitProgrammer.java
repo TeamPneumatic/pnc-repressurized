@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.client.gui.programmer.ProgWidgetGuiManager;
@@ -13,14 +14,14 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.GuiConstants;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Matrix4f;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -28,14 +29,12 @@ import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiUnitProgrammer extends Screen {
     private static final float SCALE_PER_STEP = 0.2F;
 
-    private final FontRenderer fontRenderer;
     private final List<IProgWidget> progWidgets;
     private final int guiLeft, guiTop;
     private final int startX, startY, areaWidth, areaHeight;
@@ -43,11 +42,10 @@ public class GuiUnitProgrammer extends Screen {
     private double translatedX, translatedY;
     private int lastZoom;
 
-    public GuiUnitProgrammer(List<IProgWidget> progWidgets, FontRenderer fontRenderer, int guiLeft, int guiTop,
+    public GuiUnitProgrammer(List<IProgWidget> progWidgets, int guiLeft, int guiTop,
                              int width, int height, Rectangle2d bounds, double translatedX,
                              double translatedY, int lastZoom) {
         super(new StringTextComponent(I18n.format("block.pneumaticcraft.programmer")));
-        this.fontRenderer = fontRenderer;
         this.progWidgets = progWidgets;
         this.guiLeft = guiLeft;
         this.guiTop = guiTop;
@@ -82,7 +80,7 @@ public class GuiUnitProgrammer extends Screen {
         return translatedY;
     }
 
-    public void renderForeground(int x, int y, IProgWidget tooltipExcludingWidget) {
+    public void renderForeground(MatrixStack matrixStack, int x, int y, IProgWidget tooltipExcludingWidget) {
         IProgWidget progWidget = getHoveredWidget(x, y);
         if (progWidget != null && progWidget != tooltipExcludingWidget) {
             List<ITextComponent> tooltip = new ArrayList<>();
@@ -91,27 +89,26 @@ public class GuiUnitProgrammer extends Screen {
             List<ITextComponent> errors = new ArrayList<>();
             progWidget.addErrors(errors, progWidgets);
             if (errors.size() > 0) {
-                tooltip.add(xlate("pneumaticcraft.gui.programmer.errors").applyTextStyles(TextFormatting.RED, TextFormatting.UNDERLINE));
+                tooltip.add(xlate("pneumaticcraft.gui.programmer.errors").mergeStyle(TextFormatting.RED, TextFormatting.UNDERLINE));
                 for (ITextComponent error : errors) {
-                    PneumaticCraftUtils.splitString(GuiConstants.TRIANGLE_RIGHT + " " + error.getFormattedText(), 40)
-                            .forEach(str -> tooltip.add(new StringTextComponent(str).applyTextStyle(TextFormatting.RED)));
+                    PneumaticCraftUtils.splitString(GuiConstants.TRIANGLE_RIGHT + " " + error.getString(), 40)
+                            .forEach(str -> tooltip.add(new StringTextComponent(str).mergeStyle(TextFormatting.RED)));
                 }
             }
 
             List<ITextComponent> warnings = new ArrayList<>();
             progWidget.addWarnings(warnings, progWidgets);
             if (warnings.size() > 0) {
-                tooltip.add(xlate("pneumaticcraft.gui.programmer.warnings").applyTextStyles(TextFormatting.YELLOW, TextFormatting.UNDERLINE));
+                tooltip.add(xlate("pneumaticcraft.gui.programmer.warnings").mergeStyle(TextFormatting.YELLOW, TextFormatting.UNDERLINE));
                 for (ITextComponent warning : warnings) {
-                    PneumaticCraftUtils.splitString(GuiConstants.TRIANGLE_RIGHT + " " + warning.getFormattedText(), 40)
-                            .forEach(str -> tooltip.add(new StringTextComponent(str).applyTextStyle(TextFormatting.YELLOW)));
+                    PneumaticCraftUtils.splitString(GuiConstants.TRIANGLE_RIGHT + " " + warning.getString(), 40)
+                            .forEach(str -> tooltip.add(new StringTextComponent(str).mergeStyle(TextFormatting.YELLOW)));
                 }
             }
             addAdditionalInfoToTooltip(progWidget, tooltip);
 
             if (!tooltip.isEmpty()) {
-                List<String> t = tooltip.stream().map(ITextComponent::getFormattedText).collect(Collectors.toList());
-                renderTooltip(t, x - guiLeft, y - guiTop, fontRenderer);
+                renderTooltip(matrixStack, tooltip, x - guiLeft, y - guiTop);
             }
         }
     }
@@ -132,14 +129,12 @@ public class GuiUnitProgrammer extends Screen {
 
     protected void addAdditionalInfoToTooltip(IProgWidget widget, List<ITextComponent> tooltip) {
         if (ProgWidgetGuiManager.hasGui(widget)) {
-            tooltip.add(new StringTextComponent("Right-click for options").applyTextStyle(TextFormatting.GOLD));
+            tooltip.add(new StringTextComponent("Right-click for options").mergeStyle(TextFormatting.GOLD));
         }
         ThirdPartyManager.instance().getDocsProvider().addTooltip(tooltip, false);
     }
 
-    public void render(int x, int y, boolean showFlow, boolean showInfo) {
-        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-
+    public void render(MatrixStack matrixStack, int x, int y, boolean showFlow, boolean showInfo) {
         if (scaleScroll.getState() != lastZoom) {
             float shift = SCALE_PER_STEP * (scaleScroll.getState() - lastZoom);
             float prevScale = 2.0F - lastZoom * SCALE_PER_STEP;
@@ -155,55 +150,54 @@ public class GuiUnitProgrammer extends Screen {
                 (int)(areaWidth * sfX), (int)(areaHeight * sfY));
         GL11.glEnable(GL11.GL_SCISSOR_TEST);
 
-        RenderSystem.pushMatrix();
-        RenderSystem.translated(translatedX, translatedY, 0);
+        matrixStack.push();
+        matrixStack.translate(translatedX, translatedY, 0);
 
         float scale = getScale();
-        RenderSystem.scaled(scale, scale, 1);
+        matrixStack.scale(scale, scale, 1);
 
-        if (showFlow) showFlow();
+        if (showFlow) showFlow(matrixStack);
 
         RenderSystem.enableTexture();
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         for (IProgWidget widget : progWidgets) {
-            RenderSystem.pushMatrix();
-            RenderSystem.translated(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
-            RenderSystem.scaled(0.5, 0.5, 1);
-            ProgWidgetRenderer.renderProgWidget2d(widget);
-            RenderSystem.popMatrix();
+            matrixStack.push();
+            matrixStack.translate(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
+            matrixStack.scale(0.5f, 0.5f, 1.0f);
+            ProgWidgetRenderer.renderProgWidget2d(matrixStack, widget);
+            matrixStack.pop();
         }
 
         for (IProgWidget widget : progWidgets) {
             List<ITextComponent> errors = new ArrayList<>();
             widget.addErrors(errors, progWidgets);
             if (errors.size() > 0) {
-                drawBorder(widget, 0xFFFF0000);
+                drawBorder(matrixStack, widget, 0xFFFF0000);
             } else {
                 List<ITextComponent> warnings = new ArrayList<>();
                 widget.addWarnings(warnings, progWidgets);
                 if (warnings.size() > 0) {
-                    drawBorder(widget, 0xFFFFFF00);
+                    drawBorder(matrixStack, widget, 0xFFFFFF00);
                 }
             }
         }
 
-        renderAdditionally();
+        renderAdditionally(matrixStack);
 
         RenderSystem.disableBlend();
-        RenderSystem.color4f(1, 1, 1, 1);
 
         if (showInfo) {
             for (IProgWidget widget : progWidgets) {
-                RenderSystem.pushMatrix();
-                RenderSystem.translated(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
-                RenderSystem.scaled(0.5, 0.5, 1);
-                widget.renderExtraInfo();
-                RenderSystem.popMatrix();
+                matrixStack.push();
+                matrixStack.translate(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
+                matrixStack.scale(0.5f, 0.5f, 1.0f);
+                ProgWidgetRenderer.doExtraRendering2d(matrixStack, widget);
+                matrixStack.pop();
             }
         }
 
-        RenderSystem.popMatrix();
+        matrixStack.pop();
 
         GL11.glDisable(GL11.GL_SCISSOR_TEST);
     }
@@ -223,35 +217,36 @@ public class GuiUnitProgrammer extends Screen {
         return scaleScroll.mouseScrolled(mouseX, mouseY, dir);
     }
 
-    protected void renderAdditionally() {
+    protected void renderAdditionally(MatrixStack matrixStack) {
         // nothing; to be overridden
     }
 
-    protected void drawBorder(IProgWidget widget, int color) {
-        drawBorder(widget, color, 0);
+    protected void drawBorder(MatrixStack matrixStack, IProgWidget widget, int color) {
+        drawBorder(matrixStack, widget, color, 0);
     }
 
-    protected void drawBorder(IProgWidget widget, int color, int inset) {
-        RenderSystem.pushMatrix();
-        RenderSystem.translated(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
-        RenderSystem.scaled(0.5, 0.5, 1);
-        vLine(inset, inset, widget.getHeight() - inset, color);
-        vLine(widget.getWidth() - inset, inset, widget.getHeight() - inset, color);
-        hLine(widget.getWidth() - inset, inset, inset, color);
-        hLine(widget.getWidth() - inset, inset, widget.getHeight() - inset, color);
-        RenderSystem.popMatrix();
+    protected void drawBorder(MatrixStack matrixStack, IProgWidget widget, int color, int inset) {
+        matrixStack.push();
+        matrixStack.translate(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
+        matrixStack.scale(0.5f, 0.5f, 1f);
+        vLine(matrixStack, inset, inset, widget.getHeight() - inset, color);
+        vLine(matrixStack, widget.getWidth() - inset, inset, widget.getHeight() - inset, color);
+        hLine(matrixStack, widget.getWidth() - inset, inset, inset, color);
+        hLine(matrixStack, widget.getWidth() - inset, inset, widget.getHeight() - inset, color);
+        matrixStack.pop();
     }
 
     private static final float ARROW_ANGLE = (float) Math.toRadians(30);
     private static final float ARROW_SIZE = 5;
 
-    private void showFlow() {
+    private void showFlow(MatrixStack matrixStack) {
         RenderSystem.lineWidth(1);
         RenderSystem.disableTexture();
 
         BufferBuilder wr = Tessellator.getInstance().getBuffer();
         wr.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION);
 
+        Matrix4f posMat = matrixStack.getLast().getMatrix();
         for (IProgWidget widget : progWidgets) {
             if (widget instanceof IJump) {
                 for (String jumpLocation : ((IJump) widget).getPossibleJumpLocations()) {
@@ -264,16 +259,16 @@ public class GuiUnitProgrammer extends Screen {
                                 int y2 = w.getY() + w.getHeight() / 4;
                                 float midX = (x2 + x1) / 2F;
                                 float midY = (y2 + y1) / 2F;
-                                wr.pos(guiLeft + x1, guiTop + y1, 0.0f).endVertex();
-                                wr.pos(guiLeft + x2, guiTop + y2, 0.0f).endVertex();
-                                Vec3d arrowVec = new Vec3d(x1 - x2, y1 - y2, 0).normalize();
-                                arrowVec = new Vec3d(arrowVec.x * ARROW_SIZE, 0, arrowVec.y * ARROW_SIZE);
+                                wr.pos(posMat,guiLeft + x1, guiTop + y1, 0.0f).endVertex();
+                                wr.pos(posMat,guiLeft + x2, guiTop + y2, 0.0f).endVertex();
+                                Vector3d arrowVec = new Vector3d(x1 - x2, y1 - y2, 0).normalize();
+                                arrowVec = new Vector3d(arrowVec.x * ARROW_SIZE, 0, arrowVec.y * ARROW_SIZE);
                                 arrowVec = arrowVec.rotateYaw(ARROW_ANGLE);
-                                wr.pos(guiLeft + midX, guiTop + midY, 0.0f).endVertex();
-                                wr.pos(guiLeft + midX + (float)arrowVec.x, guiTop + midY + (float)arrowVec.z, 0.0f).endVertex();
+                                wr.pos(posMat,guiLeft + midX, guiTop + midY, 0.0f).endVertex();
+                                wr.pos(posMat,guiLeft + midX + (float)arrowVec.x, guiTop + midY + (float)arrowVec.z, 0.0f).endVertex();
                                 arrowVec = arrowVec.rotateYaw(-2 * ARROW_ANGLE);
-                                wr.pos(guiLeft + midX, guiTop + midY, 0.0f).endVertex();
-                                wr.pos(guiLeft + midX + (float)arrowVec.x, guiTop + midY + (float)arrowVec.z, 0.0f).endVertex();
+                                wr.pos(posMat,guiLeft + midX, guiTop + midY, 0.0f).endVertex();
+                                wr.pos(posMat,guiLeft + midX + (float)arrowVec.x, guiTop + midY + (float)arrowVec.z, 0.0f).endVertex();
                             }
                         }
                     }

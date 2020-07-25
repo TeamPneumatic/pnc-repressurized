@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.PacketDistributor;
 
@@ -27,7 +27,7 @@ public abstract class LocationDoublePacket {
         this.z = z;
     }
 
-    LocationDoublePacket(Vec3d v) {
+    LocationDoublePacket(Vector3d v) {
         this.x = v.x;
         this.y = v.y;
         this.z = v.z;
@@ -46,6 +46,6 @@ public abstract class LocationDoublePacket {
     }
 
     PacketDistributor.TargetPoint getTargetPoint(World world) {
-        return new PacketDistributor.TargetPoint(x, y, z, TileEntityConstants.PACKET_UPDATE_DISTANCE, world.getDimension().getType());
+        return new PacketDistributor.TargetPoint(x, y, z, TileEntityConstants.PACKET_UPDATE_DISTANCE, world.func_234923_W_());
     }
 }

@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.gui.pneumatic_armor;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticScreenBase;
@@ -67,7 +68,7 @@ public class GuiMoveStat extends GuiPneumaticScreenBase {
 
         MainHelmetHandler mainOptions = HUDHandler.instance().getSpecificRenderer(MainHelmetHandler.class);
         if (movedStat != mainOptions.testMessageStat) {
-            mainOptions.testMessageStat = new WidgetAnimatedStat(null, "Test Message, keep in mind messages can be long!",
+            mainOptions.testMessageStat = new WidgetAnimatedStat(null, new StringTextComponent("Test Message, keep in mind messages can be long!"),
                     WidgetAnimatedStat.StatIcon.NONE, 0x7000AA00, null, ArmorHUDLayout.INSTANCE.messageStat);
             mainOptions.testMessageStat.openWindow();
             otherStats.add(mainOptions.testMessageStat);
@@ -78,13 +79,13 @@ public class GuiMoveStat extends GuiPneumaticScreenBase {
     public void init() {
         super.init();
 
-        snapToGrid = new WidgetCheckBox(10, (height * 3) / 5, 0xC0C0C0, "Snap To Grid");
+        snapToGrid = new WidgetCheckBox(10, (height * 3) / 5, 0xC0C0C0, new StringTextComponent("Snap To Grid"));
         snapToGrid.x = (width - snapToGrid.getWidth()) / 2;
         snapToGrid.checked = snap;
         addButton(snapToGrid);
 
         gridSlider = new Slider(snapToGrid.x, snapToGrid.y + 12, snapToGrid.getWidth(), 10,
-                "", "", 1, 12, gridSize, false, true, b -> {}, null);
+                StringTextComponent.EMPTY, StringTextComponent.EMPTY, 1, 12, gridSize, false, true, b -> {}, null);
         addButton(gridSlider);
     }
 
@@ -140,25 +141,24 @@ public class GuiMoveStat extends GuiPneumaticScreenBase {
     }
 
     @Override
-    public void onClose() {
+    public void closeScreen() {
         minecraft.displayGuiScreen(GuiHelmetMainScreen.getInstance());
     }
 
-
     @Override
-    public void render(int x, int y, float partialTicks) {
-        renderBackground();
+    public void render(MatrixStack matrixStack, int x, int y, float partialTicks) {
+        renderBackground(matrixStack);
 
-        GuiUtils.showPopupHelpScreen(this, font, helpText);
+        GuiUtils.showPopupHelpScreen(matrixStack,this, font, helpText);
 
-        super.render(x, y, partialTicks);
+        super.render(matrixStack, x, y, partialTicks);
 
-        movedStat.render(-1, -1, partialTicks);
+        movedStat.render(matrixStack,-1, -1, partialTicks);
 
         otherStats.forEach(stat -> {
             int c = stat.getBackgroundColor();
             stat.setBackgroundColor(0x30606060);
-            stat.render(-1, -1, partialTicks);
+            stat.render(matrixStack, -1, -1, partialTicks);
             stat.setBackgroundColor(c);
         });
     }

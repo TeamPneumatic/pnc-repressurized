@@ -13,8 +13,8 @@ import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.model.ModelRenderer;
+import net.minecraft.util.math.vector.Vector3f;
 
 /**
  * Used in three different places:

@@ -19,6 +19,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.StringTextComponent;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
 public class GuiSearchUpgradeOptions extends IOptionPage.SimpleToggleableOptions<SearchUpgradeHandler> {
     private static GuiItemSearcher searchGui;
 
@@ -38,7 +40,7 @@ public class GuiSearchUpgradeOptions extends IOptionPage.SimpleToggleableOptions
         gui.addWidget(new WidgetButtonExtended(30, 40, 150, 20,
                 "Search for item...", b -> openSearchGui()));
 
-        gui.addWidget(new Button(30, 128, 150, 20, "Move Stat Screen...",
+        gui.addWidget(new Button(30, 128, 150, 20, xlate("pneumaticcraft.armor.gui.misc.moveStatScreen"),
                 b -> Minecraft.getInstance().displayGuiScreen(new GuiMoveStat(getUpgradeHandler(), ArmorHUDLayout.LayoutTypes.ITEM_SEARCH))));
 
         if (searchGui != null && !player.getItemStackFromSlot(EquipmentSlotType.HEAD).isEmpty()) {

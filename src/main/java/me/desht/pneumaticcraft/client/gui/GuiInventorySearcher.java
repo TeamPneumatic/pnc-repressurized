@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
@@ -16,6 +17,7 @@ import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
 
@@ -43,7 +45,7 @@ public class GuiInventorySearcher extends ContainerScreen<ContainerInventorySear
     protected void init() {
         super.init();
 
-        addButton(label = new WidgetLabel(guiLeft + 105, guiTop + 28, "", 0xFF404080));
+        addButton(label = new WidgetLabel(guiLeft + 105, guiTop + 28, StringTextComponent.EMPTY, 0xFF404080));
     }
 
     @Override
@@ -52,7 +54,7 @@ public class GuiInventorySearcher extends ContainerScreen<ContainerInventorySear
     }
 
     @Override
-    public void onClose() {
+    public void closeScreen() {
         minecraft.keyboardListener.enableRepeatEvents(false);
         if (parentScreen != null) {
             minecraft.displayGuiScreen(parentScreen);
@@ -60,7 +62,7 @@ public class GuiInventorySearcher extends ContainerScreen<ContainerInventorySear
                 minecraft.player.openContainer = ((ContainerScreen) parentScreen).getContainer();
             }
         } else {
-            super.onClose();
+            super.closeScreen();
         }
     }
 
@@ -94,50 +96,49 @@ public class GuiInventorySearcher extends ContainerScreen<ContainerInventorySear
     public void tick() {
         super.tick();
 
-        label.setMessage("");
+        label.setMessage(StringTextComponent.EMPTY);
         ItemStack stack = inventory.getStackInSlot(0);
         if (stack.getItem() instanceof IPositionProvider) {
             List<BlockPos> posList = ((IPositionProvider) stack.getItem()).getStoredPositions(ClientUtils.getClientWorld(), stack);
             if (!posList.isEmpty()) {
                 BlockPos pos = posList.get(0);
                 if (pos != null) {
-                    label.setMessage(PneumaticCraftUtils.posToString(pos));
+                    label.setMessage(new StringTextComponent(PneumaticCraftUtils.posToString(pos)));
                 }
             }
         }
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(float par1, int par2, int par3) {
-        renderBackground();
+    protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float par1, int par2, int par3) {
+        renderBackground(matrixStack);
         minecraft.getTextureManager().bindTexture(Textures.GUI_INVENTORY_SEARCHER);
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
-        blit(xStart, yStart, 0, 0, xSize, ySize);
+        blit(matrixStack, xStart, yStart, 0, 0, xSize, ySize);
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(int par1, int par2) {
-        int x = (xSize - font.getStringWidth(getTitle().getFormattedText())) / 2;
-        font.drawString(getTitle().getFormattedText(), x, 5, 0x404040);
+    protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int mouseX, int mouseY) {
+        font.func_238422_b_(matrixStack, getTitle(), this.width / 2f, 5, 0x404040);
 
         // darken out all non-matching slots
         for (int i = 0; i < this.container.inventorySlots.size() - 1; ++i) {
             Slot slot = this.container.inventorySlots.get(i);
             if (!stackPredicate.test(slot.getStack())) {
                 RenderSystem.colorMask(true, true, true, false);
-                this.fillGradient(slot.xPos, slot.yPos, slot.xPos + 16, slot.yPos + 16, 0xC0202020, 0xC0202020);
+                this.fillGradient(matrixStack, slot.xPos, slot.yPos, slot.xPos + 16, slot.yPos + 16, 0xC0202020, 0xC0202020);
                 RenderSystem.colorMask(true, true, true, true);
             }
         }
     }
 
     @Override
-    public void render(int par1, int par2, float par3) {
-        super.render(par1, par2, par3);
+    public void render(MatrixStack matrixStack, int par1, int par2, float par3) {
+        super.render(matrixStack, par1, par2, par3);
 
         if (this.hoveredSlot != null && stackPredicate.test(this.hoveredSlot.getStack())) {
-            renderHoveredToolTip(par1, par2);
+            func_230459_a_(matrixStack, par1, par2);  // renderHoveredTooltip
         }
     }
 }

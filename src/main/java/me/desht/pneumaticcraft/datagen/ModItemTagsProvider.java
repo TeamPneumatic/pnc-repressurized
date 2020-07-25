@@ -2,22 +2,22 @@ package me.desht.pneumaticcraft.datagen;
 
 import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import net.minecraft.data.BlockTagsProvider;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.ItemTagsProvider;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
+import net.minecraft.tags.ITag;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.Tag;
 import net.minecraft.util.IItemProvider;
 import net.minecraftforge.common.Tags;
-import top.theillusivec4.curios.api.CurioTags;
 
 import java.util.Arrays;
 import java.util.function.Supplier;
 
 public class ModItemTagsProvider extends ItemTagsProvider {
-    public ModItemTagsProvider(DataGenerator generatorIn) {
-        super(generatorIn);
+    public ModItemTagsProvider(DataGenerator generatorIn, BlockTagsProvider blockTagsProvider) {
+        super(generatorIn, blockTagsProvider);
     }
 
     @Override
@@ -54,17 +54,17 @@ public class ModItemTagsProvider extends ItemTagsProvider {
 
         appendToTag(Tags.Items.INGOTS, PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON);
 
-        addItemsToTag(CurioTags.CURIO, ModItems.MEMORY_STICK);
+        addItemsToTag(PneumaticCraftTags.Items.CURIO, ModItems.MEMORY_STICK);
     }
 
     @SafeVarargs
-    private final void addItemsToTag(Tag<Item> tag, Supplier<? extends IItemProvider>... items) {
-        getBuilder(tag).add(Arrays.stream(items).map(Supplier::get).map(IItemProvider::asItem).toArray(Item[]::new));
+    private final void addItemsToTag(ITag.INamedTag<Item> tag, Supplier<? extends IItemProvider>... items) {
+        getOrCreateBuilder(tag).add(Arrays.stream(items).map(Supplier::get).map(IItemProvider::asItem).toArray(Item[]::new));
     }
 
     @SafeVarargs
-    private final void appendToTag(Tag<Item> tag, Tag<Item>... toAppend) {
-        getBuilder(tag).add(toAppend);
+    private final void appendToTag(ITag.INamedTag<Item> tag, ITag.INamedTag<Item>... toAppend) {
+        getOrCreateBuilder(tag).addTags(toAppend);
     }
 
     @Override

@@ -18,6 +18,7 @@ import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -67,14 +68,14 @@ public class MainHelmetHandler implements IUpgradeRenderHandler {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void render2D(float partialTicks, boolean helmetEnabled) {
+    public void render2D(MatrixStack matrixStack, float partialTicks, boolean helmetEnabled) {
     }
 
     @Override
     @OnlyIn(Dist.CLIENT)
     public IGuiAnimatedStat getAnimatedStat() {
         if (powerStat == null) {
-            powerStat = new WidgetAnimatedStat(null, "", WidgetAnimatedStat.StatIcon.NONE,0x3000AA00, null, ArmorHUDLayout.INSTANCE.powerStat);
+            powerStat = new WidgetAnimatedStat(null, StringTextComponent.EMPTY, WidgetAnimatedStat.StatIcon.NONE,0x3000AA00, null, ArmorHUDLayout.INSTANCE.powerStat);
             powerStat.setLineSpacing(15);
             powerStat.setWidgetOffsets(-18, 0);  // ensure armor icons are rendered in the right place
             for (EquipmentSlotType slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {

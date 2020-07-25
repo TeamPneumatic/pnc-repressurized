@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
@@ -14,10 +15,13 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class JEIAmadronTradeCategory implements IRecipeCategory<AmadronOffer> {
     private final String localizedName;
@@ -88,19 +92,19 @@ public class JEIAmadronTradeCategory implements IRecipeCategory<AmadronOffer> {
     }
 
     @Override
-    public void draw(AmadronOffer recipe, double mouseX, double mouseY) {
+    public void draw(AmadronOffer recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
         FontRenderer fr = Minecraft.getInstance().fontRenderer;
         int x = (background.getWidth() - fr.getStringWidth(recipe.getVendor())) / 2;
-        fr.drawString(recipe.getVendor(), x, 3, 0xFF404040);
+        fr.drawString(matrixStack, recipe.getVendor(), x, 3, 0xFF404040);
     }
 
     @Override
-    public List<String> getTooltipStrings(AmadronOffer recipe, double mouseX, double mouseY) {
-        List<String> res = new ArrayList<>();
+    public List<ITextComponent> getTooltipStrings(AmadronOffer recipe, double mouseX, double mouseY) {
+        List<ITextComponent> res = new ArrayList<>();
         if (mouseX >= 22 && mouseX <= 51 && mouseY >= 12) {
-            res.add(I18n.format("pneumaticcraft.gui.amadron.amadronWidget.vendor", recipe.getVendor()));
-            res.add(I18n.format("pneumaticcraft.gui.amadron.amadronWidget.selling", recipe.getOutput().toString()));
-            res.add(I18n.format("pneumaticcraft.gui.amadron.amadronWidget.buying", recipe.getInput().toString()));
+            res.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.vendor", recipe.getVendor()));
+            res.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.selling", recipe.getOutput().toString()));
+            res.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.buying", recipe.getInput().toString()));
         }
         return res;
     }
@@ -123,9 +127,9 @@ public class JEIAmadronTradeCategory implements IRecipeCategory<AmadronOffer> {
         }
 
         @Override
-        public void draw(int x, int y) {
+        public void draw(MatrixStack matrixStack, int x, int y) {
             FontRenderer fr = Minecraft.getInstance().fontRenderer;
-            fr.drawStringWithShadow(text, x + getWidth() - fr.getStringWidth(text), y + getHeight() - fr.FONT_HEIGHT, 0xFFFFFFFF);
+            fr.drawStringWithShadow(matrixStack, text, x + getWidth() - fr.getStringWidth(text), y + getHeight() - fr.FONT_HEIGHT, 0xFFFFFFFF);
         }
     }
 }

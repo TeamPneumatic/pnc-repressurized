@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
+import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
@@ -98,8 +99,9 @@ public class TileEntityAssemblyDrill extends TileEntityAssemblyRobot {
     }
 
     @Override
-    public void read(CompoundNBT tag) {
-        super.read(tag);
+    public void read(BlockState state, CompoundNBT tag) {
+        super.read(state, tag);
+
         isDrillOn = tag.getBoolean("drill");
         drillSpeed = tag.getFloat("drillSpeed");
         drillStep = tag.getInt("drillStep");

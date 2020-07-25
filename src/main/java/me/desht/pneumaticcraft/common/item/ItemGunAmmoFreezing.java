@@ -9,18 +9,19 @@ import net.minecraft.block.SnowBlock;
 import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraft.potion.Potions;
 import net.minecraft.util.Direction;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.RayTraceContext;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
 
 import java.util.UUID;
 
@@ -51,16 +52,10 @@ public class ItemGunAmmoFreezing extends ItemGunAmmo {
     public int onTargetHit(Minigun minigun, ItemStack ammo, Entity target) {
         if (target instanceof LivingEntity) {
             LivingEntity living = (LivingEntity) target;
-            IAttributeInstance knockbackRes = living.getAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE);
             living.addPotionEffect(new EffectInstance(Effects.SLOWNESS, living.getRNG().nextInt(40) + 40, 3));
-            // temporarily stop the target getting knocked back, so it doesn't get knocked out of any freeze zone
-            knockbackRes.applyModifier(KNOCKBACK);
             if (minigun.dispenserWeightedPercentage(PNCConfig.Common.Minigun.freezingAmmoEntityIceChance)) {
                 createFreezeCloud(minigun, target);
             }
-            int rounds = super.onTargetHit(minigun, ammo, target);
-            knockbackRes.removeModifier(KNOCKBACK_UUID);
-            return rounds;
         }
         return super.onTargetHit(minigun, ammo, target);
     }
@@ -85,7 +80,8 @@ public class ItemGunAmmoFreezing extends ItemGunAmmo {
     public int onBlockHit(Minigun minigun, ItemStack ammo, BlockRayTraceResult brtr) {
         World world = minigun.getWorld();
         BlockPos pos = brtr.getPos();
-        if (world.getDimension().getType() != DimensionType.THE_NETHER && minigun.dispenserWeightedPercentage(PNCConfig.Common.Minigun.freezingAmmoBlockIceChance)) {
+        // world.getDimensionType().doesFluidVaporize()
+        if (!world.func_230315_m_().func_236040_e_() && minigun.dispenserWeightedPercentage(PNCConfig.Common.Minigun.freezingAmmoBlockIceChance)) {
             BlockPos pos1;
             if (world.getBlockState(pos).getShape(world, pos) == VoxelShapes.fullCube() || brtr.getFace() != Direction.UP) {
                 pos1 = pos.offset(brtr.getFace());
@@ -107,7 +103,7 @@ public class ItemGunAmmoFreezing extends ItemGunAmmo {
                 }
             } else if (world.getBlockState(pos1).getBlock() == Blocks.WATER) {
                 // freeze surface water
-                Vec3d eye = minigun.getPlayer().getEyePosition(0f);
+                Vector3d eye = minigun.getPlayer().getEyePosition(0f);
                 RayTraceContext ctx = new RayTraceContext(eye, brtr.getHitVec(), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, minigun.getPlayer());
                 BlockRayTraceResult res = world.rayTraceBlocks(ctx);
                 if (res.getType() == RayTraceResult.Type.BLOCK) {

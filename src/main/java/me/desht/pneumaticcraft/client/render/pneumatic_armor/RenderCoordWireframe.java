@@ -7,7 +7,6 @@ import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
 
 import java.util.List;
 
@@ -23,12 +22,14 @@ public class RenderCoordWireframe {
 
     public static void addInfo(List<ITextComponent> tooltip, World world, BlockPos pos) {
         RenderCoordWireframe coordHandler = new RenderCoordWireframe(world, pos);
-        for (int i = 0; i < tooltip.size(); i++) {
-            if (tooltip.get(i).getFormattedText().contains("Coordinate Tracker")) {
-                tooltip.set(i, tooltip.get(i).appendText(" (tracking " + coordHandler.pos.getX() + ", " + coordHandler.pos.getY() + ", " + coordHandler.pos.getZ() + " in " + DimensionType.getKey(coordHandler.world.getDimension().getType()) + ")"));
-                break;
-            }
-        }
+
+        // FIXME bleh
+//        for (int i = 0; i < tooltip.size(); i++) {
+//            if (tooltip.get(i).getFormattedText().contains("Coordinate Tracker")) {
+//                tooltip.set(i, tooltip.get(i).appendText(" (tracking " + coordHandler.pos.getX() + ", " + coordHandler.pos.getY() + ", " + coordHandler.pos.getZ() + " in " + DimensionType.getKey(coordHandler.world.getDimension().getType()) + ")"));
+//                break;
+//            }
+//        }
     }
 
     public void render(MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks) {

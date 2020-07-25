@@ -10,6 +10,7 @@ import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaConstant;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethod;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethodRegistry;
 import me.desht.pneumaticcraft.lib.NBTKeys;
+import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
@@ -41,8 +42,8 @@ public abstract class TileEntityPneumaticBase extends TileEntityTickableBase {
     }
 
     @Override
-    public void handleUpdateTag(CompoundNBT tag) {
-        super.handleUpdateTag(tag);
+    public void handleUpdateTag(BlockState state, CompoundNBT tag) {
+        super.handleUpdateTag(state, tag);
 
         initializeHullAirHandlers();
     }
@@ -112,8 +113,8 @@ public abstract class TileEntityPneumaticBase extends TileEntityTickableBase {
     }
 
     @Override
-    public void read(CompoundNBT tag) {
-        super.read(tag);
+    public void read(BlockState state, CompoundNBT tag) {
+        super.read(state, tag);
 
         airHandler.deserializeNBT(tag.getCompound(NBTKeys.NBT_AIR_HANDLER));
         if (tag.contains(NBTKeys.NBT_AIR_AMOUNT)) {

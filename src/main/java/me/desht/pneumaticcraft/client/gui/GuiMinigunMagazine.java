@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.core.ModItems;
@@ -16,6 +17,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.client.event.GuiContainerEvent;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
 public class GuiMinigunMagazine extends GuiPneumaticContainerBase<ContainerMinigunMagazine,TileEntityBase> implements IExtraGuiHandling {
     private int lockedSlot = -1;
 
@@ -28,17 +31,7 @@ public class GuiMinigunMagazine extends GuiPneumaticContainerBase<ContainerMinig
         super.init();
 
         addInfoTab("gui.tooltip.item.pneumaticcraft.minigun");
-        addAnimatedStat("pneumaticcraft.gui.tab.minigun.slotInfo.title", new ItemStack(ModItems.GUN_AMMO.get()), 0xFF0080C0, true).setText("pneumaticcraft.gui.tab.minigun.slotInfo");
-    }
-
-    @Override
-    protected void drawGuiContainerBackgroundLayer(float partialTicks, int i, int j) {
-        super.drawGuiContainerBackgroundLayer(partialTicks, i, j);
-    }
-
-    @Override
-    protected void drawGuiContainerForegroundLayer(int x, int y) {
-        super.drawGuiContainerForegroundLayer(x, y);
+        addAnimatedStat(xlate("pneumaticcraft.gui.tab.minigun.slotInfo.title"), new ItemStack(ModItems.GUN_AMMO.get()), 0xFF0080C0, true).setText("pneumaticcraft.gui.tab.minigun.slotInfo");
     }
 
     @Override
@@ -73,10 +66,11 @@ public class GuiMinigunMagazine extends GuiPneumaticContainerBase<ContainerMinig
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
 
+            MatrixStack matrixStack = event.getMatrixStack();
             BufferBuilder wr = Tessellator.getInstance().getBuffer();
-            GuiUtils.drawUntexturedQuad(wr, minX, minY, 0, 16, 16, 0, 208, 0, 50);
+            GuiUtils.drawUntexturedQuad(matrixStack, wr, minX, minY, 0, 16, 16, 0, 208, 0, 50);
             RenderSystem.lineWidth(3.0F);
-            GuiUtils.drawOutline(wr, minX, minY, 0, 16, 16, 0, 208, 0, 255);
+            GuiUtils.drawOutline(matrixStack, wr, minX, minY, 0, 16, 16, 0, 208, 0, 255);
             RenderSystem.lineWidth(1.0F);
 
             RenderSystem.enableTexture();

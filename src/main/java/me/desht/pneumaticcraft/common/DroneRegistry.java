@@ -34,10 +34,9 @@ public enum DroneRegistry implements IDroneRegistry {
 
     @Override
     public void registerCustomBlockInteractor(RegistryEvent.Register<ProgWidgetType<?>> event, ICustomBlockInteract interactor) {
-        ProgWidgetType type = new ProgWidgetType<>(() ->
+        ProgWidgetType<?> type = new ProgWidgetType<>(() ->
                 new ProgWidgetCustomBlockInteract().setInteractor(interactor)).setRegistryName(interactor.getID());
         event.getRegistry().register(type);
-//        ModProgWidgets.registerCustom(type);
     }
 
     @Override

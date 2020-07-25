@@ -6,10 +6,11 @@ import me.desht.pneumaticcraft.common.block.tubes.ModuleLogistics;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketTubeModuleColor;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.item.DyeColor;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiLogisticsModule extends GuiTubeModule<ModuleLogistics> {
     private int ourColor;
@@ -27,9 +28,9 @@ public class GuiLogisticsModule extends GuiTubeModule<ModuleLogistics> {
         ourColor = module.getColorChannel();
 
         WidgetLabel ourColorLabel;
-        addButton(ourColorLabel = new WidgetLabel(guiLeft + 10, guiTop + 25, I18n.format("pneumaticcraft.gui.tubeModule.channel")));
+        addButton(ourColorLabel = new WidgetLabel(guiLeft + 10, guiTop + 25, xlate("pneumaticcraft.gui.tubeModule.channel")));
 
-        addLabel(getTitle().getFormattedText(), guiLeft + xSize / 2, guiTop + 5, WidgetLabel.Alignment.CENTRE);
+        addLabel(getTitle(), guiLeft + xSize / 2, guiTop + 5, WidgetLabel.Alignment.CENTRE);
 
         addButton(new WidgetColorSelector(guiLeft + 10 + ourColorLabel.getWidth() + 5, guiTop + 22, w -> ourColor = w.getColor().getId())
                 .withInitialColor(DyeColor.byId(ourColor)));

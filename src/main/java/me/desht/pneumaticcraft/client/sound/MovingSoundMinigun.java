@@ -16,6 +16,7 @@ import net.minecraft.util.SoundCategory;
 public class MovingSoundMinigun extends TickableSound {
     private final Entity entity;
     private final TileEntity tileEntity;
+    private boolean finished = false;
 
     MovingSoundMinigun(Entity entity) {
         super(ModSounds.MINIGUN.get(), SoundCategory.NEUTRAL);
@@ -45,7 +46,7 @@ public class MovingSoundMinigun extends TickableSound {
         Minigun minigun = null;
         if (entity != null) {
             if (!entity.isAlive()) {
-                donePlaying = true;
+                finished = true;
                 return;
             }
             x = (float) entity.getPosX();
@@ -62,17 +63,18 @@ public class MovingSoundMinigun extends TickableSound {
             }
         } else if (tileEntity != null) {
             if (tileEntity.isRemoved()) {
-                donePlaying = true;
+                finished = true;
                 return;
             }
             if (tileEntity instanceof TileEntitySentryTurret) {
                 minigun = ((TileEntitySentryTurret) tileEntity).getMinigun();
             }
         }
-        if (minigun != null) {
-            donePlaying = !minigun.isMinigunActivated() || minigun.getMinigunSpeed() < Minigun.MAX_GUN_SPEED * 0.9;
-        } else {
-            donePlaying = true;
-        }
+        finished = minigun == null || !minigun.isMinigunActivated() || minigun.getMinigunSpeed() < Minigun.MAX_GUN_SPEED * 0.9;
+    }
+
+    @Override
+    public boolean isDonePlaying() {
+        return finished;
     }
 }

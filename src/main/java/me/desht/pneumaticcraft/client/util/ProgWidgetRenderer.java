@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.client.util;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.systems.RenderSystem;
+import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.client.render.ModRenderTypes;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetCrafting;
@@ -15,10 +15,15 @@ import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.vector.Matrix4f;
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.opengl.GL11;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.BiConsumer;
 
 import static me.desht.pneumaticcraft.client.util.RenderUtils.FULL_BRIGHT;
 import static me.desht.pneumaticcraft.client.util.RenderUtils.renderWithType;
@@ -28,22 +33,29 @@ public class ProgWidgetRenderer {
      * Render a progwidget into a GUI.  Do not use for in-world rendering
      * (see {@link ProgWidgetRenderer#renderProgWidget3d(MatrixStack, IRenderTypeBuffer, IProgWidget)}
      *
+     * @param matrixStack the matrix stack
      * @param progWidget the progwidget
+     * @param alpha transparerncy
      */
-    public static void renderProgWidget2d(IProgWidget progWidget) {
+    public static void renderProgWidget2d(MatrixStack matrixStack, IProgWidget progWidget, int alpha) {
         Minecraft.getInstance().getTextureManager().bindTexture(progWidget.getTexture());
         int width = progWidget.getWidth() + (progWidget.getParameters().isEmpty() ? 0 : 10);
         int height = progWidget.getHeight() + (progWidget.hasStepOutput() ? 10 : 0);
         Pair<Float,Float> maxUV = progWidget.getMaxUV();
         float u = maxUV.getLeft();
         float v = maxUV.getRight();
+        Matrix4f posMat = matrixStack.getLast().getMatrix();
         BufferBuilder wr = Tessellator.getInstance().getBuffer();
-        wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
-        wr.pos(0, 0, 0).tex(0, 0).endVertex();
-        wr.pos(0, height, 0).tex(0, v).endVertex();
-        wr.pos(width, height, 0).tex(u, v).endVertex();
-        wr.pos(width, 0, 0).tex(u, 0).endVertex();
+        wr.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR_TEX);
+        wr.pos(posMat, 0, 0, 0).color(255, 255, 255, alpha).tex(0, 0).endVertex();
+        wr.pos(posMat, 0, height, 0).color(255, 255, 255, alpha).tex(0, v).endVertex();
+        wr.pos(posMat, width, height, 0).color(255, 255, 255, alpha).tex(u, v).endVertex();
+        wr.pos(posMat, width, 0, 0).color(255, 255, 255, alpha).tex(u, 0).endVertex();
         Tessellator.getInstance().draw();
+    }
+
+    public static void renderProgWidget2d(MatrixStack matrixStack, IProgWidget progWidget) {
+        renderProgWidget2d(matrixStack, progWidget, 255);
     }
 
     /**
@@ -66,39 +78,51 @@ public class ProgWidgetRenderer {
         });
     }
 
-    public static void renderExtras(IProgWidget progWidget) {
+    private static final Map<ResourceLocation, BiConsumer<MatrixStack, IProgWidget>> extraRenderers = new HashMap<>();
+
+    public static void doExtraRendering2d(MatrixStack matrixStack, IProgWidget widget) {
+        extraRenderers.getOrDefault(widget.getTypeID(), ProgWidgetRenderer::renderGenericExtras).accept(matrixStack, widget);
+    }
+
+    public static <P extends IProgWidget> void registerExtraRenderer(ProgWidgetType<P> type, BiConsumer<MatrixStack, P> consumer) {
+        extraRenderers.put(type.getRegistryName(), (BiConsumer<MatrixStack, IProgWidget>) consumer);
+    }
+
+    public static void renderGenericExtras(MatrixStack matrixStack, IProgWidget progWidget) {
         String info = progWidget.getExtraStringInfo();
         if (info != null && !info.isEmpty()) {
-            RenderSystem.pushMatrix();
-            RenderSystem.scaled(0.5, 0.5, 0.5);
+            matrixStack.push();
+            matrixStack.scale(0.5f, 0.5f, 0.5f);
             FontRenderer fr = Minecraft.getInstance().fontRenderer;
             List<String> splittedInfo = PneumaticCraftUtils.splitString(info, 20);
             for (int i = 0; i < splittedInfo.size(); i++) {
                 int stringLength = fr.getStringWidth(splittedInfo.get(i));
                 int startX = progWidget.getWidth() / 2 - stringLength / 4;
                 int startY = progWidget.getHeight() / 2 - (fr.FONT_HEIGHT + 1) * (splittedInfo.size() - 1) / 4 + (fr.FONT_HEIGHT + 1) * i / 2 - fr.FONT_HEIGHT / 4;
-                AbstractGui.fill(startX * 2 - 1, startY * 2 - 1, startX * 2 + stringLength + 1, startY * 2 + fr.FONT_HEIGHT + 1, 0xFFFFFFFF);
-                fr.drawString(splittedInfo.get(i), startX * 2, startY * 2, 0xFF000000);
+                AbstractGui.fill(matrixStack, startX * 2 - 1, startY * 2 - 1, startX * 2 + stringLength + 1, startY * 2 + fr.FONT_HEIGHT + 1, 0xFFFFFFFF);
+                fr.drawString(matrixStack, splittedInfo.get(i), startX * 2, startY * 2, 0xFF000000);
             }
-            RenderSystem.popMatrix();
-            RenderSystem.color4f(1, 1, 1, 1);
+            matrixStack.pop();
         }
     }
 
-    public static void renderCraftingExtras(ProgWidgetCrafting progWidget) {
+
+    public static void renderCraftingExtras(MatrixStack matrixStack, ProgWidgetCrafting progWidget) {
         ItemStack recipe = progWidget.getRecipeResult(ClientUtils.getClientWorld());
         if (recipe != null) {
-            GuiUtils.drawItemStack(recipe, 8, progWidget.getHeight() / 2 - 8, recipe.getCount() + "");
+            GuiUtils.renderItemStack(matrixStack, recipe, 8, progWidget.getHeight() / 2 - 8);
+            GuiUtils.renderItemStackOverlay(matrixStack, Minecraft.getInstance().fontRenderer, recipe, 8, progWidget.getHeight() / 2 - 8, Integer.toString(recipe.getCount()));
         }
     }
 
-    public static void renderItemFilterExtras(ProgWidgetItemFilter progWidget) {
+    public static void renderItemFilterExtras(MatrixStack matrixStack, ProgWidgetItemFilter progWidget) {
         if (progWidget.getVariable().isEmpty()) {
             if (!progWidget.getFilter().isEmpty()) {
-                GuiUtils.drawItemStack(progWidget.getFilter(), 10, 2, "");
+                GuiUtils.renderItemStack(matrixStack, progWidget.getFilter(), 10, 2);
+                GuiUtils.renderItemStackOverlay(matrixStack, Minecraft.getInstance().fontRenderer, progWidget.getFilter(), 10, 2, "");
             }
         } else {
-            renderExtras(progWidget);
+            renderGenericExtras(matrixStack, progWidget);
         }
     }
 }

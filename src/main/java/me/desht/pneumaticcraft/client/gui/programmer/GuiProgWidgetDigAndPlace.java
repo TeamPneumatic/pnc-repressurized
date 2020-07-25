@@ -7,7 +7,8 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextFieldNumber;
 import me.desht.pneumaticcraft.common.progwidgets.IBlockOrdered.Ordering;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetDigAndPlace;
-import net.minecraft.client.resources.I18n;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public abstract class GuiProgWidgetDigAndPlace<P extends ProgWidgetDigAndPlace> extends GuiProgWidgetAreaShow<P> {
 
@@ -22,7 +23,7 @@ public abstract class GuiProgWidgetDigAndPlace<P extends ProgWidgetDigAndPlace> 
     public void init() {
         super.init();
 
-        WidgetLabel orderLabel = new WidgetLabel(guiLeft + 8, guiTop + 25, "Order");
+        WidgetLabel orderLabel = new WidgetLabel(guiLeft + 8, guiTop + 25, xlate("pneumaticcraft.gui.progWidget.digAndPlace.order"));
         addButton(orderLabel);
 
         orderSelector = new WidgetComboBox(font,guiLeft + 8 + orderLabel.getWidth() + 5, guiTop + 23, 80, 12)
@@ -31,11 +32,11 @@ public abstract class GuiProgWidgetDigAndPlace<P extends ProgWidgetDigAndPlace> 
 
         if (progWidget.supportsMaxActions()) {
             WidgetCheckBox useMaxActions = new WidgetCheckBox(guiLeft + 8, guiTop + 115, 0xFF404040,
-                    I18n.format("pneumaticcraft.gui.progWidget.digAndPlace.useMaxActions"), b -> {
+                    xlate("pneumaticcraft.gui.progWidget.digAndPlace.useMaxActions"), b -> {
                 progWidget.setUseMaxActions(b.checked);
                 textField.setVisible(progWidget.useMaxActions());
             });
-            useMaxActions.setTooltip("pneumaticcraft.gui.progWidget.digAndPlace.useMaxActions.tooltip");
+            useMaxActions.setTooltip(xlate("pneumaticcraft.gui.progWidget.digAndPlace.useMaxActions.tooltip"));
             useMaxActions.checked = progWidget.useMaxActions();
             addButton(useMaxActions);
 

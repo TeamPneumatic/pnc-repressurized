@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.sensor.pollSensors;
 
 import com.google.common.collect.ImmutableSet;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.universal_sensor.IPollSensorSetting;
 import net.minecraft.client.gui.FontRenderer;
@@ -42,7 +43,7 @@ public class WorldDayLightSensor implements IPollSensorSetting {
     }
 
     private int updatePower(World worldIn, BlockPos pos) {
-        if (worldIn.dimension.hasSkyLight()) {
+        if (worldIn.func_230315_m_().hasSkyLight()) {  // getDimensionType
             int i = worldIn.getLightFor(LightType.SKY, pos) - worldIn.getSkylightSubtracted();
             float f = worldIn.getCelestialAngleRadians(1.0F);
             float f1 = f < (float) Math.PI ? 0.0F : (float) Math.PI * 2F;
@@ -56,6 +57,6 @@ public class WorldDayLightSensor implements IPollSensorSetting {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void drawAdditionalInfo(FontRenderer fontRenderer) {
+    public void drawAdditionalInfo(MatrixStack matrixStack, FontRenderer fontRenderer) {
     }
 }

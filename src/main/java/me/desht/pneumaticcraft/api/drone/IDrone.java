@@ -9,7 +9,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
@@ -61,7 +61,7 @@ public interface IDrone extends ICapabilityProvider {
      *
      * @return the entity position
      */
-    Vec3d getDronePos();
+    Vector3d getDronePos();
 
     /**
      * Get the drone's path navigator object.

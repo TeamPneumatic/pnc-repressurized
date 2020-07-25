@@ -51,7 +51,7 @@ public class MicromissileDefaults extends AuxConfigJson {
     }
 
     public void setDefaults(PlayerEntity player, Entry record) {
-        record.playerName = player.getName().getFormattedText();
+        record.playerName = player.getName().getString();
         defaults.put(player.getUniqueID(), record);
     }
 

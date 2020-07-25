@@ -151,11 +151,12 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
     }
 
     @Override
-    public void read(CompoundNBT nbt) {
-        super.read(nbt);
-        redstoneMode = nbt.getInt(NBTKeys.NBT_REDSTONE_MODE);
-        threshold = nbt.getInt("threshold");
-        inputHandler.deserializeNBT(nbt.getCompound("Items"));
+    public void read(BlockState state, CompoundNBT tag) {
+        super.read(state, tag);
+
+        redstoneMode = tag.getInt(NBTKeys.NBT_REDSTONE_MODE);
+        threshold = tag.getInt("threshold");
+        inputHandler.deserializeNBT(tag.getCompound("Items"));
     }
 
     @Override

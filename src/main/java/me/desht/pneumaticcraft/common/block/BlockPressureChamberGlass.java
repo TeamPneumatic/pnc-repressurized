@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberGlass;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.block.BlockState;
-import net.minecraft.entity.EntityType;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
@@ -47,21 +46,23 @@ public class BlockPressureChamberGlass extends BlockPressureChamberWallBase {
         return 0.2F;
     }
 
+    @Override
     public boolean propagatesSkylightDown(BlockState p_200123_1_, IBlockReader p_200123_2_, BlockPos p_200123_3_) {
         return true;
     }
 
-    public boolean causesSuffocation(BlockState p_220060_1_, IBlockReader p_220060_2_, BlockPos p_220060_3_) {
-        return false;
-    }
+//    @Override
+//    public boolean causesSuffocation(BlockState p_220060_1_, IBlockReader p_220060_2_, BlockPos p_220060_3_) {
+//        return false;
+//    }
 
-    @Override
-    public boolean isNormalCube(BlockState state, IBlockReader worldIn, BlockPos pos) {
-        return false;
-    }
+//    @Override
+//    public boolean isNormalCube(BlockState state, IBlockReader worldIn, BlockPos pos) {
+//        return false;
+//    }
 
-    public boolean canEntitySpawn(BlockState p_220067_1_, IBlockReader p_220067_2_, BlockPos p_220067_3_, EntityType<?> p_220067_4_) {
-        return false;
-    }
+//    public boolean canEntitySpawn(BlockState p_220067_1_, IBlockReader p_220067_2_, BlockPos p_220067_3_, EntityType<?> p_220067_4_) {
+//        return false;
+//    }
 
 }

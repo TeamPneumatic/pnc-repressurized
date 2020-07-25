@@ -2,20 +2,36 @@ package me.desht.pneumaticcraft.client.util;
 
 import me.desht.pneumaticcraft.client.gui.GuiSecurityStationBase;
 import net.minecraft.inventory.container.Slot;
+import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.vector.Vector3f;
 
 public class ProgressingLine {
-    public double startX;
-    public double startY;
-    public double startZ;
-    public double endX;
-    public double endY;
-    public double endZ;
+
+    public float startX;
+    public float startY;
+    public float startZ;
+    public float endX;
+    public float endY;
+    public float endZ;
     protected float progress = 0;
 
     public ProgressingLine() {
     }
 
-    public ProgressingLine(double startX, double startY, double startZ, double endX, double endY, double endZ) {
+    public ProgressingLine(Vector3f start, Vector3f end) {
+        this.startX = start.getX();
+        this.startX = start.getY();
+        this.startX = start.getZ();
+        this.endX = end.getX();
+        this.endY = end.getY();
+        this.endZ = end.getZ();
+    }
+
+    public ProgressingLine(Vector3d start, Vector3d end) {
+        this(new Vector3f(start), new Vector3f(end));
+    }
+
+    public ProgressingLine(float startX, float startY, float startZ, float endX, float endY, float endZ) {
         this.startX = startX;
         this.startY = startY;
         this.startZ = startZ;
@@ -24,8 +40,8 @@ public class ProgressingLine {
         this.endZ = endZ;
     }
 
-    public ProgressingLine(double startX, double startY, double endX, double endY) {
-        this(startX, startY, 0, endX, endY, 0);
+    public ProgressingLine(float startX, float startY, float endX, float endY) {
+        this(new Vector3f(startX, startY, 0f), new Vector3f(endX, endY, 0f));
     }
 
     public ProgressingLine(ProgressingLine copy) {
@@ -76,41 +92,6 @@ public class ProgressingLine {
         }
         return false;
     }
-
-//    @OnlyIn(Dist.CLIENT)
-//    public void render(MatrixStack matrixStack, IVertexBuilder builder, int color) {
-////        BufferBuilder wr = Tessellator.getInstance().getBuffer();
-////        wr.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION);
-//        int a = (color >> 24) & 0xFF;
-//        int r = (color >> 16) & 0xFF;
-//        int g = (color >> 8) & 0xFF;
-//        int b = color & 0xFF;
-//        builder.pos(startX, startY, startZ).color(r, g, b, a).endVertex();
-//        builder.pos(startX + (endX - startX) * progress, startY + (endY - startY) * progress, startZ + (endZ - startZ) * progress).endVertex();
-////        Tessellator.getInstance().draw();
-//    }
-//
-//    @OnlyIn(Dist.CLIENT)
-//    public void renderInterpolated(ProgressingLine prev, float partialTick, MatrixStack matrixStack, IVertexBuilder builder, int color) {
-////        BufferBuilder wr = Tessellator.getInstance().getBuffer();
-////        wr.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION);
-//        int a = (color >> 24) & 0xFF;
-//        int r = (color >> 16) & 0xFF;
-//        int g = (color >> 8) & 0xFF;
-//        int b = color & 0xFF;
-//        builder.pos(lerp(partialTick, startX, prev.startX),
-//                lerp(partialTick, startY, prev.startY),
-//                lerp(partialTick, startZ, prev.startZ))
-//                .color(r, g, b, a)
-//                .endVertex();
-//        builder.pos(
-//                lerp(partialTick, startX, prev.startX) + (lerp(partialTick, endX, prev.endX) - lerp(partialTick, startX, prev.startX)) * progress,
-//                lerp(partialTick, startY, prev.startY) + (lerp(partialTick, startY, prev.startY) - lerp(partialTick, endY, prev.endY)) * progress,
-//                lerp(partialTick, startZ, prev.startZ) + (lerp(partialTick, endZ, prev.endZ) - lerp(partialTick, startZ, prev.startZ)) * progress)
-//                .color(r, g, b, a)
-//                .endVertex();
-////        Tessellator.getInstance().draw();
-//    }
 
     public int getPointedSlotNumber(GuiSecurityStationBase gui) {
         Slot slot = gui.getSlotAtPosition((int) endX, (int) endY);

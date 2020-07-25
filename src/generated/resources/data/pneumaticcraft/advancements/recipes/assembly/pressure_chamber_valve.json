@@ -6,12 +6,12 @@
     ]
   },
   "criteria": {
-    "compressed_iron_block": {
+    "assembly_controller": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "item": "pneumaticcraft:compressed_iron_block"
+            "item": "pneumaticcraft:assembly_controller"
           }
         ]
       }
@@ -25,7 +25,7 @@
   },
   "requirements": [
     [
-      "compressed_iron_block",
+      "assembly_controller",
       "has_the_recipe"
     ]
   ]

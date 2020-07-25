@@ -20,7 +20,7 @@ import net.minecraft.particles.RedstoneParticleData;
 import net.minecraft.pathfinding.PathType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.ICollisionReader;
 
 import java.util.ArrayList;
@@ -183,7 +183,7 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
             if (!shouldAbort()) addEndingDebugEntry();
             return false;
         } else {
-            Vec3d dronePos = drone.getDronePos();
+            Vector3d dronePos = drone.getDronePos();
             double dist = curPos != null ? PneumaticCraftUtils.distBetween(curPos.getX() + 0.5, curPos.getY() + 0.5, curPos.getZ() + 0.5, dronePos.x, dronePos.y, dronePos.z) : 0;
             if (curPos != null) {
                 if (!moveToPositions()) return doBlockInteraction(curPos, dist);

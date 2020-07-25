@@ -4,7 +4,7 @@ import me.desht.pneumaticcraft.common.util.LegacyAreaWidgetConverter;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -24,8 +24,8 @@ public class AreaTypeWall extends AreaType{
         switch (axis) {
             case X:
                 {
-                    Vec3d lineVec = new Vec3d(0, p2.getY() - p1.getY(), p2.getZ() - p1.getZ()).normalize();
-                    lineVec = new Vec3d(lineVec.x, lineVec.y / 10, lineVec.z / 10);
+                    Vector3d lineVec = new Vector3d(0, p2.getY() - p1.getY(), p2.getZ() - p1.getZ()).normalize();
+                    lineVec = new Vector3d(lineVec.x, lineVec.y / 10, lineVec.z / 10);
                     double curY = p1.getY() + 0.5;
                     double curZ = p1.getZ() + 0.5;
                     double totalDistance = 0;
@@ -45,8 +45,8 @@ public class AreaTypeWall extends AreaType{
                 break;
             case Y:
                 {
-                    Vec3d lineVec = new Vec3d(p2.getX() - p1.getX(), 0, p2.getZ() - p1.getZ()).normalize();
-                    lineVec = new Vec3d(lineVec.x, lineVec.y / 10, lineVec.z / 10);
+                    Vector3d lineVec = new Vector3d(p2.getX() - p1.getX(), 0, p2.getZ() - p1.getZ()).normalize();
+                    lineVec = new Vector3d(lineVec.x, lineVec.y / 10, lineVec.z / 10);
                     double curX = p1.getX() + 0.5;
                     double curZ = p1.getZ() + 0.5;
                     double totalDistance = 0;
@@ -64,8 +64,8 @@ public class AreaTypeWall extends AreaType{
                 break;
             case Z:
                 {
-                    Vec3d lineVec = new Vec3d(p2.getX() - p1.getX(), p2.getY() - p1.getY(), 0).normalize();
-                    lineVec = new Vec3d(lineVec.x / 10, lineVec.y / 10, lineVec.z);
+                    Vector3d lineVec = new Vector3d(p2.getX() - p1.getX(), p2.getY() - p1.getY(), 0).normalize();
+                    lineVec = new Vector3d(lineVec.x / 10, lineVec.y / 10, lineVec.z);
                     double curX = p1.getX() + 0.5;
                     double curY = p1.getY() + 0.5;
                     double totalDistance = 0;

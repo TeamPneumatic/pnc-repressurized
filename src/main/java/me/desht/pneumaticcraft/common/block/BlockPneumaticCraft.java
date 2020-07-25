@@ -23,7 +23,7 @@ import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.fluid.IFluidState;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.BlockItemUseContext;
@@ -134,7 +134,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
     public BlockState getStateForPlacement(BlockItemUseContext ctx) {
         BlockState state = super.getStateForPlacement(ctx);
         for (Direction facing : Direction.VALUES) {
-            if (state.has(connectionProperty(facing))) {
+            if (state.hasProperty(connectionProperty(facing))) {
                 // handle pneumatic connections to neighbouring air handlers
                 TileEntity te = ctx.getWorld().getTileEntity(ctx.getPos().offset(facing));
                 boolean b = te != null && te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, facing.getOpposite()).isPresent();
@@ -236,7 +236,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
             if (!player.isCreative() || preserve) {
                 Block.spawnDrops(world.getBlockState(pos), world, pos, te);
             }
-            IFluidState ifluidstate = world.getFluidState(pos);
+            FluidState ifluidstate = world.getFluidState(pos);
             world.setBlockState(pos, ifluidstate.getBlockState(), Constants.BlockFlags.DEFAULT);
             return true;
         } else {
@@ -317,7 +317,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
         if (stack.hasTag()) {
             int savedAir = getSavedAir(stack);
             if (savedAir != 0) {
-                curInfo.add(xlate("pneumaticcraft.gui.tooltip.air", Integer.toString(savedAir)).applyTextStyle(TextFormatting.GREEN));
+                curInfo.add(xlate("pneumaticcraft.gui.tooltip.air", Integer.toString(savedAir)).mergeStyle(TextFormatting.GREEN));
             }
             if (stack.getItem() instanceof BlockItem && ((BlockItem) stack.getItem()).getBlock() instanceof IUpgradeAcceptor) {
                 UpgradableItemUtils.addUpgradeInformation(stack, curInfo, flag);
@@ -332,8 +332,8 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
                     FluidStack fluidStack = tank.getFluid();
                     if (!fluidStack.isEmpty()) {
                         curInfo.add(xlate("pneumaticcraft.gui.tooltip.fluid")
-                                .appendText(fluidStack.getAmount() + "mB ")
-                                .appendSibling(fluidStack.getDisplayName()).applyTextStyle(TextFormatting.GREEN));
+                                .appendString(fluidStack.getAmount() + "mB ")
+                                .append(fluidStack.getDisplayName()).mergeStyle(TextFormatting.GREEN));
                     }
                 }
             }
@@ -343,7 +343,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
             TileEntity te = createTileEntity(getDefaultState(), world);
             if (te instanceof TileEntityPneumaticBase) {
                 float pressure = ((TileEntityPneumaticBase) te).dangerPressure;
-                curInfo.add(xlate("pneumaticcraft.gui.tooltip.maxPressure", pressure).applyTextStyle(TextFormatting.YELLOW));
+                curInfo.add(xlate("pneumaticcraft.gui.tooltip.maxPressure", pressure).mergeStyle(TextFormatting.YELLOW));
             }
         }
     }
@@ -400,7 +400,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
 
     @Override
     public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
-        if (stateIn.has(connectionProperty(facing))) {
+        if (stateIn.hasProperty(connectionProperty(facing))) {
             TileEntity ourTE = worldIn.getTileEntity(currentPos);
             if (ourTE != null && ourTE.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, facing).isPresent()) {
                 // handle pneumatic connections to neighbouring air handlers

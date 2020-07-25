@@ -9,8 +9,8 @@ import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.entity.living.EntityDroneBase;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
+import net.minecraft.util.math.vector.Vector3f;
 
 public class DroneTargetLaserLayer extends LayerRenderer<EntityDroneBase, ModelDrone> {
     DroneTargetLaserLayer(RenderDrone rendererer) {

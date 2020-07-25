@@ -18,7 +18,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -83,9 +83,9 @@ public class ItemMicromissiles extends Item {
         }
 
         EntityMicromissile missile = new EntityMicromissile(worldIn, playerIn, stack);
-        Vec3d newPos = missile.getPositionVector().add(playerIn.getLookVec().normalize());
+        Vector3d newPos = missile.getPositionVec().add(playerIn.getLookVec().normalize());
         missile.setPosition(newPos.x, newPos.y, newPos.z);
-        missile.shoot(playerIn, playerIn.rotationPitch, playerIn.rotationYaw, 0.0F, getInitialVelocity(stack), 0.0F);
+        missile.func_234612_a_(playerIn, playerIn.rotationPitch, playerIn.rotationYaw, 0.0F, getInitialVelocity(stack), 0.0F);
 
         playerIn.getCooldownTracker().setCooldown(this, PNCConfig.Common.Micromissiles.launchCooldown);
 
@@ -136,13 +136,13 @@ public class ItemMicromissiles extends Item {
                 String filter = tag.getString(NBT_FILTER);
                 if (!filter.isEmpty()) {
                     curInfo.add(xlate("pneumaticcraft.gui.sentryTurret.targetFilter")
-                            .appendText(": ")
-                            .appendText(TextFormatting.AQUA + filter));
+                            .appendString(": ")
+                            .appendString(TextFormatting.AQUA + filter));
                 }
             }
             curInfo.add(xlate("pneumaticcraft.gui.micromissile.firingMode")
-                    .appendText(": " + TextFormatting.AQUA)
-                    .appendSibling(xlate(mode.getTranslationKey())));
+                    .appendString(": " + TextFormatting.AQUA)
+                    .append(xlate(mode.getTranslationKey())));
             if (PNCConfig.Common.Micromissiles.damageTerrain) {
                 curInfo.add(xlate("pneumaticcraft.gui.tooltip.terrainWarning"));
             } else {

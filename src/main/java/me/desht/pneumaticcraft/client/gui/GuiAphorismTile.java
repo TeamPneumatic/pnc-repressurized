@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
@@ -50,11 +51,11 @@ public class GuiAphorismTile extends Screen {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float partialTicks) {
-        super.render(mouseX, mouseY, partialTicks);
+    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+        super.render(matrixStack, mouseX, mouseY, partialTicks);
 
         if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {
-            GuiUtils.showPopupHelpScreen(this, font,
+            GuiUtils.showPopupHelpScreen(matrixStack, this, font,
                     PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.aphorismTile.helpText"), 40));
         }
     }

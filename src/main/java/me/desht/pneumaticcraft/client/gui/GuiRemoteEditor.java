@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.client.gui.remote.RemoteLayout;
 import me.desht.pneumaticcraft.client.gui.remote.actionwidget.*;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
@@ -19,7 +20,6 @@ import me.desht.pneumaticcraft.common.network.PacketUpdateRemoteLayout;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -32,6 +32,8 @@ import net.minecraftforge.common.util.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiRemoteEditor extends GuiRemote {
     private GuiInventorySearcher invSearchGui;
@@ -77,9 +79,9 @@ public class GuiRemoteEditor extends GuiRemote {
         oldGuiTop = guiTop;
 
         widgetTray.clear();
-        widgetTray.add(new ActionWidgetCheckBox(new WidgetCheckBox(guiLeft + 200, guiTop + 23, 0xFF404040, I18n.format("pneumaticcraft.gui.remote.tray.checkbox.name"))));
-        widgetTray.add(new ActionWidgetLabel(new WidgetLabelVariable(guiLeft + 200, guiTop + 38, I18n.format("pneumaticcraft.gui.remote.tray.label.name"))));
-        widgetTray.add(new ActionWidgetButton(new WidgetButtonExtended(guiLeft + 200, guiTop + 53, 50, 20, I18n.format("pneumaticcraft.gui.remote.tray.button.name"))));
+        widgetTray.add(new ActionWidgetCheckBox(new WidgetCheckBox(guiLeft + 200, guiTop + 23, 0xFF404040, xlate("pneumaticcraft.gui.remote.tray.checkbox.name"))));
+        widgetTray.add(new ActionWidgetLabel(new WidgetLabelVariable(guiLeft + 200, guiTop + 38, xlate("pneumaticcraft.gui.remote.tray.label.name"))));
+        widgetTray.add(new ActionWidgetButton(new WidgetButtonExtended(guiLeft + 200, guiTop + 53, 50, 20, xlate("pneumaticcraft.gui.remote.tray.button.name"))));
         widgetTray.add(new ActionWidgetDropdown(new WidgetComboBox(font, guiLeft + 200, guiTop + 80, 70, font.FONT_HEIGHT + 1).setFixedOptions()));
 
         for (ActionWidget<?> actionWidget : widgetTray) {
@@ -87,21 +89,21 @@ public class GuiRemoteEditor extends GuiRemote {
         }
 
         addButton(new WidgetButtonExtended(guiLeft - 24, guiTop, 20, 20, "", b -> doImport())
-                .setTooltipText(I18n.format("pneumaticcraft.gui.remote.button.importRemoteButton"))
+                .setTooltipText(xlate("pneumaticcraft.gui.remote.button.importRemoteButton"))
                 .setRenderStacks(new ItemStack(ModItems.REMOTE.get()))
         );
 
         addButton(new WidgetButtonExtended(guiLeft - 24, guiTop + 22, 20, 20, "", b -> doPastebin())
-                .setTooltipText(I18n.format("pneumaticcraft.gui.remote.button.pastebinButton"))
+                .setTooltipText(xlate("pneumaticcraft.gui.remote.button.pastebinButton"))
                 .setRenderedIcon(Textures.GUI_PASTEBIN_ICON_LOCATION)
         );
 
-        WidgetCheckBox snapCheck = new WidgetCheckBox(guiLeft + 194, guiTop + 105, 0xFF404040, I18n.format("pneumaticcraft.gui.remote.snapToGrid"),
+        WidgetCheckBox snapCheck = new WidgetCheckBox(guiLeft + 194, guiTop + 105, 0xFF404040, xlate("pneumaticcraft.gui.remote.snapToGrid"),
                 b -> ConfigHelper.setGuiRemoteGridSnap(b.checked));
         snapCheck.checked = PNCConfig.Client.guiRemoteGridSnap;
         addButton(snapCheck);
 
-        addButton(new WidgetLabel(guiLeft + 234, guiTop + 7, TextFormatting.BOLD + I18n.format("pneumaticcraft.gui.remote.widgetTray")).setAlignment(WidgetLabel.Alignment.CENTRE));
+        addButton(new WidgetLabel(guiLeft + 234, guiTop + 7, xlate("pneumaticcraft.gui.remote.widgetTray").mergeStyle(TextFormatting.BOLD)).setAlignment(WidgetLabel.Alignment.CENTRE));
 
         minecraft.keyboardListener.enableRepeatEvents(true);
     }
@@ -126,16 +128,11 @@ public class GuiRemoteEditor extends GuiRemote {
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(float partialTicks, int x, int y) {
-        renderBackground();
+    protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int x, int y) {
+        renderBackground(matrixStack);
         bindGuiTexture();
-        blit(guiLeft, guiTop, 0, 0, xSize, ySize, 320, 256);
-        super.drawGuiContainerBackgroundLayer(partialTicks, x, y);
-    }
-
-    @Override
-    protected void drawGuiContainerForegroundLayer(int x, int y) {
-        super.drawGuiContainerForegroundLayer(x, y);
+        blit(matrixStack, guiLeft, guiTop, 0, 0, xSize, ySize, 320, 256);
+        super.drawGuiContainerBackgroundLayer(matrixStack, partialTicks, x, y);
     }
 
     @Override

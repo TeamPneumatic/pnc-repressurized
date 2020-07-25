@@ -84,7 +84,7 @@ public class BlockSecurityStation extends BlockPneumaticCraft {
                         player.sendStatusMessage(PneumaticCraftUtils.xlate("pneumaticcraft.message.securityStation.cantHack", te.getSecurityLevel()), false);
                     } else {
                         // FIXME reimplement security station hacking
-                        player.sendStatusMessage(new StringTextComponent("Sorry, but Security Station hacking is not yet implemented in this release of PneumaticCraft").applyTextStyle(TextFormatting.GOLD), false);
+                        player.sendStatusMessage(new StringTextComponent("Sorry, but Security Station hacking is not yet implemented in this release of PneumaticCraft").mergeStyle(TextFormatting.GOLD), false);
 //                        NetworkHooks.openGui((ServerPlayerEntity) player, te.getHackingContainerProvider(), pos);
                     }
                 }

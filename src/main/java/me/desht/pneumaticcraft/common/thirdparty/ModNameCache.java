@@ -1,9 +1,9 @@
 package me.desht.pneumaticcraft.common.thirdparty;
 
 import com.google.common.collect.Maps;
-import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.forgespi.language.IModInfo;
+import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import java.util.Map;
 
@@ -23,8 +23,8 @@ public class ModNameCache {
         id2name.put("minecraft", "Minecraft");
     }
 
-    public static String getModName(ItemStack stack) {
-        return getModName(stack.getItem().getRegistryName().getNamespace());
+    public static String getModName(IForgeRegistryEntry<?> entry) {
+        return getModName(entry.getRegistryName().getNamespace());
     }
 
     public static String getModName(String modId) {

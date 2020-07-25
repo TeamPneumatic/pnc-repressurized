@@ -15,7 +15,7 @@ import net.minecraft.nbt.NBTUtil;
 import net.minecraft.profiler.IProfiler;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.Constants;
 
@@ -322,14 +322,14 @@ public class DroneAIManager implements IVariableProvider {
         if (magnetUpgrades > 0) {
             int range = Math.min(6, 1 + magnetUpgrades);
             int rangeSq = range * range;
-            Vec3d v = drone.getDronePos();
+            Vector3d v = drone.getDronePos();
             AxisAlignedBB aabb = new AxisAlignedBB(v.x, v.y, v.z, v.x, v.y, v.z).grow(range);
             List<ItemEntity> items = drone.world().getEntitiesWithinAABB(ItemEntity.class, aabb,
                     item -> item != null
                             && item.isAlive()
                             && !item.cannotPickup()
                             && !ItemRegistry.getInstance().shouldSuppressMagnet(item)
-                            && drone.getDronePos().squareDistanceTo(item.getPositionVector()) <= rangeSq);
+                            && drone.getDronePos().squareDistanceTo(item.getPositionVec()) <= rangeSq);
 
             for (ItemEntity item : items) {
                 DroneEntityAIPickupItems.tryPickupItem(drone, item);

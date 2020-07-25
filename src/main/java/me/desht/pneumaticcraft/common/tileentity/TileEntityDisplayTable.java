@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
+import net.minecraft.block.BlockState;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntityType;
@@ -42,8 +43,8 @@ public class TileEntityDisplayTable extends TileEntityBase implements IComparato
     }
 
     @Override
-    public void read(CompoundNBT tag) {
-        super.read(tag);
+    public void read(BlockState state, CompoundNBT tag) {
+        super.read(state, tag);
 
         inventory.deserializeNBT(tag.getCompound("Items"));
         itemId = Item.getIdFromItem(inventory.getStackInSlot(0).getItem());

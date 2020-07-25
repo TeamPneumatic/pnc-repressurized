@@ -4,10 +4,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.WorldSavedData;
-import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.thread.EffectiveSide;
@@ -45,7 +44,7 @@ public class GlobalVariableManager extends WorldSavedData {
 
     private static ServerWorld getOverworld() {
         if (overworld == null) {
-            overworld = DimensionManager.getWorld(ServerLifecycleHooks.getCurrentServer(), DimensionType.OVERWORLD, false, false);
+            overworld = ServerLifecycleHooks.getCurrentServer().getWorld(World.field_234918_g_);
             if (overworld == null) {
                 throw new IllegalStateException("Overworld not initialized!");
             }

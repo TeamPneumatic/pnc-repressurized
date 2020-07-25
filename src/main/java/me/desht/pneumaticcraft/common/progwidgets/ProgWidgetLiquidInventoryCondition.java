@@ -6,7 +6,7 @@ import me.desht.pneumaticcraft.common.ai.DroneAIBlockCondition;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.fluid.IFluidState;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -39,7 +39,7 @@ public class ProgWidgetLiquidInventoryCondition extends ProgWidgetCondition {
             }
 
             private int countFluid(World world, BlockPos pos) {
-                IFluidState state = world.getFluidState(pos);
+                FluidState state = world.getFluidState(pos);
                 if (ProgWidgetLiquidFilter.isLiquidValid(state.getFluid(), progWidget, 1)) {
                     return 1000;
                 } else {

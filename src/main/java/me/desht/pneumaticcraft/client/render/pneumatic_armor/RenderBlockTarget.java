@@ -25,11 +25,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.InputEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class RenderBlockTarget {
 
@@ -52,11 +55,11 @@ public class RenderBlockTarget {
         this.pos = pos;
         this.te = te;
         this.blockTracker = blockTracker;
-        String title = world.getBlockState(pos).getBlock().getTranslationKey();
+        ITextComponent title = xlate(world.getBlockState(pos).getBlock().getTranslationKey());
         BlockState state = world.getBlockState(pos);
         ItemStack stack = state.getBlock().getPickBlock(state, Minecraft.getInstance().objectMouseOver, world, pos, player);
         if (!stack.isEmpty()) {
-            title = stack.getDisplayName().getFormattedText();
+            title = stack.getDisplayName();
         }
         stat = new WidgetAnimatedStat(null, title, WidgetAnimatedStat.StatIcon.of(stack), 20, -20, 0x4000AA00, null, false);
         stat.setMinDimensionsAndReset(0, 0);

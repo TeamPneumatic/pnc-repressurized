@@ -13,13 +13,13 @@ import net.minecraft.data.loot.BlockLootTables;
 import net.minecraft.data.loot.ChestLootTables;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.loot.*;
+import net.minecraft.loot.conditions.SurvivesExplosion;
+import net.minecraft.loot.functions.CopyName;
+import net.minecraft.loot.functions.SetCount;
+import net.minecraft.loot.functions.SetNBT;
 import net.minecraft.util.IItemProvider;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.storage.loot.*;
-import net.minecraft.world.storage.loot.conditions.SurvivesExplosion;
-import net.minecraft.world.storage.loot.functions.CopyName;
-import net.minecraft.world.storage.loot.functions.SetCount;
-import net.minecraft.world.storage.loot.functions.SetNBT;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.ForgeRegistries;
 

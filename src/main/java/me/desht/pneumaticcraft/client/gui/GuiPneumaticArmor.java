@@ -21,6 +21,8 @@ import net.minecraft.util.text.TextFormatting;
 import java.util.ArrayList;
 import java.util.List;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
 public class GuiPneumaticArmor extends GuiPneumaticInventoryItem {
 
     private final String registryName;  // for translation purposes
@@ -37,9 +39,9 @@ public class GuiPneumaticArmor extends GuiPneumaticInventoryItem {
     @Override
     public void init() {
         super.init();
-        addAnimatedStat("pneumaticcraft.gui.tab.info", Textures.GUI_INFO_LOCATION, 0xFF8888FF, true)
+        addAnimatedStat(xlate("pneumaticcraft.gui.tab.info"), Textures.GUI_INFO_LOCATION, 0xFF8888FF, true)
                 .setText("gui.tab.info.item." + registryName);
-        statusStat = addAnimatedStat("Status", itemStack, 0xFFFFAA00, false);
+        statusStat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.status"), itemStack, 0xFFFFAA00, false);
 
         addUpgradeTabs(itemStack.getItem(), "armor." + equipmentSlot.toString().toLowerCase(), "armor.generic");
     }

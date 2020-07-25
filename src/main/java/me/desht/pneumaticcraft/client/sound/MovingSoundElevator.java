@@ -22,9 +22,11 @@ public class MovingSoundElevator extends TickableSound {
 
     @Override
     public void tick() {
-        if (te.isRemoved() || te.extension == te.getTargetExtension()) {
-            donePlaying = true;
-        }
         y = te.getPos().getY() + te.extension / 2;
+    }
+
+    @Override
+    public boolean isDonePlaying() {
+        return te.isRemoved() || te.extension == te.getTargetExtension();
     }
 }

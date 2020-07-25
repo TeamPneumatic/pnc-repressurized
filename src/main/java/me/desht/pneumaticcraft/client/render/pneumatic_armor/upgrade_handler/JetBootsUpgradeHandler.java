@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
@@ -12,7 +13,6 @@ import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
@@ -23,6 +23,8 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.gen.Heightmap;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class JetBootsUpgradeHandler extends IUpgradeRenderHandler.SimpleToggleableRenderHandler {
     public static final int BUILDER_MODE_LEVEL = 3;  // tier needed for builder mode
@@ -89,8 +91,8 @@ public class JetBootsUpgradeHandler extends IUpgradeRenderHandler.SimpleToggleab
     }
 
     @Override
-    public void render2D(float partialTicks, boolean helmetEnabled) {
-        super.render2D(partialTicks, helmetEnabled);
+    public void render2D(MatrixStack matrixStack, float partialTicks, boolean helmetEnabled) {
+        super.render2D(matrixStack, partialTicks, helmetEnabled);
 
         if (helmetEnabled && jbStat.isClicked()) {
             FontRenderer fr = Minecraft.getInstance().fontRenderer;
@@ -101,15 +103,15 @@ public class JetBootsUpgradeHandler extends IUpgradeRenderHandler.SimpleToggleab
                 xl -= jbStat.getWidth();
                 xr -= jbStat.getWidth();
             }
-            fr.drawStringWithShadow(l1, xl, y, 0x404040);
-            fr.drawStringWithShadow(l2, xl, y + fr.FONT_HEIGHT, 0x404040);
-            fr.drawStringWithShadow(l3, xl, y + fr.FONT_HEIGHT * 2, 0x404040);
-            fr.drawStringWithShadow(r1, xr - widestR, y, 0x404040);
-            fr.drawStringWithShadow(r2, xr - widestR, y + fr.FONT_HEIGHT, 0x404040);
-            fr.drawStringWithShadow(r3, xr - widestR, y + fr.FONT_HEIGHT * 2, 0x404040);
+            fr.drawStringWithShadow(matrixStack, l1, xl, y, 0x404040);
+            fr.drawStringWithShadow(matrixStack, l2, xl, y + fr.FONT_HEIGHT, 0x404040);
+            fr.drawStringWithShadow(matrixStack, l3, xl, y + fr.FONT_HEIGHT * 2, 0x404040);
+            fr.drawStringWithShadow(matrixStack, r1, xr - widestR, y, 0x404040);
+            fr.drawStringWithShadow(matrixStack, r2, xr - widestR, y + fr.FONT_HEIGHT, 0x404040);
+            fr.drawStringWithShadow(matrixStack, r3, xr - widestR, y + fr.FONT_HEIGHT * 2, 0x404040);
 
             if (drawShovel) {
-                GuiUtils.drawItemStack(new ItemStack(Items.DIAMOND_PICKAXE), xr - 30, jbStat.getBaseY());
+                GuiUtils.renderItemStack(matrixStack, new ItemStack(Items.DIAMOND_PICKAXE), xr - 30, jbStat.getBaseY());
             }
         }
     }
@@ -120,7 +122,7 @@ public class JetBootsUpgradeHandler extends IUpgradeRenderHandler.SimpleToggleab
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer();
             int n = Math.max(1, handler.getUpgradeCount(EquipmentSlotType.FEET, EnumUpgrade.JET_BOOTS));
             ItemStack stack = new ItemStack(EnumUpgrade.JET_BOOTS.getItem(n));
-            jbStat = new WidgetAnimatedStat(null, I18n.format("pneumaticcraft.armor.upgrade.jetBoots"),
+            jbStat = new WidgetAnimatedStat(null, xlate("pneumaticcraft.armor.upgrade.jetBoots"),
                     WidgetAnimatedStat.StatIcon.of(stack),
                     0x3000AA00, null, ArmorHUDLayout.INSTANCE.jetBootsStat);
             jbStat.setMinDimensionsAndReset(0, 0);

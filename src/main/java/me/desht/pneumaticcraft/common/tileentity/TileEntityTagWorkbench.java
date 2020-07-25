@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerTagWorkbench;
 import me.desht.pneumaticcraft.common.item.ItemTagFilter;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
@@ -77,8 +78,8 @@ public class TileEntityTagWorkbench extends TileEntityDisplayTable implements IN
     }
 
     @Override
-    public void read(CompoundNBT tag) {
-        super.read(tag);
+    public void read(BlockState state, CompoundNBT tag) {
+        super.read(state, tag);
 
         inventory.deserializeNBT(tag.getCompound("Items"));
         itemId = Item.getIdFromItem(inventory.getStackInSlot(0).getItem());

@@ -32,6 +32,8 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.glfw.GLFW;
@@ -72,7 +74,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
     private int minHeight = MIN_WIDTH_HEIGHT;
     private int backGroundColor;
     private TintColor bgColorHi, bgColorLo;
-    private String title;
+//    private String title;
     private boolean leftSided; // determines if the stat is going to expand to the left or right.
     private boolean doneExpanding;
     private float textSize;
@@ -84,7 +86,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
     private boolean bevel = false;
     private WidgetVerticalScrollbar scrollBar = null;
 
-    public WidgetAnimatedStat(Screen gui, String title, int xPos, int yPos, int backGroundColor,
+    public WidgetAnimatedStat(Screen gui, ITextComponent title, int xPos, int yPos, int backGroundColor,
                               IGuiAnimatedStat affectingStat, boolean leftSided) {
         super(xPos, yPos, MIN_WIDTH_HEIGHT, MIN_WIDTH_HEIGHT, title);
 
@@ -92,7 +94,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
         this.affectingStat = affectingStat;
         this.backGroundColor = backGroundColor;
         calculateColorHighlights(this.backGroundColor);
-        setTitle(title);
+//        setTitle(title);
         statIcon = StatIcon.NONE;
         this.leftSided = leftSided;
         textSize = 1;
@@ -104,7 +106,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
     }
 
     public WidgetAnimatedStat(Screen gui, int backgroundColor) {
-        this(gui, "", 0, 0, backgroundColor, null, false);
+        this(gui, StringTextComponent.EMPTY, 0, 0, backgroundColor, null, false);
     }
 
     public WidgetAnimatedStat(Screen gui, int backgroundColor, ItemStack icon) {
@@ -117,13 +119,13 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
         statIcon = StatIcon.of(RL(texture));
     }
 
-    public WidgetAnimatedStat(Screen gui, String title, StatIcon icon, int xPos, int yPos, int backGroundColor,
+    public WidgetAnimatedStat(Screen gui, ITextComponent title, StatIcon icon, int xPos, int yPos, int backGroundColor,
                               IGuiAnimatedStat affectingStat, boolean leftSided) {
         this(gui, title, xPos, yPos, backGroundColor, affectingStat, leftSided);
         statIcon = icon;
     }
 
-    public WidgetAnimatedStat(Screen gui, String title, StatIcon icon, int backGroundColor,
+    public WidgetAnimatedStat(Screen gui, ITextComponent title, StatIcon icon, int backGroundColor,
                               IGuiAnimatedStat affectingStat, ArmorHUDLayout.LayoutItem layout) {
         this(gui, title, 0, 0, backGroundColor, affectingStat, layout.isLeftSided());
         MainWindow mw = Minecraft.getInstance().getMainWindow();
@@ -183,7 +185,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
     public IGuiAnimatedStat setText(List<String> text) {
         textList.clear();
         for (String line : text) {
-            textList.addAll(PneumaticCraftUtils.splitString(I18n.format(line), (int) (GuiConstants.MAX_CHAR_PER_LINE_LEFT / textScale)));
+            textList.addAll(PneumaticCraftUtils.splitString(I18n.format(line), (int) (25 / textScale)));
         }
         onTextChange();
         return this;
@@ -192,7 +194,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
     @Override
     public IGuiAnimatedStat setText(String text) {
         textList.clear();
-        textList.addAll(PneumaticCraftUtils.splitString(I18n.format(text), (int) (GuiConstants.MAX_CHAR_PER_LINE_LEFT / textScale)));
+        textList.addAll(PneumaticCraftUtils.splitString(I18n.format(text), (int) (25 / textScale)));
         onTextChange();
         return this;
     }
@@ -207,7 +209,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
     @Override
     public void appendText(List<String> text) {
         for (String line : text) {
-            textList.addAll(PneumaticCraftUtils.splitString(I18n.format(line), (int) (GuiConstants.MAX_CHAR_PER_LINE_LEFT / textScale)));
+            textList.addAll(PneumaticCraftUtils.splitString(I18n.format(line), (int) (GuiConstants.MAX_CHAR_PER_LINE / textScale)));
         }
         onTextChange();
     }
@@ -359,13 +361,13 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
         }
 
         // calculate the width and height needed for the box to fit the strings.
-        int maxWidth = fontRenderer.getStringWidth(title);
+        int maxWidth = fontRenderer.getStringWidth(getMessage().getString());
         for (String line : textList) {
             maxWidth = Math.max(maxWidth, fontRenderer.getStringWidth(line));
         }
         maxWidth += 20;  // to allow space for the scrollbar, where necessary
 
-        int maxHeight = title.isEmpty() ? 6 : 16;
+        int maxHeight = getMessage().getString().isEmpty() ? 6 : 16;
         if (!textList.isEmpty()) {
             maxHeight += Math.min(MAX_LINES, textList.size()) * lineSpacing;
         }
@@ -390,11 +392,11 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
     }
 
     @Override
-    public void render(int x, int y, float partialTicks) {
+    public void render(MatrixStack matrixStack, int x, int y, float partialTicks) {
         if (this.visible) {
             int baseX = leftSided ? this.x - this.width : this.x;
             this.isHovered = x >= baseX && y >= this.affectedY && x < baseX + this.width && y < this.affectedY + this.height;
-            renderButton(x, y, partialTicks);
+            renderButton(matrixStack, x, y, partialTicks);
         }
     }
 
@@ -412,7 +414,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
     }
 
     @Override
-    public void renderButton(int mouseX, int mouseY, float partialTicks) {
+    public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         float zLevel = 0;
         FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
         int renderBaseX = (int) (oldBaseX + (x - oldBaseX) * partialTicks);
@@ -421,7 +423,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
         int renderHeight = (int) (oldHeight + (height - oldHeight) * partialTicks);
 
         if (leftSided) renderWidth *= -1;
-        AbstractGui.fill(renderBaseX, renderAffectedY, renderBaseX + renderWidth, renderAffectedY + renderHeight, backGroundColor);
+        AbstractGui.fill(matrixStack, renderBaseX, renderAffectedY, renderBaseX + renderWidth, renderAffectedY + renderHeight, backGroundColor);
         RenderSystem.disableTexture();
         RenderSystem.lineWidth(3.0F);
         RenderSystem.color4f(0, 0, 0, 1);
@@ -440,35 +442,36 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
         if (leftSided) renderWidth *= -1;
 
         // if done expanding, draw the information
+        String title = getMessage().getString();
         int titleYoffset = title.isEmpty() ? 3 : 12;
         if (doneExpanding) {
-            RenderSystem.pushMatrix();
+            matrixStack.push();
 
-            RenderSystem.translated(renderBaseX + (leftSided ? -renderWidth : 16), renderAffectedY, 0);
-            RenderSystem.scaled(textSize, textSize, textSize);
-            RenderSystem.translated(-renderBaseX - (leftSided ? -renderWidth : 16), -renderAffectedY, 0);
+            matrixStack.translate(renderBaseX + (leftSided ? -renderWidth : 16), renderAffectedY, 0);
+            matrixStack.scale(textSize, textSize, textSize);
+            matrixStack.translate(-renderBaseX - (leftSided ? -renderWidth : 16), -renderAffectedY, 0);
             if (!title.isEmpty()) {
-                fontRenderer.drawStringWithShadow(title, renderBaseX + (leftSided ? -renderWidth + 2 : 18), renderAffectedY + 2, 0xFFFF00);
+                fontRenderer.drawStringWithShadow(matrixStack, title, renderBaseX + (leftSided ? -renderWidth + 2 : 18), renderAffectedY + 2, 0xFFFF00);
             }
             for (int i = curScroll; i < textList.size() && i < curScroll + MAX_LINES; i++) {
                 if (DARK_FORMATTING.matcher(textList.get(i)).find()) {
-                    fontRenderer.drawString(textList.get(i), renderBaseX + (leftSided ? -renderWidth + 2 : 18), renderAffectedY + (i - curScroll) * lineSpacing + titleYoffset, 0xFFFFFF);
+                    fontRenderer.drawString(matrixStack, textList.get(i), renderBaseX + (leftSided ? -renderWidth + 2 : 18), renderAffectedY + (i - curScroll) * lineSpacing + titleYoffset, 0xFFFFFF);
                 } else {
-                    fontRenderer.drawStringWithShadow(textList.get(i), renderBaseX + (leftSided ? -renderWidth + 2 : 18), renderAffectedY + (i - curScroll) * lineSpacing + titleYoffset, 0xFFFFFF);
+                    fontRenderer.drawStringWithShadow(matrixStack, textList.get(i), renderBaseX + (leftSided ? -renderWidth + 2 : 18), renderAffectedY + (i - curScroll) * lineSpacing + titleYoffset, 0xFFFFFF);
                 }
             }
-            RenderSystem.popMatrix();
+            matrixStack.pop();
 
-            RenderSystem.pushMatrix();
-            RenderSystem.translated(renderBaseX + (leftSided ? widgetOffsetLeft : widgetOffsetRight), renderAffectedY + (titleYoffset - 10), 0);
+            matrixStack.push();
+            matrixStack.translate(renderBaseX + (leftSided ? widgetOffsetLeft : widgetOffsetRight), renderAffectedY + (titleYoffset - 10), 0);
             RenderSystem.enableTexture();
 
-            subWidgets.forEach(widget -> widget.render(mouseX - renderBaseX, mouseY - renderAffectedY, partialTicks));
+            subWidgets.forEach(widget -> widget.render(matrixStack, mouseX - renderBaseX, mouseY - renderAffectedY, partialTicks));
 
-            RenderSystem.popMatrix();
+            matrixStack.pop();
         }
         if (renderHeight > 16 && renderWidth > 16 && statIcon != null) {
-            statIcon.render(renderBaseX, renderAffectedY, leftSided);
+            statIcon.render(matrixStack, renderBaseX, renderAffectedY, leftSided);
         }
     }
 
@@ -519,6 +522,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
             matrixStack.scale(textSize, textSize, textSize);
             matrixStack.translate(-renderBaseX - (leftSided ? -renderWidth : 16), -renderAffectedY, 0);
             // text title
+            String title = getMessage().getString();
             if (!title.isEmpty()) {
                 RenderUtils.renderString3d(TextFormatting.BOLD + title, renderBaseX + (leftSided ? -renderWidth + 2 : 18), renderAffectedY + 2, 0xFFFFFF00, matrixStack, buffer, false, true);
             }
@@ -690,10 +694,10 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
         this.y = y;
     }
 
-    @Override
-    public void setTitle(String title) {
-        this.title = I18n.format(title);
-    }
+//    @Override
+//    public void setTitle(String title) {
+//        this.title = I18n.format(title);
+//    }
 
     @Override
     public boolean isDoneExpanding() {
@@ -705,10 +709,10 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
         this.x = x;
     }
 
-    @Override
-    public String getTitle() {
-        return title;
-    }
+//    @Override
+//    public String getTitle() {
+//        return title;
+//    }
 
     @Override
     public Rectangle2d getBounds() {
@@ -716,9 +720,9 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
     }
 
     @Override
-    public void addTooltip(double mouseX, double mouseY, List<String> curTooltip, boolean shiftPressed) {
+    public void addTooltip(double mouseX, double mouseY, List<ITextComponent> curTooltip, boolean shiftPressed) {
         if (mouseIsHoveringOverIcon(mouseX, mouseY)) {
-            curTooltip.add(title);
+            curTooltip.add(getMessage());
         }
 
         for (Widget widget : subWidgets)
@@ -770,14 +774,14 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
             return new StatIcon(ItemStack.EMPTY, texture);
         }
 
-        void render(int x, int y, boolean leftSided) {
+        void render(MatrixStack matrixStack, int x, int y, boolean leftSided) {
             RenderSystem.color4f(1, 1, 1, 1);
             RenderSystem.enableBlend();
             RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
             if (texture != null) {
-                GuiUtils.drawTexture(texture, x - (leftSided ? 16 : 0), y);
+                GuiUtils.drawTexture(matrixStack, texture, x - (leftSided ? 16 : 0), y);
             } else if (!stack.isEmpty()) {
-                GuiUtils.drawItemStack(stack, x - (leftSided ? 16 : 0), y);
+                GuiUtils.renderItemStack(matrixStack, stack, x - (leftSided ? 16 : 0), y);
             }
             RenderSystem.disableBlend();
         }

@@ -6,8 +6,8 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorFrame;
 import net.minecraft.block.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.fluid.IFluidState;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.pathfinding.PathType;
 import net.minecraft.state.BooleanProperty;
@@ -67,7 +67,7 @@ public class BlockElevatorFrame extends BlockPneumaticCraft implements IWaterLog
     @Override
     public BlockState getStateForPlacement(BlockItemUseContext ctx) {
         boolean[] connected = getConnections(ctx.getWorld(), ctx.getPos());
-        IFluidState fluidState = ctx.getWorld().getFluidState(ctx.getPos());
+        FluidState fluidState = ctx.getWorld().getFluidState(ctx.getPos());
         return super.getStateForPlacement(ctx)
                 .with(NE, connected[0]).with(SE, connected[1]).with(SW, connected[2]).with(NW, connected[3])
                 .with(WATERLOGGED, fluidState.getFluid() == Fluids.WATER);
@@ -75,7 +75,7 @@ public class BlockElevatorFrame extends BlockPneumaticCraft implements IWaterLog
     }
 
     @Override
-    public IFluidState getFluidState(BlockState state) {
+    public FluidState getFluidState(BlockState state) {
         return state.get(WATERLOGGED) ? Fluids.WATER.getStillFluidState(false) : super.getFluidState(state);
     }
 
@@ -230,11 +230,12 @@ public class BlockElevatorFrame extends BlockPneumaticCraft implements IWaterLog
         if (!player.isCrouching() && player.getHeldItem(hand).getItem() == this.asItem()) {
             // build it scaffolding-style
             if (!world.isRemote) {
-                BlockPos.Mutable mPos = new BlockPos.Mutable(pos);
-                while (mPos.getY() < world.getMaxHeight() && world.getBlockState(mPos).getBlock() == this) {
+                BlockPos.Mutable mPos = new BlockPos.Mutable(pos.getX(), pos.getY(), pos.getZ());
+                int worldHeight = world.func_230315_m_().func_241513_m_();
+                while (mPos.getY() < worldHeight && world.getBlockState(mPos).getBlock() == this) {
                     mPos.move(Direction.UP);
                 }
-                if (mPos.getY() < world.getMaxHeight() && world.getBlockState(mPos).isAir(world, mPos)) {
+                if (mPos.getY() < worldHeight && world.getBlockState(mPos).isAir(world, mPos)) {
                     world.setBlockState(mPos, this.getDefaultState());
                     float pitch = Math.min(1.5f, (mPos.getY() - pos.getY()) * 0.05f + 1f);
                     world.playSound(null, mPos, SoundEvents.BLOCK_METAL_PLACE, SoundCategory.BLOCKS, 1f, pitch);

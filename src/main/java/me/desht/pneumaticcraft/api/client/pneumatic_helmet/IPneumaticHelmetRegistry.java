@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.api.client.pneumatic_helmet;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.ITag;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -43,7 +43,7 @@ public interface IPneumaticHelmetRegistry {
      */
     void addHackable(@Nonnull Block block, @Nonnull Supplier<? extends IHackableBlock> iHackable);
 
-    void addHackable(@Nonnull Tag<Block> blockTag, @Nonnull Supplier<? extends IHackableBlock> iHackable);
+    void addHackable(@Nonnull ITag.INamedTag<Block> blockTag, @Nonnull Supplier<? extends IHackableBlock> iHackable);
 
     /**
      * Get a list of all current successful hacks on a given entity. This is used for example in Enderman hacking, so

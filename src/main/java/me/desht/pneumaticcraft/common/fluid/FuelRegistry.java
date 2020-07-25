@@ -38,7 +38,7 @@ public enum FuelRegistry implements IFuelRegistry {
 
         if (liquidFuels.containsKey(fluid.getRegistryName())) {
             Log.warning("Overriding liquid fuel entry %s (%s) with a fuel value of %d (previous value %d)",
-                    new FluidStack(fluid, 1).getDisplayName().getFormattedText(),
+                    new FluidStack(fluid, 1).getDisplayName().getString(),
                     fluid.getRegistryName().toString(), mLPerBucket, liquidFuels.get(fluid.getRegistryName()));
             if (mLPerBucket == 0) {
                 liquidFuels.remove(fluid.getRegistryName());

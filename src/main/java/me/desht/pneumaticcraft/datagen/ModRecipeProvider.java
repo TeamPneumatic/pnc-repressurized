@@ -25,8 +25,8 @@ import net.minecraft.item.crafting.SpecialRecipeSerializer;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.potion.Potions;
 import net.minecraft.tags.FluidTags;
+import net.minecraft.tags.ITag;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.Tag;
 import net.minecraft.util.IItemProvider;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.Tags;
@@ -995,11 +995,11 @@ public class ModRecipeProvider extends RecipeProvider {
         // smelting
         CookingRecipeBuilder.blastingRecipe(Ingredient.fromItems(ModItems.FAILED_PCB.get()), ModItems.EMPTY_PCB.get(),
                 0.25f, 100)
-                .addCriterion("has_empty_pcb", this.hasItem(ModItems.FAILED_PCB.get()))
+                .addCriterion("has_empty_pcb", hasItem(ModItems.FAILED_PCB.get()))
                 .build(consumer, RL("empty_pcb_from_failed_pcb"));
         CookingRecipeBuilder.smeltingRecipe(Ingredient.fromTag(PneumaticCraftTags.Items.PLASTIC_BRICKS), ModItems.PLASTIC.get(),
                 0f, 100)
-                .addCriterion("has_plastic", this.hasItem(ModItems.PLASTIC.get()))
+                .addCriterion("has_plastic", hasItem(ModItems.PLASTIC.get()))
                 .build(consumer, RL("plastic_sheet_from_brick"));
 
         // pressure chamber
@@ -1195,9 +1195,9 @@ public class ModRecipeProvider extends RecipeProvider {
     private <T extends IItemProvider & IForgeRegistryEntry<?>> ShapelessRecipeBuilder shapeless(T result, int count, T required, Object... ingredients) {
         ShapelessRecipeBuilder b = ShapelessRecipeBuilder.shapelessRecipe(result, count);
         for (Object v : ingredients) {
-            if (v instanceof Tag<?>) {
+            if (v instanceof ITag<?>) {
                 //noinspection unchecked
-                b.addIngredient((Tag<Item>) v);
+                b.addIngredient((ITag<Item>) v);
             } else if (v instanceof IItemProvider) {
                 b.addIngredient((IItemProvider) v);
             } else if (v instanceof Ingredient) {
@@ -1206,7 +1206,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 throw new IllegalArgumentException("bad type for recipe ingredient " + v);
             }
         }
-        b.addCriterion("has_" + safeName(required), this.hasItem(required));
+        b.addCriterion("has_" + safeName(required), hasItem(required));
         return b;
     }
 
@@ -1214,7 +1214,7 @@ public class ModRecipeProvider extends RecipeProvider {
         shapeless(frame, frame, frame).build(consumer, frame.getRegistryName().toString() + "_self");
     }
 
-    private ShapedRecipeBuilder logisticsFrame(Item result, Tag<Item> dye) {
+    private ShapedRecipeBuilder logisticsFrame(Item result, ITag.INamedTag<Item> dye) {
         return shaped(result, 8, ModItems.LOGISTICS_CORE.get(),
                 "PPP/PDP/PCP",
                 'P', Items.STICK,
@@ -1222,11 +1222,11 @@ public class ModRecipeProvider extends RecipeProvider {
                 'D', dye);
     }
 
-    private ShapedRecipeBuilder networkComponent(Item result, int count, Tag<Item> edge, Tag<Item> dyeCorner) {
+    private ShapedRecipeBuilder networkComponent(Item result, int count, ITag.INamedTag<Item> edge, ITag.INamedTag<Item> dyeCorner) {
         return shaped(result, count, ModItems.CAPACITOR.get(), "CEC/EXE/CEC", 'C', dyeCorner, 'E', edge, 'X', Tags.Items.CHESTS_WOODEN);
     }
 
-    private ShapedRecipeBuilder networkComponent(Item result, int count, Item edge, Tag<Item> dyeCorner) {
+    private ShapedRecipeBuilder networkComponent(Item result, int count, Item edge, ITag.INamedTag<Item> dyeCorner) {
         return shaped(result, count, ModItems.CAPACITOR.get(), "CEC/EXE/CEC", 'C', dyeCorner, 'E', edge, 'X', Tags.Items.CHESTS_WOODEN);
     }
 
@@ -1245,9 +1245,9 @@ public class ModRecipeProvider extends RecipeProvider {
         Arrays.stream(pattern.split("/")).forEach(b::patternLine);
         for (int i = 0; i < keys.length; i += 2) {
             Object v = keys[i + 1];
-            if (v instanceof Tag<?>) {
+            if (v instanceof ITag<?>) {
                 //noinspection unchecked
-                b.key((Character) keys[i], (Tag<Item>) v);
+                b.key((Character) keys[i], (ITag<Item>) v);
             } else if (v instanceof IItemProvider) {
                 b.key((Character) keys[i], (IItemProvider) v);
             } else if (v instanceof Ingredient) {
@@ -1256,7 +1256,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 throw new IllegalArgumentException("bad type for recipe ingredient " + v);
             }
         }
-        b.addCriterion("has_" + safeName(required), this.hasItem(required));
+        b.addCriterion("has_" + safeName(required), hasItem(required));
         return b;
     }
 
@@ -1269,9 +1269,9 @@ public class ModRecipeProvider extends RecipeProvider {
         Arrays.stream(pattern.split("/")).forEach(b::patternLine);
         for (int i = 0; i < keys.length; i += 2) {
             Object v = keys[i + 1];
-            if (v instanceof Tag<?>) {
+            if (v instanceof ITag<?>) {
                 //noinspection unchecked
-                b.key((Character) keys[i], (Tag<Item>) v);
+                b.key((Character) keys[i], (ITag<Item>) v);
             } else if (v instanceof IItemProvider) {
                 b.key((Character) keys[i], (IItemProvider) v);
             } else if (v instanceof Ingredient) {
@@ -1280,11 +1280,11 @@ public class ModRecipeProvider extends RecipeProvider {
                 throw new IllegalArgumentException("bad type for recipe ingredient " + v);
             }
         }
-        b.addCriterion("has_" + safeName(required), this.hasItem(required));
+        b.addCriterion("has_" + safeName(required), hasItem(required));
         return b;
     }
 
-    private ShapedRecipeBuilder plasticBrick(DyeColor color, Tag<Item> dyeIngredient) {
+    private ShapedRecipeBuilder plasticBrick(DyeColor color, ITag<Item> dyeIngredient) {
         Item brick = ModBlocks.plasticBrick(color).get().asItem();
         return shaped(brick, 8, ModItems.PLASTIC.get(),
                 "PPP/PDP/PPP",
@@ -1331,7 +1331,8 @@ public class ModRecipeProvider extends RecipeProvider {
 
     private ExplosionCraftingRecipeBuilder explosionCrafting(Ingredient ingredient, int lossRate, ItemStack result) {
         return new ExplosionCraftingRecipeBuilder(ingredient, lossRate, result)
-                .addCriterion(Criteria.has(ingredient));
+                .addCriterion(Criteria.has(Blocks.TNT));
+//                .addCriterion(Criteria.has(ingredient));
     }
 
     private HeatFrameCoolingRecipeBuilder heatFrameCooling(Ingredient ingredient, int maxTemp, ItemStack result) {
@@ -1357,7 +1358,8 @@ public class ModRecipeProvider extends RecipeProvider {
 
     private AssemblyRecipeBuilder assembly(Ingredient input, ItemStack output, AssemblyProgramType programType) {
         return new AssemblyRecipeBuilder(input, output, programType)
-                .addCriterion(Criteria.has(input));
+                .addCriterion(Criteria.has(ModBlocks.ASSEMBLY_CONTROLLER.get()));
+//                .addCriterion(Criteria.has(input));
     }
 
     private AmadronRecipeBuilder amadronStatic(AmadronTradeResource in, AmadronTradeResource out) {

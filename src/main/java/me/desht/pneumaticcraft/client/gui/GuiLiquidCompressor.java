@@ -24,6 +24,8 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
 public class GuiLiquidCompressor extends GuiPneumaticContainerBase<ContainerLiquidCompressor,TileEntityLiquidCompressor> {
     public GuiLiquidCompressor(ContainerLiquidCompressor container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
@@ -33,7 +35,7 @@ public class GuiLiquidCompressor extends GuiPneumaticContainerBase<ContainerLiqu
     public void init() {
         super.init();
         addButton(new WidgetTank(guiLeft + getFluidOffset(), guiTop + 15, te.getTank()));
-        WidgetAnimatedStat stat = addAnimatedStat("pneumaticcraft.gui.tab.liquidCompressor.fuel", new ItemStack(ModItems.LPG_BUCKET.get()), 0xFFC04400, true);
+        WidgetAnimatedStat stat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.liquidCompressor.fuel"), new ItemStack(ModItems.LPG_BUCKET.get()), 0xFFC04400, true);
         stat.setTextWithoutCuttingString(getAllFuels());
     }
 
@@ -82,9 +84,9 @@ public class GuiLiquidCompressor extends GuiPneumaticContainerBase<ContainerLiqu
             FluidStack stack = new FluidStack(fluid, 1);
             float mul = api.getBurnRateMultiplier(fluid);
             if (mul == 1) {
-                text.add(value + "| " + StringUtils.abbreviate(stack.getDisplayName().getFormattedText(), 25));
+                text.add(value + "| " + StringUtils.abbreviate(stack.getDisplayName().getString(), 25));
             } else {
-                text.add(value + "| " + StringUtils.abbreviate(stack.getDisplayName().getFormattedText(), 20) + " (x" + PneumaticCraftUtils.roundNumberTo(mul, 2) + ")");
+                text.add(value + "| " + StringUtils.abbreviate(stack.getDisplayName().getString(), 20) + " (x" + PneumaticCraftUtils.roundNumberTo(mul, 2) + ")");
             }
         }
 

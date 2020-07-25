@@ -17,7 +17,7 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.profiler.IProfiler;
 import net.minecraft.resources.IResourceManager;
-import net.minecraft.state.IProperty;
+import net.minecraft.state.Property;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
@@ -111,7 +111,7 @@ public enum BlockHeatProperties {
         }
 
         @Override
-        protected void apply(Map<ResourceLocation, JsonObject> resourceList, IResourceManager resourceManagerIn, IProfiler profilerIn) {
+        protected void apply(Map<ResourceLocation, JsonElement> resourceList, IResourceManager resourceManagerIn, IProfiler profilerIn) {
             BlockHeatProperties.getInstance().clear();
             resourceList.forEach((id, json) -> {
                 try {
@@ -184,7 +184,7 @@ public enum BlockHeatProperties {
                     temperature, thermalResistance, Collections.emptyMap());
         }
 
-        static CustomHeatEntry fromJson(JsonObject json) {
+        static CustomHeatEntry fromJson(JsonElement jsonElement) {
             BlockState transformHot = null;
             BlockState transformHotFlowing = null;
             BlockState transformCold = null;
@@ -193,6 +193,9 @@ public enum BlockHeatProperties {
 
             Block block;
             Fluid fluid;
+
+            if (!(jsonElement.isJsonObject())) return null;
+            JsonObject json = jsonElement.getAsJsonObject();
 
             if (json.has("block") && json.has("fluid")) {
                 throw new JsonSyntaxException("heat properties entry must have only one of \"block\" or \"fluid\" fields!");
@@ -275,7 +278,7 @@ public enum BlockHeatProperties {
         boolean testPredicates(BlockState state) {
             if (predicates.isEmpty()) return true;
             for (Map.Entry<String, String> entry : predicates.entrySet()) {
-                IProperty<?> iproperty = state.getBlock().getStateContainer().getProperty(entry.getKey());
+                Property<?> iproperty = state.getBlock().getStateContainer().getProperty(entry.getKey());
                 if (iproperty == null) {
                     return false;
                 }

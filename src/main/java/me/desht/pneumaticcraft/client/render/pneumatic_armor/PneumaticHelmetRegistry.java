@@ -7,7 +7,7 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker.Block
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.ITag;
 import net.minecraft.tags.TagCollection;
 import net.minecraft.util.ResourceLocation;
 import org.apache.commons.lang3.Validate;
@@ -60,12 +60,12 @@ public class PneumaticHelmetRegistry implements IPneumaticHelmetRegistry {
     }
 
     @Override
-    public void addHackable(Tag<Block> blockTag, Supplier<? extends IHackableBlock> iHackable) {
+    public void addHackable(ITag.INamedTag<Block> blockTag, Supplier<? extends IHackableBlock> iHackable) {
         Validate.isTrue(!(iHackable instanceof Block), "Blocks that already implement IHackableBlock do not need to be registered as hackable!");
 
         // can't add these yet because tags aren't populated at this point
         // we'll resolve them later via resolveBlockTags()
-        pendingBlockTags.put(blockTag.getId(), iHackable);
+        pendingBlockTags.put(blockTag.getName(), iHackable);
     }
 
     /**

@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 
 public class GuiStatBalloon {
@@ -17,8 +18,8 @@ public class GuiStatBalloon {
         this.slotNumber = slotNumber;
     }
 
-    public void render() {
-        Minecraft.getInstance().fontRenderer.drawString(text, x, y, -90);
+    public void render(MatrixStack matrixStack) {
+        Minecraft.getInstance().fontRenderer.drawString(matrixStack, text, x, y, -90);
     }
 
 }

@@ -5,6 +5,7 @@ import com.google.common.collect.Sets;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.StringTextComponent;
 
 import java.util.Set;
 
@@ -30,7 +31,7 @@ public class TrackerBlacklistManager {
             e.printStackTrace();
             String title = te.getWorld().getBlockState(te.getPos()).getBlock().getRegistryName().toString();
             HUDHandler.instance().addMessage(
-                    "Block tracking failed for " + title + "!",
+                    new StringTextComponent("Block tracking failed for " + title + "!"),
                     Lists.newArrayList("A stacktrace can be found in the log."),
                     80, 0xFFFF0000);
             blacklist.add(keyFor(te));

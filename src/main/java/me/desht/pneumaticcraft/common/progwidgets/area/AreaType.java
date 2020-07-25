@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.progwidgets.area;
 
 import me.desht.pneumaticcraft.common.util.LegacyAreaWidgetConverter;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
@@ -11,18 +10,24 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public abstract class AreaType{
-    private final String unlocalizedName;
+    private final String translationKey;
+    private final String name;
 
     public enum EnumAxis {
         X, Y, Z
-
-
     }
-    public AreaType(String name){
-        this.unlocalizedName = String.format("pneumaticcraft.gui.progWidget.area.type.%s.name", name);
+
+    public AreaType(String name) {
+        this.name = name;
+        this.translationKey = String.format("pneumaticcraft.gui.progWidget.area.type.%s.name", name);
     }
-    public String getName(){
-        return I18n.format(unlocalizedName);
+
+    public String getName() {
+        return name;
+    }
+
+    public String getTranslationKey() {
+        return translationKey;
     }
 
     public abstract void addArea(Consumer<BlockPos> areaAdder, BlockPos p1, BlockPos p2, int minX, int minY, int minZ, int maxX, int maxY, int maxZ);

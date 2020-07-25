@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 
 public class GuiDrone extends GuiPneumaticInventoryItem {
 
@@ -21,7 +22,7 @@ public class GuiDrone extends GuiPneumaticInventoryItem {
             return; // should never happen...
         }
 
-        addAnimatedStat("pneumaticcraft.gui.tab.info", Textures.GUI_INFO_LOCATION, 0xFF8888FF, true)
+        addAnimatedStat(new StringTextComponent("pneumaticcraft.gui.tab.info"), Textures.GUI_INFO_LOCATION, 0xFF8888FF, true)
                 .setText("pneumaticcraft.gui.tab.info.item.drone");
         addUpgradeTabs(itemStack.getItem(), itemStack.getItem().getRegistryName().getPath(), "drone");
     }

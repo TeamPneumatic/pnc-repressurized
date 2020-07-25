@@ -29,7 +29,7 @@ public abstract class ProgWidgetDigAndPlace extends ProgWidgetAreaItemBase imple
     @Override
     public void getTooltip(List<ITextComponent> curTooltip) {
         super.getTooltip(curTooltip);
-        curTooltip.add(new StringTextComponent("Order: ").appendSibling(new TranslationTextComponent(order.getTranslationKey())));
+        curTooltip.add(new StringTextComponent("Order: ").append(new TranslationTextComponent(order.getTranslationKey())));
     }
 
     ProgWidgetDigAndPlace(ProgWidgetType<?> type, Ordering order) {

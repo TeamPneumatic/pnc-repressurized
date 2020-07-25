@@ -11,7 +11,6 @@ import me.desht.pneumaticcraft.common.network.PacketGuiButton;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityTagWorkbench;
 import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -22,6 +21,8 @@ import net.minecraft.util.text.ITextComponent;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiTagWorkbench extends GuiPneumaticContainerBase<ContainerTagWorkbench, TileEntityTagWorkbench> {
     private static final int AVAILABLE_X = 9;
@@ -51,7 +52,8 @@ public class GuiTagWorkbench extends GuiPneumaticContainerBase<ContainerTagWorkb
         super.init();
 
         addButton(writeButton = new WidgetButtonExtended(guiLeft + 162, guiTop + 16, 20, 20, "", b -> writeTags())
-                .setRenderStacks(new ItemStack(Items.WRITABLE_BOOK)).setTooltipText(I18n.format("pneumaticcraft.gui.tooltip.tag_workbench.write_button")));
+                .setRenderStacks(new ItemStack(Items.WRITABLE_BOOK))
+                .setTooltipText(xlate("pneumaticcraft.gui.tooltip.tag_workbench.write_button")));
         addButton(addButton = new WidgetButtonExtended(guiLeft + 108, guiTop + 90, 13, 13, GuiConstants.TRIANGLE_RIGHT,
                 b -> addAvailable()));
         addButton(removeButton = new WidgetButtonExtended(guiLeft + 108, guiTop + 106, 13, 13, GuiConstants.TRIANGLE_LEFT,

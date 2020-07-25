@@ -1,11 +1,13 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.text.ITextComponent;
 
 import java.util.Collections;
 import java.util.List;
@@ -14,11 +16,11 @@ public class ArmorMessage {
     private final WidgetAnimatedStat stat;
     int lifeSpan;
 
-    public ArmorMessage(String title, int duration, int backColor) {
+    public ArmorMessage(ITextComponent title, int duration, int backColor) {
         this(title, Collections.emptyList(), duration, backColor);
     }
 
-    public ArmorMessage(String title, List<String> message, int duration, int backColor) {
+    public ArmorMessage(ITextComponent title, List<String> message, int duration, int backColor) {
         lifeSpan = duration;
         stat = new WidgetAnimatedStat(null, title, WidgetAnimatedStat.StatIcon.NONE, backColor, null, ArmorHUDLayout.INSTANCE.messageStat);
         stat.setMinDimensionsAndReset(0, 0);
@@ -36,12 +38,12 @@ public class ArmorMessage {
         return stat;
     }
 
-    void renderMessage(float partialTicks) {
+    void renderMessage(MatrixStack matrixStack, float partialTicks) {
         if (lifeSpan > 10) {
             stat.openWindow();
         } else {
             stat.closeWindow();
         }
-        stat.render(-1, -1, partialTicks);
+        stat.render(matrixStack, -1, -1, partialTicks);
     }
 }

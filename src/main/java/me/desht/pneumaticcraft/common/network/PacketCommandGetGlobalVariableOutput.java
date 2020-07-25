@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -43,7 +44,7 @@ public class PacketCommandGetGlobalVariableOutput extends LocationIntPacket {
         ctx.get().enqueueWork(() -> ClientUtils.getClientPlayer().sendStatusMessage(xlate("pneumaticcraft.command.getGlobalVariable.output",
                         varName,
                         pos.getX(), pos.getY(), pos.getZ(),
-                        stack.isEmpty() ? "-" : stack.getDisplayName().getFormattedText()),
+                        stack.isEmpty() ? new StringTextComponent("-") : stack.getDisplayName()),
                 false));
         ctx.get().setPacketHandled(true);
     }

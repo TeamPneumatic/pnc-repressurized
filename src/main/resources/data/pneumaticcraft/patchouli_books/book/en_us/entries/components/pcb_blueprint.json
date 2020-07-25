@@ -10,7 +10,7 @@
     },
     {
       "type": "pneumaticcraft:amadron_trade",
-      "item": "pneumaticcraft:pcb_blueprint",
+      "recipe": "pneumaticcraft:amadron/pcb_blueprint",
       "text": "Trading for the $(item)PCB Blueprint/$."
     }
   ]

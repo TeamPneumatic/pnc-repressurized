@@ -23,7 +23,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.client.event.InputEvent;
 
 import java.util.ArrayList;
@@ -51,7 +51,7 @@ public class RenderEntityTarget {
         circle1 = new RenderTargetCircle(entity);
         circle2 = new RenderTargetCircle(entity);
 
-        stat = new WidgetAnimatedStat(null, entity.getDisplayName().getFormattedText(), StatIcon.NONE,
+        stat = new WidgetAnimatedStat(null, entity.getDisplayName(), StatIcon.NONE,
                 20, -20, 0x3000AA00, null, false);
         stat.setMinDimensionsAndReset(0, 0);
     }
@@ -67,7 +67,7 @@ public class RenderEntityTarget {
 
     public void update() {
         stat.tickWidget();
-        stat.setTitle(entity.getDisplayName().getFormattedText());
+        stat.setMessage(entity.getDisplayName());
         PlayerEntity player = Minecraft.getInstance().player;
 
         distToEntity = entity.getDistance(ClientUtils.getClientPlayer());
@@ -103,7 +103,6 @@ public class RenderEntityTarget {
     }
 
     public void render(MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks, boolean justRenderWhenHovering) {
-
         for (IEntityTrackEntry tracker : trackEntries) {
             tracker.render(matrixStack, buffer, entity, partialTicks);
         }
@@ -182,8 +181,8 @@ public class RenderEntityTarget {
     private boolean isPlayerLookingAtTarget() {
         // code used from the Enderman player looking code.
         PlayerEntity player = Minecraft.getInstance().player;
-        Vec3d vec3 = player.getLook(1.0F).normalize();
-        Vec3d vec31 = new Vec3d(entity.getPosX() - player.getPosX(), entity.getBoundingBox().minY + entity.getHeight() / 2.0F - (player.getPosY() + player.getEyeHeight()), entity.getPosZ() - player.getPosZ());
+        Vector3d vec3 = player.getLook(1.0F).normalize();
+        Vector3d vec31 = new Vector3d(entity.getPosX() - player.getPosX(), entity.getBoundingBox().minY + entity.getHeight() / 2.0F - (player.getPosY() + player.getEyeHeight()), entity.getPosZ() - player.getPosZ());
         double d0 = vec31.length();
         vec31 = vec31.normalize();
         double d1 = vec3.dotProduct(vec31);

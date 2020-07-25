@@ -34,7 +34,7 @@
     {
       "anchor": "advanced",
       "type": "pneumaticcraft:assembly_system",
-      "item": "pneumaticcraft:advanced_pressure_tube"
+      "recipe": "pneumaticcraft:assembly/advanced_pressure_tube"
     }
   ]
 }

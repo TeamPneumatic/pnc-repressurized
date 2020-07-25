@@ -17,9 +17,20 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.Tags;
 
 public class DroneColorCrafting extends ShapelessRecipe {
+    private NonNullList<Ingredient> ingredients = null;
+
     public DroneColorCrafting(ResourceLocation idIn) {
-        super(idIn, "", new ItemStack(ModItems.DRONE.get()),
-                NonNullList.from(Ingredient.EMPTY, Ingredient.fromTag(Tags.Items.DYES), Ingredient.fromItems(ModItems.DRONE.get())));
+        super(idIn, "", new ItemStack(ModItems.DRONE.get()), NonNullList.create());
+    }
+
+    @Override
+    public NonNullList<Ingredient> getIngredients() {
+        if (ingredients == null) {
+            ingredients = NonNullList.from(Ingredient.EMPTY,
+                    Ingredient.fromTag(Tags.Items.DYES), Ingredient.fromItems(ModItems.DRONE.get())
+            );
+        }
+        return ingredients;
     }
 
     @Override

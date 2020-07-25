@@ -39,8 +39,8 @@ public class TileEntityElevatorCaller extends TileEntityTickableBase implements 
     }
 
     @Override
-    public void read(CompoundNBT tag) {
-        super.read(tag);
+    public void read(BlockState state, CompoundNBT tag) {
+        super.read(state, tag);
         emittingRedstone = tag.getBoolean("emittingRedstone");
         thisFloor = tag.getInt("thisFloor");
         shouldUpdateNeighbors = tag.getBoolean("shouldUpdateNeighbors");

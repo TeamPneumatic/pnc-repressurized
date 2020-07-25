@@ -16,6 +16,7 @@ import me.desht.pneumaticcraft.common.util.GlobalTileEntityCacheManager;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -25,7 +26,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -227,8 +228,9 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
     }
 
     @Override
-    public void read(CompoundNBT tag) {
-        super.read(tag);
+    public void read(BlockState state, CompoundNBT tag) {
+        super.read(state, tag);
+
         redstoneMode = tag.getInt(NBTKeys.NBT_REDSTONE_MODE);
         rebootTimer = tag.getInt("startupTimer");
         inventory.deserializeNBT(tag.getCompound("Items"));
@@ -312,7 +314,7 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
             if (gameProfileEquals(user, player.getGameProfile())) {
                 if (user.getId() == null && player.getGameProfile().getId() != null) {
                     sharedUsers.set(i, player.getGameProfile());
-                    Log.info("Legacy conversion: Security Station shared username '" + player.getName().getFormattedText() + "' is now using UUID '" + player.getGameProfile().getId() + "'.");
+                    Log.info("Legacy conversion: Security Station shared username '" + player.getName().getString() + "' is now using UUID '" + player.getGameProfile().getId() + "'.");
                 }
                 return true;
             }
@@ -326,7 +328,7 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
             if (gameProfileEquals(user, player.getGameProfile())) {
                 if (user.getId() == null && player.getGameProfile().getId() != null) {
                     hackedUsers.set(i, player.getGameProfile());
-                    Log.info("Legacy conversion: Security Station hacked username '" + player.getName().getFormattedText() + "' is now using UUID '" + player.getGameProfile().getId() + "'.");
+                    Log.info("Legacy conversion: Security Station hacked username '" + player.getName().getString() + "' is now using UUID '" + player.getGameProfile().getId() + "'.");
                 }
                 return true;
             }
@@ -491,10 +493,10 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
     }
 
     private static boolean isValidAndInRange(World world, BlockPos pos, boolean placementRange, TileEntitySecurityStation station) {
-        if (!station.isRemoved() && station.getWorld().getDimension().getType() == world.getDimension().getType() && station.hasValidNetwork()) {
+        if (!station.isRemoved() && station.getWorld().func_234923_W_().compareTo(world.func_234923_W_()) == 0 && station.hasValidNetwork()) {
             AxisAlignedBB aabb = station.getAffectedBoundingBox();
             if (placementRange) aabb = aabb.grow(16);
-            return aabb.contains(new Vec3d(pos));
+            return aabb.contains(Vector3d.copyCentered(pos));
         }
         return false;
     }
@@ -514,7 +516,7 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
     private class HackingContainerProvider implements INamedContainerProvider {
         @Override
         public ITextComponent getDisplayName() {
-            return getDisplayNameInternal().appendText(" Hacking");
+            return getDisplayNameInternal().copyRaw().appendString(" Hacking");
         }
 
         @Nullable

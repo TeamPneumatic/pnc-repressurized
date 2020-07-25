@@ -1,34 +1,28 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticScreenBase;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.gui.handlers.IGuiProperties;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.resources.I18n;
-
-import java.util.List;
 
 class Helpers {
-    static void drawIconAt(IDrawable icon, int x, int y) {
-        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.disableDepthTest();
-        RenderSystem.enableAlphaTest();
-        icon.draw(x, y);
-        RenderSystem.enableDepthTest();
-        RenderSystem.disableAlphaTest();
-    }
+//    static void drawIconAt(IDrawable icon, int x, int y) {
+//        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+//        RenderSystem.disableDepthTest();
+//        RenderSystem.enableAlphaTest();
+//        icon.draw(x, y);
+//        RenderSystem.enableDepthTest();
+//        RenderSystem.disableAlphaTest();
+//    }
 
-    static void drawTextAt(String translationKey, int x, int y) {
-        List<String> text = PneumaticCraftUtils.splitString(I18n.format(translationKey), 30);
-        int h = Minecraft.getInstance().fontRenderer.FONT_HEIGHT;
-        for (int i = 0; i < text.size(); i++) {
-            Minecraft.getInstance().fontRenderer.drawString(text.get(i), x, y + i * h, 0xFF404040);
-        }
-    }
+//    static void drawTextAt(String translationKey, int x, int y) {
+//        List<String> text = PneumaticCraftUtils.splitString(I18n.format(translationKey), 30);
+//        int h = Minecraft.getInstance().fontRenderer.FONT_HEIGHT;
+//        for (int i = 0; i < text.size(); i++) {
+//            Minecraft.getInstance().fontRenderer.drawString(text.get(i), x, y + i * h, 0xFF404040);
+//        }
+//    }
 
     static IDrawable makeTankOverlay(int height) {
         return JEIPlugin.jeiHelpers.getGuiHelper()

@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.common.block.BlockPneumaticDoor;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.DoorBlock;
 import net.minecraft.item.DyeColor;
 import net.minecraft.nbt.CompoundNBT;
@@ -81,8 +82,8 @@ public class TileEntityPneumaticDoor extends TileEntityTickableBase {
     }
 
     @Override
-    public void read(CompoundNBT tag) {
-        super.read(tag);
+    public void read(BlockState state, CompoundNBT tag) {
+        super.read(state, tag);
 
         rightGoing = tag.getBoolean("rightGoing");
         color = tag.getInt("color");
@@ -106,10 +107,10 @@ public class TileEntityPneumaticDoor extends TileEntityTickableBase {
                 getPos().getX() + 1, getPos().getY() + 2, getPos().getZ() + 1);
     }
 
-    @Override
-    public boolean canRenderBreaking() {
-        return true;
-    }
+//    @Override
+//    public boolean canRenderBreaking() {
+//        return true;
+//    }
 
     @Override
     public boolean shouldPreserveStateOnBreak() {

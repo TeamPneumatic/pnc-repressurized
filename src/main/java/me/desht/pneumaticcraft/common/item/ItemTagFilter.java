@@ -35,9 +35,9 @@ public class ItemTagFilter extends Item implements ITagFilteringItem {
         super.addInformation(stack, worldIn, tooltip, flagIn);
 
         if (worldIn != null) {
-            tooltip.add(xlate("pneumaticcraft.gui.tooltip.tag_filter.header").applyTextStyle(TextFormatting.YELLOW));
+            tooltip.add(xlate("pneumaticcraft.gui.tooltip.tag_filter.header").mergeStyle(TextFormatting.YELLOW));
             for (ResourceLocation rl : getConfiguredTagList(stack)) {
-                tooltip.add(GuiConstants.bullet().appendText(rl.toString()).applyTextStyle(TextFormatting.GOLD));
+                tooltip.add(GuiConstants.bullet().appendString(rl.toString()).mergeStyle(TextFormatting.GOLD));
             }
         }
     }

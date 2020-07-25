@@ -9,8 +9,8 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
@@ -18,7 +18,7 @@ import javax.annotation.Nullable;
 public class AirParticle extends SpriteTexturedParticle {
     private final IAnimatedSprite sprite;
 
-    private AirParticle(World worldIn, double xCoordIn, double yCoordIn, double zCoordIn, double xSpeedIn, double ySpeedIn, double zSpeedIn, float scale, IAnimatedSprite sprite) {
+    private AirParticle(ClientWorld worldIn, double xCoordIn, double yCoordIn, double zCoordIn, double xSpeedIn, double ySpeedIn, double zSpeedIn, float scale, IAnimatedSprite sprite) {
         super(worldIn, xCoordIn, yCoordIn, zCoordIn, xSpeedIn, ySpeedIn, zSpeedIn);
 
         this.sprite = sprite;
@@ -81,7 +81,7 @@ public class AirParticle extends SpriteTexturedParticle {
 
         @Nullable
         @Override
-        public Particle makeParticle(AirParticleData airParticleData, World world, double x, double y, double z, double dx, double dy, double dz) {
+        public Particle makeParticle(AirParticleData airParticleData, ClientWorld world, double x, double y, double z, double dx, double dy, double dz) {
             AirParticle p = new AirParticle(world, x, y, z, dx, dy, dz, 0.2f, spriteSet);
             p.setAlphaF(airParticleData.getAlpha());
             return p;

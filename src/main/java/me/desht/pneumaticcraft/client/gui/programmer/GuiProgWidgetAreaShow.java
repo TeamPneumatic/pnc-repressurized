@@ -4,7 +4,8 @@ import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
-import net.minecraft.client.resources.I18n;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiProgWidgetAreaShow<P extends IProgWidget> extends GuiProgWidgetOptionBase<P> {
 
@@ -18,7 +19,7 @@ public class GuiProgWidgetAreaShow<P extends IProgWidget> extends GuiProgWidgetO
 
         if (displayShowAreaButtons()) {
             addButton(new WidgetCheckBox(guiLeft + 8, guiTop + ySize - (font.FONT_HEIGHT + 8), 0x404040,
-                    I18n.format("pneumaticcraft.gui.programmer.button.showArea"), this::previewArea)
+                    xlate("pneumaticcraft.gui.programmer.button.showArea"), this::previewArea)
                     .setChecked(AreaRenderManager.getInstance().isShowing(guiProgrammer.te)));
         }
     }

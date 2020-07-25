@@ -27,6 +27,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -103,7 +104,7 @@ public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler {
         if (targets.size() > ENTITY_TRACK_THRESHOLD) {
             if (!shouldStopSpamOnEntityTracking) {
                 shouldStopSpamOnEntityTracking = true;
-                HUDHandler.instance().addMessage(new ArmorMessage("Stopped spam on Entity Tracker", new ArrayList<>(), 60, 0x7700AA00));
+                HUDHandler.instance().addMessage(new ArmorMessage(new StringTextComponent("Stopped spam on Entity Tracker"), new ArrayList<>(), 60, 0x7700AA00));
             }
         } else {
             shouldStopSpamOnEntityTracking = false;
@@ -116,7 +117,7 @@ public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler {
             target.update();
             if (target.isLookingAtTarget) {
                 if (target.isInitialized()) {
-                    text.add(TextFormatting.GRAY + target.entity.getDisplayName().getFormattedText());
+                    text.add(TextFormatting.GRAY + target.entity.getDisplayName().getString());
                     text.addAll(target.getEntityText());
                 } else {
                     text.add(TextFormatting.GRAY + "Acquiring target...");
@@ -133,7 +134,6 @@ public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler {
         double entityTrackRange = ENTITY_TRACKING_RANGE + Math.min(10, rangeUpgrades) * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE;
 
         return new AxisAlignedBB(player.getPosition()).grow(entityTrackRange);
-//        return new AxisAlignedBB(player.getPosX() - entityTrackRange, player.getPosY() - entityTrackRange, player.getPosZ() - entityTrackRange, player.posX + entityTrackRange, player.posY + entityTrackRange, player.posZ + entityTrackRange);
     }
 
     @Override
@@ -144,7 +144,7 @@ public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void render2D(float partialTicks, boolean upgradeEnabled) {
+    public void render2D(MatrixStack matrixStack, float partialTicks, boolean upgradeEnabled) {
     }
 
     @Override
@@ -179,7 +179,7 @@ public class EntityTrackUpgradeHandler implements IUpgradeRenderHandler {
     public WidgetAnimatedStat getAnimatedStat() {
         if (entityTrackInfo == null) {
             WidgetAnimatedStat.StatIcon icon = WidgetAnimatedStat.StatIcon.of(EnumUpgrade.ENTITY_TRACKER.getItemStack());
-            entityTrackInfo = new WidgetAnimatedStat(null, "Current tracked entities:", icon,
+            entityTrackInfo = new WidgetAnimatedStat(null, new StringTextComponent("Current tracked entities:"), icon,
                      0x3000AA00, null, ArmorHUDLayout.INSTANCE.entityTrackerStat);
             entityTrackInfo.setMinDimensionsAndReset(0, 0);
         }

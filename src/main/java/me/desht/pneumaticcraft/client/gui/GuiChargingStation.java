@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
@@ -23,6 +24,8 @@ import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.opengl.GL11;
 
 import java.util.List;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiChargingStation extends GuiPneumaticContainerBase<ContainerChargingStation,TileEntityChargingStation> {
     private WidgetButtonExtended guiSelectButton;
@@ -56,10 +59,10 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<ContainerCharg
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(float opacity, int x, int y) {
-        super.drawGuiContainerBackgroundLayer(opacity, x, y);
+    protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float opacity, int x, int y) {
+        super.drawGuiContainerBackgroundLayer(matrixStack, opacity, x, y);
 
-        renderAir();
+        renderAir(matrixStack);
     }
 
     @Override
@@ -68,7 +71,7 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<ContainerCharg
         ItemStack stack = te.getPrimaryInventory().getStackInSlot(TileEntityChargingStation.CHARGE_INVENTORY_INDEX);
         guiSelectButton.visible = stack.getItem() instanceof IChargeableContainerProvider;
         if (guiSelectButton.visible) {
-            guiSelectButton.setTooltipText(I18n.format("pneumaticcraft.gui.tooltip.charging_station.manageUpgrades", stack.getDisplayName().getFormattedText()));
+            guiSelectButton.setTooltipText(xlate("pneumaticcraft.gui.tooltip.charging_station.manageUpgrades", stack.getDisplayName()));
         }
 
         // multiplier of 25 is about the max that looks good (higher values can make the animation look like
@@ -107,7 +110,7 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<ContainerCharg
         ItemStack chargeStack  = te.getPrimaryInventory().getStackInSlot(TileEntityChargingStation.CHARGE_INVENTORY_INDEX);
         if (!chargeStack.isEmpty() && !chargeStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).isPresent()) {
             // shouldn't ever happen - I can't be bothered to add a translation
-            textList.addAll(PneumaticCraftUtils.splitString("\u00a70Non-pneumatic item in the charge slot!?", GuiConstants.MAX_CHAR_PER_LINE_LEFT));
+            textList.addAll(PneumaticCraftUtils.splitString("\u00a70Non-pneumatic item in the charge slot!?", GuiConstants.MAX_CHAR_PER_LINE));
         }
     }
 
@@ -119,7 +122,7 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<ContainerCharg
             curInfo.add(I18n.format("pneumaticcraft.gui.tab.problems.charging_station.no_item"));
         } else {
             chargeStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(h -> {
-                String name = chargeStack.getDisplayName().getFormattedText();
+                String name = chargeStack.getDisplayName().getString();
                 if (h.getPressure() > te.getPressure() + 0.01F && h.getPressure() <= 0) {
                     curInfo.addAll(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.tab.problems.charging_station.item_empty", name)));
                 } else if (h.getPressure() < te.getPressure() - 0.01F && h.getPressure() >= h.maxPressure()) {
@@ -131,19 +134,19 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<ContainerCharg
         }
     }
 
-    private void renderAir() {
+    private void renderAir(MatrixStack matrixStack) {
         RenderSystem.disableTexture();
         RenderSystem.color4f(1, 1, 1, 1);
         RenderSystem.lineWidth(2.0F);
         int particles = 10;
         for (int i = 0; i < particles; i++) {
-            renderAirParticle(renderAirProgress % (1F / particles) + (float) i / particles);
+            renderAirParticle(matrixStack, renderAirProgress % (1F / particles) + (float) i / particles);
         }
 
         RenderSystem.enableTexture();
     }
 
-    private void renderAirParticle(float particleProgress) {
+    private void renderAirParticle(MatrixStack matrixStack, float particleProgress) {
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
         float x = xStart + 117F;
@@ -161,7 +164,7 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<ContainerCharg
         BufferBuilder wr = Tessellator.getInstance().getBuffer();
         GL11.glPointSize(5);
         wr.begin(GL11.GL_POINTS, DefaultVertexFormats.POSITION);
-        wr.pos(x, y, 0.0).endVertex();
+        wr.pos(matrixStack.getLast().getMatrix(), x, y, 0f).endVertex();
         Tessellator.getInstance().draw();
     }
 }

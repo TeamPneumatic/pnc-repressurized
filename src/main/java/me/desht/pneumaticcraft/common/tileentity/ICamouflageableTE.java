@@ -1,12 +1,9 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
-import com.mojang.datafixers.Dynamic;
 import net.minecraft.block.BlockState;
-import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
-import net.minecraft.nbt.NBTDynamicOps;
+import net.minecraft.nbt.NBTUtil;
 import net.minecraftforge.common.util.Constants;
 
 /**
@@ -52,22 +49,12 @@ public interface ICamouflageableTE {
     }
 
     static BlockState readCamo(CompoundNBT tag) {
-        if (tag.contains("camoState", Constants.NBT.TAG_COMPOUND)) {
-            return BlockState.deserialize(new Dynamic<>(NBTDynamicOps.INSTANCE, tag.getCompound("camoState")));
-        } else if (tag.contains("camoStack", Constants.NBT.TAG_COMPOUND)) {
-            // TODO remove this in 1.16: migrating from old-style itemstack storage
-            ItemStack stack = ItemStack.read(tag.getCompound("camoStack"));
-            if (stack.getItem() instanceof BlockItem) {
-                return (((BlockItem) stack.getItem()).getBlock()).getDefaultState();
-            }
-        }
-        return null;
+        return tag.contains("camoState", Constants.NBT.TAG_COMPOUND) ? NBTUtil.readBlockState(tag.getCompound("camoState")) : null;
     }
 
     static void writeCamo(CompoundNBT tag, BlockState state) {
         if (state != null) {
-            Dynamic<INBT> ops = BlockState.serialize(NBTDynamicOps.INSTANCE, state);
-            tag.put("camoState", ops.getValue());
+            tag.put("camoState", NBTUtil.writeBlockState(state));
         }
     }
 }

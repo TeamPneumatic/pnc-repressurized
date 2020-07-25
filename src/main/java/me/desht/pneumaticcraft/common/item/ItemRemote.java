@@ -6,8 +6,8 @@ import me.desht.pneumaticcraft.common.inventory.ContainerRemote;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketNotifyVariablesRemote;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
-import me.desht.pneumaticcraft.common.util.GlobalPosUtils;
-import me.desht.pneumaticcraft.common.util.NBTUtil;
+import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
+import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
@@ -64,7 +64,7 @@ public class ItemRemote extends Item {
             TileEntity te = world.getTileEntity(pos);
             if (te instanceof TileEntitySecurityStation) {
                 if (((TileEntitySecurityStation) te).doesAllowPlayer(player)) {
-                    GlobalPos gPos = GlobalPos.of(world.getDimension().getType(), pos);
+                    GlobalPos gPos = GlobalPosHelper.makeGlobalPos(world, pos);
                     setSecurityStationPos(remote, gPos);
                     player.sendStatusMessage(xlate("pneumaticcraft.gui.remote.boundSecurityStation", gPos.toString()), true);
                     return ActionResultType.SUCCESS;
@@ -112,11 +112,11 @@ public class ItemRemote extends Item {
     private boolean isAllowedToEdit(PlayerEntity player, ItemStack remote) {
         GlobalPos gPos = getSecurityStationPos(remote);
         if (gPos != null) {
-            TileEntity te = GlobalPosUtils.getTileEntity(gPos);
+            TileEntity te = GlobalPosHelper.getTileEntity(gPos);
             if (te instanceof TileEntitySecurityStation) {
                 boolean canAccess = ((TileEntitySecurityStation) te).doesAllowPlayer(player);
                 if (!canAccess) {
-                    player.sendStatusMessage(new TranslationTextComponent("pneumaticcraft.gui.remote.noEditRights", gPos).applyTextStyle(TextFormatting.RED), false);
+                    player.sendStatusMessage(new TranslationTextComponent("pneumaticcraft.gui.remote.noEditRights", gPos).mergeStyle(TextFormatting.RED), false);
                 }
                 return canAccess;
             }
@@ -126,11 +126,11 @@ public class ItemRemote extends Item {
 
     private static GlobalPos getSecurityStationPos(ItemStack stack) {
         return stack.hasTag() && stack.getTag().contains(NBT_SECURITY_POS) ?
-                GlobalPosUtils.deserializeGlobalPos(stack.getTag().getCompound(NBT_SECURITY_POS)) : null;
+                GlobalPosHelper.fromNBT(stack.getTag().getCompound(NBT_SECURITY_POS)) : null;
     }
 
     private static void setSecurityStationPos(ItemStack stack, GlobalPos gPos) {
-        NBTUtil.setCompoundTag(stack, NBT_SECURITY_POS, GlobalPosUtils.serializeGlobalPos(gPos));
+        NBTUtils.setCompoundTag(stack, NBT_SECURITY_POS, GlobalPosHelper.toNBT(gPos));
     }
 
     @Override
@@ -138,7 +138,7 @@ public class ItemRemote extends Item {
         if (!world.isRemote) {
             GlobalPos gPos = getSecurityStationPos(remote);
             if (gPos != null) {
-                TileEntity te = GlobalPosUtils.getTileEntity(gPos);
+                TileEntity te = GlobalPosHelper.getTileEntity(gPos);
                 if (!(te instanceof TileEntitySecurityStation) && remote.hasTag()) {
                     remote.getTag().remove(NBT_SECURITY_POS);
                 }

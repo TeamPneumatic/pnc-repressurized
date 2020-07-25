@@ -5,21 +5,21 @@ import com.google.gson.JsonObject;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.tileentity.*;
-import me.desht.pneumaticcraft.common.util.NBTUtil;
+import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.NBTKeys;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.loot.LootContext;
+import net.minecraft.loot.LootFunction;
+import net.minecraft.loot.LootFunctionType;
+import net.minecraft.loot.LootParameters;
+import net.minecraft.loot.conditions.ILootCondition;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.storage.loot.LootContext;
-import net.minecraft.world.storage.loot.LootFunction;
-import net.minecraft.world.storage.loot.LootParameters;
-import net.minecraft.world.storage.loot.conditions.ILootCondition;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 import static me.desht.pneumaticcraft.lib.NBTKeys.NBT_AIR_AMOUNT;
 import static me.desht.pneumaticcraft.lib.NBTKeys.NBT_SIDE_CONFIG;
 
@@ -77,9 +77,9 @@ public class TileEntitySerializerFunction extends LootFunction {
                     if (!upgradeHandler.getStackInSlot(i).isEmpty()) {
                         // store creative status directly since it's queried for item model rendering (performance)
                         if (teB.getUpgrades(EnumUpgrade.CREATIVE) > 0) {
-                            NBTUtil.setBoolean(teStack, UpgradableItemUtils.NBT_CREATIVE, true);
+                            NBTUtils.setBoolean(teStack, UpgradableItemUtils.NBT_CREATIVE, true);
                         } else {
-                            NBTUtil.removeTag(teStack, UpgradableItemUtils.NBT_CREATIVE);
+                            NBTUtils.removeTag(teStack, UpgradableItemUtils.NBT_CREATIVE);
                         }
                         subTag.put(UpgradableItemUtils.NBT_UPGRADE_TAG, upgradeHandler.serializeNBT());
                         break;
@@ -108,14 +108,16 @@ public class TileEntitySerializerFunction extends LootFunction {
         return teStack;
     }
 
-    public static class Serializer extends LootFunction.Serializer<TileEntitySerializerFunction> {
-        public Serializer() {
-            super(RL("te_serializer"), TileEntitySerializerFunction.class);
-        }
+    @Override
+    public LootFunctionType func_230425_b_() {
+        return ModLootFunctions.TE_SERIALIZER;
+    }
 
+    public static class Serializer extends LootFunction.Serializer<TileEntitySerializerFunction> {
         @Override
-        public TileEntitySerializerFunction deserialize(JsonObject object, JsonDeserializationContext ctx, ILootCondition[] conditionsIn) {
+        public TileEntitySerializerFunction deserialize(JsonObject object, JsonDeserializationContext deserializationContext, ILootCondition[] conditionsIn) {
             return new TileEntitySerializerFunction(conditionsIn);
         }
+
     }
 }

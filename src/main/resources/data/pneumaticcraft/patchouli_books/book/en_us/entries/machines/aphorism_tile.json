@@ -14,7 +14,7 @@
     },
     {
       "type": "pneumaticcraft:assembly_system",
-      "item": "pneumaticcraft:aphorism_tile"
+      "recipe": "pneumaticcraft:assembly/aphorism_tile"
     }
   ]
 }

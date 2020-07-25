@@ -10,6 +10,7 @@ import me.desht.pneumaticcraft.common.inventory.ContainerEnergy;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
@@ -99,8 +100,9 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase implements
     }
 
     @Override
-    public void read(CompoundNBT tag){
-        super.read(tag);
+    public void read(BlockState state, CompoundNBT tag) {
+        super.read(state, tag);
+
         energy.readFromNBT(tag);
         redstoneMode = tag.getByte(NBTKeys.NBT_REDSTONE_MODE);
     }

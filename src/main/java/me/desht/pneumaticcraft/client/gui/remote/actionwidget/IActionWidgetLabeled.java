@@ -1,11 +1,19 @@
 package me.desht.pneumaticcraft.client.gui.remote.actionwidget;
 
+import net.minecraft.util.text.ITextComponent;
+
+import java.util.List;
+
 public interface IActionWidgetLabeled {
-    void setText(String text);
+    void setText(ITextComponent text);
 
-    String getText();
+    ITextComponent getText();
 
-    void setTooltip(String text);
+    void setTooltip(List<ITextComponent> text);
 
-    String getTooltip();
+    List<ITextComponent> getTooltip();
+
+    default ITextComponent deserializeTextComponent(String s) {
+        return ITextComponent.Serializer.func_240643_a_(s);
+    }
 }

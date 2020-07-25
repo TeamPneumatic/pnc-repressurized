@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.gui.pneumatic_armor;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
@@ -128,16 +129,16 @@ public class GuiHelmetMainScreen extends GuiPneumaticScreenBase implements IGuiS
     }
 
     @Override
-    public void render(int x, int y, float partialTicks) {
-        renderBackground();
+    public void render(MatrixStack matrixStack, int x, int y, float partialTicks) {
+        renderBackground(matrixStack);
         IOptionPage optionPage = upgradeOptions.get(pageNumber).page;
-        optionPage.renderPre(x, y, partialTicks);
-        drawCenteredString(font, TITLE_PREFIX + upgradeOptions.get(pageNumber).page.getPageName(), 100, 12, 0xFFFFFFFF);
+        optionPage.renderPre(matrixStack, x, y, partialTicks);
+        drawCenteredString(matrixStack, font, TITLE_PREFIX + upgradeOptions.get(pageNumber).page.getPageName(), 100, 12, 0xFFFFFFFF);
         if (optionPage.displaySettingsHeader()) {
-            drawCenteredString(font, "Settings", 100, optionPage.settingsYposition(), 0xFFFFFFFF);
+            drawCenteredString(matrixStack, font, "Settings", 100, optionPage.settingsYposition(), 0xFFFFFFFF);
         }
-        super.render(x, y, partialTicks);
-        optionPage.renderPost(x, y, partialTicks);
+        super.render(matrixStack, x, y, partialTicks);
+        optionPage.renderPost(matrixStack, x, y, partialTicks);
     }
 
     @Override
@@ -183,7 +184,7 @@ public class GuiHelmetMainScreen extends GuiPneumaticScreenBase implements IGuiS
 
     @Override
     public void setFocusedWidget(Widget w) {
-        setFocused(w);
+        setListener(w);
     }
 
     @Override

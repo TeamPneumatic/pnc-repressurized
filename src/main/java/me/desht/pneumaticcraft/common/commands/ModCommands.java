@@ -4,6 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
+import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
@@ -86,7 +87,7 @@ public class ModCommands {
                 if (!inv.getStackInSlot(i).isEmpty()) deliveredStacks.add(inv.getStackInSlot(i));
             }
             if (deliveredStacks.size() > 0) {
-                GlobalPos gPos = GlobalPos.of(source.getWorld().dimension.getType(), toPos);
+                GlobalPos gPos = GlobalPosHelper.makeGlobalPos(source.getWorld(), toPos);
                 PneumaticRegistry.getInstance().getDroneRegistry().deliverItemsAmazonStyle(gPos, deliveredStacks.toArray(new ItemStack[0]));
                 source.sendFeedback(xlate("pneumaticcraft.command.deliverAmazon.success", PneumaticCraftUtils.posToString(fromPos), PneumaticCraftUtils.posToString(toPos)), false);
                 return 1;
@@ -105,7 +106,7 @@ public class ModCommands {
         if (varName.startsWith("#")) varName = varName.substring(1);
         BlockPos pos = GlobalVariableManager.getInstance().getPos(varName);
         ItemStack stack = GlobalVariableManager.getInstance().getItem(varName);
-        source.sendFeedback(xlate("pneumaticcraft.command.getGlobalVariable.output", varName, pos.toString(), stack.getDisplayName().getFormattedText()), false);
+        source.sendFeedback(xlate("pneumaticcraft.command.getGlobalVariable.output", varName, pos.toString(), stack.getDisplayName().getString()), false);
         return 1;
     }
 

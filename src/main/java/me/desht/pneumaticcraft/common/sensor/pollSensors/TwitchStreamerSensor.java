@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.universal_sensor.IPollSensorSetting;
 import net.minecraft.client.gui.FontRenderer;
@@ -36,8 +37,8 @@ public class TwitchStreamerSensor implements IPollSensorSetting {
     }
 
     @Override
-    public void drawAdditionalInfo(FontRenderer fontRenderer) {
-        fontRenderer.drawString("Player Name", 70, 48, 0x404040);
+    public void drawAdditionalInfo(MatrixStack matrixStack, FontRenderer fontRenderer) {
+        fontRenderer.drawString(matrixStack, "Player Name", 70, 48, 0x404040);
     }
 
     @Override

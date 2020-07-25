@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange.TemperatureScale;
 import me.desht.pneumaticcraft.api.crafting.recipe.RefineryRecipe;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
@@ -16,6 +17,7 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.util.Collections;
@@ -86,18 +88,18 @@ public class JEIRefineryCategory implements IRecipeCategory<RefineryRecipe> {
     }
 
     @Override
-    public void draw(RefineryRecipe recipe, double mouseX, double mouseY) {
+    public void draw(RefineryRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
         WidgetTemperature w = tempWidgets.computeIfAbsent(recipe.getId(),
                 id -> WidgetTemperature.fromOperatingRange(26, 18, recipe.getOperatingTemp()));
         w.setTemperature(w.getTotalRange().getMin() + (w.getTotalRange().getMax() - w.getTotalRange().getMin()) * tickTimer.getValue() / tickTimer.getMaxValue());
-        w.renderButton((int)mouseX, (int)mouseY, 0f);
+        w.renderButton(matrixStack, (int)mouseX, (int)mouseY, 0f);
     }
 
     @Override
-    public List<String> getTooltipStrings(RefineryRecipe recipe, double mouseX, double mouseY) {
+    public List<ITextComponent> getTooltipStrings(RefineryRecipe recipe, double mouseX, double mouseY) {
         WidgetTemperature w = tempWidgets.get(recipe.getId());
         if (w != null && w.isMouseOver(mouseX, mouseY)) {
-            return ImmutableList.of(HeatUtil.formatHeatString(recipe.getOperatingTemp().asString(TemperatureScale.CELSIUS)).getFormattedText());
+            return ImmutableList.of(HeatUtil.formatHeatString(recipe.getOperatingTemp().asString(TemperatureScale.CELSIUS)));
         }
         return Collections.emptyList();
     }

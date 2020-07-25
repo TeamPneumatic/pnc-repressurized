@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client;
 
+import me.desht.pneumaticcraft.client.event.ClientTickHandler;
 import me.desht.pneumaticcraft.client.gui.*;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiHelmetMainScreen;
 import me.desht.pneumaticcraft.client.gui.programmer.*;
@@ -15,15 +16,21 @@ import me.desht.pneumaticcraft.client.model.custom.FluidItemModel;
 import me.desht.pneumaticcraft.client.model.custom.PressureGlassModel;
 import me.desht.pneumaticcraft.client.model.custom.RenderedItemModel;
 import me.desht.pneumaticcraft.client.particle.AirParticle;
+import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
 import me.desht.pneumaticcraft.client.render.entity.*;
 import me.desht.pneumaticcraft.client.render.entity.drone.RenderDrone;
 import me.desht.pneumaticcraft.client.render.fluid.*;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.entity_tracker.EntityTrackHandler;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.CoordTrackUpgradeHandler;
 import me.desht.pneumaticcraft.client.render.tileentity.*;
 import me.desht.pneumaticcraft.client.render.tube_module.*;
+import me.desht.pneumaticcraft.client.util.ProgWidgetRenderer;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo;
 import me.desht.pneumaticcraft.common.core.*;
+import me.desht.pneumaticcraft.common.event.HackTickHandler;
 import me.desht.pneumaticcraft.common.progwidgets.*;
+import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.util.DramaSplash;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Names;
@@ -33,15 +40,16 @@ import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.util.InputMappings;
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.client.settings.KeyModifier;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.DeferredWorkQueue;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
-import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.BufferedReader;
@@ -52,11 +60,36 @@ import java.util.Map;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
-@Mod.EventBusSubscriber(modid = Names.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+//@Mod.EventBusSubscriber(modid = Names.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ClientSetup {
     public static final Map<String, Pair<Integer,KeyModifier>> keybindToKeyCodes = new HashMap<>();
 
-    public static void init() {
+    public static void initEarly() {
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::init);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::registerParticleFactories);
+    }
+
+    static void init(FMLClientSetupEvent event) {
+        MinecraftForge.EVENT_BUS.register(HUDHandler.instance());
+        MinecraftForge.EVENT_BUS.register(ClientTickHandler.instance());
+        MinecraftForge.EVENT_BUS.register(HackTickHandler.instance());
+        MinecraftForge.EVENT_BUS.register(HUDHandler.instance().getSpecificRenderer(CoordTrackUpgradeHandler.class));
+        MinecraftForge.EVENT_BUS.register(AreaRenderManager.getInstance());
+        MinecraftForge.EVENT_BUS.register(KeyHandler.getInstance());
+
+        EntityTrackHandler.registerDefaultEntries();
+        ThirdPartyManager.instance().clientInit();
+
+        //noinspection deprecation
+        DeferredWorkQueue.runLater(ClientSetup::initLate);
+    }
+
+    public static void registerParticleFactories(ParticleFactoryRegisterEvent event) {
+        Minecraft.getInstance().particles.registerFactory(ModParticleTypes.AIR_PARTICLE.get(), AirParticle.Factory::new);
+        Minecraft.getInstance().particles.registerFactory(ModParticleTypes.AIR_PARTICLE_2.get(), AirParticle.Factory::new);
+    }
+
+    public static void initLate() {
         modelInit();
 
         setBlockRenderLayers();
@@ -65,12 +98,18 @@ public class ClientSetup {
         registerTESRs();
         registerScreenFactories();
         registerProgWidgetScreenFactories();
+        registerProgWidgetExtraRenderers();
         registerTubeModuleFactories();
 
         getAllKeybindsFromOptionsFile();
         EntityTrackHandler.init();
         GuiHelmetMainScreen.initHelmetMainScreen();
         DramaSplash.getInstance();
+    }
+
+    private static void registerProgWidgetExtraRenderers() {
+        ProgWidgetRenderer.registerExtraRenderer(ModProgWidgets.CRAFTING, ProgWidgetRenderer::renderCraftingExtras);
+        ProgWidgetRenderer.registerExtraRenderer(ModProgWidgets.ITEM_FILTER, ProgWidgetRenderer::renderItemFilterExtras);
     }
 
     private static void setBlockRenderLayers() {
@@ -103,12 +142,6 @@ public class ClientSetup {
         ModelLoaderRegistry.registerLoader(RL("pressure_glass"), PressureGlassModel.Loader.INSTANCE);
         ModelLoaderRegistry.registerLoader(RL("fluid_container_item"), FluidItemModel.Loader.INSTANCE);
         ModelLoaderRegistry.registerLoader(RL("rendered_item"), RenderedItemModel.Loader.INSTANCE);
-    }
-
-    @SubscribeEvent
-    public static void registerParticleFactories(ParticleFactoryRegisterEvent event) {
-        Minecraft.getInstance().particles.registerFactory(ModParticleTypes.AIR_PARTICLE.get(), AirParticle.Factory::new);
-        Minecraft.getInstance().particles.registerFactory(ModParticleTypes.AIR_PARTICLE_2.get(), AirParticle.Factory::new);
     }
 
     private static void registerEntityRenderers() {

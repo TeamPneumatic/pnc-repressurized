@@ -211,8 +211,9 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     }
 
     @Override
-    public void read(CompoundNBT tag) {
-        super.read(tag);
+    public void read(BlockState state, CompoundNBT tag) {
+        super.read(state, tag);
+
         redstoneMode = tag.getInt(NBTKeys.NBT_REDSTONE_MODE);
         itemHandler = new ChargingStationHandler();
         itemHandler.deserializeNBT(tag.getCompound("Items"));

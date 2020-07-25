@@ -6,6 +6,8 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetItemAssign;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
 public class GuiProgWidgetItemAssign extends GuiProgWidgetOptionBase<ProgWidgetItemAssign> {
     private WidgetComboBox textfield;
 
@@ -23,7 +25,7 @@ public class GuiProgWidgetItemAssign extends GuiProgWidgetOptionBase<ProgWidgetI
         textfield.setText(progWidget.getVariable());
         addButton(textfield);
 
-        addButton(new WidgetLabel(guiLeft + 10, guiTop + 30, "Setting variable:"));
+        addButton(new WidgetLabel(guiLeft + 10, guiTop + 30, xlate("pneumaticcraft.gui.progWidget.itemAssign.settingVariable")));
     }
 
     @Override

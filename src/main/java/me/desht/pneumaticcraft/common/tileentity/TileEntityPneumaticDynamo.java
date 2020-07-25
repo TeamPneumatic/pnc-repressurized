@@ -158,8 +158,9 @@ public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implement
     }
 
     @Override
-    public void read(CompoundNBT tag) {
-        super.read(tag);
+    public void read(BlockState state, CompoundNBT tag) {
+        super.read(state, tag);
+
         energy.readFromNBT(tag);
         redstoneMode = tag.getByte(NBTKeys.NBT_REDSTONE_MODE);
     }
@@ -172,6 +173,6 @@ public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implement
     @Nullable
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        return new ContainerEnergy(ModContainers.PNEUMATIC_DYNAMO.get(), i, playerInventory, getPos());
+        return new ContainerEnergy<TileEntityPneumaticDynamo>(ModContainers.PNEUMATIC_DYNAMO.get(), i, playerInventory, getPos());
     }
 }

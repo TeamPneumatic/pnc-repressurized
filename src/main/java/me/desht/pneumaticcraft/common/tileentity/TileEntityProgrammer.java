@@ -15,9 +15,10 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.network.PacketProgrammerUpdate;
 import me.desht.pneumaticcraft.common.progwidgets.*;
-import me.desht.pneumaticcraft.common.util.NBTUtil;
+import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.NBTKeys;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -80,8 +81,9 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
     }
 
     @Override
-    public void read(CompoundNBT tag) {
-        super.read(tag);
+    public void read(BlockState state, CompoundNBT tag) {
+        super.read(state, tag);
+
         redstoneMode = tag.getInt(NBTKeys.NBT_REDSTONE_MODE);
         inventory.deserializeNBT(tag.getCompound("Items"));
         history = tag.getList("history", 10);
@@ -343,7 +345,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
 
     @Override
     public String getText(int textFieldID) {
-        return inventory.getStackInSlot(PROGRAM_SLOT).getDisplayName().getFormattedText();
+        return inventory.getStackInSlot(PROGRAM_SLOT).getDisplayName().getString();
     }
 
     private void tryImport(boolean merge) {
@@ -426,7 +428,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
     }
 
     public static List<IProgWidget> getProgWidgets(ItemStack iStack) {
-        if (NBTUtil.hasTag(iStack, IProgrammable.NBT_WIDGETS)) {
+        if (NBTUtils.hasTag(iStack, IProgrammable.NBT_WIDGETS)) {
             return TileEntityProgrammer.getWidgetsFromNBT(iStack.getTag());
         } else {
             return new ArrayList<>();

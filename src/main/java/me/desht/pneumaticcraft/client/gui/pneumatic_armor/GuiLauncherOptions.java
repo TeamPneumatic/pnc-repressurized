@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.ChestplateLauncherHandler;
+import net.minecraft.util.text.StringTextComponent;
 
 public class GuiLauncherOptions extends IOptionPage.SimpleToggleableOptions<ChestplateLauncherHandler> {
     private KeybindingButton changeKeybindingButton;
@@ -14,7 +15,7 @@ public class GuiLauncherOptions extends IOptionPage.SimpleToggleableOptions<Ches
 
     @Override
     public void populateGui(IGuiScreen gui) {
-        changeKeybindingButton = new KeybindingButton(30, 128, 150, 20, "Change Launch Key...", KeyHandler.getInstance().keybindLauncher, b -> changeKeybindingButton.toggleKeybindMode());
+        changeKeybindingButton = new KeybindingButton(30, 128, 150, 20, new StringTextComponent("Change Launch Key..."), KeyHandler.getInstance().keybindLauncher, b -> changeKeybindingButton.toggleKeybindMode());
         gui.addWidget(changeKeybindingButton);
     }
 

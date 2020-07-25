@@ -6,12 +6,12 @@
     ]
   },
   "criteria": {
-    "barrier": {
+    "tnt": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "item": "minecraft:barrier"
+            "item": "minecraft:tnt"
           }
         ]
       }
@@ -25,7 +25,7 @@
   },
   "requirements": [
     [
-      "barrier",
+      "tnt",
       "has_the_recipe"
     ]
   ]

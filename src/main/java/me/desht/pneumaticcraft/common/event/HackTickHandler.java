@@ -28,7 +28,7 @@ public enum HackTickHandler {
     @SubscribeEvent
     public void worldTick(TickEvent.WorldTickEvent event) {
         if (event.phase == TickEvent.Phase.END) {
-            ResourceLocation worldKey = event.world.getDimension().getType().getRegistryName();
+            ResourceLocation worldKey = getKey(event.world);
 
             if (hackedBlocks.containsKey(worldKey)) {
                 hackedBlocks.get(worldKey).entrySet().removeIf(entry -> !entry.getValue().afterHackTick(event.world, entry.getKey()));
@@ -49,17 +49,19 @@ public enum HackTickHandler {
     }
 
     public void trackBlock(World world, BlockPos pos, IHackableBlock iHackable) {
-        ResourceLocation k = world.getDimension().getType().getRegistryName();
-        hackedBlocks.computeIfAbsent(k, k1 -> new HashMap<>()).put(pos, iHackable);
+        hackedBlocks.computeIfAbsent(getKey(world), k1 -> new HashMap<>()).put(pos, iHackable);
     }
 
     public void trackEntity(Entity entity, IHackableEntity iHackable) {
         if (iHackable.getHackableId() != null) {
             entity.getCapability(PNCCapabilities.HACKING_CAPABILITY).ifPresent(hacking -> {
                 hacking.addHackable(iHackable);
-                ResourceLocation worldKey = entity.world.getDimension().getType().getRegistryName();
-                hackedEntities.computeIfAbsent(worldKey, k -> new HashSet<>()).add(entity);
+                hackedEntities.computeIfAbsent(getKey(entity.world), k -> new HashSet<>()).add(entity);
             });
         }
+    }
+
+    private ResourceLocation getKey(World w) {
+        return w.func_234923_W_().func_240901_a_();
     }
 }

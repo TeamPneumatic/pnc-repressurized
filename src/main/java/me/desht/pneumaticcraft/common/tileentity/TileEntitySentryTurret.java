@@ -17,6 +17,7 @@ import me.desht.pneumaticcraft.common.util.EntityDistanceComparator;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.fakeplayer.FakeNetHandlerPlayerServer;
 import me.desht.pneumaticcraft.lib.NBTKeys;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -28,7 +29,11 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.RayTraceContext;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.util.FakePlayer;
@@ -67,7 +72,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
     private boolean sweeping;
     private final SentryTurretEntitySelector entitySelector = new SentryTurretEntitySelector();
     private double rangeSq;
-    private Vec3d tileVec;
+    private Vector3d tileVec;
     @DescSynced
     public float idleYaw;
 
@@ -129,7 +134,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
     }
 
     private boolean canSeeEntity(Entity entity) {
-        Vec3d entityVec = new Vec3d(entity.getPosX() + entity.getWidth() / 2, entity.getPosY() + entity.getHeight() / 2, entity.getPosZ() + entity.getWidth() / 2);
+        Vector3d entityVec = new Vector3d(entity.getPosX() + entity.getWidth() / 2, entity.getPosY() + entity.getHeight() / 2, entity.getPosZ() + entity.getWidth() / 2);
         RayTraceContext ctx = new RayTraceContext(entityVec, tileVec, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, entity);
         BlockRayTraceResult trace = getWorld().rayTraceBlocks(ctx);
         return trace.getPos().equals(getPos());
@@ -149,7 +154,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
     @Override
     protected void onFirstServerTick() {
         super.onFirstServerTick();
-        tileVec = new Vec3d(getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5);
+        tileVec = new Vector3d(getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5);
         updateAmmo();
         onFilterChanged(entityFilter);
     }
@@ -199,8 +204,9 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
     }
 
     @Override
-    public void read(CompoundNBT tag) {
-        super.read(tag);
+    public void read(BlockState state, CompoundNBT tag) {
+        super.read(state, tag);
+
         inventory.deserializeNBT(tag.getCompound("Items"));
         redstoneMode = tag.getByte(NBTKeys.NBT_REDSTONE_MODE);
         idleYaw = tag.getFloat("idleYaw");

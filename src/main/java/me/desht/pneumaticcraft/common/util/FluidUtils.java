@@ -9,8 +9,8 @@ import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FlowingFluid;
 import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.fluid.IFluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.tags.FluidTags;
@@ -144,7 +144,7 @@ public class FluidUtils {
      * @return true if there is a fluid source block of the right fluid at the given blockpos, false otherwise
      */
     public static boolean isSourceFluidBlock(World world, BlockPos pos, @Nullable Fluid fluid) {
-        IFluidState state = world.getFluidState(pos);
+        FluidState state = world.getFluidState(pos);
         return state.isSource() && fluid == null || state.getFluid() == fluid;
     }
 
@@ -166,7 +166,7 @@ public class FluidUtils {
      * @return true if there is a matching fluid block at the given blockpos, which is not a source block
      */
     public static boolean isFlowingFluidBlock(World world, BlockPos pos, @Nullable Fluid fluid) {
-        IFluidState state = world.getFluidState(pos);
+        FluidState state = world.getFluidState(pos);
         return !state.isEmpty() && !state.isSource() && (fluid == null || fluid == state.getFluid());
     }
 
@@ -186,7 +186,7 @@ public class FluidUtils {
             return FluidStack.EMPTY;
         }
 
-        IFluidState fluidState = state.getFluidState();
+        FluidState fluidState = state.getFluidState();
         Fluid fluid = fluidState.getFluid();
         if (fluid == Fluids.EMPTY || !fluid.isSource(fluidState)) {
             return FluidStack.EMPTY;
@@ -245,12 +245,12 @@ public class FluidUtils {
             if (world.isAirBlock(pos) || isNotSolid || isReplaceable
                     || block instanceof ILiquidContainer && ((ILiquidContainer)block).canContainFluid(world, pos, blockstate, toPlace.getFluid())) {
                 if (action.execute()) {
-                    if (world.dimension.doesWaterVaporize() && fluid.isIn(FluidTags.WATER)) {
+                    if (world.func_230315_m_().func_236040_e_() && fluid.isIn(FluidTags.WATER)) {
                         // no pouring water in the nether!
                         playEvaporationEffects(world, pos);
                     } else if (block instanceof ILiquidContainer) {
                         // a block which can take fluid, e.g. waterloggable block like a slab
-                        IFluidState still = fluid instanceof FlowingFluid ? ((FlowingFluid) fluid).getStillFluidState(false) : fluid.getDefaultState();
+                        FluidState still = fluid instanceof FlowingFluid ? ((FlowingFluid) fluid).getStillFluidState(false) : fluid.getDefaultState();
                         if (((ILiquidContainer) block).receiveFluid(world, pos, blockstate, still) && playSound) {
                             playEmptySound(world, pos, fluid);
                         }

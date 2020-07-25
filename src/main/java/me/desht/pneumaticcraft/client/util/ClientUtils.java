@@ -27,6 +27,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.data.EmptyModelData;
 
@@ -137,9 +138,10 @@ public class ClientUtils {
 
     public static float getBrightnessAtWorldHeight() {
         PlayerEntity player = getClientPlayer();
-        BlockPos pos = new BlockPos.Mutable(player.getPosX(), player.world.getMaxHeight(), player.getPosZ());
+        // TODO world.getMaxHeight() ?
+        BlockPos pos = new BlockPos.Mutable(player.getPosX(), 255, player.getPosZ());
         if (player.world.isBlockLoaded(pos)) {
-            return player.world.getDimension().getLightBrightness(player.world.getLight(pos));
+            return player.world.func_230315_m_().func_236021_a_(player.world.getLight(pos));
         } else {
             return 0.0F;
         }
@@ -171,5 +173,9 @@ public class ClientUtils {
 
     public static String translateDirection(Direction d) {
         return I18n.format("pneumaticcraft.gui.tooltip.direction." + d.toString());
+    }
+
+    public static ITextComponent translateDirectionComponent(Direction d) {
+        return new TranslationTextComponent("pneumaticcraft.gui.tooltip.direction." + d.toString());
     }
 }

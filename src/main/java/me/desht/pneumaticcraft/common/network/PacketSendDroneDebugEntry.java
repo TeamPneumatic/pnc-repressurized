@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.entity.living.DebugEntry;
+import me.desht.pneumaticcraft.common.debug.DroneDebugEntry;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.PacketBuffer;
@@ -14,19 +14,19 @@ import java.util.function.Supplier;
  * Sent by server to add a debug message to a debugged drone.
  */
 public class PacketSendDroneDebugEntry {
-    private DebugEntry entry;
+    private DroneDebugEntry entry;
     private int entityId;
 
     public PacketSendDroneDebugEntry() {
     }
 
-    public PacketSendDroneDebugEntry(DebugEntry entry, EntityDrone drone) {
+    public PacketSendDroneDebugEntry(DroneDebugEntry entry, EntityDrone drone) {
         this.entry = entry;
         entityId = drone.getEntityId();
     }
 
     public PacketSendDroneDebugEntry(PacketBuffer buffer) {
-        entry = new DebugEntry(buffer);
+        entry = new DroneDebugEntry(buffer);
         entityId = buffer.readInt();
     }
 

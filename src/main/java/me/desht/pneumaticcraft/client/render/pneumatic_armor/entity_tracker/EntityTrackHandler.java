@@ -119,14 +119,14 @@ public class EntityTrackHandler {
                 if (ItemPneumaticArmor.isPlayerDebuggingEntity(player, entity)) {
                     curInfo.add(TextFormatting.GOLD + I18n.format("pneumaticcraft.entityTracker.info.drone.debugging"));
                     curInfo.add(TextFormatting.GOLD + I18n.format("pneumaticcraft.entityTracker.info.drone.debugging.key",
-                            KeyHandler.getInstance().keybindOpenOptions.getLocalizedName()));
+                            I18n.format(KeyHandler.getInstance().keybindOpenOptions.getTranslationKey())));
                     if (isLookingAtTarget) {
                         curInfo.add(TextFormatting.GOLD + I18n.format("pneumaticcraft.entityTracker.info.drone.stopDebugging.key",
-                                KeyHandler.getInstance().keybindDebuggingDrone.getLocalizedName()));
+                                I18n.format(KeyHandler.getInstance().keybindDebuggingDrone.getTranslationKey())));
                     }
                 } else if (isLookingAtTarget) {
                     curInfo.add(TextFormatting.GOLD + I18n.format("pneumaticcraft.entityTracker.info.drone.pressDebugKey",
-                            KeyHandler.getInstance().keybindDebuggingDrone.getLocalizedName()));
+                            I18n.format(KeyHandler.getInstance().keybindDebuggingDrone.getTranslationKey())));
                 }
             }
         }
@@ -195,7 +195,7 @@ public class EntityTrackHandler {
         public void addInfo(Entity entity, List<String> curInfo, boolean isLookingAtTarget) {
             Entity target = ((MonsterEntity) entity).getAttackTarget();
             if (target != null) {
-                curInfo.add("Target: " + target.getDisplayName().getFormattedText());
+                curInfo.add("Target: " + target.getDisplayName().getString());
             }
         }
     }
@@ -231,7 +231,7 @@ public class EntityTrackHandler {
         public void addInfo(Entity entity, List<String> curInfo, boolean isLookingAtTarget) {
             LivingEntity owner = ((TameableEntity) entity).getOwner();
             if (owner != null) {
-                curInfo.add(I18n.format("pneumaticcraft.entityTracker.info.tamed", owner.getDisplayName().getFormattedText()));
+                curInfo.add(I18n.format("pneumaticcraft.entityTracker.info.tamed", owner.getDisplayName().getString()));
             } else {
                 curInfo.add(I18n.format("pneumaticcraft.entityTracker.info.canTame"));
             }
@@ -290,7 +290,7 @@ public class EntityTrackHandler {
             if (l.isEmpty()) {
                 curInfo.add(I18n.format("pneumaticcraft.gui.misc.no_items"));
             } else {
-                curInfo.addAll(l.stream().map(ITextComponent::getFormattedText).collect(Collectors.toList()));
+                curInfo.addAll(l.stream().map(ITextComponent::getString).collect(Collectors.toList()));
             }
         }
     }
@@ -364,7 +364,7 @@ public class EntityTrackHandler {
             ItemStack stack = frame.getDisplayedItem();
 
             if (!stack.isEmpty()) {
-                curInfo.add(I18n.format("pneumaticcraft.entityTracker.info.itemframe.item", stack.getDisplayName().getFormattedText()));
+                curInfo.add(I18n.format("pneumaticcraft.entityTracker.info.itemframe.item", stack.getDisplayName().getString()));
                 if (frame.getRotation() != 0) {
                     curInfo.add(I18n.format("pneumaticcraft.entityTracker.info.itemframe.rotation", frame.getRotation() * 45));
                 }

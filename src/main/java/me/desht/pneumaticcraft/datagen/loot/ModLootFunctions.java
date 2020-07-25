@@ -1,0 +1,16 @@
+package me.desht.pneumaticcraft.datagen.loot;
+
+import net.minecraft.loot.LootFunctionType;
+import net.minecraft.util.registry.Registry;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+
+public class ModLootFunctions {
+    public static final LootFunctionType TE_SERIALIZER = Registry.register(Registry.LOOT_FUNCTION_TYPE,
+            RL("te_serializer"), new LootFunctionType(new TileEntitySerializerFunction.Serializer())
+    );
+
+    public static void init() {
+        // poke
+    }
+}

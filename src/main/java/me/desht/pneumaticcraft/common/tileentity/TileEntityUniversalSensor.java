@@ -24,6 +24,7 @@ import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethodRegist
 import me.desht.pneumaticcraft.common.util.GlobalTileEntityCacheManager;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
@@ -46,6 +47,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class TileEntityUniversalSensor extends TileEntityPneumaticBase
         implements IRangeLineShower, IGUITextFieldSensitive, IMinWorkingPressure, IRedstoneControl, INamedContainerProvider {
@@ -268,8 +271,8 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
     }
 
     @Override
-    public void read(CompoundNBT tag) {
-        super.read(tag);
+    public void read(BlockState state, CompoundNBT tag) {
+        super.read(state, tag);
 
         itemHandler.deserializeNBT(tag.getCompound("Items"));
         setSensorSetting(tag.getString("sensorSetting"));
@@ -510,8 +513,8 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
     }
 
     @Override
-    public String getRedstoneTabTitle() {
-        return "pneumaticcraft.gui.tab.redstoneBehaviour.universalSensor.redstoneEmission";
+    public ITextComponent getRedstoneTabTitle() {
+        return xlate("pneumaticcraft.gui.tab.redstoneBehaviour.universalSensor.redstoneEmission");
     }
 
     @Override

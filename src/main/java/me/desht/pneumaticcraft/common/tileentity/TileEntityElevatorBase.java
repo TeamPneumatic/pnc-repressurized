@@ -52,6 +52,8 @@ import java.util.List;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
 public class TileEntityElevatorBase extends TileEntityPneumaticBase
         implements IGUITextFieldSensitive, IRedstoneControlled, IMinWorkingPressure, IAirListener, ICamouflageableTE, INamedContainerProvider {
 
@@ -137,7 +139,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
                 soundName = ModSounds.ELEVATOR_RISING_START.get();
                 isStopped = false;
                 if (!getWorld().isRemote && shouldPlaySounds()) {
-                    PacketDistributor.TargetPoint tp = new PacketDistributor.TargetPoint(pos.getX(), pos.getY(), pos.getZ(), 1024, world.getDimension().getType());
+                    PacketDistributor.TargetPoint tp = new PacketDistributor.TargetPoint(pos.getX(), pos.getY(), pos.getZ(), 1024, world.func_234923_W_());
                     NetworkHandler.sendToAllAround(new PacketPlayMovingSound(MovingSounds.Sound.ELEVATOR, getCoreElevator()), tp);
                 }
             }
@@ -163,7 +165,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
                 soundName = ModSounds.ELEVATOR_RISING_START.get();
                 isStopped = false;
                 if (!world.isRemote && shouldPlaySounds()) {
-                    PacketDistributor.TargetPoint tp = new PacketDistributor.TargetPoint(pos.getX(), pos.getY(), pos.getZ(), 1024, world.getDimension().getType());
+                    PacketDistributor.TargetPoint tp = new PacketDistributor.TargetPoint(pos.getX(), pos.getY(), pos.getZ(), 1024, world.func_234923_W_());
                     NetworkHandler.sendToAllAround(new PacketPlayMovingSound(MovingSounds.Sound.ELEVATOR, getCoreElevator()), tp);
                 }
             }
@@ -282,8 +284,8 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     }
 
     @Override
-    public void read(CompoundNBT tag) {
-        super.read(tag);
+    public void read(BlockState state, CompoundNBT tag) {
+        super.read(state, tag);
         extension = tag.getFloat("extension");
         targetExtension = tag.getFloat("targetExtension");
         redstoneMode = tag.getInt(NBTKeys.NBT_REDSTONE_MODE);
@@ -661,8 +663,8 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
     }
 
     @Override
-    public String getRedstoneTabTitle() {
-        return "pneumaticcraft.gui.tab.redstoneBehaviour.elevator.controlBy";
+    public ITextComponent getRedstoneTabTitle() {
+        return xlate("pneumaticcraft.gui.tab.redstoneBehaviour.elevator.controlBy");
     }
 
     @Override

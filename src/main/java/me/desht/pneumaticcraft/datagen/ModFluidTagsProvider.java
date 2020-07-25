@@ -5,7 +5,7 @@ import me.desht.pneumaticcraft.common.core.ModFluids;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.FluidTagsProvider;
 import net.minecraft.fluid.Fluid;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.ITag;
 
 import java.util.Arrays;
 import java.util.function.IntFunction;
@@ -39,17 +39,17 @@ public class ModFluidTagsProvider extends FluidTagsProvider {
     }
 
     @SafeVarargs
-    private final void createTag(Tag<Fluid> tag, Supplier<? extends Fluid>... blocks) {
-        getBuilder(tag).add(resolveAll(Fluid[]::new, blocks));
+    private final void createTag(ITag.INamedTag<Fluid> tag, Supplier<? extends Fluid>... blocks) {
+        getOrCreateBuilder(tag).add(resolveAll(Fluid[]::new, blocks));
     }
 
     @SafeVarargs
-    private final void appendToTag(Tag<Fluid> tag, Tag<Fluid>... toAppend) {
-        getBuilder(tag).add(toAppend);
+    private final void appendToTag(ITag.INamedTag<Fluid> tag, ITag.INamedTag<Fluid>... toAppend) {
+        getOrCreateBuilder(tag).addTags(toAppend);
     }
 
     @SafeVarargs
-    private final void createAndAppend(Tag<Fluid> tag, Tag<Fluid> to, Supplier<? extends Fluid>... fluids) {
+    private final void createAndAppend(ITag.INamedTag<Fluid> tag, ITag.INamedTag<Fluid> to, Supplier<? extends Fluid>... fluids) {
         createTag(tag, fluids);
         appendToTag(to, tag);
     }

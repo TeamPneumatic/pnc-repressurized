@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
@@ -15,6 +16,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
@@ -39,7 +41,7 @@ public class GuiSentryTurret extends GuiPneumaticContainerBase<ContainerSentryTu
         addButton(entityFilter = new WidgetTextField(font, guiLeft + 80, guiTop + 63, 70, font.FONT_HEIGHT));
         entityFilter.setMaxStringLength(256);
         entityFilter.setFocused2(true);
-        setFocused(entityFilter);
+        setListener(entityFilter);
 
         addButton(errorButton = new WidgetButtonExtended(guiLeft + 155, guiTop + 52, 16, 16, ""));
         errorButton.setRenderedIcon(Textures.GUI_PROBLEMS_TEXTURE).setVisible(false);
@@ -55,16 +57,16 @@ public class GuiSentryTurret extends GuiPneumaticContainerBase<ContainerSentryTu
 
         super.tick();
 
-        errorButton.visible = !errorButton.getTooltip().isEmpty();
+        errorButton.visible = errorButton.hasTooltip();
     }
 
     private void onEntityFilterChanged(String newText) {
         try {
             new EntityFilter(newText);
-            errorButton.setTooltipText("");
+            errorButton.setTooltipText(StringTextComponent.EMPTY);
             sendDelayed(5);
         } catch (IllegalArgumentException e) {
-            errorButton.setTooltipText(e.getMessage());
+            errorButton.setTooltipText(new StringTextComponent(e.getMessage()));
         }
     }
 
@@ -75,18 +77,18 @@ public class GuiSentryTurret extends GuiPneumaticContainerBase<ContainerSentryTu
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(int x, int y) {
-        super.drawGuiContainerForegroundLayer(x, y);
+    protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int x, int y) {
+        super.drawGuiContainerForegroundLayer(matrixStack, x, y);
 
-        font.drawString(I18n.format("pneumaticcraft.gui.sentryTurret.ammo"), 80, 19, 0x404040);
-        font.drawString(I18n.format("pneumaticcraft.gui.sentryTurret.targetFilter"), 80, 53, 0x404040);
+        font.drawString(matrixStack, I18n.format("pneumaticcraft.gui.sentryTurret.ammo"), 80, 19, 0x404040);
+        font.drawString(matrixStack, I18n.format("pneumaticcraft.gui.sentryTurret.targetFilter"), 80, 53, 0x404040);
         if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {
-            GuiUtils.showPopupHelpScreen(this, font,
+            GuiUtils.showPopupHelpScreen(matrixStack, this, font,
                     PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.entityFilter.helpText"), 60));
         } else if (x >= guiLeft + 76 && y >= guiTop + 51 && x <= guiLeft + 153 && y <= guiTop + 74) {
             // cursor inside the entity filter area
             String str = I18n.format("pneumaticcraft.gui.entityFilter");
-            font.drawString(str, (xSize - font.getStringWidth(str)) / 2f, ySize + 5, 0x808080);
+            font.drawString(matrixStack, str, (xSize - font.getStringWidth(str)) / 2f, ySize + 5, 0x808080);
         }
     }
 

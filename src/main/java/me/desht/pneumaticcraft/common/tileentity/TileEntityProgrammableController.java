@@ -31,6 +31,7 @@ import me.desht.pneumaticcraft.common.util.fakeplayer.DroneItemHandler;
 import me.desht.pneumaticcraft.common.util.fakeplayer.FakeNetHandlerPlayerServer;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.goal.GoalSelector;
 import net.minecraft.entity.item.ItemEntity;
@@ -47,7 +48,7 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
@@ -166,7 +167,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
             curZ = targetZ;
         } else if (PneumaticCraftUtils.distBetweenSq(curX, curY, curZ, targetX, targetY, targetZ) > 0.25) {
             // dist-between check here avoids drone "jitter" when it's very near its target
-            Vec3d vec = new Vec3d(targetX - curX, targetY - curY, targetZ - curZ).normalize().scale(speed);
+            Vector3d vec = new Vector3d(targetX - curX, targetY - curY, targetZ - curZ).normalize().scale(speed);
             curX += vec.x;
             curY += vec.y;
             curZ += vec.z;
@@ -359,8 +360,8 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     }
 
     @Override
-    public void read(CompoundNBT tag) {
-        super.read(tag);
+    public void read(BlockState state, CompoundNBT tag) {
+        super.read(state, tag);
 
         inventory.deserializeNBT(tag.getCompound("Items"));
         tank.readFromNBT(tag.getCompound("tank"));
@@ -399,7 +400,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
         tag.put("droneItems", handler.serializeNBT());
 
         if (ownerID != null) tag.putString("ownerID", ownerID.toString());
-        if (ownerName != null) tag.putString("ownerName", ownerName.getFormattedText());
+        if (ownerName != null) tag.putString("ownerName", ownerName.getString());
 
         energy.readFromNBT(tag);
 
@@ -475,7 +476,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     }
 
     @Override
-    public Vec3d getDronePos() {
+    public Vector3d getDronePos() {
         if (curX == 0 && curY == 0 && curZ == 0) {
             curX = getPos().getX() + 0.5;
             curY = getPos().getY() + 1.0;
@@ -484,7 +485,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
             targetY = curY;
             targetZ = curZ;
         }
-        return new Vec3d(curX, curY, curZ);
+        return new Vector3d(curX, curY, curZ);
     }
 
     @Override
@@ -540,7 +541,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
 
     @Override
     public void dropItem(ItemStack stack) {
-        Vec3d pos = getDronePos();
+        Vector3d pos = getDronePos();
         getWorld().addEntity(new ItemEntity(getWorld(), pos.x, pos.y, pos.z, stack));
     }
 

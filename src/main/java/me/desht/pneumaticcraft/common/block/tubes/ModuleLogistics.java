@@ -289,7 +289,7 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
         } else {
             status = "pneumaticcraft.waila.logisticsModule.noPower";
         }
-        curInfo.add(PneumaticCraftUtils.xlate("pneumaticcraft.hud.msg.state").appendText(": ").appendSibling(PneumaticCraftUtils.xlate(status)));
+        curInfo.add(PneumaticCraftUtils.xlate("pneumaticcraft.hud.msg.state").appendString(": ").append(PneumaticCraftUtils.xlate(status)));
     }
 
     @Override

@@ -16,7 +16,6 @@ import net.minecraft.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import net.minecraftforge.registries.IForgeRegistry;
 
@@ -89,8 +88,8 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
 
     public Map<ResourceLocation, T> getRecipes(World world) {
         if (world == null) {
-            // we should pretty much always have a world, but here's a fallback
-            world = ServerLifecycleHooks.getCurrentServer().getWorld(DimensionType.OVERWORLD);
+            // we should pretty much always have a world, but here's a fallback: the overworld
+            world = ServerLifecycleHooks.getCurrentServer().getWorld(World.field_234918_g_);
             if (world == null) return Collections.emptyMap();
         }
 
@@ -126,7 +125,9 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
         public CompletableFuture<Void> reload(IStage stage, IResourceManager resourceManager, IProfiler preparationsProfiler, IProfiler reloadProfiler, Executor backgroundExecutor, Executor gameExecutor) {
             return CompletableFuture.runAsync(() -> {
                 clearCachedRecipes();
-                NetworkHandler.sendToAll(new PacketClearRecipeCache());
+                if (ServerLifecycleHooks.getCurrentServer() != null) {
+                    NetworkHandler.sendToAll(new PacketClearRecipeCache());
+                }
             }, gameExecutor).thenCompose(stage::markCompleteAwaitingOthers);
         }
     }

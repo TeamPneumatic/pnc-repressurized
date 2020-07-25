@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.lib.GuiConstants;
 import net.minecraft.client.gui.FontRenderer;
@@ -71,21 +72,22 @@ public class WidgetComboBox extends WidgetTextField implements IDrawAfterRender 
     }
 
     @Override
-    public void renderButton(int mouseX, int mouseY, float partialTick) {
-        super.renderButton(mouseX, mouseY, partialTick);
+    public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTick) {
+        super.renderButton(matrixStack, mouseX, mouseY, partialTick);
 
-        fontRenderer.drawString(isFocused() ? GuiConstants.TRIANGLE_UP : GuiConstants.TRIANGLE_DOWN, x + width - 7, y + 1, 0xc0c0c0);
+        fontRenderer.drawString(matrixStack, isFocused() ? GuiConstants.TRIANGLE_UP : GuiConstants.TRIANGLE_DOWN, x + width - 7, y + 1, 0xc0c0c0);
     }
 
     @Override
-    public void renderAfterEverythingElse(int mouseX, int mouseY, float partialTick) {
+    public void renderAfterEverythingElse(MatrixStack matrixStack, int mouseX, int mouseY, float partialTick) {
         if (enabled && active && isFocused()) {
             List<String> applicableElements = getApplicableElements();
-            fill(x - 1, y + height + 1, x + width + 1, y + height + 3 + applicableElements.size() * fontRenderer.FONT_HEIGHT, 0xFFA0A0A0);
-            fill(x,     y + height + 1, x + width,     y + height + 2 + applicableElements.size() * fontRenderer.FONT_HEIGHT, 0xFF000000);
+            fill(matrixStack, x - 1, y + height + 1, x + width + 1, y + height + 3 + applicableElements.size() * fontRenderer.FONT_HEIGHT, 0xFFA0A0A0);
+            fill(matrixStack, x,     y + height + 1, x + width,     y + height + 2 + applicableElements.size() * fontRenderer.FONT_HEIGHT, 0xFF000000);
             for (int i = 0; i < applicableElements.size(); i++) {
                 String element = applicableElements.get(i);
-                fontRenderer.drawStringWithShadow(fontRenderer.trimStringToWidth(element, getWidth()), x + 4, y + height + 2 + i * fontRenderer.FONT_HEIGHT, 0xE0E0E0);
+                // func_238412_a_ = trimStringToWidth
+                fontRenderer.drawStringWithShadow(matrixStack, fontRenderer.func_238412_a_(element, getWidth()), x + 4, y + height + 2 + i * fontRenderer.FONT_HEIGHT, 0xE0E0E0);
             }
         }
     }

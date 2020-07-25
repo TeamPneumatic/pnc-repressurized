@@ -11,10 +11,8 @@ import me.desht.pneumaticcraft.client.gui.GuiPneumaticScreenBase;
 import me.desht.pneumaticcraft.client.gui.IExtraGuiHandling;
 import me.desht.pneumaticcraft.client.gui.widget.IDrawAfterRender;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
-import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
-import me.desht.pneumaticcraft.common.block.tubes.ModuleRegulatorTube;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.event.DateEventHandler;
@@ -31,16 +29,16 @@ import net.minecraft.client.GameSettings;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.IGuiEventListener;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.BipedRenderer;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.model.BipedModel;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
@@ -48,8 +46,9 @@ import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.HandSide;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.math.vector.Matrix4f;
+import net.minecraft.util.math.vector.Quaternion;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.event.TickEvent;
@@ -63,7 +62,7 @@ import java.util.Random;
 @Mod.EventBusSubscriber(modid = Names.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ClientEventHandler {
 //    private static final double MINIGUN_RADIUS = 1.1D;
-    private static final double MINIGUN_TEXT_SIZE = 0.55D;
+    private static final float MINIGUN_TEXT_SIZE = 0.55f;
     private static final float MAX_SCREEN_ROLL = 25F;  // max roll in degrees when flying with jetboots
 
     private static float currentScreenRoll = 0F;
@@ -104,18 +103,18 @@ public class ClientEventHandler {
           event.renderer.modelBipedMain.bipedHead.showModel = true;
       }*/
 
-    @SubscribeEvent
-    public static void tickEnd(TickEvent.RenderTickEvent event) {
-        if (event.phase == TickEvent.Phase.END && Minecraft.getInstance().isGameFocused()
-                && ClientUtils.getClientPlayer() != null
-                && (ModuleRegulatorTube.inverted || !ModuleRegulatorTube.inLine)) {
-            Minecraft mc = Minecraft.getInstance();
-            MainWindow mw = mc.getMainWindow();
-            FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
-            String warning = TextFormatting.RED + I18n.format("pneumaticcraft.gui.regulatorTube.hudMessage." + (ModuleRegulatorTube.inverted ? "inverted" : "notInLine"));
-            fontRenderer.drawStringWithShadow(warning, mw.getScaledWidth() / 2f - fontRenderer.getStringWidth(warning) / 2f, mw.getScaledHeight() / 2f + 30, 0xFFFFFFFF);
-        }
-    }
+//    @SubscribeEvent
+//    public static void tickEnd(TickEvent.RenderTickEvent event) {
+//        if (event.phase == TickEvent.Phase.END && Minecraft.getInstance().isGameFocused()
+//                && ClientUtils.getClientPlayer() != null
+//                && (ModuleRegulatorTube.inverted || !ModuleRegulatorTube.inLine)) {
+//            Minecraft mc = Minecraft.getInstance();
+//            MainWindow mw = mc.getMainWindow();
+//            FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
+//            String warning = TextFormatting.RED + I18n.format("pneumaticcraft.gui.regulatorTube.hudMessage." + (ModuleRegulatorTube.inverted ? "inverted" : "notInLine"));
+//            fontRenderer.drawStringWithShadow(warning, mw.getScaledWidth() / 2f - fontRenderer.getStringWidth(warning) / 2f, mw.getScaledHeight() / 2f + 30, 0xFFFFFFFF);
+//        }
+//    }
 
     @SubscribeEvent
     public static void renderFirstPersonMinigunTraces(RenderGameOverlayEvent.Pre event) {
@@ -123,7 +122,7 @@ public class ClientEventHandler {
             PlayerEntity player = Minecraft.getInstance().player;
             Minecraft mc = Minecraft.getInstance();
             ItemStack stack = player.getHeldItemMainhand();
-            if (stack.getItem() instanceof ItemMinigun){
+            if (stack.getItem() instanceof ItemMinigun) {
                 Minigun minigun = ((ItemMinigun) stack.getItem()).getMinigun(stack, player);
                 int w = event.getWindow().getScaledWidth();
                 int h = event.getWindow().getScaledHeight();
@@ -132,26 +131,27 @@ public class ClientEventHandler {
                     drawBulletTraces2D(minigun.getAmmoColor() | 0x40000000, w, h);
                 }
 
+                MatrixStack matrixStack = event.getMatrixStack();
                 ItemStack ammo = minigun.getAmmoStack();
                 if (!ammo.isEmpty()) {
-                    GuiUtils.drawItemStack(ammo,w / 2 + 16, h / 2 - 7);
+                    GuiUtils.renderItemStack(matrixStack, ammo,w / 2 + 16, h / 2 - 7);
                     int remaining = ammo.getMaxDamage() - ammo.getDamage();
-                    RenderSystem.pushMatrix();
-                    RenderSystem.translated(w / 2f + 32, h / 2f - 1, 0);
-                    RenderSystem.scaled(MINIGUN_TEXT_SIZE, MINIGUN_TEXT_SIZE, 1.0);
+                    matrixStack.push();
+                    matrixStack.translate(w / 2f + 32, h / 2f - 1, 0);
+                    matrixStack.scale(MINIGUN_TEXT_SIZE, MINIGUN_TEXT_SIZE, 1f);
                     String text = remaining + "/" + ammo.getMaxDamage();
-                    mc.fontRenderer.drawString(text, 1, 0, 0);
-                    mc.fontRenderer.drawString(text, -1, 0, 0);
-                    mc.fontRenderer.drawString(text, 0, 1, 0);
-                    mc.fontRenderer.drawString(text, 0, -1, 0);
-                    mc.fontRenderer.drawString(text, 0, 0, minigun.getAmmoColor());
-                    RenderSystem.popMatrix();
+                    mc.fontRenderer.drawString(matrixStack, text, 1, 0, 0);
+                    mc.fontRenderer.drawString(matrixStack, text, -1, 0, 0);
+                    mc.fontRenderer.drawString(matrixStack, text, 0, 1, 0);
+                    mc.fontRenderer.drawString(matrixStack, text, 0, -1, 0);
+                    mc.fontRenderer.drawString(matrixStack, text, 0, 0, minigun.getAmmoColor());
+                    matrixStack.pop();
                 }
                 mc.getTextureManager().bindTexture(Textures.MINIGUN_CROSSHAIR);
                 RenderSystem.enableBlend();
                 RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
                 RenderSystem.color4f(0.2f, 1.0f, 0.2f, 0.6f);
-                AbstractGui.blit(w / 2 - 7, h / 2 - 7, 0, 0, 16, 16, 16, 16);
+                AbstractGui.blit(matrixStack, w / 2 - 7, h / 2 - 7, 0, 0, 16, 16, 16, 16);
                 event.setCanceled(true);
             }
         }
@@ -199,8 +199,8 @@ public class ClientEventHandler {
             if (minigun.isMinigunActivated() && minigun.getMinigunSpeed() == Minigun.MAX_GUN_SPEED) {
                 IVertexBuilder builder = event.getBuffers().getBuffer(RenderType.LINES);
                 // FIXME: this just doesn't place the start of the line where it should... why?
-                Vec3d startVec = new Vec3d(0, player.getEyeHeight() / 2, 0).add(player.getLookVec());
-                Vec3d endVec = startVec.add(player.getLookVec().scale(20));
+                Vector3d startVec = new Vector3d(0, player.getEyeHeight() / 2, 0).add(player.getLookVec());
+                Vector3d endVec = startVec.add(player.getLookVec().scale(20));
                 int[] cols = RenderUtils.decomposeColor(minigun.getAmmoColor());
                 Matrix4f posMat = event.getMatrixStack().getLast().getMatrix();
                 for (int i = 0; i < 5; i++) {
@@ -219,7 +219,7 @@ public class ClientEventHandler {
     public static void screenTilt(EntityViewRenderEvent.CameraSetup event) {
         if (event.getInfo().getRenderViewEntity() instanceof PlayerEntity) {
             PlayerEntity player = (PlayerEntity) event.getInfo().getRenderViewEntity();
-            if (ItemPneumaticArmor.isPneumaticArmorPiece(player, EquipmentSlotType.FEET) && !player.onGround) {
+            if (ItemPneumaticArmor.isPneumaticArmorPiece(player, EquipmentSlotType.FEET) && !player.isOnGround()) {
                 CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
                 float targetRoll;
                 float div = 50F;
@@ -283,9 +283,9 @@ public class ClientEventHandler {
     }
 
     private static Quaternion makeQuaternion(PlayerEntity player) {
-        Vec3d forward = player.getLookVec();
+        Vector3d forward = player.getLookVec();
 
-        double dot = new Vec3d(0, 1, 0).dotProduct(forward);
+        double dot = new Vector3d(0, 1, 0).dotProduct(forward);
         if (Math.abs(dot + 1) < 0.000001) {
             return new Quaternion(0F, 1F, 0F, (float)Math.PI);
         }
@@ -293,7 +293,7 @@ public class ClientEventHandler {
             return new Quaternion(0, 0, 0, 1); //identity
         }
 
-        Vec3d rotAxis = new Vec3d(0, 1, 0).crossProduct(forward).normalize();
+        Vector3d rotAxis = new Vector3d(0, 1, 0).crossProduct(forward).normalize();
 
         double a2 = Math.acos(dot) * .5f;
         float s = (float) Math.sin(a2);
@@ -338,6 +338,7 @@ public class ClientEventHandler {
         RenderSystem.disableTexture();
         BufferBuilder bb = Tessellator.getInstance().getBuffer();
         ContainerScreen<?> container = event.getGuiContainer();
+        MatrixStack matrixStack = event.getMatrixStack();
         for (Slot s : container.getContainer().inventorySlots) {
             if (s.getStack().getItem() instanceof ICustomDurabilityBar) {
                 ICustomDurabilityBar custom = (ICustomDurabilityBar) s.getStack().getItem();
@@ -348,10 +349,10 @@ public class ClientEventHandler {
                     int[] cols = RenderUtils.decomposeColor(custom.getCustomDurabilityColour(s.getStack()));
                     int yOff = custom.isShowingOtherBar(s.getStack()) ? 0 : 1;
                     if (yOff == 1) {
-                        GuiUtils.drawUntexturedQuad(bb, x + 2, y + 14, Z_LEVEL, width, 1, 40, 40, 40, 255);
+                        GuiUtils.drawUntexturedQuad(matrixStack, bb, x + 2, y + 14, Z_LEVEL, width, 1, 40, 40, 40, 255);
                     }
-                    GuiUtils.drawUntexturedQuad(bb, x + 2, y + 12 + yOff, Z_LEVEL, 13, 1, 0, 0, 0, 255);
-                    GuiUtils.drawUntexturedQuad(bb, x + 2, y + 12 + yOff, Z_LEVEL, width, 1, cols[1], cols[2], cols[3], 255);
+                    GuiUtils.drawUntexturedQuad(matrixStack, bb, x + 2, y + 12 + yOff, Z_LEVEL, 13, 1, 0, 0, 0, 255);
+                    GuiUtils.drawUntexturedQuad(matrixStack, bb, x + 2, y + 12 + yOff, Z_LEVEL, width, 1, cols[1], cols[2], cols[3], 255);
                 }
             }
         }
@@ -379,9 +380,9 @@ public class ClientEventHandler {
     @SubscribeEvent
     public static void onGuiDrawPost(GuiScreenEvent.DrawScreenEvent.Post event) {
         if (event.getGui() instanceof GuiPneumaticContainerBase || event.getGui() instanceof GuiPneumaticScreenBase) {
-            for (IGuiEventListener l : event.getGui().children()) {
+            for (IGuiEventListener l : event.getGui().getEventListeners()) {
                 if (l instanceof IDrawAfterRender) {
-                    ((IDrawAfterRender) l).renderAfterEverythingElse(event.getMouseX(), event.getMouseY(), event.getRenderPartialTicks());
+                    ((IDrawAfterRender) l).renderAfterEverythingElse(event.getMatrixStack(), event.getMouseX(), event.getMouseY(), event.getRenderPartialTicks());
                 }
             }
         }

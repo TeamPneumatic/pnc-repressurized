@@ -19,6 +19,7 @@ import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketCoordTrackUpdate;
+import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.client.Minecraft;
@@ -107,7 +108,7 @@ public class CoordTrackUpgradeHandler implements IUpgradeRenderHandler {
     @OnlyIn(Dist.CLIENT)
     public void render3D(MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks) {
         if (coordTracker != null) {
-            if (Minecraft.getInstance().player.world.getDimension().getType() != coordTracker.world.getDimension().getType())
+            if (!Minecraft.getInstance().player.world.func_234923_W_().func_240901_a_().equals(coordTracker.world.func_234923_W_().func_240901_a_()))
                 return;
             coordTracker.render(matrixStack, buffer, partialTicks);
             if (PNCConfig.Client.Armor.pathEnabled && navigator != null) {
@@ -118,7 +119,7 @@ public class CoordTrackUpgradeHandler implements IUpgradeRenderHandler {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void render2D(float partialTicks, boolean upgradeEnabled) {
+    public void render2D(MatrixStack matrixStack, float partialTicks, boolean upgradeEnabled) {
     }
 
     @Override
@@ -147,7 +148,7 @@ public class CoordTrackUpgradeHandler implements IUpgradeRenderHandler {
             reset();
             ItemStack stack = event.getPlayer().getItemStackFromSlot(EquipmentSlotType.HEAD);
             if (!stack.isEmpty()) {
-                GlobalPos gPos = GlobalPos.of(event.getWorld().getDimension().getType(), event.getPos().offset(dir));
+                GlobalPos gPos = GlobalPosHelper.makeGlobalPos(event.getWorld(), event.getPos().offset(dir));
                 ItemPneumaticArmor.setCoordTrackerPos(stack, gPos);
                 NetworkHandler.sendToServer(new PacketCoordTrackUpdate(event.getEntity().world, event.getPos().offset(dir)));
             }
@@ -158,7 +159,7 @@ public class CoordTrackUpgradeHandler implements IUpgradeRenderHandler {
     @OnlyIn(Dist.CLIENT)
     public EnumNavigationResult navigateToSurface(PlayerEntity player) {
         World world = player.world;
-        BlockPos navigatingPos = world.getHeight(Heightmap.Type.WORLD_SURFACE, new BlockPos(player));
+        BlockPos navigatingPos = world.getHeight(Heightmap.Type.WORLD_SURFACE, player.getPosition());
         MobEntity e = PneumaticCraftUtils.createDummyEntity(player);
         Path path = e.getNavigator().getPathToPos(navigatingPos, 0);
         if (path != null) {

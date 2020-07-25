@@ -14,7 +14,7 @@ import net.minecraft.client.renderer.vertex.VertexFormatElement;
 import net.minecraft.resources.IResourceManager;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.client.model.IModelConfiguration;
 import net.minecraftforge.client.model.IModelLoader;
 import net.minecraftforge.client.model.data.EmptyModelData;
@@ -33,7 +33,7 @@ public class PressureGlassModel implements IDynamicBakedModel {
     private static final int TEXTURE_COUNT = 47;
     private static final TextureAtlasSprite[] SPRITE_CACHE = new TextureAtlasSprite[TEXTURE_COUNT];
 
-    private final Function<Material, TextureAtlasSprite> spriteGetter;
+    private final Function<RenderMaterial, TextureAtlasSprite> spriteGetter;
 
     // cached quads, by texture index & face
     private static final BakedQuad[][] QUAD_CACHE = new BakedQuad[6][];
@@ -42,18 +42,18 @@ public class PressureGlassModel implements IDynamicBakedModel {
     }
 
     // winding order lookup table
-    private static final List<List<Vec3d>> VECS = new ArrayList<>();
+    private static final List<List<Vector3d>> VECS = new ArrayList<>();
     static {
         // in DUNSWE order
-        VECS.add(ImmutableList.of(new Vec3d(1, 0, 0), new Vec3d(1, 0, 1), new Vec3d(0, 0, 1), new Vec3d(0, 0, 0)));
-        VECS.add(ImmutableList.of(new Vec3d(0, 1, 0), new Vec3d(0, 1, 1), new Vec3d(1, 1, 1), new Vec3d(1, 1, 0)));
-        VECS.add(ImmutableList.of(new Vec3d(1, 1, 0), new Vec3d(1, 0, 0), new Vec3d(0, 0, 0), new Vec3d(0, 1, 0)));
-        VECS.add(ImmutableList.of(new Vec3d(0, 1, 1), new Vec3d(0, 0, 1), new Vec3d(1, 0, 1), new Vec3d(1, 1, 1)));
-        VECS.add(ImmutableList.of(new Vec3d(0, 1, 0), new Vec3d(0, 0, 0), new Vec3d(0, 0, 1), new Vec3d(0, 1, 1)));
-        VECS.add(ImmutableList.of(new Vec3d(1, 1, 1), new Vec3d(1, 0, 1), new Vec3d(1, 0, 0), new Vec3d(1, 1, 0)));
+        VECS.add(ImmutableList.of(new Vector3d(1, 0, 0), new Vector3d(1, 0, 1), new Vector3d(0, 0, 1), new Vector3d(0, 0, 0)));
+        VECS.add(ImmutableList.of(new Vector3d(0, 1, 0), new Vector3d(0, 1, 1), new Vector3d(1, 1, 1), new Vector3d(1, 1, 0)));
+        VECS.add(ImmutableList.of(new Vector3d(1, 1, 0), new Vector3d(1, 0, 0), new Vector3d(0, 0, 0), new Vector3d(0, 1, 0)));
+        VECS.add(ImmutableList.of(new Vector3d(0, 1, 1), new Vector3d(0, 0, 1), new Vector3d(1, 0, 1), new Vector3d(1, 1, 1)));
+        VECS.add(ImmutableList.of(new Vector3d(0, 1, 0), new Vector3d(0, 0, 0), new Vector3d(0, 0, 1), new Vector3d(0, 1, 1)));
+        VECS.add(ImmutableList.of(new Vector3d(1, 1, 1), new Vector3d(1, 0, 1), new Vector3d(1, 0, 0), new Vector3d(1, 1, 0)));
     }
 
-    private PressureGlassModel(Function<Material, TextureAtlasSprite> spriteGetter) {
+    private PressureGlassModel(Function<RenderMaterial, TextureAtlasSprite> spriteGetter) {
         this.spriteGetter = spriteGetter;
     }
 
@@ -98,7 +98,7 @@ public class PressureGlassModel implements IDynamicBakedModel {
         return ItemOverrideList.EMPTY;
     }
 
-    private void putVertex(BakedQuadBuilder builder, Vec3d normal,
+    private void putVertex(BakedQuadBuilder builder, Vector3d normal,
                    double x, double y, double z, float u, float v, TextureAtlasSprite sprite, float r, float g, float b, float a) {
         ImmutableList<VertexFormatElement> elements = builder.getVertexFormat().getElements().asList();
         for (int e = 0; e < elements.size(); e++) {
@@ -130,7 +130,7 @@ public class PressureGlassModel implements IDynamicBakedModel {
 
     private BakedQuad getCachedQuad(int textureIndex, Direction side) {
         if (QUAD_CACHE[side.getIndex()][textureIndex] == null) {
-            List<Vec3d> v = VECS.get(side.getIndex());
+            List<Vector3d> v = VECS.get(side.getIndex());
             QUAD_CACHE[side.getIndex()][textureIndex] = createQuad(v.get(0), v.get(1), v.get(2), v.get(3), getSprite(textureIndex), 1f, 1f, 1f, 1f);
         }
         return QUAD_CACHE[side.getIndex()][textureIndex];
@@ -138,14 +138,14 @@ public class PressureGlassModel implements IDynamicBakedModel {
 
     private TextureAtlasSprite getSprite(int textureIndex) {
         if (SPRITE_CACHE[textureIndex] == null) {
-            SPRITE_CACHE[textureIndex] = spriteGetter.apply(new Material(AtlasTexture.LOCATION_BLOCKS_TEXTURE, new ResourceLocation(Textures.PRESSURE_GLASS_LOCATION + "window_" + (textureIndex + 1))));
+            SPRITE_CACHE[textureIndex] = spriteGetter.apply(new RenderMaterial(AtlasTexture.LOCATION_BLOCKS_TEXTURE, new ResourceLocation(Textures.PRESSURE_GLASS_LOCATION + "window_" + (textureIndex + 1))));
         }
         return SPRITE_CACHE[textureIndex];
     }
 
-    private BakedQuad createQuad(Vec3d v1, Vec3d v2, Vec3d v3, Vec3d v4, TextureAtlasSprite sprite,
+    private BakedQuad createQuad(Vector3d v1, Vector3d v2, Vector3d v3, Vector3d v4, TextureAtlasSprite sprite,
                          float r, float g, float b, float a) {
-        Vec3d normal = v3.subtract(v2).crossProduct(v1.subtract(v2)).normalize();
+        Vector3d normal = v3.subtract(v2).crossProduct(v1.subtract(v2)).normalize();
 
         BakedQuadBuilder builder = new BakedQuadBuilder(sprite);
         builder.setQuadOrientation(Direction.getFacingFromVector(normal.x, normal.y, normal.z));
@@ -171,15 +171,15 @@ public class PressureGlassModel implements IDynamicBakedModel {
 
     private static class Geometry implements IModelGeometry<Geometry> {
         @Override
-        public IBakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<Material, TextureAtlasSprite> spriteGetter, IModelTransform modelTransform, ItemOverrideList overrides, ResourceLocation modelLocation) {
+        public IBakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<RenderMaterial, TextureAtlasSprite> spriteGetter, IModelTransform modelTransform, ItemOverrideList overrides, ResourceLocation modelLocation) {
             return new PressureGlassModel(spriteGetter);
         }
 
         @Override
-        public Collection<Material> getTextures(IModelConfiguration owner, Function<ResourceLocation, IUnbakedModel> modelGetter, Set<Pair<String, String>> missingTextureErrors) {
-            List<Material> res = new ArrayList<>();
+        public Collection<RenderMaterial> getTextures(IModelConfiguration owner, Function<ResourceLocation, IUnbakedModel> modelGetter, Set<Pair<String, String>> missingTextureErrors) {
+            List<RenderMaterial> res = new ArrayList<>();
             for (int i = 0; i < PressureGlassModel.TEXTURE_COUNT; i++) {
-                res.add(new Material(AtlasTexture.LOCATION_BLOCKS_TEXTURE, new ResourceLocation(Textures.PRESSURE_GLASS_LOCATION + "window_" + (i + 1))));
+                res.add(new RenderMaterial(AtlasTexture.LOCATION_BLOCKS_TEXTURE, new ResourceLocation(Textures.PRESSURE_GLASS_LOCATION + "window_" + (i + 1))));
             }
             return res;
         }

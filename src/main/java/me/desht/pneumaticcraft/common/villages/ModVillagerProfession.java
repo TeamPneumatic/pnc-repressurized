@@ -19,6 +19,7 @@ import java.util.function.Supplier;
 public class ModVillagerProfession extends VillagerProfession {
     private final List<Supplier<SoundEvent>> soundEventSuppliers;
 
+    @SafeVarargs
     public ModVillagerProfession(String nameIn, PointOfInterestType pointOfInterestIn, ImmutableSet<Item> specificItemsIn, ImmutableSet<Block> relatedWorldBlocksIn, Supplier<SoundEvent>... soundEventSuppliers) {
         super(nameIn, pointOfInterestIn, specificItemsIn, relatedWorldBlocksIn, null);
         this.soundEventSuppliers = Arrays.asList(soundEventSuppliers);

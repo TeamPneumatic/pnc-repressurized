@@ -1,9 +1,9 @@
-package me.desht.pneumaticcraft.common.entity.living;
+package me.desht.pneumaticcraft.common.debug;
 
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 
-public class DebugEntry {
+public class DroneDebugEntry {
     private final int progWidgetId;
     private final String message;
     private final BlockPos pos;
@@ -16,7 +16,7 @@ public class DebugEntry {
      * @param progWidgetId a programming widget ID
      * @param pos block position
      */
-    DebugEntry(String message, int progWidgetId, BlockPos pos) {
+    public DroneDebugEntry(String message, int progWidgetId, BlockPos pos) {
         this.message = message;
         this.pos = pos != null ? pos : BlockPos.ZERO;
         this.progWidgetId = progWidgetId;
@@ -27,7 +27,7 @@ public class DebugEntry {
      *
      * @param buf message buffer
      */
-    public DebugEntry(PacketBuffer buf) {
+    public DroneDebugEntry(PacketBuffer buf) {
         message = buf.readString();
         pos = new BlockPos(buf.readInt(), buf.readInt(), buf.readInt());
         progWidgetId = buf.readInt();

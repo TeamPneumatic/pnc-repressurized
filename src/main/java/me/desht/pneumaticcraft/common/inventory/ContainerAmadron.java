@@ -254,7 +254,7 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
                     GlobalPos fluidGPos = ItemAmadronTablet.getFluidProvidingLocation(player.getHeldItem(hand));
                     EntityAmadrone drone = retrieveOrderItems(offer, shoppingAmounts[i], itemGPos, fluidGPos);
                     if (drone != null) {
-                        drone.setHandlingOffer(offer.getId(), shoppingAmounts[i], player.getHeldItem(hand), player.getName().getFormattedText(), AmadronAction.TAKING_PAYMENT);
+                        drone.setHandlingOffer(offer.getId(), shoppingAmounts[i], player.getHeldItem(hand), player.getName().getString(), AmadronAction.TAKING_PAYMENT);
                         placed = true;
                     }
                 }

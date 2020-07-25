@@ -6,12 +6,12 @@
     ]
   },
   "criteria": {
-    "pressure_chamber_valve": {
+    "assembly_controller": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "item": "pneumaticcraft:pressure_chamber_valve"
+            "item": "pneumaticcraft:assembly_controller"
           }
         ]
       }
@@ -25,7 +25,7 @@
   },
   "requirements": [
     [
-      "pressure_chamber_valve",
+      "assembly_controller",
       "has_the_recipe"
     ]
   ]

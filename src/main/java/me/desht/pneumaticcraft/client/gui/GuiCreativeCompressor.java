@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.inventory.ContainerCreativeCompressor;
@@ -57,15 +58,15 @@ public class GuiCreativeCompressor extends GuiPneumaticContainerBase<ContainerCr
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(int x, int y) {
-        super.drawGuiContainerForegroundLayer(x, y);
-        drawCenteredString(font, PneumaticCraftUtils.roundNumberTo(te.getPressure(), 1) + " bar", width / 2 - guiLeft, height / 2 - guiTop, 0xFFFFFF);
+    protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int x, int y) {
+        super.drawGuiContainerForegroundLayer(matrixStack, x, y);
+        drawCenteredString(matrixStack, font, PneumaticCraftUtils.roundNumberTo(te.getPressure(), 1) + " bar", width / 2 - guiLeft, height / 2 - guiTop, 0xFFFFFF);
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(float partialTicks, int i, int j){
-        renderBackground();
-        super.drawGuiContainerBackgroundLayer(partialTicks, i, j);
+    protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int i, int j){
+        renderBackground(matrixStack);
+        super.drawGuiContainerBackgroundLayer(matrixStack, partialTicks, i, j);
     }
 
     @Override

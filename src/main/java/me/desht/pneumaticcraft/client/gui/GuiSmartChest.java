@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
@@ -31,6 +32,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.items.ItemHandlerHelper;
 import org.apache.commons.lang3.tuple.Pair;
@@ -43,6 +45,7 @@ import java.util.Set;
 
 import static me.desht.pneumaticcraft.common.inventory.ContainerSmartChest.N_COLS;
 import static me.desht.pneumaticcraft.common.tileentity.TileEntitySmartChest.CHEST_SIZE;
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest, TileEntitySmartChest> {
     private List<Pair<Integer, ItemStack>> filter;
@@ -61,10 +64,10 @@ public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest
     public void init() {
         super.init();
 
-        addAnimatedStat("pneumaticcraft.gui.tab.info.smart_chest.slots.title", Textures.GUI_MOUSE_LOCATION, 0xFF00AAFF, true)
+        addAnimatedStat(xlate("pneumaticcraft.gui.tab.info.smart_chest.slots.title"), Textures.GUI_MOUSE_LOCATION, 0xFF00AAFF, true)
                 .setText("pneumaticcraft.gui.tab.info.smart_chest.slots");
 
-        statusStat = addAnimatedStat("pneumaticcraft.gui.tab.status", new ItemStack(ModBlocks.SMART_CHEST.get()), 0xFFFFAA00, false);
+        statusStat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.status"), new ItemStack(ModBlocks.SMART_CHEST.get()), 0xFFFFAA00, false);
 
         addPushPullTab();
 
@@ -106,11 +109,11 @@ public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest
         if (te.getUpgrades(EnumUpgrade.MAGNET) > 0) {
             showRangeButton.setVisible(true);
             if (AreaRenderManager.getInstance().isShowing(te)) {
-                showRangeButton.setMessage(TextFormatting.AQUA + "A");
-                showRangeButton.setTooltipText(I18n.format("pneumaticcraft.gui.programmer.button.stopShowingArea"));
+                showRangeButton.setMessage(new StringTextComponent("A").mergeStyle(TextFormatting.AQUA));
+                showRangeButton.setTooltipText(xlate("pneumaticcraft.gui.programmer.button.stopShowingArea"));
             } else {
-                showRangeButton.setMessage(TextFormatting.GRAY + "A");
-                showRangeButton.setTooltipText(I18n.format("pneumaticcraft.gui.programmer.button.showArea"));
+                showRangeButton.setMessage(new StringTextComponent("A").mergeStyle(TextFormatting.GRAY));
+                showRangeButton.setTooltipText(xlate("pneumaticcraft.gui.programmer.button.showArea"));
             }
         } else {
             showRangeButton.setVisible(false);
@@ -126,7 +129,7 @@ public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest
     }
 
     private void addPushPullTab() {
-        WidgetAnimatedStat stat = addAnimatedStat("pneumaticcraft.gui.tab.info.smart_chest.push_pull.title", new ItemStack(ModBlocks.OMNIDIRECTIONAL_HOPPER.get()), 0xFF90C0E0, false);
+        WidgetAnimatedStat stat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.info.smart_chest.push_pull.title"), new ItemStack(ModBlocks.OMNIDIRECTIONAL_HOPPER.get()), 0xFF90C0E0, false);
         stat.addPadding(7, 16);
 
         int yTop = 15, xLeft = 25;
@@ -152,7 +155,6 @@ public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest
         switch (mode) {
             case NONE:
                 button.setRenderedIcon(Textures.GUI_X_BUTTON);
-                button.setRenderStacks(ItemStack.EMPTY);
                 break;
             case PUSH:
                 button.setRenderStacks(new ItemStack(Blocks.PISTON));
@@ -161,7 +163,10 @@ public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest
                 button.setRenderStacks(new ItemStack(Blocks.STICKY_PISTON));
                 break;
         }
-        button.setTooltipText(ImmutableList.of(TextFormatting.YELLOW + face.toString(), I18n.format(mode.getTranslationKey())));
+        button.setTooltipText(ImmutableList.of(
+                new StringTextComponent(face.toString()).mergeStyle(TextFormatting.YELLOW),
+                xlate(mode.getTranslationKey()))
+        );
     }
 
     @Override
@@ -180,8 +185,8 @@ public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest
     }
 
     @Override
-    public void render(int x, int y, float partialTick) {
-        super.render(x, y, partialTick);
+    public void render(MatrixStack matrixStack, int x, int y, float partialTick) {
+        super.render(matrixStack, x, y, partialTick);
 
         if (minecraft.player.inventory.getItemStack().isEmpty()
                 && hoveredSlot != null
@@ -190,15 +195,15 @@ public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest
                 && !te.getFilter(hoveredSlot.slotNumber).isEmpty())
         {
             ItemStack stack = te.getFilter(hoveredSlot.slotNumber);
-            List<String> l = PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.smart_chest.filter",
-                    stack.getDisplayName().getFormattedText(), stack.getCount()), 40);
-            renderTooltip(l, x, y);
+            List<ITextComponent> l = PneumaticCraftUtils.splitStringComponent(I18n.format("pneumaticcraft.gui.smart_chest.filter",
+                    stack.getDisplayName().getString(), stack.getCount()), 40);
+            renderTooltip(matrixStack, l, x, y);
         }
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(float partialTicks, int x, int y) {
-        super.drawGuiContainerBackgroundLayer(partialTicks, x, y);
+    protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int x, int y) {
+        super.drawGuiContainerBackgroundLayer(matrixStack, partialTicks, x, y);
 
         RenderSystem.enableTexture();
         RenderSystem.enableBlend();
@@ -210,7 +215,7 @@ public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest
             if (slot < te.getLastSlot() && container.inventorySlots.get(slot).getHasStack()) {
                 int sx = guiLeft + 8 + (slot % N_COLS) * 18;
                 int sy = guiTop + 18 + (slot / N_COLS) * 18;
-                fill(sx, sy, sx + 16, sy + 16, 0x8080D080);
+                fill(matrixStack, sx, sy, sx + 16, sy + 16, 0x8080D080);
             }
         }
 
@@ -218,15 +223,15 @@ public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest
         for (int slot = te.getLastSlot(); slot < CHEST_SIZE; slot++) {
             int sx = guiLeft + 8 + (slot % N_COLS) * 18;
             int sy = guiTop + 18 + (slot / N_COLS) * 18;
-            fill(sx, sy, sx + 16, sy + 16, 0x40FF6060);
+            fill(matrixStack, sx, sy, sx + 16, sy + 16, 0x40FF6060);
         }
 
         RenderSystem.disableBlend();
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(int x, int y) {
-        super.drawGuiContainerForegroundLayer(x, y);
+    protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int x, int y) {
+        super.drawGuiContainerForegroundLayer(matrixStack, x, y);
 
         RenderSystem.enableTexture();
         RenderSystem.enableBlend();
@@ -236,18 +241,18 @@ public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest
             if (slot < te.getLastSlot()) {
                 int sx = 8 + (slot % N_COLS) * 18;
                 int sy = 18 + (slot / N_COLS) * 18;
-                RenderSystem.pushMatrix();
+                matrixStack.push();
                 ItemStack stack = p.getRight();
-                GuiUtils.drawItemStack(stack, sx, sy);
+                GuiUtils.renderItemStack(matrixStack, stack, sx, sy);
                 String label = "[" + stack.getCount() + "]";
-                RenderSystem.translated(0, 0, 300);
+                matrixStack.translate(0, 0, 300);
                 if (!container.inventorySlots.get(slot).getHasStack()) {
-                    fill(sx, sy, sx + 16, sy + 16, 0x8080D080);
+                    fill(matrixStack, sx, sy, sx + 16, sy + 16, 0x8080D080);
                 }
-                RenderSystem.scaled(0.5, 0.5, 0.5);
-                font.drawString(label, 2 * (sx + 16 - font.getStringWidth(label) / 2f), 2 * (sy + 1), 0xFFFFFFA0);
-                RenderSystem.scaled(2.0, 2.0, 2.0);
-                RenderSystem.popMatrix();
+                matrixStack.scale(0.5f, 0.5f, 0.5f);
+                font.drawString(matrixStack, label, 2 * (sx + 16 - font.getStringWidth(label) / 2f), 2 * (sy + 1), 0xFFFFFFA0);
+                matrixStack.scale(2.0f, 2.0f, 2.0f);
+                matrixStack.pop();
             }
         }
 

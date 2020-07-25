@@ -1,5 +1,7 @@
 package me.desht.pneumaticcraft.api.client.pneumatic_helmet;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetKeybindCheckBox;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resources.I18n;
 
@@ -31,23 +33,25 @@ public interface IOptionPage {
     void populateGui(IGuiScreen gui);
 
     /**
-     * Called immediately before {@link Screen#render(int, int, float)}
+     * Called immediately before {@link Screen#render(MatrixStack, int, int, float)}
      *
+     * @param matrixStack the matrix stack
      * @param x mouse X
      * @param y mouse Y
      * @param partialTicks partial ticks since last world ticks
      */
-    void renderPre(int x, int y, float partialTicks);
+    void renderPre(MatrixStack matrixStack, int x, int y, float partialTicks);
 
     /**
-     * Called immediately after {@link Screen#render(int, int, float)}
+     * Called immediately after {@link Screen#render(MatrixStack, int, int, float)}
      * Here you can render additional things like text.
      *
+     * @param matrixStack the matrix stack
      * @param x mouse X
      * @param y mouse Y
      * @param partialTicks partial ticks since last world ticks
      */
-    void renderPost(int x, int y, float partialTicks);
+    void renderPost(MatrixStack matrixStack, int x, int y, float partialTicks);
 
     /**
      * Called immediately after Screen#keyPressed(int, int, int).
@@ -115,7 +119,7 @@ public interface IOptionPage {
 
         public SimpleToggleableOptions(IGuiScreen screen, T upgradeHandler) {
             this.screen = screen;
-            this.name = I18n.format("pneumaticcraft.armor.upgrade." + upgradeHandler.getUpgradeID());
+            this.name = I18n.format(WidgetKeybindCheckBox.UPGRADE_PREFIX + upgradeHandler.getUpgradeID());
             this.upgradeHandler = upgradeHandler;
         }
 
@@ -135,17 +139,14 @@ public interface IOptionPage {
 
         @Override
         public void populateGui(IGuiScreen gui) {
-
         }
 
         @Override
-        public void renderPre(int x, int y, float partialTicks) {
-
+        public void renderPre(MatrixStack matrixStack, int x, int y, float partialTicks) {
         }
 
         @Override
-        public void renderPost(int x, int y, float partialTicks) {
-
+        public void renderPost(MatrixStack matrixStack, int x, int y, float partialTicks) {
         }
 
         @Override

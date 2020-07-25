@@ -12,6 +12,7 @@ import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.LightningBoltEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -117,7 +118,8 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase i
                             .filter(te -> te instanceof TileEntityElectrostaticCompressor)
                             .map(te -> (TileEntityElectrostaticCompressor) te)
                             .collect(Collectors.toList());
-                    LightningBoltEntity bolt = new LightningBoltEntity(getWorld(), x, y, z, true);
+                    LightningBoltEntity bolt = new LightningBoltEntity(EntityType.LIGHTNING_BOLT, getWorld());
+                    bolt.setPosition(x, y, z);
                     getWorld().addEntity(bolt);
                     for (TileEntityElectrostaticCompressor compressor : compressors) {
                         compressor.addAir(PneumaticValues.PRODUCTION_ELECTROSTATIC_COMPRESSOR / compressors.size());
@@ -125,7 +127,8 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase i
                     }
                     AxisAlignedBB box = new AxisAlignedBB(getPos()).grow(16, 16, 16);
                     for (LivingEntity entity : getWorld().getEntitiesWithinAABB(LivingEntity.class, box, EntityPredicates.IS_ALIVE)) {
-                        if (posSet.contains(entity.getPosition()) || posSet.contains(entity.getPosition().down())) {
+                        BlockPos pos = entity.getPosition();
+                        if (posSet.contains(pos) || posSet.contains(pos.down())) {
                             if (!net.minecraftforge.event.ForgeEventFactory.onEntityStruckByLightning(entity, bolt)) {
                                 entity.onStruckByLightning(bolt);
                             }
@@ -176,9 +179,9 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase i
     }
 
     @Override
-    public void read(CompoundNBT nbtTagCompound) {
-        super.read(nbtTagCompound);
-        redstoneMode = nbtTagCompound.getInt(NBTKeys.NBT_REDSTONE_MODE);
+    public void read(BlockState state, CompoundNBT tag) {
+        super.read(state, tag);
+        redstoneMode = tag.getInt(NBTKeys.NBT_REDSTONE_MODE);
     }
 
     @Override

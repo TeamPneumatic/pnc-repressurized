@@ -15,6 +15,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
@@ -245,12 +246,12 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
     }
 
     private void addAdvancedInfo(List<ITextComponent> curInfo) {
-        ITextComponent s = new TranslationTextComponent("pneumaticcraft.waila.redstoneModule.op", PneumaticCraftUtils.xlate(operation.getTranslationKey()));
+        IFormattableTextComponent s = new TranslationTextComponent("pneumaticcraft.waila.redstoneModule.op", PneumaticCraftUtils.xlate(operation.getTranslationKey()));
         if (operation.useOtherColor) {
-            s = s.appendText(" (").appendSibling(PneumaticCraftUtils.xlate(PneumaticCraftUtils.dyeColorDesc(otherColor)).appendText(")"));
+            s = s.appendString(" (").append(PneumaticCraftUtils.xlate(PneumaticCraftUtils.dyeColorDesc(otherColor)).appendString(")"));
         }
         if (operation.useConst) {
-            s = s.appendText(" (" + constantVal + ")");
+            s = s.appendString(" (" + constantVal + ")");
         }
         curInfo.add(s);
         if (inverted) curInfo.add(PneumaticCraftUtils.xlate("pneumaticcraft.waila.redstoneModule.inverted"));

@@ -24,8 +24,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.common.IShearable;
+import net.minecraftforge.common.IForgeShearable;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.Pair;
@@ -169,8 +168,8 @@ public class EntityFilter implements Predicate<Entity>, com.google.common.base.P
                     }
                     break;
                 case SHEARABLE:
-                    if (entity instanceof IShearable) {
-                        return ((IShearable) entity).isShearable(new ItemStack(Items.SHEARS), entity.getEntityWorld(), entity.getPosition()) ?
+                    if (entity instanceof IForgeShearable) {
+                        return ((IForgeShearable) entity).isShearable(new ItemStack(Items.SHEARS), entity.getEntityWorld(), entity.getPosition()) ?
                                 val.equalsIgnoreCase("yes") : val.equalsIgnoreCase("no");
                     }
                     break;
@@ -232,7 +231,7 @@ public class EntityFilter implements Predicate<Entity>, com.google.common.base.P
             if (typeClass != null) {
                 ok = typeClass.isAssignableFrom(entity.getClass());
             } else if (regex != null) {
-                Matcher m = regex.matcher(TextFormatting.getTextWithoutFormattingCodes(entity.getName().getFormattedText()));
+                Matcher m = regex.matcher(entity.getName().getUnformattedComponentText());
                 ok = m.matches();
             }
             return ok && matchModifiers(entity);

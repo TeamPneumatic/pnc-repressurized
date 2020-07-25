@@ -6,12 +6,12 @@
     ]
   },
   "criteria": {
-    "empty_pcb": {
+    "assembly_controller": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "item": "pneumaticcraft:empty_pcb"
+            "item": "pneumaticcraft:assembly_controller"
           }
         ]
       }
@@ -25,7 +25,7 @@
   },
   "requirements": [
     [
-      "empty_pcb",
+      "assembly_controller",
       "has_the_recipe"
     ]
   ]

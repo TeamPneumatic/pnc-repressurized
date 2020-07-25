@@ -2,17 +2,15 @@ package me.desht.pneumaticcraft.common.thirdparty.curios;
 
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
 import me.desht.pneumaticcraft.common.tileentity.PneumaticEnergyStorage;
-import me.desht.pneumaticcraft.common.tileentity.SideConfigurator;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.wrapper.CombinedInvWrapper;
 import org.apache.commons.lang3.tuple.Pair;
-import top.theillusivec4.curios.api.CuriosAPI;
-import top.theillusivec4.curios.api.inventory.CurioStackHandler;
+import top.theillusivec4.curios.api.CuriosApi;
+import top.theillusivec4.curios.api.type.inventory.ICurioStacksHandler;
 
 import java.util.Map;
 import java.util.function.Predicate;
@@ -35,9 +33,9 @@ public class Curios implements IThirdParty {
      * @param maxTransfer max amount to transfer per item
      */
     public static void chargeItems(PlayerEntity player, PneumaticEnergyStorage energyStorage, int maxTransfer) {
-        CuriosAPI.getCuriosHandler(player).ifPresent(handler -> handler.getCurioMap().forEach((id, stackHandler) -> {
+        CuriosApi.getCuriosHelper().getCuriosHandler(player).ifPresent(handler -> handler.getCurios().forEach((id, stackHandler) -> {
             for (int i = 0; i < stackHandler.getSlots() && energyStorage.getEnergyStored() > 0; i++) {
-                ItemStack stack = stackHandler.getStackInSlot(i);
+                ItemStack stack = stackHandler.getStacks().getStackInSlot(i);
                 stack.getCapability(CapabilityEnergy.ENERGY).ifPresent(receivingStorage -> {
                     int energyLeft = energyStorage.getEnergyStored();
                     energyStorage.extractEnergy(
@@ -56,9 +54,9 @@ public class Curios implements IThirdParty {
      * @return stack in that slot
      */
     public static ItemStack getStack(PlayerEntity player, String invId, int slot) {
-        return CuriosAPI.getCuriosHandler(player).map(handler -> {
-            CurioStackHandler h = handler.getCurioMap().get(invId);
-            return h == null ? ItemStack.EMPTY : h.getStackInSlot(slot);
+        return CuriosApi.getCuriosHelper().getCuriosHandler(player).map(handler -> {
+            ICurioStacksHandler h = handler.getCurios().get(invId);
+            return h == null ? ItemStack.EMPTY : h.getStacks().getStackInSlot(slot);
         }).orElse(ItemStack.EMPTY);
     }
 
@@ -69,10 +67,10 @@ public class Curios implements IThirdParty {
      * @return a pair of (inventory id and slot), or null if no match
      */
     public static Pair<String,Integer> findStack(PlayerEntity player, Predicate<ItemStack> predicate) {
-        return CuriosAPI.getCuriosHandler(player).map(handler -> {
-            for (Map.Entry<String,CurioStackHandler> entry : handler.getCurioMap().entrySet()) {
+        return CuriosApi.getCuriosHelper().getCuriosHandler(player).map(handler -> {
+            for (Map.Entry<String,ICurioStacksHandler> entry : handler.getCurios().entrySet()) {
                 for (int i = 0; i < entry.getValue().getSlots(); i++) {
-                    if (predicate.test(entry.getValue().getStackInSlot(i))) {
+                    if (predicate.test(entry.getValue().getStacks().getStackInSlot(i))) {
                         return Pair.of(entry.getKey(), i);
                     }
                 }
@@ -81,26 +79,12 @@ public class Curios implements IThirdParty {
         }).orElse(NONE);
     }
 
-    /**
-     * Called when player is connected or disconnected.  Register or unregister side configurator entries for each
-     * Curios type found on the player.
-     * @param configurator the side configurator
-     * @param player the player - may be null
-     */
-    public static void setupSideConfigurator(SideConfigurator<IItemHandler> configurator, PlayerEntity player) {
-        if (player != null) {
-            CuriosAPI.getCuriosHandler(player).ifPresent(handler -> handler.getCurioMap().forEach((id, stackHandler) -> {
-                configurator.registerHandler("curios_" + id, CuriosAPI.getIcon(id), CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, () -> stackHandler);
-            }));
-        } else {
-            configurator.unregisterHandlers(s -> s.startsWith("curios_"));
-        }
-    }
-
     public static IItemHandler makeCombinedInvWrapper(PlayerEntity player) {
-        return CuriosAPI.getCuriosHandler(player)
-                .map(handler -> new CombinedInvWrapper(handler.getCurioMap().values().toArray(new IItemHandlerModifiable[0])))
-                .orElse(new CombinedInvWrapper());
+        return CuriosApi.getCuriosHelper().getCuriosHandler(player)
+                .map(handler -> new CombinedInvWrapper(handler.getCurios().values().stream()
+                        .map(ICurioStacksHandler::getStacks)
+                        .toArray(IItemHandlerModifiable[]::new))
+                ).orElse(new CombinedInvWrapper());
 
     }
 }

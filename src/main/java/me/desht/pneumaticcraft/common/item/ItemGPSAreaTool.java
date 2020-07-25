@@ -5,7 +5,7 @@ import me.desht.pneumaticcraft.client.gui.areatool.GuiGPSAreaTool;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea;
-import me.desht.pneumaticcraft.common.util.NBTUtil;
+import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
@@ -63,7 +63,7 @@ public class ItemGPSAreaTool extends Item implements IPositionProvider {
         ItemStack stack = player.getHeldItem(hand);
         setGPSLocation(stack, pos, index);
         if (!player.world.isRemote) {
-            player.sendStatusMessage(new StringTextComponent(TextFormatting.AQUA + String.format("[%s] %s", stack.getDisplayName().getFormattedText(), getMessageText(pos, index))), false);
+            player.sendStatusMessage(new StringTextComponent(TextFormatting.AQUA + String.format("[%s] %s", stack.getDisplayName().getString(), getMessageText(pos, index))), false);
             if (player instanceof ServerPlayerEntity)
                 ((ServerPlayerEntity) player).connection.sendPacket(new SHeldItemChangePacket(player.inventory.currentItem));
         }
@@ -80,7 +80,7 @@ public class ItemGPSAreaTool extends Item implements IPositionProvider {
         super.addInformation(stack, worldIn, infoList, par4);
         for(int index = 0; index < 2; index++){
             BlockPos pos = getGPSLocation(worldIn, stack, index);
-            infoList.add(new StringTextComponent(getMessageText(pos, index)).applyTextStyle(index == 0 ? TextFormatting.RED : TextFormatting.GREEN));
+            infoList.add(new StringTextComponent(getMessageText(pos, index)).mergeStyle(index == 0 ? TextFormatting.RED : TextFormatting.GREEN));
             String varName = getVariable(stack, index);
             if (!varName.isEmpty()) {
                 infoList.add(xlate("pneumaticcraft.gui.tooltip.gpsTool.variable", varName));
@@ -137,7 +137,7 @@ public class ItemGPSAreaTool extends Item implements IPositionProvider {
         } else if (index == 1) {
             area.setP2(pos);
         }
-        NBTUtil.initNBTTagCompound(gpsTool);
+        NBTUtils.initNBTTagCompound(gpsTool);
         area.writeToNBT(gpsTool.getTag());
     }
 
@@ -148,7 +148,7 @@ public class ItemGPSAreaTool extends Item implements IPositionProvider {
         } else if (index == 1) {
             area.setCoord2Variable(variable);
         }
-        NBTUtil.initNBTTagCompound(gpsTool);
+        NBTUtils.initNBTTagCompound(gpsTool);
         area.writeToNBT(gpsTool.getTag());
     }
 

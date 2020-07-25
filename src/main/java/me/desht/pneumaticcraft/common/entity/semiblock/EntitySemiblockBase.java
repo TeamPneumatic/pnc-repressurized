@@ -26,8 +26,12 @@ import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.RayTraceContext;
 import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.network.NetworkHooks;
@@ -43,7 +47,7 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
     private boolean shouldDropItem = true;
     private AxisAlignedBB blockBounds;
     private BlockPos blockPos;
-    private Vec3d dropOffset = Vec3d.ZERO;
+    private Vector3d dropOffset = Vector3d.ZERO;
 
     EntitySemiblockBase(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
@@ -96,9 +100,9 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
     }
 
     @Override
-    public ActionResultType applyPlayerInteraction(PlayerEntity player, Vec3d hitVec, Hand hand) {
-        Vec3d eye = player.getEyePosition(0f);
-        Vec3d end = eye.add(player.getLookVec().normalize().scale(5f));
+    public ActionResultType applyPlayerInteraction(PlayerEntity player, Vector3d hitVec, Hand hand) {
+        Vector3d eye = player.getEyePosition(0f);
+        Vector3d end = eye.add(player.getLookVec().normalize().scale(5f));
         RayTraceContext ctx = new RayTraceContext(eye, end, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, player);
         BlockRayTraceResult brtr = player.world.rayTraceBlocks(ctx);
 

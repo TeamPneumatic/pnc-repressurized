@@ -172,13 +172,13 @@ public abstract class TubeModule {
     public void addInfo(List<ITextComponent> curInfo) {
         if (upgraded) {
             ItemStack stack = new ItemStack(ModItems.ADVANCED_PCB.get());
-            curInfo.add(stack.getDisplayName().appendText(" installed").applyTextStyle(TextFormatting.GREEN));
+            curInfo.add(stack.getDisplayName().deepCopy().appendString(" installed").mergeStyle(TextFormatting.GREEN));
         }
         if (this instanceof INetworkedModule) {
             int colorChannel = ((INetworkedModule) this).getColorChannel();
             String key = "color.minecraft." + DyeColor.byId(colorChannel);
-            curInfo.add(new TranslationTextComponent("pneumaticcraft.waila.logisticsModule.channel").appendText(" ")
-                    .appendSibling(new TranslationTextComponent(key).applyTextStyle(TextFormatting.YELLOW)));
+            curInfo.add(new TranslationTextComponent("pneumaticcraft.waila.logisticsModule.channel").appendString(" ")
+                    .append(new TranslationTextComponent(key).mergeStyle(TextFormatting.YELLOW)));
         }
     }
 

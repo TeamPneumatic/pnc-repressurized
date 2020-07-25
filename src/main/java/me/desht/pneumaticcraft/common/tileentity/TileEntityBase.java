@@ -31,6 +31,7 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IWorld;
 import net.minecraftforge.client.model.data.IModelData;
@@ -48,6 +49,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.BiPredicate;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public abstract class TileEntityBase extends TileEntity implements IGUIButtonSensitive, IDescSynced, IUpgradeAcceptor, IUpgradeHolder, ILuaMethodProvider {
     private static final List<String> REDSTONE_LABELS = ImmutableList.of(
@@ -111,7 +114,7 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
 
     // client side, chunk sending
     @Override
-    public void handleUpdateTag(CompoundNBT tag) {
+    public void handleUpdateTag(BlockState state, CompoundNBT tag) {
         new PacketDescription(tag).process();
     }
 
@@ -277,8 +280,8 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
     }
 
     @Override
-    public void read(CompoundNBT tag) {
-        super.read(tag);
+    public void read(BlockState state, CompoundNBT tag) {
+        super.read(state, tag);
 
         if (tag.contains(NBTKeys.NBT_UPGRADE_INVENTORY) && getUpgradeHandler() != null) {
             getUpgradeHandler().deserializeNBT(tag.getCompound(NBTKeys.NBT_UPGRADE_INVENTORY));
@@ -556,11 +559,11 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
         }
     }
 
-    public final String getRedstoneButtonText(int mode) {
-        try {
-            return getRedstoneButtonLabels().get(mode);
-        } catch (ArrayIndexOutOfBoundsException e) {
-            return "<ERROR>";
+    public final ITextComponent getRedstoneButtonText(int mode) {
+        if (mode >= 0 && mode < getRedstoneButtonLabels().size()) {
+            return xlate(getRedstoneButtonLabels().get(mode));
+        } else {
+            return new StringTextComponent("<ERROR>");
         }
     }
 
@@ -572,8 +575,10 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
         return getRedstoneButtonLabels().size();
     }
 
-    public String getRedstoneTabTitle() {
-        return this instanceof IRedstoneControlled ? "pneumaticcraft.gui.tab.redstoneBehaviour.enableOn" : "pneumaticcraft.gui.tab.redstoneBehaviour.emitRedstoneWhen";
+    public ITextComponent getRedstoneTabTitle() {
+        return this instanceof IRedstoneControlled ?
+                xlate("pneumaticcraft.gui.tab.redstoneBehaviour.enableOn") :
+                xlate("pneumaticcraft.gui.tab.redstoneBehaviour.emitRedstoneWhen");
     }
 
     /**

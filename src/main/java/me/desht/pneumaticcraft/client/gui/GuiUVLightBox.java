@@ -11,10 +11,13 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.gui.widget.Slider;
 
 import java.util.List;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiUVLightBox extends GuiPneumaticContainerBase<ContainerUVLightBox,TileEntityUVLightBox> implements Slider.ISlider {
     private Slider slider;
@@ -29,7 +32,9 @@ public class GuiUVLightBox extends GuiPneumaticContainerBase<ContainerUVLightBox
     public void init() {
         super.init();
 
-        addButton(slider = new Slider(guiLeft + 10, guiTop + 45, 95, 16, I18n.format("pneumaticcraft.gui.uv_light_box.threshold") + " ", "%", 1, 100, te.getThreshold(), false, true, b -> { }, this));
+        addButton(slider = new Slider(guiLeft + 10, guiTop + 45, 95, 16,
+                xlate("pneumaticcraft.gui.uv_light_box.threshold").appendString(" "), new StringTextComponent("%"),
+                1, 100, te.getThreshold(), false, true, b -> { }, this));
     }
 
     @Override

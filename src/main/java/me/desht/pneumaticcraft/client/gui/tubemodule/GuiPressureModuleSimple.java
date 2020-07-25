@@ -8,10 +8,13 @@ import me.desht.pneumaticcraft.common.block.tubes.TubeModuleRedstoneReceiving;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdatePressureModule;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import org.lwjgl.glfw.GLFW;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiPressureModuleSimple extends GuiTubeModule<TubeModule> {
     private WidgetTextFieldNumber thresholdField;
@@ -33,34 +36,36 @@ public class GuiPressureModuleSimple extends GuiTubeModule<TubeModule> {
     public void init() {
         super.init();
 
-        String titleText = title.getFormattedText();
-        addLabel(titleText, width / 2 - font.getStringWidth(titleText) / 2, guiTop + 5);
+        addLabel(title, width / 2 - font.func_238414_a_(title) / 2, guiTop + 5);
 
-        WidgetCheckBox advancedMode = new WidgetCheckBox(guiLeft + 6, guiTop + 20, 0xFF404040, "pneumaticcraft.gui.tubeModule.advancedConfig", b -> {
+        WidgetCheckBox advancedMode = new WidgetCheckBox(guiLeft + 6, guiTop + 20, 0xFF404040, xlate("pneumaticcraft.gui.tubeModule.advancedConfig"), b -> {
             module.advancedConfig = true;
             NetworkHandler.sendToServer(new PacketUpdatePressureModule(module));
-        }).setTooltip(I18n.format("pneumaticcraft.gui.tubeModule.advancedConfig.tooltip"));
+        }).setTooltip(xlate("pneumaticcraft.gui.tubeModule.advancedConfig.tooltip"));
         advancedMode.checked = false;
         addButton(advancedMode);
 
         thresholdField = new WidgetTextFieldNumber(font, guiLeft + 105, guiTop + 35, 30, font.FONT_HEIGHT + 2).setDecimals(1);
         addButton(thresholdField);
-        setFocused(thresholdField);
+        setListener(thresholdField);
         thresholdField.setFocused2(true);
 
         if (module instanceof TubeModuleRedstoneReceiving) {
             thresholdField.setValue(((TubeModuleRedstoneReceiving) module).getThreshold());
-            String s = I18n.format("pneumaticcraft.gui.tubeModule.simpleConfig.threshold");
-            addLabel(s, guiLeft + 80 - font.getStringWidth(s), guiTop + 36);
+            ITextComponent s = xlate("pneumaticcraft.gui.tubeModule.simpleConfig.threshold");
+            addLabel(s, guiLeft + 80 - font.func_238414_a_(s), guiTop + 36);
         } else {
             thresholdField.setValue(module.lowerBound);
-            String s = I18n.format("pneumaticcraft.gui.tubeModule.simpleConfig.turn");
-            addLabel(s,guiLeft + 80 - font.getStringWidth(s), guiTop + 36);
+            ITextComponent s = xlate("pneumaticcraft.gui.tubeModule.simpleConfig.turn");
+            addLabel(s,guiLeft + 80 - font.func_238414_a_(s), guiTop + 36);
             moreOrLessButton = new WidgetButtonExtended(guiLeft + 85, guiTop + 33, 16, 16, module.lowerBound < module.higherBound ? ">" : "<", b -> flipThreshold());
-            moreOrLessButton.setTooltipText(I18n.format(module.lowerBound < module.higherBound ? "pneumaticcraft.gui.tubeModule.simpleConfig.higherThan" : "pneumaticcraft.gui.tubeModule.simpleConfig.lowerThan"));
+            moreOrLessButton.setTooltipText(xlate(module.lowerBound < module.higherBound ?
+                    "pneumaticcraft.gui.tubeModule.simpleConfig.higherThan" :
+                    "pneumaticcraft.gui.tubeModule.simpleConfig.lowerThan")
+            );
             addButton(moreOrLessButton);
         }
-        addLabel(I18n.format("pneumaticcraft.gui.general.bar"), guiLeft + 137, guiTop + 37);
+        addLabel(xlate("pneumaticcraft.gui.general.bar"), guiLeft + 137, guiTop + 37);
     }
 
     private void flipThreshold() {
@@ -69,8 +74,11 @@ public class GuiPressureModuleSimple extends GuiTubeModule<TubeModule> {
         module.lowerBound = temp;
 
         updateThreshold();
-        moreOrLessButton.setMessage(module.lowerBound < module.higherBound ? ">" : "<");
-        moreOrLessButton.setTooltipText(I18n.format(module.lowerBound < module.higherBound ? "pneumaticcraft.gui.tubeModule.simpleConfig.higherThan" : "pneumaticcraft.gui.tubeModule.simpleConfig.lowerThan"));
+        moreOrLessButton.setMessage(new StringTextComponent(module.lowerBound < module.higherBound ? ">" : "<"));
+        moreOrLessButton.setTooltipText(xlate(module.lowerBound < module.higherBound ?
+                "pneumaticcraft.gui.tubeModule.simpleConfig.higherThan" :
+                "pneumaticcraft.gui.tubeModule.simpleConfig.lowerThan")
+        );
         NetworkHandler.sendToServer(new PacketUpdatePressureModule(module));
     }
 

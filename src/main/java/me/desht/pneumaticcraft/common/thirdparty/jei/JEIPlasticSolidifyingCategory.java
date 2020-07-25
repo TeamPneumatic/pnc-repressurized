@@ -14,11 +14,14 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class JEIPlasticSolidifyingCategory implements IRecipeCategory<JEIPlasticSolidifyingCategory.PlasticSolidifyingRecipe> {
     private final String localizedName;
@@ -80,10 +83,10 @@ public class JEIPlasticSolidifyingCategory implements IRecipeCategory<JEIPlastic
     }
 
     @Override
-    public List<String> getTooltipStrings(PlasticSolidifyingRecipe recipe, double mouseX, double mouseY) {
-        List<String> res = new ArrayList<>();
+    public List<ITextComponent> getTooltipStrings(PlasticSolidifyingRecipe recipe, double mouseX, double mouseY) {
+        List<ITextComponent> res = new ArrayList<>();
         if (mouseX >= 23 && mouseX <= 60) {
-            res.add(I18n.format("pneumaticcraft.gui.jei.tooltip.plasticSolidifying"));
+            res.add(xlate("pneumaticcraft.gui.jei.tooltip.plasticSolidifying"));
         }
         return res;
     }

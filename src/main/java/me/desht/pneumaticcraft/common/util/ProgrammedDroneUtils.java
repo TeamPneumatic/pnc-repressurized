@@ -33,7 +33,7 @@ public class ProgrammedDroneUtils {
     }
 
     public static CreatureEntity deliverItemsAmazonStyle(GlobalPos gPos, ItemStack... deliveredStacks) {
-        World world = GlobalPosUtils.getWorldForGlobalPos(gPos);
+        World world = GlobalPosHelper.getWorldForGlobalPos(gPos);
         BlockPos pos = gPos.getPos();
 
         if (world == null || world.isRemote) return null;
@@ -71,7 +71,7 @@ public class ProgrammedDroneUtils {
     }
 
     public static CreatureEntity deliverFluidAmazonStyle(GlobalPos gPos, FluidStack deliveredFluid) {
-        World world = GlobalPosUtils.getWorldForGlobalPos(gPos);
+        World world = GlobalPosHelper.getWorldForGlobalPos(gPos);
         BlockPos pos = gPos.getPos();
 
         if (world == null || world.isRemote) return null;
@@ -94,7 +94,7 @@ public class ProgrammedDroneUtils {
     }
 
     public static CreatureEntity retrieveItemsAmazonStyle(GlobalPos gPos, ItemStack... queriedStacks) {
-        World world = GlobalPosUtils.getWorldForGlobalPos(gPos);
+        World world = GlobalPosHelper.getWorldForGlobalPos(gPos);
         BlockPos pos = gPos.getPos();
 
         if (world == null || world.isRemote) return null;
@@ -123,7 +123,7 @@ public class ProgrammedDroneUtils {
     }
 
     public static CreatureEntity retrieveFluidAmazonStyle(GlobalPos gPos, FluidStack queriedFluid) {
-        World world = GlobalPosUtils.getWorldForGlobalPos(gPos);
+        World world = GlobalPosHelper.getWorldForGlobalPos(gPos);
         BlockPos pos = gPos.getPos();
 
         if (world == null || world.isRemote) return null;

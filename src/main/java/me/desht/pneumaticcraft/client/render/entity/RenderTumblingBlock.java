@@ -6,7 +6,10 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.BlockRendererDispatcher;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -14,6 +17,7 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.world.World;
 import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.model.data.EmptyModelData;
@@ -40,7 +44,7 @@ public class RenderTumblingBlock extends EntityRenderer<EntityTumblingBlock> {
         BlockState state = block.getDefaultState();
         if (state.getRenderType() == BlockRenderType.MODEL) {
             World world = entity.getEntityWorld();
-            if (state != world.getBlockState(new BlockPos(entity)) && state.getRenderType() != BlockRenderType.INVISIBLE) {
+            if (state != world.getBlockState(entity.getPosition()) && state.getRenderType() != BlockRenderType.INVISIBLE) {
                 matrixStackIn.push();
                 BlockPos blockpos = new BlockPos(entity.getPosX(), entity.getBoundingBox().maxY, entity.getPosZ());
 

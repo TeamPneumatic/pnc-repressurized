@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.ai;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 public class DroneGoToOwner extends Goal {
@@ -18,7 +18,7 @@ public class DroneGoToOwner extends Goal {
         ServerPlayerEntity owner = getOnlineOwner();
         if (owner == null) return false;
 
-        Vec3d lookVec = owner.getLookVec().scale(2.0);
+        Vector3d lookVec = owner.getLookVec().scale(2.0);
         double x = owner.getPosX() + lookVec.x;
         double z = owner.getPosZ() + lookVec.z;
         return drone.getDistanceSq(owner) > 6 && drone.getNavigator().tryMoveToXYZ(x, owner.getPosY(), z, drone.getSpeed());

@@ -30,7 +30,7 @@ public class GuiProgWidgetString<T extends ProgWidgetText> extends GuiProgWidget
         textfield.setMaxStringLength(1000);
         textfield.setText(progWidget.string);
         textfield.setFocused2(true);
-        setFocused(textfield);
+        setListener(textfield);
         addButton(textfield);
     }
 

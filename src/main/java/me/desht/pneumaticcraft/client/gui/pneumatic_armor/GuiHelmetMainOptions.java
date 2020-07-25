@@ -8,6 +8,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.MainHelmetHandler;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.text.StringTextComponent;
 
 public class GuiHelmetMainOptions extends IOptionPage.SimpleToggleableOptions<MainHelmetHandler> {
     private KeybindingButton changeKeybindingButton;
@@ -30,7 +31,7 @@ public class GuiHelmetMainOptions extends IOptionPage.SimpleToggleableOptions<Ma
 
         gui.addWidget(new WidgetButtonExtended(30, 150, 150, 20,
                 "Move Message Screen...", b -> {
-            getUpgradeHandler().testMessageStat = new WidgetAnimatedStat(null, "Test Message, keep in mind messages can be long!",
+            getUpgradeHandler().testMessageStat = new WidgetAnimatedStat(null, new StringTextComponent("Test Message, keep in mind messages can be long!"),
                     WidgetAnimatedStat.StatIcon.NONE, 0x7000AA00, null, ArmorHUDLayout.INSTANCE.messageStat);
             getUpgradeHandler().testMessageStat.openWindow();
             Minecraft.getInstance().displayGuiScreen(
@@ -38,7 +39,7 @@ public class GuiHelmetMainOptions extends IOptionPage.SimpleToggleableOptions<Ma
         }));
 
         changeKeybindingButton = new KeybindingButton(30, 172, 150, 20,
-                "Change open menu key...", KeyHandler.getInstance().keybindOpenOptions,
+                new StringTextComponent("Change open menu key..."), KeyHandler.getInstance().keybindOpenOptions,
                 b -> changeKeybindingButton.toggleKeybindMode()
         );
         gui.addWidget(changeKeybindingButton);

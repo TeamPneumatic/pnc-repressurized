@@ -12,6 +12,7 @@ import me.desht.pneumaticcraft.common.item.ItemEmptyPCB;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
@@ -218,8 +219,8 @@ public class TileEntityEtchingTank extends TileEntityTickableBase
     }
 
     @Override
-    public void read(CompoundNBT tag) {
-        super.read(tag);
+    public void read(BlockState state, CompoundNBT tag) {
+        super.read(state, tag);
 
         itemHandler.deserializeNBT(tag.getCompound("Inventory"));
         outputHandler.deserializeNBT(tag.getCompound("Output"));

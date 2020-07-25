@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.common.ai;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.common.progwidgets.IBlockOrdered;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetAreaItemBase;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -19,6 +18,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceContext;
+import net.minecraft.util.math.vector.Vector3d;
 
 import javax.annotation.Nullable;
 
@@ -39,7 +39,7 @@ public class DroneAIPlace<W extends ProgWidgetAreaItemBase & IBlockOrdered /*& I
     @Override
     protected boolean isValidPosition(BlockPos pos) {
         if (drone.world().getBlockState(pos).getMaterial().isReplaceable()) {
-            if (PneumaticCraftUtils.getBlockCentre(pos).squareDistanceTo(drone.getDronePos()) < 1.2) {
+            if (Vector3d.copyCentered(pos).squareDistanceTo(drone.getDronePos()) < 1.2) {
                 // too close - placement could be blocked by the drone
                 return false;
             }
@@ -111,8 +111,8 @@ public class DroneAIPlace<W extends ProgWidgetAreaItemBase & IBlockOrdered /*& I
 
     private BlockItemUseContext getPlacementContext(BlockPos placerPos, BlockPos targetPos, ItemStack droneStack) {
         BlockRayTraceResult brtr = drone.world().rayTraceBlocks(new RayTraceContext(
-                PneumaticCraftUtils.getBlockCentre(placerPos),
-                PneumaticCraftUtils.getBlockCentre(targetPos),
+                Vector3d.copyCentered(placerPos),
+                Vector3d.copyCentered(targetPos),
                 RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE,
                 drone.getFakePlayer()
         ));

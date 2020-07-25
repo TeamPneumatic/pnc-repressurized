@@ -7,11 +7,14 @@ import me.desht.pneumaticcraft.common.network.PacketChangeGPSToolCoordinate;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiGPSAreaTool extends GuiGPSTool {
 
@@ -47,7 +50,7 @@ public class GuiGPSAreaTool extends GuiGPSTool {
 
         int x = xMiddle - CHANGE_AREA_BUTTON_WIDTH / 2;
         int y = yMiddle + 100;
-        addButton(new Button(x, y, CHANGE_AREA_BUTTON_WIDTH, 20, I18n.format("pneumaticcraft.gui.gps_area_tool.changeAreaType"), b -> {
+        addButton(new Button(x, y, CHANGE_AREA_BUTTON_WIDTH, 20, xlate("pneumaticcraft.gui.gps_area_tool.changeAreaType"), b -> {
             ItemStack stack = minecraft.player.getHeldItem(hand);
             ProgWidgetArea area = ItemGPSAreaTool.getArea(stack);
             minecraft.displayGuiScreen(new GuiProgWidgetAreaTool(area, hand, () -> minecraft.displayGuiScreen(new GuiGPSAreaTool(stack, hand, index))));
@@ -94,8 +97,8 @@ public class GuiGPSAreaTool extends GuiGPSTool {
         }
     }
 
-    private String getToggleLabel() {
-        String color = index == 0 ? TextFormatting.RED.toString() : TextFormatting.GREEN.toString();
-        return color + "P" + (index + 1);
+    private ITextComponent getToggleLabel() {
+        TextFormatting color = index == 0 ? TextFormatting.RED : TextFormatting.GREEN;
+        return new StringTextComponent("P" + (index + 1)).mergeStyle(color);
     }
 }

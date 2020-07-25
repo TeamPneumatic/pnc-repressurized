@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.api.crafting;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.fluid.Fluid;
@@ -119,13 +120,12 @@ public class AmadronTradeResource {
     }
 
     public AmadronTradeResource validate() {
-        Validate.isTrue(item != null && fluid != null);
         switch (type) {
             case ITEM:
-                Validate.isTrue(item != null && !item.isEmpty());
+                Validate.isTrue(!item.isEmpty());
                 break;
             case FLUID:
-                Validate.isTrue(fluid != null && !fluid.isEmpty());
+                Validate.isTrue(!fluid.isEmpty());
                 break;
         }
         return this;
@@ -148,7 +148,7 @@ public class AmadronTradeResource {
                 FluidStack fluidStack = new FluidStack(fluid, amount);
                 return new AmadronTradeResource(fluidStack);
             default:
-                return null;
+                throw new JsonSyntaxException("amadron offer " + rl + " : invalid type!");
         }
     }
 
@@ -187,9 +187,9 @@ public class AmadronTradeResource {
     public String getName() {
         switch (type) {
             case ITEM:
-                return item.getDisplayName().getFormattedText();
+                return item.getDisplayName().getString();
             case FLUID:
-                return fluid.getDisplayName().getFormattedText();
+                return fluid.getDisplayName().getString();
             default:
                 return null;
         }
@@ -229,9 +229,9 @@ public class AmadronTradeResource {
     public String toString() {
         switch (type) {
             case ITEM:
-                return item.getCount() + " x " + item.getDisplayName().getFormattedText();
+                return item.getCount() + " x " + item.getDisplayName().getString();
             case FLUID:
-                return fluid.getAmount() + "mB " + fluid.getDisplayName().getFormattedText();
+                return fluid.getAmount() + "mB " + fluid.getDisplayName().getString();
         }
         return super.toString();
     }

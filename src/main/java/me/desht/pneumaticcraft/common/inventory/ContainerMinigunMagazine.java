@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.inventory;
 import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.item.ItemMinigun;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
-import me.desht.pneumaticcraft.common.util.NBTUtil;
+import me.desht.pneumaticcraft.common.util.NBTUtils;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.ClickType;
@@ -55,9 +55,9 @@ public class ContainerMinigunMagazine extends ContainerPneumaticBase<TileEntityB
             if (gunStack.getItem() instanceof ItemMinigun) {
                 int slot = ItemMinigun.getLockedSlot(gunStack);
                 if (slot == slotId) {
-                    NBTUtil.removeTag(gunStack, ItemMinigun.NBT_LOCKED_SLOT);
+                    NBTUtils.removeTag(gunStack, ItemMinigun.NBT_LOCKED_SLOT);
                 } else {
-                    NBTUtil.setInteger(gunStack, ItemMinigun.NBT_LOCKED_SLOT, slotId);
+                    NBTUtils.setInteger(gunStack, ItemMinigun.NBT_LOCKED_SLOT, slotId);
                 }
                 if (player.world.isRemote) {
                     player.playSound(SoundEvents.UI_BUTTON_CLICK, 0.5f, 1.0f);

@@ -5,7 +5,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -41,8 +41,8 @@ public class AreaTypePyramid extends AreaType {
         switch (axis) {
             case X:
                 if (p2.getX() != p1.getX()) {
-                    Vec3d lineVec = new Vec3d(p2.getX() - p1.getX(), p2.getY() - p1.getY(), p2.getZ() - p1.getZ()).normalize();
-                    lineVec = new Vec3d(lineVec.x, lineVec.y / lineVec.x, lineVec.z / lineVec.x);
+                    Vector3d lineVec = new Vector3d(p2.getX() - p1.getX(), p2.getY() - p1.getY(), p2.getZ() - p1.getZ()).normalize();
+                    lineVec = new Vector3d(lineVec.x, lineVec.y / lineVec.x, lineVec.z / lineVec.x);
                     double curY = p1.getY() - lineVec.y;
                     int x = p1.getX() + (p2.getX() > p1.getX() ? -1 : 1);
                     double curZ = p1.getZ() - lineVec.z;
@@ -72,8 +72,8 @@ public class AreaTypePyramid extends AreaType {
                 break;
             case Y:
                 if (p2.getY() != p1.getY()) {
-                    Vec3d lineVec = new Vec3d(p2.getX() - p1.getX(), p2.getY() - p1.getY(), p2.getZ() - p1.getZ()).normalize();
-                    lineVec = new Vec3d(lineVec.x / lineVec.y, lineVec.y, lineVec.z / lineVec.y);
+                    Vector3d lineVec = new Vector3d(p2.getX() - p1.getX(), p2.getY() - p1.getY(), p2.getZ() - p1.getZ()).normalize();
+                    lineVec = new Vector3d(lineVec.x / lineVec.y, lineVec.y, lineVec.z / lineVec.y);
                     double curX = p1.getX() - lineVec.x;
                     int y = p1.getY() + (p2.getY() > p1.getY() ? -1 : 1);
                     double curZ = p1.getZ() - lineVec.z;
@@ -107,8 +107,8 @@ public class AreaTypePyramid extends AreaType {
                 break;
             case Z:
                 if (p2.getZ() != p1.getZ()) {
-                    Vec3d lineVec = new Vec3d(p2.getX() - p1.getX(), p2.getY() - p1.getY(), p2.getZ() - p1.getZ()).normalize();
-                    lineVec = new Vec3d(lineVec.x / lineVec.z, lineVec.y / lineVec.z, lineVec.z);
+                    Vector3d lineVec = new Vector3d(p2.getX() - p1.getX(), p2.getY() - p1.getY(), p2.getZ() - p1.getZ()).normalize();
+                    lineVec = new Vector3d(lineVec.x / lineVec.z, lineVec.y / lineVec.z, lineVec.z);
                     double curX = p1.getX() - lineVec.x;
                     int z = p1.getZ() + (p2.getZ() > p1.getZ() ? -1 : 1);
                     double curY = p1.getY() - lineVec.y;

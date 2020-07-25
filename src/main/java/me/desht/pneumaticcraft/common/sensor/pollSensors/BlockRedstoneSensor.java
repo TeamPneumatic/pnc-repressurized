@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.sensor.pollSensors;
 
 import com.google.common.collect.ImmutableSet;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.universal_sensor.IBlockAndCoordinatePollSensor;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -46,6 +47,6 @@ public class BlockRedstoneSensor implements IBlockAndCoordinatePollSensor {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void drawAdditionalInfo(FontRenderer fontRenderer) {
+    public void drawAdditionalInfo(MatrixStack matrixStack, FontRenderer fontRenderer) {
     }
 }

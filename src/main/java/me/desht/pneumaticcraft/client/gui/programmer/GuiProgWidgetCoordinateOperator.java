@@ -5,10 +5,11 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetComboBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetRadioButton;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetCoordinateOperator;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetCoordinateOperator.EnumOperator;
-import net.minecraft.client.resources.I18n;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiProgWidgetCoordinateOperator extends GuiProgWidgetAreaShow<ProgWidgetCoordinateOperator> {
 
@@ -22,15 +23,18 @@ public class GuiProgWidgetCoordinateOperator extends GuiProgWidgetAreaShow<ProgW
     public void init() {
         super.init();
 
+        addLabel(xlate("pneumaticcraft.gui.progWidget.coordinateOperator.operator"), guiLeft + 7, guiTop + 30);
+        addLabel(xlate("pneumaticcraft.gui.progWidget.coordinate.variableName"), guiLeft + 7, guiTop + 88);
+
         List<WidgetRadioButton> radioButtons = new ArrayList<>();
         for (EnumOperator op : EnumOperator.values()) {
             String key = op.getTranslationKey();
             WidgetRadioButton radioButton = new WidgetRadioButton(guiLeft + 7, guiTop + 42 + 12 * op.ordinal(), 0xFF404040,
-                    I18n.format(op.getTranslationKey()), b -> progWidget.setOperator(op));
+                    xlate(op.getTranslationKey()), b -> progWidget.setOperator(op));
             radioButtons.add(radioButton);
             radioButton.checked = progWidget.getOperator() == op;
             radioButton.otherChoices = radioButtons;
-            radioButton.setTooltip(I18n.format(key + ".hint"));
+            radioButton.setTooltip(xlate(key + ".hint"));
             addButton(radioButton);
         }
 
@@ -45,12 +49,5 @@ public class GuiProgWidgetCoordinateOperator extends GuiProgWidgetAreaShow<ProgW
         progWidget.setVariable(variableField.getText());
 
         super.onClose();
-    }
-
-    @Override
-    public void render(int mouseX, int mouseY, float partialTicks) {
-        super.render(mouseX, mouseY, partialTicks);
-        font.drawString(I18n.format("pneumaticcraft.gui.progWidget.coordinate.variableName"), guiLeft + 7, guiTop + 88, 0xFF404060);
-        font.drawString(I18n.format("pneumaticcraft.gui.progWidget.coordinateOperator.operator"), guiLeft + 7, guiTop + 30, 0xFF404060);
     }
 }

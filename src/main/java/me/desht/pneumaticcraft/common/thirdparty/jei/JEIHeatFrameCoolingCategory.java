@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.api.crafting.recipe.HeatFrameCoolingRecipe;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -14,6 +15,7 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 
 import java.util.ArrayList;
@@ -65,10 +67,10 @@ public class JEIHeatFrameCoolingCategory implements IRecipeCategory<HeatFrameCoo
     }
 
     @Override
-    public void draw(HeatFrameCoolingRecipe recipe, double mouseX, double mouseY) {
-        progressBar.draw(22, 0);
+    public void draw(HeatFrameCoolingRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
+        progressBar.draw(matrixStack, 22, 0);
         if (recipe.getBonusMultiplier() > 0f) {
-            bonusIcon.draw(30, 0);
+            bonusIcon.draw(matrixStack, 30, 0);
         }
     }
 
@@ -88,13 +90,13 @@ public class JEIHeatFrameCoolingCategory implements IRecipeCategory<HeatFrameCoo
     }
 
     @Override
-    public List<String> getTooltipStrings(HeatFrameCoolingRecipe recipe, double mouseX, double mouseY) {
-        List<String> res = new ArrayList<>();
+    public List<ITextComponent> getTooltipStrings(HeatFrameCoolingRecipe recipe, double mouseX, double mouseY) {
+        List<ITextComponent> res = new ArrayList<>();
         if (mouseX >= 23 && mouseX <= 60) {
-            res.addAll(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.nei.recipe.heatFrameCooling", recipe.getThresholdTemperature() - 273), 40));
+            res.addAll(PneumaticCraftUtils.splitStringComponent(I18n.format("pneumaticcraft.gui.nei.recipe.heatFrameCooling", recipe.getThresholdTemperature() - 273)));
             if (recipe.getBonusMultiplier() > 0f) {
-                String bonus = TextFormatting.YELLOW + I18n.format("pneumaticcraft.gui.nei.recipe.heatFrameCooling.bonus", recipe.getBonusMultiplier() * 100, recipe.getOutput().getDisplayName().getFormattedText(), recipe.getThresholdTemperature() - 273, recipe.getBonusLimit() + 1);
-                res.addAll(PneumaticCraftUtils.splitString(bonus, 40));
+                String bonus = TextFormatting.YELLOW + I18n.format("pneumaticcraft.gui.nei.recipe.heatFrameCooling.bonus", recipe.getBonusMultiplier() * 100, recipe.getOutput().getDisplayName().getString(), recipe.getThresholdTemperature() - 273, recipe.getBonusLimit() + 1);
+                res.addAll(PneumaticCraftUtils.splitStringComponent(bonus));
             }
         }
         return res;

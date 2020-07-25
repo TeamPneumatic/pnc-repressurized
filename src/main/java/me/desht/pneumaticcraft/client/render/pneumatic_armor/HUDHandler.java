@@ -26,14 +26,14 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
@@ -46,6 +46,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static me.desht.pneumaticcraft.common.item.ItemPneumaticArmor.isPneumaticArmorPiece;
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class HUDHandler implements IKeyListener {
     private static final int PROGRESS_BAR_HEIGHT = 17;
@@ -82,7 +83,7 @@ public class HUDHandler implements IKeyListener {
 
         matrixStack.push();
 
-        Vec3d projectedView = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
+        Vector3d projectedView = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
         matrixStack.translate(-projectedView.x, -projectedView.y, -projectedView.z);
 
         ItemStack helmetStack = player.getItemStackFromSlot(EquipmentSlotType.HEAD);
@@ -120,8 +121,10 @@ public class HUDHandler implements IKeyListener {
 
         float partialTicks = event.getPartialTicks();
 
+        MatrixStack matrixStack = event.getMatrixStack();
+
         MainWindow mw = event.getWindow();
-        RenderSystem.pushMatrix();
+        matrixStack.push();
 //        RenderSystem.depthMask(false);
 //        RenderSystem.disableCull();
 //        RenderSystem.disableTexture();
@@ -155,24 +158,24 @@ public class HUDHandler implements IKeyListener {
                     RenderSystem.disableTexture();
                     RenderSystem.enableBlend();
                     RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-                    RenderProgressBar.render2d(mw.getScaledWidth() / 2.0, yOffset,
+                    RenderProgressBar.render2d(matrixStack,mw.getScaledWidth() / 2f, yOffset,
                             mw.getScaledWidth() - 10, yOffset + PROGRESS_BAR_HEIGHT - 1, -90F,
                             progress,0xAAFFC000, 0xAA00FF00);
                     RenderSystem.disableBlend();
                     RenderSystem.enableTexture();
-                    GuiUtils.drawItemStack(armorStack,xLeft + 2, yOffset);
+                    GuiUtils.renderItemStack(matrixStack, armorStack,xLeft + 2, yOffset);
                 }
             }
             if (comHudHandler.isArmorReady(slot)) {
-                String itemName = armorStack.getDisplayName().getFormattedText();
+                ITextComponent itemName = armorStack.getDisplayName();
                 float pressure = comHudHandler.getArmorPressure(slot);
                 // low/no pressure warnings
                 if (pressure < 0.05F && !gaveEmptyWarning[slot.getIndex()]) {
-                    addMessage(new ArmorMessage(I18n.format("pneumaticcraft.armor.message.outOfAir", itemName), 100, 0x70FF0000));
+                    addMessage(new ArmorMessage(xlate("pneumaticcraft.armor.message.outOfAir", itemName), 100, 0x70FF0000));
                     gaveEmptyWarning[slot.getIndex()] = true;
                 }
                 if (pressure > 0.2F && pressure < 0.5F && !gaveNearlyEmptyWarning[slot.getIndex()]) {
-                    addMessage(new ArmorMessage(I18n.format("pneumaticcraft.armor.message.almostOutOfAir", itemName), 60, 0x70FF8000));
+                    addMessage(new ArmorMessage(xlate("pneumaticcraft.armor.message.almostOutOfAir", itemName), 60, 0x70FF8000));
                     gaveNearlyEmptyWarning[slot.getIndex()] = true;
                 }
                 // all enabled upgrades do their 2D rendering here
@@ -183,9 +186,9 @@ public class HUDHandler implements IKeyListener {
                         if (comHudHandler.isUpgradeRendererInserted(slot, i) && comHudHandler.isUpgradeRendererEnabled(slot, i)) {
                             IGuiAnimatedStat stat = upgradeRenderHandler.getAnimatedStat();
                             if (stat != null) {
-                                stat.render(-1, -1, partialTicks);
+                                stat.render(matrixStack, -1, -1, partialTicks);
                             }
-                            upgradeRenderHandler.render2D(partialTicks, pressure > 0F);
+                            upgradeRenderHandler.render2D(matrixStack, partialTicks, pressure > 0F);
                         }
                     }
                 }
@@ -194,16 +197,16 @@ public class HUDHandler implements IKeyListener {
 
         // chestplate launcher upgrade (if installed)
         if (LauncherTracker.INSTANCE.getLauncherProgress() > 0) {
-            LauncherTracker.INSTANCE.render(mw, partialTicks);
+            LauncherTracker.INSTANCE.render(matrixStack, mw, partialTicks);
         }
 
         // render every pending message
         for (ArmorMessage message : messageList) {
-            message.renderMessage(partialTicks);
+            message.renderMessage(matrixStack, partialTicks);
         }
 
         RenderSystem.disableBlend();
-        RenderSystem.popMatrix();
+        matrixStack.pop();
 //        RenderSystem.enableCull();
 //        RenderSystem.depthMask(true);
 //        RenderSystem.enableTexture();
@@ -214,7 +217,7 @@ public class HUDHandler implements IKeyListener {
             for (EquipmentSlotType slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
                 if (isPneumaticArmorPiece(player, slot) && comHudHandler.getArmorPressure(slot) > 0F) {
                     String text = Math.min(100, comHudHandler.getTicksSinceEquipped(slot) * 100 / comHudHandler.getStartupTime(slot)) + "%";
-                    mc.fontRenderer.drawStringWithShadow(text, mw.getScaledWidth() * 0.75f - 8, 14 + PROGRESS_BAR_HEIGHT * (3 - slot.getIndex()), 0xFFFF40);
+                    mc.fontRenderer.drawStringWithShadow(matrixStack, text, mw.getScaledWidth() * 0.75f - 8, 14 + PROGRESS_BAR_HEIGHT * (3 - slot.getIndex()), 0xFFFF40);
                 }
             }
         }
@@ -311,20 +314,22 @@ public class HUDHandler implements IKeyListener {
             if (comHudHandler.getTicksSinceEquipped(slot) == comHudHandler.getStartupTime(slot) / (renderHandlers.size() + 2) * (i + 1)) {
                 playArmorInitSound(player, ModSounds.HUD_INIT.get(), 0.5F + (float) (i + 1) / (renderHandlers.size() + 2) * 0.5F);
                 boolean upgradeEnabled = comHudHandler.isUpgradeRendererInserted(slot, i);
-                addMessage(new ArmorMessage(I18n.format(WidgetKeybindCheckBox.UPGRADE_PREFIX + renderHandlers.get(i).getUpgradeID()) + (upgradeEnabled ? " installed" : " not installed"), 80, upgradeEnabled ? 0x7000AA00 : 0x70FF8000));
+                ITextComponent message = xlate(WidgetKeybindCheckBox.UPGRADE_PREFIX + renderHandlers.get(i).getUpgradeID())
+                        .appendString(upgradeEnabled ? " installed" : " not installed");
+                addMessage(new ArmorMessage(message, 80, upgradeEnabled ? 0x7000AA00 : 0x70FF8000));
             }
         }
 
-        String itemName = player.getItemStackFromSlot(slot).getDisplayName().getFormattedText();
+        ITextComponent itemName = player.getItemStackFromSlot(slot).getDisplayName();
 
         if (comHudHandler.getTicksSinceEquipped(slot) == 1) {
             playArmorInitSound(player, ModSounds.HUD_INIT.get(), 0.5F);
-            addMessage(new ArmorMessage(I18n.format("pneumaticcraft.armor.message.initStarted", itemName), 50, 0x7000AA00));
+            addMessage(new ArmorMessage(xlate("pneumaticcraft.armor.message.initStarted", itemName), 50, 0x7000AA00));
         }
 
         if (comHudHandler.getTicksSinceEquipped(slot) == comHudHandler.getStartupTime(slot)) {
             playArmorInitSound(player, ModSounds.HUD_INIT_COMPLETE.get(), 1.0F);
-            addMessage(new ArmorMessage(I18n.format("pneumaticcraft.armor.message.initComplete", itemName), 50, 0x7000AA00));
+            addMessage(new ArmorMessage(xlate("pneumaticcraft.armor.message.initComplete", itemName), 50, 0x7000AA00));
         }
     }
 
@@ -337,15 +342,17 @@ public class HUDHandler implements IKeyListener {
     }
 
     public void addFeatureToggleMessage(String key, boolean enabled) {
-        HUDHandler.instance().addMessage(I18n.format("pneumaticcraft.armor.message." + (enabled ? "enable" : "disable") + "Setting", I18n.format(key)), Collections.emptyList(), 60, 0x7000AA00);
+        HUDHandler.instance().addMessage(xlate("pneumaticcraft.armor.message." + (enabled ? "enable" : "disable") + "Setting", xlate(key)), Collections.emptyList(), 60, 0x7000AA00);
     }
 
     public void addFeatureToggleMessage(IUpgradeRenderHandler handler, String key, boolean enabled) {
-        String msg = I18n.format(WidgetKeybindCheckBox.UPGRADE_PREFIX + handler.getUpgradeID()) + ": " + I18n.format(WidgetKeybindCheckBox.UPGRADE_PREFIX + key);
-        HUDHandler.instance().addMessage(I18n.format("pneumaticcraft.armor.message." + (enabled ? "enable" : "disable") + "Setting", msg), Collections.emptyList(), 60, 0x7000AA00);
+        ITextComponent msg = xlate(WidgetKeybindCheckBox.UPGRADE_PREFIX + handler.getUpgradeID())
+                .appendString(": ")
+                .append(xlate(WidgetKeybindCheckBox.UPGRADE_PREFIX + key));
+        HUDHandler.instance().addMessage(xlate("pneumaticcraft.armor.message." + (enabled ? "enable" : "disable") + "Setting", msg), Collections.emptyList(), 60, 0x7000AA00);
     }
 
-    public void addMessage(String title, List<String> message, int duration, int backColor) {
+    public void addMessage(ITextComponent title, List<String> message, int duration, int backColor) {
         addMessage(new ArmorMessage(title, message, duration, backColor));
     }
 

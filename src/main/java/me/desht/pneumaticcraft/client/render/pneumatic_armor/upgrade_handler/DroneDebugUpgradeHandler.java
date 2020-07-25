@@ -36,17 +36,14 @@ public class DroneDebugUpgradeHandler implements IUpgradeRenderHandler {
 
     @Override
     public void tick(PlayerEntity player, int rangeUpgrades) {
-
     }
 
     @Override
     public void render3D(MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks) {
-
     }
 
     @Override
-    public void render2D(float partialTicks, boolean helmetEnabled) {
-
+    public void render2D(MatrixStack matrixStack, float partialTicks, boolean helmetEnabled) {
     }
 
     @Override

@@ -7,10 +7,10 @@ import me.desht.pneumaticcraft.client.render.RenderMinigunTracers;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.entity.living.EntityDroneBase;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.entity.LivingRenderer;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.vector.Vector3f;
 
 public class DroneMinigunLayer extends LayerRenderer<EntityDroneBase, ModelDrone> {
     private final ModelMinigun modelDroneMinigun = new ModelMinigun();

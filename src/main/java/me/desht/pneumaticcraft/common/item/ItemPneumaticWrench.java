@@ -68,22 +68,25 @@ public class ItemPneumaticWrench extends ItemPressurizable {
     }
 
     @Override
-    public boolean itemInteractionForEntity(ItemStack iStack, PlayerEntity player, LivingEntity target, Hand hand) {
+    public ActionResultType itemInteractionForEntity(ItemStack iStack, PlayerEntity player, LivingEntity target, Hand hand) {
         if (player.world.isRemote) {
-            return true;
+            return ActionResultType.SUCCESS;
         } else if (target.isAlive() && target instanceof IPneumaticWrenchable) {
             return iStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).map(h -> {
-                boolean wrenched = ((IPneumaticWrenchable) target).onWrenched(target.world, player, null, null, hand);
-                if (wrenched) {
+                if (!player.isCreative() && h.getAir() < PneumaticValues.USAGE_PNEUMATIC_WRENCH) {
+                    return ActionResultType.FAIL;
+                }
+                if (((IPneumaticWrenchable) target).onWrenched(target.world, player, null, null, hand)) {
                     if (!player.isCreative()) {
-                        if (h.getAir() < PneumaticValues.USAGE_PNEUMATIC_WRENCH) return false;
                         h.addAir(-PneumaticValues.USAGE_PNEUMATIC_WRENCH);
                     }
                     playWrenchSound(target.world, target.getPosition());
+                    return ActionResultType.SUCCESS;
+                } else {
+                    return ActionResultType.PASS;
                 }
-                return wrenched;
             }).orElseThrow(RuntimeException::new);
         }
-        return false;
+        return ActionResultType.PASS;
     }
 }

@@ -24,15 +24,15 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.IBlockDisplayReader;
 import net.minecraft.world.IBlockReader;
-import net.minecraft.world.ILightReader;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 
@@ -86,10 +86,10 @@ public class BlockAphorismTile extends BlockPneumaticCraft implements ColorHandl
             if (subTag != null && (subTag.contains(NBT_BORDER_COLOR) || subTag.contains(NBT_BACKGROUND_COLOR))) {
                 ListNBT l = subTag.getList(TileEntityAphorismTile.NBT_TEXT_LINES, Constants.NBT.TAG_STRING);
                 if (!l.isEmpty()) {
-                    curInfo.add(xlate("gui.tooltip.block.pneumaticcraft.aphorism_tile.text").applyTextStyle(TextFormatting.YELLOW));
-                    l.forEach(el -> curInfo.add(new StringTextComponent("  " + el.getString()).applyTextStyle(TextFormatting.ITALIC)));
+                    curInfo.add(xlate("gui.tooltip.block.pneumaticcraft.aphorism_tile.text").mergeStyle(TextFormatting.YELLOW));
+                    l.forEach(el -> curInfo.add(new StringTextComponent("  " + el.getString()).mergeStyle(TextFormatting.ITALIC)));
                 }
-                curInfo.add(xlate("gui.tooltip.block.pneumaticcraft.aphorism_tile.reset").applyTextStyle(TextFormatting.DARK_GREEN));
+                curInfo.add(xlate("gui.tooltip.block.pneumaticcraft.aphorism_tile.reset").mergeStyle(TextFormatting.DARK_GREEN));
             }
         }
     }
@@ -139,7 +139,7 @@ public class BlockAphorismTile extends BlockPneumaticCraft implements ColorHandl
         return ActionResultType.SUCCESS;
     }
 
-    private boolean clickedBorder(BlockState state, Vec3d hitVec) {
+    private boolean clickedBorder(BlockState state, Vector3d hitVec) {
         double x = Math.abs(hitVec.x - (int) hitVec.x);
         double y = Math.abs(hitVec.y - (int) hitVec.y);
         double z = Math.abs(hitVec.z - (int) hitVec.z);
@@ -153,9 +153,9 @@ public class BlockAphorismTile extends BlockPneumaticCraft implements ColorHandl
 
     private void sendEditorMessage(PlayerEntity player) {
         ITextComponent msg = new StringTextComponent(TextFormatting.WHITE.toString())
-                .appendSibling(new TranslationTextComponent("pneumaticcraft.gui.aphorismTileEditor"))
-                .appendSibling(new StringTextComponent(": "))
-                .appendSibling(new TranslationTextComponent("pneumaticcraft.gui.holdF1forHelp"));
+                .append(new TranslationTextComponent("pneumaticcraft.gui.aphorismTileEditor"))
+                .append(new StringTextComponent(": "))
+                .append(new TranslationTextComponent("pneumaticcraft.gui.holdF1forHelp"));
         player.sendStatusMessage(msg, true);
     }
 
@@ -188,7 +188,7 @@ public class BlockAphorismTile extends BlockPneumaticCraft implements ColorHandl
     }
 
     @Override
-    public int getTintColor(BlockState state, @Nullable ILightReader world, @Nullable BlockPos pos, int tintIndex) {
+    public int getTintColor(BlockState state, @Nullable IBlockDisplayReader world, @Nullable BlockPos pos, int tintIndex) {
         if (world != null && pos != null) {
             return PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityAphorismTile.class).map(teAt -> {
                 switch (tintIndex) {

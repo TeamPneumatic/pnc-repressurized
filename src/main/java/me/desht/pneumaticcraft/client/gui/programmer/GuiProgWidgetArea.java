@@ -17,7 +17,6 @@ import me.desht.pneumaticcraft.common.progwidgets.area.AreaType.AreaTypeWidgetEn
 import me.desht.pneumaticcraft.common.progwidgets.area.AreaType.AreaTypeWidgetInteger;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -30,6 +29,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
     private GuiInventorySearcher invSearchGui;
@@ -56,11 +57,11 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
         // GPS buttons
         WidgetButtonExtended gpsButton1 = new WidgetButtonExtended(guiLeft + (advancedMode ? 6 : 55), guiTop + 30, 20, 20, "", b -> openInvSearchGUI(0))
                 .setRenderStacks(new ItemStack(ModItems.GPS_TOOL.get()))
-                .setTooltipText(I18n.format("pneumaticcraft.gui.progWidget.area.selectGPS1"));
+                .setTooltipText(xlate("pneumaticcraft.gui.progWidget.area.selectGPS1"));
         addButton(gpsButton1);
         WidgetButtonExtended gpsButton2 = new WidgetButtonExtended(guiLeft + (advancedMode ? 133 : 182), guiTop + 30, 20, 20, "", b -> openInvSearchGUI(1))
                 .setRenderStacks(new ItemStack(ModItems.GPS_TOOL.get()))
-                .setTooltipText(I18n.format("pneumaticcraft.gui.progWidget.area.selectGPS2"));
+                .setTooltipText(xlate("pneumaticcraft.gui.progWidget.area.selectGPS2"));
         addButton(gpsButton2);
 
         // variable textfields
@@ -77,12 +78,12 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
         }
 
         // type selector radio buttons
-        addLabel(I18n.format("pneumaticcraft.gui.progWidget.area.type"), guiLeft + 8, guiTop + 88);
+        addLabel(xlate("pneumaticcraft.gui.progWidget.area.type"), guiLeft + 8, guiTop + 88);
         final int widgetsPerColumn = 5;
         List<WidgetRadioButton> radioButtons = new ArrayList<>();
         for (int i = 0; i < allAreaTypes.size(); i++) {
             final AreaType areaType = allAreaTypes.get(i);
-            WidgetRadioButton radioButton = new WidgetRadioButton(guiLeft + widgetsPerColumn + i / widgetsPerColumn * 80, guiTop + 100 + i % widgetsPerColumn * 12, 0xFF404040, areaType.getName(), b -> {
+            WidgetRadioButton radioButton = new WidgetRadioButton(guiLeft + widgetsPerColumn + i / widgetsPerColumn * 80, guiTop + 100 + i % widgetsPerColumn * 12, 0xFF404040, xlate(areaType.getTranslationKey()), b -> {
                 progWidget.type = areaType;
                 switchToWidgets(areaType);
             });
@@ -113,9 +114,9 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
 
         // blockpos labels
         String l1 = "P1: " + TextFormatting.DARK_BLUE + formatPos(progWidget.x1, progWidget.y1, progWidget.z1);
-        addLabel(l1, guiLeft + 8, guiTop + 20);
+        addLabel(new StringTextComponent(l1), guiLeft + 8, guiTop + 20);
         String l2 = "P2: " + TextFormatting.DARK_BLUE + formatPos(progWidget.x2, progWidget.y2, progWidget.z2);
-        addLabel(l2, guiLeft + 133, guiTop + 20);
+        addLabel(new StringTextComponent(l2), guiLeft + 133, guiTop + 20);
     }
 
     private String formatPos(int x, int y, int z) {
@@ -163,7 +164,7 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
         List<AreaTypeWidget> atWidgets = new ArrayList<>();
         type.addUIWidgets(atWidgets);
         for (AreaTypeWidget areaTypeWidget : atWidgets) {
-            WidgetLabel titleWidget = new WidgetLabel(x, curY, I18n.format(areaTypeWidget.title));
+            WidgetLabel titleWidget = new WidgetLabel(x, curY, xlate(areaTypeWidget.title));
             addButton(titleWidget);
             areaTypeStaticWidgets.add(titleWidget);
             curY += font.FONT_HEIGHT + 1;

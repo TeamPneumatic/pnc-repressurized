@@ -3,9 +3,9 @@ package me.desht.pneumaticcraft.common.item;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.inventory.ContainerAmadron;
-import me.desht.pneumaticcraft.common.util.GlobalPosUtils;
+import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
 import me.desht.pneumaticcraft.common.util.IOHelper;
-import me.desht.pneumaticcraft.common.util.NBTUtil;
+import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
@@ -64,13 +64,13 @@ public class ItemAmadronTablet extends ItemPressurizable implements IPositionPro
 
         if (te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing).isPresent()) {
             if (!worldIn.isRemote) {
-                setFluidProvidingLocation(player.getHeldItem(ctx.getHand()), GlobalPos.of(worldIn.getDimension().getType(), pos));
+                setFluidProvidingLocation(player.getHeldItem(ctx.getHand()), GlobalPosHelper.makeGlobalPos(worldIn, pos));
             } else {
                 ctx.getPlayer().playSound(ModSounds.CHIRP.get(), 1.0f, 1.5f);
             }
         } else if (te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing).isPresent()) {
             if (!worldIn.isRemote) {
-                setItemProvidingLocation(player.getHeldItem(ctx.getHand()), GlobalPos.of(worldIn.getDimension().getType(), pos));
+                setItemProvidingLocation(player.getHeldItem(ctx.getHand()), GlobalPosHelper.makeGlobalPos(worldIn, pos));
             } else {
                 ctx.getPlayer().playSound(ModSounds.CHIRP.get(), 1.0f, 1.5f);
             }
@@ -85,14 +85,14 @@ public class ItemAmadronTablet extends ItemPressurizable implements IPositionPro
         super.addInformation(stack, worldIn, infoList, flag);
         GlobalPos gPos = getItemProvidingLocation(stack);
         if (gPos != null) {
-            infoList.add(xlate("pneumaticcraft.gui.tooltip.amadronTablet.itemLocation", GlobalPosUtils.prettyPrint(gPos)).applyTextStyle(TextFormatting.YELLOW));
+            infoList.add(xlate("pneumaticcraft.gui.tooltip.amadronTablet.itemLocation", GlobalPosHelper.prettyPrint(gPos)).mergeStyle(TextFormatting.YELLOW));
         } else {
             infoList.add(xlate("pneumaticcraft.gui.tooltip.amadronTablet.selectItemLocation"));
         }
 
         gPos = getFluidProvidingLocation(stack);
         if (gPos != null) {
-            infoList.add(xlate("pneumaticcraft.gui.tooltip.amadronTablet.fluidLocation", GlobalPosUtils.prettyPrint(gPos)).applyTextStyle(TextFormatting.YELLOW));
+            infoList.add(xlate("pneumaticcraft.gui.tooltip.amadronTablet.fluidLocation", GlobalPosHelper.prettyPrint(gPos)).mergeStyle(TextFormatting.YELLOW));
         } else {
             infoList.add(xlate("pneumaticcraft.gui.tooltip.amadronTablet.selectFluidLocation"));
         }
@@ -101,7 +101,7 @@ public class ItemAmadronTablet extends ItemPressurizable implements IPositionPro
     public static LazyOptional<IItemHandler> getItemCapability(ItemStack tablet) {
         GlobalPos pos = getItemProvidingLocation(tablet);
         if (pos != null) {
-            TileEntity te = GlobalPosUtils.getTileEntity(pos);
+            TileEntity te = GlobalPosHelper.getTileEntity(pos);
             return IOHelper.getInventoryForTE(te);
         }
         return LazyOptional.empty();
@@ -109,18 +109,18 @@ public class ItemAmadronTablet extends ItemPressurizable implements IPositionPro
 
     public static GlobalPos getItemProvidingLocation(ItemStack tablet) {
         return tablet.hasTag() && tablet.getTag().contains("itemPos") ?
-                GlobalPosUtils.deserializeGlobalPos(tablet.getTag().getCompound("itemPos")) :
+                GlobalPosHelper.fromNBT(tablet.getTag().getCompound("itemPos")) :
                 null;
     }
 
     private static void setItemProvidingLocation(ItemStack tablet, GlobalPos globalPos) {
-        NBTUtil.setCompoundTag(tablet, "itemPos", GlobalPosUtils.serializeGlobalPos(globalPos));
+        NBTUtils.setCompoundTag(tablet, "itemPos", GlobalPosHelper.toNBT(globalPos));
     }
 
     public static LazyOptional<IFluidHandler> getFluidCapability(ItemStack tablet) {
         GlobalPos pos = getFluidProvidingLocation(tablet);
         if (pos != null) {
-            TileEntity te = GlobalPosUtils.getTileEntity(pos);
+            TileEntity te = GlobalPosHelper.getTileEntity(pos);
             return IOHelper.getFluidHandlerForTE(te);
         }
         return LazyOptional.empty();
@@ -128,12 +128,12 @@ public class ItemAmadronTablet extends ItemPressurizable implements IPositionPro
 
     public static GlobalPos getFluidProvidingLocation(ItemStack tablet) {
         return tablet.hasTag() && tablet.getTag().contains("liquidPos") ?
-                GlobalPosUtils.deserializeGlobalPos(tablet.getTag().getCompound("liquidPos")) :
+                GlobalPosHelper.fromNBT(tablet.getTag().getCompound("liquidPos")) :
                 null;
     }
 
     private static void setFluidProvidingLocation(ItemStack tablet, GlobalPos globalPos) {
-        NBTUtil.setCompoundTag(tablet, "liquidPos", GlobalPosUtils.serializeGlobalPos(globalPos));
+        NBTUtils.setCompoundTag(tablet, "liquidPos", GlobalPosHelper.toNBT(globalPos));
     }
 
     public static Map<ResourceLocation, Integer> loadShoppingCart(ItemStack tablet) {
@@ -151,7 +151,7 @@ public class ItemAmadronTablet extends ItemPressurizable implements IPositionPro
     public static void saveShoppingCart(ItemStack tablet, Map<ResourceLocation, Integer> cart) {
         CompoundNBT subTag = new CompoundNBT();
         cart.forEach((key, value) -> subTag.putInt(key.toString(), value));
-        NBTUtil.setCompoundTag(tablet, "shoppingCart", subTag);
+        NBTUtils.setCompoundTag(tablet, "shoppingCart", subTag);
     }
 
     @Override

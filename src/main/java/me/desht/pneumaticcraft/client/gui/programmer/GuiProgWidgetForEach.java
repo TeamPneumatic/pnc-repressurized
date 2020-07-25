@@ -5,7 +5,8 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetComboBox;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.IVariableSetWidget;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
-import net.minecraft.client.resources.I18n;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiProgWidgetForEach<W extends IProgWidget & IVariableSetWidget> extends GuiProgWidgetAreaShow<W> {
 
@@ -25,6 +26,8 @@ public class GuiProgWidgetForEach<W extends IProgWidget & IVariableSetWidget> ex
         addButton(variableField);
         variableField.setText(progWidget.getVariable());
         variableField.setFocused2(true);
+
+        addLabel(xlate("pneumaticcraft.gui.progWidget.coordinate.variableName"), guiLeft + 10, guiTop + 30);
     }
 
     @Override
@@ -32,11 +35,5 @@ public class GuiProgWidgetForEach<W extends IProgWidget & IVariableSetWidget> ex
         progWidget.setVariable(variableField.getText());
 
         super.onClose();
-    }
-
-    @Override
-    public void render(int mouseX, int mouseY, float partialTicks) {
-        super.render(mouseX, mouseY, partialTicks);
-        font.drawString(I18n.format("pneumaticcraft.gui.progWidget.coordinate.variableName"), guiLeft + 10, guiTop + 30, 0xFF000000);
     }
 }

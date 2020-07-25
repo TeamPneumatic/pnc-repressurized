@@ -5,13 +5,13 @@ import com.mojang.blaze3d.vertex.IVertexBuilder;
 import me.desht.pneumaticcraft.client.render.ModRenderTypes;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.Matrix4f;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.util.math.vector.Matrix4f;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer.*;
+import static me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer2D.*;
 
 public class PressureGaugeRenderer3D {
     public static void drawPressureGauge(MatrixStack matrixStack, IRenderTypeBuffer buffer, float minPressure, float maxPressure, float dangerPressure, float minWorkingPressure, float currentPressure, int xPos, int yPos) {

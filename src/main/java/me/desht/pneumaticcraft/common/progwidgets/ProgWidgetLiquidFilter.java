@@ -91,8 +91,8 @@ public class ProgWidgetLiquidFilter extends ProgWidget {
         super.getTooltip(curTooltip);
         if (fluid != null) {
             curTooltip.add(new StringTextComponent("Fluid: " )
-                    .applyTextStyle(TextFormatting.AQUA)
-                    .appendText(getExtraStringInfo()));
+                    .mergeStyle(TextFormatting.AQUA)
+                    .appendString(getExtraStringInfo()));
         }
     }
 
@@ -134,7 +134,7 @@ public class ProgWidgetLiquidFilter extends ProgWidget {
     @Override
     public String getExtraStringInfo() {
         return fluid != Fluids.EMPTY ?
-                new FluidStack(fluid, 1).getDisplayName().getFormattedText() :
+                new FluidStack(fluid, 1).getDisplayName().getString() :
                 I18n.format("pneumaticcraft.gui.progWidget.liquidFilter.noFluid");
     }
 

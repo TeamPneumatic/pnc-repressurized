@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
 import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
+import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
@@ -88,8 +89,9 @@ public class TileEntityAssemblyPlatform extends TileEntityTickableBase implement
     }
 
     @Override
-    public void read(CompoundNBT tag) {
-        super.read(tag);
+    public void read(BlockState state, CompoundNBT tag) {
+        super.read(state, tag);
+
         shouldClawClose = tag.getBoolean("clawClosing");
         clawProgress = tag.getFloat("clawProgress");
         speed = tag.getFloat("speed");

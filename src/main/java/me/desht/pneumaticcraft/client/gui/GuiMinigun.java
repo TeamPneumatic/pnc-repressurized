@@ -6,6 +6,8 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.text.ITextComponent;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
 public class GuiMinigun extends GuiPneumaticInventoryItem {
     public GuiMinigun(ContainerChargingStationItemInventory container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
@@ -15,7 +17,7 @@ public class GuiMinigun extends GuiPneumaticInventoryItem {
     public void init() {
         super.init();
 
-        addAnimatedStat("pneumaticcraft.gui.tab.info", Textures.GUI_INFO_LOCATION, 0xFF8888FF, true)
+        addAnimatedStat(xlate("pneumaticcraft.gui.tab.info"), Textures.GUI_INFO_LOCATION, 0xFF8888FF, true)
                 .setText("gui.tooltip.item.pneumaticcraft.minigun");
         addUpgradeTabs(itemStack.getItem(), "minigun");
     }

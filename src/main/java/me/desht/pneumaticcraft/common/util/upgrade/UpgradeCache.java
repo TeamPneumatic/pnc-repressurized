@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.util.upgrade;
 
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.item.ItemMachineUpgrade;
-import me.desht.pneumaticcraft.common.util.NBTUtil;
+import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.IntArrayNBT;
@@ -66,7 +66,7 @@ public class UpgradeCache {
 
     private void handleExtraData(ItemStack stack, EnumUpgrade type) {
         if (type == EnumUpgrade.DISPENSER && stack.hasTag()) {
-            ejectDirection = Direction.byName(NBTUtil.getString(stack, ItemMachineUpgrade.NBT_DIRECTION));
+            ejectDirection = Direction.byName(NBTUtils.getString(stack, ItemMachineUpgrade.NBT_DIRECTION));
         }
     }
 

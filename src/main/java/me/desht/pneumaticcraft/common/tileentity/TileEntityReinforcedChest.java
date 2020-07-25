@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerReinforcedChest;
 import me.desht.pneumaticcraft.common.inventory.handler.ComparatorItemStackHandler;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
@@ -52,8 +53,9 @@ public class TileEntityReinforcedChest extends TileEntityBase implements INamedC
     }
 
     @Override
-    public void read(CompoundNBT tag) {
-        super.read(tag);
+    public void read(BlockState state, CompoundNBT tag) {
+        super.read(state, tag);
+
         inventory.deserializeNBT(tag.getCompound(NBT_ITEMS));
     }
 

@@ -47,7 +47,7 @@ public abstract class DroneEntityBase<W extends IEntityProvider, E extends Entit
     @Override
     public boolean shouldContinueExecuting() {
         if (!targetedEntity.isAlive()) return false;
-        if (targetedEntity.getPositionVector().squareDistanceTo(drone.getDronePos()) < 2.25) {
+        if (targetedEntity.getPositionVec().squareDistanceTo(drone.getDronePos()) < 2.25) {
             return doAction();
         }
         return !drone.getPathNavigator().hasNoPath();

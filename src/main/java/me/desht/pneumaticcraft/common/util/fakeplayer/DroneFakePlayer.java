@@ -4,7 +4,7 @@ import com.mojang.authlib.GameProfile;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import net.minecraft.entity.item.ExperienceOrbEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.util.FakePlayer;
 
@@ -19,7 +19,7 @@ public class DroneFakePlayer extends FakePlayer {
 
     @Override
     public void giveExperiencePoints(int amount) {
-        Vec3d pos = drone.getDronePos();
+        Vector3d pos = drone.getDronePos();
         ExperienceOrbEntity orb = new ExperienceOrbEntity(drone.world(), pos.x, pos.y, pos.z, amount);
         drone.world().addEntity(orb);
     }

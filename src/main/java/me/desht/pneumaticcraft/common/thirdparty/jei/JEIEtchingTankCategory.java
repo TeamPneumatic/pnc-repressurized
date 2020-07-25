@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModItems;
@@ -100,8 +101,8 @@ public class JEIEtchingTankCategory implements IRecipeCategory<JEIEtchingTankCat
     }
 
     @Override
-    public void draw(EtchingTankRecipe recipe, double mouseX, double mouseY) {
-        progressBar.draw(20, 0);
+    public void draw(EtchingTankRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
+        progressBar.draw(matrixStack, 20, 0);
     }
 
     static class EtchingTankRecipe {

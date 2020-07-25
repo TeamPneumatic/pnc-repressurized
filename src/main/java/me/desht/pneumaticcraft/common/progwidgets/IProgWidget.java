@@ -42,13 +42,6 @@ public interface IProgWidget extends IProgWidgetBase {
     void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets);
 
     /**
-     * Render any extra widget info needed; this is only called client-side, of course.  Since this class is also
-     * loaded server side, never call client-side rendering code directly from this method!
-     * Instead, call out to a method in a separate (client-only) class to do the necessary drawing.
-     */
-    void renderExtraInfo();
-
-    /**
      * Can this widget connect to a widget above?
      * @return true if it can, false otherwise
      */

@@ -49,10 +49,10 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     }
 
     @Override
-    public void read(CompoundNBT nbt) {
-        super.read(nbt);
+    public void read(BlockState state, CompoundNBT tag) {
+        super.read(state, tag);
 
-        byte closed = nbt.getByte("sidesClosed");
+        byte closed = tag.getByte("sidesClosed");
         for (int i = 0; i < 6; i++) {
             sidesClosed[i] = ((closed & 1 << i) != 0);
         }

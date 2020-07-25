@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.gui.tubemodule;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
@@ -20,7 +21,11 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.vector.Matrix4f;
+import net.minecraft.util.text.StringTextComponent;
 import org.lwjgl.opengl.GL11;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiPressureModule extends GuiTubeModule<TubeModule> {
 
@@ -49,20 +54,20 @@ public class GuiPressureModule extends GuiTubeModule<TubeModule> {
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
 
-        addLabel("lower", guiLeft + 15, guiTop + 33);
-        addLabel("bar", guiLeft + 50, guiTop + 44);
-        addLabel("higher", guiLeft + 140, guiTop + 33);
+        addLabel(new StringTextComponent("lower"), guiLeft + 15, guiTop + 33);
+        addLabel(new StringTextComponent("bar"), guiLeft + 50, guiTop + 44);
+        addLabel(new StringTextComponent("higher"), guiLeft + 140, guiTop + 33);
 
-        String titleText = title.getFormattedText();
-        addLabel(titleText, width / 2 - font.getStringWidth(titleText) / 2, guiTop + 5);
+//        String titleText = title.getFormattedText();
+        addLabel(title, width / 2 - font.func_238414_a_(title) / 2, guiTop + 5);
 
         lowerBoundField = new TextFieldWidget(font, xStart + 15, yStart + 43, 30, 10,
-                PneumaticCraftUtils.roundNumberTo(module.lowerBound, 1));
+                new StringTextComponent(PneumaticCraftUtils.roundNumberTo(module.lowerBound, 1)));
         lowerBoundField.setResponder(s -> updateBoundFromTextfield(0));
         addButton(lowerBoundField);
 
         higherBoundField = new TextFieldWidget(font, xStart + 140, yStart + 43, 30, 10,
-                PneumaticCraftUtils.roundNumberTo(module.higherBound, 1));
+                new StringTextComponent(PneumaticCraftUtils.roundNumberTo(module.higherBound, 1)));
         higherBoundField.setResponder(s -> updateBoundFromTextfield(1));
         addButton(higherBoundField);
 
@@ -71,18 +76,20 @@ public class GuiPressureModule extends GuiTubeModule<TubeModule> {
         graphLeft = guiLeft + 22;
         graphRight = guiLeft + 172;
 
-        addButton(new WidgetTooltipArea(graphLeft - 20, graphHighY, 25, graphLowY - graphHighY, "pneumaticcraft.gui.redstone"));
-        addButton(new WidgetTooltipArea(graphLeft, graphLowY - 5, graphRight - graphLeft, 25, "pneumaticcraft.gui.threshold"));
+        addButton(new WidgetTooltipArea(graphLeft - 20, graphHighY, 25, graphLowY - graphHighY,
+                xlate("pneumaticcraft.gui.redstone")));
+        addButton(new WidgetTooltipArea(graphLeft, graphLowY - 5, graphRight - graphLeft, 25,
+                xlate("pneumaticcraft.gui.threshold")));
 
-        WidgetAnimatedStat stat = new WidgetAnimatedStat(this, "pneumaticcraft.gui.tab.info", WidgetAnimatedStat.StatIcon.of(Textures.GUI_INFO_LOCATION), xStart, yStart + 5, 0xFF8888FF, null, true);
+        WidgetAnimatedStat stat = new WidgetAnimatedStat(this, xlate("pneumaticcraft.gui.tab.info"), WidgetAnimatedStat.StatIcon.of(Textures.GUI_INFO_LOCATION), xStart, yStart + 5, 0xFF8888FF, null, true);
         stat.setText("pneumaticcraft.gui.tab.info.tubeModule");
         stat.setBeveled(true);
         addButton(stat);
 
-        WidgetCheckBox advancedMode = new WidgetCheckBox(guiLeft + 6, guiTop + 20, 0xFF404040, "pneumaticcraft.gui.tubeModule.advancedConfig", b -> {
+        WidgetCheckBox advancedMode = new WidgetCheckBox(guiLeft + 6, guiTop + 20, 0xFF404040, xlate("pneumaticcraft.gui.tubeModule.advancedConfig"), b -> {
             module.advancedConfig = b.checked;
             NetworkHandler.sendToServer(new PacketUpdatePressureModule(module));
-        }).setTooltip(I18n.format("pneumaticcraft.gui.tubeModule.advancedConfig.tooltip"));
+        }).setTooltip(xlate("pneumaticcraft.gui.tubeModule.advancedConfig.tooltip"));
         advancedMode.checked = true;
         addButton(advancedMode);
 
@@ -96,8 +103,8 @@ public class GuiPressureModule extends GuiTubeModule<TubeModule> {
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float partialTicks) {
-        super.render(mouseX, mouseY, partialTicks);
+    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+        super.render(matrixStack, mouseX, mouseY, partialTicks);
 
         RenderSystem.disableLighting();
 
@@ -105,20 +112,20 @@ public class GuiPressureModule extends GuiTubeModule<TubeModule> {
         int scrollbarLowerBoundX = (int) (guiLeft + 16 + (158 - 11) * (module.lowerBound / (TubeModule.MAX_VALUE + 1)));
         int scrollbarHigherBoundX = (int) (guiLeft + 16 + (158 - 11) * (module.higherBound / (TubeModule.MAX_VALUE + 1)));
 
-        blit(scrollbarLowerBoundX, guiTop + 73, 183, 0, 15, 12);
-        blit(scrollbarHigherBoundX, guiTop + 59, 183, 0, 15, 12);
+        blit(matrixStack, scrollbarLowerBoundX, guiTop + 73, 183, 0, 15, 12);
+        blit(matrixStack, scrollbarHigherBoundX, guiTop + 59, 183, 0, 15, 12);
 
-        renderGraph();
+        renderGraph(matrixStack);
 
         /*
          * Draw the current redstone strength
          */
         if (module instanceof TubeModuleRedstoneReceiving) {
             module.onNeighborBlockUpdate();
-            hLine(graphLeft + 4, graphRight, graphHighY + (graphLowY - graphHighY) * (15 - ((TubeModuleRedstoneReceiving) module).getReceivingRedstoneLevel()) / 15, 0xFFFF0000);
+            hLine(matrixStack, graphLeft + 4, graphRight, graphHighY + (graphLowY - graphHighY) * (15 - ((TubeModuleRedstoneReceiving) module).getReceivingRedstoneLevel()) / 15, 0xFFFF0000);
             String status = I18n.format("pneumaticcraft.gui.tubeModule.simpleConfig.threshold")
                     + " " + PneumaticCraftUtils.roundNumberTo(((TubeModuleRedstoneReceiving) module).getThreshold(), 1) + " bar";
-            font.drawString(status, guiLeft + xSize / 2f - font.getStringWidth(status) / 2f, guiTop + 175, 0xFF404040);
+            font.drawString(matrixStack, status, guiLeft + xSize / 2f - font.getStringWidth(status) / 2f, guiTop + 175, 0xFF404040);
         }
 
         /*
@@ -130,10 +137,11 @@ public class GuiPressureModule extends GuiTubeModule<TubeModule> {
         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         RenderSystem.disableTexture();
         RenderSystem.color4f(0, 0, 0, 1.0f);
+        Matrix4f posMat = matrixStack.getLast().getMatrix();
         for (int i = 0; i < 16; i++) {
-            double y = graphHighY + (graphLowY - graphHighY) * (15 - i) / 15.0;
-            double x = graphLeft + (graphRight - graphLeft) * module.getThreshold(i) / 30;
-            bufferBuilder.pos(x, y, 90.0d).color(0.25f + i * 0.05f, 0f, 0f, 1.0f).endVertex();
+            float y = graphHighY + (graphLowY - graphHighY) * (15 - i) / 15f;
+            float x = graphLeft + (graphRight - graphLeft) * module.getThreshold(i) / 30f;
+            bufferBuilder.pos(posMat, x, y, 90f).color(0.25f + i * 0.05f, 0f, 0f, 1.0f).endVertex();
         }
         Tessellator.getInstance().draw();
         RenderSystem.enableTexture();
@@ -141,24 +149,24 @@ public class GuiPressureModule extends GuiTubeModule<TubeModule> {
 
     }
 
-    private void renderGraph() {
-        vLine(graphLeft, graphHighY, graphLowY, 0xFF000000);
+    private void renderGraph(MatrixStack matrixStack) {
+        vLine(matrixStack, graphLeft, graphHighY, graphLowY, 0xFF000000);
         for (int i = 0; i < 16; i++) {
             boolean longer = i % 5 == 0;
             if (longer) {
-                font.drawString(i + "", graphLeft - 5 - font.getStringWidth(i + ""), graphHighY + (graphLowY - graphHighY) * (15 - i) / 15f - 3, 0xFF000000);
-                hLine(graphLeft + 4, graphRight, graphHighY + (graphLowY - graphHighY) * (15 - i) / 15, i == 0 ? 0xFF000000 : 0x33000000);
+                font.drawString(matrixStack, i + "", graphLeft - 5 - font.getStringWidth(i + ""), graphHighY + (graphLowY - graphHighY) * (15 - i) / 15f - 3, 0xFF000000);
+                hLine(matrixStack, graphLeft + 4, graphRight, graphHighY + (graphLowY - graphHighY) * (15 - i) / 15, i == 0 ? 0xFF000000 : 0x33000000);
 
             }
-            hLine(graphLeft - (longer ? 5 : 3), graphLeft + 3, graphHighY + (graphLowY - graphHighY) * (15 - i) / 15, 0xFF000000);
+            hLine(matrixStack, graphLeft - (longer ? 5 : 3), graphLeft + 3, graphHighY + (graphLowY - graphHighY) * (15 - i) / 15, 0xFF000000);
         }
         for (int i = 0; i < 31; i++) {
             boolean longer = i % 5 == 0;
             if (longer) {
-                font.drawString(i + "", graphLeft + (graphRight - graphLeft) * i / 30f - font.getStringWidth(i + "") / 2f + 1, graphLowY + 6, 0xFF000000);
-                vLine(graphLeft + (graphRight - graphLeft) * i / 30, graphHighY, graphLowY - 2, 0x33000000);
+                font.drawString(matrixStack, i + "", graphLeft + (graphRight - graphLeft) * i / 30f - font.getStringWidth(i + "") / 2f + 1, graphLowY + 6, 0xFF000000);
+                vLine(matrixStack, graphLeft + (graphRight - graphLeft) * i / 30, graphHighY, graphLowY - 2, 0x33000000);
             }
-            vLine(graphLeft + (graphRight - graphLeft) * i / 30, graphLowY - 3, graphLowY + (longer ? 5 : 3), 0xFF000000);
+            vLine(matrixStack, graphLeft + (graphRight - graphLeft) * i / 30, graphLowY - 3, graphLowY + (longer ? 5 : 3), 0xFF000000);
         }
     }
 

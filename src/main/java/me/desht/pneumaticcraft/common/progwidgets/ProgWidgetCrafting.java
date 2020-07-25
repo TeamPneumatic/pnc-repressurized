@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.common.progwidgets;
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.client.util.ProgWidgetRenderer;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.util.ItemTagMatcher;
@@ -22,7 +21,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -125,11 +124,6 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
     private static IRecipe<CraftingInventory> getRecipe(World world, ICraftingWidget widget) {
         CraftingInventory grid = widget.getCraftingGrid();
         return world.getRecipeManager().getRecipe(IRecipeType.CRAFTING, grid, world).orElse(null);
-    }
-
-    @Override
-    public void renderExtraInfo() {
-        ProgWidgetRenderer.renderCraftingExtras(this);
     }
 
     @Override
@@ -249,7 +243,7 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
 
                         ItemStack remainder = ItemHandlerHelper.insertItem(drone.getInv(), itemstack2.copy(), false);
                         if (!remainder.isEmpty()) {
-                            Vec3d pos = drone.getDronePos();
+                            Vector3d pos = drone.getDronePos();
                             ItemEntity item = new ItemEntity(drone.world(), pos.x, pos.y, pos.z, remainder);
                             drone.world().addEntity(item);
                         }
@@ -267,7 +261,7 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
 
             ItemStack remainder = ItemHandlerHelper.insertItem(drone.getInv(), craftedStack, false);
             if (!remainder.isEmpty()) {
-                Vec3d pos = drone.getDronePos();
+                Vector3d pos = drone.getDronePos();
                 ItemEntity item = new ItemEntity(drone.world(), pos.x, pos.y, pos.z, remainder);
                 drone.world().addEntity(item);
             }

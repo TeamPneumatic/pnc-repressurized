@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
@@ -8,8 +9,9 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 
 import javax.annotation.Nonnull;
@@ -17,6 +19,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 import static me.desht.pneumaticcraft.api.crafting.TemperatureRange.TemperatureScale.CELSIUS;
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class WidgetTemperature extends Widget implements ITooltipProvider {
     private int temperature;
@@ -27,7 +30,7 @@ public class WidgetTemperature extends Widget implements ITooltipProvider {
     private boolean showOperatingRange = true;
 
     public WidgetTemperature(int xIn, int yIn, TemperatureRange totalRange, int initialTemp, int tickInterval) {
-        super(xIn, yIn, 13, 50, "");
+        super(xIn, yIn, 13, 50, StringTextComponent.EMPTY);
         this.totalRange = totalRange;
         this.temperature = initialTemp;
         this.tickInterval = tickInterval;
@@ -70,64 +73,64 @@ public class WidgetTemperature extends Widget implements ITooltipProvider {
     }
 
     @Override
-    public void renderButton(int mouseX, int mouseY, float partialTicks) {
+    public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         if (this.visible) {
             RenderSystem.disableLighting();
             Minecraft.getInstance().getTextureManager().bindTexture(Textures.WIDGET_TEMPERATURE);
             RenderSystem.color4f(1, 1, 1, 1);
 
             // the background frame
-            blit(x + 6, y, 6, 0, 7, 50, 18, 50);
+            blit(matrixStack, x + 6, y, 6, 0, 7, 50, 18, 50);
 
             // the coloured temperature bar
             int barLength = getYPos(temperature);
-            blit(x + 7, y - 1 + height - barLength, 13, height - barLength - 2, 5, barLength, 18, 50);
+            blit(matrixStack, x + 7, y - 1 + height - barLength, 13, height - barLength - 2, 5, barLength, 18, 50);
 
             // ticks
-            drawTicks();
+            drawTicks(matrixStack);
             if (drawText) {
-                GuiUtils.drawScaledText(Minecraft.getInstance().fontRenderer, CELSIUS.symbol(), x + 7, y + height + 1, 0xFF404040, 0.5f);
+                GuiUtils.drawScaledText(matrixStack, Minecraft.getInstance().fontRenderer, CELSIUS.symbol(), x + 7, y + height + 1, 0xFF404040, 0.5f);
             }
 
             // operating temp markers, if necessary
-            drawOperatingTempMarkers();
+            drawOperatingTempMarkers(matrixStack);
         }
     }
 
-    public void drawTicks() {
+    public void drawTicks(MatrixStack matrixStack) {
         FontRenderer font = Minecraft.getInstance().fontRenderer;
         int tickTempC = findNearest(totalRange.getMin() - 273, tickInterval);
         int n = 0;
         while (tickTempC <= totalRange.getMax() - 273) {
             // draw...
             int yOffset = getYPos(tickTempC + 273);
-            hLine(x + 4, x + 6, y - 1 + height - yOffset, 0xA0404040);
+            hLine(matrixStack, x + 4, x + 6, y - 1 + height - yOffset, 0xA0404040);
             if (yOffset != 0 && yOffset != height - 1) {
-                hLine(x + 6, x + 8, y - 1 + height - yOffset, 0x80C0C0C0);
+                hLine(matrixStack, x + 6, x + 8, y - 1 + height - yOffset, 0x80C0C0C0);
             }
             if (drawText && n++ % 2 == 0) {
                 String s = Integer.toString(tickTempC);
-                GuiUtils.drawScaledText(font, s, x + 4 - font.getStringWidth(s) / 2, y - 2 + height - yOffset, 0xFF404040, 0.5f);
+                GuiUtils.drawScaledText(matrixStack, font, s, x + 4 - font.getStringWidth(s) / 2, y - 2 + height - yOffset, 0xFF404040, 0.5f);
             }
             tickTempC += tickInterval;
         }
     }
 
-    public void drawOperatingTempMarkers() {
+    public void drawOperatingTempMarkers(MatrixStack matrixStack) {
         if (operatingRange != null) {
             if (totalRange.inRange(operatingRange.getMax())) {
                 int yOffset = getYPos(operatingRange.getMax());
-                hLine(x + 7, x + 11, y + 1 + height - yOffset, 0xFFE0E040);
-                hLine(x + 9, x + 9,  y     + height - yOffset, 0x80E0E040);
-                hLine(x + 8, x + 10, y - 1 + height - yOffset, 0x80E0E040);
-                hLine(x + 7, x + 11, y - 2 + height - yOffset, 0x80E0E040);
+                hLine(matrixStack, x + 7, x + 11, y + 1 + height - yOffset, 0xFFE0E040);
+                hLine(matrixStack, x + 9, x + 9,  y     + height - yOffset, 0x80E0E040);
+                hLine(matrixStack, x + 8, x + 10, y - 1 + height - yOffset, 0x80E0E040);
+                hLine(matrixStack, x + 7, x + 11, y - 2 + height - yOffset, 0x80E0E040);
             }
             if (totalRange.inRange(operatingRange.getMin())) {
                 int yOffset = getYPos(operatingRange.getMin());
-                hLine(x + 7, x + 11, y - 1 + height - yOffset, 0xFFE0E040);
-                hLine(x + 9, x + 9,  y     + height - yOffset, 0x80E0E040);
-                hLine(x + 8, x + 10, y + 1 + height - yOffset, 0x80E0E040);
-                hLine(x + 7, x + 11, y + 2 + height - yOffset, 0x80E0E040);
+                hLine(matrixStack, x + 7, x + 11, y - 1 + height - yOffset, 0xFFE0E040);
+                hLine(matrixStack, x + 9, x + 9,  y     + height - yOffset, 0x80E0E040);
+                hLine(matrixStack, x + 8, x + 10, y + 1 + height - yOffset, 0x80E0E040);
+                hLine(matrixStack, x + 7, x + 11, y + 2 + height - yOffset, 0x80E0E040);
             }
         }
     }
@@ -145,12 +148,11 @@ public class WidgetTemperature extends Widget implements ITooltipProvider {
     }
 
     @Override
-    public void addTooltip(double mouseX, double mouseY, List<String> curTip, boolean shift) {
-        curTip.add(HeatUtil.formatHeatString(temperature).getFormattedText());
+    public void addTooltip(double mouseX, double mouseY, List<ITextComponent> curTip, boolean shift) {
+        curTip.add(HeatUtil.formatHeatString(temperature));
         if (operatingRange != null && showOperatingRange) {
             TextFormatting tf = operatingRange.inRange(temperature) ? TextFormatting.GREEN : TextFormatting.GOLD;
-            curTip.add(tf + I18n.format("pneumaticcraft.gui.misc.requiredTemperatureString",
-                    operatingRange.asString(CELSIUS)));
+            curTip.add(xlate("pneumaticcraft.gui.misc.requiredTemperatureString", operatingRange.asString(CELSIUS)).mergeStyle(tf));
         }
     }
 

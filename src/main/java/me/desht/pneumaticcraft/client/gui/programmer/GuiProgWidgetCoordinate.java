@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.gui.programmer;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.client.gui.GuiInventorySearcher;
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
@@ -17,6 +18,8 @@ import net.minecraft.util.text.StringTextComponent;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiProgWidgetCoordinate extends GuiProgWidgetAreaShow<ProgWidgetCoordinate> {
     private GuiInventorySearcher invSearchGui;
@@ -40,14 +43,14 @@ public class GuiProgWidgetCoordinate extends GuiProgWidgetAreaShow<ProgWidgetCoo
         List<WidgetRadioButton> radioButtons = new ArrayList<>();
 
         WidgetRadioButton radioButton = new WidgetRadioButton(guiLeft + 7, guiTop + 51, 0xFF404040,
-                I18n.format("pneumaticcraft.gui.progWidget.coordinate.constant"), b -> setUsingVariable(false));
+                xlate("pneumaticcraft.gui.progWidget.coordinate.constant"), b -> setUsingVariable(false));
         if (!progWidget.isUsingVariable()) radioButton.checked = true;
         radioButtons.add(radioButton);
         radioButton.otherChoices = radioButtons;
         addButton(radioButton);
 
         radioButton = new WidgetRadioButton(guiLeft + 7, guiTop + 100, 0xFF404040,
-                I18n.format("pneumaticcraft.gui.progWidget.coordinate.variable"), b -> setUsingVariable(true));
+                xlate("pneumaticcraft.gui.progWidget.coordinate.variable"), b -> setUsingVariable(true));
         if (progWidget.isUsingVariable()) radioButton.checked = true;
         radioButtons.add(radioButton);
         radioButton.otherChoices = radioButtons;
@@ -55,7 +58,7 @@ public class GuiProgWidgetCoordinate extends GuiProgWidgetAreaShow<ProgWidgetCoo
 
         gpsButton = new WidgetButtonExtended(guiLeft + 100, guiTop + 20, 20, 20, "", b -> openGPSSearcher());
         gpsButton.setRenderStacks(new ItemStack(ModItems.GPS_TOOL.get()));
-        gpsButton.setTooltipText(I18n.format("pneumaticcraft.gui.progWidget.coordinate.selectFromGPS"));
+        gpsButton.setTooltipText(xlate("pneumaticcraft.gui.progWidget.coordinate.selectFromGPS"));
         gpsButton.active = !progWidget.isUsingVariable();
         addButton(gpsButton);
         coordFields = new WidgetTextFieldNumber[3];
@@ -106,11 +109,11 @@ public class GuiProgWidgetCoordinate extends GuiProgWidgetAreaShow<ProgWidgetCoo
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float partialTicks) {
-        super.render(mouseX, mouseY, partialTicks);
-        font.drawString("x:", guiLeft + 90, guiTop + 51, 0xFF404040);
-        font.drawString("y:", guiLeft + 90, guiTop + 64, 0xFF404040);
-        font.drawString("z:", guiLeft + 90, guiTop + 77, 0xFF404040);
-        font.drawString(I18n.format("pneumaticcraft.gui.progWidget.coordinate.variableName"), guiLeft + 90, guiTop + 100, 0xFF404060);
+    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+        super.render(matrixStack, mouseX, mouseY, partialTicks);
+        font.drawString(matrixStack, "x:", guiLeft + 90, guiTop + 51, 0xFF404040);
+        font.drawString(matrixStack, "y:", guiLeft + 90, guiTop + 64, 0xFF404040);
+        font.drawString(matrixStack, "z:", guiLeft + 90, guiTop + 77, 0xFF404040);
+        font.drawString(matrixStack, I18n.format("pneumaticcraft.gui.progWidget.coordinate.variableName"), guiLeft + 90, guiTop + 100, 0xFF404060);
     }
 }

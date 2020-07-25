@@ -4,11 +4,12 @@ import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.RegistryKey;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -26,7 +27,7 @@ public class PacketCoordTrackUpdate extends LocationIntPacket {
 
     public PacketCoordTrackUpdate(World world, BlockPos pos) {
         super(pos);
-        dimensionID = DimensionType.getKey(world.getDimension().getType());
+        dimensionID = world.func_234923_W_().func_240901_a_();
     }
 
     @Override
@@ -44,7 +45,8 @@ public class PacketCoordTrackUpdate extends LocationIntPacket {
         ctx.get().enqueueWork(() -> {
             ItemStack stack = ctx.get().getSender().getItemStackFromSlot(EquipmentSlotType.HEAD);
             if (stack.getItem() instanceof ItemPneumaticArmor) {
-                ItemPneumaticArmor.setCoordTrackerPos(stack, GlobalPos.of(DimensionType.byName(dimensionID), pos));
+                RegistryKey<World> worldKey = RegistryKey.func_240903_a_(Registry.WORLD_KEY, dimensionID);
+                ItemPneumaticArmor.setCoordTrackerPos(stack, GlobalPos.func_239648_a_(worldKey, pos));
             }
         });
         ctx.get().setPacketHandled(true);

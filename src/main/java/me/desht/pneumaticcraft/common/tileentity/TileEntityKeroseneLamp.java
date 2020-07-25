@@ -13,6 +13,7 @@ import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.NBTKeys;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
@@ -24,6 +25,7 @@ import net.minecraft.nbt.NBTUtil;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.*;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.capabilities.Capability;
@@ -245,7 +247,7 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements IR
 
     private boolean passesRaytraceTest(BlockPos pos, BlockPos lampPos) {
         // must be run on server!
-        RayTraceContext ctx = new RayTraceContext(new Vec3d(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5), new Vec3d(lampPos.getX() + 0.5, lampPos.getY() + 0.5, lampPos.getZ() + 0.5), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, FakePlayerFactory.getMinecraft((ServerWorld) getWorld()));
+        RayTraceContext ctx = new RayTraceContext(new Vector3d(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5), new Vector3d(lampPos.getX() + 0.5, lampPos.getY() + 0.5, lampPos.getZ() + 0.5), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, FakePlayerFactory.getMinecraft((ServerWorld) getWorld()));
         BlockRayTraceResult rtr = getWorld().rayTraceBlocks(ctx);
         return rtr.getType() == RayTraceResult.Type.BLOCK && rtr.getPos().equals(lampPos);
     }
@@ -284,8 +286,9 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements IR
     }
 
     @Override
-    public void read(CompoundNBT tag) {
-        super.read(tag);
+    public void read(BlockState state, CompoundNBT tag) {
+        super.read(state, tag);
+
         managingLights.clear();
         ListNBT lights = tag.getList("lights", 10);
         for (int i = 0; i < lights.size(); i++) {

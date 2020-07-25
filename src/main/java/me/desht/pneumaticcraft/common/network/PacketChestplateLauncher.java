@@ -10,7 +10,7 @@ import net.minecraft.entity.projectile.AbstractArrowEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.items.ItemHandlerHelper;
 
@@ -61,7 +61,7 @@ public class PacketChestplateLauncher {
                 arrow.setDamage(arrow.getDamage() + 0.25 * upgrades * amount);
             }
 
-            Vec3d velocity = player.getLookVec().normalize().scale(amount * upgrades * SCALE_FACTOR);
+            Vector3d velocity = player.getLookVec().normalize().scale(amount * upgrades * SCALE_FACTOR);
             TileEntityAirCannon.launchEntity(launchedEntity, player.getEyePosition(1f).add(0, -0.1, 0), velocity, true);
 
             if (!player.isCreative()) {

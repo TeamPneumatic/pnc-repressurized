@@ -9,7 +9,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
@@ -120,7 +120,7 @@ public interface IHackableBlock {
     default Optional<BlockRayTraceResult> fakeRayTrace(PlayerEntity player, BlockPos targetPos) {
         BlockState state = player.world.getBlockState(targetPos);
         AxisAlignedBB aabb = state.getShape(player.world, targetPos).getBoundingBox().offset(targetPos);
-        Optional<Vec3d> hit = aabb.rayTrace(player.getEyePosition(1f), aabb.getCenter());
+        Optional<Vector3d> hit = aabb.rayTrace(player.getEyePosition(1f), aabb.getCenter());
         Direction dir = Direction.getFacingDirections(player)[0];
         return hit.map(v -> new BlockRayTraceResult(v, dir.getOpposite(), targetPos, false));
     }

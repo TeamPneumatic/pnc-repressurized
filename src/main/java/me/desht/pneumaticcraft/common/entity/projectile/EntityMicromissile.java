@@ -25,6 +25,7 @@ import net.minecraft.util.EntityPredicates;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.*;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
@@ -139,7 +140,7 @@ public class EntityMicromissile extends ThrowableEntity {
 
             if (targetEntity != null) {
                 // turn toward the target
-                Vec3d diff = targetEntity.getPositionVector().add(0, targetEntity.getEyeHeight(), 0).subtract(getPositionVector()).normalize().scale(turnSpeed);
+                Vector3d diff = targetEntity.getPositionVec().add(0, targetEntity.getEyeHeight(), 0).subtract(getPositionVec()).normalize().scale(turnSpeed);
                 setMotion(getMotion().add(diff));
             }
 
@@ -149,7 +150,7 @@ public class EntityMicromissile extends ThrowableEntity {
             setMotion(getMotion().scale(mul));
 
             if (getEntityWorld().isRemote && getEntityWorld().rand.nextBoolean()) {
-                Vec3d m = getMotion();
+                Vector3d m = getMotion();
                 world.addParticle(AirParticleData.DENSE, getPosX(), getPosY(), getPosZ(), -m.x/2, -m.y/2, -m.z/2);
             }
         }
@@ -163,7 +164,7 @@ public class EntityMicromissile extends ThrowableEntity {
         // find the closest entity which matches this missile's entity filter
         for (Entity e : l) {
             if (isValidTarget(e) && e.getDistanceSq(this) < SEEK_RANGE * SEEK_RANGE) {
-                RayTraceContext ctx = new RayTraceContext(getPositionVector(), e.getPositionVector().add(0, e.getEyeHeight(), 0), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, e);
+                RayTraceContext ctx = new RayTraceContext(getPositionVec(), e.getPositionVec().add(0, e.getEyeHeight(), 0), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, e);
                 RayTraceResult res = getEntityWorld().rayTraceBlocks(ctx);
                 if (res.getType() == RayTraceResult.Type.MISS || res.getType() == RayTraceResult.Type.ENTITY) {
                     tgt = e;
@@ -177,7 +178,7 @@ public class EntityMicromissile extends ThrowableEntity {
 
     public boolean isValidTarget(Entity e) {
         // never target the player who fired the missile or any of their pets/drones
-        LivingEntity thrower = getThrower();
+        Entity thrower = func_234616_v_();  // getThrower()
         if (thrower != null) {
             if (e.equals(thrower)
                     || e instanceof TameableEntity && thrower.equals(((TameableEntity) e).getOwner())
@@ -218,8 +219,9 @@ public class EntityMicromissile extends ThrowableEntity {
         getEntityWorld().createExplosion(this, x, y, z, (float) PNCConfig.Common.Micromissiles.baseExplosionDamage * explosionPower, false, mode);
     }
 
+    // shoot()
     @Override
-    public void shoot(Entity entityThrower, float pitch, float yaw, float pitchOffset, float velocity, float inaccuracy) {
+    public void func_234612_a_(Entity entityThrower, float pitch, float yaw, float pitchOffset, float velocity, float inaccuracy) {
         float x = -MathHelper.sin(yaw * 0.017453292F) * MathHelper.cos(pitch * 0.017453292F);
         float y = -MathHelper.sin(pitch * 0.017453292F);
         float z = MathHelper.cos(yaw * 0.017453292F) * MathHelper.cos(pitch * 0.017453292F);
@@ -275,7 +277,7 @@ public class EntityMicromissile extends ThrowableEntity {
     }
 
     private class TargetSorter implements Comparator<Entity> {
-        private final Vec3d vec;
+        private final Vector3d vec;
 
         TargetSorter() {
             vec = getPositionVec();
@@ -283,7 +285,7 @@ public class EntityMicromissile extends ThrowableEntity {
 
         @Override
         public int compare(Entity e1, Entity e2) {
-            return Double.compare(vec.squareDistanceTo(e1.getPositionVector()), vec.squareDistanceTo(e2.getPositionVector()));
+            return Double.compare(vec.squareDistanceTo(e1.getPositionVec()), vec.squareDistanceTo(e2.getPositionVec()));
         }
     }
 }

@@ -6,7 +6,7 @@ import net.minecraft.block.Block;
 import net.minecraft.data.BlockTagsProvider;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.ITag;
 import net.minecraftforge.common.Tags;
 
 import java.util.Arrays;
@@ -49,17 +49,17 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
     }
 
     @SafeVarargs
-    private final void createTag(Tag<Block> tag, Supplier<? extends Block>... blocks) {
-        getBuilder(tag).add(resolveAll(Block[]::new, blocks));
+    private final void createTag(ITag.INamedTag<Block> tag, Supplier<? extends Block>... blocks) {
+        getOrCreateBuilder(tag).add(resolveAll(Block[]::new, blocks));
     }
 
     @SafeVarargs
-    private final void appendToTag(Tag<Block> tag, Tag<Block>... toAppend) {
-        getBuilder(tag).add(toAppend);
+    private final void appendToTag(ITag.INamedTag<Block> tag, ITag.INamedTag<Block>... toAppend) {
+        getOrCreateBuilder(tag).addTags(toAppend);
     }
 
     @SafeVarargs
-    private final void createAndAppend(Tag<Block> tag, Tag<Block> to, Supplier<? extends Block>... blocks) {
+    private final void createAndAppend(ITag.INamedTag<Block> tag, ITag.INamedTag<Block> to, Supplier<? extends Block>... blocks) {
         createTag(tag, blocks);
         appendToTag(to, tag);
     }

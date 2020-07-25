@@ -8,10 +8,12 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.SoundCategory;
 
 public class MovingSoundJetBoots extends TickableSound {
+    private static final int END_TICKS = 20;
+
     private final PlayerEntity player;
     private final CommonArmorHandler handler;
     private float targetPitch;
-    private int endTimer = -1;
+    private int endTimer = Integer.MAX_VALUE;
 
     MovingSoundJetBoots(PlayerEntity player) {
         super(ModSounds.LEAKING_GAS_LOW.get(), SoundCategory.NEUTRAL);
@@ -29,24 +31,22 @@ public class MovingSoundJetBoots extends TickableSound {
     public void tick() {
         if (!handler.isValid() || !handler.isArmorEnabled()) {
             // handler gets invalidated if the tracked player disconnects
-            donePlaying = true;
             return;
         }
 
-        if (!handler.isJetBootsEnabled() && endTimer == -1 || !handler.isJetBootsActive() && player.onGround && endTimer == -1) {
-            endTimer = 20;
+        if (endTimer == Integer.MAX_VALUE &&
+                (!handler.isJetBootsEnabled() || !handler.isJetBootsActive() && player.isOnGround())) {
+            endTimer = END_TICKS;
         }
-        if (endTimer > 0 && --endTimer <= 0) {
-            donePlaying = true;
-        }
+        if (endTimer <= END_TICKS) endTimer--;
 
         x = (float) player.getPosX();
         y = (float) player.getPosY();
         z = (float) player.getPosZ();
 
-        if (endTimer > 0) {
+        if (endTimer > 0 && endTimer <= END_TICKS) {
             targetPitch = 0.5F;
-            volume = volumeFromConfig() - ((20 - endTimer) / 50F);
+            volume = volumeFromConfig() - ((END_TICKS - endTimer) / 50F);
         } else {
             if (handler.isJetBootsActive()) {
                 double vel = player.getMotion().length();
@@ -62,6 +62,11 @@ public class MovingSoundJetBoots extends TickableSound {
             pitch *= 0.75f;
             volume *= 0.5f;
         }
+    }
+
+    @Override
+    public boolean isDonePlaying() {
+        return !handler.isValid() || !handler.isArmorEnabled() || endTimer <= 0;
     }
 
     private float volumeFromConfig() {

@@ -26,7 +26,7 @@ public class BlockKeroseneLamp extends BlockPneumaticCraft {
     public static final BooleanProperty LIT = BooleanProperty.create("lit");
 
     public BlockKeroseneLamp() {
-        super(ModBlocks.defaultProps());
+        super(ModBlocks.defaultProps().setLightLevel(state -> state.get(LIT) ? 15 : 0));
         setDefaultState(getStateContainer().getBaseState().with(LIT, false));
     }
 
@@ -76,7 +76,12 @@ public class BlockKeroseneLamp extends BlockPneumaticCraft {
     }
 
     @Override
-    public int getLightValue(BlockState state) {
+    public int getLightValue(BlockState state, IBlockReader world, BlockPos pos) {
         return state.get(LIT) ? 15 : 0;
     }
+
+//    @Override
+//    public int getLightValue(BlockState state) {
+//        return state.get(LIT) ? 15 : 0;
+//    }
 }

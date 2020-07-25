@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.item.DyeColor;
 
@@ -35,25 +36,25 @@ public class WidgetColorSelector extends WidgetButtonExtended implements IDrawAf
     }
 
     @Override
-    public void renderButton(int mouseX, int mouseY, float partialTick) {
-        super.renderButton(mouseX, mouseY, partialTick);
+    public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTick) {
+        super.renderButton(matrixStack, mouseX, mouseY, partialTick);
 
-        fill(x + 3, y + 3, x + width - 4, y + height - 4, 0xFF000000 | color.getColorValue());
-        hLine(x + 3, x + width - 3, y + height - 4, 0xFF606060);
-        vLine(x + width - 4, y + 3, y + height - 3, 0xFF606060);
+        fill(matrixStack,x + 3, y + 3, x + width - 4, y + height - 4, 0xFF000000 | color.getColorValue());
+        hLine(matrixStack,x + 3, x + width - 3, y + height - 4, 0xFF606060);
+        vLine(matrixStack,x + width - 4, y + 3, y + height - 3, 0xFF606060);
     }
 
     @Override
-    public void renderAfterEverythingElse(int mouseX, int mouseY, float partialTick) {
+    public void renderAfterEverythingElse(MatrixStack matrixStack, int mouseX, int mouseY, float partialTick) {
         if (expanded) {
-            fill(x, y - 1 + height, x + width * 4, y -1 + height * 5, 0xFF000000);
-            fill(x + 1, y + height, x + width * 4 - 1, y - 2 + height * 5, 0xFF808080);
+            fill(matrixStack, x, y - 1 + height, x + width * 4, y -1 + height * 5, 0xFF000000);
+            fill(matrixStack, x + 1, y + height, x + width * 4 - 1, y - 2 + height * 5, 0xFF808080);
             for (DyeColor color : DyeColor.values()) {
                 int dx = x + (color.getId() % 4) * 16;
                 int dy = y - 1 + height + (color.getId() / 4) * 16;
-                fill(dx + 3, dy + 3, dx + 13, dy + 13, 0xFF000000 | color.getColorValue());
-                hLine(dx + 3, dx + 13, dy + 13, 0xFF606060);
-                vLine(dx + 13, dy + 3, dy + 13, 0xFF606060);
+                fill(matrixStack, dx + 3, dy + 3, dx + 13, dy + 13, 0xFF000000 | color.getColorValue());
+                hLine(matrixStack, dx + 3, dx + 13, dy + 13, 0xFF606060);
+                vLine(matrixStack, dx + 13, dy + 3, dy + 13, 0xFF606060);
             }
         }
     }

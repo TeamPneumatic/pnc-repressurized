@@ -10,7 +10,7 @@
     "item": "minecraft:obsidian"
   },
   "bonus_output": {
-    "multiplier": 0.01,
-    "limit": 0.25
+    "multiplier": 0.025,
+    "limit": 0.5
   }
 }

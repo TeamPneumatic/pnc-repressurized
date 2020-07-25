@@ -89,10 +89,10 @@ public class DroneItemHandler extends ItemStackHandler {
             // maybe one day drones will be able to change their current held-item slot
             fakePlayer.setHeldItem(Hand.MAIN_HAND, newStack);
             if (!prevHeldStack.isEmpty()) {
-                fakePlayer.getAttributes().removeAttributeModifiers(prevHeldStack.getAttributeModifiers(EquipmentSlotType.MAINHAND));
+                fakePlayer.getAttributeManager().removeModifiers(prevHeldStack.getAttributeModifiers(EquipmentSlotType.MAINHAND));
             }
             if (!newStack.isEmpty()) {
-                fakePlayer.getAttributes().applyAttributeModifiers(newStack.getAttributeModifiers(EquipmentSlotType.MAINHAND));
+                fakePlayer.getAttributeManager().reapplyModifiers(newStack.getAttributeModifiers(EquipmentSlotType.MAINHAND));
             }
             prevHeldStack = newStack.copy();
         }

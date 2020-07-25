@@ -17,7 +17,11 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.RayTraceContext;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -85,14 +89,14 @@ public class ModuleAirGrate extends TubeModule {
             rangeLines.tick(world.rand);
         }
 
-        pushEntities(world, pos, new Vec3d(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D));
+        pushEntities(world, pos, new Vector3d(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D));
     }
 
     private AxisAlignedBB getAffectedAABB() {
         return new AxisAlignedBB(pressureTube.getPos().offset(getDirection(), grateRange + 1)).grow(grateRange);
     }
 
-    private void pushEntities(World world, BlockPos pos, Vec3d tileVec) {
+    private void pushEntities(World world, BlockPos pos, Vector3d tileVec) {
         AxisAlignedBB bbBox = getAffectedAABB();
         List<Entity> entities = world.getEntitiesWithinAABB(Entity.class, bbBox, entityFilter);
         double d0 = grateRange * 3;
@@ -115,7 +119,7 @@ public class ModuleAirGrate extends TubeModule {
                 if (d5 > 0.0D) {
                     d5 *= d5;
                     if (vacuum) d5 *= -1;
-                    entity.move(MoverType.SELF, new Vec3d(x * d5, y * d5, z * d5));
+                    entity.move(MoverType.SELF, new Vector3d(x * d5, y * d5, z * d5));
                     entitiesMoved++;
                     if (world.isRemote && world.rand.nextDouble() < 0.2) {
                         if (vacuum) {
@@ -140,10 +144,10 @@ public class ModuleAirGrate extends TubeModule {
         }
     }
 
-    private boolean rayTraceOK(Entity entity, Vec3d tileVec) {
+    private boolean rayTraceOK(Entity entity, Vector3d tileVec) {
         BlockPos pos = new BlockPos(entity.getEyePosition(0f));
         return traceabilityCache.computeIfAbsent(pos, k -> {
-            Vec3d entityVec = new Vec3d(entity.getPosX(), entity.getPosY() + entity.getEyeHeight(), entity.getPosZ());
+            Vector3d entityVec = new Vector3d(entity.getPosX(), entity.getPosY() + entity.getEyeHeight(), entity.getPosZ());
             RayTraceContext ctx = new RayTraceContext(entityVec, tileVec, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, entity);
             BlockRayTraceResult trace = entity.getEntityWorld().rayTraceBlocks(ctx);
             return trace != null && trace.getPos().equals(pressureTube.getPos());
@@ -220,10 +224,10 @@ public class ModuleAirGrate extends TubeModule {
     public void addInfo(List<ITextComponent> curInfo) {
         super.addInfo(curInfo);
         String txt = grateRange == 0 ? "Idle" : vacuum ? "Attracting" : "Repelling";
-        curInfo.add(new StringTextComponent("Status: ").appendText(txt).applyTextStyle(TextFormatting.WHITE));
-        curInfo.add(new StringTextComponent("Range: ").appendText(grateRange + " blocks").applyTextStyle(TextFormatting.WHITE));
+        curInfo.add(new StringTextComponent("Status: ").appendString(txt).mergeStyle(TextFormatting.WHITE));
+        curInfo.add(new StringTextComponent("Range: ").appendString(grateRange + " blocks").mergeStyle(TextFormatting.WHITE));
         if (entityFilter != null)
-            curInfo.add(new StringTextComponent("Entity Filter: \"").appendText(entityFilter.toString()).appendText("\"").applyTextStyle(TextFormatting.WHITE));
+            curInfo.add(new StringTextComponent("Entity Filter: \"").appendString(entityFilter.toString()).appendString("\"").mergeStyle(TextFormatting.WHITE));
     }
 
     @Override

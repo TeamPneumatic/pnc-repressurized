@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.network;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.UpgradeRenderHandlerList;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
-import me.desht.pneumaticcraft.common.util.NBTUtil;
+import me.desht.pneumaticcraft.common.util.NBTUtils;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
@@ -66,7 +66,7 @@ public class PacketUpdateArmorExtraData {
             ItemStack stack = player.getItemStackFromSlot(slot);
             if (stack.getItem() instanceof ItemPneumaticArmor) {
                 CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
-                NBTUtil.initNBTTagCompound(stack);
+                NBTUtils.initNBTTagCompound(stack);
                 for (String key : data.keySet()) {
                     INBT dataTag = data.get(key);
                     if (isKeyOKForSlot(key, slot, dataTag.getId())) {

@@ -6,8 +6,8 @@ import me.desht.pneumaticcraft.common.core.ModHarvestHandlers.TreePart;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.LogBlock;
 import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
@@ -20,7 +20,7 @@ public class HarvestHandlerTree extends HarvestHandler {
 
     @Override
     public boolean canHarvest(World world, IBlockReader chunkCache, BlockPos pos, BlockState state, IDrone drone) {
-        return state.getBlock() instanceof LogBlock;
+        return state.getBlock().isIn(BlockTags.LOGS);
     }
 
     @Override

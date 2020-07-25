@@ -85,7 +85,8 @@ public class ModRenderTypes extends RenderType {
     public static final RenderType BLOCK_TRACKER = makeType("block_tracker",
             DefaultVertexFormats.POSITION_COLOR, GL11.GL_LINES, 256,
             RenderType.State.getBuilder().line(LineState.DEFAULT_LINE)
-                    .layer(RenderState.PROJECTION_LAYERING)
+                    // TODO 1.16 can we use field_239235_M_ ?
+//                    .layer(RenderState.PROJECTION_LAYERING)
                     .transparency(TRANSLUCENT_TRANSPARENCY)
                     .texture(NO_TEXTURE)
                     .cull(CULL_DISABLED)
@@ -98,7 +99,7 @@ public class ModRenderTypes extends RenderType {
     public static final RenderType TARGET_CIRCLE = makeType("target_circle",
             DefaultVertexFormats.POSITION_COLOR, GL11.GL_TRIANGLE_STRIP, 65536,
             RenderType.State.getBuilder()
-                    .layer(PROJECTION_LAYERING)
+//                    .layer(PROJECTION_LAYERING)
                     .shadeModel(SHADE_ENABLED)
                     .transparency(TRANSLUCENT_TRANSPARENCY)
                     .texture(NO_TEXTURE)

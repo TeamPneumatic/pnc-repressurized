@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.progwidgets.area;
 
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 
 import java.util.function.Consumer;
 
@@ -16,7 +16,7 @@ public class AreaTypeLine extends AreaType {
 
     @Override
     public void addArea(Consumer<BlockPos> areaAdder, BlockPos p1, BlockPos p2, int minX, int minY, int minZ, int maxX, int maxY, int maxZ){
-        Vec3d lineVec = new Vec3d(p2.getX() - p1.getX(), p2.getY() - p1.getY(), p2.getZ() - p1.getZ()).normalize().scale(0.1);
+        Vector3d lineVec = new Vector3d(p2.getX() - p1.getX(), p2.getY() - p1.getY(), p2.getZ() - p1.getZ()).normalize().scale(0.1);
         double curX = p1.getX() + 0.5;
         double curY = p1.getY() + 0.5;
         double curZ = p1.getZ() + 0.5;

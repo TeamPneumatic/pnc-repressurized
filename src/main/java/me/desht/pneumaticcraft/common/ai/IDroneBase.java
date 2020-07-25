@@ -16,7 +16,7 @@ public interface IDroneBase extends IDrone {
 
     void setActiveProgram(IProgWidget widget);
 
-    boolean isProgramApplicable(ProgWidgetType widgetType);
+    boolean isProgramApplicable(ProgWidgetType<?> widgetType);
 
     void overload(String msgKey, Object... params);
 

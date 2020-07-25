@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.sensor.eventSensors;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.api.distmarker.Dist;
@@ -29,6 +30,6 @@ public class PlayerAttackSensor extends PlayerEventSensor {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void drawAdditionalInfo(FontRenderer fontRenderer) {
+    public void drawAdditionalInfo(MatrixStack matrixStack, FontRenderer fontRenderer) {
     }
 }

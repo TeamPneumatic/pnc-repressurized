@@ -20,7 +20,7 @@ import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
@@ -155,7 +155,7 @@ public abstract class ItemGunAmmo extends Item implements ColorHandlers.ITintabl
             World w = minigun.getPlayer().world;
             BlockState state = w.getBlockState(brtr.getPos());
             Direction face = brtr.getFace();
-            Vec3d hitVec = brtr.getHitVec();
+            Vector3d hitVec = brtr.getHitVec();
             IParticleData data = new BlockParticleData(ParticleTypes.BLOCK, state);
             ((ServerWorld) w).spawnParticle(data, hitVec.x, hitVec.y, hitVec.z, 10,
                     face.getXOffset() * 0.2, face.getYOffset() * 0.2, face.getZOffset() * 0.2, 0.05);

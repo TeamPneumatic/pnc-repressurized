@@ -19,7 +19,6 @@ import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.ForgeRegistryEntry;
-import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -47,9 +46,6 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
         this.operatingTemperature = operatingTemperature;
         this.requiredPressure = requiredPressure;
         this.exothermic = exothermic;
-
-        Validate.isTrue(!inputFluid.hasNoMatchingItems() || !inputItem.hasNoMatchingItems(),
-                "At least on of input fluid or input item must be non-empty!");
     }
 
     @Override
@@ -134,15 +130,19 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
 
         @Override
         public T read(ResourceLocation recipeId, JsonObject json) {
+            if (!json.has("item_input") && !json.has("fluid_input")) {
+                throw new JsonSyntaxException("Must have at least one of item_input and/or fluid_input!");
+            }
+            if (!json.has("item_output") && !json.has("fluid_output")) {
+                throw new JsonSyntaxException("Must have at least one of item_output and/or fluid_output!");
+            }
+
             Ingredient itemInput = json.has("item_input") ?
                     Ingredient.deserialize(json.get("item_input")) :
                     Ingredient.EMPTY;
             Ingredient fluidInput = json.has("fluid_input") ?
                     FluidIngredient.deserialize(json.get("fluid_input")) :
                     FluidIngredient.EMPTY;
-            if (itemInput.hasNoMatchingItems() && fluidInput.hasNoMatchingItems()) {
-                throw new JsonSyntaxException("Must have at least one of item_input and/or fluid_input!");
-            }
 
             FluidStack fluidOutput = json.has("fluid_output") ?
                     ModCraftingHelper.fluidStackFromJson(json.getAsJsonObject("fluid_output")):
@@ -150,9 +150,6 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
             ItemStack itemOutput = json.has("item_output") ?
                     ShapedRecipe.deserializeItem(JSONUtils.getJsonObject(json, "item_output")) :
                     ItemStack.EMPTY;
-            if (fluidOutput.isEmpty() && itemOutput.isEmpty()) {
-                throw new JsonSyntaxException("Must have at least one of item_output and/or fluid_output!");
-            }
 
             TemperatureRange range = json.has("temperature") ?
                     TemperatureRange.fromJson(json.getAsJsonObject("temperature")) :

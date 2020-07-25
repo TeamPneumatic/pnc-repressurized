@@ -17,6 +17,8 @@ import net.minecraftforge.energy.CapabilityEnergy;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
 public class GuiProgrammableController extends GuiPneumaticContainerBase<ContainerProgrammableController,TileEntityProgrammableController>
         implements IGuiDrone
 {
@@ -35,7 +37,7 @@ public class GuiProgrammableController extends GuiPneumaticContainerBase<Contain
                 .map(s -> GuiConstants.BULLET + " " + I18n.format("programmingPuzzle." + s.getNamespace() + "." + s.getPath() + ".name"))
                 .sorted()
                 .collect(Collectors.toList());
-        addAnimatedStat("pneumaticcraft.gui.tab.info.programmable_controller.excluded",
+        addAnimatedStat(xlate("pneumaticcraft.gui.tab.info.programmable_controller.excluded"),
                 new ItemStack(ModItems.DRONE.get()), 0xFFFF5050, true).setText(exc);
     }
 

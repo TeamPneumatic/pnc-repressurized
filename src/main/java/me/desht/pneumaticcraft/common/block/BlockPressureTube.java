@@ -19,19 +19,23 @@ import net.minecraft.block.SoundType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.fluid.IFluidState;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.EnumProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.shapes.IBooleanFunction;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
@@ -124,12 +128,12 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
             }
         }
         if (l.size() == 1) state = setSide(state, l.get(0).getOpposite(), CONNECTED);
-        IFluidState fluidState = ctx.getWorld().getFluidState(ctx.getPos());
+        FluidState fluidState = ctx.getWorld().getFluidState(ctx.getPos());
         return state.with(WATERLOGGED, fluidState.getFluid() == Fluids.WATER);
     }
 
     @Override
-    public IFluidState getFluidState(BlockState state) {
+    public FluidState getFluidState(BlockState state) {
         return state.get(WATERLOGGED) ? Fluids.WATER.getStillFluidState(false) : super.getFluidState(state);
     }
 
@@ -298,7 +302,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
      * @return a tube module, or null if no module is focused
      */
     public static TubeModule getFocusedModule(World world, BlockPos pos, PlayerEntity player) {
-        Pair<Vec3d, Vec3d> vecs = PneumaticCraftUtils.getStartAndEndLookVec(player);
+        Pair<Vector3d, Vector3d> vecs = PneumaticCraftUtils.getStartAndEndLookVec(player);
         BlockState state = world.getBlockState(pos);
         BlockRayTraceResult rayTraceResult = doTrace(state, world, pos, vecs.getLeft(), vecs.getRight());
         TubeHitInfo tubeHitInfo = getHitInfo(rayTraceResult);
@@ -327,7 +331,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
      * @return (true, side) if it's the side of the tube core, or (false, side) if it's a tube arm
      */
     private static Pair<Boolean, Direction> getLookedTube(IBlockReader world, BlockPos pos, PlayerEntity player) {
-        Pair<Vec3d, Vec3d> vecs = PneumaticCraftUtils.getStartAndEndLookVec(player);
+        Pair<Vector3d, Vector3d> vecs = PneumaticCraftUtils.getStartAndEndLookVec(player);
         BlockState state = world.getBlockState(pos);
         BlockRayTraceResult rayTraceResult = doTrace(state, world, pos, vecs.getLeft(), vecs.getRight());
         TubeHitInfo tubeHitInfo = getHitInfo(rayTraceResult);
@@ -338,7 +342,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
         return null;
     }
 
-    private static BlockRayTraceResult doTrace(BlockState state, IBlockReader world, BlockPos pos, Vec3d origin, Vec3d direction) {
+    private static BlockRayTraceResult doTrace(BlockState state, IBlockReader world, BlockPos pos, Vector3d origin, Vector3d direction) {
         BlockRayTraceResult bestRTR = null;
 
         // first try & trace the tube core (center cube)
@@ -388,14 +392,14 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
         return bestRTR;
     }
 
-    private static boolean isCloserIntersection(Vec3d origin, RayTraceResult oldRTR, RayTraceResult newRTR) {
+    private static boolean isCloserIntersection(Vector3d origin, RayTraceResult oldRTR, RayTraceResult newRTR) {
         return newRTR != null &&
                 (oldRTR == null || origin.squareDistanceTo(newRTR.getHitVec()) <= origin.squareDistanceTo(oldRTR.getHitVec()));
     }
 
     @Override
     public ItemStack getPickBlock(BlockState state, RayTraceResult target, IBlockReader world, BlockPos pos, PlayerEntity player) {
-        Pair<Vec3d, Vec3d> vecs = PneumaticCraftUtils.getStartAndEndLookVec(player);
+        Pair<Vector3d, Vector3d> vecs = PneumaticCraftUtils.getStartAndEndLookVec(player);
         BlockRayTraceResult rayTraceResult = doTrace(state, world, pos, vecs.getLeft(), vecs.getRight());
         TubeHitInfo tubeHitInfo = getHitInfo(rayTraceResult);
         if (tubeHitInfo.type == TubeHitInfo.PartType.TUBE) {
@@ -609,7 +613,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
         }
 
         @Override
-        public String getName() {
+        public String getString() {
             return name;
         }
     }

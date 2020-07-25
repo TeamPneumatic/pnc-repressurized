@@ -1,6 +1,8 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import me.desht.pneumaticcraft.client.util.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.widget.Widget;
@@ -8,7 +10,9 @@ import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.resources.I18n;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.vector.Matrix4f;
+import net.minecraft.util.text.ITextComponent;
 import org.apache.commons.lang3.Validate;
 import org.lwjgl.opengl.GL11;
 
@@ -26,49 +30,47 @@ public class WidgetRadioButton extends Widget implements ITooltipProvider {
     public final int color;
     private final Consumer<WidgetRadioButton> pressable;
     private final FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
-    private List<String> tooltip = new ArrayList<>();
+    private List<ITextComponent> tooltip = new ArrayList<>();
     public List<WidgetRadioButton> otherChoices;
 
-    public WidgetRadioButton(int x, int y, int color, String text, Consumer<WidgetRadioButton> pressable) {
-        super(x, y, text);
+    public WidgetRadioButton(int x, int y, int color, ITextComponent text, Consumer<WidgetRadioButton> pressable) {
+        super(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, text);
 
-        this.width = BUTTON_WIDTH + fontRenderer.getStringWidth(getMessage());
+        this.width = BUTTON_WIDTH + fontRenderer.func_238414_a_(getMessage());
         this.height = BUTTON_HEIGHT;
         this.color = color;
         this.pressable = pressable;
     }
 
-    public WidgetRadioButton(int x, int y, int color, String text) {
+    public WidgetRadioButton(int x, int y, int color, ITextComponent text) {
         this(x, y, color, text, null);
     }
 
     @Override
-    public void renderButton(int mouseX, int mouseY, float partialTicks) {
-        drawCircle(x + BUTTON_WIDTH / 2, y + BUTTON_HEIGHT / 2, BUTTON_WIDTH / 2, enabled ? 0xFFA0A0A0 : 0xFF999999);
-        drawCircle(x + BUTTON_WIDTH / 2, y + BUTTON_HEIGHT / 2, BUTTON_WIDTH / 2 - 1, enabled ? 0XFF202020 : 0xFFAAAAAA);
+    public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+        drawCircle(matrixStack, x + BUTTON_WIDTH / 2f, y + BUTTON_HEIGHT / 2f, BUTTON_WIDTH / 2f, enabled ? 0xFFA0A0A0 : 0xFF999999);
+        drawCircle(matrixStack, x + BUTTON_WIDTH / 2f, y + BUTTON_HEIGHT / 2f, BUTTON_WIDTH / 2f - 1, enabled ? 0XFF202020 : 0xFFAAAAAA);
         if (checked) {
-            drawCircle(x + BUTTON_WIDTH / 2, y + BUTTON_HEIGHT / 2, 1, enabled ? 0xFFFFFFFF : 0xFFAAAAAA);
+            drawCircle(matrixStack, x + BUTTON_WIDTH / 2f, y + BUTTON_HEIGHT / 2f, 1, enabled ? 0xFFFFFFFF : 0xFFAAAAAA);
         }
-        fontRenderer.drawString(I18n.format(getMessage()), x + 1 + BUTTON_WIDTH,
+        fontRenderer.func_238422_b_(matrixStack, getMessage(), x + 1 + BUTTON_WIDTH,
                 y + BUTTON_HEIGHT / 2f - fontRenderer.FONT_HEIGHT / 2f, enabled ? color : 0xFF888888);
     }
 
-    private void drawCircle(int x, int y, int radius, int color) {
+    private static final float N_POINTS = 12f;
+
+    private void drawCircle(MatrixStack matrixStack, float x, float y, float radius, int color) {
         BufferBuilder wr = Tessellator.getInstance().getBuffer();
-        float f = (color >> 24 & 255) / 255.0F;
-        float f1 = (color >> 16 & 255) / 255.0F;
-        float f2 = (color >> 8 & 255) / 255.0F;
-        float f3 = (color & 255) / 255.0F;
+        int[] cols = RenderUtils.decomposeColor(color);
         RenderSystem.enableBlend();
         RenderSystem.disableTexture();
         RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        RenderSystem.color4f(f1, f2, f3, f);
-        wr.begin(GL11.GL_TRIANGLE_FAN, DefaultVertexFormats.POSITION);
-        int points = 12;
-        for (int i = 0; i < points; i++) {
-            double sin = Math.sin((double) i / points * Math.PI * 2);
-            double cos = Math.cos((double) i / points * Math.PI * 2);
-            wr.pos(x + sin * radius, y + cos * radius, 0.0).endVertex();
+        wr.begin(GL11.GL_TRIANGLE_FAN, DefaultVertexFormats.POSITION_COLOR);
+        Matrix4f posMat = matrixStack.getLast().getMatrix();
+        for (int i = 0; i < N_POINTS; i++) {
+            float sin = MathHelper.sin(i / N_POINTS * (float) Math.PI * 2f);
+            float cos = MathHelper.cos(i / N_POINTS * (float) Math.PI * 2f);
+            wr.pos(posMat, x + sin * radius, y + cos * radius, 0f).color(cols[1], cols[2], cols[2], cols[0]).endVertex();
         }
         Tessellator.getInstance().draw();
         RenderSystem.enableTexture();
@@ -76,7 +78,7 @@ public class WidgetRadioButton extends Widget implements ITooltipProvider {
     }
 
     public Rectangle2d getBounds() {
-        return new Rectangle2d(x, y, BUTTON_WIDTH + fontRenderer.getStringWidth(getMessage()), BUTTON_HEIGHT);
+        return new Rectangle2d(x, y, BUTTON_WIDTH + fontRenderer.func_238414_a_(getMessage()), BUTTON_HEIGHT);
     }
 
     @Override
@@ -91,16 +93,16 @@ public class WidgetRadioButton extends Widget implements ITooltipProvider {
         }
     }
 
-    public void setTooltip(String tooltip) {
+    public void setTooltip(ITextComponent tooltip) {
         setTooltip(Collections.singletonList(tooltip));
     }
 
-    public void setTooltip(List<String> tooltip) {
+    public void setTooltip(List<ITextComponent> tooltip) {
         this.tooltip = tooltip;
     }
 
     @Override
-    public void addTooltip(double mouseX, double mouseY, List<String> curTooltip, boolean shiftPressed) {
+    public void addTooltip(double mouseX, double mouseY, List<ITextComponent> curTooltip, boolean shiftPressed) {
         curTooltip.addAll(tooltip);
     }
 }

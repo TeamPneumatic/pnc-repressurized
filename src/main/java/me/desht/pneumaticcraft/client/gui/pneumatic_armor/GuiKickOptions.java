@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.KickUpgradeHandler;
+import net.minecraft.util.text.StringTextComponent;
 
 public class GuiKickOptions extends IOptionPage.SimpleToggleableOptions<KickUpgradeHandler> {
     private KeybindingButton changeKeybindingButton;
@@ -20,7 +21,7 @@ public class GuiKickOptions extends IOptionPage.SimpleToggleableOptions<KickUpgr
     @Override
     public void populateGui(IGuiScreen gui) {
         changeKeybindingButton = new KeybindingButton(30, 128, 150, 20,
-                "Change Kick Key...", KeyHandler.getInstance().keybindKick, b -> changeKeybindingButton.toggleKeybindMode());
+                new StringTextComponent("Change Kick Key..."), KeyHandler.getInstance().keybindKick, b -> changeKeybindingButton.toggleKeybindMode());
         gui.addWidget(changeKeybindingButton);
     }
 

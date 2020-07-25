@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
+import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
@@ -205,8 +206,9 @@ public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase imp
     }
 
     @Override
-    public void read(CompoundNBT tag) {
-        super.read(tag);
+    public void read(BlockState state, CompoundNBT tag) {
+        super.read(state, tag);
+
         for (int i = 0; i < 5; i++) {
             angles[i] = tag.getFloat("angle" + i);
             targetAngles[i] = tag.getFloat("targetAngle" + i);

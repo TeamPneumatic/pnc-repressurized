@@ -7,12 +7,17 @@ import me.desht.pneumaticcraft.client.render.ModRenderTypes;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Matrix4f;
+import net.minecraft.util.math.vector.Vector3f;
 import org.lwjgl.opengl.GL11;
 
 import java.util.function.BiConsumer;
@@ -203,18 +208,20 @@ public class RenderUtils {
 
     /**
      * Render a progressing line in GUI context
+     * @param matrixStack
      * @param line the line to render
      * @param color line's colour
      */
-    public static void renderProgressingLine(ProgressingLine line, int color) {
+    public static void renderProgressingLineGUI(MatrixStack matrixStack, ProgressingLine line, int color) {
         int[] cols = decomposeColor(color);
         float progress = line.getProgress();
+        Matrix4f posMat = matrixStack.getLast().getMatrix();
         BufferBuilder wr = Tessellator.getInstance().getBuffer();
         wr.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR);
-        wr.pos(line.startX, line.startY, line.startZ)
+        wr.pos(posMat, line.startX, line.startY, line.startZ)
                 .color(cols[1], cols[2], cols[3], cols[0])
                 .endVertex();
-        wr.pos(lerp(progress, line.startX, line.endX), lerp(progress, line.startY, line.endY), lerp(progress, line.startZ,line.endZ))
+        wr.pos(posMat, lerp(progress, line.startX, line.endX), lerp(progress, line.startY, line.endY), lerp(progress, line.startZ,line.endZ))
                 .color(cols[1], cols[2], cols[3], cols[0])
                 .endVertex();
         Tessellator.getInstance().draw();

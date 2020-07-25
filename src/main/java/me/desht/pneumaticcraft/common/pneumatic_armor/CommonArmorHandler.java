@@ -43,7 +43,7 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.IBlockReader;
 import net.minecraftforge.api.distmarker.Dist;
@@ -62,7 +62,7 @@ public class CommonArmorHandler {
     private static final CommonArmorHandler clientHandler = new CommonArmorHandler(null);
     private static final CommonArmorHandler serverHandler = new CommonArmorHandler(null);
 
-    private static final Vec3d FORWARD = new Vec3d(0, 0, 1);
+    private static final Vector3d FORWARD = new Vector3d(0, 0, 1);
 
     private final HashMap<UUID, CommonArmorHandler> playerHandlers = new HashMap<>();
     private PlayerEntity player;
@@ -299,35 +299,35 @@ public class CommonArmorHandler {
             int airUsed = playerAir * Armor.scubaMultiplier;
             addAir(EquipmentSlotType.HEAD, -airUsed);
             NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.SCUBA.get(), SoundCategory.PLAYERS, player.getPosition(), 1.5f, 1.0f, false), (ServerPlayerEntity) player);
-            Vec3d eyes = player.getEyePosition(1.0f).add(player.getLookVec().scale(0.5));
+            Vector3d eyes = player.getEyePosition(1.0f).add(player.getLookVec().scale(0.5));
             NetworkHandler.sendToAllAround(new PacketSpawnParticle(ParticleTypes.BUBBLE, eyes.x - 0.5, eyes.y, eyes.z -0.5, 0.0, 0.2, 0.0, 10, 1.0, 1.0, 1.0), player.world);
         }
     }
 
     // track player movement across ticks on the server - very transient, a capability would be overkill here
 
-    private static final Map<UUID,Vec3d> moveMap = new HashMap<>();
+    private static final Map<UUID,Vector3d> moveMap = new HashMap<>();
     private void handleLeggingsSpeedBoost() {
         double speedBoost = getSpeedBoostFromLegs();
         if (player.world.isRemote) {
             // doing this client-side only appears to be effective
             if (player.moveForward > 0) {
-                if (!player.onGround && isJetBootsEnabled() && jetBootsBuilderMode) {
+                if (!player.isOnGround() && isJetBootsEnabled() && jetBootsBuilderMode) {
                     player.moveRelative(getUpgradeCount(EquipmentSlotType.FEET, EnumUpgrade.JET_BOOTS) / 250f, FORWARD);
                 }
-                if (player.onGround && !player.isInWater()) {
+                if (player.isOnGround() && !player.isInWater()) {
                     player.moveRelative((float) speedBoost, FORWARD);
                 }
             }
         }
         if (!player.world.isRemote && speedBoost > 0) {
-            Vec3d prev = moveMap.get(player.getUniqueID());
+            Vector3d prev = moveMap.get(player.getUniqueID());
             boolean moved = prev != null && (Math.abs(player.getPosX() - prev.x) > 0.0001 || Math.abs(player.getPosZ() - prev.z) > 0.0001);
-            if (moved && player.onGround && !player.isInWater()) {
+            if (moved && player.isOnGround() && !player.isInWater()) {
                 int airUsage = (int) Math.ceil(PneumaticValues.PNEUMATIC_LEGS_SPEED_USAGE * speedBoost * 8);
                 addAir(EquipmentSlotType.LEGS, -airUsage);
             }
-            moveMap.put(player.getUniqueID(), player.getPositionVector());
+            moveMap.put(player.getUniqueID(), player.getPositionVec());
         }
     }
 
@@ -344,13 +344,13 @@ public class CommonArmorHandler {
         if (player.world.isRemote && player.isInWater() && player.moveForward > 0) {
             // doing this client-side only appears to be effective
             if (isArmorReady(EquipmentSlotType.FEET) && getUpgradeCount(EquipmentSlotType.FEET, EnumUpgrade.FLIPPERS) > 0) {
-                player.moveRelative((float) (player.onGround ? Armor.flippersSpeedBoostGround : Armor.flippersSpeedBoostFloating), FORWARD);
+                player.moveRelative((float) (player.isOnGround() ? Armor.flippersSpeedBoostGround : Armor.flippersSpeedBoostFloating), FORWARD);
             }
         }
     }
 
     private void setYMotion(Entity entity, double y) {
-        Vec3d v = entity.getMotion();
+        Vector3d v = entity.getMotion();
         v = v.add(0, y - v.y, 0);
         entity.setMotion(v);
     }
@@ -368,17 +368,17 @@ public class CommonArmorHandler {
                     jetbootsAirUsage = (int) (Armor.jetBootsAirUsage * jetbootsCount / 2.5F);
                 } else {
                     // jetboots firing - move in direction of looking
-                    Vec3d lookVec = player.getLookVec().scale(0.3 * jetbootsCount);
+                    Vector3d lookVec = player.getLookVec().scale(0.3 * jetbootsCount);
                     float div = lookVec.y > 0 ? -64f : -16f;
                     flightAccel = MathHelper.clamp(flightAccel + (float)lookVec.y / div, 0.8F, 4.2F);
                     lookVec = lookVec.scale(flightAccel * jetBootsPower);
                     if (jetBootsActiveTicks < 10) lookVec = lookVec.scale(jetBootsActiveTicks * 0.1);
-                    player.setMotion(lookVec.x, player.onGround ? 0 : lookVec.y, lookVec.z);
+                    player.setMotion(lookVec.x, player.isOnGround() ? 0 : lookVec.y, lookVec.z);
                     jetbootsAirUsage = (int) (Armor.jetBootsAirUsage * jetbootsCount * jetBootsPower);
                 }
                 if (player.isInWater()) jetbootsAirUsage *= 4;
                 jetBootsActiveTicks++;
-            } else if (isJetBootsEnabled() && !player.onGround) {
+            } else if (isJetBootsEnabled() && !player.isOnGround()) {
                 // jetboots not firing, but enabled - slowly descend (or hover if enough upgrades)
                 setYMotion(player, player.isSneaking() ? -0.45 : -0.1 + 0.02 * jetbootsCount);
                 player.fallDistance = 0;
@@ -391,7 +391,7 @@ public class CommonArmorHandler {
         if (jetbootsAirUsage != 0 && !player.world.isRemote) {
             if (prevJetBootsAirUsage == 0) {
                 // jet boots starting up
-                NetworkHandler.sendToDimension(new PacketPlayMovingSound(MovingSounds.Sound.JET_BOOTS, player), player.world.getDimension().getType());
+                NetworkHandler.sendToDimension(new PacketPlayMovingSound(MovingSounds.Sound.JET_BOOTS, player), player.world.func_234923_W_());
                 AdvancementTriggers.FLIGHT.trigger((ServerPlayerEntity) player);
             }
             if (player.collidedHorizontally) {
@@ -469,11 +469,11 @@ public class CommonArmorHandler {
         List<Entity> itemList = player.getEntityWorld().getEntitiesWithinAABB(Entity.class, box,
                 e -> (e instanceof ExperienceOrbEntity || e instanceof ItemEntity) && e.isAlive());
 
-        Vec3d playerVec = player.getPositionVector();
+        Vector3d playerVec = player.getPositionVec();
         for (Entity item : itemList) {
             if (item instanceof ItemEntity && ((ItemEntity) item).cannotPickup()) continue;
 
-            if (item.getPositionVector().squareDistanceTo(playerVec) <= magnetRadiusSq
+            if (item.getPositionVec().squareDistanceTo(playerVec) <= magnetRadiusSq
                     && !ItemRegistry.getInstance().shouldSuppressMagnet(item)
                     && !item.getPersistentData().getBoolean(Names.PREVENT_REMOTE_MOVEMENT)) {
                 if (getArmorPressure(EquipmentSlotType.CHEST) < 0.1F) break;
@@ -506,7 +506,7 @@ public class CommonArmorHandler {
                     if (hackedEntity.isAlive()) {
                         hackableEntity.onHackFinished(hackedEntity, player);
                         HackTickHandler.instance().trackEntity(hackedEntity, hackableEntity);
-                        NetworkHandler.sendToAllAround(new PacketHackingEntityFinish(hackedEntity), new PacketDistributor.TargetPoint(hackedEntity.getPosX(), hackedEntity.getPosY(), hackedEntity.getPosZ(), 64, hackedEntity.world.getDimension().getType()));
+                        NetworkHandler.sendToAllAround(new PacketHackingEntityFinish(hackedEntity), new PacketDistributor.TargetPoint(hackedEntity.getPosX(), hackedEntity.getPosY(), hackedEntity.getPosZ(), 64, hackedEntity.world.func_234923_W_()));
                         AdvancementTriggers.ENTITY_HACK.trigger((ServerPlayerEntity) player);  // safe to cast, this is server-side
                     }
                     setHackedEntity(null);

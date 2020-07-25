@@ -12,7 +12,7 @@ import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.model.ItemOverrideList;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.fluid.IFluidState;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
@@ -128,7 +128,7 @@ public class CamoModel implements IDynamicBakedModel {
 
         @Nonnull
         @Override
-        public IFluidState getFluidState(@Nonnull BlockPos blockPos) {
+        public FluidState getFluidState(@Nonnull BlockPos blockPos) {
             // todo test for 1.13
             return compose.getFluidState(blockPos);
         }

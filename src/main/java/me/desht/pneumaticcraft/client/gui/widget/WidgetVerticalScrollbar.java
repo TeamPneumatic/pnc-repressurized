@@ -8,8 +8,9 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.Matrix4f;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.vector.Matrix4f;
+import net.minecraft.util.text.StringTextComponent;
 import org.apache.commons.lang3.Validate;
 
 import static me.desht.pneumaticcraft.client.util.RenderUtils.*;
@@ -21,7 +22,7 @@ public class WidgetVerticalScrollbar extends Widget implements ICanRender3d {
     private boolean dragging;
 
     public WidgetVerticalScrollbar(int x, int y, int height) {
-        super(x, y, 14, height, "");
+        super(x, y, 14, height, StringTextComponent.EMPTY);
     }
 
     public WidgetVerticalScrollbar setStates(int states) {
@@ -76,17 +77,17 @@ public class WidgetVerticalScrollbar extends Widget implements ICanRender3d {
     }
 
     @Override
-    public void renderButton(int mouseX, int mouseY, float partialTick) {
+    public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTick) {
         if (visible) {
             RenderSystem.color4f(1, 1, 1, 1);
             Minecraft.getInstance().getTextureManager().bindTexture(Textures.WIDGET_VERTICAL_SCROLLBAR);
-            blit(x, y, 12, 0, width, 1, 26, 15);
+            blit(matrixStack, x, y, 12, 0, width, 1, 26, 15);
             for (int i = 0; i < height - 2; i++)
-                blit(x, y + 1 + i, 12, 1, width, 1, 26, 15);
-            blit(x, y + height - 1, 12, 14, width, 1, 26, 15);
+                blit(matrixStack, x, y + 1 + i, 12, 1, width, 1, 26, 15);
+            blit(matrixStack, x, y + height - 1, 12, 14, width, 1, 26, 15);
 
             if (!active) RenderSystem.color4f(0.6F, 0.6F, 0.6F, 1);
-            blit(x + 1, y + 1 + (int) ((height - 17) * currentScroll), 0, 0, 12, 15, 26, 15);
+            blit(matrixStack, x + 1, y + 1 + (int) ((height - 17) * currentScroll), 0, 0, 12, 15, 26, 15);
             RenderSystem.color4f(1, 1, 1, 1);
         }
     }

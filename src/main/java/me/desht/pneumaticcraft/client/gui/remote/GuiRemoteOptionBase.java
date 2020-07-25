@@ -1,18 +1,29 @@
 package me.desht.pneumaticcraft.client.gui.remote;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticScreenBase;
 import me.desht.pneumaticcraft.client.gui.GuiRemoteEditor;
 import me.desht.pneumaticcraft.client.gui.remote.actionwidget.ActionWidget;
 import me.desht.pneumaticcraft.client.gui.remote.actionwidget.IActionWidgetLabeled;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetComboBox;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextFieldNumber;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
 public class GuiRemoteOptionBase<A extends ActionWidget<?>> extends GuiPneumaticScreenBase {
+    private static final String TOOLTIP_DELIMITER = "//";
+
     protected final A actionWidget;
     final GuiRemoteEditor guiRemote;
     private WidgetTextField labelField, tooltipField;
@@ -29,10 +40,9 @@ public class GuiRemoteOptionBase<A extends ActionWidget<?>> extends GuiPneumatic
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float partialTicks) {
-        renderBackground();
-        super.render(mouseX, mouseY, partialTicks);
-
+    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+        renderBackground(matrixStack);
+        super.render(matrixStack, mouseX, mouseY, partialTicks);
     }
 
     @Override
@@ -49,28 +59,27 @@ public class GuiRemoteOptionBase<A extends ActionWidget<?>> extends GuiPneumatic
     public void init() {
         super.init();
 
-        addLabel(I18n.format("pneumaticcraft.gui.remote.enable"), guiLeft + 10, guiTop + 150);
-        String t = title.getFormattedText();
-        addLabel(t, width / 2 - font.getStringWidth(t) / 2, guiTop + 5);
-        addLabel("#", guiLeft + 10, guiTop + 161);
+        addLabel(xlate("pneumaticcraft.gui.remote.enable"), guiLeft + 10, guiTop + 150);
+        addLabel(title, width / 2, guiTop + 5, WidgetLabel.Alignment.CENTRE);
+        addLabel(new StringTextComponent("#"), guiLeft + 10, guiTop + 161);
 
         if (actionWidget instanceof IActionWidgetLabeled) {
-            addLabel(I18n.format("pneumaticcraft.gui.remote.text"), guiLeft + 10, guiTop + 20);
-            addLabel(I18n.format("pneumaticcraft.gui.remote.tooltip"), guiLeft + 10, guiTop + 46);
+            addLabel(xlate("pneumaticcraft.gui.remote.text"), guiLeft + 10, guiTop + 20);
+            addLabel(xlate("pneumaticcraft.gui.remote.tooltip"), guiLeft + 10, guiTop + 46);
         }
 
-        addLabel(I18n.format("pneumaticcraft.gui.remote.enableValue"), guiLeft + 10, guiTop + 175);
-        addLabel("X:", guiLeft + 10, guiTop + 186);
-        addLabel("Y:", guiLeft + 67, guiTop + 186);
-        addLabel("Z:", guiLeft + 124, guiTop + 186);
+        addLabel(xlate("pneumaticcraft.gui.remote.enableValue"), guiLeft + 10, guiTop + 175);
+        addLabel(new StringTextComponent("X:"), guiLeft + 10, guiTop + 186);
+        addLabel(new StringTextComponent("Y:"), guiLeft + 67, guiTop + 186);
+        addLabel(new StringTextComponent("Z:"), guiLeft + 124, guiTop + 186);
 
         enableField = new WidgetComboBox(font, guiLeft + 18, guiTop + 160, 152, 10);
         enableField.setElements(guiRemote.getContainer().variables);
         enableField.setText(actionWidget.getEnableVariable());
-        enableField.setTooltip(I18n.format("pneumaticcraft.gui.remote.enable.tooltip"));
+        enableField.setTooltip(xlate("pneumaticcraft.gui.remote.enable.tooltip"));
         addButton(enableField);
 
-        String valueTooltip = I18n.format("pneumaticcraft.gui.remote.enableValue.tooltip");
+        ITextComponent valueTooltip = xlate("pneumaticcraft.gui.remote.enableValue.tooltip");
 
         xValueField = new WidgetTextFieldNumber(font, guiLeft + 20, guiTop + 185, 38, 10);
         xValueField.setValue(actionWidget.getEnablingValue().getX());
@@ -89,13 +98,17 @@ public class GuiRemoteOptionBase<A extends ActionWidget<?>> extends GuiPneumatic
 
         if (actionWidget instanceof IActionWidgetLabeled) {
             labelField = new WidgetTextField(font, guiLeft + 10, guiTop + 30, 160, 10);
-            labelField.setText(((IActionWidgetLabeled) actionWidget).getText());
-            labelField.setTooltip(I18n.format("pneumaticcraft.gui.remote.label.tooltip"));
+            labelField.setText(((IActionWidgetLabeled) actionWidget).getText().getString());
+            labelField.setTooltip(xlate("pneumaticcraft.gui.remote.label.tooltip"));
             labelField.setMaxStringLength(1000);
             addButton(labelField);
 
             tooltipField = new WidgetTextField(font, guiLeft + 10, guiTop + 56, 160, 10);
-            tooltipField.setText(((IActionWidgetLabeled) actionWidget).getTooltip());
+
+            String joined = ((IActionWidgetLabeled) actionWidget).getTooltip().stream()
+                    .map(ITextComponent::getString)
+                    .collect(Collectors.joining(TOOLTIP_DELIMITER));
+            tooltipField.setText(joined);
             addButton(tooltipField);
         }
     }
@@ -105,8 +118,11 @@ public class GuiRemoteOptionBase<A extends ActionWidget<?>> extends GuiPneumatic
         actionWidget.setEnableVariable(enableField.getText());
         actionWidget.setEnablingValue(xValueField.getValue(), yValueField.getValue(), zValueField.getValue());
         if (actionWidget instanceof IActionWidgetLabeled) {
-            ((IActionWidgetLabeled) actionWidget).setText(labelField.getText());
-            ((IActionWidgetLabeled) actionWidget).setTooltip(tooltipField.getText());
+            ((IActionWidgetLabeled) actionWidget).setText(new StringTextComponent(labelField.getText()));
+            List<ITextComponent> l = Arrays.stream(tooltipField.getText().split(TOOLTIP_DELIMITER))
+                    .map(StringTextComponent::new)
+                    .collect(Collectors.toList());
+            ((IActionWidgetLabeled) actionWidget).setTooltip(l);
         }
 
         minecraft.displayGuiScreen(guiRemote);

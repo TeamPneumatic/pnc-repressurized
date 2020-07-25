@@ -1,6 +1,8 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import me.desht.pneumaticcraft.client.gui.widget.tmp.ExtendedButtonTmp;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -11,7 +13,8 @@ import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.client.gui.widget.ExtendedButton;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
@@ -21,24 +24,36 @@ import java.util.List;
  * Extension of GuiButtonExt that add: 1) a string tag which is sent to the server when clicked (PacketGuiButton),
  * 2) ability to draw itemstack or textured icons & 3) can render its area when invisible
  */
-public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidget, ITooltipProvider {
+public class WidgetButtonExtended extends ExtendedButtonTmp implements ITaggedWidget, ITooltipProvider {
     public enum IconPosition { MIDDLE, LEFT, RIGHT }
     private ItemStack[] renderedStacks;
 
     private ResourceLocation resLoc;
-    private final List<String> tooltipText = new ArrayList<>();
+    private final List<ITextComponent> tooltipText = new ArrayList<>();
     private final ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
     private int invisibleHoverColor;
     private boolean thisVisible = true;
     private IconPosition iconPosition = IconPosition.MIDDLE;
     private String tag = null;
 
-    public WidgetButtonExtended(int startX, int startY, int xSize, int ySize, String buttonText, IPressable pressable) {
+    public WidgetButtonExtended(int startX, int startY, int xSize, int ySize, ITextComponent buttonText, IPressable pressable) {
         super(startX, startY, xSize, ySize, buttonText, pressable);
+    }
+
+    public WidgetButtonExtended(int startX, int startY, int xSize, int ySize, ITextComponent buttonText) {
+        this(startX, startY, xSize, ySize, buttonText, b -> {});
+    }
+
+    public WidgetButtonExtended(int startX, int startY, int xSize, int ySize, String buttonText, IPressable pressable) {
+        super(startX, startY, xSize, ySize, new StringTextComponent(buttonText), pressable);
     }
 
     public WidgetButtonExtended(int startX, int startY, int xSize, int ySize, String buttonText) {
         this(startX, startY, xSize, ySize, buttonText, b -> {});
+    }
+
+    public WidgetButtonExtended(int startX, int startY, int xSize, int ySize) {
+        this(startX, startY, xSize, ySize, StringTextComponent.EMPTY, b -> {});
     }
 
     /**
@@ -81,37 +96,52 @@ public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidge
 
     public WidgetButtonExtended setRenderStacks(ItemStack... renderedStacks) {
         this.renderedStacks = renderedStacks;
+        this.resLoc = null;
         return this;
     }
 
     public WidgetButtonExtended setRenderedIcon(ResourceLocation resLoc) {
         this.resLoc = resLoc;
+        this.renderedStacks = null;
         return this;
     }
 
-    public WidgetButtonExtended setTooltipText(List<String> tooltip) {
+    public WidgetButtonExtended setTexture(Object texture) {
+        if (texture instanceof ItemStack) {
+            setRenderStacks((ItemStack) texture);
+        } else if (texture instanceof ResourceLocation) {
+            setRenderedIcon((ResourceLocation) texture);
+        } else {
+            throw new IllegalArgumentException("texture must be an ItemStack or ResourceLocation!");
+        }
+        return this;
+    }
+
+    public WidgetButtonExtended setTooltipText(List<ITextComponent> tooltip) {
         tooltipText.clear();
         tooltipText.addAll(tooltip);
         return this;
     }
 
-    public WidgetButtonExtended setTooltipText(String tooltip) {
+    public WidgetButtonExtended setTooltipText(ITextComponent tooltip) {
         tooltipText.clear();
-        if (tooltip != null && !tooltip.equals("")) {
+        if (tooltip != null && !tooltip.getString().isEmpty()) {
             tooltipText.add(tooltip);
         }
         return this;
     }
 
     @Override
-    public void addTooltip(double mouseX, double mouseY, List<String> curTip, boolean shift) {
-        if (tooltipText != null) {
-            curTip.addAll(tooltipText);
-        }
+    public void addTooltip(double mouseX, double mouseY, List<ITextComponent> curTip, boolean shift) {
+        curTip.addAll(tooltipText);
     }
 
-    public String getTooltip() {
-        return tooltipText.size() > 0 ? tooltipText.get(0) : "";
+    public boolean hasTooltip() {
+        return !tooltipText.isEmpty();
+    }
+
+    public List<ITextComponent> getTooltip() {
+        return tooltipText;
     }
 
     public int getWidth() {
@@ -123,29 +153,26 @@ public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidge
     }
 
     @Override
-    public void renderButton(int x, int y, float partialTicks) {
-        if (thisVisible) super.renderButton(x, y, partialTicks);
+    public void renderButton(MatrixStack matrixStack, int x, int y, float partialTicks) {
+        if (thisVisible) super.renderButton(matrixStack, x, y, partialTicks);
 
         if (visible) {
             if (renderedStacks != null) {
                 int startX = getIconX();
-                RenderSystem.enableRescaleNormal();
                 RenderHelper.enableStandardItemLighting();
-//                RenderHelper.enableGUIStandardItemLighting();
                 for (int i = 0; i < renderedStacks.length; i++) {
-                    itemRenderer.renderItemAndEffectIntoGUI(renderedStacks[i], startX + i * 18, this.y + 2);
+                    GuiUtils.renderItemStack(matrixStack, renderedStacks[i], startX + i * 18, this.y + 2);
                 }
                 RenderHelper.disableStandardItemLighting();
-                RenderSystem.disableRescaleNormal();
             }
             if (resLoc != null) {
                 RenderSystem.enableBlend();
                 RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-                GuiUtils.drawTexture(resLoc, this.x + width / 2 - 8, this.y + 2);
+                GuiUtils.drawTexture(matrixStack, resLoc, this.x + width / 2 - 8, this.y + 2);
                 RenderSystem.disableBlend();
             }
             if (active && !thisVisible && x >= this.x && y >= this.y && x < this.x + width && y < this.y + height) {
-                AbstractGui.fill(this.x, this.y, this.x + width, this.y + height, invisibleHoverColor);
+                AbstractGui.fill(matrixStack, this.x, this.y, this.x + width, this.y + height, invisibleHoverColor);
             }
         }
     }

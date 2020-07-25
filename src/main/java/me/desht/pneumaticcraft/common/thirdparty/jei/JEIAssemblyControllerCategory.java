@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.item.ItemAssemblyProgram;
@@ -92,11 +93,11 @@ public class JEIAssemblyControllerCategory implements IRecipeCategory<AssemblyRe
     }
 
     @Override
-    public void draw(AssemblyRecipe recipe, double mouseX, double mouseY) {
-        progressBar.draw(68, 75);
+    public void draw(AssemblyRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
+        progressBar.draw(matrixStack, 68, 75);
         FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
-        fontRenderer.drawString("Required Machines", 5, 15, 0xFF404040);
-        fontRenderer.drawString("Prog.", 129, 9, 0xFF404040);
+        fontRenderer.drawString(matrixStack, "Required Machines", 5, 15, 0xFF404040);
+        fontRenderer.drawString(matrixStack, "Prog.", 129, 9, 0xFF404040);
     }
 
     private ItemStack[] getMachinesFromEnum(AssemblyProgram.EnumMachine[] requiredMachines) {

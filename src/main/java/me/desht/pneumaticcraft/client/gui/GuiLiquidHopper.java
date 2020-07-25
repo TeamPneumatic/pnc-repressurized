@@ -21,6 +21,8 @@ import net.minecraft.util.text.ITextComponent;
 import java.util.ArrayList;
 import java.util.List;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
 public class GuiLiquidHopper extends GuiPneumaticContainerBase<ContainerLiquidHopper,TileEntityLiquidHopper> {
     private WidgetAnimatedStat statusStat;
     private final WidgetButtonExtended[] modeButtons = new WidgetButtonExtended[2];
@@ -33,20 +35,20 @@ public class GuiLiquidHopper extends GuiPneumaticContainerBase<ContainerLiquidHo
     public void init() {
         super.init();
         addButton(new WidgetTank(guiLeft + 116, guiTop + 15, te.getTank()));
-        statusStat = addAnimatedStat("pneumaticcraft.gui.tab.hopperStatus", new ItemStack(ModBlocks.LIQUID_HOPPER.get()), 0xFFFFAA00, false);
+        statusStat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.hopperStatus"), new ItemStack(ModBlocks.LIQUID_HOPPER.get()), 0xFFFFAA00, false);
 
-        WidgetAnimatedStat optionStat = addAnimatedStat("pneumaticcraft.gui.tab.gasLift.mode", new ItemStack(Blocks.LEVER), 0xFFFFCC00, false);
+        WidgetAnimatedStat optionStat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.gasLift.mode"), new ItemStack(Blocks.LEVER), 0xFFFFCC00, false);
         optionStat.addPadding(4, 14);
 
         WidgetButtonExtended button = new WidgetButtonExtended(5, 20, 20, 20, "").withTag("empty");
         button.setRenderStacks(new ItemStack(Items.BUCKET));
-        button.setTooltipText(I18n.format("pneumaticcraft.gui.tab.liquidHopper.mode.empty"));
+        button.setTooltipText(xlate("pneumaticcraft.gui.tab.liquidHopper.mode.empty"));
         optionStat.addSubWidget(button);
         modeButtons[0] = button;
 
         button = new WidgetButtonExtended(30, 20, 20, 20, "").withTag("leave");
         button.setRenderStacks(new ItemStack(Items.WATER_BUCKET));
-        button.setTooltipText(I18n.format("pneumaticcraft.gui.tab.liquidHopper.mode.leaveLiquid"));
+        button.setTooltipText(xlate("pneumaticcraft.gui.tab.liquidHopper.mode.leaveLiquid"));
         optionStat.addSubWidget(button);
         modeButtons[1] = button;
     }

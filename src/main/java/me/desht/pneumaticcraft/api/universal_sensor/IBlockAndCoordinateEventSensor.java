@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.api.universal_sensor;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.tileentity.TileEntity;
@@ -61,7 +62,8 @@ public interface IBlockAndCoordinateEventSensor {
     /**
      * Called by GuiScreen#drawScreen this method can be used to render additional things like status/info text.
      *
+     * @param matrixStack
      * @param fontRenderer
      */
-    void drawAdditionalInfo(FontRenderer fontRenderer);
+    void drawAdditionalInfo(MatrixStack matrixStack, FontRenderer fontRenderer);
 }

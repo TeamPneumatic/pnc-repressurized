@@ -19,13 +19,14 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 import static me.desht.pneumaticcraft.lib.TileEntityConstants.PNEUMATIC_DOOR_EXTENSION;
 import static me.desht.pneumaticcraft.lib.TileEntityConstants.PNEUMATIC_DOOR_SPEED_FAST;
 
@@ -122,8 +123,8 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase
                     if (redstoneMode == 0) {
                         return true;
                     } else {
-                        Vec3d eyePos = player.getEyePosition(0f);
-                        Vec3d endPos = eyePos.add(player.getLookVec().normalize().scale(range * 1.4142f));
+                        Vector3d eyePos = player.getEyePosition(0f);
+                        Vector3d endPos = eyePos.add(player.getLookVec().normalize().scale(range * 1.4142f));
                         return door.getRenderBoundingBox().rayTrace(eyePos, endPos).isPresent();
                     }
                 }
@@ -176,8 +177,9 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase
     }
 
     @Override
-    public void read(CompoundNBT tag) {
-        super.read(tag);
+    public void read(BlockState state, CompoundNBT tag) {
+        super.read(state, tag);
+
         progress = tag.getFloat("extension");
         opening = tag.getBoolean("opening");
         redstoneMode = tag.getInt(NBTKeys.NBT_REDSTONE_MODE);
@@ -243,8 +245,8 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase
     }
 
     @Override
-    public String getRedstoneTabTitle() {
-        return "pneumaticcraft.gui.tab.redstoneBehaviour.pneumaticDoor.openWhen";
+    public ITextComponent getRedstoneTabTitle() {
+        return xlate("pneumaticcraft.gui.tab.redstoneBehaviour.pneumaticDoor.openWhen");
     }
 
     @Override

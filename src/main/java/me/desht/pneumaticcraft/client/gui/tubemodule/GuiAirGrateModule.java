@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.gui.tubemodule;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
@@ -15,8 +16,11 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.glfw.GLFW;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiAirGrateModule extends GuiTubeModule<ModuleAirGrate> {
     private int sendTimer = 0;
@@ -34,9 +38,9 @@ public class GuiAirGrateModule extends GuiTubeModule<ModuleAirGrate> {
     public void init() {
         super.init();
 
-        addLabel(title.getFormattedText(), guiLeft + xSize / 2, guiTop + 5, WidgetLabel.Alignment.CENTRE);
-        WidgetLabel label = addLabel(I18n.format("pneumaticcraft.gui.entityFilter"), guiLeft + 10, guiTop + 30);
-        addLabel(I18n.format("pneumaticcraft.gui.holdF1forHelp"), guiLeft + xSize / 2, guiTop + ySize + 5, WidgetLabel.Alignment.CENTRE)
+        addLabel(title, guiLeft + xSize / 2, guiTop + 5, WidgetLabel.Alignment.CENTRE);
+        WidgetLabel label = addLabel(xlate("pneumaticcraft.gui.entityFilter"), guiLeft + 10, guiTop + 30);
+        addLabel(xlate("pneumaticcraft.gui.holdF1forHelp"), guiLeft + xSize / 2, guiTop + ySize + 5, WidgetLabel.Alignment.CENTRE)
                 .setColor(0xFFC0C0C0);
 
         int tx = 12 + label.getWidth();
@@ -44,7 +48,7 @@ public class GuiAirGrateModule extends GuiTubeModule<ModuleAirGrate> {
         textfield.setText(module.getEntityFilterString());
         textfield.setResponder(s -> sendTimer = 5);
         textfield.setFocused2(true);
-        setFocused(textfield);
+        setListener(textfield);
         addButton(textfield);
 
         warningButton = new WidgetButtonExtended(guiLeft + 152, guiTop + 20, 20, 20, "");
@@ -58,22 +62,22 @@ public class GuiAirGrateModule extends GuiTubeModule<ModuleAirGrate> {
     private void validateEntityFilter(String filter) {
         try {
             warningButton.visible = false;
-            warningButton.setTooltipText("");
+            warningButton.setTooltipText(StringTextComponent.EMPTY);
             new EntityFilter(filter);  // syntax check
         } catch (IllegalArgumentException e) {
             warningButton.visible = true;
-            warningButton.setTooltipText(TextFormatting.GOLD + e.getMessage());
+            warningButton.setTooltipText(new StringTextComponent(e.getMessage()).mergeStyle(TextFormatting.GOLD));
         }
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float partialTicks) {
-        super.render(mouseX, mouseY, partialTicks);
+    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+        super.render(matrixStack, mouseX, mouseY, partialTicks);
 
         if (!textfield.isFocused()) textfield.setText(module.getEntityFilterString());
 
         if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {
-            GuiUtils.showPopupHelpScreen(this, font,
+            GuiUtils.showPopupHelpScreen(matrixStack, this, font,
                     PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.entityFilter.helpText"), 60));
         }
     }

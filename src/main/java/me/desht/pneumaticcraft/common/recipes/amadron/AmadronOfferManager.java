@@ -1,9 +1,6 @@
 package me.desht.pneumaticcraft.common.recipes.amadron;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
+import com.google.gson.*;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
@@ -160,7 +157,7 @@ public enum AmadronOfferManager {
      *
      * @param resourceList a collection of all the static offers loaded as recipes
      */
-    public void initOffers(Map<ResourceLocation, JsonObject> resourceList) {
+    public void initOffers(Map<ResourceLocation, JsonElement> resourceList) {
         loadRecipeOffers(resourceList);
 
         setupVillagerTrades();
@@ -274,21 +271,24 @@ public enum AmadronOfferManager {
         }
     }
 
-    private void loadRecipeOffers(Map<ResourceLocation, JsonObject> resourceList) {
+    private void loadRecipeOffers(Map<ResourceLocation, JsonElement> resourceList) {
         staticOffers.clear();
         periodicOffers.clear();
-        resourceList.forEach((id, json) -> {
-            if (JSONUtils.getString(json, "type", "").equals("pneumaticcraft:amadron")) {
-                try {
-                    AmadronOffer offer = AmadronOffer.fromJson(id, json);
-                    if (offer.isStaticOffer()) {
-                        staticOffers.add(offer);
-                    } else {
-                        periodicOffers.computeIfAbsent(offer.getTradeLevel(), l -> new ArrayList<>()).add(offer);
+        resourceList.forEach((id, jsonElement) -> {
+            if (jsonElement.isJsonObject()) {
+                JsonObject json = jsonElement.getAsJsonObject();
+                if (JSONUtils.getString(json, "type", "").equals("pneumaticcraft:amadron")) {
+                    try {
+                        AmadronOffer offer = AmadronOffer.fromJson(id, json);
+                        if (offer.isStaticOffer()) {
+                            staticOffers.add(offer);
+                        } else {
+                            periodicOffers.computeIfAbsent(offer.getTradeLevel(), l -> new ArrayList<>()).add(offer);
+                        }
+                    } catch (CommandSyntaxException | JsonSyntaxException e) {
+                        Log.error("Syntax error for offer id " + id + ": " + e.getMessage());
+                        Log.error(ExceptionUtils.getStackTrace(e));
                     }
-                } catch (CommandSyntaxException | JsonSyntaxException e) {
-                    Log.error("Syntax error for offer id " + id + ": " + e.getMessage());
-                    Log.error(ExceptionUtils.getStackTrace(e));
                 }
             }
         });
@@ -329,7 +329,7 @@ public enum AmadronOfferManager {
         }
 
         @Override
-        protected void apply(Map<ResourceLocation, JsonObject> resourceList, IResourceManager resourceManagerIn, IProfiler profilerIn) {
+        protected void apply(Map<ResourceLocation, JsonElement> resourceList, IResourceManager resourceManagerIn, IProfiler profilerIn) {
             AmadronOfferManager.getInstance().initOffers(resourceList);
         }
     }

@@ -5,9 +5,9 @@ import me.desht.pneumaticcraft.client.model.entity.drone.ModelDrone;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.entity.living.EntityDroneBase;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.vector.Vector3f;
 
 public class DroneFrameLayer extends LayerRenderer<EntityDroneBase, ModelDrone> {
     private final float[] frameColors;

@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.client.gui.remote.GuiRemoteDropdown;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetComboBox;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSetGlobalVariable;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
@@ -13,7 +14,6 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import org.apache.commons.lang3.text.WordUtils;
 
 public class ActionWidgetDropdown extends ActionWidgetVariable<WidgetComboBox> {
 
@@ -33,7 +33,7 @@ public class ActionWidgetDropdown extends ActionWidgetVariable<WidgetComboBox> {
         width = widget.getWidth();
         height = widget.getHeight();
         widget.setText(I18n.format("pneumaticcraft.gui.remote.tray.dropdown.name"));
-        widget.setTooltip(WordUtils.wrap(I18n.format("pneumaticcraft.gui.remote.tray.dropdown.tooltip"), 50).split(System.getProperty("line.separator")));
+        widget.setTooltip(PneumaticCraftUtils.splitStringComponent(I18n.format("pneumaticcraft.gui.remote.tray.dropdown.tooltip")));
     }
 
     @Override

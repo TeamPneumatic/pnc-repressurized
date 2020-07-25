@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
@@ -16,11 +17,13 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 import static me.desht.pneumaticcraft.lib.GuiConstants.ARROW_LEFT;
 import static me.desht.pneumaticcraft.lib.GuiConstants.ARROW_RIGHT;
 
@@ -39,9 +42,9 @@ public class GuiElevator extends GuiPneumaticContainerBase<ContainerElevator, Ti
     public void init() {
         super.init();
 
-        statusStat = addAnimatedStat(I18n.format("pneumaticcraft.gui.tab.status"), new ItemStack(ModBlocks.ELEVATOR_BASE.get()), 0xFFFFAA00, false);
+        statusStat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.status"), new ItemStack(ModBlocks.ELEVATOR_BASE.get()), 0xFFFFAA00, false);
 
-        WidgetAnimatedStat floorNameStat = addAnimatedStat(I18n.format("pneumaticcraft.gui.tab.info.elevator.floorNames"),
+        WidgetAnimatedStat floorNameStat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.info.elevator.floorNames"),
                 new ItemStack(ModBlocks.ELEVATOR_CALLER.get()), 0xFF005500, false);
         floorNameStat.addPadding(7, 40);
 
@@ -50,8 +53,9 @@ public class GuiElevator extends GuiPneumaticContainerBase<ContainerElevator, Ti
         floorNameField.setResponder(this::updateFloor);  // gui responder
 
         floorNameStat.addSubWidget(floorNameField);
-        floorNameStat.addSubWidget(noFloorsLabel = new WidgetLabel(5, 20, I18n.format("pneumaticcraft.gui.tab.info.elevator.noCallers")).setColor(0xFFFFFFFF));
-        floorNameStat.addSubWidget(floorNumberLabel = new WidgetLabel(85, 40, "").setAlignment(WidgetLabel.Alignment.CENTRE).setColor(0xFFFFFFFF));
+        floorNameStat.addSubWidget(noFloorsLabel = new WidgetLabel(5, 20, xlate("pneumaticcraft.gui.tab.info.elevator.noCallers")).setColor(0xFFFFFFFF));
+        floorNameStat.addSubWidget(floorNumberLabel = new WidgetLabel(85, 40, StringTextComponent.EMPTY)
+                .setAlignment(WidgetLabel.Alignment.CENTRE).setColor(0xFFFFFFFF));
         floorNameStat.addSubWidget(cycleDown = new WidgetButtonExtended(5, 35, 20, 20, ARROW_LEFT, button -> cycleFloor(-1)));
         floorNameStat.addSubWidget(cycleUp = new WidgetButtonExtended(145, 35, 20, 20, ARROW_RIGHT, button -> cycleFloor(1)));
     }
@@ -83,8 +87,8 @@ public class GuiElevator extends GuiPneumaticContainerBase<ContainerElevator, Ti
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(float opacity, int x, int y) {
-        super.drawGuiContainerBackgroundLayer(opacity, x, y);
+    protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float opacity, int x, int y) {
+        super.drawGuiContainerBackgroundLayer(matrixStack, opacity, x, y);
     }
 
     @Override
@@ -96,7 +100,7 @@ public class GuiElevator extends GuiPneumaticContainerBase<ContainerElevator, Ti
         noFloorsLabel.visible = te.floorHeights.length == 0;
         floorNumberLabel.visible = te.floorHeights.length > 0;
         floorNameField.active = te.floorHeights.length > 0;
-        floorNumberLabel.setMessage(I18n.format("pneumaticcraft.gui.tab.info.elevator.floorNumber", currentEditedFloor + 1, te.floorHeights.length));
+        floorNumberLabel.setMessage(xlate("pneumaticcraft.gui.tab.info.elevator.floorNumber", currentEditedFloor + 1, te.floorHeights.length));
     }
 
     private List<String> getStatusText() {

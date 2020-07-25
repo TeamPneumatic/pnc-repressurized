@@ -1,10 +1,12 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -26,17 +28,18 @@ public class WidgetFluidStack extends WidgetFluidFilter {
     }
 
     @Override
-    public void renderButton(int mouseX, int mouseY, float partialTick) {
-        super.renderButton(mouseX, mouseY, partialTick);
+    public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTick) {
+        super.renderButton(matrixStack, mouseX, mouseY, partialTick);
 
         if (!fluidStack.isEmpty()) {
             int fluidAmount = fluidStack.getAmount() / 1000;
             if (fluidAmount > 1) {
                 FontRenderer fr = Minecraft.getInstance().fontRenderer;
-                RenderSystem.translated(0, 0, 200);  // ensure amount is drawn in front of the fluid texture
+                matrixStack.push();
+                matrixStack.translate(0, 0, 200);  // ensure amount is drawn in front of the fluid texture
                 String s = fluidAmount + "B";
-                fr.drawStringWithShadow(s, x - fr.getStringWidth(s) + 17, y + 9, 0xFFFFFFFF);
-                RenderSystem.translated(0, 0, -200);
+                fr.drawStringWithShadow(matrixStack, s, x - fr.getStringWidth(s) + 17, y + 9, 0xFFFFFFFF);
+                matrixStack.pop();
             }
         }
     }
@@ -68,10 +71,12 @@ public class WidgetFluidStack extends WidgetFluidFilter {
     }
 
     @Override
-    public void addTooltip(double mouseX, double mouseY, List<String> curTip, boolean shiftPressed) {
+    public void addTooltip(double mouseX, double mouseY, List<ITextComponent> curTip, boolean shiftPressed) {
         if (!fluidStack.isEmpty()) {
-            curTip.add(new FluidStack(fluidStack, 1).getDisplayName().getFormattedText() + " (" + fluidStack.getAmount() + "mB)");
-            curTip.add(TextFormatting.BLUE + "" + TextFormatting.ITALIC + ModNameCache.getModName(fluidStack.getFluid().getRegistryName().getNamespace()));
+            curTip.add(new FluidStack(fluidStack, 1).getDisplayName().deepCopy()
+                    .appendString(" (" + fluidStack.getAmount() + "mB)"));
+            curTip.add(new StringTextComponent(ModNameCache.getModName(fluidStack.getFluid()))
+                    .mergeStyle(TextFormatting.BLUE,  TextFormatting.ITALIC));
         }
     }
 }

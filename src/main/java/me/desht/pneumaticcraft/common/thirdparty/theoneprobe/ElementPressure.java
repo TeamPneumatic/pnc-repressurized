@@ -1,12 +1,13 @@
 package me.desht.pneumaticcraft.common.thirdparty.theoneprobe;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import io.netty.buffer.ByteBuf;
 import mcjty.theoneprobe.api.IElement;
-import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer;
-import me.desht.pneumaticcraft.common.capabilities.MachineAirHandler;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
+import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer2D;
 import me.desht.pneumaticcraft.common.tileentity.IMinWorkingPressure;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 
 public class ElementPressure implements IElement {
@@ -17,7 +18,7 @@ public class ElementPressure implements IElement {
 
     private static final float SCALE = 0.7f;
 
-    ElementPressure(TileEntity te, MachineAirHandler airHandler) {
+    ElementPressure(TileEntity te, IAirHandlerMachine airHandler) {
         min = te instanceof IMinWorkingPressure ? ((IMinWorkingPressure) te).getMinWorkingPressure() : 0;
         pressure = airHandler.getPressure();
         danger = airHandler.getDangerPressure();
@@ -32,13 +33,13 @@ public class ElementPressure implements IElement {
     }
 
     @Override
-    public void render(int x, int y) {
-        RenderSystem.pushMatrix();
-        RenderSystem.scaled(SCALE, SCALE, SCALE);
+    public void render(MatrixStack matrixStack, int x, int y) {
+        matrixStack.push();
+        matrixStack.scale(SCALE, SCALE, SCALE);
         int x1 = (int)((x + getWidth() / 2) / SCALE);
         int y1 = (int)((y + getHeight() / 2) / SCALE);
-        PressureGaugeRenderer.drawPressureGauge(Minecraft.getInstance().fontRenderer, -1, crit, danger, min, pressure, x1, y1,0xFFC0C0C0);
-        RenderSystem.popMatrix();
+        PressureGaugeRenderer2D.drawPressureGauge(matrixStack, Minecraft.getInstance().fontRenderer, -1, crit, danger, min, pressure, x1, y1,0xFFC0C0C0);
+        matrixStack.pop();
     }
 
     @Override
@@ -52,7 +53,7 @@ public class ElementPressure implements IElement {
     }
 
     @Override
-    public void toBytes(ByteBuf buf) {
+    public void toBytes(PacketBuffer buf) {
         buf.writeFloat(min);
         buf.writeFloat(pressure);
         buf.writeFloat(danger);

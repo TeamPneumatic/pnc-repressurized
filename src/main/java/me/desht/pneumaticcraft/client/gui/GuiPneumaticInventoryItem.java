@@ -1,9 +1,10 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
-import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer;
+import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer2D;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.inventory.ContainerChargingStationItemInventory;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
@@ -64,7 +65,7 @@ public abstract class GuiPneumaticInventoryItem extends GuiPneumaticContainerBas
         pressureStatText.add(col + I18n.format("pneumaticcraft.gui.tooltip.air", String.format("%,d", Math.round(curPressure * volume))));
         pressureStatText.add(col + I18n.format("pneumaticcraft.gui.tooltip.baseVolume", String.format("%,d", getDefaultVolume())));
         if (volume > getDefaultVolume()) {
-            pressureStatText.add(col + GuiConstants.TRIANGLE_RIGHT + " " + upgrades + " x " + EnumUpgrade.VOLUME.getItemStack().getDisplayName().getFormattedText());
+            pressureStatText.add(col + GuiConstants.TRIANGLE_RIGHT + " " + upgrades + " x " + EnumUpgrade.VOLUME.getItemStack().getDisplayName().getString());
             pressureStatText.add(col + I18n.format("pneumaticcraft.gui.tooltip.effectiveVolume", String.format("%,d",volume)));
         }
     }
@@ -92,12 +93,11 @@ public abstract class GuiPneumaticInventoryItem extends GuiPneumaticContainerBas
     protected abstract int getDefaultVolume();
 
     @Override
-    protected void drawGuiContainerForegroundLayer(int x, int y) {
-        String containerName = itemStack.getDisplayName().getFormattedText();
-        font.drawString(containerName, xSize / 2f - font.getStringWidth(containerName) / 2f, 5, 0x404040);
+    protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int x, int y) {
+        font.func_238422_b_(matrixStack, itemStack.getDisplayName(), (xSize - font.func_238414_a_(itemStack.getDisplayName())) / 2f, 5, 0x404040);
 
         itemStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
-                .ifPresent(h -> PressureGaugeRenderer.drawPressureGauge(font, 0, h.maxPressure(), h.maxPressure(), 0, te.chargingItemPressure, xSize * 3 / 4 + 10, ySize / 4 + 4));
+                .ifPresent(h -> PressureGaugeRenderer2D.drawPressureGauge(matrixStack, font, 0, h.maxPressure(), h.maxPressure(), 0, te.chargingItemPressure, xSize * 3 / 4 + 10, ySize / 4 + 4));
     }
 
     @Override
@@ -126,11 +126,11 @@ public abstract class GuiPneumaticInventoryItem extends GuiPneumaticContainerBas
                 for (String w : what) {
                     String key = "pneumaticcraft.gui.tab.info.item." + w + "." + upgrade.getName() + "Upgrade";
                     if (I18n.hasKey(key)) {
-                        text.addAll(PneumaticCraftUtils.splitString(I18n.format(key)));
+                        text.addAll(PneumaticCraftUtils.splitString(I18n.format(key), 30));
                         break;
                     }
                 }
-                addAnimatedStat(upgradeStack.getDisplayName().getFormattedText(), upgradeStack, 0xFF6060FF, leftSided)
+                addAnimatedStat(upgradeStack.getDisplayName(), upgradeStack, 0xFF6060FF, leftSided)
                         .setTextWithoutCuttingString(text);
                 leftSided = !leftSided;
             }

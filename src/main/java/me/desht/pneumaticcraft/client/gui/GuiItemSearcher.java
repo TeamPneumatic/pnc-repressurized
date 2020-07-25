@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiHelmetMainScreen;
 import me.desht.pneumaticcraft.common.core.ModItems;
@@ -22,6 +23,7 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -93,21 +95,21 @@ public class GuiItemSearcher extends ContainerScreen<ContainerItemSearcher> {
         buttons.clear();
         children.clear();
         minecraft.keyboardListener.enableRepeatEvents(true);
-        searchField = new TextFieldWidget(font, guiLeft + 20, guiTop + 36, 89, font.FONT_HEIGHT, "");
+        searchField = new TextFieldWidget(font, guiLeft + 20, guiTop + 36, 89, font.FONT_HEIGHT, StringTextComponent.EMPTY);
         searchField.setMaxStringLength(15);
         searchField.setEnableBackgroundDrawing(true);
         searchField.setVisible(true);
         searchField.setTextColor(16777215);
         searchField.setResponder(s -> updateCreativeSearch());
         addButton(searchField);
-        setFocused(searchField);
+        setListener(searchField);
         searchField.setFocused2(true);
 
         updateCreativeSearch();
     }
 
     @Override
-    public void onClose() {
+    public void closeScreen() {
         minecraft.keyboardListener.enableRepeatEvents(false);
         if (parentScreen != null) {
             minecraft.displayGuiScreen(parentScreen);
@@ -115,7 +117,7 @@ public class GuiItemSearcher extends ContainerScreen<ContainerItemSearcher> {
                 minecraft.player.openContainer = ((ContainerScreen) parentScreen).getContainer();
             }
         } else {
-            super.onClose();
+            super.closeScreen();
         }
     }
 
@@ -123,18 +125,18 @@ public class GuiItemSearcher extends ContainerScreen<ContainerItemSearcher> {
     public void tick() {
         super.tick();
 
-        if (parentScreen instanceof GuiHelmetMainScreen) {
-            if (minecraft.player.getItemStackFromSlot(EquipmentSlotType.HEAD).getItem() != ModItems.PNEUMATIC_HELMET.get()) {
-                minecraft.displayGuiScreen(parentScreen);
-                onClose();
-            }
+        if (parentScreen instanceof GuiHelmetMainScreen
+                && minecraft.player.getItemStackFromSlot(EquipmentSlotType.HEAD).getItem() != ModItems.PNEUMATIC_HELMET.get()) {
+//                minecraft.displayGuiScreen(parentScreen);
+//                onClose();
+            closeScreen();
         }
     }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-            onClose();
+            closeScreen();
         }
         return !searchField.keyPressed(keyCode, scanCode, modifiers)
                 && searchField.canWrite() || super.keyPressed(keyCode, scanCode, modifiers);
@@ -187,10 +189,10 @@ public class GuiItemSearcher extends ContainerScreen<ContainerItemSearcher> {
      * Draw the foreground layer for the GuiContainer (everything in front of the items)
      */
     @Override
-    protected void drawGuiContainerForegroundLayer(int par1, int par2) {
-        font.drawString("Item Searcher", 23, 5, 4210752);
-        font.drawString("Search Box", 23, 25, 4210752);
-        font.drawString("Target", 113, 10, 4210752);
+    protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int par1, int par2) {
+        font.drawString(matrixStack, "Item Searcher", 23, 5, 0x404040);
+        font.drawString(matrixStack, "Search Box", 23, 25, 0x404040);
+        font.drawString(matrixStack, "Target", 113, 10, 0x404040);
     }
 
     /**
@@ -216,8 +218,8 @@ public class GuiItemSearcher extends ContainerScreen<ContainerItemSearcher> {
      * Draws the screen and all the components in it.
      */
     @Override
-    public void render(int x, int y, float partialTicks) {
-        renderBackground();
+    public void render(MatrixStack matrixStack, int x, int y, float partialTicks) {
+        renderBackground(matrixStack);
 
         boolean isLeftClicking = minecraft.gameSettings.keyBindAttack.isKeyDown();
         int x1 = guiLeft + 156;
@@ -245,30 +247,29 @@ public class GuiItemSearcher extends ContainerScreen<ContainerItemSearcher> {
             container.scrollTo(0);
         }
 
-        super.render(x, y, partialTicks);
+        super.render(matrixStack, x, y, partialTicks);
 
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.disableLighting();
 
-        renderHoveredToolTip(x, y);
+        func_230459_a_(matrixStack, x, y);
     }
 
     /**
      * Draw the background layer for the GuiContainer (everything behind the items)
      */
     @Override
-    protected void drawGuiContainerBackgroundLayer(float par1, int par2, int par3) {
+    protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float par1, int par2, int par3) {
         minecraft.getTextureManager().bindTexture(GUI_TEXTURE);
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
-        blit(xStart, yStart, 0, 0, xSize, ySize);
-//        searchField.drawTextBox();
+        blit(matrixStack, xStart, yStart, 0, 0, xSize, ySize);
 
         int i1 = guiLeft + 156;
         int k = guiTop + 48;
         int l = k + 112;
         minecraft.getTextureManager().bindTexture(SCROLL_TEXTURE);
-        blit(i1, k + (int) ((l - k - 17) * currentScroll), 232 + (needsScrollBars() ? 0 : 12), 0, 12, 15);
+        blit(matrixStack, i1, k + (int) ((l - k - 17) * currentScroll), 232 + (needsScrollBars() ? 0 : 12), 0, 12, 15);
 
     }
 
@@ -286,7 +287,7 @@ public class GuiItemSearcher extends ContainerScreen<ContainerItemSearcher> {
         SearchEntry(ItemStack stack) {
             this.stack = stack;
             List<String> t = stack.getTooltip(minecraft.player, minecraft.gameSettings.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL).stream()
-                    .map(ITextComponent::getFormattedText)
+                    .map(ITextComponent::getString)
                     .collect(Collectors.toList());
             tooltip = StringUtils.join(t, "\n").toLowerCase();
         }

@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.client.util.ProgWidgetRenderer;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.config.subconfig.ProgWidgetConfig;
 import me.desht.pneumaticcraft.common.core.ModRegistries;
@@ -46,7 +45,7 @@ public abstract class ProgWidget implements IProgWidget {
 
     @Override
     public void getTooltip(List<ITextComponent> curTooltip) {
-        curTooltip.add(xlate(getTranslationKey()).applyTextStyles(TextFormatting.DARK_AQUA, TextFormatting.UNDERLINE));
+        curTooltip.add(xlate(getTranslationKey()).mergeStyle(TextFormatting.DARK_AQUA, TextFormatting.UNDERLINE));
         if (freeToUse()) {
             curTooltip.add(new TranslationTextComponent("pneumaticcraft.gui.progWidget.comment.tooltip.freeToUse"));
         }
@@ -134,10 +133,10 @@ public abstract class ProgWidget implements IProgWidget {
         return parent;
     }
 
-    @Override
-    public void renderExtraInfo() {
-        ProgWidgetRenderer.renderExtras(this);
-    }
+//    @Override
+//    public void renderExtraInfo() {
+//        ProgWidgetRenderer.renderExtras(this);
+//    }
 
     @Override
     public Pair<Float,Float> getMaxUV() {

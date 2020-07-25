@@ -14,7 +14,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ILightReader;
+import net.minecraft.world.IBlockDisplayReader;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -76,12 +76,12 @@ public class ColorHandlers {
      * Items implementing this will be automatically registered in the ColorHandler.Block event
      */
     public interface ITintableBlock {
-        int getTintColor(BlockState state, @Nullable ILightReader world, @Nullable BlockPos pos, int tintIndex);
+        int getTintColor(BlockState state, @Nullable IBlockDisplayReader world, @Nullable BlockPos pos, int tintIndex);
     }
 
     public interface IHeatTintable extends ITintableBlock {
         @Override
-        default int getTintColor(BlockState state, @Nullable ILightReader world, @Nullable BlockPos pos, int tintIndex) {
+        default int getTintColor(BlockState state, @Nullable IBlockDisplayReader world, @Nullable BlockPos pos, int tintIndex) {
             if (world != null && pos != null) {
                 TileEntity te = world.getTileEntity(pos);
                 TintColor tint = te instanceof IHeatTinted ? ((IHeatTinted) te).getColorForTintIndex(tintIndex) : TintColor.WHITE;

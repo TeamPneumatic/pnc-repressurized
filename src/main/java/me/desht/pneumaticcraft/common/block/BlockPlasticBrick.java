@@ -27,8 +27,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.IBlockDisplayReader;
 import net.minecraft.world.IBlockReader;
-import net.minecraft.world.ILightReader;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
@@ -119,7 +119,7 @@ public class BlockPlasticBrick extends Block implements ColorHandlers.ITintableB
     }
 
     @Override
-    public int getTintColor(BlockState state, @Nullable ILightReader world, @Nullable BlockPos pos, int tintIndex) {
+    public int getTintColor(BlockState state, @Nullable IBlockDisplayReader world, @Nullable BlockPos pos, int tintIndex) {
         return getColor().getColorValue();
     }
 
@@ -139,7 +139,7 @@ public class BlockPlasticBrick extends Block implements ColorHandlers.ITintableB
         }
 
         @Override
-        public String getName() {
+        public String getString() {
             return name;
         }
     }

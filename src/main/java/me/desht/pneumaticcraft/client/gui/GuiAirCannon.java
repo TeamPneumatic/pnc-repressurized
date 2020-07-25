@@ -13,10 +13,13 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiAirCannon extends GuiPneumaticContainerBase<ContainerAirCannon,TileEntityAirCannon> {
     private WidgetAnimatedStat statusStat;
@@ -37,22 +40,18 @@ public class GuiAirCannon extends GuiPneumaticContainerBase<ContainerAirCannon,T
     public void init() {
         super.init();
 
-        statusStat = this.addAnimatedStat(I18n.format("pneumaticcraft.gui.tab.info.airCannon.status"), 
+        statusStat = this.addAnimatedStat(xlate("pneumaticcraft.gui.tab.info.airCannon.status"),
                 new ItemStack(ModBlocks.AIR_CANNON.get()), 0xFFFF8000, false);
 
-        strengthTab = this.addAnimatedStat(I18n.format("pneumaticcraft.gui.tab.info.airCannon.force", te.forceMult),
+        strengthTab = this.addAnimatedStat(xlate("pneumaticcraft.gui.tab.info.airCannon.force", te.forceMult),
                 new ItemStack(ModItems.AIR_CANISTER.get()), 0xFF2080FF, false);
         strengthTab.addPadding(3, 22);
         strengthTab.addSubWidget(new WidgetButtonExtended(16, 16, 20, 20, "--").withTag("--"));
         strengthTab.addSubWidget(new WidgetButtonExtended(38, 16, 20, 20, "-").withTag("-"));
         strengthTab.addSubWidget(new WidgetButtonExtended(60, 16, 20, 20, "+").withTag("+"));
         strengthTab.addSubWidget(new WidgetButtonExtended(82, 16, 20, 20, "++").withTag("++"));
-    }
 
-    @Override
-    protected void drawGuiContainerForegroundLayer(int x, int y) {
-        super.drawGuiContainerForegroundLayer(x, y);
-        font.drawString("GPS", 50, 20, 0x404040);
+        addLabel(new StringTextComponent("GPS"),  50, 20);
     }
 
     @Override
@@ -65,7 +64,7 @@ public class GuiAirCannon extends GuiPneumaticContainerBase<ContainerAirCannon,T
         super.tick();
 
         statusStat.setText(getStatusText());
-        strengthTab.setTitle(I18n.format("pneumaticcraft.gui.tab.info.airCannon.force", te.forceMult));
+        strengthTab.setMessage(xlate("pneumaticcraft.gui.tab.info.airCannon.force", te.forceMult));
 
         if (gpsX != te.gpsX || gpsY != te.gpsY || gpsZ != te.gpsZ) {
             gpsX = te.gpsX;

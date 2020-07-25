@@ -18,6 +18,7 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
@@ -27,6 +28,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -88,14 +90,14 @@ public class SearchUpgradeHandler implements IUpgradeRenderHandler {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void render2D(float partialTicks, boolean helmetEnabled) {
+    public void render2D(MatrixStack matrixStack, float partialTicks, boolean helmetEnabled) {
         Item item = ItemPneumaticArmor.getSearchedItem(ClientUtils.getWornArmor(EquipmentSlotType.HEAD));
         List<String> textList = new ArrayList<>();
         if (item == null) {
-            textList.add("press '" + KeyHandler.getInstance().keybindOpenOptions.getLocalizedName() + "' to configure");
+            textList.add("press '" + I18n.format(KeyHandler.getInstance().keybindOpenOptions.getTranslationKey()) + "' to configure");
         } else {
             if (searchedStack.getItem() != item) searchedStack = new ItemStack(item);
-            textList.add(searchedStack.getDisplayName().getFormattedText() + " (" + totalSearchedItemCount + " found)");
+            textList.add(searchedStack.getDisplayName().getString() + " (" + totalSearchedItemCount + " found)");
         }
         searchInfo.setText(textList);
     }
@@ -228,7 +230,7 @@ public class SearchUpgradeHandler implements IUpgradeRenderHandler {
     public WidgetAnimatedStat getAnimatedStat() {
         if (searchInfo == null) {
             WidgetAnimatedStat.StatIcon icon = WidgetAnimatedStat.StatIcon.of(EnumUpgrade.SEARCH.getItemStack());
-            searchInfo = new WidgetAnimatedStat(null, "Currently searching for:", icon,
+            searchInfo = new WidgetAnimatedStat(null, new StringTextComponent("Currently searching for:"), icon,
                     0x3000AA00, null, ArmorHUDLayout.INSTANCE.itemSearchStat);
             searchInfo.setMinDimensionsAndReset(0, 0);
         }

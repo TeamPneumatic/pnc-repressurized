@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
 public class TheOneProbe implements IThirdParty {
 
     private static final TextFormatting COLOR = TextFormatting.GRAY;
@@ -63,11 +65,11 @@ public class TheOneProbe implements IThirdParty {
                         List<ITextComponent> tip = new ArrayList<>();
                         CompoundNBT tag = ((ISemiBlock) entity).serializeNBT(new CompoundNBT());
                         ((ISemiBlock) entity).addTooltip(tip, player, tag, player.isSneaking());
-                        tip.forEach(text -> probeInfo.text(text.getFormattedText()));
+                        tip.forEach(probeInfo::text);
                     }
                     entity.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY).ifPresent(h -> {
                         String p = PneumaticCraftUtils.roundNumberTo(h.getPressure(), 1);
-                        probeInfo.text(COLOR + "Pressure: " + p + " bar");
+                        probeInfo.text(xlate("pneumaticcraft.gui.tooltip.pressure", p).mergeStyle(COLOR));
                     });
                     entity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY)
                             .ifPresent(h -> TOPInfoProvider.handleFluidTanks(mode, probeInfo, h));

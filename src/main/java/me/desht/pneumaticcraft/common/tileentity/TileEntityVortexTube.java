@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.heat.SyncedTemperature;
 import me.desht.pneumaticcraft.common.network.DescSynced;
+import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.util.LazyOptional;
@@ -63,8 +64,9 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
     }
 
     @Override
-    public void read(CompoundNBT tag) {
-        super.read(tag);
+    public void read(BlockState state, CompoundNBT tag) {
+        super.read(state, tag);
+
         coldHeatExchanger.deserializeNBT(tag.getCompound("coldHeat"));
         connectingExchanger.deserializeNBT(tag.getCompound("connector"));
     }

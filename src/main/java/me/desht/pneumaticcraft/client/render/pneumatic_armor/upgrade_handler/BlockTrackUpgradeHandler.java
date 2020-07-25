@@ -21,7 +21,12 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -108,9 +113,9 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler {
     private void checkBlockFocus(PlayerEntity player, int blockTrackRange) {
         focusedTarget = null;
         focusedFace = null;
-        Vec3d eyes = player.getEyePosition(1.0f);
-        Vec3d v = eyes;
-        Vec3d lookVec = player.getLookVec();
+        Vector3d eyes = player.getEyePosition(1.0f);
+        Vector3d v = eyes;
+        Vector3d lookVec = player.getLookVec();
         for (int i = 0; i < blockTrackRange * 4; i++) {
             v = v.add(lookVec.scale(0.25));  // scale down to minimise clipping across a corner and missing the block
             BlockPos checkPos = new BlockPos(v.x, v.y, v.z);
@@ -253,10 +258,10 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler {
         List<String> textList = new ArrayList<>();
 
         if (focusedTarget != null) {
-            blockTrackInfo.setTitle(focusedTarget.stat.getTitle());
+            blockTrackInfo.setMessage(focusedTarget.stat.getMessage());
             textList.addAll(focusedTarget.textList);
         } else {
-            blockTrackInfo.setTitle("Current tracked blocks:");
+            blockTrackInfo.setMessage(new StringTextComponent("Current tracked blocks:"));
 
             blockTypeCount.forEach((k, v) -> {
                 if (v > 0 && WidgetKeybindCheckBox.fromKeyBindingName(k).checked) textList.add(v + " " + I18n.format(WidgetKeybindCheckBox.UPGRADE_PREFIX + k));
@@ -284,22 +289,11 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler {
 
     @Override
     public void render3D(MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks) {
-//        GlStateManager.depthMask(false);
-//        GlStateManager.disableDepthTest();
-//        GlStateManager.disableCull();
-//        GlStateManager.enableBlend();
-//        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-
         blockTargets.values().forEach(t -> t.render(matrixStack, buffer, partialTicks));
-
-//        GlStateManager.enableCull();
-//        GlStateManager.enableDepthTest();
-//        GlStateManager.disableBlend();
-//        GlStateManager.depthMask(true);
     }
 
     @Override
-    public void render2D(float partialTicks, boolean helmetEnabled) {
+    public void render2D(MatrixStack matrixStack, float partialTicks, boolean helmetEnabled) {
     }
 
     @Override
@@ -335,7 +329,7 @@ public class BlockTrackUpgradeHandler implements IUpgradeRenderHandler {
     public WidgetAnimatedStat getAnimatedStat() {
         if (blockTrackInfo == null) {
             WidgetAnimatedStat.StatIcon icon = WidgetAnimatedStat.StatIcon.of(EnumUpgrade.BLOCK_TRACKER.getItemStack());
-            blockTrackInfo = new WidgetAnimatedStat(null, "Current tracked blocks:",
+            blockTrackInfo = new WidgetAnimatedStat(null, new StringTextComponent("Current tracked blocks:"),
                     icon, 0x3000AA00, null, ArmorHUDLayout.INSTANCE.blockTrackerStat);
             blockTrackInfo.setMinDimensionsAndReset(0, 0);
         }

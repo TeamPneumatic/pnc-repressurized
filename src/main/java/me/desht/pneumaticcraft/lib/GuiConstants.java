@@ -1,10 +1,10 @@
 package me.desht.pneumaticcraft.lib;
 
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.StringTextComponent;
 
 public class GuiConstants {
-    public static final int MAX_CHAR_PER_LINE_LEFT = 26;
+    public static final int MAX_CHAR_PER_LINE = 45;
 
     public static final String BULLET = "\u2022";
     public static final String ARROW_LEFT_SHORT = "\u2b05";
@@ -21,7 +21,7 @@ public class GuiConstants {
     public static final String TRIANGLE_DOWN_RIGHT = "\u25e2";
     public static final String CIRCULAR_ARROW = "\u293e";
 
-    public static ITextComponent bullet() {
+    public static IFormattableTextComponent bullet() {
         return new StringTextComponent(BULLET + " ");
     }
 }

@@ -16,7 +16,7 @@ import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
-import me.desht.pneumaticcraft.common.util.NBTUtil;
+import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.lib.Log;
@@ -204,7 +204,7 @@ public class ItemMinigun extends ItemPressurizable implements IChargeableContain
 
     @Override
     public ITextComponent getInventoryHeader() {
-        return xlate("pneumaticcraft.gui.tooltip.gunAmmo.loaded").applyTextStyle(TextFormatting.GREEN);
+        return xlate("pneumaticcraft.gui.tooltip.gunAmmo.loaded").mergeStyle(TextFormatting.GREEN);
     }
 
     @Override
@@ -213,13 +213,13 @@ public class ItemMinigun extends ItemPressurizable implements IChargeableContain
     }
 
     public static int getLockedSlot(ItemStack stack) {
-        if (NBTUtil.hasTag(stack, NBT_LOCKED_SLOT)) {
-            int slot = NBTUtil.getInteger(stack, NBT_LOCKED_SLOT);
+        if (NBTUtils.hasTag(stack, NBT_LOCKED_SLOT)) {
+            int slot = NBTUtils.getInteger(stack, NBT_LOCKED_SLOT);
             if (slot >= 0 && slot < MAGAZINE_SIZE) {
                 return slot;
             } else {
                 Log.warning("removed out of range saved ammo slot: " + slot);
-                NBTUtil.removeTag(stack, NBT_LOCKED_SLOT);
+                NBTUtils.removeTag(stack, NBT_LOCKED_SLOT);
             }
         }
         return -1;
@@ -262,7 +262,7 @@ public class ItemMinigun extends ItemPressurizable implements IChargeableContain
         }
 
         public void save() {
-            if (!gunStack.isEmpty()) NBTUtil.setCompoundTag(gunStack, NBT_MAGAZINE, serializeNBT());
+            if (!gunStack.isEmpty()) NBTUtils.setCompoundTag(gunStack, NBT_MAGAZINE, serializeNBT());
         }
     }
 
@@ -273,28 +273,28 @@ public class ItemMinigun extends ItemPressurizable implements IChargeableContain
 
         @Override
         public boolean isMinigunActivated() {
-            return NBTUtil.getBoolean(minigunStack, "activated");
+            return NBTUtils.getBoolean(minigunStack, "activated");
         }
 
         @Override
         public void setMinigunActivated(boolean activated) {
-            NBTUtil.setBoolean(minigunStack, "activated", activated);
+            NBTUtils.setBoolean(minigunStack, "activated", activated);
         }
 
         @Override
         public void setAmmoColorStack(@Nonnull ItemStack ammo) {
             if (!ammo.isEmpty() ) {
-                NBTUtil.setCompoundTag(minigunStack, "ammoColorStack", ammo.write(new CompoundNBT()));
+                NBTUtils.setCompoundTag(minigunStack, "ammoColorStack", ammo.write(new CompoundNBT()));
             } else {
-                NBTUtil.removeTag(minigunStack, "ammoColorStack");
+                NBTUtils.removeTag(minigunStack, "ammoColorStack");
             }
         }
 
         @Override
         public int getAmmoColor() {
             ItemStack ammo = ItemStack.EMPTY;
-            if (NBTUtil.hasTag(minigunStack, "ammoColorStack")) {
-                CompoundNBT tag = NBTUtil.getCompoundTag(minigunStack, "ammoColorStack");
+            if (NBTUtils.hasTag(minigunStack, "ammoColorStack")) {
+                CompoundNBT tag = NBTUtils.getCompoundTag(minigunStack, "ammoColorStack");
                 ammo = ItemStack.read(tag);
             }
             return getAmmoColor(ammo);
@@ -307,52 +307,52 @@ public class ItemMinigun extends ItemPressurizable implements IChargeableContain
 
         @Override
         public float getMinigunSpeed() {
-            return NBTUtil.getFloat(minigunStack, "speed");
+            return NBTUtils.getFloat(minigunStack, "speed");
         }
 
         @Override
         public void setMinigunSpeed(float minigunSpeed) {
-            NBTUtil.setFloat(minigunStack, "speed", minigunSpeed);
+            NBTUtils.setFloat(minigunStack, "speed", minigunSpeed);
         }
 
         @Override
         public int getMinigunTriggerTimeOut() {
-            return NBTUtil.getInteger(minigunStack, "triggerTimeout");
+            return NBTUtils.getInteger(minigunStack, "triggerTimeout");
         }
 
         @Override
         public void setMinigunTriggerTimeOut(int minigunTriggerTimeOut) {
-            NBTUtil.setInteger(minigunStack, "triggerTimeout", minigunTriggerTimeOut);
+            NBTUtils.setInteger(minigunStack, "triggerTimeout", minigunTriggerTimeOut);
         }
 
         @Override
         public int getMinigunSoundCounter() {
-            return NBTUtil.getInteger(minigunStack, "soundCounter");
+            return NBTUtils.getInteger(minigunStack, "soundCounter");
         }
 
         @Override
         public void setMinigunSoundCounter(int minigunSoundCounter) {
-            NBTUtil.setInteger(minigunStack, "soundCounter", minigunSoundCounter);
+            NBTUtils.setInteger(minigunStack, "soundCounter", minigunSoundCounter);
         }
 
         @Override
         public float getMinigunRotation() {
-            return NBTUtil.getFloat(minigunStack, "rotation");
+            return NBTUtils.getFloat(minigunStack, "rotation");
         }
 
         @Override
         public void setMinigunRotation(float minigunRotation) {
-            NBTUtil.setFloat(minigunStack, "rotation", minigunRotation);
+            NBTUtils.setFloat(minigunStack, "rotation", minigunRotation);
         }
 
         @Override
         public float getOldMinigunRotation() {
-            return NBTUtil.getFloat(minigunStack, "oldRotation");
+            return NBTUtils.getFloat(minigunStack, "oldRotation");
         }
 
         @Override
         public void setOldMinigunRotation(float oldMinigunRotation) {
-            NBTUtil.setFloat(minigunStack, "oldRotation", oldMinigunRotation);
+            NBTUtils.setFloat(minigunStack, "oldRotation", oldMinigunRotation);
         }
 
         @Override

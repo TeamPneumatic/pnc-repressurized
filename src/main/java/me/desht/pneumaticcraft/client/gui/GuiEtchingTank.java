@@ -15,6 +15,8 @@ import net.minecraft.util.text.TextFormatting;
 
 import java.util.List;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
 public class GuiEtchingTank extends GuiPneumaticContainerBase<ContainerEtchingTank, TileEntityEtchingTank> {
     private WidgetTemperature tempWidget;
 
@@ -32,15 +34,15 @@ public class GuiEtchingTank extends GuiPneumaticContainerBase<ContainerEtchingTa
 
         addButton(tempWidget = new WidgetTemperature(guiLeft + 134, guiTop + 18, TemperatureRange.of(273, 773), 323, 50) {
             @Override
-            public void addTooltip(double mouseX, double mouseY, List<String> curTip, boolean shift) {
+            public void addTooltip(double mouseX, double mouseY, List<ITextComponent> curTip, boolean shift) {
                 super.addTooltip(mouseX, mouseY, curTip, shift);
 
                 int interval = te.getTickInterval();
                 int processTimeSecs = interval * 5;
-                curTip.add(TextFormatting.GREEN + I18n.format("pneumaticcraft.gui.tooltip.etching_tank.process_time", processTimeSecs));
+                curTip.add(xlate("pneumaticcraft.gui.tooltip.etching_tank.process_time", processTimeSecs).mergeStyle(TextFormatting.GREEN));
                 if (getTemperature() > 323) {
                     float usage = (30 - interval) / (5f * interval);
-                    curTip.add(TextFormatting.YELLOW + I18n.format("pneumaticcraft.gui.tooltip.etching_tank.acid_usage", PneumaticCraftUtils.roundNumberTo(usage, 2)));
+                    curTip.add(xlate("pneumaticcraft.gui.tooltip.etching_tank.acid_usage", PneumaticCraftUtils.roundNumberTo(usage, 2)).mergeStyle(TextFormatting.YELLOW));
                 }
             }
         });

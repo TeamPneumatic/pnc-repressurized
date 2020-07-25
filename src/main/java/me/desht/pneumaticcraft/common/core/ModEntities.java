@@ -11,6 +11,7 @@ import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ai.attributes.GlobalEntityTypeAttributes;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -259,5 +260,15 @@ public class ModEntities {
                 .setUpdateInterval(Integer.MAX_VALUE)
                 .setCustomClientFactory((spawnEntity, world) -> ModEntities.LOGISTICS_FRAME_REQUESTER.get().create(world))
                 .setShouldReceiveVelocityUpdates(false);
+    }
+
+    public static void registerGlobalAttributes() {
+        GlobalEntityTypeAttributes.put(ModEntities.DRONE.get(), EntityDrone.prepareAttributes().create());
+        GlobalEntityTypeAttributes.put(ModEntities.AMADRONE.get(), EntityDrone.prepareAttributes().create());
+        GlobalEntityTypeAttributes.put(ModEntities.COLLECTOR_DRONE.get(), EntityDrone.prepareAttributes().create());
+        GlobalEntityTypeAttributes.put(ModEntities.GUARD_DRONE.get(), EntityDrone.prepareAttributes().create());
+        GlobalEntityTypeAttributes.put(ModEntities.HARVESTING_DRONE.get(), EntityDrone.prepareAttributes().create());
+        GlobalEntityTypeAttributes.put(ModEntities.LOGISTICS_DRONE.get(), EntityDrone.prepareAttributes().create());
+        GlobalEntityTypeAttributes.put(ModEntities.PROGRAMMABLE_CONTROLLER.get(), EntityDrone.prepareAttributes().create());
     }
 }

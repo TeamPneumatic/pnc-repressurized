@@ -16,7 +16,7 @@ public class BlockPressureChamberWall extends BlockPressureChamberWallBase {
         NONE, CENTER, XEDGE, ZEDGE, YEDGE, XMIN_YMIN_ZMIN, XMIN_YMIN_ZMAX, XMIN_YMAX_ZMIN, XMIN_YMAX_ZMAX;
 
         @Override
-        public String getName() {
+        public String getString() {
             return toString().toLowerCase();
         }
     }

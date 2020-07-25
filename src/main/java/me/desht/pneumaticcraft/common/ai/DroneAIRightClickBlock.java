@@ -20,7 +20,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceContext;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.util.FakePlayer;
@@ -76,7 +76,7 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetBl
 
         // this is adapted from PlayerInteractionManager#processRightClickBlock()
         try {
-            Vec3d blockVec = PneumaticCraftUtils.getBlockCentre(pos);
+            Vector3d blockVec = Vector3d.copyCentered(pos);
             BlockRayTraceResult brtr = drone.world().rayTraceBlocks(new RayTraceContext(fakePlayer.getPositionVec(), blockVec, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, fakePlayer));
             PlayerInteractEvent.RightClickBlock event = ForgeHooks.onRightClickBlock(fakePlayer, Hand.MAIN_HAND, pos, faceDir);
             if (event.isCanceled() || event.getUseItem() == Event.Result.DENY) {
@@ -137,7 +137,7 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetBl
         if (event.getUseBlock() != Event.Result.DENY) {
             World world = fakePlayer.getEntityWorld();
             BlockState iblockstate = world.getBlockState(pos);
-            Vec3d blockVec = PneumaticCraftUtils.getBlockCentre(pos);
+            Vector3d blockVec = Vector3d.copyCentered(pos);
             BlockRayTraceResult brtr = drone.world().rayTraceBlocks(new RayTraceContext(fakePlayer.getPositionVec(), blockVec, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, fakePlayer));
             return iblockstate.onBlockActivated(world, fakePlayer, Hand.MAIN_HAND, brtr) == ActionResultType.SUCCESS;
 

@@ -10,6 +10,8 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.Blo
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import net.minecraft.client.Minecraft;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
 public class GuiBlockTrackOptions extends IOptionPage.SimpleToggleableOptions<BlockTrackUpgradeHandler> {
     public GuiBlockTrackOptions(IGuiScreen screen, BlockTrackUpgradeHandler renderHandler) {
         super(screen, renderHandler);
@@ -18,7 +20,7 @@ public class GuiBlockTrackOptions extends IOptionPage.SimpleToggleableOptions<Bl
     @Override
     public void populateGui(IGuiScreen gui) {
         gui.addWidget(new WidgetButtonExtended(30, settingsYposition() + 12, 150, 20,
-                "Move Stat Screen...", b -> {
+                xlate("pneumaticcraft.armor.gui.misc.moveStatScreen"), b -> {
             Minecraft.getInstance().player.closeScreen();
             Minecraft.getInstance().displayGuiScreen(new GuiMoveStat(getUpgradeHandler(), ArmorHUDLayout.LayoutTypes.BLOCK_TRACKER));
         }));
@@ -27,8 +29,11 @@ public class GuiBlockTrackOptions extends IOptionPage.SimpleToggleableOptions<Bl
         for (int i = 0; i < nWidgets; i++) {
             WidgetKeybindCheckBox checkBox = new WidgetKeybindCheckBox(5, 38 + i * 12, 0xFFFFFFFF,
                     BlockTrackEntryList.instance.trackList.get(i).getEntryName(), cb -> {
-                if (cb == WidgetKeybindCheckBox.fromKeyBindingName(cb.getMessage())) {
-                    HUDHandler.instance().addFeatureToggleMessage(getUpgradeHandler(), cb.getMessage(), cb.checked);
+                if (cb instanceof WidgetKeybindCheckBox) {
+                    WidgetKeybindCheckBox kcb = (WidgetKeybindCheckBox) cb;
+                    if (cb == WidgetKeybindCheckBox.fromKeyBindingName(kcb.getUpgradeId())) {
+                        HUDHandler.instance().addFeatureToggleMessage(getUpgradeHandler(), kcb.getUpgradeId(), cb.checked);
+                    }
                 }
             });
             gui.addWidget(checkBox);

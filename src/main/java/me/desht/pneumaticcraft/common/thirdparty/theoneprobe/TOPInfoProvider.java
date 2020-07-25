@@ -5,7 +5,6 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.block.BlockPressureTube;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
-import me.desht.pneumaticcraft.common.capabilities.MachineAirHandler;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.heat.TemperatureData;
@@ -23,6 +22,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
@@ -31,6 +31,8 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class TOPInfoProvider {
     private static final TextFormatting COLOR = TextFormatting.GRAY;
@@ -67,19 +69,18 @@ public class TOPInfoProvider {
 
     private static void handlePneumatic(ProbeMode mode, IProbeInfo probeInfo, TileEntity pneumaticMachine) {
         pneumaticMachine.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).ifPresent(airHandler -> {
-            if (airHandler instanceof MachineAirHandler) {
-                MachineAirHandler airHandler1 = (MachineAirHandler) airHandler;
-                probeInfo.text(COLOR + "Max Pressure: " + TextFormatting.WHITE + PneumaticCraftUtils.roundNumberTo(airHandler1.getDangerPressure(), 1) + " bar");
-                if (mode == ProbeMode.EXTENDED) {
-                    probeInfo.text(COLOR + "Pressure:");
-                    probeInfo.horizontal()
-                            .element(new ElementPressure(pneumaticMachine, airHandler1))
-                            .vertical()
-                            .text("")
-                            .text("  \u2b05 " + PneumaticCraftUtils.roundNumberTo(airHandler.getPressure(), 2) + " bar");
-                } else {
-                    probeInfo.text(COLOR + "Pressure: " + TextFormatting.WHITE + PneumaticCraftUtils.roundNumberTo(airHandler.getPressure(), 2) + " bar");
-                }
+            String pressure = PneumaticCraftUtils.roundNumberTo(airHandler.getPressure(), 2);
+            String dangerPressure = PneumaticCraftUtils.roundNumberTo(airHandler.getPressure(), 1);
+            probeInfo.text(xlate("pneumaticcraft.gui.tooltip.maxPressure", dangerPressure).mergeStyle(COLOR));
+            if (mode == ProbeMode.EXTENDED) {
+                probeInfo.text(new StringTextComponent("Pressure:").mergeStyle(COLOR));
+                probeInfo.horizontal()
+                        .element(new ElementPressure(pneumaticMachine, airHandler))
+                        .vertical()
+                        .text(StringTextComponent.EMPTY)
+                        .text(new StringTextComponent("  \u2b05 " + pressure + " bar"));
+            } else {
+                probeInfo.text(xlate("pneumaticcraft.gui.tooltip.pressure", pressure));
             }
         });
     }
@@ -89,11 +90,11 @@ public class TOPInfoProvider {
         if (tempData.isMultisided()) {
             for (Direction face : Direction.VALUES) {
                 if (tempData.hasData(face)) {
-                    probeInfo.text(HeatUtil.formatHeatString(face, (int) tempData.getTemperature(face)).getFormattedText());
+                    probeInfo.text(HeatUtil.formatHeatString(face, (int) tempData.getTemperature(face)));
                 }
             }
         } else if (tempData.hasData(null)) {
-            probeInfo.text(HeatUtil.formatHeatString((int) tempData.getTemperature(null)).getFormattedText());
+            probeInfo.text(HeatUtil.formatHeatString((int) tempData.getTemperature(null)));
         }
     }
 
@@ -104,17 +105,19 @@ public class TOPInfoProvider {
         if (!drops.isEmpty()) {
             ItemStack stack = drops.get(0);
             horiz.item(stack);
-            horiz.text(stack.getDisplayName().getFormattedText());
+            horiz.text(stack.getDisplayName());
             List<ITextComponent> currenttip = new ArrayList<>();
             semiBlock.addTooltip(currenttip, player, stack.getTag(), player.isSneaking());
-            currenttip.forEach(t -> vert.text(t.getFormattedText()));
+            currenttip.forEach(vert::text);
         }
     }
 
     private static void handleRedstoneMode(ProbeMode mode, IProbeInfo probeInfo, TileEntityBase te) {
         if (te instanceof IRedstoneControl) {
             int redstoneMode = ((IRedstoneControl) te).getRedstoneMode();
-            probeInfo.text(COLOR + L(te.getRedstoneTabTitle()) + ": " + TextFormatting.RED + L(te.getRedstoneButtonText(redstoneMode)));
+            probeInfo.text(te.getRedstoneTabTitle().deepCopy().mergeStyle(COLOR)
+                    .appendString(": ")
+                    .append(te.getRedstoneButtonText(redstoneMode).deepCopy().mergeStyle(COLOR)));
         }
     }
 
@@ -125,7 +128,7 @@ public class TOPInfoProvider {
             module.addInfo(currenttip);
             if (!currenttip.isEmpty()) {
                 IProbeInfo vert = probeInfo.vertical(new Layout(0xFF4040FF));
-                currenttip.stream().map(ITextComponent::getFormattedText).forEach(vert::text);
+                currenttip.forEach(vert::text);
             }
         }
     }
@@ -134,15 +137,21 @@ public class TOPInfoProvider {
         if (mode == ProbeMode.EXTENDED) {
             for (int i = 0; i < handler.getTanks(); i++) {
                 FluidStack fluidStack = handler.getFluidInTank(i);
-                String fluidDesc = fluidStack.isEmpty() ? L("pneumaticcraft.gui.liquid.empty") : fluidStack.getAmount() + "mB " + L(fluidStack.getTranslationKey());
-                probeInfo.text(COLOR + "Tank #" + (i + 1) + ": " + TextFormatting.AQUA + fluidDesc);
+                ITextComponent fluidDesc = fluidStack.isEmpty() ?
+                        xlate("pneumaticcraft.gui.liquid.empty") :
+                        new StringTextComponent(fluidStack.getAmount() + "mB ").append(xlate(fluidStack.getTranslationKey()));
+                probeInfo.text(new StringTextComponent("Tank #" + (i + 1) + ": ")
+                        .append(fluidDesc.deepCopy().mergeStyle(TextFormatting.AQUA)));
             }
         }
     }
 
     private static void handleCamo(ProbeMode mode, IProbeInfo probeInfo, BlockState camo) {
         if (camo != null) {
-            probeInfo.text(TextFormatting.YELLOW + "[Camo: " + ItemCamoApplicator.getCamoStateDisplayName(camo).getFormattedText() + "]");
+            probeInfo.text(new StringTextComponent("[Camo: ")
+                    .append(ItemCamoApplicator.getCamoStateDisplayName(camo))
+                    .appendString("]")
+                    .mergeStyle(TextFormatting.YELLOW));
         }
     }
 

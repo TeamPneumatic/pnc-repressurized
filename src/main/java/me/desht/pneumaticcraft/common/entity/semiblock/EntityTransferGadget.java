@@ -13,7 +13,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidUtil;
@@ -44,7 +44,7 @@ public class EntityTransferGadget extends EntitySemiblockBase implements IDirect
     }
 
     private int counter;
-    public Vec3d renderingOffset;
+    public Vector3d renderingOffset;
 
     public EntityTransferGadget(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
@@ -113,17 +113,17 @@ public class EntityTransferGadget extends EntitySemiblockBase implements IDirect
         if (param == SIDE) renderingOffset = calcRenderingOffset(getBoundingBox(), getSide());
     }
 
-    private Vec3d calcRenderingOffset(AxisAlignedBB aabb, Direction d) {
+    private Vector3d calcRenderingOffset(AxisAlignedBB aabb, Direction d) {
         double xl = aabb.getXSize() / 2;
         double zl = aabb.getZSize() / 2;
 
         switch (d) {
-            case DOWN: return new Vec3d(0, -THICKNESS, 0);
-            case UP: return new Vec3d(0, aabb.getYSize(), 0);
-            case NORTH: return new Vec3d(-THICKNESS / 2, -THICKNESS / 2, -zl);
-            case SOUTH: return new Vec3d(0, -THICKNESS / 2, zl);
-            case WEST: return new Vec3d(-xl - THICKNESS, -THICKNESS / 2, 0);
-            case EAST: return new Vec3d(xl, -THICKNESS / 2, 0);
+            case DOWN: return new Vector3d(0, -THICKNESS, 0);
+            case UP: return new Vector3d(0, aabb.getYSize(), 0);
+            case NORTH: return new Vector3d(-THICKNESS / 2, -THICKNESS / 2, -zl);
+            case SOUTH: return new Vector3d(0, -THICKNESS / 2, zl);
+            case WEST: return new Vector3d(-xl - THICKNESS, -THICKNESS / 2, 0);
+            case EAST: return new Vector3d(xl, -THICKNESS / 2, 0);
             default: throw new IllegalArgumentException();
         }
     }

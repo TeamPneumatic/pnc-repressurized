@@ -2,15 +2,15 @@ package me.desht.pneumaticcraft.common.util;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 
 import java.util.Comparator;
 
 public class EntityDistanceComparator implements Comparator<Entity> {
-    private final Vec3d origin;
+    private final Vector3d origin;
 
     public EntityDistanceComparator(BlockPos pos) {
-        origin = PneumaticCraftUtils.getBlockCentre(pos);
+        origin = Vector3d.copyCentered(pos);
     }
 
     @Override

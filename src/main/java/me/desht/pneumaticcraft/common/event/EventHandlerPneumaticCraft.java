@@ -27,7 +27,7 @@ import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefineryController;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
-import me.desht.pneumaticcraft.common.util.NBTUtil;
+import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.Block;
@@ -43,6 +43,8 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.loot.LootPool;
+import net.minecraft.loot.TableLootEntry;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
@@ -51,8 +53,6 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
-import net.minecraft.world.storage.loot.LootPool;
-import net.minecraft.world.storage.loot.TableLootEntry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.LootTableLoadEvent;
@@ -294,10 +294,10 @@ public class EventHandlerPneumaticCraft {
                 // so other clients will know who's wielding it, and render appropriately
                 // See RenderItemMinigun#renderByItem()
                 if (event.getTo().getItem() == ModItems.MINIGUN.get()) {
-                    NBTUtil.initNBTTagCompound(event.getTo());
+                    NBTUtils.initNBTTagCompound(event.getTo());
                     event.getTo().getTag().putInt("owningPlayerId", event.getEntityLiving().getEntityId());
                 } else if (event.getFrom().getItem() == ModItems.MINIGUN.get()) {
-                    NBTUtil.initNBTTagCompound(event.getFrom());
+                    NBTUtils.initNBTTagCompound(event.getFrom());
                     event.getFrom().getTag().remove("owningPlayerId");
                 }
             } else if (event.getSlot().getSlotType() == EquipmentSlotType.Group.ARMOR) {
@@ -319,7 +319,7 @@ public class EventHandlerPneumaticCraft {
             // prevent minecarts which have just been dropped by drones from immediately picking up the drone
             if (event.getEntityMounting() instanceof EntityDrone
                     && (event.getEntityBeingMounted() instanceof AbstractMinecartEntity || event.getEntityBeingMounted() instanceof BoatEntity)) {
-                if (!event.getEntityBeingMounted().onGround) {
+                if (!event.getEntityBeingMounted().isOnGround()) {
                     event.setCanceled(true);
                 }
             }

@@ -36,7 +36,7 @@ public class ItemCamoApplicator extends ItemPressurizable {
         BlockState camoState = getCamoState(stack);
         ITextComponent disp = super.getDisplayName(stack);
         if (camoState != null) {
-            return disp.appendText(": ").appendSibling(getCamoStateDisplayName(camoState)).applyTextStyle(TextFormatting.YELLOW);
+            return disp.deepCopy().appendString(": ").append(getCamoStateDisplayName(camoState)).mergeStyle(TextFormatting.YELLOW);
         } else {
             return disp;
         }
@@ -97,8 +97,8 @@ public class ItemCamoApplicator extends ItemPressurizable {
                         ItemStack camoStack = ICamouflageableTE.getStackForState(newCamo);
                         if (!PneumaticCraftUtils.consumeInventoryItem(player.inventory, camoStack)) {
                             player.sendStatusMessage(new TranslationTextComponent("pneumaticcraft.message.camo.notEnoughBlocks")
-                                    .appendSibling(camoStack.getDisplayName())
-                                    .applyTextStyles(TextFormatting.RED), true);
+                                    .append(camoStack.getDisplayName())
+                                    .mergeStyle(TextFormatting.RED), true);
                             NetworkHandler.sendToAllAround(new PacketPlaySound(ModSounds.MINIGUN_STOP.get(), SoundCategory.PLAYERS,
                                     pos, 1.0F, 2.0F, false), world);
                             return ActionResultType.FAIL;

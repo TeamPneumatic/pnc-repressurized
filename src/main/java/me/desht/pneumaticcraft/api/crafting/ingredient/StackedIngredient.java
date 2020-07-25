@@ -8,8 +8,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.ITag;
+import net.minecraft.tags.TagCollectionManager;
 import net.minecraft.util.IItemProvider;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
@@ -34,8 +34,8 @@ public class StackedIngredient extends Ingredient {
         super(itemLists);
     }
 
-    public static Ingredient fromTag(Tag<Item> tag, int count) {
-        return StackedIngredient.fromItemListStream(Stream.of(new StackedTagList(tag, count)));
+    public static Ingredient fromTag(ITag.INamedTag<Item> tag, int count) {
+        return StackedIngredient.fromItemListStream(Stream.of(new StackedTagList(tag, count, tag.getName())));
     }
 
     public static Ingredient fromStacks(ItemStack... stacks) {
@@ -81,12 +81,13 @@ public class StackedIngredient extends Ingredient {
             return new Ingredient.SingleItemList(new ItemStack(item, count));
         } else if (json.has("tag")) {
             ResourceLocation resourcelocation = new ResourceLocation(JSONUtils.getString(json, "tag"));
-            Tag<Item> tag = ItemTags.getCollection().get(resourcelocation);
+//            ITag<Item> tag = ItemTags.getCollection().get(resourcelocation);
+            ITag<Item> tag = TagCollectionManager.func_232928_e_().func_232925_b_().get(resourcelocation);
             if (tag == null) {
                 throw new JsonSyntaxException("Unknown item tag '" + resourcelocation + "'");
             } else {
                 int count = json.has("count") ? JSONUtils.getInt(json, "count") : 1;
-                return new StackedTagList(tag, count);
+                return new StackedTagList(tag, count, resourcelocation);
             }
         } else {
             throw new JsonParseException("An ingredient entry needs either a tag or an item");
@@ -140,12 +141,14 @@ public class StackedIngredient extends Ingredient {
     }
 
     public static class StackedTagList implements IItemList {
-        private final Tag<Item> tag;
+        private final ITag<Item> tag;
         private final int count;
+        private final ResourceLocation id;
 
-        public StackedTagList(Tag<Item> tagIn, int count) {
+        public StackedTagList(ITag<Item> tagIn, int count, ResourceLocation id) {
             this.tag = tagIn;
             this.count = count;
+            this.id = id;
         }
 
         @Override
@@ -157,7 +160,7 @@ public class StackedIngredient extends Ingredient {
             }
 
             if (list.size() == 0 && !net.minecraftforge.common.ForgeConfig.SERVER.treatEmptyTagsAsAir.get()) {
-                list.add(new ItemStack(net.minecraft.block.Blocks.BARRIER).setDisplayName(new net.minecraft.util.text.StringTextComponent("Empty Tag: " + tag.getId().toString())));
+                list.add(new ItemStack(net.minecraft.block.Blocks.BARRIER).setDisplayName(new net.minecraft.util.text.StringTextComponent("Empty Tag: " + id.toString())));
             }
             return list;
         }
@@ -166,7 +169,7 @@ public class StackedIngredient extends Ingredient {
         public JsonObject serialize() {
             JsonObject json = new JsonObject();
             json.addProperty("type", Serializer.ID.toString());
-            json.addProperty("tag", this.tag.getId().toString());
+            json.addProperty("tag", id.toString());
             json.addProperty("count", count);
             return json;
         }

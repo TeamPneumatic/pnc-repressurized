@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.sensor.pollSensors.entity;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.common.util.EntityFilter;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.resources.I18n;
@@ -42,8 +43,8 @@ public class EntityInRangeSensor extends EntityPollSensor {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void drawAdditionalInfo(FontRenderer fontRenderer) {
-        fontRenderer.drawString(I18n.format("pneumaticcraft.gui.entityFilter"), 70, 48, 0x404040);
+    public void drawAdditionalInfo(MatrixStack matrixStack, FontRenderer fontRenderer) {
+        fontRenderer.drawString(matrixStack, I18n.format("pneumaticcraft.gui.entityFilter"), 70, 48, 0x404040);
     }
 
     @Override

@@ -1,50 +1,44 @@
 package me.desht.pneumaticcraft.common.thirdparty.patchouli;
 
 import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource.Type;
+import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
-import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferManager;
+import me.desht.pneumaticcraft.lib.Log;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import vazkii.patchouli.api.IComponentProcessor;
+import vazkii.patchouli.api.IVariable;
 import vazkii.patchouli.api.IVariableProvider;
-import vazkii.patchouli.api.PatchouliAPI;
-import vazkii.patchouli.common.util.ItemStackUtil;
 
 public class ProcessorAmadronTrade implements IComponentProcessor {
-    private AmadronOffer offer = null;
+    private AmadronOffer recipe = null;
     private String text = null;
 
     @Override
-    public void setup(IVariableProvider<String> iVariableProvider) {
-        // TODO: only item->item trades supported right now
-
-        ItemStack result = PatchouliAPI.instance.deserializeItemStack(iVariableProvider.get("item"));
-        for (AmadronOffer offer : AmadronOfferManager.getInstance().getActiveOffers()) {
-            if (offer.getInput().getType() == Type.ITEM && offer.getOutput().getType() == Type.ITEM) {
-                ItemStack outStack = offer.getOutput().getItem();
-                if (ItemStack.areItemsEqual(result, outStack)) {
-                    this.offer = offer;
-                    break;
-                }
-            }
+    public void setup(IVariableProvider iVariableProvider) {
+        String recipeId = iVariableProvider.get("recipe").asString();
+        recipe = PneumaticCraftRecipeType.AMADRON_OFFERS.getRecipe(Minecraft.getInstance().world, new ResourceLocation(recipeId));
+        if (recipe == null) {
+            Log.warning("Missing amadron offer recipe: " + recipeId);
         }
 
-        text = iVariableProvider.has("text") ? iVariableProvider.get("text") : null;
+        text = iVariableProvider.has("text") ? iVariableProvider.get("text").asString() : null;
     }
 
     @Override
-    public String process(String key) {
-        if (offer == null) return null;
+    public IVariable process(String key) {
+        if (recipe == null) return null;
 
         switch (key) {
             case "input":
-                return ItemStackUtil.serializeStack(offer.getInput().getItem());
+                return IVariable.from(recipe.getInput().getType() == Type.ITEM ? recipe.getInput().getItem() : recipe.getInput().getFluid());
             case "output":
-                return ItemStackUtil.serializeStack(offer.getOutput().getItem());
+                return IVariable.from(recipe.getOutput().getType() == Type.ITEM ? recipe.getOutput().getItem() : recipe.getOutput().getFluid());
             case "name":
-                return offer.getOutput().getItem().getDisplayName().getFormattedText();
+                return IVariable.wrap(recipe.getOutput().getItem().getDisplayName().getString());
             case "text":
-                return text == null ? null : I18n.format(text);
+                return IVariable.wrap(text == null ? "" : I18n.format(text));
         }
 
         return null;

@@ -14,6 +14,7 @@ import me.desht.pneumaticcraft.common.util.EnchantmentUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -262,8 +263,8 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
     }
 
     @Override
-    public void read(CompoundNBT tag) {
-        super.read(tag);
+    public void read(BlockState state, CompoundNBT tag) {
+        super.read(state, tag);
 
         redstoneMode = tag.getInt(NBTKeys.NBT_REDSTONE_MODE);
         feedMode = FeedMode.valueOf(tag.getString("feedMode"));
@@ -495,7 +496,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
                         player.dropItem(remainingItem, false);
                     }
                 }
-                player.sendStatusMessage(new TranslationTextComponent("pneumaticcraft.gui.aerial_interface.fedItem", copy.getDisplayName().getFormattedText()), true);
+                player.sendStatusMessage(new TranslationTextComponent("pneumaticcraft.gui.aerial_interface.fedItem", copy.getDisplayName()), true);
                 if (stack.getCount() == startValue) break;
             }
             return remainingItem.getCount() > 0 ? remainingItem : ItemStack.EMPTY;

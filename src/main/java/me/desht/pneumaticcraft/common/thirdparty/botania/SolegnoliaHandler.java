@@ -7,6 +7,6 @@ import vazkii.botania.api.BotaniaAPI;
 public class SolegnoliaHandler implements IMagnetSuppressor {
     @Override
     public boolean shouldSuppressMagnet(Entity e) {
-        return BotaniaAPI.instance().internalHandler().hasSolegnoliaAround(e);
+        return BotaniaAPI.instance().hasSolegnoliaAround(e);
     }
 }

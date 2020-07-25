@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerCreativeCompressor;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
@@ -22,9 +23,10 @@ public class TileEntityCreativeCompressor extends TileEntityPneumaticBase implem
     }
 
     @Override
-    public void read(CompoundNBT nbt) {
-        super.read(nbt);
-        pressureSetpoint = nbt.getFloat("setpoint");
+    public void read(BlockState state, CompoundNBT tag) {
+        super.read(state, tag);
+
+        pressureSetpoint = tag.getFloat("setpoint");
     }
 
     @Override

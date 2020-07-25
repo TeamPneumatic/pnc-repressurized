@@ -82,12 +82,12 @@ public abstract class AssemblyProgram {
     public void addProgramProblem(List<String> problemList) {
         switch (curProblem) {
             case NO_INPUT:
-                problemList.addAll(PneumaticCraftUtils.splitString(TextFormatting.GRAY + "The input IO Unit can't find an inventory with a Block of Compressed Iron.", GuiConstants.MAX_CHAR_PER_LINE_LEFT));
-                problemList.addAll(PneumaticCraftUtils.splitString(TextFormatting.BLACK + "Place an inventory with a Block of Compressed Iron surrounding the IO Unit.", GuiConstants.MAX_CHAR_PER_LINE_LEFT));
+                problemList.addAll(PneumaticCraftUtils.splitString(TextFormatting.GRAY + "The input IO Unit can't find an inventory with a Block of Compressed Iron.", GuiConstants.MAX_CHAR_PER_LINE));
+                problemList.addAll(PneumaticCraftUtils.splitString(TextFormatting.BLACK + "Place an inventory with a Block of Compressed Iron surrounding the IO Unit.", GuiConstants.MAX_CHAR_PER_LINE));
                 break;
             case NO_OUTPUT:
-                problemList.addAll(PneumaticCraftUtils.splitString(TextFormatting.GRAY + "The output IO Unit can't find an inventory to place the output in.", GuiConstants.MAX_CHAR_PER_LINE_LEFT));
-                problemList.addAll(PneumaticCraftUtils.splitString(TextFormatting.BLACK + "Place an inventory / make space in a connected inventory.", GuiConstants.MAX_CHAR_PER_LINE_LEFT));
+                problemList.addAll(PneumaticCraftUtils.splitString(TextFormatting.GRAY + "The output IO Unit can't find an inventory to place the output in.", GuiConstants.MAX_CHAR_PER_LINE));
+                problemList.addAll(PneumaticCraftUtils.splitString(TextFormatting.BLACK + "Place an inventory / make space in a connected inventory.", GuiConstants.MAX_CHAR_PER_LINE));
                 break;
         }
     }

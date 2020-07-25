@@ -49,9 +49,9 @@ public class ItemAssemblyProgram extends Item {
     @OnlyIn(Dist.CLIENT)
     public void addInformation(ItemStack stack, World worldIn, List<ITextComponent> infoList, ITooltipFlag par4) {
         infoList.add(new StringTextComponent("Required Machines:"));
-        infoList.add(bullet().appendSibling(xlate(ModBlocks.ASSEMBLY_CONTROLLER.get().getTranslationKey())));
+        infoList.add(bullet().append(xlate(ModBlocks.ASSEMBLY_CONTROLLER.get().getTranslationKey())));
         Arrays.stream(getProgram().getRequiredMachines())
-                .map(machine -> bullet().appendSibling(xlate(machine.getMachineBlock().getTranslationKey())))
+                .map(machine -> bullet().append(xlate(machine.getMachineBlock().getTranslationKey())))
                 .forEach(infoList::add);
     }
 

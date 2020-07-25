@@ -12,6 +12,7 @@ import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -67,7 +68,7 @@ public class AirConUpgradeHandler extends IUpgradeRenderHandler.SimpleToggleable
                     + Strings.repeat("|", Math.abs(ac))
                     + TextFormatting.DARK_GRAY
                     + Strings.repeat("|", MAX_AC - Math.abs(ac));
-            acStat.setTitle(TextFormatting.YELLOW + "A/C: " + bar);
+            acStat.setMessage(new StringTextComponent("A/C: " + bar).mergeStyle(TextFormatting.YELLOW));
             acStat.setBackgroundColor(ac < 0 ? 0x300080FF : (ac == 0 ? 0x3000AA00 : 0x30FFD000));
         }
     }
@@ -75,7 +76,7 @@ public class AirConUpgradeHandler extends IUpgradeRenderHandler.SimpleToggleable
     @Override
     public IGuiAnimatedStat getAnimatedStat() {
         if (acStat == null) {
-            acStat = new WidgetAnimatedStat(null, "", WidgetAnimatedStat.StatIcon.NONE,
+            acStat = new WidgetAnimatedStat(null, StringTextComponent.EMPTY, WidgetAnimatedStat.StatIcon.NONE,
                     0x3000AA00, null, ArmorHUDLayout.INSTANCE.airConStat);
             acStat.setMinDimensionsAndReset(0, 0);
         }

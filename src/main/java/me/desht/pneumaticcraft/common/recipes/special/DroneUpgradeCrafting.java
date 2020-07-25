@@ -14,13 +14,21 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 
 public class DroneUpgradeCrafting extends ShapelessRecipe {
+    private NonNullList<Ingredient> ingredients = null;
+
     public DroneUpgradeCrafting(ResourceLocation idIn) {
-        super(idIn, "", new ItemStack(ModItems.DRONE.get()),
-                NonNullList.from(Ingredient.EMPTY,
-                        Ingredient.fromItems(ModItems.PRINTED_CIRCUIT_BOARD.get()),
-                        Ingredient.fromTag(PneumaticCraftTags.Items.BASIC_DRONES)
-                )
-        );
+        super(idIn, "", new ItemStack(ModItems.DRONE.get()), NonNullList.create());
+    }
+
+    @Override
+    public NonNullList<Ingredient> getIngredients() {
+        if (ingredients == null) {
+            ingredients = NonNullList.from(Ingredient.EMPTY,
+                    Ingredient.fromItems(ModItems.PRINTED_CIRCUIT_BOARD.get()),
+                    Ingredient.fromTag(PneumaticCraftTags.Items.BASIC_DRONES)
+            );
+        }
+        return ingredients;
     }
 
     @Override

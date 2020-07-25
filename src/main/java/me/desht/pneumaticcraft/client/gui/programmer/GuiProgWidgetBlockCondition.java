@@ -3,7 +3,8 @@ package me.desht.pneumaticcraft.client.gui.programmer;
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetBlockCondition;
-import net.minecraft.client.resources.I18n;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiProgWidgetBlockCondition extends GuiProgWidgetCondition<ProgWidgetBlockCondition> {
     public GuiProgWidgetBlockCondition(ProgWidgetBlockCondition widget, GuiProgrammer guiProgrammer) {
@@ -15,17 +16,17 @@ public class GuiProgWidgetBlockCondition extends GuiProgWidgetCondition<ProgWidg
         super.init();
 
         addButton(new WidgetCheckBox(guiLeft + 5, guiTop + 60, 0xFF404040,
-                I18n.format("pneumaticcraft.gui.progWidget.conditionBlock.checkForAir"),
+                xlate("pneumaticcraft.gui.progWidget.conditionBlock.checkForAir"),
                         b -> progWidget.checkingForAir = b.checked)
                 .setChecked(progWidget.checkingForAir)
-                .setTooltip(I18n.format("pneumaticcraft.gui.progWidget.conditionBlock.checkForAir.tooltip"))
+                .setTooltip(xlate("pneumaticcraft.gui.progWidget.conditionBlock.checkForAir.tooltip"))
         );
 
         addButton(new WidgetCheckBox(guiLeft + 5, guiTop + 72, 0xFF404040,
-                I18n.format("pneumaticcraft.gui.progWidget.conditionBlock.checkForLiquids"),
+                xlate("pneumaticcraft.gui.progWidget.conditionBlock.checkForLiquids"),
                 b -> progWidget.checkingForLiquids = b.checked)
                 .setChecked(progWidget.checkingForLiquids)
-                .setTooltip(I18n.format("pneumaticcraft.gui.progWidget.conditionBlock.checkForLiquids.tooltip")));
+                .setTooltip(xlate("pneumaticcraft.gui.progWidget.conditionBlock.checkForLiquids.tooltip")));
     }
 
     @Override

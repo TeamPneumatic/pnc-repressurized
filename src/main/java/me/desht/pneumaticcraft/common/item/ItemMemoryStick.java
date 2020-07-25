@@ -108,10 +108,10 @@ public class ItemMemoryStick extends Item implements ColorHandlers.ITintableItem
                 FluidStack fluidStack = handler.getFluidInTank(0);
                 int amount = fluidStack.getAmount();
                 int levels = EnchantmentUtils.getLevelForExperience(amount/ ratio);
-                tooltip.add(new TranslationTextComponent("pneumaticcraft.gui.tooltip.memory_stick.xp_stored", amount / ratio, levels).applyTextStyle(TextFormatting.GREEN));
+                tooltip.add(new TranslationTextComponent("pneumaticcraft.gui.tooltip.memory_stick.xp_stored", amount / ratio, levels).mergeStyle(TextFormatting.GREEN));
             });
             boolean absorb = shouldAbsorbXPOrbs(stack);
-            tooltip.add(new TranslationTextComponent("pneumaticcraft.message.memory_stick.absorb." + absorb).applyTextStyle(TextFormatting.YELLOW));
+            tooltip.add(new TranslationTextComponent("pneumaticcraft.message.memory_stick.absorb." + absorb).mergeStyle(TextFormatting.YELLOW));
         }
     }
 
@@ -178,7 +178,7 @@ public class ItemMemoryStick extends Item implements ColorHandlers.ITintableItem
                 if (now - last > 2 && event.getItemStack().getItem() == ModItems.MEMORY_STICK.get()) {
                     boolean absorb = shouldAbsorbXPOrbs(event.getItemStack());
                     setAbsorbXPOrbs(event.getItemStack(), !absorb);
-                    event.getPlayer().sendStatusMessage(new TranslationTextComponent("pneumaticcraft.message.memory_stick.absorb." + !absorb).applyTextStyle(TextFormatting.YELLOW), true);
+                    event.getPlayer().sendStatusMessage(new TranslationTextComponent("pneumaticcraft.message.memory_stick.absorb." + !absorb).mergeStyle(TextFormatting.YELLOW), true);
                     event.setCanceled(true);
                     lastEvent.put(event.getPlayer(), now);
                 }

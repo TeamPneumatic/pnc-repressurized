@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.ContainerPressureChamberValve;
@@ -14,6 +15,8 @@ import net.minecraft.util.text.ITextComponent;
 
 import java.util.List;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
 public class GuiPressureChamber extends GuiPneumaticContainerBase<ContainerPressureChamberValve,TileEntityPressureChamberValve> {
     public GuiPressureChamber(ContainerPressureChamberValve container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
@@ -23,7 +26,7 @@ public class GuiPressureChamber extends GuiPneumaticContainerBase<ContainerPress
     public void init() {
         super.init();
 
-        addAnimatedStat("Pressure Chamber Status", new ItemStack(ModBlocks.PRESSURE_CHAMBER_WALL.get()), 0xFFFFAA00, false)
+        addAnimatedStat(xlate("pneumaticcraft.gui.tab.status"), new ItemStack(ModBlocks.PRESSURE_CHAMBER_WALL.get()), 0xFFFFAA00, false)
                 .setText(ImmutableList.of(
                         "\u00a7fChamber Size:",
                         "\u00a70" + te.multiBlockSize + "x" + te.multiBlockSize + "x" + te.multiBlockSize + " (outside)",
@@ -32,10 +35,11 @@ public class GuiPressureChamber extends GuiPneumaticContainerBase<ContainerPress
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(int x, int y) {
-        super.drawGuiContainerForegroundLayer(x, y);
-        String containerName = I18n.format("pneumaticcraft.gui.pressureChamberTitle", te.multiBlockSize + "x" + te.multiBlockSize + "x" + te.multiBlockSize);
-        font.drawString(containerName, xSize / 2f - font.getStringWidth(containerName) / 2f, 6, 4210752);
+    protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int x, int y) {
+        super.drawGuiContainerForegroundLayer(matrixStack, x, y);
+
+        ITextComponent title = xlate("pneumaticcraft.gui.pressureChamberTitle", te.multiBlockSize + "x" + te.multiBlockSize + "x" + te.multiBlockSize);
+        font.func_238422_b_(matrixStack, title, (xSize - font.func_238414_a_(title)) / 2f, 6, 0x404040);
     }
 
     @Override

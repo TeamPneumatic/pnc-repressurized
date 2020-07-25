@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.client.event.ClientTickHandler;
 import me.desht.pneumaticcraft.client.util.ProgressingLine;
@@ -66,7 +67,7 @@ public class NetworkConnectionHandler implements INeedTickUpdate {
         }
     }
 
-    public void render() {
+    public void render(MatrixStack matrixStack) {
         float f = (color >> 24 & 255) / 255.0F;
         float f1 = (color >> 16 & 255) / 255.0F;
         float f2 = (color >> 8 & 255) / 255.0F;
@@ -74,9 +75,8 @@ public class NetworkConnectionHandler implements INeedTickUpdate {
         RenderSystem.enableBlend();
         RenderSystem.disableTexture();
         RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        RenderSystem.color4f(f1, f2, f3, f);
         for (ProgressingLine line : lineList) {
-            RenderUtils.renderProgressingLine(line, color);
+            RenderUtils.renderProgressingLineGUI(matrixStack, line, color);
         }
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();

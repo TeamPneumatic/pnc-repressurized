@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.client.gui.pneumatic_armor;
 
 import com.google.common.collect.Sets;
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.client.KeyHandler;
@@ -11,18 +11,17 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.DroneDebugUpgradeHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.entity.living.DebugEntry;
+import me.desht.pneumaticcraft.common.debug.DroneDebugEntry;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.progwidgets.IAreaProvider;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetStart;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
-import me.desht.pneumaticcraft.common.util.NBTUtil;
+import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.NBTKeys;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.renderer.Rectangle2d;
@@ -70,7 +69,7 @@ public class GuiDroneDebuggerOptions extends IOptionPage.SimpleToggleableOptions
         if (Minecraft.getInstance().player != null) {
             ItemStack helmet = ClientUtils.getClientPlayer().getItemStackFromSlot(EquipmentSlotType.HEAD);
             if (!helmet.isEmpty()) {
-                int entityId = NBTUtil.getInteger(helmet, NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE);
+                int entityId = NBTUtils.getInteger(helmet, NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE);
                 Entity entity = ClientUtils.getClientWorld().getEntityByID(entityId);
                 if (entity instanceof EntityDrone) {
                     selectedDrone = (EntityDrone) entity;
@@ -88,7 +87,7 @@ public class GuiDroneDebuggerOptions extends IOptionPage.SimpleToggleableOptions
                 b -> programmerUnit.gotoPiece(selectedDrone.getActiveWidget()));
         gui.addWidget(showActive);
 
-        followCheckbox = new WidgetCheckBox(30, 176, 0xFFFFFFFF, " " + I18n.format("pneumaticcraft.gui.progWidget.debug.followActive"));
+        followCheckbox = new WidgetCheckBox(30, 176, 0xFFFFFFFF, new StringTextComponent(" ").append(xlate("pneumaticcraft.gui.progWidget.debug.followActive")));
         followCheckbox.x = 180 - followCheckbox.getWidth();
         gui.addWidget(followCheckbox);
 
@@ -97,7 +96,6 @@ public class GuiDroneDebuggerOptions extends IOptionPage.SimpleToggleableOptions
         programmingWidth = guiScreen.width - PROGRAMMING_MARGIN * 2;
         programmingHeight = guiScreen.height - PROGRAMMING_MARGIN - PROGRAMMING_START_Y;
         programmerUnit = new DebugInfoProgrammerUnit(selectedDrone != null ? selectedDrone.getProgWidgets() : new ArrayList<>(),
-                gui.getFontRenderer(),
                 0, 0, guiScreen.width, guiScreen.height,
                 new Rectangle2d(programmingStartX, PROGRAMMING_START_Y, programmingWidth, programmingHeight),
                 0, 0, 0);
@@ -107,31 +105,32 @@ public class GuiDroneDebuggerOptions extends IOptionPage.SimpleToggleableOptions
     }
 
     @Override
-    public void renderPre(int x, int y, float partialTicks) {
-        AbstractGui.fill(programmingStartX, PROGRAMMING_START_Y, programmingStartX + programmingWidth, PROGRAMMING_START_Y + programmingHeight, 0x55000000);
+    public void renderPre(MatrixStack matrixStack, int x, int y, float partialTicks) {
+        AbstractGui.fill(matrixStack, programmingStartX, PROGRAMMING_START_Y, programmingStartX + programmingWidth, PROGRAMMING_START_Y + programmingHeight, 0x55000000);
     }
 
     @Override
-    public void renderPost(int x, int y, float partialTicks) {
+    public void renderPost(MatrixStack matrixStack, int x, int y, float partialTicks) {
         Screen guiScreen = getGuiScreen().getScreen();
 
         int screenWidth = guiScreen.width;
         int screenHeight = guiScreen.height;
 
         if (selectedDrone != null) {
-            Minecraft.getInstance().fontRenderer.drawStringWithShadow("Drone name: " + selectedDrone.getName().getFormattedText(), 20, screenHeight - 15, 0xFFFFFFFF);
-            Minecraft.getInstance().fontRenderer.drawStringWithShadow("Routine: " + selectedDrone.getLabel(), screenWidth / 2f, screenHeight - 15, 0xFFFFFFFF);
+            Minecraft.getInstance().fontRenderer.drawStringWithShadow(matrixStack, "Drone name: " + selectedDrone.getName().getString(), 20, screenHeight - 15, 0xFFFFFFFF);
+            Minecraft.getInstance().fontRenderer.drawStringWithShadow(matrixStack, "Routine: " + selectedDrone.getLabel(), screenWidth / 2f, screenHeight - 15, 0xFFFFFFFF);
         }
 
-        RenderSystem.translated(0, 0, 300);
-        programmerUnit.render(x, y, true, true);
-        programmerUnit.renderForeground(x, y, null);
-        RenderSystem.translated(0, 0, -300);
+        matrixStack.push();
+        matrixStack.translate(0, 0, 300);
+        programmerUnit.render(matrixStack, x, y, true, true);
+        programmerUnit.renderForeground(matrixStack, x, y, null);
+        matrixStack.pop();
 
-        followCheckbox.render(x, y, partialTicks);
+        followCheckbox.render(matrixStack, x, y, partialTicks);
 
         if (selectedDrone == null) {
-            guiScreen.drawCenteredString(Minecraft.getInstance().fontRenderer, "Press '" + KeyHandler.getInstance().keybindDebuggingDrone.getLocalizedName() + "' on a Drone when tracked by an Entity Tracker to debug the Drone.", screenWidth / 2, screenHeight / 2, 0xFFFF0000);
+            guiScreen.drawCenteredString(matrixStack, Minecraft.getInstance().fontRenderer, "Press '" + I18n.format(KeyHandler.getInstance().keybindDebuggingDrone.getTranslationKey()) + "' on a Drone when tracked by an Entity Tracker to debug the Drone.", screenWidth / 2, screenHeight / 2, 0xFFFF0000);
         }
 
         IProgWidget widget = programmerUnit.getHoveredWidget(x, y);
@@ -139,7 +138,7 @@ public class GuiDroneDebuggerOptions extends IOptionPage.SimpleToggleableOptions
         getUpgradeHandler().getShowingPositions().clear();
         if (widget != null) {
             int widgetId = selectedDrone.getProgWidgets().indexOf(widget);
-            DebugEntry entry = selectedDrone.getDebugEntry(widgetId);
+            DroneDebugEntry entry = selectedDrone.getDebugEntry(widgetId);
             if (entry != null && entry.hasCoords()) {
                 getUpgradeHandler().getShowingPositions().add(entry.getPos());
             }
@@ -184,10 +183,10 @@ public class GuiDroneDebuggerOptions extends IOptionPage.SimpleToggleableOptions
 
     private class DebugInfoProgrammerUnit extends GuiUnitProgrammer {
 
-        DebugInfoProgrammerUnit(List<IProgWidget> progWidgets, FontRenderer fontRenderer, int guiLeft,
+        DebugInfoProgrammerUnit(List<IProgWidget> progWidgets, int guiLeft,
                                 int guiTop, int width, int height, Rectangle2d bounds,
                                 int translatedX, int translatedY, int lastZoom) {
-            super(progWidgets, fontRenderer, guiLeft, guiTop, width, height, bounds, translatedX, translatedY, lastZoom);
+            super(progWidgets, guiLeft, guiTop, width, height, bounds, translatedX, translatedY, lastZoom);
             TileEntityProgrammer.updatePuzzleConnections(progWidgets);
         }
 
@@ -195,42 +194,42 @@ public class GuiDroneDebuggerOptions extends IOptionPage.SimpleToggleableOptions
         protected void addAdditionalInfoToTooltip(IProgWidget widget, List<ITextComponent> tooltip) {
             int widgetId = selectedDrone.getProgWidgets().indexOf(widget);
 
-            DebugEntry entry = selectedDrone.getDebugEntry(widgetId);
+            DroneDebugEntry entry = selectedDrone.getDebugEntry(widgetId);
             if (entry != null) {
                 long elapsed = (System.currentTimeMillis() - entry.getReceivedTime()) / 50;
-                tooltip.add(new StringTextComponent("Last message:" ).applyTextStyle(TextFormatting.AQUA)
-                        .appendText(PneumaticCraftUtils.convertTicksToMinutesAndSeconds(elapsed, true))
-                        .applyTextStyle(TextFormatting.YELLOW)
-                        .appendText(" ago"));
+                tooltip.add(new StringTextComponent("Last message:" ).mergeStyle(TextFormatting.AQUA)
+                        .appendString(PneumaticCraftUtils.convertTicksToMinutesAndSeconds(elapsed, true))
+                        .mergeStyle(TextFormatting.YELLOW)
+                        .appendString(" ago"));
                 tooltip.add(new StringTextComponent("  \"")
-                        .appendSibling(xlate(entry.getMessage()))
-                        .appendText("\"  ")
-                        .applyTextStyles(TextFormatting.AQUA, TextFormatting.ITALIC));
+                        .append(xlate(entry.getMessage()))
+                        .appendString("\"  ")
+                        .mergeStyle(TextFormatting.AQUA, TextFormatting.ITALIC));
                 if (entry.hasCoords()) {
-                    tooltip.add(xlate("pneumaticcraft.gui.progWidget.debug.hasPositions").applyTextStyle(TextFormatting.GREEN));
+                    tooltip.add(xlate("pneumaticcraft.gui.progWidget.debug.hasPositions").mergeStyle(TextFormatting.GREEN));
                     if (widget != areaShowingWidget)
-                        tooltip.add(xlate("pneumaticcraft.gui.progWidget.debug.clickToShow").applyTextStyle(TextFormatting.GREEN));
+                        tooltip.add(xlate("pneumaticcraft.gui.progWidget.debug.clickToShow").mergeStyle(TextFormatting.GREEN));
                 }
             }
             if (widget instanceof IAreaProvider) {
                 if (widgetId == areaShowWidgetId) {
                     tooltip.add(new StringTextComponent("Right-Click: ")
-                            .appendSibling(xlate("pneumaticcraft.gui.programmer.button.stopShowingArea"))
-                            .applyTextStyle(TextFormatting.GREEN));
+                            .append(xlate("pneumaticcraft.gui.programmer.button.stopShowingArea"))
+                            .mergeStyle(TextFormatting.GREEN));
                 } else {
                     tooltip.add(new StringTextComponent("Right-Click: ")
-                            .appendSibling(xlate("pneumaticcraft.gui.programmer.button.showArea"))
-                            .applyTextStyle(TextFormatting.GREEN));
+                            .append(xlate("pneumaticcraft.gui.programmer.button.showArea"))
+                            .mergeStyle(TextFormatting.GREEN));
                 }
             }
         }
 
         @Override
-        protected void renderAdditionally() {
+        protected void renderAdditionally(MatrixStack matrixStack) {
             if (selectedDrone != null && selectedDrone.getActiveWidget() != null) {
-                drawBorder(selectedDrone.getActiveWidget(), 0xFF00FF00);
+                drawBorder(matrixStack, selectedDrone.getActiveWidget(), 0xFF00FF00);
                 if (areaShowWidgetId >= 0) {
-                    drawBorder(selectedDrone.getProgWidgets().get(areaShowWidgetId), 0xA040FFA0, 2);
+                    drawBorder(matrixStack, selectedDrone.getProgWidgets().get(areaShowWidgetId), 0xA040FFA0, 2);
                 }
             }
         }

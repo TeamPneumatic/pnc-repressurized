@@ -2,8 +2,6 @@ package me.desht.pneumaticcraft.common.progwidgets;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.client.util.GuiUtils;
-import me.desht.pneumaticcraft.client.util.ProgWidgetRenderer;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -56,17 +54,17 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
         }
     }
 
-    @Override
-    public void renderExtraInfo() {
-        ProgWidgetRenderer.renderItemFilterExtras(this);
-        if (variable.isEmpty()) {
-            if (!filter.isEmpty()) {
-                GuiUtils.drawItemStack(filter, 10, 2, "");
-            }
-        } else {
-            super.renderExtraInfo();
-        }
-    }
+//    @Override
+//    public void renderExtraInfo() {
+//        ProgWidgetRenderer.renderItemFilterExtras(this);
+//        if (variable.isEmpty()) {
+//            if (!filter.isEmpty()) {
+//                GuiUtils.drawItemStack(filter, 10, 2, "");
+//            }
+//        } else {
+//            super.renderExtraInfo();
+//        }
+//    }
 
     @Override
     public String getExtraStringInfo() {
@@ -90,15 +88,15 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
     public void getTooltip(List<ITextComponent> curTooltip) {
         super.getTooltip(curTooltip);
         if (!filter.isEmpty()) {
-            curTooltip.add(new StringTextComponent("Filter: ").applyTextStyle(TextFormatting.AQUA).appendSibling(filter.getDisplayName()));
+            curTooltip.add(new StringTextComponent("Filter: ").mergeStyle(TextFormatting.AQUA).append(filter.getDisplayName()));
             if (useModSimilarity) {
-                curTooltip.add(new StringTextComponent("- Using Mod Similarity").applyTextStyle(TextFormatting.DARK_AQUA));
+                curTooltip.add(new StringTextComponent("- Using Mod Similarity").mergeStyle(TextFormatting.DARK_AQUA));
             } else {
-                curTooltip.add(new StringTextComponent((useItemDurability ? "- Using" : "- Ignoring") + " item damage").applyTextStyle(TextFormatting.DARK_AQUA));
+                curTooltip.add(new StringTextComponent((useItemDurability ? "- Using" : "- Ignoring") + " item damage").mergeStyle(TextFormatting.DARK_AQUA));
                 if (matchBlock) {
-                    curTooltip.add(new StringTextComponent("- Matching by block").applyTextStyle(TextFormatting.DARK_AQUA));
+                    curTooltip.add(new StringTextComponent("- Matching by block").mergeStyle(TextFormatting.DARK_AQUA));
                 } else {
-                    curTooltip.add(new StringTextComponent(useNBT ? "- Using NBT" : "- Ignoring NBT").applyTextStyle(TextFormatting.DARK_AQUA));
+                    curTooltip.add(new StringTextComponent(useNBT ? "- Using NBT" : "- Ignoring NBT").mergeStyle(TextFormatting.DARK_AQUA));
                 }
             }
         }

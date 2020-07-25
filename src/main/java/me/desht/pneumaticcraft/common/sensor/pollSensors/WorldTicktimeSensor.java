@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.sensor.pollSensors;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.universal_sensor.IPollSensorSetting;
 import net.minecraft.client.gui.FontRenderer;
@@ -47,7 +48,7 @@ public class WorldTicktimeSensor implements IPollSensorSetting {
     @Override
     public int getRedstoneValue(World world, BlockPos pos, int sensorRange, String textBoxText) {
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-        double worldTickTime = mean(server.getTickTime(world.dimension.getType())) * 1.0E-6D;
+        double worldTickTime = mean(server.getTickTime(world.func_234923_W_())) * 1.0E-6D;
         try {
             int redstoneStrength = (int) (worldTickTime * Double.parseDouble(textBoxText));
             return Math.min(15, redstoneStrength);
@@ -63,7 +64,7 @@ public class WorldTicktimeSensor implements IPollSensorSetting {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void drawAdditionalInfo(FontRenderer fontRenderer) {
-        fontRenderer.drawString("Tick Resolution", 70, 48, 0x404040);
+    public void drawAdditionalInfo(MatrixStack matrixStack, FontRenderer fontRenderer) {
+        fontRenderer.drawString(matrixStack, "Tick Resolution", 70, 48, 0x404040);
     }
 }

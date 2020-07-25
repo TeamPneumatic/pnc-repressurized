@@ -13,7 +13,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.NonNullList;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
@@ -37,10 +36,10 @@ public class ItemEmptyPCB extends ItemNonDespawning implements ICustomDurability
         }
         infoList.add(xlate("pneumaticcraft.gui.tooltip.item.uvLightBox.successChance", uvProgress));
         if (uvProgress < 100 && etchProgress == 0) {
-            infoList.add(xlate("pneumaticcraft.gui.tooltip.item.uvLightBox.putInLightBox").applyTextStyle(TextFormatting.GRAY));
+            infoList.add(xlate("pneumaticcraft.gui.tooltip.item.uvLightBox.putInLightBox").mergeStyle(TextFormatting.GRAY));
         }
         if (uvProgress > 0) {
-            infoList.add(xlate("pneumaticcraft.gui.tooltip.item.uvLightBox.putInAcid").applyTextStyle(TextFormatting.GRAY));
+            infoList.add(xlate("pneumaticcraft.gui.tooltip.item.uvLightBox.putInAcid").mergeStyle(TextFormatting.GRAY));
         }
     }
 
@@ -74,7 +73,7 @@ public class ItemEmptyPCB extends ItemNonDespawning implements ICustomDurability
     public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entityItem) {
         super.onEntityItemUpdate(stack, entityItem);
 
-        if (entityItem.world.getFluidState(new BlockPos(entityItem)).getFluid().isIn(PneumaticCraftTags.Fluids.ETCHING_ACID)) {
+        if (entityItem.world.getFluidState(entityItem.getPosition()).getFluid().isIn(PneumaticCraftTags.Fluids.ETCHING_ACID)) {
             if (!stack.hasTag()) {
                 stack.setTag(new CompoundNBT());
             }

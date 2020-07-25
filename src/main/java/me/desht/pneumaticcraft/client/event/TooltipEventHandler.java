@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.event;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
@@ -14,7 +15,7 @@ import me.desht.pneumaticcraft.common.item.ItemMicromissiles;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
-import me.desht.pneumaticcraft.common.util.NBTUtil;
+import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.GuiConstants;
@@ -30,6 +31,7 @@ import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.BucketItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -91,7 +93,7 @@ public class TooltipEventHandler {
                     curInfo.add(xlate("pneumaticcraft.gui.tab.info.installDocsProvider"));
                 }
             } else {
-                curInfo.add(xlate("pneumaticcraft.gui.tooltip.sneakForInfo").applyTextStyle(TextFormatting.AQUA));
+                curInfo.add(xlate("pneumaticcraft.gui.tooltip.sneakForInfo").mergeStyle(TextFormatting.AQUA));
             }
         }
     }
@@ -107,7 +109,7 @@ public class TooltipEventHandler {
             } else {
                 color = TextFormatting.DARK_GREEN;
             }
-            textList.add(xlate("pneumaticcraft.gui.tooltip.pressure", PneumaticCraftUtils.roundNumberTo(airHandler.getPressure(), 1)).applyTextStyle(color));
+            textList.add(xlate("pneumaticcraft.gui.tooltip.pressure", PneumaticCraftUtils.roundNumberTo(airHandler.getPressure(), 1)).mergeStyle(color));
         });
     }
 
@@ -129,16 +131,16 @@ public class TooltipEventHandler {
                     }
                 }
                 addedEntries.add(new StringTextComponent(GuiConstants.BULLET + " " + entry.getValue() + " x ")
-                        .appendSibling(xlate(widgetType.getTranslationKey()))
-                        .applyTextStyles(prefix));
+                        .append(xlate(widgetType.getTranslationKey()))
+                        .mergeStyle(prefix));
             }
             if (hasInvalidPrograms) {
-                event.getToolTip().add(xlate("pneumaticcraft.gui.tooltip.programmable.invalidPieces").applyTextStyle(TextFormatting.RED));
+                event.getToolTip().add(xlate("pneumaticcraft.gui.tooltip.programmable.invalidPieces").mergeStyle(TextFormatting.RED));
             }
-            addedEntries.sort(Comparator.comparing(ITextComponent::getFormattedText));
+            addedEntries.sort(Comparator.comparing(ITextComponent::getString));
             event.getToolTip().addAll(addedEntries);
             if (ClientUtils.hasShiftDown() && !widgets.isEmpty()) {
-                event.getToolTip().add(xlate("pneumaticcraft.gui.tooltip.programmable.requiredPieces", widgets.size()).applyTextStyles(TextFormatting.GREEN));
+                event.getToolTip().add(xlate("pneumaticcraft.gui.tooltip.programmable.requiredPieces", widgets.size()).mergeStyle(TextFormatting.GREEN));
             }
         }
     }
@@ -147,7 +149,7 @@ public class TooltipEventHandler {
         FluidUtil.getFluidContained(event.getItemStack()).ifPresent(fluidStack -> {
             String key = "gui.tooltip.item.pneumaticcraft." + event.getItemStack().getItem().getRegistryName().getPath();
             if (I18n.hasKey(key)) {
-                if (event.getToolTip().get(event.getToolTip().size() - 1).getFormattedText().contains("Minecraft Forge")) {
+                if (event.getToolTip().get(event.getToolTip().size() - 1).getString().contains("Minecraft Forge")) {
                     // bit of a kludge!  otherwise the blue "Minecraft Forge" string gets shown twice
                     event.getToolTip().remove(event.getToolTip().size() - 1);
                 }
@@ -160,7 +162,7 @@ public class TooltipEventHandler {
                     String translatedInfo = TextFormatting.AQUA + I18n.format(key);
                     event.getToolTip().addAll(PneumaticCraftUtils.splitString(prefix + translatedInfo, 40).stream().map(StringTextComponent::new).collect(Collectors.toList()));
                 } else {
-                    event.getToolTip().add(xlate("pneumaticcraft.gui.tooltip.sneakForInfo").applyTextStyles(TextFormatting.AQUA));
+                    event.getToolTip().add(xlate("pneumaticcraft.gui.tooltip.sneakForInfo").mergeStyle(TextFormatting.AQUA));
                 }
             }
         });
@@ -185,11 +187,13 @@ public class TooltipEventHandler {
             int width = 0;
             FontRenderer fr = event.getFontRenderer();
             int y = event.getY() + fr.FONT_HEIGHT * 2 + 5;
-            RenderSystem.translated(0, 0, 300);
-            width = Math.max(width, renderString(fr, (I18n.format("pneumaticcraft.gui.micromissile.topSpeed")), event.getX(), y));
-            width = Math.max(width, renderString(fr, (I18n.format("pneumaticcraft.gui.micromissile.turnSpeed")), event.getX(), y + fr.FONT_HEIGHT));
-            width = Math.max(width, renderString(fr, (I18n.format("pneumaticcraft.gui.micromissile.damage")), event.getX(), y + fr.FONT_HEIGHT * 2));
-            RenderSystem.translated(0, 0, -300);
+            MatrixStack matrixStack = event.getMatrixStack();
+            matrixStack.push();
+            matrixStack.translate(0, 0, 300);
+            width = Math.max(width, renderString(matrixStack, fr, (I18n.format("pneumaticcraft.gui.micromissile.topSpeed")), event.getX(), y));
+            width = Math.max(width, renderString(matrixStack, fr, (I18n.format("pneumaticcraft.gui.micromissile.turnSpeed")), event.getX(), y + fr.FONT_HEIGHT));
+            width = Math.max(width, renderString(matrixStack, fr, (I18n.format("pneumaticcraft.gui.micromissile.damage")), event.getX(), y + fr.FONT_HEIGHT * 2));
+            matrixStack.pop();
 
             int barX = event.getX() + width + 2;
             int barW = event.getWidth() - width - 10;
@@ -198,25 +202,26 @@ public class TooltipEventHandler {
             GL11.glEnable(GL11.GL_LINE_STIPPLE);
             GL11.glLineStipple(1, (short) 0xFEFE);
             RenderSystem.shadeModel(GL11.GL_SMOOTH);
-            drawLine(barX, y, (int) (barW * NBTUtil.getFloat(stack, ItemMicromissiles.NBT_TOP_SPEED)));
-            drawLine(barX, y + fr.FONT_HEIGHT, (int) (barW * NBTUtil.getFloat(stack, ItemMicromissiles.NBT_TURN_SPEED)));
-            drawLine(barX, y + 2 * fr.FONT_HEIGHT, (int) (barW * NBTUtil.getFloat(stack, ItemMicromissiles.NBT_DAMAGE)));
+            drawLine(matrixStack, barX, y, (int) (barW * NBTUtils.getFloat(stack, ItemMicromissiles.NBT_TOP_SPEED)));
+            drawLine(matrixStack, barX, y + fr.FONT_HEIGHT, (int) (barW * NBTUtils.getFloat(stack, ItemMicromissiles.NBT_TURN_SPEED)));
+            drawLine(matrixStack, barX, y + 2 * fr.FONT_HEIGHT, (int) (barW * NBTUtils.getFloat(stack, ItemMicromissiles.NBT_DAMAGE)));
             RenderSystem.lineWidth(1);
             GL11.glDisable(GL11.GL_LINE_STIPPLE);
             RenderSystem.shadeModel(GL11.GL_FLAT);
         }
     }
 
-    private static void drawLine(int x, int y, int length) {
+    private static void drawLine(MatrixStack matrixStack, int x, int y, int length) {
         BufferBuilder bb = Tessellator.getInstance().getBuffer();
+        Matrix4f posMat = matrixStack.getLast().getMatrix();
         bb.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR);
-        bb.pos(x, y + 4, 0).color(128, 128, 0, 255).endVertex();
-        bb.pos(x + length, y + 4, 0).color(0, 192, 0, 255).endVertex();
+        bb.pos(posMat, x, y + 4, 0).color(128, 128, 0, 255).endVertex();
+        bb.pos(posMat, x + length, y + 4, 0).color(0, 192, 0, 255).endVertex();
         Tessellator.getInstance().draw();
     }
 
-    private static int renderString(FontRenderer fr, String s, int x, int y) {
-        fr.drawStringWithShadow(s, x, y, 0xFFFFFFFF);
+    private static int renderString(MatrixStack matrixStack, FontRenderer fr, String s, int x, int y) {
+        fr.drawStringWithShadow(matrixStack, s, x, y, 0xFFFFFFFF);
         return fr.getStringWidth(s);
     }
 

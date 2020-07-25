@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.config;
 
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget.WidgetDifficulty;
+import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import net.minecraftforge.common.ForgeConfigSpec;
 
 public class ClientConfig {
@@ -146,7 +147,7 @@ public class ClientConfig {
     /**
      * Used by the Pneumatic Helmet coordinate tracker to control path update frequency.
      */
-    public enum PathUpdateSetting {
+    public enum PathUpdateSetting implements ITranslatableEnum {
         SLOW(100),
         NORMAL(20),
         FAST(1);
@@ -163,6 +164,11 @@ public class ClientConfig {
 
         public PathUpdateSetting cycle() {
             return PathUpdateSetting.values()[(ordinal() + 1) % values().length];
+        }
+
+        @Override
+        public String getTranslationKey() {
+            return "pneumaticcraft.armor.gui.coordinateTracker.pathUpdate." + toString().toLowerCase();
         }
     }
 }

@@ -1,9 +1,10 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
-import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer;
+import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer2D;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.inventory.ContainerVacuumPump;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityVacuumPump;
@@ -31,21 +32,21 @@ public class GuiVacuumPump extends GuiPneumaticContainerBase<ContainerVacuumPump
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(int x, int y) {
-        super.drawGuiContainerForegroundLayer(x, y);
+    protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int x, int y) {
+        super.drawGuiContainerForegroundLayer(matrixStack, x, y);
 
-        font.drawString("+", 32, 47, 0xFF00AA00);
-        font.drawString("-", 138, 47, 0xFFFF0000);
+        font.drawString(matrixStack, "+", 32, 47, 0xFF00AA00);
+        font.drawString(matrixStack, "-", 138, 47, 0xFFFF0000);
 
         float pressure = te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, te.getInputSide())
                 .orElseThrow(RuntimeException::new).getPressure();
-        PressureGaugeRenderer.drawPressureGauge(font, -1, PneumaticValues.MAX_PRESSURE_VACUUM_PUMP,
+        PressureGaugeRenderer2D.drawPressureGauge(matrixStack, font, -1, PneumaticValues.MAX_PRESSURE_VACUUM_PUMP,
                 PneumaticValues.DANGER_PRESSURE_VACUUM_PUMP, PneumaticValues.MIN_PRESSURE_VACUUM_PUMP, pressure,
                 xSize / 5, ySize / 5 + 4);
 
         float vacPressure = te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, te.getVacuumSide())
                 .orElseThrow(RuntimeException::new).getPressure();
-        PressureGaugeRenderer.drawPressureGauge(font, -1, PneumaticValues.MAX_PRESSURE_VACUUM_PUMP,
+        PressureGaugeRenderer2D.drawPressureGauge(matrixStack, font, -1, PneumaticValues.MAX_PRESSURE_VACUUM_PUMP,
                 PneumaticValues.DANGER_PRESSURE_VACUUM_PUMP, -1, vacPressure,
                 xSize * 4 / 5, ySize / 5 + 4);
     }
@@ -81,7 +82,7 @@ public class GuiVacuumPump extends GuiPneumaticContainerBase<ContainerVacuumPump
                 String.format("%,d", volume)));
         if (volume > inputAirHandler.getBaseVolume()) {
             pressureStatText.add(col + GuiConstants.TRIANGLE_RIGHT + " "
-                    + upgrades + " x " + EnumUpgrade.VOLUME.getItemStack().getDisplayName().getFormattedText());
+                    + upgrades + " x " + EnumUpgrade.VOLUME.getItemStack().getDisplayName().getString());
             pressureStatText.add(col + I18n.format("pneumaticcraft.gui.tooltip.effectiveVolume", String.format("%,d",volume)));
         }
 

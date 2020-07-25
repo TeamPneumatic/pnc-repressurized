@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 
 import java.util.Comparator;
 
@@ -12,7 +12,7 @@ public class ChunkPositionSorter implements Comparator<BlockPos> {
     private final double x, y, z;
 
     ChunkPositionSorter(IDroneBase entity) {
-        Vec3d vec = entity.getDronePos();
+        Vector3d vec = entity.getDronePos();
 
         // work from middle of the block the drone is in (try to minimize inconsistency)
         x = Math.floor(vec.x) + 0.5;

@@ -13,8 +13,8 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.world.IBlockDisplayReader;
 import net.minecraft.world.IBlockReader;
-import net.minecraft.world.ILightReader;
 
 import javax.annotation.Nullable;
 
@@ -26,7 +26,7 @@ public class BlockUVLightBox extends BlockPneumaticCraft implements ColorHandler
     private static final VoxelShape SHAPE_NS = Block.makeCuboidShape(4.5, 0, 1, 11.5, 7, 15);
 
     public BlockUVLightBox() {
-        super(ModBlocks.defaultProps());
+        super(ModBlocks.defaultProps().setLightLevel(state -> state.get(LIT) ? 15 : 0));
         setDefaultState(getStateContainer().getBaseState().with(LOADED, false).with(LIT, false));
     }
 
@@ -47,9 +47,14 @@ public class BlockUVLightBox extends BlockPneumaticCraft implements ColorHandler
     }
 
     @Override
-    public int getLightValue(BlockState state) {
+    public int getLightValue(BlockState state, IBlockReader world, BlockPos pos) {
         return state.get(LIT) ? 15 : 0;
     }
+
+//    @Override
+//    public int getLightValue(BlockState state) {
+//        return state.get(LIT) ? 15 : 0;
+//    }
 
     @Override
     public boolean isRotatable() {
@@ -57,9 +62,9 @@ public class BlockUVLightBox extends BlockPneumaticCraft implements ColorHandler
     }
 
     @Override
-    public int getTintColor(BlockState state, @Nullable ILightReader world, @Nullable BlockPos pos, int tintIndex) {
+    public int getTintColor(BlockState state, @Nullable IBlockDisplayReader world, @Nullable BlockPos pos, int tintIndex) {
         if (world != null && pos != null) {
-            return state.has(BlockUVLightBox.LIT) && state.get(BlockUVLightBox.LIT) ? 0xFF4000FF : 0xFFAFAFE4;
+            return state.hasProperty(BlockUVLightBox.LIT) && state.get(BlockUVLightBox.LIT) ? 0xFF4000FF : 0xFFAFAFE4;
         }
         return 0xFFAFAFE4;
     }

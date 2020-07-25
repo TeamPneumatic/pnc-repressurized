@@ -44,7 +44,7 @@ public class BlockTrackEntryFluid implements IBlockTrackEntry {
                     if (stack.isEmpty()) {
                         infoList.add(I18n.format("pneumaticcraft.blockTracker.info.fluids.tankEmpty", i + 1, handler.getTankCapacity(i)));
                     } else {
-                        infoList.add(I18n.format("pneumaticcraft.blockTracker.info.fluids.tankFull", i + 1, stack.getAmount(), handler.getTankCapacity(i), stack.getDisplayName().getFormattedText()));
+                        infoList.add(I18n.format("pneumaticcraft.blockTracker.info.fluids.tankFull", i + 1, stack.getAmount(), handler.getTankCapacity(i), stack.getDisplayName().getString()));
                     }
                 }
             });

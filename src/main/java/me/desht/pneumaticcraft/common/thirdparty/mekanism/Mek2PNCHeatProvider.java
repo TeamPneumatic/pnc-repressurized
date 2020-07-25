@@ -5,8 +5,8 @@ import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.common.config.PNCConfig.Common.Integration;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicAmbient;
 import mekanism.api.heat.IHeatHandler;
-import mekanism.api.transmitters.ITransmitter;
 import mekanism.common.tile.TileEntityQuantumEntangloporter;
+import mekanism.common.tile.transmitter.TileEntityTransmitter;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
@@ -78,8 +78,8 @@ public class Mek2PNCHeatProvider implements ICapabilityProvider {
     // resistance when connected to PNC:R blocks, limiting the rate with which a PNC:R heat exchanger will
     // equalise heat directly. This doesn't stop the TC from *pushing* heat, though.
     private double getResistanceMultiplier(TileEntity te) {
-        // FIXME using non-API way of checking if tile entity is an Entangloporter
-        if (te instanceof ITransmitter || te instanceof TileEntityQuantumEntangloporter) {
+        // FIXME using non-API way of checking this
+        if (te instanceof TileEntityTransmitter || te instanceof TileEntityQuantumEntangloporter) {
             return 10000000;
         } else {
             return 1;

@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.gui.tubemodule;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.client.TubeModuleClientRegistry;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticScreenBase;
 import me.desht.pneumaticcraft.common.block.BlockPressureTube;
@@ -24,9 +25,9 @@ public abstract class GuiTubeModule<M extends TubeModule> extends GuiPneumaticSc
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float partialTicks) {
-        renderBackground();
-        super.render(mouseX, mouseY, partialTicks);
+    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+        renderBackground(matrixStack);
+        super.render(matrixStack, mouseX, mouseY, partialTicks);
     }
 
     @Override

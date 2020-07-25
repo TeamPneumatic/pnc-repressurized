@@ -8,11 +8,13 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.CoordTrackUpgradeHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.client.resources.I18n;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
 import java.util.ArrayList;
 import java.util.Collections;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiCoordinateTrackerOptions extends IOptionPage.SimpleToggleableOptions<CoordTrackUpgradeHandler> {
     private Button wirePath;
@@ -70,7 +72,7 @@ public class GuiCoordinateTrackerOptions extends IOptionPage.SimpleToggleableOpt
         mc.player.closeScreen();
         mc.setGameFocused(true);
         coordHandler.isListeningToCoordTrackerSetting = true;
-        HUDHandler.instance().addMessage(new ArmorMessage("Changing Coordinate Tracker coordinate...",
+        HUDHandler.instance().addMessage(new ArmorMessage(new StringTextComponent("Changing Coordinate Tracker coordinate..."),
                 Collections.singletonList("Right-click the desired coordinate"), 90, 0x7000AA00)
         );
     }
@@ -80,33 +82,24 @@ public class GuiCoordinateTrackerOptions extends IOptionPage.SimpleToggleableOpt
         mc.setGameFocused(true);
         switch (coordHandler.navigateToSurface(mc.player)) {
             case EASY_PATH:
-                HUDHandler.instance().addMessage(new ArmorMessage(I18n.format("pneumaticcraft.armor.message.coordinateTracker.routeFound"), new ArrayList<>(), 90, 0x7000AA00));
+                HUDHandler.instance().addMessage(new ArmorMessage(xlate("pneumaticcraft.armor.message.coordinateTracker.routeFound"), new ArrayList<>(), 90, 0x7000AA00));
                 break;
             case DRONE_PATH:
-                HUDHandler.instance().addMessage(new ArmorMessage(I18n.format("pneumaticcraft.armor.message.coordinateTracker.harderRouteFound"), new ArrayList<>(), 90, 0x7044AA00));
+                HUDHandler.instance().addMessage(new ArmorMessage(xlate("pneumaticcraft.armor.message.coordinateTracker.harderRouteFound"), new ArrayList<>(), 90, 0x7044AA00));
                 break;
             case NO_PATH:
-                HUDHandler.instance().addMessage(new ArmorMessage(I18n.format("pneumaticcraft.armor.message.coordinateTracker.noRouteFound"), new ArrayList<>(), 90, 0x70FF0000));
+                HUDHandler.instance().addMessage(new ArmorMessage(xlate("pneumaticcraft.armor.message.coordinateTracker.noRouteFound"), new ArrayList<>(), 90, 0x70FF0000));
                 break;
         }
     }
 
     private void updateButtonTexts() {
         CoordTrackUpgradeHandler coordHandler = HUDHandler.instance().getSpecificRenderer(CoordTrackUpgradeHandler.class);
-        pathEnabled.setMessage(coordHandler.pathEnabled ? "Navigation Enabled" : "Navigation Disabled");
-        wirePath.setMessage(coordHandler.wirePath ? "Wire Navigation" : "Tile Navigation");
-        xRayEnabled.setMessage(coordHandler.xRayEnabled ? "X-Ray Enabled" : "X-Ray Disabled");
-        switch (coordHandler.pathUpdateSetting) {
-            case SLOW:
-                pathUpdateRate.setMessage("Path update rate: Low");
-                break;
-            case NORMAL:
-                pathUpdateRate.setMessage("Path update rate: Normal");
-                break;
-            case FAST:
-                pathUpdateRate.setMessage("Path update rate: Fast");
-                break;
-        }
+        pathEnabled.setMessage(xlate("pneumaticcraft.armor.gui.coordinateTracker.navEnabled." + coordHandler.pathEnabled));
+        wirePath.setMessage(xlate("pneumaticcraft.armor.gui.coordinateTracker.wirePath." + coordHandler.wirePath));
+        xRayEnabled.setMessage(xlate("pneumaticcraft.armor.gui.coordinateTracker.xray." + coordHandler.xRayEnabled));
+        pathUpdateRate.setMessage(xlate(coordHandler.pathUpdateSetting.getTranslationKey()));
+
         wirePath.active = coordHandler.pathEnabled;
         xRayEnabled.active = coordHandler.pathEnabled;
         pathUpdateRate.active = coordHandler.pathEnabled;

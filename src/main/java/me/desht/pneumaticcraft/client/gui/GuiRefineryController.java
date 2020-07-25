@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
@@ -36,19 +37,6 @@ public class GuiRefineryController extends GuiPneumaticContainerBase<ContainerRe
     public void init() {
         super.init();
 
-//        widgetTemperature = new WidgetTemperature(guiLeft + 32, guiTop + 32, 273, 673,
-//                te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY))
-//        {
-//            @Override
-//            public void addTooltip(double mouseX, double mouseY, List<String> curTip, boolean shift) {
-//                super.addTooltip(mouseX, mouseY, curTip, shift);
-//                if (te.minTemp > 0) {
-//                    int temp = logic.map(IHeatExchangerLogic::getTemperatureAsInt).orElseThrow(RuntimeException::new);
-//                    TextFormatting tf = te.minTemp < temp ? TextFormatting.GREEN : TextFormatting.GOLD;
-//                    curTip.add(tf + I18n.format("pneumaticcraft.gui.misc.requiredTemperature", te.minTemp - 273));
-//                }
-//            }
-//        };
         widgetTemperature = new WidgetTemperature(guiLeft + 32, guiTop + 32, TemperatureRange.of(273, 673), 273, 50);
         addButton(widgetTemperature);
 
@@ -90,30 +78,23 @@ public class GuiRefineryController extends GuiPneumaticContainerBase<ContainerRe
         }
         te.getHeatCap(null).ifPresent(l -> widgetTemperature.setTemperature(l.getTemperatureAsInt()));
         widgetTemperature.autoScaleForTemperature();
-
-//        if (te.minTemp > 0) {
-//            widgetTemperature.setScales(te.minTemp);
-//        } else {
-//            widgetTemperature.setScales();
-//        }
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
-        super.drawGuiContainerBackgroundLayer(f, x, y);
+    protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float f, int x, int y) {
+        super.drawGuiContainerBackgroundLayer(matrixStack, f, x, y);
         if (outputs.size() < 4) {
             RenderSystem.enableBlend();
             RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-            RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-            fill(guiLeft + 155, guiTop + 17, guiLeft + 171, guiTop + 81, 0x40FF0000);
+            fill(matrixStack, guiLeft + 155, guiTop + 17, guiLeft + 171, guiTop + 81, 0x40FF0000);
             if (outputs.size() < 3) {
-                fill(guiLeft + 135, guiTop + 21, guiLeft + 151, guiTop + 85, 0x40FF0000);
+                fill(matrixStack, guiLeft + 135, guiTop + 21, guiLeft + 151, guiTop + 85, 0x40FF0000);
             }
             if (outputs.size() < 2) {
-                fill(guiLeft + 115, guiTop + 25, guiLeft + 131, guiTop + 89, 0x40FF0000);
+                fill(matrixStack, guiLeft + 115, guiTop + 25, guiLeft + 131, guiTop + 89, 0x40FF0000);
             }
             if (outputs.size() < 1) {
-                fill(guiLeft + 95, guiTop + 29, guiLeft + 111, guiTop + 93, 0x40FF0000);
+                fill(matrixStack, guiLeft + 95, guiTop + 29, guiLeft + 111, guiTop + 93, 0x40FF0000);
             }
             RenderSystem.disableBlend();
         }

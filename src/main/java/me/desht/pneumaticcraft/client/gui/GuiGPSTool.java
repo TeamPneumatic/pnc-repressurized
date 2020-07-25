@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextFieldNumber;
@@ -8,12 +9,14 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketChangeGPSToolCoordinate;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiGPSTool extends GuiPneumaticScreenBase {
     private static final int TEXTFIELD_WIDTH = 40;
@@ -65,13 +68,13 @@ public class GuiGPSTool extends GuiPneumaticScreenBase {
         for (int i = 0; i < 3; i++) {
             final int idx = i;
             addButton(new Button(xMiddle - 49 - TEXTFIELD_WIDTH / 2, yMiddle - 20 + i * 22, 22, 20,
-                    "-10", b -> updateTextField(idx, -10)));
+                    new StringTextComponent("-10"), b -> updateTextField(idx, -10)));
             addButton(new Button(xMiddle - 25 - TEXTFIELD_WIDTH / 2, yMiddle - 20 + i * 22, 22, 20,
-                    "-1", b -> updateTextField(idx, -1)));
+                    new StringTextComponent("-1"), b -> updateTextField(idx, -1)));
             addButton(new Button(xMiddle + 3 + TEXTFIELD_WIDTH / 2, yMiddle - 20 + i * 22, 22, 20,
-                    "+1", b -> updateTextField(idx, 1)));
+                    new StringTextComponent("+1"), b -> updateTextField(idx, 1)));
             addButton(new Button(xMiddle + 27 + TEXTFIELD_WIDTH / 2, yMiddle - 20 + i * 22, 22, 20,
-                    "+10", b -> updateTextField(idx, 10)));
+                    new StringTextComponent("+10"), b -> updateTextField(idx, 10)));
         }
 
         if (variableField != null) oldVarName = variableField.getText();
@@ -79,8 +82,8 @@ public class GuiGPSTool extends GuiPneumaticScreenBase {
         variableField.setText(oldVarName);
         addButton(variableField);
 
-        String var = I18n.format("pneumaticcraft.gui.progWidget.coordinate.variable") + " #";
-        addButton(new WidgetLabel(xMiddle - 62 - font.getStringWidth(var), yMiddle + 61, var, 0xc0c0c0));
+        ITextComponent var = xlate("pneumaticcraft.gui.progWidget.coordinate.variable").appendString(" #");
+        addButton(new WidgetLabel(xMiddle - 62 - font.func_238414_a_(var), yMiddle + 61, var, 0xc0c0c0));
     }
 
     private void updateTextField(int idx, int amount) {
@@ -88,17 +91,17 @@ public class GuiGPSTool extends GuiPneumaticScreenBase {
     }
 
     @Override
-    public void render(int par1, int par2, float par3) {
-        renderBackground();
-        super.render(par1, par2, par3);
+    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+        renderBackground(matrixStack);
+        super.render(matrixStack, mouseX, mouseY, partialTicks);
 
         int xMiddle = width / 2;
         int yMiddle = height / 2;
         int stringX = xMiddle - 60 - TEXTFIELD_WIDTH / 2;
-        drawCenteredString(font, getTitle().getFormattedText(), xMiddle, yMiddle - 58, 0xFFFFFFFF);
-        drawString(font, "X:", stringX, yMiddle - 10 - font.FONT_HEIGHT / 2, 0xFFFFFFFF);
-        drawString(font, "Y:", stringX, yMiddle + 4 + font.FONT_HEIGHT / 2, 0xFFFFFFFF);
-        drawString(font, "Z:", stringX, yMiddle + 34 - font.FONT_HEIGHT / 2, 0xFFFFFFFF);
+        drawCenteredString(matrixStack, font, getTitle(), xMiddle, yMiddle - 58, 0xFFFFFFFF);
+        drawString(matrixStack, font, "X:", stringX, yMiddle - 10 - font.FONT_HEIGHT / 2, 0xFFFFFFFF);
+        drawString(matrixStack, font, "Y:", stringX, yMiddle + 4 + font.FONT_HEIGHT / 2, 0xFFFFFFFF);
+        drawString(matrixStack, font, "Z:", stringX, yMiddle + 34 - font.FONT_HEIGHT / 2, 0xFFFFFFFF);
     }
 
     @Override

@@ -113,8 +113,8 @@ public class GuiThermalCompressor extends GuiPneumaticContainerBase<ContainerThe
         }
 
         @Override
-        public void addTooltip(double mouseX, double mouseY, List<String> curTip, boolean shift) {
-            curTip.add(HeatUtil.formatHeatString(side, getTemperature()).getFormattedText());
+        public void addTooltip(double mouseX, double mouseY, List<ITextComponent> curTip, boolean shift) {
+            curTip.add(HeatUtil.formatHeatString(side, getTemperature()));
         }
     }
 }

@@ -5,7 +5,7 @@ import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IUpgradeItem;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.util.NBTUtil;
+import me.desht.pneumaticcraft.common.util.NBTUtils;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
@@ -47,11 +47,11 @@ public class ItemMachineUpgrade extends Item implements IUpgradeItem {
             infoList.add(xlate("pneumaticcraft.gui.tooltip.item.upgrade.usedIn"));
             PneumaticRegistry.getInstance().getItemRegistry().addTooltip(upgrade, infoList);
         } else {
-            infoList.add(xlate("pneumaticcraft.gui.tooltip.item.upgrade.shiftMessage").applyTextStyle(TextFormatting.AQUA));
+            infoList.add(xlate("pneumaticcraft.gui.tooltip.item.upgrade.shiftMessage").mergeStyle(TextFormatting.AQUA));
         }
         if (getUpgradeType() == EnumUpgrade.DISPENSER) {
-            Direction dir = stack.hasTag() ? Direction.byName(NBTUtil.getString(stack, NBT_DIRECTION)) : null;
-            infoList.add(xlate("pneumaticcraft.message.dispenser.direction", dir == null ? "*" : dir.getName()));
+            Direction dir = stack.hasTag() ? Direction.byName(NBTUtils.getString(stack, NBT_DIRECTION)) : null;
+            infoList.add(xlate("pneumaticcraft.message.dispenser.direction", dir == null ? "*" : dir.getString()));
             infoList.add(xlate("pneumaticcraft.message.dispenser.clickToSet"));
         }
         super.addInformation(stack, world, infoList, par4);
@@ -85,8 +85,8 @@ public class ItemMachineUpgrade extends Item implements IUpgradeItem {
             stack.setTag(null);
             player.sendStatusMessage(new TranslationTextComponent("pneumaticcraft.message.dispenser.direction", "*"), true);
         } else {
-            NBTUtil.setString(stack, NBT_DIRECTION, facing.getName());
-            player.sendStatusMessage(new TranslationTextComponent("pneumaticcraft.message.dispenser.direction", facing.getName()), true);
+            NBTUtils.setString(stack, NBT_DIRECTION, facing.getString());
+            player.sendStatusMessage(new TranslationTextComponent("pneumaticcraft.message.dispenser.direction", facing.getString()), true);
         }
     }
 

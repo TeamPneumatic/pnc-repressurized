@@ -22,7 +22,7 @@ public class DroneAIEditSign extends DroneAIBlockInteraction<ProgWidgetAreaItemB
             SignTileEntity sign = (SignTileEntity) te;
             String[] lines = ((ISignEditWidget) progWidget).getLines();
             for (int i = 0; i < 4; i++) {
-                sign.signText[i] = new StringTextComponent(i < lines.length ? lines[i] : ""); //TODO 1.8 test
+                sign.setText(i, new StringTextComponent(i < lines.length ? lines[i] : ""));
             }
             BlockState state = drone.world().getBlockState(pos);
             drone.world().notifyBlockUpdate(pos, state, state, 3);

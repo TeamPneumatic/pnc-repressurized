@@ -1,16 +1,21 @@
 package me.desht.pneumaticcraft.common.network;
 
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.RegistryKey;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.world.World;
 
 public class PacketUtil {
     public static void writeGlobalPos(PacketBuffer buf, GlobalPos gPos) {
-        buf.writeResourceLocation(gPos.getDimension().getRegistryName());
+        buf.writeResourceLocation(gPos.func_239646_a_().func_240901_a_());
         buf.writeBlockPos(gPos.getPos());
     }
 
     public static GlobalPos readGlobalPos(PacketBuffer buf) {
-        return GlobalPos.of(DimensionType.byName(buf.readResourceLocation()), buf.readBlockPos());
+        RegistryKey<World> worldKey = RegistryKey.func_240903_a_(Registry.WORLD_KEY, buf.readResourceLocation());
+        BlockPos pos = buf.readBlockPos();
+        return GlobalPos.func_239648_a_(worldKey, pos);
     }
 }

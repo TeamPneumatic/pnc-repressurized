@@ -3,12 +3,6 @@ package me.desht.pneumaticcraft;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.client.ClientSetup;
-import me.desht.pneumaticcraft.client.KeyHandler;
-import me.desht.pneumaticcraft.client.event.ClientTickHandler;
-import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.entity_tracker.EntityTrackHandler;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.CoordTrackUpgradeHandler;
 import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.capabilities.CapabilityAirHandler;
@@ -37,30 +31,26 @@ import me.desht.pneumaticcraft.common.villages.VillageStructures;
 import me.desht.pneumaticcraft.common.worldgen.ModDecorators;
 import me.desht.pneumaticcraft.common.worldgen.ModWorldGen;
 import me.desht.pneumaticcraft.datagen.*;
-import me.desht.pneumaticcraft.datagen.loot.TileEntitySerializerFunction;
+import me.desht.pneumaticcraft.datagen.loot.ModLootFunctions;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.Block;
 import net.minecraft.block.DispenserBlock;
+import net.minecraft.data.BlockTagsProvider;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.item.Item;
-import net.minecraft.world.storage.loot.functions.LootFunctionManager;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.event.AddReloadListenerEvent;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DeferredWorkQueue;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
-import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
-import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
-import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
@@ -72,17 +62,12 @@ public class PneumaticCraftRepressurized {
         ConfigHolder.init();
         AuxConfigHandler.preInit();
 
-        DistExecutor.runWhenOn(Dist.CLIENT, () -> () -> {
-            modBus.addListener(ClientHandler::clientSetup);
-            MinecraftForge.EVENT_BUS.addListener(ClientHandler::registerRenders);
-        });
+        DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> ClientSetup::initEarly);
 
         modBus.addListener(this::commonSetup);
-        MinecraftForge.EVENT_BUS.addListener(this::serverAboutToStart);
-        MinecraftForge.EVENT_BUS.addListener(EventPriority.LOWEST, this::serverAboutToStartLowest);
-        MinecraftForge.EVENT_BUS.addListener(this::serverStarting);
-        MinecraftForge.EVENT_BUS.addListener(this::serverStarted);
         MinecraftForge.EVENT_BUS.addListener(this::serverStopping);
+        MinecraftForge.EVENT_BUS.addListener(this::addReloadListeners);
+        MinecraftForge.EVENT_BUS.addListener(this::registerCommands);
 
         ModBlocks.BLOCKS.register(modBus);
         ModItems.ITEMS.register(modBus);
@@ -104,7 +89,7 @@ public class PneumaticCraftRepressurized {
         PneumaticRegistry.init(PneumaticCraftAPIHandler.getInstance());
         AdvancementTriggers.registerTriggers();
 
-        LootFunctionManager.registerFunction(new TileEntitySerializerFunction.Serializer());
+        ModLootFunctions.init();
 
         MinecraftForge.EVENT_BUS.register(new TickHandlerPneumaticCraft());
         MinecraftForge.EVENT_BUS.register(new EventHandlerPneumaticCraft());
@@ -133,9 +118,10 @@ public class PneumaticCraftRepressurized {
         POIFixup.fixup();
         VillageStructures.init();
         ModNameCache.init();
-//        ThirdPartyManager.instance().init();
+        ModEntities.registerGlobalAttributes();
 
         // stuff to do after every other mod is done initialising
+        //noinspection deprecation
         DeferredWorkQueue.runLater(() -> {
             DispenserBlock.registerDispenseBehavior(ModItems.DRONE.get(), new BehaviorDispenseDrone());
             DispenserBlock.registerDispenseBehavior(ModItems.LOGISTICS_DRONE.get(), new BehaviorDispenseDrone());
@@ -162,56 +148,31 @@ public class PneumaticCraftRepressurized {
         CapabilityHacking.register();
     }
 
-    private void serverAboutToStart(FMLServerAboutToStartEvent event) {
-        event.getServer().getResourceManager().addReloadListener(new AmadronOfferManager.ReloadListener());
-        event.getServer().getResourceManager().addReloadListener(new BlockHeatProperties.ReloadListener());
+    private void addReloadListeners(AddReloadListenerEvent event) {
+        event.addListener(PneumaticCraftRecipeType.getCacheReloadListener());
+        event.addListener(new AmadronOfferManager.ReloadListener());
+        event.addListener(new BlockHeatProperties.ReloadListener());
     }
 
-    private void serverAboutToStartLowest(FMLServerAboutToStartEvent event) {
-        event.getServer().getResourceManager().addReloadListener(PneumaticCraftRecipeType.getCacheReloadListener());
-    }
-
-    private void serverStarting(FMLServerStartingEvent event) {
-        ModCommands.register(event.getCommandDispatcher());
+    private void registerCommands(RegisterCommandsEvent event) {
+        ModCommands.register(event.getDispatcher());
     }
 
     private void serverStopping(FMLServerStoppingEvent event) {
         AmadronOfferManager.getInstance().saveAll();
     }
 
-    private void serverStarted(FMLServerStartedEvent event) {
-    }
-
-    static class ClientHandler {
-        static void clientSetup(FMLClientSetupEvent event) {
-            MinecraftForge.EVENT_BUS.register(HUDHandler.instance());
-            MinecraftForge.EVENT_BUS.register(ClientTickHandler.instance());
-            MinecraftForge.EVENT_BUS.register(HackTickHandler.instance());
-            MinecraftForge.EVENT_BUS.register(HUDHandler.instance().getSpecificRenderer(CoordTrackUpgradeHandler.class));
-            MinecraftForge.EVENT_BUS.register(AreaRenderManager.getInstance());
-            MinecraftForge.EVENT_BUS.register(KeyHandler.getInstance());
-
-            EntityTrackHandler.registerDefaultEntries();
-            ThirdPartyManager.instance().clientInit();
-
-            DeferredWorkQueue.runLater(ClientSetup::init);
-        }
-
-        static void registerRenders(ModelRegistryEvent event) {
-        }
-    }
-
     @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
     public static class DataGenerators {
-
         @SubscribeEvent
         public static void gatherData(GatherDataEvent event) {
             DataGenerator generator = event.getGenerator();
             if (event.includeServer()) {
                 generator.addProvider(new ModRecipeProvider(generator));
                 generator.addProvider(new ModLootTablesProvider(generator));
-                generator.addProvider(new ModBlockTagsProvider(generator));
-                generator.addProvider(new ModItemTagsProvider(generator));
+                BlockTagsProvider blockTagsProvider = new ModBlockTagsProvider(generator);
+                generator.addProvider(blockTagsProvider);
+                generator.addProvider(new ModItemTagsProvider(generator, blockTagsProvider));
                 generator.addProvider(new ModFluidTagsProvider(generator));
             }
         }

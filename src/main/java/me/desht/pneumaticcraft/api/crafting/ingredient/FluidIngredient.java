@@ -12,7 +12,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tags.FluidTags;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.ITag;
+import net.minecraft.tags.TagCollectionManager;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.crafting.IIngredientSerializer;
@@ -64,13 +65,13 @@ public class FluidIngredient extends Ingredient {
         return new FluidIngredient(Arrays.asList(fluids), amount);
     }
 
-    public static FluidIngredient of(int amount, Tag<Fluid> fluid) {
-        return new FluidIngredient(fluid.getId(), amount);
+    public static FluidIngredient of(int amount, ITag.INamedTag<Fluid> fluid) {
+        return new FluidIngredient(fluid.getName(), amount);
     }
 
     private Collection<Fluid> getFluidList() {
         if (fluids == null && tagId != null) {
-            Tag<Fluid> tag = FluidTags.getCollection().get(tagId);
+            ITag<Fluid> tag = FluidTags.getCollection().get(tagId);
             fluids = tag == null ? Collections.emptyList() : ImmutableList.copyOf(tag.getAllElements());
         }
         return fluids;
@@ -165,7 +166,8 @@ public class FluidIngredient extends Ingredient {
             int amount = JSONUtils.getInt(json, "amount", 1000);
             if (json.has("tag")) {
                 ResourceLocation rl = new ResourceLocation(JSONUtils.getString(json, "tag"));
-                if (FluidTags.getCollection().get(rl) == null) throw new JsonSyntaxException("Unknown fluid tag '" + rl + "'");
+                if (TagCollectionManager.func_232928_e_().func_232926_c_().get(rl) == null) throw new JsonSyntaxException("Unknown fluid tag '" + rl + "'");
+//                if (FluidTags.getCollection().get(rl) == null) throw new JsonSyntaxException("Unknown fluid tag '" + rl + "'");
                 return new FluidIngredient(rl, amount);
             } else if (json.has("fluid")) {
                 ResourceLocation fluidName = new ResourceLocation(JSONUtils.getString(json, "fluid"));

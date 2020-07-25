@@ -21,7 +21,7 @@ public class TickHandlerPneumaticCraft {
             if (event.world.getGameTime() % 100 == 0) {
                 double tickTime = MathHelper.average(ServerLifecycleHooks.getCurrentServer().tickTimeArray) * 1.0E-6D;
                 // In case world are going to get their own thread: MinecraftServer.getServer().worldTickTimes.get(event.world.provider.getDimension())
-                NetworkHandler.sendToDimension(new PacketServerTickTime(tickTime), event.world.getDimension().getType());
+                NetworkHandler.sendToDimension(new PacketServerTickTime(tickTime), event.world.func_234923_W_());
             }
         }
     }

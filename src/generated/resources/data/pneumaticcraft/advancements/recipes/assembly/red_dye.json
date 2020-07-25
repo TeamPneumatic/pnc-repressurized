@@ -6,12 +6,12 @@
     ]
   },
   "criteria": {
-    "barrier": {
+    "assembly_controller": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "item": "minecraft:barrier"
+            "item": "pneumaticcraft:assembly_controller"
           }
         ]
       }
@@ -25,7 +25,7 @@
   },
   "requirements": [
     [
-      "barrier",
+      "assembly_controller",
       "has_the_recipe"
     ]
   ]

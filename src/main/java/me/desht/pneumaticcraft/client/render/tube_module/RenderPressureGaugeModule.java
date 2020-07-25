@@ -9,10 +9,10 @@ import me.desht.pneumaticcraft.common.block.tubes.ModulePressureGauge;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Vector3f;
 
 public class RenderPressureGaugeModule extends TubeModuleRendererBase<ModulePressureGauge> {
     private static final float GAUGE_SCALE = 0.007f;

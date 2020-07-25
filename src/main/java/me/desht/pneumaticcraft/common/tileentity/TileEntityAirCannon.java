@@ -19,12 +19,16 @@ import me.desht.pneumaticcraft.common.util.fakeplayer.FakeNetHandlerPlayerServer
 import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
-import net.minecraft.entity.item.*;
+import net.minecraft.entity.item.BoatEntity;
+import net.minecraft.entity.item.ExperienceBottleEntity;
+import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.item.TNTEntity;
 import net.minecraft.entity.item.minecart.MinecartEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -42,7 +46,7 @@ import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
@@ -58,6 +62,8 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.Map.Entry;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class TileEntityAirCannon extends TileEntityPneumaticBase
         implements IMinWorkingPressure, IRedstoneControl, IGUIButtonSensitive, INamedContainerProvider {
@@ -402,8 +408,8 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     }
 
     @Override
-    public void read(CompoundNBT tag) {
-        super.read(tag);
+    public void read(BlockState state, CompoundNBT tag) {
+        super.read(state, tag);
         targetRotationAngle = tag.getFloat("targetRotationAngle");
         targetHeightAngle = tag.getFloat("targetHeightAngle");
         rotationAngle = tag.getFloat("rotationAngle");
@@ -586,8 +592,8 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
             }
 
             launchEntity(launchedEntity,
-                    new Vec3d(getPos().getX() + 0.5D, getPos().getY() + 1.8D, getPos().getZ() + 0.5D),
-                    new Vec3d(velocity[0], velocity[1], velocity[2]),
+                    new Vector3d(getPos().getX() + 0.5D, getPos().getY() + 1.8D, getPos().getZ() + 0.5D),
+                    new Vector3d(velocity[0], velocity[1], velocity[2]),
                     shootingInventory);
             return true;
         } else {
@@ -616,7 +622,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
         return fakePlayer;
     }
 
-    public static void launchEntity(Entity launchedEntity, Vec3d initialPos, Vec3d velocity, boolean doSpawn) {
+    public static void launchEntity(Entity launchedEntity, Vector3d initialPos, Vector3d velocity, boolean doSpawn) {
         World world = launchedEntity.getEntityWorld();
 
         if (launchedEntity.getRidingEntity() != null) {
@@ -625,7 +631,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
 
         launchedEntity.setPosition(initialPos.x, initialPos.y, initialPos.z);
         NetworkHandler.sendToAllAround(new PacketSetEntityMotion(launchedEntity, velocity),
-                new PacketDistributor.TargetPoint(initialPos.x, initialPos.y, initialPos.z, 64, world.getDimension().getType()));
+                new PacketDistributor.TargetPoint(initialPos.x, initialPos.y, initialPos.z, 64, world.func_234923_W_()));
         if (launchedEntity instanceof FireballEntity) {
             // fireball velocity is handled a little differently...
             FireballEntity fireball = (FireballEntity) launchedEntity;
@@ -635,8 +641,8 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
         } else {
             launchedEntity.setMotion(velocity);
         }
-        launchedEntity.onGround = false;
-        launchedEntity.collided = false;
+        launchedEntity.setOnGround(false);
+//        launchedEntity.collided = false;
         launchedEntity.collidedHorizontally = false;
         launchedEntity.collidedVertically = false;
 
@@ -806,8 +812,8 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     }
 
     @Override
-    public String getRedstoneTabTitle() {
-        return "pneumaticcraft.gui.tab.redstoneBehaviour.airCannon.fireUpon";
+    public ITextComponent getRedstoneTabTitle() {
+        return xlate("pneumaticcraft.gui.tab.redstoneBehaviour.airCannon.fireUpon");
     }
 
 }

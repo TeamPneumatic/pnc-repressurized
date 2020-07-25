@@ -80,6 +80,7 @@ public class PneumaticValues {
     public static final int USAGE_CAMO_APPLICATOR = 50;//mL per usage.
     public static final int USAGE_PROGRAMMABLE_CONTROLLER = 10;//mL per tick when not idling
     public static final int USAGE_ITEM_MINIGUN = 20;//mL per tick while firing
+    public static final int USAGE_ITEM_MANOMETER = 30;//mL per usage
 
     public static final int PRODUCTION_COMPRESSOR = 10; // mL per tick
     public static final int PRODUCTION_ADVANCED_COMPRESSOR = 50; // mL per tick

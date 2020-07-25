@@ -1,14 +1,17 @@
 package me.desht.pneumaticcraft.client.gui.programmer;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticScreenBase;
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketProgrammerUpdate;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public abstract class GuiProgWidgetOptionBase<P extends IProgWidget> extends GuiPneumaticScreenBase {
     protected final P progWidget;
@@ -27,22 +30,26 @@ public abstract class GuiProgWidgetOptionBase<P extends IProgWidget> extends Gui
     public void init() {
         super.init();
 
-        String title = I18n.format(progWidget.getTranslationKey());
-        addLabel(title, width / 2 - font.getStringWidth(title) / 2, guiTop + 5);
+        ITextComponent title = xlate(progWidget.getTranslationKey());
+        addLabel(title, width / 2 - font.func_238414_a_(title) / 2, guiTop + 5);
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float partialTicks) {
-        renderBackground();
+    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+        renderBackground(matrixStack);
 
-        super.render(mouseX, mouseY, partialTicks);
+        super.render(matrixStack, mouseX, mouseY, partialTicks);
+    }
+
+    @Override
+    public void closeScreen() {
+        minecraft.displayGuiScreen(guiProgrammer);
     }
 
     @Override
     public void onClose() {
         if (guiProgrammer != null) {
             NetworkHandler.sendToServer(new PacketProgrammerUpdate(guiProgrammer.te));
-            minecraft.displayGuiScreen(guiProgrammer);
         } else {
             super.onClose();
         }

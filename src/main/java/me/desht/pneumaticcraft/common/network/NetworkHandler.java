@@ -20,8 +20,8 @@ package me.desht.pneumaticcraft.common.network;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.RegistryKey;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.PacketDistributor;
@@ -229,11 +229,11 @@ public class NetworkHandler {
 		}
     }
 
-    public static void sendToDimension(Object message, DimensionType type) {
+    public static void sendToDimension(Object message, RegistryKey<World> world) {
 		if (message instanceof ILargePayload) {
-			getSplitMessages((ILargePayload) message).forEach(part -> NETWORK.send(PacketDistributor.DIMENSION.with(() -> type), part));
+			getSplitMessages((ILargePayload) message).forEach(part -> NETWORK.send(PacketDistributor.DIMENSION.with(() -> world), part));
 		} else {
-			NETWORK.send(PacketDistributor.DIMENSION.with(() -> type), message);
+			NETWORK.send(PacketDistributor.DIMENSION.with(() -> world), message);
 		}
     }
 
@@ -252,12 +252,14 @@ public class NetworkHandler {
 	 */
 	public static void sendNonLocal(Object packet) {
 		MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-		if (server.isDedicatedServer()) {
-			NetworkHandler.sendToAll(packet);
-		} else {
-			for (ServerPlayerEntity player : server.getPlayerList().getPlayers()) {
-				if (!player.getGameProfile().getName().equals(player.server.getServerOwner())) {
-					sendToPlayer(packet, player);
+		if (server != null) {
+			if (server.isDedicatedServer()) {
+				NetworkHandler.sendToAll(packet);
+			} else {
+				for (ServerPlayerEntity player : server.getPlayerList().getPlayers()) {
+					if (!player.getGameProfile().getName().equals(player.server.getServerOwner())) {
+						sendToPlayer(packet, player);
+					}
 				}
 			}
 		}

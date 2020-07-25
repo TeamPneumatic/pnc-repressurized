@@ -3,10 +3,16 @@ package me.desht.pneumaticcraft.common.util;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
+import net.minecraft.nbt.ListNBT;
+import net.minecraft.nbt.StringNBT;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.math.vector.Vector3i;
+import net.minecraft.util.text.ITextComponent;
 
-public class NBTUtil {
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class NBTUtils {
     /**
      * Initializes the {@link CompoundNBT} for the given {@link ItemStack} if
      * it is null.
@@ -350,7 +356,7 @@ public class NBTUtil {
         itemStack.getTag().put(tagName, tagValue);
     }
 
-    public static void setPos(ItemStack stack, Vec3i vec) {
+    public static void setPos(ItemStack stack, Vector3i vec) {
         initNBTTagCompound(stack);
         setPos(stack.getTag(), vec);
     }
@@ -360,7 +366,7 @@ public class NBTUtil {
         return getPos(stack.getTag());
     }
 
-    public static void setPos(CompoundNBT tag, Vec3i vec) {
+    public static void setPos(CompoundNBT tag, Vector3i vec) {
         tag.putInt("x", vec.getX());
         tag.putInt("y", vec.getY());
         tag.putInt("z", vec.getZ());
@@ -384,5 +390,18 @@ public class NBTUtil {
 
     public static float fromTag(CompoundNBT tag, String name, float def) {
         return tag.contains(name) ? tag.getFloat(name) : def;
+    }
+
+    public static ListNBT serializeTextComponents(List<ITextComponent> textComponents) {
+        ListNBT l = new ListNBT();
+        textComponents.forEach(t -> l.add(StringNBT.valueOf(ITextComponent.Serializer.toJson(t))));
+        return l;
+    }
+
+    public static List<ITextComponent> deserializeTextComponents(ListNBT l) {
+        return l.stream()
+                .filter(nbt -> nbt instanceof StringNBT)
+                .map(nbt -> ITextComponent.Serializer.func_240643_a_(nbt.getString()))  // fromJsonStrict
+                .collect(Collectors.toList());
     }
 }

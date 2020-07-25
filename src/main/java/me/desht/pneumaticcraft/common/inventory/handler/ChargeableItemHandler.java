@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.inventory.handler;
 
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
-import me.desht.pneumaticcraft.common.util.NBTUtil;
+import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import net.minecraft.item.ItemStack;
@@ -11,7 +11,7 @@ public class ChargeableItemHandler extends BaseItemStackHandler {
     public ChargeableItemHandler(TileEntityChargingStation te) {
         super(te, UpgradableItemUtils.UPGRADE_INV_SIZE);
 
-        if (!NBTUtil.hasTag(getChargingStack(), UpgradableItemUtils.NBT_UPGRADE_TAG)) {
+        if (!NBTUtils.hasTag(getChargingStack(), UpgradableItemUtils.NBT_UPGRADE_TAG)) {
             writeToNBT();
         }
         readFromNBT();
@@ -32,7 +32,7 @@ public class ChargeableItemHandler extends BaseItemStackHandler {
     }
 
     private void readFromNBT() {
-        deserializeNBT(NBTUtil.getCompoundTag(getChargingStack(), UpgradableItemUtils.NBT_UPGRADE_TAG));
+        deserializeNBT(NBTUtils.getCompoundTag(getChargingStack(), UpgradableItemUtils.NBT_UPGRADE_TAG));
     }
 
     @Override

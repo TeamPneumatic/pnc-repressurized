@@ -1,20 +1,13 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
-import com.google.common.collect.ImmutableList;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.lib.Log;
-import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.ByteNBT;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.INBTSerializable;
@@ -24,6 +17,8 @@ import org.apache.commons.lang3.Validate;
 
 import java.util.*;
 import java.util.function.Predicate;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 /**
  * A class to manage which sides of a TE's block are mapped to which capability handler objects (item/fluid/energy...)
@@ -84,8 +79,7 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundNBT> {
         entries.addAll(newEntries);
         idxMap.clear();
         for (int i = 0; i < entries.size(); i++) {
-            ConnectionEntry e = entries.get(i);
-            idxMap.put(e.id, i);
+            idxMap.put(entries.get(i).id, i);
         }
     }
 
@@ -194,32 +188,15 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundNBT> {
         }
     }
 
-    @OnlyIn(Dist.CLIENT)
-    public void setupButton(WidgetButtonExtended button) {
-        try {
-            RelativeFace relativeFace = RelativeFace.valueOf(button.getTag().split("\\.")[1]);
-            ConnectionEntry c = entries.get(faces[relativeFace.ordinal()]);
-            if (c != null) {
-                if (c.texture instanceof ItemStack) {
-                    button.setRenderStacks((ItemStack) c.texture);
-                    button.setRenderedIcon(null);
-                } else if (c.texture instanceof ResourceLocation) {
-                    button.setRenderStacks(ItemStack.EMPTY);
-                    button.setRenderedIcon((ResourceLocation) c.texture);
-                }
-            } else {
-                button.setRenderStacks(ItemStack.EMPTY);
-                button.setRenderedIcon(Textures.GUI_X_BUTTON);
-            }
-            button.setTooltipText(ImmutableList.of(TextFormatting.YELLOW + relativeFace.toString(), I18n.format(getFaceKey(relativeFace))));
-        } catch (IllegalArgumentException e) {
-            Log.warning("Bad tag '" + button.getTag() + "'");
-        }
+    public ITextComponent getFaceLabel(RelativeFace relativeFace) {
+        ConnectionEntry<T> c = entries.get(faces[relativeFace.ordinal()]);
+        return c == null ?
+                xlate("pneumaticcraft.gui.sideConfigurator.unconnected") :
+                xlate("pneumaticcraft.gui.sideConfigurator." + id + "." + c.id);
     }
 
-    private String getFaceKey(RelativeFace relativeFace) {
-        ConnectionEntry<T> c = entries.get(faces[relativeFace.ordinal()]);
-        return c == null ? "pneumaticcraft.gui.sideConfigurator.unconnected" : "pneumaticcraft.gui.sideConfigurator." + id + "." + c.id;
+    public ConnectionEntry<?> getEntry(RelativeFace face) {
+        return entries.get(faces[face.ordinal()]);
     }
 
     @Override
@@ -274,7 +251,7 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundNBT> {
         }
     }
 
-    private static class ConnectionEntry<T> {
+    public static class ConnectionEntry<T> {
         private final String id;
         private final Object texture;
         private final Capability<T> cap;
@@ -287,6 +264,10 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundNBT> {
             this.cap = cap;
             this.handler = handler;
             this.lazy = LazyOptional.of(handler);
+        }
+
+        public Object getTexture() {
+            return texture;
         }
     }
 }

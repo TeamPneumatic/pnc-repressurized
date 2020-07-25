@@ -85,8 +85,9 @@ public class TileEntityPressureChamberWall extends TileEntityBase implements IMa
      * Reads a tile entity from NBT.
      */
     @Override
-    public void read(CompoundNBT tag) {
-        super.read(tag);
+    public void read(BlockState state, CompoundNBT tag) {
+        super.read(state, tag);
+
         valveX = tag.getInt("valveX");
         valveY = tag.getInt("valveY");
         valveZ = tag.getInt("valveZ");

@@ -5,13 +5,15 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.common.inventory.ContainerKeroseneLamp;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityKeroseneLamp;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.fml.client.gui.widget.Slider;
 
 import java.util.List;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiKeroseneLamp extends GuiPneumaticContainerBase<ContainerKeroseneLamp,TileEntityKeroseneLamp> implements Slider.ISlider {
 
@@ -27,9 +29,12 @@ public class GuiKeroseneLamp extends GuiPneumaticContainerBase<ContainerKerosene
         super.init();
 
         addButton(new WidgetTank(guiLeft + 152, guiTop + 15, te.getTank()));
-        addButton(rangeLabel = new WidgetLabel(guiLeft + 20, guiTop + 55, ""));
+        addButton(rangeLabel = new WidgetLabel(guiLeft + 20, guiTop + 55, StringTextComponent.EMPTY));
 
-        addButton(slider = new Slider(guiLeft + 7, guiTop + 30, 118, 20, I18n.format("pneumaticcraft.gui.keroseneLamp.maxRange") + " ", "", 1, TileEntityKeroseneLamp.MAX_RANGE, te.getTargetRange(), false, true, b -> { }, this));
+        addButton(slider = new Slider(guiLeft + 7, guiTop + 30, 118, 20,
+                xlate("pneumaticcraft.gui.keroseneLamp.maxRange").appendString(" "), StringTextComponent.EMPTY,
+                1, TileEntityKeroseneLamp.MAX_RANGE, te.getTargetRange(), false, true,
+                b -> { }, this));
     }
 
     @Override
@@ -42,7 +47,7 @@ public class GuiKeroseneLamp extends GuiPneumaticContainerBase<ContainerKerosene
             slider.updateSlider();
         }
 
-        rangeLabel.setMessage(I18n.format("pneumaticcraft.gui.keroseneLamp.currentRange", te.getRange()));
+        rangeLabel.setMessage(xlate("pneumaticcraft.gui.keroseneLamp.currentRange", te.getRange()));
     }
 
     @Override

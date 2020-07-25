@@ -52,7 +52,7 @@ public class PacketSendNBTPacket extends LocationIntPacket {
             TileEntity te = ClientUtils.getClientTE(pos);
             if (te != null) {
                 try {
-                    te.read(tag);
+                    te.read(te.getBlockState(), tag);
                 } catch (Throwable e) {
                     TrackerBlacklistManager.addInventoryTEToBlacklist(te, e);
                 }

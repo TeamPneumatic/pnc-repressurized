@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.sensor.pollSensors;
 
 import com.google.common.collect.ImmutableSet;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.universal_sensor.IPollSensorSetting;
 import net.minecraft.client.gui.FontRenderer;
@@ -30,7 +31,7 @@ public class PlayerHealthSensor implements IPollSensorSetting {
     }
 
     @Override
-    public void drawAdditionalInfo(FontRenderer fontRenderer) {
+    public void drawAdditionalInfo(MatrixStack matrixStack, FontRenderer fontRenderer) {
 
     }
 

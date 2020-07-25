@@ -8,18 +8,19 @@ import me.desht.pneumaticcraft.common.minigun.Minigun;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.InventoryScreen;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.Vector3f;
+import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.tileentity.ItemStackTileEntityRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.HandSide;
+import net.minecraft.util.math.vector.Vector3f;
 
 public class RenderItemMinigun extends ItemStackTileEntityRenderer {
     private final ModelMinigun model = new ModelMinigun();
 
     @Override
-    public void render(ItemStack stack, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLightIn, int combinedOverlayIn) {
+    public void func_239207_a_(ItemStack stack, ItemCameraTransforms.TransformType transformType, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLightIn, int combinedOverlayIn) {
         if (stack.getItem() == ModItems.MINIGUN.get() && stack.hasTag()) {
             Minecraft mc = Minecraft.getInstance();
             PlayerEntity player = mc.player;

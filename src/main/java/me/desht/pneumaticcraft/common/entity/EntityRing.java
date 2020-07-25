@@ -7,7 +7,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
 
@@ -54,12 +54,12 @@ public class EntityRing extends Entity {
     public void tick() {
         if (targetEntity == null) return;
 
-        Vec3d end = targetEntity.getPositionVector();
+        Vector3d end = targetEntity.getPositionVec();
         prevRotationYaw = rotationYaw;
         prevRotationPitch = rotationPitch;
 
         if (ring == null) {
-            ring = new ProgressingLine(getPosX(), getPosY(), getPosZ(), end.x, end.y, end.z);
+            ring = new ProgressingLine(getPositionVec(), end);
         } else {
             if (oldRing == null) {
                 oldRing = new ProgressingLine(ring.startX, ring.startY, ring.startZ, ring.endX, ring.endY, ring.endZ);
@@ -68,9 +68,9 @@ public class EntityRing extends Entity {
                 oldRing.endY = ring.endY;
                 oldRing.endZ = ring.endZ;
             }
-            ring.endX = end.x;
-            ring.endY = end.y;
-            ring.endZ = end.z;
+            ring.endX = (float) end.x;
+            ring.endY = (float) end.y;
+            ring.endZ = (float) end.z;
 
             double dx = end.x - getPosX();
             double dy = end.y - getPosY();

@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.authlib.GameProfile;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
@@ -21,6 +22,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 
 import java.util.ArrayList;
@@ -49,8 +51,8 @@ public class GuiSecurityStationInventory extends GuiSecurityStationBase<Containe
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
 
-        statusStat = addAnimatedStat("Security Status", new ItemStack(ModBlocks.SECURITY_STATION.get()), 0xFFFFAA00, false);
-        accessStat = addAnimatedStat("Shared Users", new ItemStack(Items.PLAYER_HEAD), 0xFF005500, false);
+        statusStat = addAnimatedStat(new StringTextComponent("Security Status"), new ItemStack(ModBlocks.SECURITY_STATION.get()), 0xFFFFAA00, false);
+        accessStat = addAnimatedStat(new StringTextComponent("Shared Users"), new ItemStack(Items.PLAYER_HEAD), 0xFF005500, false);
 
         Rectangle2d accessButtonRectangle = accessStat.getButtonScaledRectangle(145, 10, 20, 20);
         addUserButton = getButtonFromRectangle(null, accessButtonRectangle, "+", b -> {
@@ -77,9 +79,9 @@ public class GuiSecurityStationInventory extends GuiSecurityStationBase<Containe
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(int x, int y) {
-        super.drawGuiContainerForegroundLayer(x, y);
-        font.drawString("Network Layout", 15, 12, 4210752);
+    protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int x, int y) {
+        super.drawGuiContainerForegroundLayer(matrixStack, x, y);
+        font.drawString(matrixStack, "Network Layout", 15, 12, 4210752);
     }
 
     @Override
@@ -98,10 +100,10 @@ public class GuiSecurityStationInventory extends GuiSecurityStationBase<Containe
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(float opacity, int x, int y) {
-        super.drawGuiContainerBackgroundLayer(opacity, x, y);
+    protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float opacity, int x, int y) {
+        super.drawGuiContainerBackgroundLayer(matrixStack, opacity, x, y);
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-        nodeHandler.render();
+        nodeHandler.render(matrixStack);
     }
 
     @Override
@@ -116,7 +118,7 @@ public class GuiSecurityStationInventory extends GuiSecurityStationBase<Containe
             rebootButtonString = "Reboot";
         }
 
-        rebootButton.setMessage(rebootButtonString);
+        rebootButton.setMessage(new StringTextComponent(rebootButtonString));
 
         addUserButton.visible = accessStat.isDoneExpanding();
         for (Button button : removeUserButtons) {

@@ -63,7 +63,7 @@ public class GuiProgWidgetLiquidFilter extends GuiProgWidgetOptionBase<ProgWidge
 
         searchField = new WidgetTextField(font, guiLeft + 8, guiTop + 35, 90, 10);
         addButton(searchField);
-        setFocused(searchField);
+        setListener(searchField);
         searchField.setFocused2(true);
         searchField.setResponder(s -> textTimer = 5);
 
@@ -77,7 +77,7 @@ public class GuiProgWidgetLiquidFilter extends GuiProgWidgetOptionBase<ProgWidge
     private void addValidFluids() {
         List<Fluid> fluids = ForgeRegistries.FLUIDS.getValues().stream()
                 .filter(fluid -> matchSearch(searchField.getText(), fluid))
-                .sorted(Comparator.comparing(f -> new FluidStack(f, 1).getDisplayName().getFormattedText()))
+                .sorted(Comparator.comparing(f -> new FluidStack(f, 1).getDisplayName().getString()))
                 .collect(Collectors.toList());
 
         scrollbar.setStates(Math.max(0, (fluids.size() - GRID_WIDTH * GRID_HEIGHT + GRID_WIDTH - 1) / GRID_WIDTH));

@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.api.client;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.client.gui.widget.ITickableWidget;
 import net.minecraft.client.renderer.Rectangle2d;
 
@@ -87,19 +88,19 @@ public interface IGuiAnimatedStat extends ITickableWidget {
      */
     void appendText(List<String> text);
 
-    /**
-     * Sets the title of this stat. It will automatically get the yellow color assigned.
-     *
-     * @param title
-     */
-    void setTitle(String title);
-
-    /**
-     * Returns the title of this stat (obviously without color prefix).
-     *
-     * @return
-     */
-    String getTitle();
+//    /**
+//     * Sets the title of this stat. It will automatically get the yellow color assigned.
+//     *
+//     * @param title
+//     */
+//    void setTitle(String title);
+//
+//    /**
+//     * Returns the title of this stat (obviously without color prefix).
+//     *
+//     * @return
+//     */
+//    String getTitle();
 
     /**
      * Defines what dimensions the stat should have when it is not expanded (default 17x17) and resets the stat to these dimensions.
@@ -213,7 +214,7 @@ public interface IGuiAnimatedStat extends ITickableWidget {
      * @param mouseY
      * @param partialTicks
      */
-    void render(int mouseX, int mouseY, float partialTicks);
+    void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks);
 
     /**
      * Forces the stat to close.

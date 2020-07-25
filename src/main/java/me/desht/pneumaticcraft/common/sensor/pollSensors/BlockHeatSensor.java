@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.sensor.pollSensors;
 
 import com.google.common.collect.ImmutableSet;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
@@ -56,7 +57,7 @@ public class BlockHeatSensor implements IBlockAndCoordinatePollSensor {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void drawAdditionalInfo(FontRenderer fontRenderer) {
-        fontRenderer.drawString("Temperature", 70, 48, 0x404040);
+    public void drawAdditionalInfo(MatrixStack matrixStack, FontRenderer fontRenderer) {
+        fontRenderer.drawString(matrixStack, "Temperature", 70, 48, 0x404040);
     }
 }

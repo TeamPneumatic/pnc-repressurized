@@ -6,7 +6,6 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityDisplayTable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.ItemRenderer;
-import net.minecraft.client.renderer.Vector3f;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
@@ -16,6 +15,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.vector.Vector3f;
 
 public class RenderDisplayTable extends TileEntityRenderer<TileEntityDisplayTable> {
     public RenderDisplayTable(TileEntityRendererDispatcher dispatcher) {

@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.item;
 
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.client.IFOVModifierItem;
@@ -16,8 +17,8 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.recipes.special.OneProbeCrafting;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
-import me.desht.pneumaticcraft.common.util.GlobalPosUtils;
-import me.desht.pneumaticcraft.common.util.NBTUtil;
+import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
+import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.lib.NBTKeys;
@@ -25,8 +26,9 @@ import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.attributes.Attribute;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.inventory.container.INamedContainerProvider;
@@ -144,21 +146,21 @@ public class ItemPneumaticArmor extends ArmorItem
 
     private void addHelmetInformation(ItemStack stack, World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         if (OneProbeCrafting.isOneProbeEnabled(stack)) {
-            tooltip.add(new StringTextComponent("The One Probe installed").applyTextStyle(TextFormatting.BLUE));
+            tooltip.add(new StringTextComponent("The One Probe installed").mergeStyle(TextFormatting.BLUE));
         }
 
-        // supplementary search & tracker information
-        Item searchedItem = getSearchedItem(stack);
-        if (searchedItem != null) {
-            for (int i = 0; i < tooltip.size(); i++) {
-                // FIXME: bleh
-                if (tooltip.get(i).getFormattedText().contains("Item Search")) {
-                    ItemStack searchedStack = new ItemStack(searchedItem);
-                    tooltip.set(i, tooltip.get(i).appendText(" (searching " + searchedStack.getDisplayName().getFormattedText() + ")"));
-                    break;
-                }
-            }
-        }
+        // TODO supplementary search & tracker information
+//        Item searchedItem = getSearchedItem(stack);
+//        if (searchedItem != null) {
+//            for (int i = 0; i < tooltip.size(); i++) {
+//                // FIXME: bleh
+//                if (tooltip.get(i).getFormattedText().contains("Item Search")) {
+//                    ItemStack searchedStack = new ItemStack(searchedItem);
+//                    tooltip.set(i, tooltip.get(i).appendText(" (searching " + searchedStack.getDisplayName().getFormattedText() + ")"));
+//                    break;
+//                }
+//            }
+//        }
 
         BlockPos pos = getCoordTrackerPos(stack, worldIn);
         if (pos != null) RenderCoordWireframe.addInfo(tooltip, worldIn, pos);
@@ -180,13 +182,17 @@ public class ItemPneumaticArmor extends ArmorItem
     }
 
     @Override
-    public Multimap<String, AttributeModifier> getAttributeModifiers(EquipmentSlotType equipmentSlot, ItemStack stack) {
-        Multimap<String, AttributeModifier> multimap = super.getAttributeModifiers(equipmentSlot, stack);
+    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlotType equipmentSlot, ItemStack stack) {
+        Multimap<Attribute, AttributeModifier> multimap = HashMultimap.create(super.getAttributeModifiers(equipmentSlot, stack));
+
+        // in future?
+//        Multimap<Attribute, AttributeModifier> m = MultimapBuilder.hashKeys().hashSetValues()
+//                .build(super.getAttributeModifiers(equipmentSlot, stack));
 
         if (equipmentSlot == this.slot) {
             int upgrades = UpgradableItemUtils.getUpgrades(stack, EnumUpgrade.ARMOR);
-            multimap.put(SharedMonsterAttributes.ARMOR.getName(), new AttributeModifier(PNEUMATIC_ARMOR_MODIFIERS[equipmentSlot.getIndex()], "Pneumatic Armor modifier boost", (double) upgrades / 2d, AttributeModifier.Operation.ADDITION));
-            multimap.put(SharedMonsterAttributes.ARMOR_TOUGHNESS.getName(), new AttributeModifier(PNEUMATIC_ARMOR_MODIFIERS[equipmentSlot.getIndex()], "Pneumatic Armor toughness boost", upgrades, AttributeModifier.Operation.ADDITION));
+            multimap.put(Attributes.ARMOR, new AttributeModifier(PNEUMATIC_ARMOR_MODIFIERS[equipmentSlot.getIndex()], "Pneumatic Armor modifier boost", (double) upgrades / 2d, AttributeModifier.Operation.ADDITION));
+            multimap.put(Attributes.ARMOR_TOUGHNESS, new AttributeModifier(PNEUMATIC_ARMOR_MODIFIERS[equipmentSlot.getIndex()], "Pneumatic Armor toughness boost", upgrades, AttributeModifier.Operation.ADDITION));
         }
 
         return multimap;
@@ -219,38 +225,38 @@ public class ItemPneumaticArmor extends ArmorItem
     }
 
     public static Item getSearchedItem(ItemStack helmetStack) {
-        if (helmetStack.isEmpty() || !NBTUtil.hasTag(helmetStack, NBT_SEARCH_ITEM)) return null;
-        String itemName = NBTUtil.getString(helmetStack, NBT_SEARCH_ITEM);
+        if (helmetStack.isEmpty() || !NBTUtils.hasTag(helmetStack, NBT_SEARCH_ITEM)) return null;
+        String itemName = NBTUtils.getString(helmetStack, NBT_SEARCH_ITEM);
         return itemName == null || itemName.isEmpty() ? null : ForgeRegistries.ITEMS.getValue(new ResourceLocation(itemName));
     }
 
     public static void setSearchedItem(ItemStack helmetStack, Item searchedItem) {
-        NBTUtil.setString(helmetStack, NBT_SEARCH_ITEM, searchedItem.getRegistryName().toString());
+        NBTUtils.setString(helmetStack, NBT_SEARCH_ITEM, searchedItem.getRegistryName().toString());
     }
 
     public static BlockPos getCoordTrackerPos(ItemStack helmetStack, World world) {
-        if (helmetStack.isEmpty() || !NBTUtil.hasTag(helmetStack, NBT_COORD_TRACKER)) return null;
-        CompoundNBT tag = NBTUtil.getCompoundTag(helmetStack, NBT_COORD_TRACKER);
-        GlobalPos gPos = GlobalPosUtils.deserializeGlobalPos(tag);
-        if (gPos.getPos().getY() < 0 || !world.getDimension().getType().equals(gPos.getDimension())) {
+        if (helmetStack.isEmpty() || !NBTUtils.hasTag(helmetStack, NBT_COORD_TRACKER)) return null;
+        CompoundNBT tag = NBTUtils.getCompoundTag(helmetStack, NBT_COORD_TRACKER);
+        GlobalPos gPos = GlobalPosHelper.fromNBT(tag);
+        if (gPos.getPos().getY() < 0 || !GlobalPosHelper.isSameWorld(gPos, world)) {
             return null;
         }
         return gPos.getPos();
     }
 
     public static void setCoordTrackerPos(ItemStack helmetStack, GlobalPos gPos) {
-        NBTUtil.setCompoundTag(helmetStack, ItemPneumaticArmor.NBT_COORD_TRACKER, GlobalPosUtils.serializeGlobalPos(gPos));
+        NBTUtils.setCompoundTag(helmetStack, ItemPneumaticArmor.NBT_COORD_TRACKER, GlobalPosHelper.toNBT(gPos));
     }
 
     public static String getEntityFilter(ItemStack helmetStack) {
-        if (helmetStack.isEmpty() || !NBTUtil.hasTag(helmetStack, NBT_ENTITY_FILTER)) return "";
-        return NBTUtil.getString(helmetStack, NBT_ENTITY_FILTER);
+        if (helmetStack.isEmpty() || !NBTUtils.hasTag(helmetStack, NBT_ENTITY_FILTER)) return "";
+        return NBTUtils.getString(helmetStack, NBT_ENTITY_FILTER);
     }
 
     public static boolean isPlayerDebuggingEntity(PlayerEntity player, Entity e) {
         ItemStack helmet = player.getItemStackFromSlot(EquipmentSlotType.HEAD);
         return helmet.getItem() == ModItems.PNEUMATIC_HELMET.get()
-                && NBTUtil.getInteger(helmet, NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE) == e.getEntityId();
+                && NBTUtils.getInteger(helmet, NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE) == e.getEntityId();
     }
 
     @Override
@@ -348,6 +354,12 @@ public class ItemPneumaticArmor extends ArmorItem
         @Override
         public float getToughness() {
             return 1.0f;
+        }
+
+        @Override
+        public float getKnockbackResistance() {
+            // TODO: upgrades to improve knockback resistance ?
+            return 0;
         }
     }
 }

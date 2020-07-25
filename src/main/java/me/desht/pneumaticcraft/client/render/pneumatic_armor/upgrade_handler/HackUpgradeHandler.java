@@ -10,6 +10,7 @@ import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.util.text.TextFormatting;
@@ -25,17 +26,14 @@ public class HackUpgradeHandler implements IUpgradeRenderHandler {
 
     @Override
     public void tick(PlayerEntity player, int rangeUpgrades) {
-
     }
 
     @Override
     public void render3D(MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks) {
-
     }
 
     @Override
-    public void render2D(float partialTicks, boolean helmetEnabled) {
-
+    public void render2D(MatrixStack matrixStack, float partialTicks, boolean helmetEnabled) {
     }
 
     @Override
@@ -78,7 +76,7 @@ public class HackUpgradeHandler implements IUpgradeRenderHandler {
 
     public static void addKeybindTooltip(List<String> curInfo) {
         if (KeyHandler.getInstance().keybindHack.getKey().getKeyCode() != 0) {
-            curInfo.add(TextFormatting.GOLD + "Press [" + KeyHandler.getInstance().keybindHack.getLocalizedName() + "] to hack");
+            curInfo.add(TextFormatting.GOLD + "Press [" + I18n.format(KeyHandler.getInstance().keybindHack.getTranslationKey()) + "] to hack");
         }
     }
 }

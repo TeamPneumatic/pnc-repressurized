@@ -8,7 +8,7 @@ import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 
 import static me.desht.pneumaticcraft.common.entity.semiblock.EntityTransferGadget.EnumInputOutput;
@@ -36,7 +36,7 @@ public class RenderTransferGadget extends RenderSemiblockBase<EntityTransferGadg
         
         AxisAlignedBB aabb = entity.getBoundingBox();
         float[] cols = entity.getIOMode() == EnumInputOutput.OUTPUT ? OUTPUT_COLS : INPUT_COLS;
-        Vec3d offset = entity.renderingOffset;
+        Vector3d offset = entity.renderingOffset;
         if (entity.getTimeSinceHit() > 0) {
             wobble(entity, partialTicks, matrixStackIn);
         }

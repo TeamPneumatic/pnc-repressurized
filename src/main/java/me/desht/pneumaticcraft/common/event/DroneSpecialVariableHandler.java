@@ -25,7 +25,7 @@ public class DroneSpecialVariableHandler {
     }
 
     private BlockPos getPosForEntity(Entity entity) {
-        return new BlockPos(entity).offset(Direction.UP); //TODO 1.8 check what's with the offset
+        return entity.getPosition().offset(Direction.UP); //TODO 1.8 check what's with the offset
     }
 
     private BlockPos getPosForEntity(IDrone entity) {

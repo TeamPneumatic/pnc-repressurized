@@ -31,29 +31,29 @@ public class RangeLines {
         return pos;
     }
 
-    public void startRendering(double range) {
+    public void startRendering(float range) {
         rangeLinesTimer = 120;
 
         rangeLines.clear();
-        double r = range + 0.5D;
+        float r = range + 0.5F;
         for (int i = 0; i < range * 16 + 8; i++) {
             // Add the vertical lines of the walls
-            rangeLines.add(new ProgressingLine(-r + i / 8D, -r + 1, -r, -r + i / 8D, r + 1, -r));
-            rangeLines.add(new ProgressingLine(r - i / 8D, -r + 1, r, r - i / 8D, r + 1, r));
-            rangeLines.add(new ProgressingLine(-r, -r + 1, r - i / 8D, -r, r + 1, r - i / 8D));
-            rangeLines.add(new ProgressingLine(r, -r + 1, -r + i / 8D, r, r + 1, -r + i / 8D));
+            rangeLines.add(new ProgressingLine(-r + i / 8F, -r + 1, -r, -r + i / 8F, r + 1, -r));
+            rangeLines.add(new ProgressingLine(r - i / 8F, -r + 1, r, r - i / 8F, r + 1, r));
+            rangeLines.add(new ProgressingLine(-r, -r + 1, r - i / 8F, -r, r + 1, r - i / 8F));
+            rangeLines.add(new ProgressingLine(r, -r + 1, -r + i / 8F, r, r + 1, -r + i / 8F));
 
             // Add the horizontal lines of the walls
-            rangeLines.add(new ProgressingLine(-r, -r + i / 8D + 1, -r, -r, -r + i / 8D + 1, r));
-            rangeLines.add(new ProgressingLine(r, -r + i / 8D + 1, -r, r, -r + i / 8D + 1, r));
-            rangeLines.add(new ProgressingLine(-r, r - i / 8D + 1, -r, r, r - i / 8D + 1, -r));
-            rangeLines.add(new ProgressingLine(-r, -r + i / 8D + 1, r, r, -r + i / 8D + 1, r));
+            rangeLines.add(new ProgressingLine(-r, -r + i / 8F + 1, -r, -r, -r + i / 8F + 1, r));
+            rangeLines.add(new ProgressingLine(r, -r + i / 8F + 1, -r, r, -r + i / 8F + 1, r));
+            rangeLines.add(new ProgressingLine(-r, r - i / 8F + 1, -r, r, r - i / 8F + 1, -r));
+            rangeLines.add(new ProgressingLine(-r, -r + i / 8F + 1, r, r, -r + i / 8F + 1, r));
 
             // Add the roof and floor
-            rangeLines.add(new ProgressingLine(r - i / 8D, -r + 1, -r, r - i / 8D, -r + 1, r));
-            rangeLines.add(new ProgressingLine(r - i / 8D, r + 1, -r, r - i / 8D, r + 1, r));
-            rangeLines.add(new ProgressingLine(-r, -r + 1, -r + i / 8D, r, -r + 1, -r + i / 8D));
-            rangeLines.add(new ProgressingLine(-r, r + 1, -r + i / 8D, r, r + 1, -r + i / 8D));
+            rangeLines.add(new ProgressingLine(r - i / 8F, -r + 1, -r, r - i / 8F, -r + 1, r));
+            rangeLines.add(new ProgressingLine(r - i / 8F, r + 1, -r, r - i / 8F, r + 1, r));
+            rangeLines.add(new ProgressingLine(-r, -r + 1, -r + i / 8F, r, -r + 1, -r + i / 8F));
+            rangeLines.add(new ProgressingLine(-r, r + 1, -r + i / 8F, r, r + 1, -r + i / 8F));
 
         }
     }

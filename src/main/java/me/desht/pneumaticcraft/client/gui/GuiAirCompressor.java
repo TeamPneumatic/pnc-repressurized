@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.common.inventory.ContainerAirCompressor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAirCompressor;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -26,16 +26,16 @@ public class GuiAirCompressor extends GuiPneumaticContainerBase<ContainerAirComp
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(float opacity, int x, int y) {
-        super.drawGuiContainerBackgroundLayer(opacity, x, y);
+    protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int x, int y) {
+        super.drawGuiContainerBackgroundLayer(matrixStack, partialTicks, x, y);
 
-        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+//        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         int i1 = te.getBurnTimeRemainingScaled(12);
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
 
         if (te.burnTime >= te.curFuelUsage) {
-            blit(xStart + getFuelSlotXOffset(), yStart + 38 + 12 - i1, 176, 12 - i1, 14, i1 + 2);
+            blit(matrixStack, xStart + getFuelSlotXOffset(), yStart + 38 + 12 - i1, 176, 12 - i1, 14, i1 + 2);
         }
     }
 

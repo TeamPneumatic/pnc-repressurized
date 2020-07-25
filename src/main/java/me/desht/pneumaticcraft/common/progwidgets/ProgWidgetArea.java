@@ -132,12 +132,12 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     }
 
     public void addAreaTypeTooltip(List<ITextComponent> curTooltip) {
-        curTooltip.add(xlate("pneumaticcraft.gui.progWidget.area.type").appendText(type.getName()));
+        curTooltip.add(xlate("pneumaticcraft.gui.progWidget.area.type").append(xlate(type.getTranslationKey())));
 
         List<AreaTypeWidget> widgets = new ArrayList<>();
         type.addUIWidgets(widgets);
         for (AreaTypeWidget widget : widgets) {
-            curTooltip.add(xlate(widget.title).appendText(" ").appendText(widget.getCurValue()));
+            curTooltip.add(xlate(widget.title).appendString(" ").appendString(widget.getCurValue()));
         }
     }
 
@@ -245,7 +245,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
                 // 2) Programs using variables where we don't necessarily have the values at compile-time
                 IDroneBase drone = aiManager.getDrone();
                 Log.warning(String.format("Drone @ %s (DIM %s) was killed due to excessively large area (%d > %d). See 'I:maxProgrammingArea' in config.",
-                        drone.getDronePos().toString(), drone.world().getDimension().getType().toString(), size, maxSize));
+                        drone.getDronePos().toString(), drone.world().func_234923_W_().func_240901_a_().toString(), size, maxSize));
                 drone.overload("areaTooLarge", maxSize);
                 return;
             }

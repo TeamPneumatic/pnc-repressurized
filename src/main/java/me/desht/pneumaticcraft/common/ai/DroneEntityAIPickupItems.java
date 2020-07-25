@@ -86,7 +86,7 @@ public class DroneEntityAIPickupItems extends Goal {
     @Override
     public boolean shouldContinueExecuting() {
         if (!curPickingUpEntity.isAlive()) return false;
-        if (curPickingUpEntity.getPositionVector().squareDistanceTo(drone.getDronePos()) < 4) {
+        if (curPickingUpEntity.getPositionVec().squareDistanceTo(drone.getDronePos()) < 4) {
             ItemStack stack = curPickingUpEntity.getItem();
             if (itemPickupWidget.isItemValidForFilters(stack)) {
                 tryPickupItem(drone, curPickingUpEntity);

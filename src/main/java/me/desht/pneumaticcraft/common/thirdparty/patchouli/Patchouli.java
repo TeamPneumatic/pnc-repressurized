@@ -9,6 +9,7 @@ import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.Direction;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -16,7 +17,11 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.config.ModConfig;
 import vazkii.patchouli.api.IMultiblock;
 import vazkii.patchouli.api.IStateMatcher;
+import vazkii.patchouli.api.IVariable;
 import vazkii.patchouli.api.PatchouliAPI;
+
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 import static net.minecraft.state.properties.BlockStateProperties.FACING;
@@ -121,5 +126,11 @@ public class Patchouli implements IThirdParty, IDocsProvider {
     @Override
     public ThirdPartyManager.ModType modType() {
         return ThirdPartyManager.ModType.DOCUMENTATION;
+    }
+
+    static class Util {
+        static IVariable getStacks(Ingredient ingr) {
+            return IVariable.wrapList(Arrays.stream(ingr.getMatchingStacks()).map(IVariable::from).collect(Collectors.toList()));
+        }
     }
 }

@@ -60,7 +60,7 @@ public interface IUpgradeRenderHandler {
      * @param helmetEnabled true when isEnabled() returned true earlier. Can be used to close AnimatedStats for instance.
      *                      However this is already handled if you return an AnimatedStat in getAnimatedStat().
      */
-    void render2D(float partialTicks, boolean helmetEnabled);
+    void render2D(MatrixStack matrixStack, float partialTicks, boolean helmetEnabled);
 
     /**
      * You can return a {@link IGuiAnimatedStat} here, that the HUD Handler will pick up and render. It also
@@ -151,7 +151,7 @@ public interface IUpgradeRenderHandler {
         }
 
         @Override
-        public void render2D(float partialTicks, boolean helmetEnabled) {
+        public void render2D(MatrixStack matrixStack, float partialTicks, boolean helmetEnabled) {
         }
 
         @Override

@@ -4,7 +4,7 @@ import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.client.gui.GuiGPSTool;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModSounds;
-import me.desht.pneumaticcraft.common.util.NBTUtil;
+import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
@@ -39,7 +39,7 @@ public class ItemGPSTool extends Item implements IPositionProvider {
         BlockPos pos = ctx.getPos();
         setGPSLocation(ctx.getPlayer().getHeldItem(ctx.getHand()), pos);
         if (!ctx.getWorld().isRemote)
-            ctx.getPlayer().sendStatusMessage(new TranslationTextComponent("pneumaticcraft.message.gps_tool.targetSet" ,pos.getX(), pos.getY(), pos.getZ()).applyTextStyle(TextFormatting.GREEN), false);
+            ctx.getPlayer().sendStatusMessage(new TranslationTextComponent("pneumaticcraft.message.gps_tool.targetSet" ,pos.getX(), pos.getY(), pos.getZ()).mergeStyle(TextFormatting.GREEN), false);
         ctx.getPlayer().playSound(ModSounds.CHIRP.get(), 1.0f, 1.5f);
         return ActionResultType.SUCCESS; // we don't want to use the item.
     }
@@ -62,7 +62,7 @@ public class ItemGPSTool extends Item implements IPositionProvider {
             int y = compound.getInt("y");
             int z = compound.getInt("z");
             if (x != 0 || y != 0 || z != 0) {
-                infoList.add(new StringTextComponent("Set to " + x + ", " + y + ", " + z).applyTextStyle(TextFormatting.GREEN));
+                infoList.add(new StringTextComponent("Set to " + x + ", " + y + ", " + z).mergeStyle(TextFormatting.GREEN));
             }
             String varName = getVariable(stack);
             if (!varName.equals("")) {
@@ -88,31 +88,34 @@ public class ItemGPSTool extends Item implements IPositionProvider {
         CompoundNBT compound = gpsTool.getTag();
         if (compound != null) {
             String var = getVariable(gpsTool);
-            if (!var.equals("") && world != null && !world.isRemote) {
+            if (!var.isEmpty() && world != null && !world.isRemote) {
                 BlockPos pos = GlobalVariableManager.getInstance().getPos(var);
                 setGPSLocation(gpsTool, pos);
             }
-            int x = compound.getInt("x");
-            int y = compound.getInt("y");
-            int z = compound.getInt("z");
-            if (x != 0 || y != 0 || z != 0) {
-                return new BlockPos(x, y, z);
-            } else {
-                return null;
-            }
+            BlockPos pos = net.minecraft.nbt.NBTUtil.readBlockPos(compound.getCompound("Pos"));
+            return pos.equals(BlockPos.ZERO) ? null : pos;
+//            int x = compound.getInt("x");
+//            int y = compound.getInt("y");
+//            int z = compound.getInt("z");
+//            if (x != 0 || y != 0 || z != 0) {
+//                return new BlockPos(x, y, z);
+//            } else {
+//                return null;
+//            }
         } else {
             return null;
         }
     }
 
     public static void setGPSLocation(ItemStack gpsTool, BlockPos pos) {
-        NBTUtil.setPos(gpsTool, pos);
+        gpsTool.getOrCreateTag().put("Pos", net.minecraft.nbt.NBTUtil.writeBlockPos(pos));
+//        NBTUtil.setPos(gpsTool, pos);
         String var = getVariable(gpsTool);
         if (!var.equals("")) GlobalVariableManager.getInstance().set(var, pos);
     }
 
     public static void setVariable(ItemStack gpsTool, String variable) {
-        NBTUtil.setString(gpsTool, "variable", variable);
+        NBTUtils.setString(gpsTool, "variable", variable);
     }
 
     public static String getVariable(ItemStack gpsTool) {

@@ -4,7 +4,7 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -19,7 +19,7 @@ public class PacketSetEntityMotion extends LocationDoublePacket {
     public PacketSetEntityMotion() {
     }
 
-    public PacketSetEntityMotion(Entity entity, Vec3d motion) {
+    public PacketSetEntityMotion(Entity entity, Vector3d motion) {
         super(motion);
         entityId = entity.getEntityId();
     }
@@ -40,8 +40,8 @@ public class PacketSetEntityMotion extends LocationDoublePacket {
             Entity entity = ClientUtils.getClientWorld().getEntityByID(entityId);
             if (entity != null) {
                 entity.setMotion(x, y, z);
-                entity.onGround = false;
-                entity.collided = false;
+                entity.setOnGround(false);
+//                entity.collided = false;
                 entity.collidedHorizontally = false;
                 entity.collidedVertically = false;
                 if (entity instanceof LivingEntity) ((LivingEntity) entity).setJumping(true);

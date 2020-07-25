@@ -12,6 +12,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -86,11 +87,11 @@ public class ProgWidgetEntityRightClick extends ProgWidget implements IAreaProvi
                 visitedEntities.add(targetedEntity);
                 boolean activated = false;
                 ItemStack stack = drone.getInv().getStackInSlot(0);
-                if (stack.getItem().itemInteractionForEntity(stack, drone.getFakePlayer(), targetedEntity, Hand.MAIN_HAND)) {
+                if (stack.getItem().itemInteractionForEntity(stack, drone.getFakePlayer(), targetedEntity, Hand.MAIN_HAND) == ActionResultType.SUCCESS) {
                     activated = true;
                 }
                 if (!activated && targetedEntity instanceof AgeableEntity
-                        && ((AgeableEntity) targetedEntity).processInteract(drone.getFakePlayer(), Hand.MAIN_HAND)) {
+                        && targetedEntity.processInitialInteract(drone.getFakePlayer(), Hand.MAIN_HAND) == ActionResultType.SUCCESS) {
                     activated = true;
                 }
                 return false;//return activated; <-- will right click as long as it's sucessfully activated.

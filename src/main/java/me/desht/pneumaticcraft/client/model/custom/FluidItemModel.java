@@ -11,11 +11,11 @@ import me.desht.pneumaticcraft.client.render.fluid.TankRenderInfo;
 import me.desht.pneumaticcraft.common.item.IFluidRendered;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.TransformationMatrix;
 import net.minecraft.client.renderer.model.*;
 import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.VertexFormatElement;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
@@ -24,8 +24,8 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.util.math.vector.TransformationMatrix;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.client.model.IModelConfiguration;
 import net.minecraftforge.client.model.IModelLoader;
 import net.minecraftforge.client.model.PerspectiveMapWrapper;
@@ -73,27 +73,27 @@ public class FluidItemModel implements IDynamicBakedModel {
             float bz2 = (float) (bounds.maxZ * 16);
 
             if (info.shouldRender(Direction.DOWN)) {
-                List<Vec3d> vecs = ImmutableList.of(new Vec3d(bounds.maxX, bounds.minY, bounds.minZ), new Vec3d(bounds.maxX, bounds.minY, bounds.maxZ), new Vec3d(bounds.minX, bounds.minY, bounds.maxZ), new Vec3d(bounds.minX, bounds.minY, bounds.minZ));
+                List<Vector3d> vecs = ImmutableList.of(new Vector3d(bounds.maxX, bounds.minY, bounds.minZ), new Vector3d(bounds.maxX, bounds.minY, bounds.maxZ), new Vector3d(bounds.minX, bounds.minY, bounds.maxZ), new Vector3d(bounds.minX, bounds.minY, bounds.minZ));
                 res.add(createQuad(vecs, cols, still, Direction.DOWN, bx1, bx2, bz1, bz2));
             }
             if (info.shouldRender(Direction.UP)) {
-                List<Vec3d> vecs = ImmutableList.of(new Vec3d(bounds.minX, bounds.maxY, bounds.minZ), new Vec3d(bounds.minX, bounds.maxY, bounds.maxZ), new Vec3d(bounds.maxX, bounds.maxY, bounds.maxZ), new Vec3d(bounds.maxX, bounds.maxY, bounds.minZ));
+                List<Vector3d> vecs = ImmutableList.of(new Vector3d(bounds.minX, bounds.maxY, bounds.minZ), new Vector3d(bounds.minX, bounds.maxY, bounds.maxZ), new Vector3d(bounds.maxX, bounds.maxY, bounds.maxZ), new Vector3d(bounds.maxX, bounds.maxY, bounds.minZ));
                 res.add(createQuad(vecs, cols, still, Direction.UP, bx1, bx2, bz1, bz2));
             }
             if (info.shouldRender(Direction.NORTH)) {
-                List<Vec3d> vecs = ImmutableList.of(new Vec3d(bounds.maxX, bounds.maxY, bounds.minZ), new Vec3d(bounds.maxX, bounds.minY, bounds.minZ), new Vec3d(bounds.minX, bounds.minY, bounds.minZ), new Vec3d(bounds.minX, bounds.maxY, bounds.minZ));
+                List<Vector3d> vecs = ImmutableList.of(new Vector3d(bounds.maxX, bounds.maxY, bounds.minZ), new Vector3d(bounds.maxX, bounds.minY, bounds.minZ), new Vector3d(bounds.minX, bounds.minY, bounds.minZ), new Vector3d(bounds.minX, bounds.maxY, bounds.minZ));
                 res.add(createQuad(vecs, cols, still, Direction.NORTH, bx1, bx2, by1, by2));
             }
             if (info.shouldRender(Direction.SOUTH)) {
-                List<Vec3d> vecs = ImmutableList.of(new Vec3d(bounds.minX, bounds.maxY, bounds.maxZ), new Vec3d(bounds.minX, bounds.minY, bounds.maxZ), new Vec3d(bounds.maxX, bounds.minY, bounds.maxZ), new Vec3d(bounds.maxX, bounds.maxY, bounds.maxZ));
+                List<Vector3d> vecs = ImmutableList.of(new Vector3d(bounds.minX, bounds.maxY, bounds.maxZ), new Vector3d(bounds.minX, bounds.minY, bounds.maxZ), new Vector3d(bounds.maxX, bounds.minY, bounds.maxZ), new Vector3d(bounds.maxX, bounds.maxY, bounds.maxZ));
                 res.add(createQuad(vecs, cols, still, Direction.SOUTH, bx1, bx2, by1, by2));
             }
             if (info.shouldRender(Direction.WEST)) {
-                List<Vec3d> vecs = ImmutableList.of(new Vec3d(bounds.minX, bounds.maxY, bounds.minZ), new Vec3d(bounds.minX, bounds.minY, bounds.minZ), new Vec3d(bounds.minX, bounds.minY, bounds.maxZ), new Vec3d(bounds.minX, bounds.maxY, bounds.maxZ));
+                List<Vector3d> vecs = ImmutableList.of(new Vector3d(bounds.minX, bounds.maxY, bounds.minZ), new Vector3d(bounds.minX, bounds.minY, bounds.minZ), new Vector3d(bounds.minX, bounds.minY, bounds.maxZ), new Vector3d(bounds.minX, bounds.maxY, bounds.maxZ));
                 res.add(createQuad(vecs, cols, still, Direction.WEST, bz1, bz2, by1, by2));
             }
             if (info.shouldRender(Direction.EAST)) {
-                List<Vec3d> vecs = ImmutableList.of(new Vec3d(bounds.maxX, bounds.maxY, bounds.maxZ), new Vec3d(bounds.maxX, bounds.minY, bounds.maxZ), new Vec3d(bounds.maxX, bounds.minY, bounds.minZ), new Vec3d(bounds.maxX, bounds.maxY, bounds.minZ));
+                List<Vector3d> vecs = ImmutableList.of(new Vector3d(bounds.maxX, bounds.maxY, bounds.maxZ), new Vector3d(bounds.maxX, bounds.minY, bounds.maxZ), new Vector3d(bounds.maxX, bounds.minY, bounds.minZ), new Vector3d(bounds.maxX, bounds.maxY, bounds.minZ));
                 res.add(createQuad(vecs, cols, still, Direction.EAST, bz1, bz2, by1, by2));
             }
         }
@@ -112,9 +112,9 @@ public class FluidItemModel implements IDynamicBakedModel {
         return new AxisAlignedBB(tankBounds.minX, y1, tankBounds.minZ, tankBounds.maxX, y2, tankBounds.maxZ);
     }
 
-    private BakedQuad createQuad(List<Vec3d> vecs, float[] cols, TextureAtlasSprite sprite, Direction face, float u1, float u2, float v1, float v2) {
+    private BakedQuad createQuad(List<Vector3d> vecs, float[] cols, TextureAtlasSprite sprite, Direction face, float u1, float u2, float v1, float v2) {
         BakedQuadBuilder builder = new BakedQuadBuilder(sprite);
-        Vec3d normal = new Vec3d(face.getDirectionVec());
+        Vector3d normal = Vector3d.copy(face.getDirectionVec());
         putVertex(builder, normal, vecs.get(0).x, vecs.get(0).y, vecs.get(0).z, u1, v1, sprite, cols);
         putVertex(builder, normal, vecs.get(1).x, vecs.get(1).y, vecs.get(1).z, u1, v2, sprite, cols);
         putVertex(builder, normal, vecs.get(2).x, vecs.get(2).y, vecs.get(2).z, u2, v2, sprite, cols);
@@ -123,7 +123,7 @@ public class FluidItemModel implements IDynamicBakedModel {
         return builder.build();
     }
 
-    private void putVertex(BakedQuadBuilder builder, Vec3d normal,
+    private void putVertex(BakedQuadBuilder builder, Vector3d normal,
                            double x, double y, double z, float u, float v, TextureAtlasSprite sprite, float[] col) {
         ImmutableList<VertexFormatElement> elements = builder.getVertexFormat().getElements().asList();
         for (int e = 0; e < elements.size(); e++) {
@@ -206,12 +206,12 @@ public class FluidItemModel implements IDynamicBakedModel {
         }
 
         @Override
-        public IBakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<Material, TextureAtlasSprite> spriteGetter, IModelTransform modelTransform, ItemOverrideList overrides, ResourceLocation modelLocation) {
+        public IBakedModel bake(IModelConfiguration owner, ModelBakery bakery, Function<RenderMaterial, TextureAtlasSprite> spriteGetter, IModelTransform modelTransform, ItemOverrideList overrides, ResourceLocation modelLocation) {
             return new FluidItemModel(baseModel.bakeModel(bakery, baseModel.parent, spriteGetter, modelTransform, modelLocation, true), PerspectiveMapWrapper.getTransforms(baseModel.getAllTransforms()));
         }
 
         @Override
-        public Collection<Material> getTextures(IModelConfiguration owner, Function<ResourceLocation, IUnbakedModel> modelGetter, Set<Pair<String, String>> missingTextureErrors) {
+        public Collection<RenderMaterial> getTextures(IModelConfiguration owner, Function<ResourceLocation, IUnbakedModel> modelGetter, Set<Pair<String, String>> missingTextureErrors) {
             return baseModel.getTextures(modelGetter, missingTextureErrors);
         }
     }
@@ -239,7 +239,7 @@ public class FluidItemModel implements IDynamicBakedModel {
 
         @Nullable
         @Override
-        public IBakedModel getModelWithOverrides(IBakedModel original, ItemStack stack, @Nullable World world, @Nullable LivingEntity entity) {
+        public IBakedModel func_239290_a_(IBakedModel original, ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
             if (stack.getItem() instanceof IFluidRendered) {
                 IFluidItemRenderInfoProvider infoProvider = ((IFluidRendered) stack.getItem()).getFluidItemRenderer();
                 modelIn.tanksToRender = infoProvider.getTanksToRender(stack);

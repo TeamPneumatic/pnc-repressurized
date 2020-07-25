@@ -11,6 +11,7 @@ import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
@@ -124,8 +125,9 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements IRe
     }
 
     @Override
-    public void read(CompoundNBT tag) {
-        super.read(tag);
+    public void read(BlockState state, CompoundNBT tag) {
+        super.read(state, tag);
+
         vacuumHandler.deserializeNBT(tag.getCompound("vacuum"));
         turning = tag.getBoolean("turning");
         redstoneMode = tag.getInt(NBTKeys.NBT_REDSTONE_MODE);
@@ -143,7 +145,7 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements IRe
     public void printManometerMessage(PlayerEntity player, List<ITextComponent> curInfo) {
         String input = PneumaticCraftUtils.roundNumberTo(airHandler.getPressure(), 1);
         String vac = PneumaticCraftUtils.roundNumberTo(vacuumHandler.getPressure(), 1);
-        curInfo.add(xlate("pneumaticcraft.message.vacuum_pump.manometer", input, vac).applyTextStyle(TextFormatting.GREEN));
+        curInfo.add(xlate("pneumaticcraft.message.vacuum_pump.manometer", input, vac).mergeStyle(TextFormatting.GREEN));
     }
 
     @Override

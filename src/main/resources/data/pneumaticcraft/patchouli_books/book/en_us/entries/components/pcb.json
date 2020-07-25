@@ -36,7 +36,7 @@
     },
     {
       "type": "pneumaticcraft:assembly_system",
-      "item": "pneumaticcraft:unassembled_pcb"
+      "recipe": "pneumaticcraft:assembly/unassembled_pcb"
     },
     {
       "type": "crafting",

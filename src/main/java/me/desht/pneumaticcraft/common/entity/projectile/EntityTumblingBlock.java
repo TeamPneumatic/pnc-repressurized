@@ -55,14 +55,15 @@ public class EntityTumblingBlock extends ThrowableEntity {
         super(ModEntities.TUMBLING_BLOCK.get(), worldIn);
         Validate.isTrue(!stack.isEmpty() && stack.getItem() instanceof BlockItem);
 
-        owner = thrower;
+        setShooter(thrower);
+//        owner = thrower;
         this.preventEntitySpawning = true;
         this.setPosition(x, y + (double)((1.0F - this.getHeight()) / 2.0F), z);
         this.setMotion(0, 0, 0);
         this.prevPosX = x;
         this.prevPosY = y;
         this.prevPosZ = z;
-        this.setOrigin(new BlockPos(this));
+        this.setOrigin(getPosition());
         dataManager.set(STATE_STACK, stack);
     }
 
@@ -77,8 +78,9 @@ public class EntityTumblingBlock extends ThrowableEntity {
         dataManager.register(STATE_STACK, ItemStack.EMPTY);
     }
 
+    // shoot()
     @Override
-    public void shoot(Entity entityThrower, float rotationPitchIn, float rotationYawIn, float pitchOffset, float velocity, float inaccuracy) {
+    public void func_234612_a_(Entity entityThrower, float rotationPitchIn, float rotationYawIn, float pitchOffset, float velocity, float inaccuracy) {
         // velocities etc. get set up in TileEntityAirCannon#launchEntity()
     }
 
@@ -109,7 +111,7 @@ public class EntityTumblingBlock extends ThrowableEntity {
         super.tick();  // handles nearly all of the in-flight logic
 
         if (!world.isRemote) {
-            BlockPos blockpos1 = new BlockPos(this);
+            BlockPos blockpos1 = getPosition(); //new BlockPos(this);
             if (!onGround && (ticksExisted > 100 && (blockpos1.getY() < 1 || blockpos1.getY() > 256) || ticksExisted > 600)) {
                 dropAsItem();
                 remove();
@@ -138,16 +140,17 @@ public class EntityTumblingBlock extends ThrowableEntity {
         }
         BlockPos pos0 = brtr.getPos();
         Direction face = brtr.getFace();
-        PlayerEntity placer = getThrower() instanceof PlayerEntity ? (PlayerEntity) getThrower() : getFakePlayer();
+        // func_234616_v_ = getThrower
+        PlayerEntity placer = func_234616_v_() instanceof PlayerEntity ? (PlayerEntity) func_234616_v_() : getFakePlayer();
         BlockState state = world.getBlockState(pos0);
         BlockItemUseContext ctx = new LocalBlockItemUseContext(new ItemUseContext(placer, Hand.MAIN_HAND, brtr));
         BlockPos pos = state.isReplaceable(ctx) ? pos0 : pos0.offset(face);
 
         if (world.getBlockState(pos).isReplaceable(ctx)) {
-            BlockSnapshot snapshot = BlockSnapshot.getBlockSnapshot(world, pos);
+            BlockSnapshot snapshot = BlockSnapshot.create(world, pos);
             if (!ForgeEventFactory.onBlockPlace(placer, snapshot, face)) {
                 ActionResultType res = ((BlockItem) stack.getItem()).tryPlace(ctx);
-                return res == ActionResultType.SUCCESS;
+                return res == ActionResultType.SUCCESS || res == ActionResultType.CONSUME;
             }
         }
         return false;

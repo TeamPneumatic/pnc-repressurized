@@ -2,11 +2,14 @@ package me.desht.pneumaticcraft.common.util;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.Entity;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.fluid.IFluidState;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.ICollisionReader;
 import net.minecraft.world.World;
@@ -16,6 +19,8 @@ import net.minecraft.world.chunk.EmptyChunk;
 import net.minecraft.world.chunk.IChunk;
 
 import javax.annotation.Nullable;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 /**
  * Like a Region, but should be OK to use get a cache from a different thread (since we go through
@@ -80,6 +85,11 @@ public class ChunkCache implements ICollisionReader {
         return this.getChunk(chunkX, chunkZ);
     }
 
+    @Override
+    public Stream<VoxelShape> func_230318_c_(@Nullable Entity p_230318_1_, AxisAlignedBB p_230318_2_, Predicate<Entity> p_230318_3_) {
+        return Stream.empty();
+    }
+
     @Nullable
     @Override
     public TileEntity getTileEntity(BlockPos pos) {
@@ -98,7 +108,7 @@ public class ChunkCache implements ICollisionReader {
     }
 
     @Override
-    public IFluidState getFluidState(BlockPos pos) {
+    public FluidState getFluidState(BlockPos pos) {
         if (World.isOutsideBuildHeight(pos)) {
             return Fluids.EMPTY.getDefaultState();
         } else {

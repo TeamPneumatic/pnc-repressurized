@@ -8,6 +8,7 @@ import me.desht.pneumaticcraft.common.inventory.ContainerGasLift;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
+import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -15,8 +16,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.fluid.IFluidState;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.BlockItem;
@@ -45,12 +46,18 @@ public class TileEntityGasLift extends TileEntityPneumaticBase
         implements IMinWorkingPressure, IRedstoneControlled, ISerializableTanks, IAutoFluidEjecting, INamedContainerProvider {
     private static final int INVENTORY_SIZE = 1;
 
-    public enum Status {
+    public enum Status implements ITranslatableEnum {
         IDLE("idling"), PUMPING("pumping"), DIGGING("diggingDown"), RETRACTING("retracting"), STUCK("stuck");
 
-        public final String desc;
+        private final String desc;
+
         Status(String desc) {
             this.desc = desc;
+        }
+
+        @Override
+        public String getTranslationKey() {
+            return "pneumaticcraft.gui.tab.status.gasLift.action." + desc;
         }
     }
 
@@ -207,7 +214,7 @@ public class TileEntityGasLift extends TileEntityPneumaticBase
     private boolean suckLiquid() {
         BlockPos pos = getPos().offset(Direction.DOWN, currentDepth + 1);
 
-        IFluidState fluidState = world.getFluidState(pos);
+        FluidState fluidState = world.getFluidState(pos);
         if (fluidState.getFluid() == Fluids.EMPTY) {
             pumpingLake = null;
             return false;
@@ -300,8 +307,8 @@ public class TileEntityGasLift extends TileEntityPneumaticBase
     }
 
     @Override
-    public void read(CompoundNBT tag) {
-        super.read(tag);
+    public void read(BlockState state, CompoundNBT tag) {
+        super.read(state, tag);
 
         inventory.deserializeNBT(tag.getCompound("Items"));
         redstoneMode = tag.getByte(NBTKeys.NBT_REDSTONE_MODE);

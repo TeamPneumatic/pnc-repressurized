@@ -111,14 +111,15 @@ public class TileEntityDroneInterface extends TileEntity implements ITickableTil
 
 
     @Override
-    public void handleUpdateTag(CompoundNBT tag) {
-        super.handleUpdateTag(tag);
+    public void handleUpdateTag(BlockState state, CompoundNBT tag) {
+        super.handleUpdateTag(state, tag);
         droneId = tag.getInt("drone");
     }
 
     @Override
     public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
-        handleUpdateTag(pkt.getNbtCompound());
+//        handleUpdateTag(pkt.getNbtCompound());
+        droneId = pkt.getNbtCompound().getInt("drone");
     }
 
     private EntityDrone validateAndGetDrone() {
@@ -688,7 +689,7 @@ public class TileEntityDroneInterface extends TileEntity implements ITickableTil
             @Override
             public Object[] call(Object[] args) {
                 requireNoArgs(args);
-                return new Object[]{validateAndGetDrone().getOwnerName()};
+                return new Object[]{validateAndGetDrone().getOwnerName().getString()};
             }
         });
 

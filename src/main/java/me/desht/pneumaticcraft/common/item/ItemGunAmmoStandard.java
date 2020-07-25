@@ -5,7 +5,7 @@ import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
-import me.desht.pneumaticcraft.common.util.NBTUtil;
+import me.desht.pneumaticcraft.common.util.NBTUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
@@ -52,7 +52,7 @@ public class ItemGunAmmoStandard extends ItemGunAmmo {
     public static void setPotion(ItemStack ammo, ItemStack potion) {
         CompoundNBT tag = new CompoundNBT();
         potion.write(tag);
-        NBTUtil.setCompoundTag(ammo, "potion", tag);
+        NBTUtils.setCompoundTag(ammo, "potion", tag);
     }
 
     @Override
@@ -96,7 +96,7 @@ public class ItemGunAmmoStandard extends ItemGunAmmo {
             } else if (potion.getItem() instanceof LingeringPotionItem) {
                 extra = " " + I18n.format("pneumaticcraft.gui.tooltip.gunAmmo.lingering");
             }
-            infoList.add(xlate("pneumaticcraft.gui.tooltip.gunAmmo").appendText(" " + potionInfo.get(0).getFormattedText() + extra));
+            infoList.add(xlate("pneumaticcraft.gui.tooltip.gunAmmo").appendString(" ").append(potionInfo.get(0)).appendString(extra));
         } else {
             infoList.add(xlate("pneumaticcraft.gui.tooltip.gunAmmo.combineWithPotion"));
         }

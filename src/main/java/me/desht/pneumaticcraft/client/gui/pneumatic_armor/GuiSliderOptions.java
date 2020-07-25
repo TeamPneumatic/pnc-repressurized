@@ -12,6 +12,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.fml.client.gui.widget.Slider;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -38,9 +39,9 @@ public abstract class GuiSliderOptions<T extends IUpgradeRenderHandler> extends 
      */
     protected abstract String getTagName();
 
-    protected abstract String getPrefix();
+    protected abstract ITextComponent getPrefix();
 
-    protected abstract String getSuffix();
+    protected abstract ITextComponent getSuffix();
 
     EquipmentSlotType getSlot() {
         return getUpgradeHandler().getEquipmentSlot();

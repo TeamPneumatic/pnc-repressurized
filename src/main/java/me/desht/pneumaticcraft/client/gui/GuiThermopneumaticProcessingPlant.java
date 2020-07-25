@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
@@ -50,7 +50,7 @@ public class GuiThermopneumaticProcessingPlant extends
 
         dumpButton = new WidgetButtonExtended(guiLeft + 12, guiTop + 86, 18, 20, "").withTag("dump");
         dumpButton.setRenderedIcon(Textures.GUI_RIGHT_ARROW);
-        dumpButton.setTooltipText(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.thermopneumatic.moveInput")));
+        dumpButton.setTooltipText(PneumaticCraftUtils.splitStringComponent(I18n.format("pneumaticcraft.gui.thermopneumatic.moveInput")));
         addButton(dumpButton);
 
         nExposedFaces = HeatUtil.countExposedFaces(Collections.singletonList(te));
@@ -70,32 +70,31 @@ public class GuiThermopneumaticProcessingPlant extends
 
         if (hasShiftDown()) {
             dumpButton.setRenderedIcon(Textures.GUI_X_BUTTON);
-            dumpButton.setTooltipText(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.thermopneumatic.dumpInput")));
+            dumpButton.setTooltipText(PneumaticCraftUtils.splitStringComponent(I18n.format("pneumaticcraft.gui.thermopneumatic.dumpInput")));
         } else {
             dumpButton.setRenderedIcon(Textures.GUI_RIGHT_ARROW);
-            dumpButton.setTooltipText(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.thermopneumatic.moveInput")));
+            dumpButton.setTooltipText(PneumaticCraftUtils.splitStringComponent(I18n.format("pneumaticcraft.gui.thermopneumatic.moveInput")));
         }
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(float partialTicks, int x, int y) {
-        super.drawGuiContainerBackgroundLayer(partialTicks, x, y);
+    protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int x, int y) {
+        super.drawGuiContainerBackgroundLayer(matrixStack, partialTicks, x, y);
 
         // animated progress bar
         double progress = te.getCraftingPercentage();
         int progressWidth = (int) (progress * 48);
         bindGuiTexture();
-        blit(guiLeft + 30, guiTop + 36, xSize, 0, progressWidth, 30);
+        blit(matrixStack, guiLeft + 30, guiTop + 36, xSize, 0, progressWidth, 30);
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(int x, int y) {
-        String containerName = title.getFormattedText();
-        RenderSystem.pushMatrix();
-        RenderSystem.scaled(0.95, 1.0, 1);
-        font.drawString(containerName, xSize / 2f - font.getStringWidth(containerName) / 2.1f , 5, 0x404040);
-        RenderSystem.popMatrix();
-        super.drawGuiContainerForegroundLayer(x, y);
+    protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int x, int y) {
+        matrixStack.push();
+        matrixStack.scale(0.95f, 1f, 1f);
+        font.func_238422_b_(matrixStack, title, xSize / 2f - font.func_238414_a_(title) / 2.1f , 5, 0x404040);
+        matrixStack.pop();
+        super.drawGuiContainerForegroundLayer(matrixStack, x, y);
 
     }
 

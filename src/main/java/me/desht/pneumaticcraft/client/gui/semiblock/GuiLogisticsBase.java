@@ -34,6 +34,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
 public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumaticContainerBase<ContainerLogistics, TileEntityBase> {
     protected final L logistics;
     private GuiItemSearcher itemSearchGui;
@@ -66,18 +68,18 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
             fluidSearchGui = null;
         }
 
-        String invisibleText = I18n.format("pneumaticcraft.gui.logistics_frame.invisible");
+        ITextComponent invisibleText = xlate("pneumaticcraft.gui.logistics_frame.invisible");
         WidgetCheckBox invisible;
-        addButton(invisible = new WidgetCheckBox(guiLeft + xSize - 18 - font.getStringWidth(invisibleText), guiTop + 16, 0xFF404040, invisibleText, b -> {
+        addButton(invisible = new WidgetCheckBox(guiLeft + xSize - 18 - font.func_238414_a_(invisibleText), guiTop + 16, 0xFF404040, invisibleText, b -> {
             logistics.setSemiblockInvisible(b.checked);
             syncToServer();
         }).setChecked(logistics.isSemiblockInvisible()));
 
-        invisible.setTooltip(PneumaticCraftUtils.splitString(
-                I18n.format("pneumaticcraft.gui.logistics_frame.invisible.tooltip"), 40));
+        invisible.setTooltip(PneumaticCraftUtils.splitStringComponent(
+                I18n.format("pneumaticcraft.gui.logistics_frame.invisible.tooltip")));
 
-        addButton(itemLabel = new WidgetLabel(guiLeft + 8, guiTop + 18, ""));
-        addButton(fluidLabel = new WidgetLabel(guiLeft + 8, guiTop + 90, ""));
+        addButton(itemLabel = new WidgetLabel(guiLeft + 8, guiTop + 18, StringTextComponent.EMPTY));
+        addButton(fluidLabel = new WidgetLabel(guiLeft + 8, guiTop + 90, StringTextComponent.EMPTY));
         updateLabels();
 
         IntStream.range(0, EntityLogisticsFrame.FLUID_FILTER_SLOTS).forEach(i -> {
@@ -112,9 +114,9 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
     }
 
     private void updateLabels() {
-        String s = logistics.isWhiteList() ? "" : TextFormatting.STRIKETHROUGH.toString();
-        itemLabel.setMessage(s + I18n.format(String.format("pneumaticcraft.gui.%s.itemFilters", logistics.getId().getPath())));
-        fluidLabel.setMessage(s + I18n.format(String.format("pneumaticcraft.gui.%s.fluidFilters", logistics.getId().getPath())));
+        TextFormatting s = logistics.isWhiteList() ? TextFormatting.RESET : TextFormatting.STRIKETHROUGH;
+        itemLabel.setMessage(xlate(String.format("pneumaticcraft.gui.%s.itemFilters", logistics.getId().getPath())).mergeStyle(s));
+        fluidLabel.setMessage(xlate(String.format("pneumaticcraft.gui.%s.fluidFilters", logistics.getId().getPath())).mergeStyle(s));
     }
 
     private void syncToServer() {
@@ -134,36 +136,36 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
     }
 
     private void addFilterTab() {
-        WidgetAnimatedStat filterTab = addAnimatedStat("pneumaticcraft.gui.logistics_frame.filter_settings",
+        WidgetAnimatedStat filterTab = addAnimatedStat(xlate("pneumaticcraft.gui.logistics_frame.filter_settings"),
                 new ItemStack(Blocks.COBWEB), 0xFF106010, false);
         filterTab.addPadding(logistics.supportsBlacklisting() ? 8 : 6, 28);
 
-        WidgetCheckBox matchDurability = new WidgetCheckBox(5, 20, 0xFFFFFFFF, I18n.format("pneumaticcraft.gui.logistics_frame.matchDurability"), b -> {
+        WidgetCheckBox matchDurability = new WidgetCheckBox(5, 20, 0xFFFFFFFF, xlate("pneumaticcraft.gui.logistics_frame.matchDurability"), b -> {
             logistics.setMatchDurability(b.checked);
             syncToServer();
         })
-                .setTooltip(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.logistics_frame.matchDurability.tooltip"), 40))
+                .setTooltip(PneumaticCraftUtils.splitStringComponent(I18n.format("pneumaticcraft.gui.logistics_frame.matchDurability.tooltip")))
                 .setChecked(logistics.isMatchDurability());
         filterTab.addSubWidget(matchDurability);
 
-        WidgetCheckBox matchNBT = new WidgetCheckBox(5, 36, 0xFFFFFFFF, I18n.format("pneumaticcraft.gui.logistics_frame.matchNBT"), b -> {
+        WidgetCheckBox matchNBT = new WidgetCheckBox(5, 36, 0xFFFFFFFF, xlate("pneumaticcraft.gui.logistics_frame.matchNBT"), b -> {
             logistics.setMatchNBT(b.checked);
             syncToServer();
         })
-                .setTooltip(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.logistics_frame.matchNBT.tooltip"), 40))
+                .setTooltip(PneumaticCraftUtils.splitStringComponent(I18n.format("pneumaticcraft.gui.logistics_frame.matchNBT.tooltip")))
                 .setChecked(logistics.isMatchNBT());
         filterTab.addSubWidget(matchNBT);
 
-        WidgetCheckBox matchModId = new WidgetCheckBox(5, 52, 0xFFFFFFFF, I18n.format("pneumaticcraft.gui.logistics_frame.matchModId"), b -> {
+        WidgetCheckBox matchModId = new WidgetCheckBox(5, 52, 0xFFFFFFFF, xlate("pneumaticcraft.gui.logistics_frame.matchModId"), b -> {
             logistics.setMatchModId(b.checked);
             syncToServer();
         })
-                .setTooltip(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.logistics_frame.matchModId.tooltip"), 40))
+                .setTooltip(PneumaticCraftUtils.splitStringComponent(I18n.format("pneumaticcraft.gui.logistics_frame.matchModId.tooltip")))
                 .setChecked(logistics.isMatchModId());
         filterTab.addSubWidget(matchModId);
 
         if (logistics.supportsBlacklisting()) {
-            WidgetCheckBox whitelist = new WidgetCheckBox(5, 73, 0xFFFFFFFF, I18n.format("pneumaticcraft.gui.logistics_frame.whitelist"), b -> {
+            WidgetCheckBox whitelist = new WidgetCheckBox(5, 73, 0xFFFFFFFF, xlate("pneumaticcraft.gui.logistics_frame.whitelist"), b -> {
                 logistics.setWhiteList(b.checked);
                 updateLabels();
                 syncToServer();
@@ -173,33 +175,31 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
     }
 
     private void addFacingTab() {
-        facingTab = addAnimatedStat("", new ItemStack(Items.MAP), 0xFFC0C0C0, false);
+        facingTab = addAnimatedStat(StringTextComponent.EMPTY, new ItemStack(Items.MAP), 0xFFC0C0C0, false);
         facingTab.addPadding(8, 18);
 
-        facingTab.addSubWidget(facingButtons[0] = new WidgetButtonExtended(15, 62, 20, 20, "D",
-                b -> setFace(Direction.DOWN)));
-        facingTab.addSubWidget(facingButtons[1] = new WidgetButtonExtended(15, 20, 20, 20, "U",
-                b -> setFace(Direction.UP)));
-        facingTab.addSubWidget(facingButtons[2] = new WidgetButtonExtended(36, 20, 20, 20, "N",
-                b -> setFace(Direction.NORTH)));
-        facingTab.addSubWidget(facingButtons[3] = new WidgetButtonExtended(36, 62, 20, 20, "S",
-                b -> setFace(Direction.SOUTH)));
-        facingTab.addSubWidget(facingButtons[4] = new WidgetButtonExtended(15, 41, 20, 20, "W",
-                b -> setFace(Direction.WEST)));
-        facingTab.addSubWidget(facingButtons[5] = new WidgetButtonExtended(57, 41, 20, 20, "E",
-                b -> setFace(Direction.EAST)));
+        addDirButton(0, 15, 62, "D");
+        addDirButton(1, 15, 20, "U");
+        addDirButton(2, 36, 20, "N");
+        addDirButton(3, 36, 62, "S");
+        addDirButton(4, 15, 41, "W");
+        addDirButton(5, 57, 41, "E");
 
-        facingTab.addSubWidget(new WidgetButtonExtended(36, 41, 20, 20, "")
-                .setTooltipText(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.logistics_frame.facing.tooltip")))
+        facingTab.addSubWidget(new WidgetButtonExtended(36, 41, 20, 20, StringTextComponent.EMPTY)
+                .setTooltipText(PneumaticCraftUtils.splitStringComponent(I18n.format("pneumaticcraft.gui.logistics_frame.facing.tooltip")))
                 .setRenderedIcon(Textures.GUI_INFO_LOCATION)
                 .setVisible(false)
         );
         updateFacing();
     }
 
+    private void addDirButton(int i, int x, int y, String label) {
+        facingTab.addSubWidget(facingButtons[i] = new WidgetButtonExtended(x, y, 20, 20, new StringTextComponent(label)));
+    }
+
     private void updateFacing() {
         String s = logistics.getFacing() == null ? "-" : ClientUtils.translateDirection(logistics.getFacing());
-        facingTab.setTitle(I18n.format("pneumaticcraft.gui.logistics_frame.facing", s));
+        facingTab.setMessage(xlate("pneumaticcraft.gui.logistics_frame.facing", s));
         for (Direction face : Direction.values()) {
             facingButtons[face.getIndex()].active = face != logistics.getFacing();
         }

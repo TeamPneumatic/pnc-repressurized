@@ -45,7 +45,7 @@ public class BlockSentryTurret extends BlockPneumaticCraft {
         CompoundNBT tag = stack.getChildTag(NBTKeys.BLOCK_ENTITY_TAG);
         if (tag != null && tag.contains(TileEntitySentryTurret.NBT_ENTITY_FILTER, Constants.NBT.TAG_STRING)) {
             curInfo.add(new TranslationTextComponent("pneumaticcraft.gui.entityFilter")
-                    .appendText(": " + tag.getString(TileEntitySentryTurret.NBT_ENTITY_FILTER)).applyTextStyle(TextFormatting.YELLOW));
+                    .appendString(": " + tag.getString(TileEntitySentryTurret.NBT_ENTITY_FILTER)).mergeStyle(TextFormatting.YELLOW));
         }
     }
 

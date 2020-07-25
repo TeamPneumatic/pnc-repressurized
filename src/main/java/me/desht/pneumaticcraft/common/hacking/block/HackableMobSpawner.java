@@ -55,7 +55,7 @@ public class HackableMobSpawner implements IHackableBlock {
             if (te != null) {
                 te.write(tag);
                 tag.putShort("RequiredPlayerRange", (short) 0);
-                te.read(tag);
+                te.read(te.getBlockState(), tag);
                 BlockState state = world.getBlockState(pos);
                 world.notifyBlockUpdate(pos, state, state, 3);
             }

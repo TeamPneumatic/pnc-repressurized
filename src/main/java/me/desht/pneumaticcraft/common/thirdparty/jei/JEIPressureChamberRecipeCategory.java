@@ -1,8 +1,9 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.api.crafting.recipe.PressureChamberRecipe;
-import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer;
+import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer2D;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -18,10 +19,13 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class JEIPressureChamberRecipeCategory implements IRecipeCategory<PressureChamberRecipe> {
     private final String localizedName;
@@ -80,15 +84,15 @@ public class JEIPressureChamberRecipeCategory implements IRecipeCategory<Pressur
         recipeLayout.getItemStacks().addTooltipCallback((slotIndex, input, ingredient, tooltip) -> {
             String tooltipKey = recipe.getTooltipKey(input, slotIndex);
             if (!tooltipKey.isEmpty()) {
-                tooltip.addAll(PneumaticCraftUtils.splitString(I18n.format(tooltipKey)));
+                tooltip.addAll(PneumaticCraftUtils.splitStringComponent(I18n.format(tooltipKey)));
             }
         });
     }
 
     @Override
-    public void draw(PressureChamberRecipe recipe, double mouseX, double mouseY) {
+    public void draw(PressureChamberRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
         float pressure = recipe.getCraftingPressure() * ((float) tickTimer.getValue() / tickTimer.getMaxValue());
-        PressureGaugeRenderer.drawPressureGauge(Minecraft.getInstance().fontRenderer, -1, PneumaticValues.MAX_PRESSURE_PRESSURE_CHAMBER, PneumaticValues.DANGER_PRESSURE_PRESSURE_CHAMBER, recipe.getCraftingPressure(), pressure, 120, 27);
+        PressureGaugeRenderer2D.drawPressureGauge(matrixStack, Minecraft.getInstance().fontRenderer, -1, PneumaticValues.MAX_PRESSURE_PRESSURE_CHAMBER, PneumaticValues.DANGER_PRESSURE_PRESSURE_CHAMBER, recipe.getCraftingPressure(), pressure, 120, 27);
     }
 
     @Override
@@ -97,9 +101,9 @@ public class JEIPressureChamberRecipeCategory implements IRecipeCategory<Pressur
     }
 
     @Override
-    public List<String> getTooltipStrings(PressureChamberRecipe recipe, double mouseX, double mouseY) {
+    public List<ITextComponent> getTooltipStrings(PressureChamberRecipe recipe, double mouseX, double mouseY) {
         if (mouseX >= 100 && mouseY >= 7 && mouseX <= 140 && mouseY <= 47) {
-            return ImmutableList.of(I18n.format("pneumaticcraft.gui.tooltip.pressure", recipe.getCraftingPressure()));
+            return ImmutableList.of(xlate("pneumaticcraft.gui.tooltip.pressure", recipe.getCraftingPressure()));
         }
         return Collections.emptyList();
     }

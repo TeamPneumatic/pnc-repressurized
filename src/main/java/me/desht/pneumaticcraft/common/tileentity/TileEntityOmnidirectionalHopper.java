@@ -9,6 +9,7 @@ import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -178,8 +179,9 @@ public class TileEntityOmnidirectionalHopper extends TileEntityAbstractHopper {
     }
 
     @Override
-    public void read(CompoundNBT tag) {
-        super.read(tag);
+    public void read(BlockState state, CompoundNBT tag) {
+        super.read(state, tag);
+
         itemHandler.deserializeNBT(tag.getCompound("Items"));
         roundRobin = tag.getBoolean("RoundRobin");
         rrSlot = tag.getInt("RRSlot");

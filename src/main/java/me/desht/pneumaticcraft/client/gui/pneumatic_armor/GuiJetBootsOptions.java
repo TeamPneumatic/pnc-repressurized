@@ -14,6 +14,10 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiJetBootsOptions extends GuiSliderOptions<JetBootsUpgradeHandler> {
     private WidgetKeybindCheckBox checkBox;
@@ -29,7 +33,8 @@ public class GuiJetBootsOptions extends GuiSliderOptions<JetBootsUpgradeHandler>
         checkBox = new WidgetKeybindCheckBox(5, 45, 0xFFFFFFFF, "jetboots.module.builderMode", b -> setBuilderMode(b.checked));
         gui.addWidget(checkBox);
 
-        gui.addWidget(new WidgetButtonExtended(30, 128, 150, 20, "Move Stat Screen...", b -> {
+        gui.addWidget(new WidgetButtonExtended(30, 128, 150, 20,
+                xlate("pneumaticcraft.armor.gui.misc.moveStatScreen"), b -> {
             Minecraft.getInstance().player.closeScreen();
             Minecraft.getInstance().displayGuiScreen(new GuiMoveStat(getUpgradeHandler(), ArmorHUDLayout.LayoutTypes.JET_BOOTS));
         }));
@@ -61,13 +66,13 @@ public class GuiJetBootsOptions extends GuiSliderOptions<JetBootsUpgradeHandler>
     }
 
     @Override
-    protected String getPrefix() {
-        return "Power: ";
+    protected ITextComponent getPrefix() {
+        return new StringTextComponent("Power: ");
     }
 
     @Override
-    protected String getSuffix() {
-        return "%";
+    protected ITextComponent getSuffix() {
+        return new StringTextComponent("%");
     }
 
 }

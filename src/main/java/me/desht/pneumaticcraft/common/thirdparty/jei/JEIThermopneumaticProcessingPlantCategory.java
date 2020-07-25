@@ -1,9 +1,10 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange.TemperatureScale;
 import me.desht.pneumaticcraft.api.crafting.recipe.ThermoPlantRecipe;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
-import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer;
+import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer2D;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -20,9 +21,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.util.*;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class JEIThermopneumaticProcessingPlantCategory implements IRecipeCategory<ThermoPlantRecipe> {
     private final String localizedName;
@@ -116,30 +120,30 @@ public class JEIThermopneumaticProcessingPlantCategory implements IRecipeCategor
     }
 
     @Override
-    public void draw(ThermoPlantRecipe recipe, double mouseX, double mouseY) {
+    public void draw(ThermoPlantRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
         if (recipe.getRequiredPressure() != 0) {
             float pressure = recipe.getRequiredPressure() * ((float) tickTimer.getValue() / tickTimer.getMaxValue());
-            PressureGaugeRenderer.drawPressureGauge(Minecraft.getInstance().fontRenderer, -1, PneumaticValues.MAX_PRESSURE_TIER_ONE, PneumaticValues.DANGER_PRESSURE_TIER_ONE, recipe.getRequiredPressure(), pressure, 141, 42);
+            PressureGaugeRenderer2D.drawPressureGauge(matrixStack, Minecraft.getInstance().fontRenderer, -1, PneumaticValues.MAX_PRESSURE_TIER_ONE, PneumaticValues.DANGER_PRESSURE_TIER_ONE, recipe.getRequiredPressure(), pressure, 141, 42);
         }
 
         if (!recipe.getOperatingTemperature().isAny()) {
             WidgetTemperature w = tempWidgets.computeIfAbsent(recipe.getId(),
                     id -> WidgetTemperature.fromOperatingRange(100, 12, recipe.getOperatingTemperature()));
             w.setTemperature(w.getTotalRange().getMin() + (w.getTotalRange().getMax() - w.getTotalRange().getMin()) * tickTimer.getValue() / tickTimer.getMaxValue());
-            w.render((int) mouseX, (int) mouseY, 0f);
+            w.render(matrixStack, (int) mouseX, (int) mouseY, 0f);
         }
-        progressBar.draw(25, 20);
+        progressBar.draw(matrixStack, 25, 20);
     }
 
     @Override
-    public List<String> getTooltipStrings(ThermoPlantRecipe recipe, double mouseX, double mouseY) {
-        List<String> res = new ArrayList<>();
+    public List<ITextComponent> getTooltipStrings(ThermoPlantRecipe recipe, double mouseX, double mouseY) {
+        List<ITextComponent> res = new ArrayList<>();
         WidgetTemperature w = tempWidgets.get(recipe.getId());
         if (w != null && w.isMouseOver(mouseX, mouseY)) {
-            res.add(HeatUtil.formatHeatString(recipe.getOperatingTemperature().asString(TemperatureScale.CELSIUS)).getFormattedText());
+            res.add(HeatUtil.formatHeatString(recipe.getOperatingTemperature().asString(TemperatureScale.CELSIUS)));
         }
         if (recipe.getRequiredPressure() > 0 && mouseX >= 116 && mouseY >= 22 && mouseX <= 156 && mouseY <= 62) {
-            res.add(I18n.format("pneumaticcraft.gui.tooltip.pressure", recipe.getRequiredPressure()));
+            res.add(xlate("pneumaticcraft.gui.tooltip.pressure", recipe.getRequiredPressure()));
         }
         return res;
     }

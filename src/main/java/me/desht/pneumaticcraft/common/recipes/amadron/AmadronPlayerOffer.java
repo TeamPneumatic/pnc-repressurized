@@ -2,15 +2,13 @@ package me.desht.pneumaticcraft.common.recipes.amadron;
 
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.types.JsonOps;
 import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
 import me.desht.pneumaticcraft.common.DroneRegistry;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketAmadronTradeNotifyDeal;
 import me.desht.pneumaticcraft.common.network.PacketUtil;
-import me.desht.pneumaticcraft.common.util.GlobalPosUtils;
+import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
@@ -190,7 +188,7 @@ public class AmadronPlayerOffer extends AmadronOffer {
     TileEntity getProvidingTileEntity() {
         if (cachedInput == null || cachedInput.isRemoved()) {
             if (providingPos != null) {
-                cachedInput = GlobalPosUtils.getTileEntity(providingPos);
+                cachedInput = GlobalPosHelper.getTileEntity(providingPos);
             }
         }
         return cachedInput;
@@ -199,7 +197,7 @@ public class AmadronPlayerOffer extends AmadronOffer {
     TileEntity getReturningTileEntity() {
         if (cachedOutput == null || cachedOutput.isRemoved()) {
             if (returningPos != null) {
-                cachedOutput = GlobalPosUtils.getTileEntity(returningPos);
+                cachedOutput = GlobalPosHelper.getTileEntity(returningPos);
             }
         }
         return cachedOutput;
@@ -251,10 +249,10 @@ public class AmadronPlayerOffer extends AmadronOffer {
         json.addProperty("inStock", inStock);
         json.addProperty("pendingPayments", pendingPayments);
         if (providingPos != null) {
-            json.add("providingPos", providingPos.serialize(JsonOps.INSTANCE));
+            json.add("providingPos", GlobalPosHelper.toJson(providingPos));
         }
         if (returningPos != null) {
-            json.add("returningPos", returningPos.serialize(JsonOps.INSTANCE));
+            json.add("returningPos", GlobalPosHelper.toJson(returningPos));
         }
         return json;
     }
@@ -266,10 +264,10 @@ public class AmadronPlayerOffer extends AmadronOffer {
         custom.inStock = json.get("inStock").getAsInt();
         custom.pendingPayments = json.get("pendingPayments").getAsInt();
         if (json.has("providingPos")) {
-            custom.providingPos = GlobalPos.deserialize(new Dynamic<>(JsonOps.INSTANCE, json.get("providingPos")));
+            custom.providingPos = GlobalPosHelper.fromJson(json.get("providingPos").getAsJsonObject());
         }
         if (json.has("returningPos")) {
-            custom.returningPos = GlobalPos.deserialize(new Dynamic<>(JsonOps.INSTANCE, json.get("returningPos")));
+            custom.returningPos = GlobalPosHelper.fromJson(json.get("returningPos").getAsJsonObject());
         }
         return custom;
     }

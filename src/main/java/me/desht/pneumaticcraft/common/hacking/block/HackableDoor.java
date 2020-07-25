@@ -23,7 +23,7 @@ public class HackableDoor implements IHackableBlock {
 
     @Override
     public boolean canHack(IBlockReader world, BlockPos pos, PlayerEntity player) {
-        return world.getBlockState(pos).has(getOpenProperty());
+        return world.getBlockState(pos).hasProperty(getOpenProperty());
     }
 
     @Override

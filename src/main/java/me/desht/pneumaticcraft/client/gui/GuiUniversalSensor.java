@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.universal_sensor.ISensorSetting;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
@@ -27,6 +27,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.glfw.GLFW;
 
@@ -71,9 +72,9 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
 
-        sensorInfoStat = addAnimatedStat("Sensor Info", new ItemStack(ModBlocks.UNIVERSAL_SENSOR.get()), 0xFFFFAA00, false);
+        sensorInfoStat = addAnimatedStat(new StringTextComponent("Sensor Info"), new ItemStack(ModBlocks.UNIVERSAL_SENSOR.get()), 0xFFFFAA00, false);
 
-        nameFilterField = new TextFieldWidget(font, xStart + 70, yStart + 58, 98, 10, "");
+        nameFilterField = new TextFieldWidget(font, xStart + 70, yStart + 58, 98, 10, StringTextComponent.EMPTY);
         nameFilterField.setText(te.getText(0));
         nameFilterField.setResponder(s -> sendDelayed(5));
         addButton(nameFilterField);
@@ -82,11 +83,11 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(int x, int y) {
-        super.drawGuiContainerForegroundLayer(x, y);
+    protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int x, int y) {
+        super.drawGuiContainerForegroundLayer(matrixStack, x, y);
 
         if (maxPage > 1) {
-            font.drawString(page + "/" + maxPage, 110, 46 + 22 * MAX_SENSORS_PER_PAGE, 0x404040);
+            font.drawString(matrixStack, page + "/" + maxPage, 110, 46 + 22 * MAX_SENSORS_PER_PAGE, 0x404040);
         }
 
         String[] folders = te.getSensorSetting().split("/");
@@ -94,23 +95,23 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
             Set<EnumUpgrade> requiredUpgrades = SensorHandler.getInstance().getRequiredStacksFromText(folders[0]);
             int curX = 92;
             for (EnumUpgrade upgrade : requiredUpgrades) {
-                GuiUtils.drawItemStack(upgrade.getItemStack(), curX, 20);
+                GuiUtils.renderItemStack(matrixStack, upgrade.getItemStack(), curX, 20);
                 curX += 18;
             }
         } else {
             int xSpace = xSize - 96;
             int size = font.getStringWidth(folders[folders.length - 1]);
-            RenderSystem.pushMatrix();
-            RenderSystem.translated(92, 24, 0);
+            matrixStack.push();
+            matrixStack.translate(92, 24, 0);
             if (size > xSpace) {
-                RenderSystem.scaled((float)xSpace / (float)size, 1, 1);
+                matrixStack.scale((float)xSpace / (float)size, 1, 1);
             }
-            font.drawString(folders[folders.length - 1], 0, 0, 0x4040A0);
-            RenderSystem.popMatrix();
+            font.drawString(matrixStack, folders[folders.length - 1], 0, 0, 0x4040A0);
+            matrixStack.pop();
         }
 
         if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {
-            GuiUtils.showPopupHelpScreen(this, font,
+            GuiUtils.showPopupHelpScreen(matrixStack, this, font,
                     PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.entityFilter.helpText"), 60));
         }
     }
@@ -132,14 +133,15 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(float opacity, int x, int y) {
-        super.drawGuiContainerBackgroundLayer(opacity, x, y);
+    protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float opacity, int x, int y) {
+        super.drawGuiContainerBackgroundLayer(matrixStack, opacity, x, y);
 
         ISensorSetting sensor = SensorHandler.getInstance().getSensorFromPath(te.getSensorSetting());
         if (sensor != null) {
-            RenderSystem.translated(guiLeft, guiTop, 0);
-            sensor.drawAdditionalInfo(font);
-            RenderSystem.translated(-guiLeft, -guiTop, 0);
+            matrixStack.push();
+            matrixStack.translate(guiLeft, guiTop, 0);
+            sensor.drawAdditionalInfo(matrixStack, font);
+            matrixStack.pop();
         }
     }
 
@@ -213,7 +215,7 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
         boolean textboxEnabled = sensor != null && sensor.needsTextBox();
         nameFilterField.setVisible(textboxEnabled);
         if (textboxEnabled) {
-            setFocused(nameFilterField);
+            setListener(nameFilterField);
         }
         nameFilterField.setFocused2(textboxEnabled);
     }

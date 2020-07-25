@@ -36,55 +36,54 @@ public class ItemManometer extends ItemPressurizable {
         if (world.isRemote) return ActionResultType.PASS;
 
         return stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).map(h -> {
-            if (h.getPressure() > 0.1F) {
-                TileEntity te = world.getTileEntity(context.getPos());
-
-                List<ITextComponent> curInfo = new ArrayList<>();
-                te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, side)
-                        .ifPresent(teAirHandler -> teAirHandler.printManometerMessage(player, curInfo));
-
-                if (te instanceof IManoMeasurable) {
-                    ((IManoMeasurable) te).printManometerMessage(player, curInfo);
-                }
-
-                te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY)
-                        .ifPresent(exchanger -> curInfo.add(HeatUtil.formatHeatString(exchanger.getTemperatureAsInt())));
-                for (Direction d : Direction.VALUES) {
-                    te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY, d)
-                            .ifPresent(exchanger -> curInfo.add(HeatUtil.formatHeatString(exchanger.getTemperatureAsInt())));
-                }
-
-                if (curInfo.size() > 0) {
-                    h.addAir(-30);
-                    curInfo.forEach(s -> player.sendStatusMessage(s, false));
-                }
-                return ActionResultType.SUCCESS;
-            } else {
-                player.sendStatusMessage(xlate("pneumaticcraft.message.misc.outOfAir", stack.getDisplayName().getFormattedText()).applyTextStyles(TextFormatting.RED), true);
+            if (h.getAir() < PneumaticValues.USAGE_ITEM_MANOMETER) {
+                player.sendStatusMessage(xlate("pneumaticcraft.message.misc.outOfAir", stack.getDisplayName()).mergeStyle(TextFormatting.RED), true);
                 return ActionResultType.FAIL;
             }
+            TileEntity te = world.getTileEntity(context.getPos());
+
+            List<ITextComponent> curInfo = new ArrayList<>();
+            te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, side)
+                    .ifPresent(teAirHandler -> teAirHandler.printManometerMessage(player, curInfo));
+
+            if (te instanceof IManoMeasurable) {
+                ((IManoMeasurable) te).printManometerMessage(player, curInfo);
+            }
+
+            te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY)
+                    .ifPresent(exchanger -> curInfo.add(HeatUtil.formatHeatString(exchanger.getTemperatureAsInt())));
+            for (Direction d : Direction.VALUES) {
+                te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY, d)
+                        .ifPresent(exchanger -> curInfo.add(HeatUtil.formatHeatString(exchanger.getTemperatureAsInt())));
+            }
+
+            if (curInfo.size() > 0) {
+                h.addAir(-PneumaticValues.USAGE_ITEM_MANOMETER);
+                curInfo.forEach(s -> player.sendStatusMessage(s, false));
+            }
+            return ActionResultType.SUCCESS;
         }).orElse(ActionResultType.PASS);
     }
 
     @Override
-    public boolean itemInteractionForEntity(ItemStack iStack, PlayerEntity player, LivingEntity entity, Hand hand) {
+    public ActionResultType itemInteractionForEntity(ItemStack iStack, PlayerEntity player, LivingEntity entity, Hand hand) {
         if (!player.world.isRemote) {
             if (entity instanceof IManoMeasurable) {
                 return iStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).map(h -> {
-                    if (h.getPressure() > 0.1F) {
-                        List<ITextComponent> curInfo = new ArrayList<>();
-                        ((IManoMeasurable) entity).printManometerMessage(player, curInfo);
-                        if (curInfo.size() > 0) {
-                            h.addAir(-30);
-                            curInfo.forEach(s -> player.sendStatusMessage(s, false));
-                        }
-                    } else {
-                        player.sendStatusMessage(xlate("pneumaticcraft.message.misc.outOfAir", iStack.getDisplayName().getFormattedText()).applyTextStyles(TextFormatting.RED), true);
+                    if (h.getAir() < PneumaticValues.USAGE_ITEM_MANOMETER) {
+                        player.sendStatusMessage(xlate("pneumaticcraft.message.misc.outOfAir", iStack.getDisplayName()).mergeStyle(TextFormatting.RED), true);
+                        return ActionResultType.FAIL;
                     }
-                    return true;
-                }).orElse(false);
+                    List<ITextComponent> curInfo = new ArrayList<>();
+                    ((IManoMeasurable) entity).printManometerMessage(player, curInfo);
+                    if (curInfo.size() > 0) {
+                        h.addAir(-PneumaticValues.USAGE_ITEM_MANOMETER);
+                        curInfo.forEach(s -> player.sendStatusMessage(s, false));
+                    }
+                    return ActionResultType.SUCCESS;
+                }).orElse(ActionResultType.PASS);
             }
         }
-        return false;
+        return ActionResultType.PASS;
     }
 }

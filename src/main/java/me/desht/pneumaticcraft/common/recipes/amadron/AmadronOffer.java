@@ -18,6 +18,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class AmadronOffer extends AmadronRecipe {
@@ -59,7 +60,7 @@ public class AmadronOffer extends AmadronRecipe {
 
     @Override
     public String getVendor() {
-        return xlate("pneumaticcraft.gui.amadron").getFormattedText();
+        return xlate("pneumaticcraft.gui.amadron").getString();
     }
 
     public int getStock() {
@@ -104,6 +105,8 @@ public class AmadronOffer extends AmadronRecipe {
 
         return object;
     }
+
+    private static final String AMADRON_TYPE = RL("amadron").toString();
 
     public static AmadronOffer fromJson(ResourceLocation id, JsonObject json) throws CommandSyntaxException {
         return new AmadronOffer(id,

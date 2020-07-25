@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.client.util.ProgressingLine;
 import me.desht.pneumaticcraft.common.core.ModItems;
@@ -39,13 +40,14 @@ public class NetworkConnectionPlayerHandler extends NetworkConnectionHandler {
     }
 
     @Override
-    public void render() {
-        super.render();
+    public void render(MatrixStack matrixStack) {
+        super.render(matrixStack);
+
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         RenderSystem.color4f(1, 1, 1, 0.5F);
         for (GuiStatBalloon balloon : balloons) {
-            balloon.render();
+            balloon.render(matrixStack);
         }
         RenderSystem.disableBlend();
     }

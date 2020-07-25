@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
@@ -49,7 +50,8 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer,TileEntityProgrammer> {
     private GuiPastebin pastebinGui;
@@ -123,7 +125,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         }
 
         Rectangle2d bounds = getProgrammerBounds();
-        programmerUnit = new GuiUnitProgrammer(te.progWidgets, font, guiLeft, guiTop, width, height,
+        programmerUnit = new GuiUnitProgrammer(te.progWidgets, guiLeft, guiTop, width, height,
                 bounds, te.translatedX, te.translatedY, te.zoomState);
         addButton(programmerUnit.getScrollBar());
 
@@ -135,7 +137,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         int yBottom = getProgrammerBounds().getY() + getProgrammerBounds().getHeight() + 3; // 171 or 427
 
         importButton = new WidgetButtonExtended(xStart + xRight + 2, yStart + 3, 20, 15, GuiConstants.ARROW_LEFT).withTag("import");
-        importButton.setTooltipText(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.programmer.button.import"), 40));
+        importButton.setTooltipText(PneumaticCraftUtils.splitStringComponent(I18n.format("pneumaticcraft.gui.programmer.button.import"), 40));
         addButton(importButton);
 
         exportButton = new WidgetButtonExtended(xStart + xRight + 2, yStart + 20, 20, 15, GuiConstants.ARROW_RIGHT).withTag("export");
@@ -145,7 +147,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         addButton(new WidgetButtonExtended(xStart + xRight + 34, yStart + yBottom, 13, 10, GuiConstants.TRIANGLE_RIGHT, b -> adjustPage(1)));
 
         allWidgetsButton = new WidgetButtonExtended(xStart + xRight + 22, yStart + yBottom - 16, 10, 10, GuiConstants.TRIANGLE_UP_LEFT, b -> toggleShowWidgets());
-        allWidgetsButton.setTooltipText(I18n.format("pneumaticcraft.gui.programmer.button.openPanel.tooltip"));
+        allWidgetsButton.setTooltipText(xlate("pneumaticcraft.gui.programmer.button.openPanel.tooltip"));
         addButton(allWidgetsButton);
 
         difficultyButtons = new ArrayList<>();
@@ -156,23 +158,23 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
             addButton(dButton);
             difficultyButtons.add(dButton);
             dButton.otherChoices = difficultyButtons;
-            dButton.setTooltip(I18n.format("pneumaticcraft.gui.programmer.difficulty." + difficulty.toString().toLowerCase() + ".tooltip"));
+            dButton.setTooltip(xlate("pneumaticcraft.gui.programmer.difficulty." + difficulty.toString().toLowerCase() + ".tooltip"));
         }
 
         addButton(new WidgetButtonExtended(xStart + 5, yStart + yBottom + 4, 87, 20,
                 I18n.format("pneumaticcraft.gui.programmer.button.showStart"), b -> gotoStart())
-                .setTooltipText(I18n.format("pneumaticcraft.gui.programmer.button.showStart.tooltip")));
+                .setTooltipText(xlate("pneumaticcraft.gui.programmer.button.showStart.tooltip")));
         addButton(new WidgetButtonExtended(xStart + 5, yStart + yBottom + 26, 87, 20,
                 I18n.format("pneumaticcraft.gui.programmer.button.showLatest"), b -> gotoLatest())
-                .setTooltipText(I18n.format("pneumaticcraft.gui.programmer.button.showLatest.tooltip")));
+                .setTooltipText(xlate("pneumaticcraft.gui.programmer.button.showLatest.tooltip")));
         addButton(showInfo = new WidgetCheckBox(xStart + 5, yStart + yBottom + 49, 0xFF404040,
-                "pneumaticcraft.gui.programmer.checkbox.showInfo").setChecked(te.showInfo));
+                xlate("pneumaticcraft.gui.programmer.checkbox.showInfo")).setChecked(te.showInfo));
         addButton(showFlow = new WidgetCheckBox(xStart + 5, yStart + yBottom + 61, 0xFF404040,
-                "pneumaticcraft.gui.programmer.checkbox.showFlow").setChecked(te.showFlow));
+                xlate("pneumaticcraft.gui.programmer.checkbox.showFlow")).setChecked(te.showFlow));
 
         WidgetButtonExtended pastebinButton = new WidgetButtonExtended(guiLeft - 24, guiTop + 44, 20, 20, "",
                 b -> pastebin());
-        pastebinButton.setTooltipText(I18n.format("pneumaticcraft.gui.remote.button.pastebinButton"));
+        pastebinButton.setTooltipText(xlate("pneumaticcraft.gui.remote.button.pastebinButton"));
         pastebinButton.setRenderedIcon(Textures.GUI_PASTEBIN_ICON_LOCATION);
         addButton(pastebinButton);
 
@@ -185,16 +187,16 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         redoButton.setRenderedIcon(Textures.GUI_REDO_ICON_LOCATION);
         clearAllButton.setRenderedIcon(Textures.GUI_DELETE_ICON_LOCATION);
 
-        undoButton.setTooltipText(I18n.format("pneumaticcraft.gui.programmer.button.undoButton.tooltip"));
-        redoButton.setTooltipText(I18n.format("pneumaticcraft.gui.programmer.button.redoButton.tooltip"));
-        clearAllButton.setTooltipText(I18n.format("pneumaticcraft.gui.programmer.button.clearAllButton.tooltip"));
+        undoButton.setTooltipText(xlate("pneumaticcraft.gui.programmer.button.undoButton.tooltip"));
+        redoButton.setTooltipText(xlate("pneumaticcraft.gui.programmer.button.redoButton.tooltip"));
+        clearAllButton.setTooltipText(xlate("pneumaticcraft.gui.programmer.button.clearAllButton.tooltip"));
 
         addButton(undoButton);
         addButton(redoButton);
         addButton(clearAllButton);
         addButton(convertToRelativeButton);
 
-        addLabel(title.getFormattedText(), guiLeft + 7, guiTop + 5, 0xFF404040);
+        addLabel(title, guiLeft + 7, guiTop + 5, 0xFF404040);
 
         nameField = new WidgetTextField(font, guiLeft + xRight - 99, guiTop + 5, 98, font.FONT_HEIGHT);
         nameField.setResponder(s -> updateDroneName());
@@ -205,8 +207,8 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
 
         addButton(filterField);
 
-        String name = I18n.format("pneumaticcraft.gui.programmer.name");
-        addLabel(name, guiLeft + xRight - 102 - font.getStringWidth(name), guiTop + 5, 0xFF404040);
+        ITextComponent name = xlate("pneumaticcraft.gui.programmer.name");
+        addLabel(name, guiLeft + xRight - 102 - font.func_238414_a_(name), guiTop + 5, 0xFF404040);
 
         updateVisibleProgWidgets();
 
@@ -324,9 +326,12 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         updateVisibleProgWidgets();
     }
 
+    private static final ITextComponent TDR = new StringTextComponent(GuiConstants.TRIANGLE_DOWN_RIGHT);
+    private static final ITextComponent TUL = new StringTextComponent(GuiConstants.TRIANGLE_UP_LEFT);
+
     private void toggleShowWidgets() {
         showingAllWidgets = !showingAllWidgets;
-        allWidgetsButton.setMessage(showingAllWidgets ? GuiConstants.TRIANGLE_DOWN_RIGHT : GuiConstants.TRIANGLE_UP_LEFT);
+        allWidgetsButton.setMessage(showingAllWidgets ? TDR : TUL);
         updateVisibleProgWidgets();
         filterField.setFocused2(showingAllWidgets);
     }
@@ -383,18 +388,18 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(int x, int y) {
-        super.drawGuiContainerForegroundLayer(x, y);
+    protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int x, int y) {
+        super.drawGuiContainerForegroundLayer(matrixStack, x, y);
 
         int xRight = getProgrammerBounds().getX() + getProgrammerBounds().getWidth(); // 299 or 649
         int yBottom = getProgrammerBounds().getY() + getProgrammerBounds().getHeight(); // 171 or 427
 
         String str = widgetPage + 1 + "/" + maxPage;
-        font.drawString(str, xRight + (22 - font.getStringWidth(str) / 2f), yBottom + 4, 0xFF404040);
-        font.drawString(I18n.format("pneumaticcraft.gui.programmer.difficulty"), xRight - 36, yBottom + 20, 0xFF404040);
+        font.drawString(matrixStack, str, xRight + 22 - font.getStringWidth(str) / 2, yBottom + 4, 0x404040);
+        font.func_238422_b_(matrixStack, xlate("pneumaticcraft.gui.programmer.difficulty"), xRight - 36, yBottom + 20, 0x404040);
 
         if (showingWidgetProgress == 0) {
-            programmerUnit.renderForeground(x, y, draggingWidget);
+            programmerUnit.renderForeground(matrixStack, x, y, draggingWidget);
         }
 
         for (int i = 0; i < visibleSpawnWidgets.size(); i++) {
@@ -407,26 +412,26 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
                 widget.getTooltip(tooltip);
                 ThirdPartyManager.instance().getDocsProvider().addTooltip(tooltip, showingAllWidgets);
                 if (!tooltip.isEmpty()) {
-                    drawHoveringString(tooltip.stream().map(ITextComponent::getFormattedText).collect(Collectors.toList()), x - guiLeft, y - guiTop, font);
+                    drawHoveringString(matrixStack, tooltip, x - guiLeft, y - guiTop, font);
                 }
             }
         }
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
+    protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY) {
         lastMouseX = mouseX;
         lastMouseY = mouseY;
 
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-        renderBackground();
+        renderBackground(matrixStack);
         bindGuiTexture();
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
-        blit(xStart, yStart, 0, 0, xSize, ySize, xSize, ySize);
-        super.drawGuiContainerBackgroundLayer(partialTicks, mouseX, mouseY);
+        blit(matrixStack, xStart, yStart, 0, 0, xSize, ySize, xSize, ySize);
+        super.drawGuiContainerBackgroundLayer(matrixStack, partialTicks, mouseX, mouseY);
 
-        programmerUnit.render(mouseX, mouseY, showFlow.checked, showInfo.checked && showingWidgetProgress == 0);
+        programmerUnit.render(matrixStack, mouseX, mouseY, showFlow.checked, showInfo.checked && showingWidgetProgress == 0);
 
         // draw expanding widget tray
         if (showingWidgetProgress > 0) {
@@ -437,9 +442,9 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
             bindGuiTexture();
             int width = (int)MathHelper.lerp(partialTicks, (float)oldShowingWidgetProgress, (float)showingWidgetProgress);
             for (int i = 0; i < width; i++) {
-                blit(xStart + xRight + 21 - i, yStart + 36, xRight + 24, 36, 1, yBottom - 35, xSize, ySize);
+                blit(matrixStack, xStart + xRight + 21 - i, yStart + 36, xRight + 24, 36, 1, yBottom - 35, xSize, ySize);
             }
-            blit(xStart + xRight + 20 - width, yStart + 36, xRight + 20, 36, 2, yBottom - 35, xSize, ySize);
+            blit(matrixStack, xStart + xRight + 20 - width, yStart + 36, xRight + 20, 36, 2, yBottom - 35, xSize, ySize);
 
             if (showingAllWidgets && draggingWidget != null) toggleShowWidgets();
         }
@@ -449,47 +454,47 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         for (int i = 0; i < visibleSpawnWidgets.size(); i++) {
             IProgWidget widget = visibleSpawnWidgets.get(i);
-            RenderSystem.pushMatrix();
-            RenderSystem.translated(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
-            RenderSystem.scaled(0.5, 0.5, 1);
+            matrixStack.push();
+            matrixStack.translate(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
+            matrixStack.scale(0.5f, 0.5f, 1f);
             if (showingAllWidgets && filteredSpawnWidgets != null && !filteredSpawnWidgets.get(i)) {
-                RenderSystem.color4f(1, 1, 1, 0.2f);
+                ProgWidgetRenderer.renderProgWidget2d(matrixStack, widget, 48);
             } else {
-                RenderSystem.color4f(1, 1, 1, 1);
+                ProgWidgetRenderer.renderProgWidget2d(matrixStack, widget);
             }
-            ProgWidgetRenderer.renderProgWidget2d(widget);
-            RenderSystem.popMatrix();
+            matrixStack.pop();
         }
 
         // draw the widget currently being dragged, if any
         float scale = programmerUnit.getScale();
-        RenderSystem.pushMatrix();
-        RenderSystem.translated(programmerUnit.getTranslatedX(), programmerUnit.getTranslatedY(), 0);
-        RenderSystem.scaled(scale, scale, 1);
+        matrixStack.push();
+        matrixStack.translate(programmerUnit.getTranslatedX(), programmerUnit.getTranslatedY(), 0);
+        matrixStack.scale(scale, scale, 1f);
         if (draggingWidget != null) {
-            RenderSystem.pushMatrix();
-            RenderSystem.translated(draggingWidget.getX() + guiLeft, draggingWidget.getY() + guiTop, 0);
-            RenderSystem.scaled(0.5, 0.5, 1);
-            ProgWidgetRenderer.renderProgWidget2d(draggingWidget);
-            RenderSystem.popMatrix();
+            matrixStack.push();
+            matrixStack.translate(draggingWidget.getX() + guiLeft, draggingWidget.getY() + guiTop, 0);
+            matrixStack.scale(0.5f, 0.5f, 1f);
+            ProgWidgetRenderer.renderProgWidget2d(matrixStack, draggingWidget);
+            matrixStack.pop();
         }
-        RenderSystem.popMatrix();
+        matrixStack.pop();
 
         RenderSystem.disableBlend();
 
-        if (!removingWidgets.isEmpty()) drawRemovingWidgets();
+        if (!removingWidgets.isEmpty()) drawRemovingWidgets(matrixStack);
     }
 
     /**
      * This doesn't achieve much other than look really cool.
      */
-    private void drawRemovingWidgets() {
+    private void drawRemovingWidgets(MatrixStack matrixStack) {
         Iterator<RemovingWidget> iter = removingWidgets.iterator();
         int h = minecraft.getMainWindow().getScaledHeight();
         float scale = programmerUnit.getScale();
-        RenderSystem.pushMatrix();
-        RenderSystem.translated(programmerUnit.getTranslatedX(), programmerUnit.getTranslatedY(), 0);
-        RenderSystem.scaled(scale, scale, 1);
+
+        matrixStack.push();
+        matrixStack.translate(programmerUnit.getTranslatedX(), programmerUnit.getTranslatedY(), 0);
+        matrixStack.scale(scale, scale, 1f);
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         while (iter.hasNext()) {
@@ -498,11 +503,11 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
             if (w.getY() + rw.ty > h / scale) {
                 iter.remove();
             } else {
-                RenderSystem.pushMatrix();
-                RenderSystem.translated(w.getX() + rw.tx + guiLeft, w.getY() + rw.ty + guiTop, 0);
-                RenderSystem.scaled(0.5, 0.5, 1);
-                ProgWidgetRenderer.renderProgWidget2d(w);
-                RenderSystem.popMatrix();
+                matrixStack.push();
+                matrixStack.translate(w.getX() + rw.tx + guiLeft, w.getY() + rw.ty + guiTop, 0);
+                matrixStack.scale(0.5f, 0.5f, 1f);
+                ProgWidgetRenderer.renderProgWidget2d(matrixStack, w);
+                matrixStack.pop();
                 rw.ty += rw.velY;
                 rw.tx += rw.velX;
                 rw.velY += 0.3;
@@ -510,7 +515,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
             }
         }
         RenderSystem.disableBlend();
-        RenderSystem.popMatrix();
+        matrixStack.pop();
     }
 
     @Override
@@ -786,7 +791,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
                     updateVisibleProgWidgets();
                 }
             } else {
-                setFocused(filterField);
+                setListener(filterField);
             }
         } else {
             showingWidgetProgress -= maxProgress / 5;
@@ -809,7 +814,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         if (!programmedItem.isEmpty()) {
             nameField.setEnabled(true);
             if (!nameField.getText().equals(programmedItem.getDisplayName().getUnformattedComponentText())) {
-                nameField.setText(programmedItem.getDisplayName().getFormattedText());
+                nameField.setText(programmedItem.getDisplayName().getString());
             }
         } else {
             nameField.setEnabled(false);
@@ -818,28 +823,28 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
     }
 
     private void updateExportButtonTooltip(ItemStack programmedItem, List<ITextComponent> errors, List<ITextComponent> warnings) {
-        List<String> exportButtonTooltip = new ArrayList<>();
-        exportButtonTooltip.add(I18n.format("pneumaticcraft.gui.programmer.button.export"));
-        exportButtonTooltip.add(I18n.format("pneumaticcraft.gui.programmer.button.export.programmingWhen", I18n.format("pneumaticcraft.gui.programmer.button.export." + (te.redstoneMode == 0 ? "pressingButton" : "onItemInsert"))));
-        exportButtonTooltip.add(I18n.format("pneumaticcraft.gui.programmer.button.export.pressRToChange"));
+        List<ITextComponent> exportButtonTooltip = new ArrayList<>();
+        exportButtonTooltip.add(xlate("pneumaticcraft.gui.programmer.button.export"));
+        exportButtonTooltip.add(xlate("pneumaticcraft.gui.programmer.button.export.programmingWhen", xlate("pneumaticcraft.gui.programmer.button.export." + (te.redstoneMode == 0 ? "pressingButton" : "onItemInsert"))));
+        exportButtonTooltip.add(xlate("pneumaticcraft.gui.programmer.button.export.pressRToChange"));
         if (!programmedItem.isEmpty()) {
             int required = te.getRequiredPuzzleCount();
-            if (required != 0) exportButtonTooltip.add("");
+            if (required != 0) exportButtonTooltip.add(StringTextComponent.EMPTY);
             int r = minecraft.player.isCreative() ? 0 : required;
             if (required > 0) {
-                exportButtonTooltip.add(I18n.format("pneumaticcraft.gui.tooltip.programmable.requiredPieces", r));
+                exportButtonTooltip.add(xlate("pneumaticcraft.gui.tooltip.programmable.requiredPieces", r));
             } else if (required < 0) {
-                exportButtonTooltip.add(I18n.format("pneumaticcraft.gui.tooltip.programmable.returnedPieces", -r));
+                exportButtonTooltip.add(xlate("pneumaticcraft.gui.tooltip.programmable.returnedPieces", -r));
             }
-            if (required != 0 && minecraft.player.isCreative()) exportButtonTooltip.add("(Creative mode)");
+            if (required != 0 && minecraft.player.isCreative()) exportButtonTooltip.add(new StringTextComponent("(Creative mode)"));
         } else {
-            exportButtonTooltip.add(TextFormatting.GOLD + I18n.format("pneumaticcraft.gui.programmer.button.export.noProgrammableItem"));
+            exportButtonTooltip.add(xlate("pneumaticcraft.gui.programmer.button.export.noProgrammableItem").mergeStyle(TextFormatting.GOLD));
         }
 
         if (errors.size() > 0)
-            exportButtonTooltip.add(TextFormatting.RED + I18n.format("pneumaticcraft.gui.programmer.errorCount", errors.size()));
+            exportButtonTooltip.add(xlate("pneumaticcraft.gui.programmer.errorCount", errors.size()).mergeStyle(TextFormatting.RED));
         if (warnings.size() > 0)
-            exportButtonTooltip.add(TextFormatting.YELLOW + I18n.format("pneumaticcraft.gui.programmer.warningCount", warnings.size()));
+            exportButtonTooltip.add(xlate("pneumaticcraft.gui.programmer.warningCount", warnings.size()).mergeStyle(TextFormatting.YELLOW));
 
         exportButton.setTooltipText(exportButtonTooltip);
     }
@@ -876,9 +881,9 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         }
         if (!startFound) tooltip.add("pneumaticcraft.gui.programmer.button.convertToRelative.noStartPiece");
 
-        List<String> localizedTooltip = new ArrayList<>();
+        List<ITextComponent> localizedTooltip = new ArrayList<>();
         for (String s : tooltip) {
-            localizedTooltip.addAll(PneumaticCraftUtils.splitString(I18n.format(s), 40));
+            localizedTooltip.addAll(PneumaticCraftUtils.splitStringComponent(I18n.format(s)));
         }
         convertToRelativeButton.setTooltipText(localizedTooltip);
     }
@@ -1165,12 +1170,13 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         }
 
         @Override
-        public void renderButton(int x, int y, float partialTicks) {
+        public void renderButton(MatrixStack matrixStack, int x, int y, float partialTicks) {
             // this is needed to force the textfield to draw on top of any
             // widgets in the programming area
-            RenderSystem.translated(0, 0, 300);
-            super.renderButton(x, y, partialTicks);
-            RenderSystem.translated(0, 0, -300);
+            matrixStack.push();
+            matrixStack.translate(0, 0, 300);
+            super.renderButton(matrixStack, x, y, partialTicks);
+            matrixStack.pop();
         }
     }
 
@@ -1178,7 +1184,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         final WidgetDifficulty difficulty;
 
         DifficultyButton(int x, int y, int color, WidgetDifficulty difficulty, Consumer<WidgetRadioButton> pressable) {
-            super(x, y, color, difficulty.getTranslationKey(), pressable);
+            super(x, y, color, xlate(difficulty.getTranslationKey()), pressable);
             this.difficulty = difficulty;
         }
     }

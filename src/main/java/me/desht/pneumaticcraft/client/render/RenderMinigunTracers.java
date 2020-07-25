@@ -7,7 +7,7 @@ import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 
 import java.util.Random;
 
@@ -26,18 +26,19 @@ public class RenderMinigunTracers {
 
         matrixStack.push();
         matrixStack.translate(-x, -y, -z);
-        Vec3d vec = new Vec3d(target.getPosX() - x, target.getPosY() + target.getHeight() / 2 - y, target.getPosZ() - z)
+        Vector3d vec = new Vector3d(target.getPosX() - x, target.getPosY() + target.getHeight() / 2 - y, target.getPosZ() - z)
                 .normalize().scale(gunRadius);
+        // TODO don't really need ProgressingLine here
         ProgressingLine minigunFire = new ProgressingLine().setProgress(1);
-        minigunFire.startX = x + vec.x ;
-        minigunFire.startY = y + vec.y;
-        minigunFire.startZ = z + vec.z;
+        minigunFire.startX = (float) (x + vec.x);
+        minigunFire.startY = (float) (y + vec.y);
+        minigunFire.startZ = (float) (z + vec.z);
         Random rand = target.getEntityWorld().rand;
         IVertexBuilder builder = buffer.getBuffer(ModRenderTypes.getBlockHilightLine(false));
         for (int i = 0; i < 5; i++) {
-            minigunFire.endX = target.getPosX() + rand.nextDouble() * 0.8 - 0.4;
-            minigunFire.endY = target.getPosY() + target.getHeight() / 2 + rand.nextDouble() * 0.8 - 0.4;
-            minigunFire.endZ = target.getPosZ() + rand.nextDouble() * 0.8 - 0.4;
+            minigunFire.endX = (float) (target.getPosX() + rand.nextDouble() * 0.8 - 0.4);
+            minigunFire.endY = (float) (target.getPosY() + target.getHeight() / 2 + rand.nextDouble() * 0.8 - 0.4);
+            minigunFire.endZ = (float) (target.getPosZ() + rand.nextDouble() * 0.8 - 0.4);
             RenderUtils.renderProgressingLine(minigunFire, matrixStack, builder, 0x40000000 | minigun.getAmmoColor());
         }
         matrixStack.pop();

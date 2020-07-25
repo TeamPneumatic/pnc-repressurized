@@ -3,8 +3,11 @@ package me.desht.pneumaticcraft.client.gui.remote;
 import me.desht.pneumaticcraft.client.gui.GuiRemoteEditor;
 import me.desht.pneumaticcraft.client.gui.remote.actionwidget.ActionWidgetButton;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextFieldNumber;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiRemoteButton extends GuiRemoteVariable<ActionWidgetButton> {
     private WidgetTextFieldNumber widthField;
@@ -19,14 +22,14 @@ public class GuiRemoteButton extends GuiRemoteVariable<ActionWidgetButton> {
     public void init() {
         super.init();
 
-        addLabel(I18n.format("pneumaticcraft.gui.remote.button.settingValue"), guiLeft + 10, guiTop + 95);
-        addLabel("X:", guiLeft + 10, guiTop + 106);
-        addLabel("Y:", guiLeft + 67, guiTop + 106);
-        addLabel("Z:", guiLeft + 124, guiTop + 106);
-        addLabel(I18n.format("pneumaticcraft.gui.remote.button.width"), guiLeft + 10, guiTop + 123);
-        addLabel(I18n.format("pneumaticcraft.gui.remote.button.height"), guiLeft + 10, guiTop + 138);
+        addLabel(xlate("pneumaticcraft.gui.remote.button.settingValue"), guiLeft + 10, guiTop + 95);
+        addLabel(new StringTextComponent("X:"), guiLeft + 10, guiTop + 106);
+        addLabel(new StringTextComponent("Y:"), guiLeft + 67, guiTop + 106);
+        addLabel(new StringTextComponent("Z:"), guiLeft + 124, guiTop + 106);
+        addLabel(xlate("pneumaticcraft.gui.remote.button.width"), guiLeft + 10, guiTop + 123);
+        addLabel(xlate("pneumaticcraft.gui.remote.button.height"), guiLeft + 10, guiTop + 138);
 
-        String valueTooltip = I18n.format("pneumaticcraft.gui.remote.button.value.tooltip");
+        ITextComponent valueTooltip = xlate("pneumaticcraft.gui.remote.button.value.tooltip");
 
         xValueField = new WidgetTextFieldNumber(font, guiLeft + 20, guiTop + 105, 38, 10);
         xValueField.setValue(actionWidget.settingCoordinate.getX());

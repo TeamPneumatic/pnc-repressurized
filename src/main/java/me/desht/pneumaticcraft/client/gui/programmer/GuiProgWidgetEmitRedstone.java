@@ -1,11 +1,13 @@
 package me.desht.pneumaticcraft.client.gui.programmer;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetEmitRedstone;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.Direction;
+import net.minecraft.util.text.ITextComponent;
 
 public class GuiProgWidgetEmitRedstone extends GuiProgWidgetOptionBase<ProgWidgetEmitRedstone> {
 
@@ -18,7 +20,7 @@ public class GuiProgWidgetEmitRedstone extends GuiProgWidgetOptionBase<ProgWidge
         super.init();
 
         for (Direction dir : Direction.VALUES) {
-            String sideName = ClientUtils.translateDirection(dir);
+            ITextComponent sideName = ClientUtils.translateDirectionComponent(dir);
             WidgetCheckBox checkBox = new WidgetCheckBox(guiLeft + 8, guiTop + 30 + dir.getIndex() * 12, 0xFF404040, sideName,
                     b -> progWidget.getSides()[dir.getIndex()] = b.checked);
             checkBox.checked = progWidget.getSides()[dir.getIndex()];
@@ -27,9 +29,9 @@ public class GuiProgWidgetEmitRedstone extends GuiProgWidgetOptionBase<ProgWidge
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float partialTicks) {
-        super.render(mouseX, mouseY, partialTicks);
+    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+        super.render(matrixStack, mouseX, mouseY, partialTicks);
 
-        font.drawString(I18n.format("pneumaticcraft.gui.progWidget.general.affectingSides"), guiLeft + 8, guiTop + 20, 0xFF604040);
+        font.drawString(matrixStack, I18n.format("pneumaticcraft.gui.progWidget.general.affectingSides"), guiLeft + 8, guiTop + 20, 0xFF604040);
     }
 }

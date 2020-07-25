@@ -9,6 +9,7 @@ import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
@@ -178,12 +179,13 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
     }
 
     @Override
-    public void read(CompoundNBT nbtTagCompound) {
-        super.read(nbtTagCompound);
-        burnTime = nbtTagCompound.getInt("burnTime");
-        maxBurnTime = nbtTagCompound.getInt("maxBurn");
-        redstoneMode = nbtTagCompound.getInt(NBTKeys.NBT_REDSTONE_MODE);
-        itemHandler.deserializeNBT(nbtTagCompound.getCompound("Items"));
+    public void read(BlockState state, CompoundNBT tag) {
+        super.read(state, tag);
+
+        burnTime = tag.getInt("burnTime");
+        maxBurnTime = tag.getInt("maxBurn");
+        redstoneMode = tag.getInt(NBTKeys.NBT_REDSTONE_MODE);
+        itemHandler.deserializeNBT(tag.getCompound("Items"));
     }
 
     @Override

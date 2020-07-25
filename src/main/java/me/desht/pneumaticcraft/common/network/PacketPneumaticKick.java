@@ -15,7 +15,7 @@ import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.Comparator;
@@ -52,7 +52,7 @@ public class PacketPneumaticKick {
     }
 
     private void handleKick(PlayerEntity player, int upgrades) {
-        Vec3d lookVec = player.getLookVec().normalize();
+        Vector3d lookVec = player.getLookVec().normalize();
 
         double playerFootY = player.getPosY() - player.getHeight() / 4;
         AxisAlignedBB box = new AxisAlignedBB(player.getPosX(), playerFootY, player.getPosZ(), player.getPosX(), playerFootY, player.getPosZ())

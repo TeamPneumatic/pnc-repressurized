@@ -2,7 +2,6 @@ package me.desht.pneumaticcraft.common.util;
 
 import me.desht.pneumaticcraft.api.item.IInventoryItem;
 import me.desht.pneumaticcraft.api.item.ITagFilteringItem;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.CoordTrackUpgradeHandler;
 import me.desht.pneumaticcraft.common.XPFluidManager;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
@@ -15,7 +14,6 @@ import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.item.ExperienceOrbEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.monster.ZombieEntity;
@@ -29,6 +27,8 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.*;
+import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.vector.Vector3i;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -126,6 +126,14 @@ public class PneumaticCraftUtils {
         }
     }
 
+    public static List<ITextComponent> splitStringComponent(String text) {
+        return asStringComponent(splitString(text, GuiConstants.MAX_CHAR_PER_LINE));
+    }
+
+    public static List<ITextComponent> splitStringComponent(String text, int maxCharPerLine) {
+        return asStringComponent(splitString(text, maxCharPerLine));
+    }
+
     public static List<String> splitString(String text, int maxCharPerLine) {
         List<String> result = new ArrayList<>();
 
@@ -163,7 +171,7 @@ public class PneumaticCraftUtils {
     }
 
     public static List<String> splitString(String text) {
-        return splitString(text, GuiConstants.MAX_CHAR_PER_LINE_LEFT);
+        return splitString(text, GuiConstants.MAX_CHAR_PER_LINE);
     }
 
     public static List<ITextComponent> asStringComponent(List<String> l) {
@@ -260,7 +268,7 @@ public class PneumaticCraftUtils {
         int i = begin - 1;
 
         for (int j = begin; j < end; j++) {
-            if (arr[j].getDisplayName().getFormattedText().compareToIgnoreCase(pivot.getDisplayName().getFormattedText()) <= 0) {
+            if (arr[j].getDisplayName().getString().compareToIgnoreCase(pivot.getDisplayName().getString()) <= 0) {
                 i++;
 
                 ItemStack swapTemp = arr[i];
@@ -284,7 +292,7 @@ public class PneumaticCraftUtils {
      * @param originalStacks array of item stacks to sort & combine
      */
     public static void sortCombineItemStacksAndToString(List<ITextComponent> textList, ItemStack[] originalStacks) {
-        sortCombineItemStacksAndToString(textList, originalStacks, GuiConstants.bullet().getFormattedText());
+        sortCombineItemStacksAndToString(textList, originalStacks, GuiConstants.bullet().getString());
     }
 
     /**
@@ -306,7 +314,7 @@ public class PneumaticCraftUtils {
             if (!stack.isEmpty()) {
                 if (!stack.isItemEqual(prevItemStack) || prevInventoryItems != null && prevInventoryItems.size() > 0) {
                     if (!prevItemStack.isEmpty()) {
-                        addText(textList, prefix  + PneumaticCraftUtils.convertAmountToString(itemCount) + " x " + prevItemStack.getDisplayName().getFormattedText());
+                        addText(textList, prefix  + PneumaticCraftUtils.convertAmountToString(itemCount) + " x " + prevItemStack.getDisplayName().getString());
                     }
                     if (prevInventoryItems != null) {
                         sortCombineItemStacksAndToString(textList, prevInventoryItems.toArray(new ItemStack[0]), prefix + GuiConstants.ARROW_DOWN_RIGHT + " ");
@@ -320,7 +328,7 @@ public class PneumaticCraftUtils {
             }
         }
         if (itemCount > 0 && !prevItemStack.isEmpty()) {
-            addText(textList,prefix + PneumaticCraftUtils.convertAmountToString(itemCount) + " x " + prevItemStack.getDisplayName().getFormattedText());
+            addText(textList,prefix + PneumaticCraftUtils.convertAmountToString(itemCount) + " x " + prevItemStack.getDisplayName().getString());
             if (prevInventoryItems != null) {
                 sortCombineItemStacksAndToString(textList, prevInventoryItems.toArray(new ItemStack[0]), prefix + GuiConstants.ARROW_DOWN_RIGHT + " ");
             }
@@ -395,24 +403,24 @@ public class PneumaticCraftUtils {
     }
 
     public static RayTraceResult getEntityLookedObject(LivingEntity entity, float maxDistance) {
-        Pair<Vec3d, Vec3d> vecs = getStartAndEndLookVec(entity, maxDistance);
+        Pair<Vector3d, Vector3d> vecs = getStartAndEndLookVec(entity, maxDistance);
         RayTraceContext ctx = new RayTraceContext(vecs.getLeft(), vecs.getRight(), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, entity);
         return entity.world.rayTraceBlocks(ctx);
     }
 
-    public static Pair<Vec3d, Vec3d> getStartAndEndLookVec(LivingEntity entity) {
+    public static Pair<Vector3d, Vector3d> getStartAndEndLookVec(LivingEntity entity) {
         return getStartAndEndLookVec(entity, 4.5F);
     }
 
-    public static Pair<Vec3d, Vec3d> getStartAndEndLookVec(LivingEntity entity, float maxDistance) {
-        Vec3d entityVec;
+    public static Pair<Vector3d, Vector3d> getStartAndEndLookVec(LivingEntity entity, float maxDistance) {
+        Vector3d entityVec;
         if (entity.world.isRemote && entity instanceof PlayerEntity) {
-            entityVec = new Vec3d(entity.getPosX(), entity.getPosY() + 1.6200000000000001D, entity.getPosZ());
+            entityVec = new Vector3d(entity.getPosX(), entity.getPosY() + 1.6200000000000001D, entity.getPosZ());
         } else {
-            entityVec = new Vec3d(entity.getPosX(), entity.getPosY() + entity.getEyeHeight() - (entity.isSneaking() ? 0.08 : 0), entity.getPosZ());
+            entityVec = new Vector3d(entity.getPosX(), entity.getPosY() + entity.getEyeHeight() - (entity.isSneaking() ? 0.08 : 0), entity.getPosZ());
         }
-        Vec3d entityLookVec = entity.getLook(1.0F);
-        Vec3d maxDistVec = entityVec.add(entityLookVec.scale(maxDistance));
+        Vector3d entityLookVec = entity.getLook(1.0F);
+        Vector3d maxDistVec = entityVec.add(entityLookVec.scale(maxDistance));
         return new ImmutablePair<>(entityVec, maxDistVec);
     }
 
@@ -424,7 +432,7 @@ public class PneumaticCraftUtils {
         return Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2) + Math.pow(z1 - z2, 2);
     }
     
-    public static double distBetweenSq(Vec3i pos, double x, double y, double z) {
+    public static double distBetweenSq(Vector3i pos, double x, double y, double z) {
         return distBetweenSq(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, x, y, z);
     }
 
@@ -440,11 +448,11 @@ public class PneumaticCraftUtils {
         return (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2);
     }
 
-    public static double distBetween(Vec3i pos, double x, double y, double z) {
+    public static double distBetween(Vector3i pos, double x, double y, double z) {
         return distBetween(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, x, y, z);
     }
 
-    public static double distBetween(Vec3i pos1, Vec3i pos2) {
+    public static double distBetween(Vector3i pos1, Vector3i pos2) {
         return distBetween(pos1, pos2.getX() + 0.5, pos2.getY() + 0.5, pos2.getZ() + 0.5);
     }
 
@@ -523,7 +531,7 @@ public class PneumaticCraftUtils {
     }
 
     private static RayTraceResult raytraceEntityBlocks(LivingEntity entity, double range) {
-        Pair<Vec3d, Vec3d> startAndEnd = getStartAndEndLookVec(entity, (float) range);
+        Pair<Vector3d, Vector3d> startAndEnd = getStartAndEndLookVec(entity, (float) range);
         RayTraceContext ctx = new RayTraceContext(startAndEnd.getLeft(), startAndEnd.getRight(), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, entity);
         return entity.world.rayTraceBlocks(ctx);
     }
@@ -531,23 +539,23 @@ public class PneumaticCraftUtils {
     public static RayTraceResult getMouseOverServer(LivingEntity lookingEntity, double range) {
         RayTraceResult result = raytraceEntityBlocks(lookingEntity, range);
         double rangeSq = range * range;
-        Pair<Vec3d, Vec3d> startAndEnd = getStartAndEndLookVec(lookingEntity, (float) range);
-        Vec3d eyePos = startAndEnd.getLeft();
+        Pair<Vector3d, Vector3d> startAndEnd = getStartAndEndLookVec(lookingEntity, (float) range);
+        Vector3d eyePos = startAndEnd.getLeft();
 
         if (result.getType() != RayTraceResult.Type.MISS) {
             rangeSq = result.getHitVec().squareDistanceTo(eyePos);
         }
 
         double rangeSq2 = rangeSq;
-        Vec3d hitVec = null;
+        Vector3d hitVec = null;
         Entity focusedEntity = null;
 
-        Vec3d lookVec = lookingEntity.getLookVec().scale(range + 1);
+        Vector3d lookVec = lookingEntity.getLookVec().scale(range + 1);
         AxisAlignedBB box = lookingEntity.getBoundingBox().grow(lookVec.x, lookVec.y, lookVec.z);
 
         for (Entity entity : lookingEntity.world.getEntitiesInAABBexcluding(lookingEntity, box, Entity::canBeCollidedWith)) {
             AxisAlignedBB aabb = entity.getBoundingBox().grow(entity.getCollisionBorderSize());
-            Optional<Vec3d> vec = aabb.rayTrace(eyePos, startAndEnd.getRight());
+            Optional<Vector3d> vec = aabb.rayTrace(eyePos, startAndEnd.getRight());
 
             if (aabb.contains(eyePos)) {
                 if (rangeSq2 >= 0.0D) {
@@ -590,7 +598,7 @@ public class PneumaticCraftUtils {
      * @return true if the block could be placed, false otherwise
      */
     public static boolean tryPlaceBlock(World w, BlockPos pos, PlayerEntity player, Direction face, BlockState newState) {
-        BlockSnapshot snapshot = BlockSnapshot.getBlockSnapshot(w, pos);
+        BlockSnapshot snapshot = BlockSnapshot.create(w, pos);
         if (!ForgeEventFactory.onBlockPlace(player, snapshot, face)) {
             w.setBlockState(pos, newState);
             return true;
@@ -608,11 +616,11 @@ public class PneumaticCraftUtils {
      */
     public static MobEntity createDummyEntity(PlayerEntity player) {
         ZombieEntity dummy = new ZombieEntity(player.world) {
-            @Override
-            protected void registerAttributes() {
-                super.registerAttributes();
-                this.getAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(CoordTrackUpgradeHandler.SEARCH_RANGE);
-            }
+//            @Override
+//            protected void registerAttributes() {
+//                super.registerAttributes();
+//                this.getAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(CoordTrackUpgradeHandler.SEARCH_RANGE);
+//            }
         };
         dummy.setPosition(player.getPosX(), player.getPosY(), player.getPosZ());
         return dummy;
@@ -691,7 +699,7 @@ public class PneumaticCraftUtils {
      * @param s the translation key
      * @return the translated string (if called server-side, a string which The One Probe will handle client-side)
      */
-    public static ITextComponent xlate(String s, Object... args) {
+    public static TranslationTextComponent xlate(String s, Object... args) {
         return new TranslationTextComponent(s, args);
     }
 
@@ -709,15 +717,15 @@ public class PneumaticCraftUtils {
         return ForgeEventFactory.getItemBurnTime(stack, ret == -1 ? ForgeHooks.getBurnTime(stack) : ret);
     }
 
-    public static Vec3d getBlockCentre(BlockPos pos) {
-        return new Vec3d(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
-    }
-
     public static void copyItemHandler(IItemHandler source, ItemStackHandler dest) {
         dest.setSize(source.getSlots());
         for (int i = 0; i < source.getSlots(); i++) {
             dest.setStackInSlot(i, source.getStackInSlot(i).copy());
         }
+    }
+
+    public static BlockPos getPosForEntity(Entity e) {
+        return new BlockPos(e.getPosX(), e.getPosY(), e.getPosZ());
     }
 
     public static String posToString(BlockPos pos) {

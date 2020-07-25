@@ -5,8 +5,8 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityHeatPipe;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.IWaterLoggable;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.fluid.IFluidState;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
@@ -61,7 +61,7 @@ public class BlockHeatPipe extends BlockPneumaticCraftCamo implements IWaterLogg
     }
 
     @Override
-    public IFluidState getFluidState(BlockState state) {
+    public FluidState getFluidState(BlockState state) {
         return state.get(WATERLOGGED) ? Fluids.WATER.getStillFluidState(false) : super.getFluidState(state);
     }
 
@@ -70,7 +70,7 @@ public class BlockHeatPipe extends BlockPneumaticCraftCamo implements IWaterLogg
     public BlockState getStateForPlacement(BlockItemUseContext ctx) {
         BlockState state = super.getStateForPlacement(ctx);
 
-        IFluidState fluidState = ctx.getWorld().getFluidState(ctx.getPos());
+        FluidState fluidState = ctx.getWorld().getFluidState(ctx.getPos());
         return state.with(WATERLOGGED, fluidState.getFluid() == Fluids.WATER);
     }
 

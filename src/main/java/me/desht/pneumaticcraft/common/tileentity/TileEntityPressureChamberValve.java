@@ -16,7 +16,6 @@ import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.util.ItemStackHandlerIterable;
-import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
@@ -29,6 +28,7 @@ import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
+import net.minecraft.nbt.NBTUtil;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
@@ -45,6 +45,7 @@ import net.minecraftforge.items.wrapper.CombinedInvWrapper;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
         implements IMinWorkingPressure, IAirListener, INamedContainerProvider {
@@ -324,8 +325,8 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
     }
 
     @Override
-    public void read(CompoundNBT tag) {
-        super.read(tag);
+    public void read(BlockState state, CompoundNBT tag) {
+        super.read(state, tag);
 
         setupMultiBlock(tag.getInt("multiBlockSize"), tag.getInt("multiBlockX"), tag.getInt("multiBlockY"), tag.getInt("multiBlockZ"));
 //        isSufficientPressureInChamber = tag.getBoolean("sufPressure");
@@ -347,7 +348,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
         nbtValveList.clear();
         for (int i = 0; i < accList.size(); ++i) {
             CompoundNBT tagCompound = accList.getCompound(i);
-            nbtValveList.add(NBTUtil.getPos(tagCompound));
+            nbtValveList.add(NBTUtil.readBlockPos(tagCompound));
         }
     }
 
@@ -358,19 +359,13 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
         tag.putInt("multiBlockY", multiBlockY);
         tag.putInt("multiBlockZ", multiBlockZ);
         tag.putInt("multiBlockSize", multiBlockSize);
-//        tag.putBoolean("sufPressure", isSufficientPressureInChamber);
-//        tag.putBoolean("validRecipe", isValidRecipeInChamber);
-//        tag.putFloat("recipePressure", recipePressure);
         tag.put("itemsInChamber", itemsInChamber.serializeNBT());
         tag.put("craftedItems", craftedItems.serializeNBT());
 
         // Write the accessory valve list to NBT
-        ListNBT accList = new ListNBT();
-        for (TileEntityPressureChamberValve valve : accessoryValves) {
-            CompoundNBT tagCompound = new CompoundNBT();
-            NBTUtil.setPos(tagCompound, valve.getPos());
-            accList.add(tagCompound);
-        }
+        ListNBT accList = accessoryValves.stream()
+                .map(valve -> NBTUtil.writeBlockPos(valve.getPos()))
+                .collect(Collectors.toCollection(ListNBT::new));
         tag.put("Valves", accList);
 
         return tag;

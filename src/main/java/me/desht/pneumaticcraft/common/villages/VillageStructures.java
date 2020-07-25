@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.villages;
 
-import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.gen.feature.jigsaw.JigsawManager;
@@ -35,7 +34,7 @@ public class VillageStructures {
         List<Pair<JigsawPiece, Integer>> newPieces = shuffled.stream()
                 .map(p -> new Pair<>(p, 1))
                 .collect(Collectors.toList());
-        newPieces.add(new Pair<>(new SingleJigsawPiece(toAdd.toString(), ImmutableList.of(), JigsawPattern.PlacementBehaviour.RIGID), weight));
+        newPieces.add(new Pair<>(new SingleJigsawPiece(toAdd.toString()), weight)); // ImmutableList.of(), JigsawPattern.PlacementBehaviour.RIGID), weight));
         JigsawManager.REGISTRY.register(new JigsawPattern(pool, old.getFallback(), newPieces, JigsawPattern.PlacementBehaviour.RIGID));
     }
 }

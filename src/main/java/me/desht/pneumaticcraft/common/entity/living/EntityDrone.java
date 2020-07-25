@@ -23,6 +23,7 @@ import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModEntities;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModSounds;
+import me.desht.pneumaticcraft.common.debug.DroneDebugEntry;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsFrame;
 import me.desht.pneumaticcraft.common.item.ItemDrone;
 import me.desht.pneumaticcraft.common.item.ItemGPSTool;
@@ -51,7 +52,8 @@ import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.attributes.AttributeModifierMap;
+import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.GoalSelector;
 import net.minecraft.entity.item.BoatEntity;
@@ -78,18 +80,18 @@ import net.minecraft.particles.ParticleTypes;
 import net.minecraft.pathfinding.*;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.FakePlayer;
+import net.minecraftforge.common.util.ITeleporter;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
@@ -137,15 +139,16 @@ public class EntityDrone extends EntityDroneBase implements
     private static final DataParameter<ItemStack> HELD_ITEM = EntityDataManager.createKey(EntityDrone.class, DataSerializers.ITEMSTACK);
     private static final DataParameter<Integer> TARGET_ID = EntityDataManager.createKey(EntityDrone.class, DataSerializers.VARINT);
 
-    private static final HashMap<String, Integer> LASER_COLOR_MAP = new HashMap<>();
+    private static final StringTextComponent DEF_DRONE_NAME = new StringTextComponent("Drone");
 
     public static final String NBT_DRONE_COLOR = "color";
 
+    private static final HashMap<ITextComponent, Integer> LASER_COLOR_MAP = new HashMap<>();
     static {
-        LASER_COLOR_MAP.put("aureylian", 0xff69b4);
-        LASER_COLOR_MAP.put("loneztar", 0x00a0a0);
-        LASER_COLOR_MAP.put("jadedcat", 0xa020f0);
-        LASER_COLOR_MAP.put("desht", 0xff6000);
+        LASER_COLOR_MAP.put(new StringTextComponent("aureylian"), 0xff69b4);
+        LASER_COLOR_MAP.put(new StringTextComponent("loneztar"), 0x00a0a0);
+        LASER_COLOR_MAP.put(new StringTextComponent("jadedcat"), 0xa020f0);
+        LASER_COLOR_MAP.put(new StringTextComponent("desht"), 0xff6000);
     }
 
     private EntityDroneItemHandler droneItemHandler;
@@ -172,7 +175,7 @@ public class EntityDrone extends EntityDroneBase implements
     public List<IProgWidget> progWidgets = new ArrayList<>();
 
     private DroneFakePlayer fakePlayer;
-    public String ownerName = "Drone";
+    public ITextComponent ownerName = DEF_DRONE_NAME;
     private UUID ownerUUID;
 
     private final DroneGoToChargingStation chargeAI;
@@ -207,10 +210,10 @@ public class EntityDrone extends EntityDroneBase implements
         this(type, world);
         if (player != null) {
             ownerUUID = player.getGameProfile().getId();
-            ownerName = player.getName().getFormattedText();
+            ownerName = player.getName();
         } else {
             ownerUUID = getUniqueID(); // Anonymous drone used for Amadron or spawned with a Dispenser
-            ownerName = "Drone";
+            ownerName = DEF_DRONE_NAME;
         }
     }
 
@@ -305,13 +308,20 @@ public class EntityDrone extends EntityDroneBase implements
         dataManager.register(TARGET_ID, 0);
     }
 
-    @Override
-    protected void registerAttributes() {
-        super.registerAttributes();
-        getAttributes().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(3.0D);
-        getAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(40F);
-        getAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(getRange());
+    public static AttributeModifierMap.MutableAttribute prepareAttributes() {
+        return LivingEntity.registerAttributes()
+                .createMutableAttribute(Attributes.ATTACK_DAMAGE, 3.0D)
+                .createMutableAttribute(Attributes.MAX_HEALTH, 40.0D)
+                .createMutableAttribute(Attributes.FOLLOW_RANGE, 75.0D);
     }
+
+//    @Override
+//    protected void registerAttributes() {
+//        super.registerAttributes();
+//        getAttributes().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(3.0D);
+//        getAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(40F);
+//        getAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(getRange());
+//    }
 
     @Nonnull
     @Override
@@ -337,13 +347,13 @@ public class EntityDrone extends EntityDroneBase implements
     public void writeSpawnData(PacketBuffer buffer) {
         buffer.writeLong(ownerUUID.getMostSignificantBits());
         buffer.writeLong(ownerUUID.getLeastSignificantBits());
-        buffer.writeString(ownerName);
+        buffer.writeTextComponent(ownerName);
     }
 
     @Override
     public void readSpawnData(PacketBuffer buffer) {
         ownerUUID = new UUID(buffer.readLong(), buffer.readLong());
-        ownerName = buffer.readString();
+        ownerName = buffer.readTextComponent();
     }
 
     /**
@@ -445,7 +455,7 @@ public class EntityDrone extends EntityDroneBase implements
                 }
 
                 if (state.getMaterial() != Material.AIR && world.rand.nextBoolean()) {
-                    Vec3d vec = new Vec3d(getPosY() - y, 0, 0);
+                    Vector3d vec = new Vector3d(getPosY() - y, 0, 0);
                     vec = vec.rotateYaw((float) (rand.nextFloat() * Math.PI * 2));
                     IParticleData data = new BlockParticleData(ParticleTypes.BLOCK, state);
                     world.addParticle(data, getPosX() + vec.x, y + 1, getPosZ() + vec.z, vec.x, 0, vec.z);
@@ -535,8 +545,7 @@ public class EntityDrone extends EntityDroneBase implements
 
     @Override
     public int getLaserColor() {
-        // TODO since this is used in rendering, we should cache it for performance reasons
-        String name = hasCustomName() ? getCustomName().getFormattedText().toLowerCase() : ownerName.toLowerCase();
+        ITextComponent name = hasCustomName() ? getCustomName() : ownerName;
         return LASER_COLOR_MAP.getOrDefault(name, super.getLaserColor());
     }
 
@@ -660,7 +669,7 @@ public class EntityDrone extends EntityDroneBase implements
      * Moves the entity based on the specified heading.  Args: strafe, forward
      */
     @Override
-    public void travel(Vec3d travelVec) {
+    public void travel(Vector3d travelVec) {
         if (world.isRemote) {
             LivingEntity targetEntity = getAttackTarget();
             if (targetEntity != null && !targetEntity.isAlive()) {
@@ -671,12 +680,12 @@ public class EntityDrone extends EntityDroneBase implements
                 if (targetLine == null) targetLine = new ProgressingLine(0, -getHeight() / 2, 0, 0, 0, 0);
                 if (oldTargetLine == null) oldTargetLine = new ProgressingLine(0, -getHeight() / 2, 0, 0, 0, 0);
 
-                targetLine.endX = targetEntity.getPosX() - getPosX();
-                targetLine.endY = targetEntity.getPosY() + targetEntity.getHeight() / 2 - getPosY();
-                targetLine.endZ = targetEntity.getPosZ() - getPosZ();
-                oldTargetLine.endX = targetEntity.prevPosX - prevPosX;
-                oldTargetLine.endY = targetEntity.prevPosY + targetEntity.getHeight() / 2 - prevPosY;
-                oldTargetLine.endZ = targetEntity.prevPosZ - prevPosZ;
+                targetLine.endX = (float) (targetEntity.getPosX() - getPosX());
+                targetLine.endY = (float) (targetEntity.getPosY() + targetEntity.getHeight() / 2 - getPosY());
+                targetLine.endZ = (float) (targetEntity.getPosZ() - getPosZ());
+                oldTargetLine.endX = (float) (targetEntity.prevPosX - prevPosX);
+                oldTargetLine.endY = (float) (targetEntity.prevPosY + targetEntity.getHeight() / 2 - prevPosY);
+                oldTargetLine.endZ = (float) (targetEntity.prevPosZ - prevPosZ);
 
                 oldTargetLine.setProgress(targetLine.getProgress());
                 targetLine.incProgressByDistance(0.3D);
@@ -709,19 +718,19 @@ public class EntityDrone extends EntityDroneBase implements
     }
 
     @Override
-    public boolean processInteract(PlayerEntity player, Hand hand) {
+    public ActionResultType func_230254_b_(PlayerEntity player, Hand hand) {
         ItemStack stack = player.getHeldItem(hand);
         if (stack.getItem() == ModItems.GPS_TOOL.get()) {
             if (!world.isRemote) {
                 BlockPos gpsLoc = ItemGPSTool.getGPSLocation(world, stack);
                 if (gpsLoc != null) {
                     getNavigator().tryMoveToXYZ(gpsLoc.getX(), gpsLoc.getY(), gpsLoc.getZ(), 0.1D);
-                    return true;
+                    return ActionResultType.SUCCESS;
                 } else {
-                    return false;
+                    return ActionResultType.PASS;
                 }
             }
-            return true;
+            return ActionResultType.SUCCESS;
         } else {
             DyeColor color = DyeColor.getColor(stack);
             if (color != null) {
@@ -734,10 +743,10 @@ public class EntityDrone extends EntityDroneBase implements
                         }
                     }
                 }
-                return true;
+                return ActionResultType.SUCCESS;
             }
         }
-        return false;
+        return ActionResultType.PASS;
     }
 
     public boolean shouldDropAsItem() {
@@ -778,8 +787,8 @@ public class EntityDrone extends EntityDroneBase implements
 
     @Nullable
     @Override
-    public Entity changeDimension(DimensionType type) {
-        Entity entity = super.changeDimension(type);
+    public Entity changeDimension(ServerWorld p_241206_1_, ITeleporter teleporter) {
+        Entity entity = super.changeDimension(p_241206_1_, teleporter);
         if (entity != null) {
             restoreFluidBlocks(false);
         }
@@ -833,9 +842,9 @@ public class EntityDrone extends EntityDroneBase implements
             int y = (int) Math.floor(getPosY());
             int z = (int) Math.floor(getPosZ());
             ITextComponent msg = hasCustomName() ?
-                    new TranslationTextComponent("pneumaticcraft.death.drone.named", getCustomName().getFormattedText(), x, y, z) :
+                    new TranslationTextComponent("pneumaticcraft.death.drone.named", getCustomName().getString(), x, y, z) :
                     new TranslationTextComponent("pneumaticcraft.death.drone", x, y, z);
-            msg = msg.appendSibling(new StringTextComponent(" - ")).appendSibling(damageSource.getDeathMessage(this));
+            msg = msg.copyRaw().appendString(" - ").append(damageSource.getDeathMessage(this));
             owner.sendStatusMessage(msg, false);
         }
     }
@@ -893,7 +902,7 @@ public class EntityDrone extends EntityDroneBase implements
 
     @Override
     public void printManometerMessage(PlayerEntity player, List<ITextComponent> curInfo) {
-        if (hasCustomName()) curInfo.add(getCustomName().applyTextStyle(TextFormatting.AQUA));
+        if (hasCustomName()) curInfo.add(getCustomName().deepCopy().mergeStyle(TextFormatting.AQUA));
         curInfo.add(xlate("pneumaticcraft.entityTracker.info.tamed", getFakePlayer().getName()));
         curInfo.add(xlate("pneumaticcraft.gui.tooltip.pressure", PneumaticCraftUtils.roundNumberTo(getAirHandler().getPressure(), 1) + " bar."));
     }
@@ -915,7 +924,7 @@ public class EntityDrone extends EntityDroneBase implements
 
         fluidTank.writeToNBT(tag);
 
-        tag.putString("owner", ownerName);
+        tag.putString("owner", ownerName.getString());
         if (ownerUUID != null) {
             tag.putLong("ownerUUID_M", ownerUUID.getMostSignificantBits());
             tag.putLong("ownerUUID_L", ownerUUID.getLeastSignificantBits());
@@ -962,7 +971,7 @@ public class EntityDrone extends EntityDroneBase implements
 
         energy.setCapacity(100000 + 100000 * getUpgrades(EnumUpgrade.VOLUME));
 
-        if (tag.contains("owner")) ownerName = tag.getString("owner");
+        if (tag.contains("owner")) ownerName = new StringTextComponent(tag.getString("owner"));
         if (tag.contains("ownerUUID_M")) ownerUUID = new UUID(tag.getLong("ownerUUID_M"), tag.getLong("ownerUUID_L"));
 
         if (tag.contains("displacedLiquids")) {
@@ -978,7 +987,7 @@ public class EntityDrone extends EntityDroneBase implements
     }
 
     // computercraft ("getOwnerName" method)
-    public String getOwnerName() {
+    public ITextComponent getOwnerName() {
         return ownerName;
     }
 
@@ -1161,7 +1170,7 @@ public class EntityDrone extends EntityDroneBase implements
     }
 
     public PlayerEntity getOwner() {
-        return world.getServer().getPlayerList().getPlayerByUsername(ownerName);
+        return world.getServer().getPlayerList().getPlayerByUUID(ownerUUID);
     }
 
     public void setStandby(boolean standby) {
@@ -1174,8 +1183,8 @@ public class EntityDrone extends EntityDroneBase implements
     }
 
     @Override
-    public Vec3d getDronePos() {
-        return getPositionVector();
+    public Vector3d getDronePos() {
+        return getPositionVec();
     }
 
     @Override
@@ -1194,7 +1203,7 @@ public class EntityDrone extends EntityDroneBase implements
     }
 
     @Override
-    public boolean isProgramApplicable(ProgWidgetType widgetType) {
+    public boolean isProgramApplicable(ProgWidgetType<?> widgetType) {
         return true;
     }
 
@@ -1212,7 +1221,8 @@ public class EntityDrone extends EntityDroneBase implements
                 if (e instanceof AbstractMinecartEntity || e instanceof BoatEntity) {
                     // little kludge to prevent the dropped minecart/boat immediately picking up the drone
                     y -= 2;
-                    if (world.getBlockState(e.getPosition()).isNormalCube(world, e.getPosition())) {
+                    BlockPos pos = PneumaticCraftUtils.getPosForEntity(e);
+                    if (world.getBlockState(pos).isNormalCube(world, pos)) {
                         y++;
                     }
                     // minecarts have their own tick() which doesn't decrement rideCooldown
@@ -1300,7 +1310,7 @@ public class EntityDrone extends EntityDroneBase implements
         return dataManager.get(LABEL);
     }
 
-    public DebugEntry getDebugEntry(int widgetID) {
+    public DroneDebugEntry getDebugEntry(int widgetID) {
         return debugList.get(widgetID);
     }
 
@@ -1311,7 +1321,7 @@ public class EntityDrone extends EntityDroneBase implements
 
     @Override
     public void addDebugEntry(String message, BlockPos pos) {
-        DebugEntry entry = new DebugEntry(message, getActiveWidgetIndex(), pos);
+        DroneDebugEntry entry = new DroneDebugEntry(message, getActiveWidgetIndex(), pos);
 
         // add the entry server-side
         addDebugEntry(entry);
@@ -1323,14 +1333,14 @@ public class EntityDrone extends EntityDroneBase implements
         }
     }
 
-    public void addDebugEntry(DebugEntry entry) {
+    public void addDebugEntry(DroneDebugEntry entry) {
         debugList.addEntry(entry);
     }
 
     public void trackAsDebugged(ServerPlayerEntity player) {
         NetworkHandler.sendToPlayer(new PacketSyncDroneEntityProgWidgets(this), player);
 
-        for (DebugEntry entry : debugList.getAll()) {
+        for (DroneDebugEntry entry : debugList.getAll()) {
             NetworkHandler.sendToPlayer(new PacketSendDroneDebugEntry(entry, this), player);
         }
 
@@ -1424,24 +1434,24 @@ public class EntityDrone extends EntityDroneBase implements
     }
 
     private class DroneDebugList {
-        private final Map<Integer, DebugEntry> debugEntries = new HashMap<>();
+        private final Map<Integer, DroneDebugEntry> debugEntries = new HashMap<>();
 
         private DroneDebugList() {
         }
 
-        void addEntry(DebugEntry entry) {
+        void addEntry(DroneDebugEntry entry) {
             debugEntries.put(EntityDrone.this.getActiveWidgetIndex(), entry);
         }
 
-        public Collection<DebugEntry> getAll() {
+        public Collection<DroneDebugEntry> getAll() {
             return debugEntries.values();
         }
 
-        public DebugEntry get(int widgetId) {
+        public DroneDebugEntry get(int widgetId) {
             return debugEntries.get(widgetId);
         }
 
-        public DebugEntry getCurrent() {
+        public DroneDebugEntry getCurrent() {
             return debugEntries.get(EntityDrone.this.getActiveWidgetIndex());
         }
     }

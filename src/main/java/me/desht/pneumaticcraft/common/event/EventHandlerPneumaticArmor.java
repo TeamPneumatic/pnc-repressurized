@@ -28,7 +28,7 @@ import net.minecraft.util.EntityDamageSource;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.Difficulty;
 import net.minecraftforge.event.AnvilUpdateEvent;
 import net.minecraftforge.event.TickEvent;
@@ -42,6 +42,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static me.desht.pneumaticcraft.common.item.ItemPneumaticArmor.isPneumaticArmorPiece;
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 /**
  * Events related to Pneumatic Armor.  Note any player-tick events are handled in CommonHUDHandler#tickArmorPiece()
@@ -66,8 +67,8 @@ public class EventHandlerPneumaticArmor {
                     CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
                     if (handler.isArmorReady(EquipmentSlotType.HEAD) && handler.getArmorPressure(EquipmentSlotType.HEAD) > 0 && handler.isEntityTrackerEnabled()) {
                         NetworkHandler.sendToPlayer(new PacketSendArmorHUDMessage(
-                                "pneumaticcraft.armor.message.targetWarning", 60, 0x70FF4000,
-                                        event.getEntityLiving().getName().getFormattedText()),
+                                xlate("pneumaticcraft.armor.message.targetWarning", event.getEntityLiving().getName().getString()),
+                                        60, 0x70FF4000),
                                 player
                         );
                     }
@@ -206,7 +207,7 @@ public class EventHandlerPneumaticArmor {
                 float actualBoost = Math.max(1.0f, rangeUpgrades * power);
                 float scale = player.isSprinting() ? 0.3f * actualBoost : 0.225f * actualBoost;
                 float rotRad = player.rotationYaw * 0.017453292f;  // deg2rad
-                Vec3d m = player.getMotion();
+                Vector3d m = player.getMotion();
                 double addX = m.x == 0 ? 0 : - (double)(MathHelper.sin(rotRad) * scale);
                 double addZ = m.z == 0 ? 0 : + (double)(MathHelper.cos(rotRad) * scale);
                 player.setMotion(m.x + addX, m.y + actualBoost * 0.15f, m.z + addZ);
@@ -228,7 +229,7 @@ public class EventHandlerPneumaticArmor {
         int max = PneumaticValues.PNEUMATIC_JET_BOOTS_MAX_UPGRADES;
         if (isPneumaticArmorPiece(player, EquipmentSlotType.FEET)) {
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(event.getPlayer());
-            if (handler.isJetBootsEnabled() && !player.onGround && handler.isJetBootsBuilderMode()) {
+            if (handler.isJetBootsEnabled() && !player.isOnGround() && handler.isJetBootsBuilderMode()) {
                 int n = (max + 1) - handler.getUpgradeCount(EquipmentSlotType.FEET, EnumUpgrade.JET_BOOTS, max);
                 if (n < 4) {
                     float mult = 5.0f / n;   // default dig speed when not on ground is 1/5 of normal
@@ -258,7 +259,7 @@ public class EventHandlerPneumaticArmor {
         }
     }
 
-    private static final Vec3d IDLE_VEC = new Vec3d(0, -0.5, -0);
+    private static final Vector3d IDLE_VEC = new Vector3d(0, -0.5, -0);
 
     /**
      * Client side: play particles for all known players (including us) with active jet boots either idling or firing
@@ -268,12 +269,12 @@ public class EventHandlerPneumaticArmor {
         if (event.phase == TickEvent.Phase.END && event.player.world.isRemote) {
             JetBootsStateTracker tracker = JetBootsStateTracker.getTracker(event.player);
             for (PlayerEntity player : event.player.world.getPlayers()) {
-                if (!player.onGround && isPneumaticArmorPiece(player, EquipmentSlotType.FEET)) {
+                if (!player.isOnGround() && isPneumaticArmorPiece(player, EquipmentSlotType.FEET)) {
                     JetBootsStateTracker.JetBootsState state = tracker.getJetBootsState(player);
                     if (state != null && state.isEnabled()) {
                         int nParticles = state.isActive() ? 5 : 1;
-                        Vec3d jetVec = state.shouldRotatePlayer() ? player.getLookVec().scale(-0.5) : IDLE_VEC;
-                        Vec3d feet = getFeetPos(player, state.shouldRotatePlayer());
+                        Vector3d jetVec = state.shouldRotatePlayer() ? player.getLookVec().scale(-0.5) : IDLE_VEC;
+                        Vector3d feet = getFeetPos(player, state.shouldRotatePlayer());
                         for (int i = 0; i < nParticles; i++) {
                             player.world.addParticle(AirParticleData.DENSE, feet.x, feet.y, feet.z, jetVec.x, jetVec.y, jetVec.z);
                         }
@@ -283,11 +284,11 @@ public class EventHandlerPneumaticArmor {
         }
     }
 
-    private Vec3d getFeetPos(PlayerEntity player, boolean rotated) {
-        if (!rotated) return player.getPositionVector();
+    private Vector3d getFeetPos(PlayerEntity player, boolean rotated) {
+        if (!rotated) return player.getPositionVec();
 
         double midY = (player.getPosY() + player.getEyePosition(1.0f).y) / 2;
-        return player.getPositionVector().add(player.getLookVec().scale(player.getPosY() - midY));
+        return player.getPositionVec().add(player.getLookVec().scale(player.getPosY() - midY));
     }
 
     @SubscribeEvent

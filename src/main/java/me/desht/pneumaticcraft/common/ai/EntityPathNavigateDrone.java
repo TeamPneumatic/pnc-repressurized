@@ -20,7 +20,7 @@ import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -160,7 +160,7 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
                 pathFollow();
 
                 if (!noPath()) {
-                    Vec3d vec32 = currentPath.getPosition(entity);
+                    Vector3d vec32 = currentPath.getPosition(entity);
 
                     if (vec32 != null) {
                         entity.getMoveHelper().setMoveTo(vec32.x, vec32.y, vec32.z, speed);
@@ -232,7 +232,7 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
     }
 
     @Override
-    public boolean isDirectPathBetweenPoints(Vec3d p_75493_1_, Vec3d p_75493_2_, int p_75493_3_, int p_75493_4_, int p_75493_5_) {
+    public boolean isDirectPathBetweenPoints(Vector3d p_75493_1_, Vector3d p_75493_2_, int p_75493_3_, int p_75493_4_, int p_75493_5_) {
         return false;
     }
 
@@ -244,7 +244,7 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
     }
 
     @Override
-    protected Vec3d getEntityPosition() {
+    protected Vector3d getEntityPosition() {
         return pathfindingEntity.getDronePos();
     }
 

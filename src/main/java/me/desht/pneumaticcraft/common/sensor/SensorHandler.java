@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.sensor;
 
 import com.google.common.collect.ImmutableSet;
+import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.universal_sensor.*;
 import me.desht.pneumaticcraft.common.sensor.eventSensors.BlockInteractSensor;
@@ -192,8 +193,8 @@ public class SensorHandler implements ISensorRegistry {
 
         @Override
         @OnlyIn(Dist.CLIENT)
-        public void drawAdditionalInfo(FontRenderer fontRenderer) {
-            coordinateSensor.drawAdditionalInfo(fontRenderer);
+        public void drawAdditionalInfo(MatrixStack matrixStack, FontRenderer fontRenderer) {
+            coordinateSensor.drawAdditionalInfo(matrixStack, fontRenderer);
         }
 
         @Override
@@ -250,8 +251,8 @@ public class SensorHandler implements ISensorRegistry {
 
         @Override
         @OnlyIn(Dist.CLIENT)
-        public void drawAdditionalInfo(FontRenderer fontRenderer) {
-            coordinateSensor.drawAdditionalInfo(fontRenderer);
+        public void drawAdditionalInfo(MatrixStack matrixStack, FontRenderer fontRenderer) {
+            coordinateSensor.drawAdditionalInfo(matrixStack, fontRenderer);
         }
 
         @Override

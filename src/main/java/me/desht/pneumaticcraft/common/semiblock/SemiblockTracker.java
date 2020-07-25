@@ -140,7 +140,7 @@ public enum SemiblockTracker {
     }
 
     private ResourceLocation getKey(World world) {
-        return world.getDimension().getType().getRegistryName();
+        return world.func_234923_W_().func_240901_a_();
     }
 
     private static class SemiblockCollection {
