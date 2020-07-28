@@ -1,10 +1,9 @@
 package me.desht.pneumaticcraft.api.universal_sensor;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 
 import java.util.List;
@@ -34,14 +33,16 @@ public interface ISensorSetting {
      */
     boolean needsTextBox();
 
-    /**
-     * Called by GuiScreen#drawScreen this method can be used to render additional things like status/info text.
-     *
-     * @param matrixStack the matrix stack
-     * @param fontRenderer the font renderer
-     */
-    // FIXME: move to external rendering class.  ISensorSetting can be loaded on server too.
-    void drawAdditionalInfo(MatrixStack matrixStack, FontRenderer fontRenderer);
+    default void getAdditionalInfo(List<ITextComponent> info) {}
+
+//    /**
+//     * Called by GuiScreen#drawScreen this method can be used to render additional things like status/info text.
+//     *
+//     * @param matrixStack the matrix stack
+//     * @param fontRenderer the font renderer
+//     */
+//    // FIXME: move to external rendering class.  ISensorSetting can be loaded on server too.
+//    void drawAdditionalInfo(MatrixStack matrixStack, FontRenderer fontRenderer);
 
     /**
      * Should return the description of this sensor displayed in the GUI stat. Information should at least include

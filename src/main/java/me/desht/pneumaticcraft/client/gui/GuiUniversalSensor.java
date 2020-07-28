@@ -110,6 +110,17 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
             matrixStack.pop();
         }
 
+        ISensorSetting sensor = SensorHandler.getInstance().getSensorFromPath(te.getSensorSetting());
+        if (sensor != null) {
+            List<ITextComponent> info = new ArrayList<>();
+            sensor.getAdditionalInfo(info);
+            int yOff = 0;
+            for (ITextComponent line : info) {
+                font.func_238422_b_(matrixStack, line, 70, 48 + yOff, 0x404040);
+                yOff += font.FONT_HEIGHT;
+            }
+        }
+
         if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {
             GuiUtils.showPopupHelpScreen(matrixStack, this, font,
                     PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.entityFilter.helpText"), 60));
@@ -136,13 +147,6 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
     protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float opacity, int x, int y) {
         super.drawGuiContainerBackgroundLayer(matrixStack, opacity, x, y);
 
-        ISensorSetting sensor = SensorHandler.getInstance().getSensorFromPath(te.getSensorSetting());
-        if (sensor != null) {
-            matrixStack.push();
-            matrixStack.translate(guiLeft, guiTop, 0);
-            sensor.drawAdditionalInfo(matrixStack, font);
-            matrixStack.pop();
-        }
     }
 
     @Override
@@ -162,7 +166,7 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
         String[] directories = SensorHandler.getInstance().getDirectoriesAtLocation(te.getSensorSetting());
 
         if (!te.getSensorSetting().isEmpty()) {
-            addButtonLocal(new WidgetButtonExtended(guiLeft + 70, guiTop + 18, 20, 20, ARROW_LEFT_SHORT).withTag("back"));
+            addButtonLocal(new WidgetButtonExtended(guiLeft + 70, guiTop + 20, 16, 16, ARROW_LEFT).withTag("back"));
         }
         if (directories.length == 0 || te.getSensorSetting().isEmpty()) {
             addButtonLocal(new WidgetButtonExtended(guiLeft + 70, guiTop + 125, 98, 20, I18n.format("pneumaticcraft.gui.button.showRange"), b -> { onClose(); te.showRangeLines(); }));
@@ -172,12 +176,12 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
         if (page > maxPage) page = maxPage;
         if (page < 1) page = 1;
         if (maxPage > 1) {
-            addButtonLocal(new WidgetButtonExtended(guiLeft + 70, guiTop + 40 + 22 * MAX_SENSORS_PER_PAGE, 30, 20, ARROW_LEFT, b -> {
+            addButtonLocal(new WidgetButtonExtended(guiLeft + 70, guiTop + 40 + 22 * MAX_SENSORS_PER_PAGE, 30, 20, TRIANGLE_LEFT, b -> {
                 page--;
                 if (page <= 0) page = maxPage;
                 updateButtons();
             }));
-            addButtonLocal(new WidgetButtonExtended(guiLeft + 138, guiTop + 40 + 22 * MAX_SENSORS_PER_PAGE, 30, 20, ARROW_RIGHT, b -> {
+            addButtonLocal(new WidgetButtonExtended(guiLeft + 138, guiTop + 40 + 22 * MAX_SENSORS_PER_PAGE, 30, 20, TRIANGLE_RIGHT, b -> {
                 page++;
                 if (page > maxPage) page = 1;
                 updateButtons();

@@ -1,18 +1,17 @@
 package me.desht.pneumaticcraft.common.sensor.pollSensors;
 
 import com.google.common.collect.ImmutableSet;
-import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.universal_sensor.IPollSensorSetting;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.server.management.PlayerList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
+import java.util.List;
 import java.util.Set;
 
 public class WorldPlayersInServerSensor implements IPollSensorSetting {
@@ -51,8 +50,7 @@ public class WorldPlayersInServerSensor implements IPollSensorSetting {
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
-    public void drawAdditionalInfo(MatrixStack matrixStack, FontRenderer fontRenderer) {
-        fontRenderer.drawString(matrixStack, "Player Name", 70, 48, 0x404040);
+    public void getAdditionalInfo(List<ITextComponent> info) {
+        info.add(new StringTextComponent("Player Name"));
     }
 }

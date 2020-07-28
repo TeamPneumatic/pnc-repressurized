@@ -1,14 +1,12 @@
 package me.desht.pneumaticcraft.common.sensor.pollSensors.entity;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.common.util.EntityFilter;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.util.text.ITextComponent;
 
 import java.util.List;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class EntityInRangeSensor extends EntityPollSensor {
 
@@ -42,9 +40,8 @@ public class EntityInRangeSensor extends EntityPollSensor {
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
-    public void drawAdditionalInfo(MatrixStack matrixStack, FontRenderer fontRenderer) {
-        fontRenderer.drawString(matrixStack, I18n.format("pneumaticcraft.gui.entityFilter"), 70, 48, 0x404040);
+    public void getAdditionalInfo(List<ITextComponent> info) {
+        info.add(xlate("pneumaticcraft.gui.entityFilter"));
     }
 
     @Override

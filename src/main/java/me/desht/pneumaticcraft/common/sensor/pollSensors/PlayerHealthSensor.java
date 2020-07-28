@@ -1,10 +1,8 @@
 package me.desht.pneumaticcraft.common.sensor.pollSensors;
 
 import com.google.common.collect.ImmutableSet;
-import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.universal_sensor.IPollSensorSetting;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -28,11 +26,6 @@ public class PlayerHealthSensor implements IPollSensorSetting {
     @Override
     public boolean needsTextBox() {
         return true;
-    }
-
-    @Override
-    public void drawAdditionalInfo(MatrixStack matrixStack, FontRenderer fontRenderer) {
-
     }
 
     @Override

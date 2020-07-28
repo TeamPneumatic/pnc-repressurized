@@ -4,18 +4,19 @@ import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.universal_sensor.IPollSensorSetting;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -37,8 +38,8 @@ public class TwitchStreamerSensor implements IPollSensorSetting {
     }
 
     @Override
-    public void drawAdditionalInfo(MatrixStack matrixStack, FontRenderer fontRenderer) {
-        fontRenderer.drawString(matrixStack, "Player Name", 70, 48, 0x404040);
+    public void getAdditionalInfo(List<ITextComponent> info) {
+        info.add(new StringTextComponent("Player Name"));
     }
 
     @Override

@@ -1,15 +1,11 @@
 package me.desht.pneumaticcraft.common.sensor.pollSensors;
 
 import com.google.common.collect.ImmutableSet;
-import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.universal_sensor.IBlockAndCoordinatePollSensor;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.util.Set;
 
@@ -45,10 +41,5 @@ public class BlockComparatorSensor implements IBlockAndCoordinatePollSensor {
             }
         }
         return maxStrength;
-    }
-
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public void drawAdditionalInfo(MatrixStack matrixStack, FontRenderer fontRenderer) {
     }
 }

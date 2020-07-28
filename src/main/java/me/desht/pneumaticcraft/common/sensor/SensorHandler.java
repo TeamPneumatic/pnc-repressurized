@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.sensor;
 
 import com.google.common.collect.ImmutableSet;
-import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.universal_sensor.*;
 import me.desht.pneumaticcraft.common.sensor.eventSensors.BlockInteractSensor;
@@ -10,13 +9,11 @@ import me.desht.pneumaticcraft.common.sensor.eventSensors.PlayerItemPickupSensor
 import me.desht.pneumaticcraft.common.sensor.pollSensors.*;
 import me.desht.pneumaticcraft.common.sensor.pollSensors.entity.EntityInRangeSensor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUniversalSensor;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.eventbus.api.Event;
 
 import java.util.*;
@@ -192,9 +189,8 @@ public class SensorHandler implements ISensorRegistry {
         }
 
         @Override
-        @OnlyIn(Dist.CLIENT)
-        public void drawAdditionalInfo(MatrixStack matrixStack, FontRenderer fontRenderer) {
-            coordinateSensor.drawAdditionalInfo(matrixStack, fontRenderer);
+        public void getAdditionalInfo(List<ITextComponent> info) {
+            coordinateSensor.getAdditionalInfo(info);
         }
 
         @Override
@@ -250,9 +246,8 @@ public class SensorHandler implements ISensorRegistry {
         }
 
         @Override
-        @OnlyIn(Dist.CLIENT)
-        public void drawAdditionalInfo(MatrixStack matrixStack, FontRenderer fontRenderer) {
-            coordinateSensor.drawAdditionalInfo(matrixStack, fontRenderer);
+        public void getAdditionalInfo(List<ITextComponent> info) {
+            coordinateSensor.getAdditionalInfo(info);
         }
 
         @Override

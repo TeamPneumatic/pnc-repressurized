@@ -1,14 +1,10 @@
 package me.desht.pneumaticcraft.common.sensor.eventSensors;
 
 import com.google.common.collect.ImmutableSet;
-import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.universal_sensor.IBlockAndCoordinateEventSensor;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.Event;
 
@@ -43,10 +39,5 @@ public class BlockInteractSensor implements IBlockAndCoordinateEventSensor {
     @Override
     public int getRedstonePulseLength() {
         return 5;
-    }
-
-    @Override
-    @OnlyIn(Dist.CLIENT)
-    public void drawAdditionalInfo(MatrixStack matrixStack, FontRenderer fontRenderer) {
     }
 }
