@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.config;
 
 import com.google.common.collect.ImmutableMap;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.UpgradeRenderHandlerList;
 import me.desht.pneumaticcraft.common.config.ClientConfig.PathUpdateSetting;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget.WidgetDifficulty;
 import me.desht.pneumaticcraft.lib.Names;
@@ -46,7 +45,8 @@ public class ConfigHelper {
         PNCConfig.Client.Sound.jetbootsVolume = client.sound.jetbootsVolume.get();
         PNCConfig.Client.Sound.jetbootsVolumeBuilderMode = client.sound.jetbootsVolumeBuilderMode.get();
 
-        UpgradeRenderHandlerList.instance().refreshConfig();
+//        ArmorUpgradeClientRegistry.getInstance().refreshConfig();
+//        UpgradeRenderHandlerList.instance().refreshConfig();
     }
 
     static void refreshCommon(net.minecraftforge.fml.config.ModConfig config) {

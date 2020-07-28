@@ -1,10 +1,10 @@
 package me.desht.pneumaticcraft.common.util.upgrade;
 
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.UpgradeRenderHandlerList;
 import me.desht.pneumaticcraft.common.core.ModEntities;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
+import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.sensor.SensorHandler;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.inventory.EquipmentSlotType;
@@ -69,9 +69,9 @@ public class UpgradesDBSetup {
 
         // Pneumatic Armor
         List<Builder> armor = Arrays.asList(new Builder(), new Builder(), new Builder(), new Builder());
-        for (EquipmentSlotType slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
+        for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
             // upgrades automatically added due to an upgrade handler being registered
-            UpgradeRenderHandlerList.instance().getHandlersForSlot(slot).forEach(handler ->
+            ArmorUpgradeRegistry.getInstance().getHandlersForSlot(slot).forEach(handler ->
                     Arrays.stream(handler.getRequiredUpgrades()).forEach(upgrade -> {
                         armor.get(slot.getIndex()).with(upgrade, handler.getMaxInstallableUpgrades(upgrade));
                     })

@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.client.util;
 
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.EntityTrackUpgradeHandler;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.EntityTrackerClientHandler;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MainWindow;
@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
@@ -30,6 +31,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.data.EmptyModelData;
+import net.minecraftforge.client.settings.KeyModifier;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -60,7 +62,7 @@ public class ClientUtils {
     }
 
     public static void addDroneToHudHandler(EntityDrone drone, BlockPos pos) {
-        HUDHandler.instance().getSpecificRenderer(EntityTrackUpgradeHandler.class).getTargetsStream()
+        HUDHandler.getInstance().getSpecificRenderer(EntityTrackerClientHandler.class).getTargetsStream()
                 .filter(target -> target.entity == drone)
                 .forEach(target -> target.getDroneAIRenderer().addBlackListEntry(drone.world, pos));
     }
@@ -177,5 +179,22 @@ public class ClientUtils {
 
     public static ITextComponent translateDirectionComponent(Direction d) {
         return new TranslationTextComponent("pneumaticcraft.gui.tooltip.direction." + d.toString());
+    }
+
+    /**
+     * Because keyBinding.getTranslationKey() doesn't work that well...
+     *
+     * @param keyBinding the keybinding
+     * @return a human-friendly string representation
+     */
+    public static String translateKeyBind(KeyBinding keyBinding) {
+        String res = I18n.format(keyBinding.getTranslationKey());
+        if (res.equals(keyBinding.getTranslationKey()) && keyBinding.getKey().getType() == InputMappings.Type.KEYSYM) {
+            if (keyBinding.getKey().getKeyCode() >= 32 && keyBinding.getKey().getKeyCode() < 128) {
+                res = String.valueOf(Character.toChars(keyBinding.getKey().getKeyCode()));
+            }
+        }
+        String mod = keyBinding.getKeyModifier() != KeyModifier.NONE ? keyBinding.getKeyModifier() + " + " : "";
+        return mod + res;
     }
 }

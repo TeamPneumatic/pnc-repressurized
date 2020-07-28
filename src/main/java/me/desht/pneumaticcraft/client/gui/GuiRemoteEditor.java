@@ -98,7 +98,7 @@ public class GuiRemoteEditor extends GuiRemote {
                 .setRenderedIcon(Textures.GUI_PASTEBIN_ICON_LOCATION)
         );
 
-        WidgetCheckBox snapCheck = new WidgetCheckBox(guiLeft + 194, guiTop + 105, 0xFF404040, xlate("pneumaticcraft.gui.remote.snapToGrid"),
+        WidgetCheckBox snapCheck = new WidgetCheckBox(guiLeft + 194, guiTop + 105, 0xFF404040, xlate("pneumaticcraft.gui.misc.snapToGrid"),
                 b -> ConfigHelper.setGuiRemoteGridSnap(b.checked));
         snapCheck.checked = PNCConfig.Client.guiRemoteGridSnap;
         addButton(snapCheck);

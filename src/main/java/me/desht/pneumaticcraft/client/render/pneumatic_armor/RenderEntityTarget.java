@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.client.render.pneumatic_armor;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IEntityTrackEntry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
-import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiDroneDebuggerOptions;
+import me.desht.pneumaticcraft.client.gui.pneumatic_armor.option_screens.DroneDebuggerOptions;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat.StatIcon;
 import me.desht.pneumaticcraft.client.render.RenderProgressBar;
@@ -199,7 +199,7 @@ public class RenderEntityTarget {
 
     public void selectAsDebuggingTarget() {
         if (isInitialized() && isPlayerLookingAtTarget() && entity instanceof EntityDrone) {
-            GuiDroneDebuggerOptions.clearAreaShowWidgetId();
+            DroneDebuggerOptions.clearAreaShowWidgetId();
             if (ItemPneumaticArmor.isPlayerDebuggingEntity(ClientUtils.getClientPlayer(), entity)) {
                 NetworkHandler.sendToServer(new PacketUpdateDebuggingDrone(-1));
                 Minecraft.getInstance().player.playSound(ModSounds.SCI_FI.get(), 1.0f, 2.0f);

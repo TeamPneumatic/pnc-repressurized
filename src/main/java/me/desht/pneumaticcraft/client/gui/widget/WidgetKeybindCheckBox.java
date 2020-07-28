@@ -1,22 +1,25 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
-import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
+import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.client.ClientSetup;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.UpgradeRenderHandlerList;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorFeatureStatus;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketToggleArmorFeature;
+import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.client.GameSettings;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
@@ -34,51 +37,62 @@ import java.util.function.Consumer;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipProvider {
-    public static final String UPGRADE_PREFIX = "pneumaticcraft.armor.upgrade.";
-
     private static WidgetKeybindCheckBox coreComponents;
 
-    private final String upgradeID;
+    private final ResourceLocation upgradeID;
     private boolean isAwaitingKey;
     private ITextComponent oldCheckboxText;
     private KeyBinding keyBinding;
 
-    public WidgetKeybindCheckBox(int x, int y, int color, String upgradeID, Consumer<WidgetCheckBox> pressable) {
-        super(x, y, color, xlate("pneumaticcraft.gui.enableModule", xlate(UPGRADE_PREFIX + upgradeID)), pressable);
+    private WidgetKeybindCheckBox(ResourceLocation upgradeID, int x, int y, int color, Consumer<WidgetCheckBox> pressable) {
+        super(x, y, color,
+                xlate("pneumaticcraft.gui.enableModule", xlate(ArmorUpgradeRegistry.getStringKey(upgradeID))),
+                pressable);
 
         this.upgradeID = upgradeID;
         this.keyBinding = findSavedKeybind();
-
-        if (!KeyDispatcher.id2checkBox.containsKey(upgradeID)) {
-            this.checked = ArmorFeatureStatus.INSTANCE.isUpgradeEnabled(upgradeID);
-            if (keyBinding != null) {
-                KeyDispatcher.addKeybind(keyBinding, this);
-            }
-            KeyDispatcher.id2checkBox.put(this.upgradeID, this);
-            if (upgradeID.equals("coreComponents")) {
-                // stash this one since it's referenced a lot
-                coreComponents = this;
-            }
-        } else {
-            this.checked = KeyDispatcher.id2checkBox.get(upgradeID).checked;
-        }
     }
 
-    private KeyBinding makeKeyBinding(int keyCode, KeyModifier modifier) {
-        return new KeyBinding(UPGRADE_PREFIX + upgradeID, KeyConflictContext.IN_GAME, modifier,
-                InputMappings.Type.KEYSYM, keyCode, Names.PNEUMATIC_KEYBINDING_CATEGORY);
+    public static WidgetKeybindCheckBox getOrCreate(ResourceLocation upgradeID, int x, int y, int color, Consumer<WidgetCheckBox> pressable) {
+        WidgetKeybindCheckBox newCheckBox = KeyDispatcher.id2checkBox.get(upgradeID);
+        if (newCheckBox == null) {
+            newCheckBox = new WidgetKeybindCheckBox(upgradeID, x, y, color, pressable);
+            newCheckBox.checked = ArmorFeatureStatus.INSTANCE.isUpgradeEnabled(upgradeID);
+            if (newCheckBox.keyBinding != null) {
+                KeyDispatcher.addKeybind(newCheckBox.keyBinding, newCheckBox);
+            }
+            KeyDispatcher.id2checkBox.put(upgradeID, newCheckBox);
+            if (upgradeID.equals(ArmorUpgradeRegistry.getInstance().coreComponentsHandler.getID())) {
+                // stash this one since it's referenced a lot
+                coreComponents = newCheckBox;
+            }
+        }
+        return newCheckBox;
+    }
+
+    public static WidgetKeybindCheckBox get(ResourceLocation upgradeID) {
+        return KeyDispatcher.id2checkBox.get(upgradeID);
+    }
+
+    public static WidgetKeybindCheckBox forUpgrade(IArmorUpgradeHandler handler) {
+        return get(handler.getID());
+    }
+
+    public static WidgetKeybindCheckBox forUpgrade(IArmorUpgradeClientHandler handler) {
+        return get(handler.getCommonHandler().getID());
     }
 
     public static WidgetKeybindCheckBox getCoreComponents() {
         return coreComponents;
     }
 
-    public static WidgetKeybindCheckBox fromKeyBindingName(String name) {
-        return KeyDispatcher.id2checkBox.get(name);
+    public static boolean isHandlerEnabled(IArmorUpgradeHandler handler) {
+        return forUpgrade(handler).checked;
     }
 
-    public static boolean isHandlerEnabled(IUpgradeRenderHandler handler) {
-        return fromKeyBindingName(handler.getUpgradeID()).checked;
+    private KeyBinding makeKeyBinding(int keyCode, KeyModifier modifier) {
+        return new KeyBinding(ArmorUpgradeRegistry.getStringKey(upgradeID), KeyConflictContext.IN_GAME, modifier,
+                InputMappings.Type.KEYSYM, keyCode, Names.PNEUMATIC_KEYBINDING_CATEGORY);
     }
 
     @Override
@@ -102,23 +116,24 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            CommonArmorHandler hudHandler = CommonArmorHandler.getHandlerForPlayer();
-            for (EquipmentSlotType slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
-                List<IUpgradeRenderHandler> renderHandlers = UpgradeRenderHandlerList.instance().getHandlersForSlot(slot);
-                for (int i = 0; i < renderHandlers.size(); i++) {
-                    IUpgradeRenderHandler upgradeRenderHandler = renderHandlers.get(i);
-                    if ((upgradeRenderHandler.getUpgradeID()).equals(upgradeID) && hudHandler.isUpgradeRendererInserted(slot, i)) {
+            CommonArmorHandler commonArmorHandler = CommonArmorHandler.getHandlerForPlayer();
+            for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
+//                List<IArmorUpgradeClientHandler> renderHandlers = UpgradeRenderHandlerList.instance().getHandlersForSlot(slot);
+                List<IArmorUpgradeHandler> upgradeHandlers = ArmorUpgradeRegistry.getInstance().getHandlersForSlot(slot);
+                for (int i = 0; i < upgradeHandlers.size(); i++) {
+                    IArmorUpgradeHandler upgradeHandler = upgradeHandlers.get(i);
+                    if ((upgradeHandler.getID()).equals(upgradeID) && commonArmorHandler.isUpgradeInserted(slot, i)) {
                         NetworkHandler.sendToServer(new PacketToggleArmorFeature((byte) i, coreComponents.checked && checked, slot));
-                        hudHandler.setUpgradeRenderEnabled(slot, (byte)i, coreComponents.checked && checked);
-                        HUDHandler.instance().addFeatureToggleMessage(UPGRADE_PREFIX + upgradeID, checked);
+                        commonArmorHandler.setUpgradeEnabled(slot, (byte)i, coreComponents.checked && checked);
+                        HUDHandler.getInstance().addFeatureToggleMessage(ArmorUpgradeRegistry.getStringKey(upgradeID), checked);
                         break;
                     }
                 }
-                if (upgradeID.equals("coreComponents")) {
-                    for (int i = 0; i < renderHandlers.size(); i++) {
-                        boolean state = WidgetKeybindCheckBox.fromKeyBindingName(renderHandlers.get(i).getUpgradeID()).checked;
+                if (upgradeID.equals(ArmorUpgradeRegistry.getInstance().coreComponentsHandler.getID())) {
+                    for (int i = 0; i < upgradeHandlers.size(); i++) {
+                        boolean state = WidgetKeybindCheckBox.forUpgrade(upgradeHandlers.get(i)).checked;
                         NetworkHandler.sendToServer(new PacketToggleArmorFeature((byte) i, coreComponents.checked && state, slot));
-                        hudHandler.setUpgradeRenderEnabled(slot, (byte)i, coreComponents.checked && state);
+                        commonArmorHandler.setUpgradeEnabled(slot, (byte)i, coreComponents.checked && state);
                     }
                 }
             }
@@ -158,7 +173,8 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
             keyBinding = makeKeyBinding(GLFW.GLFW_KEY_UNKNOWN, KeyModifier.NONE);
             ClientRegistry.registerKeyBinding(keyBinding);
             KeyBinding.resetKeyBindingArrayAndHash();
-            ClientSetup.keybindToKeyCodes.put(upgradeID, Pair.of(GLFW.GLFW_KEY_UNKNOWN, KeyModifier.NONE));
+            String keybindName = ArmorUpgradeRegistry.getStringKey(upgradeID);
+            ClientSetup.keybindToKeyCodes.put(keybindName, Pair.of(GLFW.GLFW_KEY_UNKNOWN, KeyModifier.NONE));
             Minecraft.getInstance().gameSettings.saveOptions();
         }
     }
@@ -173,7 +189,7 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
                 KeyDispatcher.cleanupKeybind(upgradeID);
                 // NOTE: we can't use "this" here because the id->checkbox and keybind->checkbox
                 // maps MUST continue to refer to the same object!
-                KeyDispatcher.addKeybind(keyBinding, WidgetKeybindCheckBox.fromKeyBindingName(upgradeID));
+                KeyDispatcher.addKeybind(keyBinding, KeyDispatcher.id2checkBox.get(upgradeID));
                 setMessage(oldCheckboxText);
             }
             return true;
@@ -191,8 +207,7 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
      * @return the key binding
      */
     private KeyBinding setOrAddKeybind(int keyCode, KeyModifier modifier) {
-        String keybindName = UPGRADE_PREFIX + upgradeID;
-
+        String keybindName = ArmorUpgradeRegistry.getStringKey(upgradeID);
         GameSettings gameSettings = Minecraft.getInstance().gameSettings;
         for (KeyBinding keyBinding : gameSettings.keyBindings) {
             if (keyBinding != null && keyBinding.getKeyDescription().equals(keybindName)) {
@@ -205,7 +220,7 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
             }
         }
         // If the keybind wasn't registered yet, look for it in the Minecraft options.txt file (which
-        // we scanned in ClientProxy#getAllKeybindsFromOptionsFile() during pre-init)
+        // we scanned in ClientSetup#getAllKeybindsFromOptionsFile() during client init)
         if (keyCode < 0) {
             if (ClientSetup.keybindToKeyCodes.containsKey(keybindName)) {
                 Pair<Integer,KeyModifier> binding = ClientSetup.keybindToKeyCodes.get(keybindName);
@@ -226,8 +241,8 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
     @Override
     public void addTooltip(double mouseX, double mouseY, List<ITextComponent> curTooltip, boolean shiftPressed) {
         if (keyBinding != null) {
-            String s = keyBinding.getKeyModifier() != KeyModifier.NONE ? keyBinding.getKeyModifier() + " + " : "";
-            curTooltip.add(xlate("pneumaticcraft.gui.keybindBoundKey", s + I18n.format(keyBinding.getKey().getTranslationKey())));
+            curTooltip.add(xlate("pneumaticcraft.gui.keybindBoundKey",
+                    TextFormatting.YELLOW + ClientUtils.translateKeyBind(keyBinding)));
         }
         if (!isAwaitingKey) {
             curTooltip.add(xlate("pneumaticcraft.gui.keybindRightClickToSet"));
@@ -237,14 +252,14 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
         }
     }
 
-    public String getUpgradeId() {
+    public ResourceLocation getUpgradeId() {
         return upgradeID;
     }
 
     @Mod.EventBusSubscriber(Dist.CLIENT)
     public static class KeyDispatcher {
         // maps upgrade ID to keybind widget
-        private static final Map<String, WidgetKeybindCheckBox> id2checkBox = new HashMap<>();
+        private static final Map<ResourceLocation, WidgetKeybindCheckBox> id2checkBox = new HashMap<>();
         // maps "<keycode>/<modifier>" to keybind widget
         private static final Map<String, WidgetKeybindCheckBox> dispatchMap = new HashMap<>();
 
@@ -268,7 +283,7 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
             dispatchMap.remove(key);
         }
 
-        static void cleanupKeybind(String upgradeID) {
+        static void cleanupKeybind(ResourceLocation upgradeID) {
             dispatchMap.values().removeIf(w -> w.upgradeID.equals(upgradeID));
         }
 

@@ -36,7 +36,7 @@ public class KeyHandler {
     }
 
     private KeyHandler() {
-        registerKeyListener(HUDHandler.instance());
+        registerKeyListener(HUDHandler.getInstance());
 
         keybindOpenOptions = registerKeyBinding(new KeyBinding(KeyHandler.DESCRIPTION_ARMOR_OPTIONS, KeyConflictContext.IN_GAME,
                 KeyModifier.NONE, InputMappings.Type.KEYSYM, GLFW.GLFW_KEY_U, Names.PNEUMATIC_KEYBINDING_CATEGORY));

@@ -30,7 +30,7 @@ public class TrackerBlacklistManager {
         if (!blacklist.contains(keyFor(te))) {
             e.printStackTrace();
             String title = te.getWorld().getBlockState(te.getPos()).getBlock().getRegistryName().toString();
-            HUDHandler.instance().addMessage(
+            HUDHandler.getInstance().addMessage(
                     new StringTextComponent("Block tracking failed for " + title + "!"),
                     Lists.newArrayList("A stacktrace can be found in the log."),
                     80, 0xFFFF0000);

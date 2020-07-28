@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiHelmetMainScreen;
+import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiArmorMainScreen;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.ContainerItemSearcher;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -125,7 +125,7 @@ public class GuiItemSearcher extends ContainerScreen<ContainerItemSearcher> {
     public void tick() {
         super.tick();
 
-        if (parentScreen instanceof GuiHelmetMainScreen
+        if (parentScreen instanceof GuiArmorMainScreen
                 && minecraft.player.getItemStackFromSlot(EquipmentSlotType.HEAD).getItem() != ModItems.PNEUMATIC_HELMET.get()) {
 //                minecraft.displayGuiScreen(parentScreen);
 //                onClose();

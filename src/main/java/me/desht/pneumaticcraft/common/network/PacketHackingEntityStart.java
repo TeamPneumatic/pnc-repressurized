@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderEntityTarget;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.EntityTrackUpgradeHandler;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.EntityTrackerClientHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import net.minecraft.entity.Entity;
@@ -45,7 +45,7 @@ public class PacketHackingEntityStart {
                 Entity entity = cPlayer.world.getEntityByID(entityId);
                 if (entity != null) {
                     CommonArmorHandler.getHandlerForPlayer(cPlayer).setHackedEntity(entity);
-                    HUDHandler.instance().getSpecificRenderer(EntityTrackUpgradeHandler.class).getTargetsStream()
+                    HUDHandler.getInstance().getSpecificRenderer(EntityTrackerClientHandler.class).getTargetsStream()
                             .filter(target -> target.entity == entity)
                             .findFirst()
                             .ifPresent(RenderEntityTarget::onHackConfirmServer);

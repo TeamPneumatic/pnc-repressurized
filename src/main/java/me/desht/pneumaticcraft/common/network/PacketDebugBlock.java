@@ -8,7 +8,7 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.util.Debugger;
+import me.desht.pneumaticcraft.common.util.BlockIndicator;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -33,7 +33,11 @@ public class PacketDebugBlock extends LocationIntPacket {
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> Debugger.indicateBlock(ClientUtils.getClientWorld(), pos));
+        ctx.get().enqueueWork(() -> {
+            if (ctx.get().getSender() == null) {
+                BlockIndicator.indicateBlock(ClientUtils.getClientWorld(), pos);
+            }
+        });
         ctx.get().setPacketHandled(true);
     }
 }

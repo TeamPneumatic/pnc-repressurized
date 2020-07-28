@@ -3,6 +3,8 @@ package me.desht.pneumaticcraft.client.render.pneumatic_armor;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.*;
 import me.desht.pneumaticcraft.api.hacking.IHacking;
+import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
+import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker.BlockTrackEntryList;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
@@ -86,13 +88,13 @@ public class PneumaticHelmetRegistry implements IPneumaticHelmetRegistry {
 
     @Override
     public void registerBlockTrackEntry(IBlockTrackEntry entry) {
-        BlockTrackEntryList.instance.trackList.add(entry);
+        BlockTrackEntryList.INSTANCE.trackList.add(entry);
     }
 
     @Override
-    public void registerRenderHandler(IUpgradeRenderHandler renderHandler) {
-        Validate.notNull(renderHandler, "Render handler can't be null!");
-        UpgradeRenderHandlerList.instance().addUpgradeRenderer(renderHandler);
+    public void registerRenderHandler(IArmorUpgradeHandler handler, IArmorUpgradeClientHandler clientHandler) {
+        Validate.notNull(clientHandler, "Render handler can't be null!");
+        ArmorUpgradeClientRegistry.getInstance().registerHandler(handler, clientHandler);
     }
 
     public IHackableBlock getHackable(Block block) {

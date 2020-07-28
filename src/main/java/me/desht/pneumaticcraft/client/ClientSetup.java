@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.client;
 
 import me.desht.pneumaticcraft.client.event.ClientTickHandler;
 import me.desht.pneumaticcraft.client.gui.*;
-import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiHelmetMainScreen;
+import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiArmorMainScreen;
 import me.desht.pneumaticcraft.client.gui.programmer.*;
 import me.desht.pneumaticcraft.client.gui.semiblock.GuiLogisticsProvider;
 import me.desht.pneumaticcraft.client.gui.semiblock.GuiLogisticsRequester;
@@ -16,19 +16,21 @@ import me.desht.pneumaticcraft.client.model.custom.FluidItemModel;
 import me.desht.pneumaticcraft.client.model.custom.PressureGlassModel;
 import me.desht.pneumaticcraft.client.model.custom.RenderedItemModel;
 import me.desht.pneumaticcraft.client.particle.AirParticle;
+import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
 import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
 import me.desht.pneumaticcraft.client.render.entity.*;
 import me.desht.pneumaticcraft.client.render.entity.drone.RenderDrone;
 import me.desht.pneumaticcraft.client.render.fluid.*;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.entity_tracker.EntityTrackHandler;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.CoordTrackUpgradeHandler;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.*;
 import me.desht.pneumaticcraft.client.render.tileentity.*;
 import me.desht.pneumaticcraft.client.render.tube_module.*;
 import me.desht.pneumaticcraft.client.util.ProgWidgetRenderer;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo;
 import me.desht.pneumaticcraft.common.core.*;
 import me.desht.pneumaticcraft.common.event.HackTickHandler;
+import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.progwidgets.*;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.util.DramaSplash;
@@ -70,10 +72,9 @@ public class ClientSetup {
     }
 
     static void init(FMLClientSetupEvent event) {
-        MinecraftForge.EVENT_BUS.register(HUDHandler.instance());
+        MinecraftForge.EVENT_BUS.register(HUDHandler.getInstance());
         MinecraftForge.EVENT_BUS.register(ClientTickHandler.instance());
         MinecraftForge.EVENT_BUS.register(HackTickHandler.instance());
-        MinecraftForge.EVENT_BUS.register(HUDHandler.instance().getSpecificRenderer(CoordTrackUpgradeHandler.class));
         MinecraftForge.EVENT_BUS.register(AreaRenderManager.getInstance());
         MinecraftForge.EVENT_BUS.register(KeyHandler.getInstance());
 
@@ -94,6 +95,7 @@ public class ClientSetup {
 
         setBlockRenderLayers();
 
+        registerArmorClientUpgradeHandlers();
         registerEntityRenderers();
         registerTESRs();
         registerScreenFactories();
@@ -103,7 +105,7 @@ public class ClientSetup {
 
         getAllKeybindsFromOptionsFile();
         EntityTrackHandler.init();
-        GuiHelmetMainScreen.initHelmetMainScreen();
+        GuiArmorMainScreen.initHelmetCoreComponents();
         DramaSplash.getInstance();
     }
 
@@ -321,6 +323,33 @@ public class ClientSetup {
         TubeModuleClientRegistry.registerTubeModuleRenderer(Names.MODULE_LOGISTICS, RenderLogisticsModule::new);
     }
 
+    private static void registerArmorClientUpgradeHandlers() {
+        ArmorUpgradeRegistry r = ArmorUpgradeRegistry.getInstance();
+        ArmorUpgradeClientRegistry cr = ArmorUpgradeClientRegistry.getInstance();
+
+        cr.registerHandler(r.coreComponentsHandler, new CoreComponentsClientHandler());
+        cr.registerHandler(r.blockTrackerHandler, new BlockTrackerClientHandler());
+        cr.registerHandler(r.entityTrackerHandler, new EntityTrackerClientHandler());
+        cr.registerHandler(r.searchHandler, new SearchClientHandler());
+        cr.registerHandler(r.coordTrackerHandler, new CoordTrackClientHandler());
+        cr.registerHandler(r.droneDebugHandler, new DroneDebugClientHandler());
+        cr.registerHandler(r.nightVisionHandler, new NightVisionClientHandler());
+        cr.registerHandler(r.scubaHandler, new ScubaClientHandler());
+        cr.registerHandler(r.hackHandler, new HackClientHandler());
+
+        cr.registerHandler(r.magnetHandler, new MagnetClientHandler());
+        cr.registerHandler(r.chargingHandler, new ChargingClientHandler());
+        cr.registerHandler(r.chestplateLauncherHandler, new ChestplateLauncherClientHandler());
+        cr.registerHandler(r.airConHandler, new AirConClientHandler());
+
+        cr.registerHandler(r.runSpeedHandler, new SpeedBoostClientHandler());
+        cr.registerHandler(r.jumpBoostHandler, new JumpBoostClientHandler());
+
+        cr.registerHandler(r.jetBootsHandler, new JetBootsClientHandler());
+        cr.registerHandler(r.stepAssistHandler, new StepAssistClientHandler());
+        cr.registerHandler(r.kickHandler, new KickClientHandler());
+    }
+
     private static void getAllKeybindsFromOptionsFile() {
         File optionsFile = new File(Minecraft.getInstance().gameDir, "options.txt");
         if (optionsFile.exists()) {
@@ -329,9 +358,10 @@ public class ClientSetup {
                 while ((s = bufferedreader.readLine()) != null) {
                     String[] str = s.split(":");
                     if (str[0].startsWith("key_")) {
-                        KeyModifier mod = str.length > 2 ? KeyModifier.valueFromString(str[2]) : KeyModifier.NONE;
+                        // key_<keybind-name>:<keycode>:<modifiers>
+                        KeyModifier modifier = str.length > 2 ? KeyModifier.valueFromString(str[2]) : KeyModifier.NONE;
                         InputMappings.Input i = InputMappings.getInputByName(str[1]);
-                        keybindToKeyCodes.put(str[0].substring(4), Pair.of(i.getKeyCode(), mod));
+                        keybindToKeyCodes.put(str[0].substring(4), Pair.of(i.getKeyCode(), modifier));
                     }
                 }
             } catch (Exception exception1) {

@@ -6,6 +6,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
@@ -15,6 +16,8 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 
 import java.util.Collections;
 import java.util.List;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
 public class BlockTrackEntryFluid implements IBlockTrackEntry {
     @Override
@@ -54,7 +57,7 @@ public class BlockTrackEntryFluid implements IBlockTrackEntry {
     }
 
     @Override
-    public String getEntryName() {
-        return "blockTracker.module.fluids";
+    public ResourceLocation getEntryID() {
+        return RL("block_tracker.module.fluids");
     }
 }

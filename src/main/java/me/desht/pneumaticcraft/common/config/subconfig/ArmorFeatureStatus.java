@@ -4,11 +4,15 @@ import com.google.common.collect.Sets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
+import me.desht.pneumaticcraft.lib.Log;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.ResourceLocationException;
 
 import java.util.Set;
 
 public class ArmorFeatureStatus extends AuxConfigJson {
-    private final Set<String> activeUpgrades = Sets.newHashSet();
+    private final Set<ResourceLocation> activeUpgrades = Sets.newHashSet();
 
     public static final ArmorFeatureStatus INSTANCE = new ArmorFeatureStatus();
 
@@ -27,10 +31,10 @@ public class ArmorFeatureStatus extends AuxConfigJson {
         JsonArray array = new JsonArray();
         if (activeUpgrades.isEmpty()) {
             // armor "master switch" is on by default
-            activeUpgrades.add("coreComponents");
+            activeUpgrades.add(ArmorUpgradeRegistry.getInstance().coreComponentsHandler.getID());
         }
-        for (String s : activeUpgrades) {
-            array.add(s);
+        for (ResourceLocation s : activeUpgrades) {
+            array.add(s.toString());
         }
         json.add("active", array);
     }
@@ -40,11 +44,15 @@ public class ArmorFeatureStatus extends AuxConfigJson {
         JsonArray array = json.get("active").getAsJsonArray();
         activeUpgrades.clear();
         for (JsonElement element : array) {
-            activeUpgrades.add(element.getAsString());
+            try {
+                activeUpgrades.add(new ResourceLocation(element.getAsString()));
+            } catch (ResourceLocationException e) {
+                Log.error("ignoring " + element.getAsString() + " in ArmorFeatureStatus.json: " + e.getMessage());
+            }
         }
     }
 
-    public void setUpgradeEnabled(String upgradeID, boolean enabled) {
+    public void setUpgradeEnabled(ResourceLocation upgradeID, boolean enabled) {
         if (enabled) {
             activeUpgrades.add(upgradeID);
         } else {
@@ -52,7 +60,7 @@ public class ArmorFeatureStatus extends AuxConfigJson {
         }
     }
 
-    public boolean isUpgradeEnabled(String upgradeID) {
+    public boolean isUpgradeEnabled(ResourceLocation upgradeID) {
         return activeUpgrades.contains(upgradeID);
     }
 }

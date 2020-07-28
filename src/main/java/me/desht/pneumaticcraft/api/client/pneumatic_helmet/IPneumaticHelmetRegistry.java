@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.api.client.pneumatic_helmet;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
+import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.tags.ITag;
@@ -58,7 +59,7 @@ public interface IPneumaticHelmetRegistry {
     /**
      * Registers a Pneumatic Helmet module
      *
-     * @param renderHandler the handler to register
+     * @param clientHandler the handler to register
      */
-    void registerRenderHandler(IUpgradeRenderHandler renderHandler);
+    void registerRenderHandler(IArmorUpgradeHandler handler, IArmorUpgradeClientHandler clientHandler);
 }

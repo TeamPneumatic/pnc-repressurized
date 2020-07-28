@@ -4,27 +4,30 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
-import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.client.IKeyListener;
 import me.desht.pneumaticcraft.client.KeyHandler;
-import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiHelmetMainScreen;
+import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiArmorMainScreen;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetKeybindCheckBox;
+import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
 import me.desht.pneumaticcraft.client.render.RenderProgressBar;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.BlockTrackUpgradeHandler;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.DroneDebugUpgradeHandler;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.EntityTrackUpgradeHandler;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.HackUpgradeHandler;
-import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.BlockTrackerClientHandler;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.DroneDebugClientHandler;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.EntityTrackerClientHandler;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.HackClientHandler;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPneumaticKick;
 import me.desht.pneumaticcraft.common.network.PacketToggleArmorFeature;
+import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.PlayerEntity;
@@ -34,6 +37,7 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
@@ -48,24 +52,30 @@ import java.util.List;
 import static me.desht.pneumaticcraft.common.item.ItemPneumaticArmor.isPneumaticArmorPiece;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class HUDHandler implements IKeyListener {
+/**
+ * Singleton object which manages all the Pneumatic Armor HUD drawing for the player.
+ */
+public enum HUDHandler implements IKeyListener {
+    INSTANCE;
+
     private static final int PROGRESS_BAR_HEIGHT = 17;
+
+    private int lastScaledWidth = -1;
+    private int lastScaledHeight = -1;
 
     private long lastArmorInitSound; // avoid too much sound spam when equipping armor
     private boolean sentForceInitPacket = false; // whether to send an armor init packet when helmet not equipped
 
-    private final List<ArmorMessage> messageList = new ArrayList<>();
+    private final List<ArmorMessage> pendingMessages = new ArrayList<>();
     private final boolean[] gaveEmptyWarning = new boolean[4];  // per-slot
     private final boolean[] gaveNearlyEmptyWarning = new boolean[4];  // per-slot
 
-    private static final HUDHandler INSTANCE = new HUDHandler();
-
-    public static HUDHandler instance() {
+    public static HUDHandler getInstance() {
         return INSTANCE;
     }
 
-    public <T extends IUpgradeRenderHandler> T getSpecificRenderer(Class<T> clazz) {
-        return UpgradeRenderHandlerList.instance().getRenderHandler(clazz);
+    public <T extends IArmorUpgradeClientHandler> T getSpecificRenderer(Class<T> clazz) {
+        return ArmorUpgradeClientRegistry.getInstance().byClass(clazz);
     }
 
     /**
@@ -77,6 +87,7 @@ public class HUDHandler implements IKeyListener {
         if (!WidgetKeybindCheckBox.getCoreComponents().checked || mc.gameSettings.hideGUI) return;
 
         PlayerEntity player = mc.player;
+        if (player == null) return;
 
         IRenderTypeBuffer.Impl buffer = Minecraft.getInstance().getRenderTypeBuffers().getBufferSource();
         MatrixStack matrixStack = event.getMatrixStack();
@@ -87,15 +98,17 @@ public class HUDHandler implements IKeyListener {
         matrixStack.translate(-projectedView.x, -projectedView.y, -projectedView.z);
 
         ItemStack helmetStack = player.getItemStackFromSlot(EquipmentSlotType.HEAD);
-        CommonArmorHandler comHudHandler = CommonArmorHandler.getHandlerForPlayer(player);
-        if (helmetStack.getItem() instanceof ItemPneumaticArmor && comHudHandler.getArmorPressure(EquipmentSlotType.HEAD) > 0F) {
-            for (EquipmentSlotType slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
-                if (comHudHandler.isArmorReady(slot)) {
+        CommonArmorHandler commonArmorHandler = CommonArmorHandler.getHandlerForPlayer(player);
+        if (helmetStack.getItem() instanceof ItemPneumaticArmor && commonArmorHandler.getArmorPressure(EquipmentSlotType.HEAD) > 0F) {
+            for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
+                if (commonArmorHandler.isArmorReady(slot)) {
                     GlStateManager.disableTexture();
-                    List<IUpgradeRenderHandler> renderHandlers = UpgradeRenderHandlerList.instance().getHandlersForSlot(slot);
-                    for (int i = 0; i < renderHandlers.size(); i++) {
-                        if (comHudHandler.isUpgradeRendererInserted(slot, i) && WidgetKeybindCheckBox.fromKeyBindingName(renderHandlers.get(i).getUpgradeID()).checked)
-                            renderHandlers.get(i).render3D(matrixStack, buffer, event.getPartialTicks());
+                    List<IArmorUpgradeClientHandler> clientHandlers = ArmorUpgradeClientRegistry.getInstance().getHandlersForSlot(slot);
+                    for (int i = 0; i < clientHandlers.size(); i++) {
+                        if (commonArmorHandler.isUpgradeInserted(slot, i)
+                                && WidgetKeybindCheckBox.forUpgrade(clientHandlers.get(i)).checked) {
+                            clientHandlers.get(i).render3D(matrixStack, buffer, event.getPartialTicks());
+                        }
                     }
                     GlStateManager.enableTexture();
                 }
@@ -125,15 +138,11 @@ public class HUDHandler implements IKeyListener {
 
         MainWindow mw = event.getWindow();
         matrixStack.push();
-//        RenderSystem.depthMask(false);
-//        RenderSystem.disableCull();
-//        RenderSystem.disableTexture();
-//        RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT, IS_RUNNING_ON_MAC);
         RenderSystem.color4f(0, 1, 0, 0.8F);
         CommonArmorHandler comHudHandler = CommonArmorHandler.getHandlerForPlayer(player);
 
         boolean anyArmorInInit = false;
-        for (EquipmentSlotType slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
+        for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
             ItemStack armorStack = player.getItemStackFromSlot(slot);
             if (armorStack.getItem() instanceof ItemPneumaticArmor && !comHudHandler.isArmorReady(slot)) {
                 anyArmorInInit = true;
@@ -141,7 +150,7 @@ public class HUDHandler implements IKeyListener {
             }
         }
 
-        for (EquipmentSlotType slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
+        for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
             ItemStack armorStack = player.getItemStackFromSlot(slot);
             if (!(armorStack.getItem() instanceof ItemPneumaticArmor) || comHudHandler.getArmorPressure(slot) < 0.0001F) {
                 continue;
@@ -169,6 +178,7 @@ public class HUDHandler implements IKeyListener {
             if (comHudHandler.isArmorReady(slot)) {
                 ITextComponent itemName = armorStack.getDisplayName();
                 float pressure = comHudHandler.getArmorPressure(slot);
+
                 // low/no pressure warnings
                 if (pressure < 0.05F && !gaveEmptyWarning[slot.getIndex()]) {
                     addMessage(new ArmorMessage(xlate("pneumaticcraft.armor.message.outOfAir", itemName), 100, 0x70FF0000));
@@ -178,17 +188,18 @@ public class HUDHandler implements IKeyListener {
                     addMessage(new ArmorMessage(xlate("pneumaticcraft.armor.message.almostOutOfAir", itemName), 60, 0x70FF8000));
                     gaveNearlyEmptyWarning[slot.getIndex()] = true;
                 }
+
                 // all enabled upgrades do their 2D rendering here
                 if (WidgetKeybindCheckBox.getCoreComponents().checked) {
-                    List<IUpgradeRenderHandler> renderHandlers = UpgradeRenderHandlerList.instance().getHandlersForSlot(slot);
+                    List<IArmorUpgradeClientHandler> renderHandlers = ArmorUpgradeClientRegistry.getInstance().getHandlersForSlot(slot);
                     for (int i = 0; i < renderHandlers.size(); i++) {
-                        IUpgradeRenderHandler upgradeRenderHandler = renderHandlers.get(i);
-                        if (comHudHandler.isUpgradeRendererInserted(slot, i) && comHudHandler.isUpgradeRendererEnabled(slot, i)) {
-                            IGuiAnimatedStat stat = upgradeRenderHandler.getAnimatedStat();
+                        IArmorUpgradeClientHandler clientHandler = renderHandlers.get(i);
+                        if (comHudHandler.isUpgradeInserted(slot, i) && comHudHandler.isUpgradeEnabled(slot, i)) {
+                            IGuiAnimatedStat stat = clientHandler.getAnimatedStat();
                             if (stat != null) {
                                 stat.render(matrixStack, -1, -1, partialTicks);
                             }
-                            upgradeRenderHandler.render2D(matrixStack, partialTicks, pressure > 0F);
+                            clientHandler.render2D(matrixStack, partialTicks, pressure > 0F);
                         }
                     }
                 }
@@ -201,20 +212,16 @@ public class HUDHandler implements IKeyListener {
         }
 
         // render every pending message
-        for (ArmorMessage message : messageList) {
-            message.renderMessage(matrixStack, partialTicks);
-        }
+        pendingMessages.forEach(message -> message.renderMessage(matrixStack, partialTicks));
 
         RenderSystem.disableBlend();
         matrixStack.pop();
-//        RenderSystem.enableCull();
-//        RenderSystem.depthMask(true);
-//        RenderSystem.enableTexture();
+
         RenderSystem.color4f(1, 1, 1, 1);
 
         // show armor initialisation percentages
         if (comHudHandler.isArmorEnabled() && anyArmorInInit) {
-            for (EquipmentSlotType slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
+            for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
                 if (isPneumaticArmorPiece(player, slot) && comHudHandler.getArmorPressure(slot) > 0F) {
                     String text = Math.min(100, comHudHandler.getTicksSinceEquipped(slot) * 100 / comHudHandler.getStartupTime(slot)) + "%";
                     mc.fontRenderer.drawStringWithShadow(matrixStack, text, mw.getScaledWidth() * 0.75f - 8, 14 + PROGRESS_BAR_HEIGHT * (3 - slot.getIndex()), 0xFFFF40);
@@ -231,7 +238,7 @@ public class HUDHandler implements IKeyListener {
             if (player == mc.player && player.world.isRemote) {
                 boolean armorEquipped = false;
                 CommonArmorHandler comHudHandler = CommonArmorHandler.getHandlerForPlayer();
-                for (EquipmentSlotType slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
+                for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
                     if (isPneumaticArmorPiece(player, slot)) {
                         updateArmorPiece(mc.player, slot, comHudHandler);
                         armorEquipped = true;
@@ -240,10 +247,10 @@ public class HUDHandler implements IKeyListener {
                 if (armorEquipped) {
                     ensureArmorInit(player, comHudHandler);
                     updateLauncherTracker();
-                    messageList.forEach(message -> message.getStat().tickWidget());
-                    messageList.removeIf(message -> message == null || --message.lifeSpan <= 0);
+                    pendingMessages.forEach(message -> message.getStat().tickWidget());
+                    pendingMessages.removeIf(message -> message == null || --message.lifeSpan <= 0);
                 } else {
-                    messageList.clear();
+                    pendingMessages.clear();
                     sentForceInitPacket = false;
                 }
             }
@@ -257,7 +264,7 @@ public class HUDHandler implements IKeyListener {
             boolean state = WidgetKeybindCheckBox.getCoreComponents().checked;
             // core-components is always in slot HEAD, index 0
             if (state) {
-                comHudHandler.setUpgradeRenderEnabled(EquipmentSlotType.HEAD, (byte) 0, true);
+                comHudHandler.setUpgradeEnabled(EquipmentSlotType.HEAD, (byte) 0, true);
                 NetworkHandler.sendToServer(new PacketToggleArmorFeature((byte) 0, true, EquipmentSlotType.HEAD));
             }
             sentForceInitPacket = true;
@@ -274,47 +281,48 @@ public class HUDHandler implements IKeyListener {
         }
     }
 
-    private void updateArmorPiece(PlayerEntity player, EquipmentSlotType slot, CommonArmorHandler comHudHandler) {
+    private void updateArmorPiece(PlayerEntity player, EquipmentSlotType slot, CommonArmorHandler commonArmorHandler) {
         boolean armorEnabled = WidgetKeybindCheckBox.getCoreComponents().checked;
-        List<IUpgradeRenderHandler> renderHandlers = UpgradeRenderHandlerList.instance().getHandlersForSlot(slot);
+        List<IArmorUpgradeHandler> upgradeHandlers = ArmorUpgradeRegistry.getInstance().getHandlersForSlot(slot);
 
         // At start of init, inform the server which upgrades are enabled
-        if (comHudHandler.getTicksSinceEquipped(slot) == 0) {
-            for (IUpgradeRenderHandler handler : UpgradeRenderHandlerList.instance().getHandlersForSlot(slot)) {
+        if (commonArmorHandler.getTicksSinceEquipped(slot) == 0) {
+            for (IArmorUpgradeClientHandler handler : ArmorUpgradeClientRegistry.getInstance().getHandlersForSlot(slot)) {
                 handler.reset();
             }
-            for (int i = 0; i < renderHandlers.size(); i++) {
-                boolean state = armorEnabled && WidgetKeybindCheckBox.fromKeyBindingName(renderHandlers.get(i).getUpgradeID()).checked;
-                comHudHandler.setUpgradeRenderEnabled(slot, (byte) i, state);
+            for (int i = 0; i < upgradeHandlers.size(); i++) {
+                boolean state = armorEnabled && WidgetKeybindCheckBox.forUpgrade(upgradeHandlers.get(i)).checked;
+                commonArmorHandler.setUpgradeEnabled(slot, (byte) i, state);
                 NetworkHandler.sendToServer(new PacketToggleArmorFeature((byte) i, state, slot));
             }
         }
 
         // After full init, run handler's update() on each installed upgrade
-        if (comHudHandler.getTicksSinceEquipped(slot) > comHudHandler.getStartupTime(slot) && armorEnabled) {
-            for (int i = 0; i < renderHandlers.size(); i++) {
-                IUpgradeRenderHandler upgradeRenderHandler = renderHandlers.get(i);
-                if (comHudHandler.isUpgradeRendererInserted(slot, i) && comHudHandler.isUpgradeRendererEnabled(slot, i)) {
-                    IGuiAnimatedStat stat = upgradeRenderHandler.getAnimatedStat();
+        if (commonArmorHandler.getTicksSinceEquipped(slot) > commonArmorHandler.getStartupTime(slot) && armorEnabled) {
+            for (int i = 0; i < upgradeHandlers.size(); i++) {
+                IArmorUpgradeHandler upgradeHandler = upgradeHandlers.get(i);
+                if (commonArmorHandler.isUpgradeInserted(slot, i) && commonArmorHandler.isUpgradeEnabled(slot, i)) {
+                    IArmorUpgradeClientHandler clientHandler = ArmorUpgradeClientRegistry.getInstance().getClientHandler(upgradeHandler);
+                    IGuiAnimatedStat stat = clientHandler.getAnimatedStat();
                     if (stat != null) {
-                        if (comHudHandler.getArmorPressure(slot) > upgradeRenderHandler.getMinimumPressure()) {
+                        if (commonArmorHandler.getArmorPressure(slot) > upgradeHandler.getMinimumPressure()) {
                             stat.openWindow();
                         } else {
                             stat.closeWindow();
                         }
                         stat.tickWidget();
                     }
-                    upgradeRenderHandler.tick(player, comHudHandler.getUpgradeCount(slot, EnumUpgrade.RANGE));
+                    clientHandler.tickClient(commonArmorHandler);
                 }
             }
         }
 
         // During init, display found/not found message for each possible upgrade
-        for (int i = 0; i < renderHandlers.size(); i++) {
-            if (comHudHandler.getTicksSinceEquipped(slot) == comHudHandler.getStartupTime(slot) / (renderHandlers.size() + 2) * (i + 1)) {
-                playArmorInitSound(player, ModSounds.HUD_INIT.get(), 0.5F + (float) (i + 1) / (renderHandlers.size() + 2) * 0.5F);
-                boolean upgradeEnabled = comHudHandler.isUpgradeRendererInserted(slot, i);
-                ITextComponent message = xlate(WidgetKeybindCheckBox.UPGRADE_PREFIX + renderHandlers.get(i).getUpgradeID())
+        for (int i = 0; i < upgradeHandlers.size(); i++) {
+            if (commonArmorHandler.getTicksSinceEquipped(slot) == commonArmorHandler.getStartupTime(slot) / (upgradeHandlers.size() + 2) * (i + 1)) {
+                playArmorInitSound(player, ModSounds.HUD_INIT.get(), 0.5F + (float) (i + 1) / (upgradeHandlers.size() + 2) * 0.5F);
+                boolean upgradeEnabled = commonArmorHandler.isUpgradeInserted(slot, i);
+                ITextComponent message = xlate(upgradeHandlers.get(i).getTranslationKey())
                         .appendString(upgradeEnabled ? " installed" : " not installed");
                 addMessage(new ArmorMessage(message, 80, upgradeEnabled ? 0x7000AA00 : 0x70FF8000));
             }
@@ -322,12 +330,12 @@ public class HUDHandler implements IKeyListener {
 
         ITextComponent itemName = player.getItemStackFromSlot(slot).getDisplayName();
 
-        if (comHudHandler.getTicksSinceEquipped(slot) == 1) {
+        if (commonArmorHandler.getTicksSinceEquipped(slot) == 1) {
             playArmorInitSound(player, ModSounds.HUD_INIT.get(), 0.5F);
             addMessage(new ArmorMessage(xlate("pneumaticcraft.armor.message.initStarted", itemName), 50, 0x7000AA00));
         }
 
-        if (comHudHandler.getTicksSinceEquipped(slot) == comHudHandler.getStartupTime(slot)) {
+        if (commonArmorHandler.getTicksSinceEquipped(slot) == commonArmorHandler.getStartupTime(slot)) {
             playArmorInitSound(player, ModSounds.HUD_INIT_COMPLETE.get(), 1.0F);
             addMessage(new ArmorMessage(xlate("pneumaticcraft.armor.message.initComplete", itemName), 50, 0x7000AA00));
         }
@@ -342,14 +350,14 @@ public class HUDHandler implements IKeyListener {
     }
 
     public void addFeatureToggleMessage(String key, boolean enabled) {
-        HUDHandler.instance().addMessage(xlate("pneumaticcraft.armor.message." + (enabled ? "enable" : "disable") + "Setting", xlate(key)), Collections.emptyList(), 60, 0x7000AA00);
+        addMessage(xlate("pneumaticcraft.armor.message." + (enabled ? "enable" : "disable") + "Setting", xlate(key)),
+                Collections.emptyList(), 60, 0x7000AA00);
     }
 
-    public void addFeatureToggleMessage(IUpgradeRenderHandler handler, String key, boolean enabled) {
-        ITextComponent msg = xlate(WidgetKeybindCheckBox.UPGRADE_PREFIX + handler.getUpgradeID())
-                .appendString(": ")
-                .append(xlate(WidgetKeybindCheckBox.UPGRADE_PREFIX + key));
-        HUDHandler.instance().addMessage(xlate("pneumaticcraft.armor.message." + (enabled ? "enable" : "disable") + "Setting", msg), Collections.emptyList(), 60, 0x7000AA00);
+    public void addFeatureToggleMessage(String key, String subKey, boolean enabled) {
+        ITextComponent msg = xlate(key).appendString(": ").append(xlate(subKey));
+        addMessage(xlate("pneumaticcraft.armor.message." + (enabled ? "enable" : "disable") + "Setting", msg),
+                Collections.emptyList(), 60, 0x7000AA00);
     }
 
     public void addMessage(ITextComponent title, List<String> message, int duration, int backColor) {
@@ -357,10 +365,10 @@ public class HUDHandler implements IKeyListener {
     }
 
     public void addMessage(ArmorMessage message) {
-        if (messageList.size() > 0) {
-            message.setDependingMessage(messageList.get(messageList.size() - 1).getStat()); //set the depending stat of the new stat to the last stat.
+        if (pendingMessages.size() > 0) {
+            message.setDependingMessage(pendingMessages.get(pendingMessages.size() - 1).getStat()); //set the depending stat of the new stat to the last stat.
         }
-        messageList.add(message);
+        pendingMessages.add(message);
     }
 
     @Override
@@ -369,14 +377,14 @@ public class HUDHandler implements IKeyListener {
         if (mc.isGameFocused()) {
             if (key == KeyHandler.getInstance().keybindOpenOptions) {
                 if (ItemPneumaticArmor.isPlayerWearingAnyPneumaticArmor(mc.player)) {
-                    mc.displayGuiScreen(GuiHelmetMainScreen.getInstance());
+                    mc.displayGuiScreen(GuiArmorMainScreen.getInstance());
                 }
-            } else if (key == KeyHandler.getInstance().keybindHack && HackUpgradeHandler.enabledForPlayer(mc.player)) {
-                getSpecificRenderer(BlockTrackUpgradeHandler.class).hack();
-                getSpecificRenderer(EntityTrackUpgradeHandler.class).hack();
+            } else if (key == KeyHandler.getInstance().keybindHack && HackClientHandler.enabledForPlayer(mc.player)) {
+                getSpecificRenderer(BlockTrackerClientHandler.class).hack();
+                getSpecificRenderer(EntityTrackerClientHandler.class).hack();
             } else if (key == KeyHandler.getInstance().keybindDebuggingDrone
-                    && DroneDebugUpgradeHandler.enabledForPlayer(ClientUtils.getClientPlayer())) {
-                getSpecificRenderer(EntityTrackUpgradeHandler.class).selectAsDebuggingTarget();
+                    && DroneDebugClientHandler.enabledForPlayer(mc.player)) {
+                getSpecificRenderer(EntityTrackerClientHandler.class).selectAsDebuggingTarget();
             } else if (key == KeyHandler.getInstance().keybindKick
                     && CommonArmorHandler.getHandlerForPlayer().getUpgradeCount(EquipmentSlotType.FEET, EnumUpgrade.DISPENSER) > 0) {
                 NetworkHandler.sendToServer(new PacketPneumaticKick());
@@ -388,24 +396,26 @@ public class HUDHandler implements IKeyListener {
         }
     }
 
-//    @SubscribeEvent
-//    public void onMouseEvent(GuiScreenEvent.MouseScrollEvent.Post event) {
-//        boolean isCaptured = getSpecificRenderer(BlockTrackUpgradeHandler.class).scroll(event);
-//        if (!isCaptured) isCaptured = getSpecificRenderer(EntityTrackUpgradeHandler.class).scroll(event);
-//        if (isCaptured) event.setCanceled(true);
-//    }
-
     @SubscribeEvent
     public void onMouseScroll(InputEvent.MouseScrollEvent event) {
-        boolean isCaptured = getSpecificRenderer(BlockTrackUpgradeHandler.class).scroll(event);
-        if (!isCaptured) isCaptured = getSpecificRenderer(EntityTrackUpgradeHandler.class).scroll(event);
+        boolean isCaptured = getSpecificRenderer(BlockTrackerClientHandler.class).scroll(event);
+        if (!isCaptured) isCaptured = getSpecificRenderer(EntityTrackerClientHandler.class).scroll(event);
         if (isCaptured) event.setCanceled(true);
     }
 
-    public void onResolutionChanged() {
-        for (EquipmentSlotType slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
-            for (IUpgradeRenderHandler handler : UpgradeRenderHandlerList.instance().getHandlersForSlot(slot)) {
-                handler.onResolutionChanged();
+    @SubscribeEvent
+    public void handleResolutionChange(GuiScreenEvent.InitGuiEvent event) {
+        Screen gui = event.getGui();
+        if (gui.getMinecraft().world != null) {
+            MainWindow mw = gui.getMinecraft().getMainWindow();
+            if (mw.getScaledWidth() != lastScaledWidth || mw.getScaledHeight() != lastScaledHeight) {
+                for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
+                    for (IArmorUpgradeClientHandler handler : ArmorUpgradeClientRegistry.getInstance().getHandlersForSlot(slot)) {
+                        handler.onResolutionChanged();
+                    }
+                }
+                lastScaledWidth = mw.getScaledWidth();
+                lastScaledHeight = mw.getScaledHeight();
             }
         }
     }

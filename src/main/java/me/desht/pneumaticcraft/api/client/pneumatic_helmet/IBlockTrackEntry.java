@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.api.client.pneumatic_helmet;
 import net.minecraft.block.BlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
@@ -72,7 +73,7 @@ public interface IBlockTrackEntry {
      *
      * @return the name of the group of this entry.
      */
-    String getEntryName();
+    ResourceLocation getEntryID();
 
     /**
      * Convenience method: check if the given capability provider provides the given capability.

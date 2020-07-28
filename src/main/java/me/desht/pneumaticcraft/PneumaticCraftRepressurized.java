@@ -19,6 +19,7 @@ import me.desht.pneumaticcraft.common.hacking.HackableHandler;
 import me.desht.pneumaticcraft.common.heat.BlockHeatProperties;
 import me.desht.pneumaticcraft.common.item.ItemGPSAreaTool;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
+import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.sensor.SensorHandler;
@@ -111,6 +112,7 @@ public class PneumaticCraftRepressurized {
         registerCapabilities();
         NetworkHandler.init();
         FluidSetup.init();
+        ArmorUpgradeRegistry.init();
         HackableHandler.addDefaultEntries();
         SensorHandler.getInstance().init();
         UpgradesDBSetup.init();

@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.common.inventory.ContainerAssemblyController;
 import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram.EnumMachine;
 import me.desht.pneumaticcraft.common.tileentity.IAssemblyMachine;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyController;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
@@ -71,6 +72,18 @@ public class GuiAssemblyController extends GuiPneumaticContainerBase<ContainerAs
     protected void addProblems(List<String> textList) {
         super.addProblems(textList);
 
-        te.addProblems(textList);
+        if (te.curProgram == null) {
+            textList.addAll(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.tab.problems.assembly_controller.no_program")));
+        } else {
+            if (te.isMachineDuplicate) {
+                String key = I18n.format(te.duplicateMachine.getTranslationKey());
+                textList.addAll(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.tab.problems.assembly_controller.duplicateMachine", key)));
+            } else if (te.isMachineMissing) {
+                String key = I18n.format(te.missingMachine.getTranslationKey());
+                textList.addAll(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.tab.problems.assembly_controller.missingMachine", key)));
+            } else {
+                te.curProgram.addProgramProblem(textList);
+            }
+        }
     }
 }

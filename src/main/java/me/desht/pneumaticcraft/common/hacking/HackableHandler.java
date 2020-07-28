@@ -8,8 +8,8 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderBlockTarget;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderEntityTarget;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.BlockTrackUpgradeHandler;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.EntityTrackUpgradeHandler;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.BlockTrackerClientHandler;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.EntityTrackerClientHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.hacking.block.*;
@@ -149,7 +149,7 @@ public class HackableHandler {
 
     private static boolean isInDisplayCooldown(IHackableBlock hackableBlock, IBlockReader world, BlockPos pos, PlayerEntity player) {
         if (player.world.isRemote) {
-            RenderBlockTarget target = HUDHandler.instance().getSpecificRenderer(BlockTrackUpgradeHandler.class).getTargetForCoord(pos);
+            RenderBlockTarget target = HUDHandler.getInstance().getSpecificRenderer(BlockTrackerClientHandler.class).getTargetForCoord(pos);
             int requiredHackTime = hackableBlock.getHackTime(world, pos, player);
             return target != null && target.getHackTime() >= requiredHackTime && target.getHackTime() <= requiredHackTime + 20;
         } else {
@@ -159,7 +159,7 @@ public class HackableHandler {
 
     private static boolean isInDisplayCooldown(IHackableEntity hackableEntity, Entity entity) {
         if (entity.world.isRemote) {
-            RenderEntityTarget target = HUDHandler.instance().getSpecificRenderer(EntityTrackUpgradeHandler.class).getTargetForEntity(entity);
+            RenderEntityTarget target = HUDHandler.getInstance().getSpecificRenderer(EntityTrackerClientHandler.class).getTargetForEntity(entity);
             int requiredHackTime = hackableEntity.getHackTime(entity, ClientUtils.getClientPlayer());
             return target != null && target.getHackTime() >= requiredHackTime && target.getHackTime() <= requiredHackTime + 20;
         } else {

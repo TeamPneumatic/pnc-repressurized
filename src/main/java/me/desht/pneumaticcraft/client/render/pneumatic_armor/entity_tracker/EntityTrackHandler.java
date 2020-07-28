@@ -12,9 +12,9 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderDroneAI;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderEntityTarget;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.DroneDebugUpgradeHandler;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.EntityTrackUpgradeHandler;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.HackUpgradeHandler;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.DroneDebugClientHandler;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.EntityTrackerClientHandler;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.HackClientHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.hacking.HackableHandler;
@@ -115,18 +115,17 @@ public class EntityTrackHandler {
             curInfo.add(I18n.format("pneumaticcraft.entityTracker.info.tamed", ((EntityDrone) entity).ownerName));
             curInfo.add(I18n.format("pneumaticcraft.entityTracker.info.drone.routine", ((EntityDrone) entity).getLabel()));
             PlayerEntity player = ClientUtils.getClientPlayer();
-            if (DroneDebugUpgradeHandler.enabledForPlayer(player)) {
+            if (DroneDebugClientHandler.enabledForPlayer(player)) {
+                String debugKey = ClientUtils.translateKeyBind(KeyHandler.getInstance().keybindDebuggingDrone);
                 if (ItemPneumaticArmor.isPlayerDebuggingEntity(player, entity)) {
                     curInfo.add(TextFormatting.GOLD + I18n.format("pneumaticcraft.entityTracker.info.drone.debugging"));
-                    curInfo.add(TextFormatting.GOLD + I18n.format("pneumaticcraft.entityTracker.info.drone.debugging.key",
-                            I18n.format(KeyHandler.getInstance().keybindOpenOptions.getTranslationKey())));
+                    String optionsKey = ClientUtils.translateKeyBind(KeyHandler.getInstance().keybindOpenOptions);
+                    curInfo.add(TextFormatting.GOLD + I18n.format("pneumaticcraft.entityTracker.info.drone.debugging.key", optionsKey));
                     if (isLookingAtTarget) {
-                        curInfo.add(TextFormatting.GOLD + I18n.format("pneumaticcraft.entityTracker.info.drone.stopDebugging.key",
-                                I18n.format(KeyHandler.getInstance().keybindDebuggingDrone.getTranslationKey())));
+                        curInfo.add(TextFormatting.GOLD + I18n.format("pneumaticcraft.entityTracker.info.drone.stopDebugging.key", debugKey));
                     }
                 } else if (isLookingAtTarget) {
-                    curInfo.add(TextFormatting.GOLD + I18n.format("pneumaticcraft.entityTracker.info.drone.pressDebugKey",
-                            I18n.format(KeyHandler.getInstance().keybindDebuggingDrone.getTranslationKey())));
+                    curInfo.add(TextFormatting.GOLD + I18n.format("pneumaticcraft.entityTracker.info.drone.pressDebugKey", debugKey));
                 }
             }
         }
@@ -302,7 +301,7 @@ public class EntityTrackHandler {
     public static class EntityTrackEntryHackable implements IEntityTrackEntry {
         @Override
         public boolean isApplicable(Entity entity) {
-            return HackUpgradeHandler.enabledForPlayer(ClientUtils.getClientPlayer());
+            return HackClientHandler.enabledForPlayer(ClientUtils.getClientPlayer());
         }
 
         @Override
@@ -310,7 +309,7 @@ public class EntityTrackHandler {
             PlayerEntity player = ClientUtils.getClientPlayer();
             IHackableEntity hackable = HackableHandler.getHackableForEntity(entity, player);
             if (hackable != null) {
-                int hackTime = HUDHandler.instance().getSpecificRenderer(EntityTrackUpgradeHandler.class).getTargetsStream()
+                int hackTime = HUDHandler.getInstance().getSpecificRenderer(EntityTrackerClientHandler.class).getTargetsStream()
                         .filter(target -> target.entity == entity)
                         .findFirst()
                         .map(RenderEntityTarget::getHackTime)
@@ -318,7 +317,7 @@ public class EntityTrackHandler {
                 if (hackTime == 0) {
                     if (isLookingAtTarget) {
                         hackable.addHackInfo(entity, curInfo, player);
-                        HackUpgradeHandler.addKeybindTooltip(curInfo);
+                        HackClientHandler.addKeybindTooltip(curInfo);
                     }
                 } else {
                     int requiredHackTime = hackable.getHackTime(entity, player);
@@ -329,7 +328,7 @@ public class EntityTrackHandler {
                         hackable.addPostHackInfo(entity, curInfo, player);
                     } else if (isLookingAtTarget) {
                         hackable.addHackInfo(entity, curInfo, player);
-                        HackUpgradeHandler.addKeybindTooltip(curInfo);
+                        HackClientHandler.addKeybindTooltip(curInfo);
                     }
                 }
             }

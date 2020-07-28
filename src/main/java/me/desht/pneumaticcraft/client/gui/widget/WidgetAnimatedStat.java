@@ -4,7 +4,6 @@ import com.google.common.base.Strings;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
-import me.desht.pneumaticcraft.client.event.ClientEventHandler;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticContainerBase;
 import me.desht.pneumaticcraft.client.render.ModRenderTypes;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
@@ -316,14 +315,16 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
             height = Math.min(maxHeight, height + ANIMATED_STAT_SPEED);
             doneExpanding = width == maxWidth && height == maxHeight;
 
-            Pair<Integer,Integer> size = ClientEventHandler.getScaledScreenSize();
+            int scaledWidth = Minecraft.getInstance().getMainWindow().getScaledWidth();
+            int scaledHeight = Minecraft.getInstance().getMainWindow().getScaledHeight();
+
             if (isLeftSided()) {
-                if (x >= size.getLeft()) x = size.getLeft();
+                if (x >= scaledWidth) x = scaledWidth;
             } else {
                 if (x < 0) x = 1;
             }
-            if (y + height >= size.getRight()) {
-                y = size.getRight() - height - 1;
+            if (y + height >= scaledHeight) {
+                y = scaledHeight - height - 1;
             }
 
             if (doneExpanding) {

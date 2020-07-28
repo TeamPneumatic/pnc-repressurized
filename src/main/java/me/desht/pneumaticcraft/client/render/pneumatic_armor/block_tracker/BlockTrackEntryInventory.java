@@ -13,6 +13,7 @@ import net.minecraft.state.properties.ChestType;
 import net.minecraft.tileentity.ChestTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.IBlockReader;
@@ -23,6 +24,8 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
 public class BlockTrackEntryInventory implements IBlockTrackEntry {
     @Override
@@ -83,7 +86,7 @@ public class BlockTrackEntryInventory implements IBlockTrackEntry {
     }
 
     @Override
-    public String getEntryName() {
-        return "blockTracker.module.inventories";
+    public ResourceLocation getEntryID() {
+        return RL("block_tracker.module.inventories");
     }
 }

@@ -6,12 +6,15 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.EndPortalFrameBlock;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
 import java.util.Collections;
 import java.util.List;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
 public class BlockTrackEntryEndPortalFrame implements IBlockTrackEntry {
 
@@ -40,8 +43,7 @@ public class BlockTrackEntryEndPortalFrame implements IBlockTrackEntry {
     }
 
     @Override
-    public String getEntryName() {
-        return "blockTracker.module.end_portal";
+    public ResourceLocation getEntryID() {
+        return RL("block_tracker.module.end_portal");
     }
-
 }

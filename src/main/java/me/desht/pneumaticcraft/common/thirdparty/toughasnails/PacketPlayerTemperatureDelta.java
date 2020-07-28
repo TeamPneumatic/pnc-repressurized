@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.thirdparty.toughasnails;
 
 import io.netty.buffer.ByteBuf;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.AirConUpgradeHandler;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.AirConClientHandler;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 
@@ -31,7 +31,7 @@ public class PacketPlayerTemperatureDelta {
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> AirConUpgradeHandler.deltaTemp = deltaTemp);
+        ctx.get().enqueueWork(() -> AirConClientHandler.deltaTemp = deltaTemp);
         ctx.get().setPacketHandled(true);
     }
 }

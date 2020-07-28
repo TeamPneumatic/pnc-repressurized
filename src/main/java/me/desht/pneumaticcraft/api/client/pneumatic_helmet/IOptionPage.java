@@ -1,13 +1,15 @@
 package me.desht.pneumaticcraft.api.client.pneumatic_helmet;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetKeybindCheckBox;
+import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.resources.I18n;
+import net.minecraft.util.text.IFormattableTextComponent;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 /**
  * The Option Page is the page you see when you press 'F' (by default) with a Pneumatic Helmet equipped. You can
- * register this class by returning a new instance of this class at {@link IUpgradeRenderHandler#getGuiOptionsPage(IGuiScreen)}
+ * register this class by returning a new instance of this class at {@link IArmorUpgradeClientHandler#getGuiOptionsPage(IGuiScreen)}
  */
 public interface IOptionPage {
 
@@ -19,11 +21,11 @@ public interface IOptionPage {
     IGuiScreen getGuiScreen();
 
     /**
-     * This string is used in the text of the button of this page.
+     * This text is used in the GUI button for this page.
      *
      * @return the page name
      */
-    String getPageName();
+    IFormattableTextComponent getPageName();
 
     /**
      * Here you can initialize your buttons and stuff like with a {@link Screen}.
@@ -112,19 +114,19 @@ public interface IOptionPage {
     /**
      * Convenience class for simple toggleable armor features with no additional settings.
      */
-    class SimpleToggleableOptions<T extends IUpgradeRenderHandler> implements IOptionPage {
+    class SimpleToggleableOptions<T extends IArmorUpgradeClientHandler> implements IOptionPage {
         private final IGuiScreen screen;
-        private final String name;
-        private final T upgradeHandler;
+        private final IFormattableTextComponent name;
+        private final T clientUpgradeHandler;
 
-        public SimpleToggleableOptions(IGuiScreen screen, T upgradeHandler) {
+        public SimpleToggleableOptions(IGuiScreen screen, T clientUpgradeHandler) {
             this.screen = screen;
-            this.name = I18n.format(WidgetKeybindCheckBox.UPGRADE_PREFIX + upgradeHandler.getUpgradeID());
-            this.upgradeHandler = upgradeHandler;
+            this.name = xlate(ArmorUpgradeRegistry.getStringKey(clientUpgradeHandler.getCommonHandler().getID()));
+            this.clientUpgradeHandler = clientUpgradeHandler;
         }
 
-        protected T getUpgradeHandler() {
-            return upgradeHandler;
+        protected T getClientUpgradeHandler() {
+            return clientUpgradeHandler;
         }
 
         @Override
@@ -133,7 +135,7 @@ public interface IOptionPage {
         }
 
         @Override
-        public String getPageName() {
+        public IFormattableTextComponent getPageName() {
             return name;
         }
 

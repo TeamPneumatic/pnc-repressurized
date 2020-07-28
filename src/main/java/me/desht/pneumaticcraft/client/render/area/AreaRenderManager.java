@@ -4,8 +4,8 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.DroneDebugUpgradeHandler;
+import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.DroneDebugClientHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ItemCamoApplicator;
@@ -32,7 +32,7 @@ public class AreaRenderManager {
     private static final AreaRenderManager INSTANCE = new AreaRenderManager();
     private final Map<BlockPos, AreaRenderer> showHandlers = new HashMap<>();
     private World world;
-    private DroneDebugUpgradeHandler droneDebugger;
+    private DroneDebugClientHandler droneDebugger;
 
     private List<AreaRenderer> cachedPositionProviderShowers;
     private AreaRenderer camoPositionShower;
@@ -99,7 +99,7 @@ public class AreaRenderManager {
         ItemStack helmet = player.getItemStackFromSlot(EquipmentSlotType.HEAD);
         if (helmet.getItem() == ModItems.PNEUMATIC_HELMET.get()) {
             if (droneDebugger == null) {
-                droneDebugger = HUDHandler.instance().getSpecificRenderer(DroneDebugUpgradeHandler.class);
+                droneDebugger = ArmorUpgradeClientRegistry.getInstance().byClass(DroneDebugClientHandler.class);
             }
             Set<BlockPos> posSet = droneDebugger.getShowingPositions();
             Set<BlockPos> areaSet = droneDebugger.getShownArea();

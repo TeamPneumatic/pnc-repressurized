@@ -224,13 +224,13 @@ public abstract class SyncedField<T> {
         @Override
         protected Byte retrieveValue(Field field, Object te) throws Exception {
             Object[] enumTypes = field.getType().getEnumConstants();
-            // this will be -1 if the enum field is null, which we can check for in injectValue()
+            // this will be INDEX_NOT_FOUND if the enum field is null, which we can check for in injectValue()
             return (byte) ArrayUtils.indexOf(enumTypes, field.get(te));
         }
 
         @Override
         protected void injectValue(Field field, Object te, Byte value) throws Exception {
-            if (value == -1) {
+            if (value == ArrayUtils.INDEX_NOT_FOUND) {
                 field.set(te, null);
             } else {
                 Object enumType = field.getType().getEnumConstants()[value];

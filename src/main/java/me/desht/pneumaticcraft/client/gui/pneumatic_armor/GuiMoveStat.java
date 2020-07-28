@@ -2,16 +2,16 @@ package me.desht.pneumaticcraft.client.gui.pneumatic_armor;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
-import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticScreenBase;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetKeybindCheckBox;
+import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.UpgradeRenderHandlerList;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.MainHelmetHandler;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.CoreComponentsClientHandler;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
+import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.resources.I18n;
@@ -25,9 +25,11 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
 public class GuiMoveStat extends GuiPneumaticScreenBase {
     private final IGuiAnimatedStat movedStat;
-    private final IUpgradeRenderHandler renderHandler;
+    private final IArmorUpgradeClientHandler renderHandler;
     private boolean clicked = false;
     private final List<IGuiAnimatedStat> otherStats = new ArrayList<>();
     private final List<String> helpText = new ArrayList<>();
@@ -39,11 +41,11 @@ public class GuiMoveStat extends GuiPneumaticScreenBase {
     private static boolean snap = false;
     private static int gridSize = 4;
 
-    GuiMoveStat(IUpgradeRenderHandler renderHandler, ArmorHUDLayout.LayoutTypes layoutItem) {
+    public GuiMoveStat(IArmorUpgradeClientHandler renderHandler, ArmorHUDLayout.LayoutTypes layoutItem) {
         this(renderHandler, layoutItem, renderHandler.getAnimatedStat());
     }
 
-    GuiMoveStat(IUpgradeRenderHandler renderHandler, ArmorHUDLayout.LayoutTypes layoutItem, @Nonnull IGuiAnimatedStat movedStat) {
+    public GuiMoveStat(IArmorUpgradeClientHandler renderHandler, ArmorHUDLayout.LayoutTypes layoutItem, @Nonnull IGuiAnimatedStat movedStat) {
         super(new StringTextComponent("Move Gui"));
 
         this.movedStat = movedStat;
@@ -52,12 +54,12 @@ public class GuiMoveStat extends GuiPneumaticScreenBase {
 
         movedStat.openWindow();
 
-        CommonArmorHandler hudHandler = CommonArmorHandler.getHandlerForPlayer();
-        for (EquipmentSlotType slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
-            List<IUpgradeRenderHandler> renderHandlers = UpgradeRenderHandlerList.instance().getHandlersForSlot(slot);
+        CommonArmorHandler commonArmorHandler = CommonArmorHandler.getHandlerForPlayer();
+        for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
+            List<IArmorUpgradeClientHandler> renderHandlers = ArmorUpgradeClientRegistry.getInstance().getHandlersForSlot(slot);
             for (int i = 0; i < renderHandlers.size(); i++) {
-                IUpgradeRenderHandler upgradeRenderHandler = renderHandlers.get(i);
-                if (hudHandler.isUpgradeRendererInserted(slot, i) && hudHandler.isUpgradeRendererEnabled(slot, i)) {
+                IArmorUpgradeClientHandler upgradeRenderHandler = renderHandlers.get(i);
+                if (commonArmorHandler.isUpgradeInserted(slot, i) && commonArmorHandler.isUpgradeEnabled(slot, i)) {
                     IGuiAnimatedStat stat = upgradeRenderHandler.getAnimatedStat();
                     if (stat != null && stat != movedStat) {
                         otherStats.add(stat);
@@ -66,7 +68,7 @@ public class GuiMoveStat extends GuiPneumaticScreenBase {
             }
         }
 
-        MainHelmetHandler mainOptions = HUDHandler.instance().getSpecificRenderer(MainHelmetHandler.class);
+        CoreComponentsClientHandler mainOptions = HUDHandler.getInstance().getSpecificRenderer(CoreComponentsClientHandler.class);
         if (movedStat != mainOptions.testMessageStat) {
             mainOptions.testMessageStat = new WidgetAnimatedStat(null, new StringTextComponent("Test Message, keep in mind messages can be long!"),
                     WidgetAnimatedStat.StatIcon.NONE, 0x7000AA00, null, ArmorHUDLayout.INSTANCE.messageStat);
@@ -79,7 +81,7 @@ public class GuiMoveStat extends GuiPneumaticScreenBase {
     public void init() {
         super.init();
 
-        snapToGrid = new WidgetCheckBox(10, (height * 3) / 5, 0xC0C0C0, new StringTextComponent("Snap To Grid"));
+        snapToGrid = new WidgetCheckBox(10, (height * 3) / 5, 0xC0C0C0, xlate("pneumaticcraft.gui.misc.snapToGrid"));
         snapToGrid.x = (width - snapToGrid.getWidth()) / 2;
         snapToGrid.checked = snap;
         addButton(snapToGrid);
@@ -142,7 +144,7 @@ public class GuiMoveStat extends GuiPneumaticScreenBase {
 
     @Override
     public void closeScreen() {
-        minecraft.displayGuiScreen(GuiHelmetMainScreen.getInstance());
+        minecraft.displayGuiScreen(GuiArmorMainScreen.getInstance());
     }
 
     @Override
@@ -176,7 +178,7 @@ public class GuiMoveStat extends GuiPneumaticScreenBase {
 
         if (helpText.isEmpty()) {
             helpText.add(TextFormatting.GREEN + "" + TextFormatting.UNDERLINE + "Moving: "
-                    + I18n.format(WidgetKeybindCheckBox.UPGRADE_PREFIX + renderHandler.getUpgradeID()));
+                    + I18n.format(ArmorUpgradeRegistry.getStringKey(renderHandler.getCommonHandler().getID())));
             helpText.add("");
             helpText.add("Left- or Right-Click: move the highlighted stat");
             helpText.add("...");

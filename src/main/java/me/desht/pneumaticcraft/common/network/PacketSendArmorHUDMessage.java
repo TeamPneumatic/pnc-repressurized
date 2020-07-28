@@ -44,7 +44,7 @@ public class PacketSendArmorHUDMessage {
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> HUDHandler.instance().addMessage(new ArmorMessage(message, Collections.emptyList(), duration, color)));
+        ctx.get().enqueueWork(() -> HUDHandler.getInstance().addMessage(new ArmorMessage(message, Collections.emptyList(), duration, color)));
         ctx.get().setPacketHandled(true);
     }
 }

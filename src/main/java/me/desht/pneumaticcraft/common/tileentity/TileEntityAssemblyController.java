@@ -11,7 +11,6 @@ import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram.EnumMachi
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
@@ -23,8 +22,6 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
@@ -46,15 +43,15 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase
     };
     private final LazyOptional<IItemHandler> inventoryCap = LazyOptional.of(() -> itemHandler);
 
-    private AssemblyProgram curProgram;
+    public AssemblyProgram curProgram;
     @GuiSynced
-    private boolean isMachineMissing;
+    public boolean isMachineMissing;
     @GuiSynced
-    private boolean isMachineDuplicate;
+    public boolean isMachineDuplicate;
     @GuiSynced
-    private EnumMachine missingMachine;
+    public EnumMachine missingMachine;
     @GuiSynced
-    private EnumMachine duplicateMachine;
+    public EnumMachine duplicateMachine;
     private boolean goingToHomePosition;
     @DescSynced
     public String displayedText = "";
@@ -157,23 +154,6 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase
 
     private void setStatus(String text) {
         displayedText = text;
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    public void addProblems(List<String> problemList) {
-        if (curProgram == null) {
-            problemList.addAll(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.tab.problems.assembly_controller.no_program")));
-        } else {
-            if (isMachineDuplicate) {
-                String key = I18n.format(duplicateMachine.getTranslationKey());
-                problemList.addAll(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.tab.problems.assembly_controller.duplicateMachine", key)));
-            } else if (!isMachineMissing) {
-                curProgram.addProgramProblem(problemList);
-            } else {
-                String key = I18n.format(missingMachine.getTranslationKey());
-                problemList.addAll(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.tab.problems.assembly_controller.missingMachine", key)));
-            }
-        }
     }
 
     public List<IAssemblyMachine> findMachines(int max) {

@@ -6,7 +6,7 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableBlock;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.render.RenderProgressBar;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker.BlockTrackEntryList;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.BlockTrackUpgradeHandler;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.BlockTrackerClientHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.hacking.HackableHandler;
@@ -44,12 +44,12 @@ public class RenderBlockTarget {
     private final PlayerEntity player;
     public List<String> textList = new ArrayList<>();
     private int hackTime;
-    private final BlockTrackUpgradeHandler blockTracker;
+    private final BlockTrackerClientHandler blockTracker;
     private TileEntity te;
     private int nEntries;
 
     public RenderBlockTarget(World world, PlayerEntity player, BlockPos pos, TileEntity te,
-                             BlockTrackUpgradeHandler blockTracker) {
+                             BlockTrackerClientHandler blockTracker) {
         this.world = world;
         this.player = player;
         this.pos = pos;
@@ -79,7 +79,7 @@ public class RenderBlockTarget {
     }
 
     private List<IBlockTrackEntry> getApplicableEntries() {
-        return BlockTrackEntryList.instance.getEntriesForCoordinate(world, pos, te);
+        return BlockTrackEntryList.INSTANCE.getEntriesForCoordinate(world, pos, te);
     }
 
     public BlockPos getPos() {
@@ -96,7 +96,7 @@ public class RenderBlockTarget {
         }
     }
 
-    public void update() {
+    public void tick() {
         if (te != null && te.isRemoved()) {
             te = null;
         }

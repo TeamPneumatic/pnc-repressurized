@@ -18,40 +18,6 @@ public class ModuleRegulatorTube extends TubeModuleRedstoneReceiving implements 
         super(itemTubeModule);
     }
 
-//    @OnlyIn(Dist.CLIENT)
-//    private void renderPreview() {
-//        if (!hasTicked) {
-//            TileEntityPneumaticBase tile = getTube();
-//            NetworkHandler.sendToServer(new PacketDescriptionPacketRequest(tile.getPos()));
-//            TileEntity neighbor = tile.getWorld().getTileEntity(tile.getPos().offset(dir));
-//            inLine = neighbor instanceof IPneumaticMachine;
-//            if (inLine) {
-//                IAirHandlerMachine neighborHandler = ((IPneumaticMachine) neighbor).getAirHandler(dir);
-//                inverted = neighborHandler != null && neighborHandler.getPressure() > tile.getAirHandler(null).getPressure();
-//
-//
-//                NetworkHandler.sendToServer(new PacketDescriptionPacketRequest(neighbor.getPos()));
-//            }
-//            hasTicked = true;
-//        }
-//
-//        GlStateManager.enableBlend();
-//        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-//        if (inLine && !inverted) {
-//            GlStateManager.color4f(0, 1, 0, 0.3F);
-//        } else {
-//            GlStateManager.color4f(1, 0, 0, 0.3F);
-//        }
-//        GlStateManager.pushMatrix();
-//        GlStateManager.translated(0, 1, 0.2 + ClientTickHandler.TICKS % 20 * 0.015);
-//        GlStateManager.rotated(90, 1, 0, 0);
-//
-//        RenderUtils.render3DArrow();
-//        GlStateManager.color4f(1, 1, 1, 0.5F);  // 0.5 because we're rendering a preview
-//        GlStateManager.popMatrix();
-//        GlStateManager.disableBlend();
-//    }
-
     @Override
     public int getMaxDispersion() {
         return getCachedNeighbourAirHandler().map(h -> {

@@ -37,7 +37,7 @@ public interface ISensorSetting {
     /**
      * Called by GuiScreen#drawScreen this method can be used to render additional things like status/info text.
      *
-     * @param matrixStack
+     * @param matrixStack the matrix stack
      * @param fontRenderer the font renderer
      */
     // FIXME: move to external rendering class.  ISensorSetting can be loaded on server too.

@@ -1,9 +1,10 @@
 package me.desht.pneumaticcraft.client.event;
 
-import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
 import me.desht.pneumaticcraft.client.gui.INeedTickUpdate;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.UpgradeRenderHandlerList;
+import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleRegulatorTube;
+import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraftforge.event.TickEvent;
@@ -52,8 +53,8 @@ public class ClientTickHandler {
     public void tickEnd(TickEvent.ClientTickEvent event) {
         if (event.phase == TickEvent.Phase.END) {
             if (Minecraft.getInstance().player == null) {
-                for (EquipmentSlotType slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
-                    for (IUpgradeRenderHandler handler : UpgradeRenderHandlerList.instance().getHandlersForSlot(slot)) {
+                for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
+                    for (IArmorUpgradeClientHandler handler : ArmorUpgradeClientRegistry.getInstance().getHandlersForSlot(slot)) {
                         handler.reset();
                     }
                 }

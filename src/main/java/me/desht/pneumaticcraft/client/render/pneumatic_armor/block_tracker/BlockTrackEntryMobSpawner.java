@@ -12,6 +12,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.MobSpawnerTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockReader;
@@ -20,6 +21,8 @@ import net.minecraft.world.spawner.AbstractSpawner;
 
 import java.util.Collections;
 import java.util.List;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
 public class BlockTrackEntryMobSpawner implements IBlockTrackEntry {
 
@@ -59,7 +62,7 @@ public class BlockTrackEntryMobSpawner implements IBlockTrackEntry {
     }
 
     @Override
-    public String getEntryName() {
-        return "blockTracker.module.mob_spawner";
+    public ResourceLocation getEntryID() {
+        return RL("block_tracker.module.spawner");
     }
 }

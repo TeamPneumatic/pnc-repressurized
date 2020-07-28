@@ -3,12 +3,13 @@ package me.desht.pneumaticcraft.common.pneumatic_armor;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableBlock;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
-import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
+import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerItem;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.UpgradeRenderHandlerList;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.*;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.entity_tracker.EntityTrackHandler;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.JetBootsClientHandler;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
@@ -21,6 +22,7 @@ import me.desht.pneumaticcraft.common.item.ItemMachineUpgrade;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.network.*;
+import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.*;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.lib.Names;
@@ -58,7 +60,7 @@ import net.minecraftforge.fml.network.PacketDistributor;
 
 import java.util.*;
 
-public class CommonArmorHandler {
+public class CommonArmorHandler implements ICommonArmorHandler {
     private static final CommonArmorHandler clientHandler = new CommonArmorHandler(null);
     private static final CommonArmorHandler serverHandler = new CommonArmorHandler(null);
 
@@ -103,8 +105,8 @@ public class CommonArmorHandler {
 
     private CommonArmorHandler(PlayerEntity player) {
         this.player = player;
-        for (EquipmentSlotType slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
-            List<IUpgradeRenderHandler> renderHandlers = UpgradeRenderHandlerList.instance().getHandlersForSlot(slot);
+        for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
+            List<IArmorUpgradeHandler> renderHandlers = ArmorUpgradeRegistry.getInstance().getHandlersForSlot(slot);
             upgradeRenderersInserted[slot.getIndex()] = new boolean[renderHandlers.size()];
             upgradeRenderersEnabled[slot.getIndex()] = new boolean[renderHandlers.size()];
             upgradeMatrix[slot.getIndex()] = new int[EnumUpgrade.values().length];
@@ -171,7 +173,7 @@ public class CommonArmorHandler {
     }
 
     private void tick() {
-        for (EquipmentSlotType slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
+        for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
             tickArmorPiece(slot);
         }
         if (!player.world.isRemote) {
@@ -193,7 +195,7 @@ public class CommonArmorHandler {
                 if (!player.world.isRemote) {
                     if (isArmorReady(slot) && !player.isCreative()) {
                         // use up air in the armor piece
-                        float airUsage = UpgradeRenderHandlerList.instance().getAirUsage(player, slot, false);
+                        float airUsage = getIdleAirUsage(slot, false);
                         if (airUsage != 0) {
                             float oldPressure = addAir(slot, (int) -airUsage);
                             if (oldPressure > 0F && getArmorPressure(slot) == 0F) {
@@ -212,6 +214,16 @@ public class CommonArmorHandler {
             }
             ticksSinceEquip[slot.getIndex()] = 0;
         }
+    }
+
+    public float getIdleAirUsage(EquipmentSlotType slot, boolean countDisabled) {
+        float totalUsage = 0f;
+        List<IArmorUpgradeHandler> handlers = ArmorUpgradeRegistry.getInstance().getHandlersForSlot(slot);
+        for (int i = 0; i < handlers.size(); i++) {
+            if (isUpgradeInserted(slot, i) && (countDisabled || isUpgradeEnabled(slot, i)))
+                totalUsage += handlers.get(i).getIdleAirUsage(this);
+        }
+        return totalUsage;
     }
 
     /*
@@ -274,8 +286,8 @@ public class CommonArmorHandler {
                     && nightVisionEnabled;
             if (shouldEnable) {
                 player.addPotionEffect(new EffectInstance(Effects.NIGHT_VISION, 500, 0, false, false));
-                addAir(EquipmentSlotType.HEAD, -PneumaticValues.PNEUMATIC_NIGHT_VISION_USAGE * 8);
-            } else if (!shouldEnable && wasNightVisionEnabled) {
+//                addAir(EquipmentSlotType.HEAD, -PneumaticValues.PNEUMATIC_NIGHT_VISION_USAGE * 8);
+            } else if (wasNightVisionEnabled) {
                 player.removePotionEffect(Effects.NIGHT_VISION);
             }
             wasNightVisionEnabled = shouldEnable;
@@ -362,7 +374,7 @@ public class CommonArmorHandler {
         int jetbootsAirUsage = 0;
         if (getArmorPressure(EquipmentSlotType.FEET) > 0.0F) {
             if (isJetBootsActive()) {
-                if (jetBootsBuilderMode && jetbootsCount >= JetBootsUpgradeHandler.BUILDER_MODE_LEVEL) {
+                if (jetBootsBuilderMode && jetbootsCount >= JetBootsClientHandler.BUILDER_MODE_LEVEL) {
                     // builder mode - rise vertically (or hover if sneaking and firing)
                     setYMotion(player, player.isSneaking() ? 0 : 0.15 + 0.15 * (jetbootsCount - 3));
                     jetbootsAirUsage = (int) (Armor.jetBootsAirUsage * jetbootsCount / 2.5F);
@@ -533,7 +545,7 @@ public class CommonArmorHandler {
         ItemStack[] upgradeStacks = UpgradableItemUtils.getUpgradeStacks(armorStack);
         Arrays.fill(upgradeRenderersInserted[slot.getIndex()], false);
         for (int i = 0; i < upgradeRenderersInserted[slot.getIndex()].length; i++) {
-            upgradeRenderersInserted[slot.getIndex()][i] = isModuleEnabled(upgradeStacks, UpgradeRenderHandlerList.instance().getHandlersForSlot(slot).get(i));
+            upgradeRenderersInserted[slot.getIndex()][i] = isModuleEnabled(upgradeStacks, ArmorUpgradeRegistry.getInstance().getHandlersForSlot(slot).get(i));
         }
 
         // record the number of upgrades of every type
@@ -564,6 +576,12 @@ public class CommonArmorHandler {
         }
     }
 
+    @Override
+    public PlayerEntity getPlayer() {
+        return player;
+    }
+
+    @Override
     public int getUpgradeCount(EquipmentSlotType slot, EnumUpgrade upgrade) {
         return upgradeMatrix[slot.getIndex()][upgrade.ordinal()];
     }
@@ -572,38 +590,38 @@ public class CommonArmorHandler {
         return Math.min(max, upgradeMatrix[slot.getIndex()][upgrade.ordinal()]);
     }
 
-    public boolean isUpgradeRendererInserted(EquipmentSlotType slot, int i) {
-        return upgradeRenderersInserted[slot.getIndex()][i];
+    public boolean isUpgradeInserted(EquipmentSlotType slot, int featureIndex) {
+        return upgradeRenderersInserted[slot.getIndex()][featureIndex];
     }
 
-    public boolean isUpgradeRendererEnabled(EquipmentSlotType slot, int i) {
-        return upgradeRenderersEnabled[slot.getIndex()][i];
+    public boolean isUpgradeEnabled(EquipmentSlotType slot, int featureIndex) {
+        return upgradeRenderersEnabled[slot.getIndex()][featureIndex];
     }
 
-    public void setUpgradeRenderEnabled(EquipmentSlotType slot, byte featureIndex, boolean state) {
+    public void setUpgradeEnabled(EquipmentSlotType slot, byte featureIndex, boolean state) {
         upgradeRenderersEnabled[slot.getIndex()][featureIndex] = state;
-        IUpgradeRenderHandler handler = UpgradeRenderHandlerList.instance().getHandlersForSlot(slot).get(featureIndex);
+        IArmorUpgradeHandler handler = ArmorUpgradeRegistry.getInstance().getHandlersForSlot(slot).get(featureIndex);
         // bit of a code smell here, but caching the enablement of various features is important for performance
-        if (handler instanceof MagnetUpgradeHandler) {
+        if (handler instanceof MagnetHandler) {
             magnetEnabled = state;
-        } else if (handler instanceof ChargingUpgradeHandler) {
+        } else if (handler instanceof ChargingHandler) {
             chargingEnabled = state;
-        } else if (handler instanceof StepAssistUpgradeHandler) {
+        } else if (handler instanceof StepAssistHandler) {
             stepAssistEnabled = state;
-        } else if (handler instanceof RunSpeedUpgradeHandler) {
+        } else if (handler instanceof SpeedBoostHandler) {
             runSpeedEnabled = state;
-        } else if (handler instanceof JumpBoostUpgradeHandler) {
+        } else if (handler instanceof JumpBoostHandler) {
             jumpBoostEnabled = state;
-        } else if (handler instanceof JetBootsUpgradeHandler) {
+        } else if (handler instanceof JetBootsHandler) {
             jetBootsEnabled = state;
             JetBootsStateTracker.getTracker(player).setJetBootsState(player, jetBootsEnabled, isJetBootsActive(), isJetBootsBuilderMode());
-        } else if (handler instanceof MainHelmetHandler) {
+        } else if (handler instanceof CoreComponentsHandler) {
             armorEnabled = state;
-        } else if (handler instanceof EntityTrackUpgradeHandler) {
+        } else if (handler instanceof EntityTrackHandler) {
             entityTrackerEnabled = state;
-        } else if (handler instanceof NightVisionUpgradeHandler) {
+        } else if (handler instanceof NightVisionHandler) {
             nightVisionEnabled = state;
-        } else if (handler instanceof ScubaUpgradeHandler) {
+        } else if (handler instanceof ScubaHandler) {
             scubaEnabled = state;
         }
         /*else if (handler instanceof AirConUpgradeHandler) {
@@ -615,7 +633,7 @@ public class CommonArmorHandler {
         return ticksSinceEquip[slot.getIndex()];
     }
 
-    private boolean isModuleEnabled(ItemStack[] helmetStacks, IUpgradeRenderHandler handler) {
+    private boolean isModuleEnabled(ItemStack[] helmetStacks, IArmorUpgradeHandler handler) {
         for (EnumUpgrade requiredUpgrade : handler.getRequiredUpgrades()) {
             boolean found = false;
             for (ItemStack stack : helmetStacks) {
@@ -629,6 +647,7 @@ public class CommonArmorHandler {
         return true;
     }
 
+    @Override
     public int getSpeedFromUpgrades(EquipmentSlotType slot) {
         return 1 + getUpgradeCount(slot, EnumUpgrade.SPEED);
     }
@@ -669,6 +688,7 @@ public class CommonArmorHandler {
 //        return airConEnabled;
 //    }
 
+    @Override
     public float getArmorPressure(EquipmentSlotType slot) {
         return airHandlers.get(slot.getIndex()).map(IAirHandler::getPressure).orElse(0F);
     }

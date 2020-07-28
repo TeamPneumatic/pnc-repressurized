@@ -1,17 +1,15 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IUpgradeRenderHandler;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.UpgradeRenderHandlerList;
 import me.desht.pneumaticcraft.common.inventory.ContainerChargingStationItemInventory;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
+import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ArmorItem;
@@ -58,16 +56,16 @@ public class GuiPneumaticArmor extends GuiPneumaticInventoryItem {
 
         String black = TextFormatting.BLACK.toString();
         text.add(TextFormatting.WHITE + "Air Usage:");
-        PlayerEntity player = minecraft.player;
-        float totalUsage = UpgradeRenderHandlerList.instance().getAirUsage(player, equipmentSlot, true);
+        CommonArmorHandler commonArmorHandler = CommonArmorHandler.getHandlerForPlayer();
+        float totalUsage = commonArmorHandler.getIdleAirUsage(equipmentSlot, true);
         if (totalUsage > 0F) {
-            List<IUpgradeRenderHandler> renderHandlers = UpgradeRenderHandlerList.instance().getHandlersForSlot(equipmentSlot);
-            for (int i = 0; i < renderHandlers.size(); i++) {
-                if (CommonArmorHandler.getHandlerForPlayer(player).isUpgradeRendererInserted(equipmentSlot, i)) {
-                    IUpgradeRenderHandler handler = renderHandlers.get(i);
-                    float upgradeUsage = handler.getEnergyUsage(CommonArmorHandler.getHandlerForPlayer(player).getUpgradeCount(equipmentSlot, EnumUpgrade.RANGE), player);
+            List<IArmorUpgradeHandler> handlers = ArmorUpgradeRegistry.getInstance().getHandlersForSlot(equipmentSlot);
+            for (int i = 0; i < handlers.size(); i++) {
+                if (commonArmorHandler.isUpgradeInserted(equipmentSlot, i)) {
+                    IArmorUpgradeHandler handler = handlers.get(i);
+                    float upgradeUsage = handler.getIdleAirUsage(commonArmorHandler);
                     if (upgradeUsage > 0F) {
-                        text.add(black + PneumaticCraftUtils.roundNumberTo(upgradeUsage, 1) + " mL/tick (" + handler.getUpgradeID() + ")");
+                        text.add(black + PneumaticCraftUtils.roundNumberTo(upgradeUsage, 1) + " mL/tick (" + handler.getID() + ")");
                     }
                 }
             }

@@ -10,7 +10,6 @@ import me.desht.pneumaticcraft.client.gui.GuiPneumaticContainerBase;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticScreenBase;
 import me.desht.pneumaticcraft.client.gui.IExtraGuiHandling;
 import me.desht.pneumaticcraft.client.gui.widget.IDrawAfterRender;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
@@ -26,11 +25,9 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
 import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.GameSettings;
-import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.IGuiEventListener;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.RenderType;
@@ -54,7 +51,6 @@ import net.minecraftforge.client.event.*;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.opengl.GL11;
 
 import java.util.Random;
@@ -66,9 +62,6 @@ public class ClientEventHandler {
     private static final float MAX_SCREEN_ROLL = 25F;  // max roll in degrees when flying with jetboots
 
     private static float currentScreenRoll = 0F;
-
-    private static int lastWidth = -1;
-    private static int lastHeight = -1;
 
     @SubscribeEvent
     public static void onLivingRender(RenderLivingEvent.Pre<?,?> event) {
@@ -119,8 +112,9 @@ public class ClientEventHandler {
     @SubscribeEvent
     public static void renderFirstPersonMinigunTraces(RenderGameOverlayEvent.Pre event) {
         if (event.getType() == RenderGameOverlayEvent.ElementType.CROSSHAIRS && Minecraft.getInstance().gameSettings.thirdPersonView == 0) {
-            PlayerEntity player = Minecraft.getInstance().player;
             Minecraft mc = Minecraft.getInstance();
+            PlayerEntity player = mc.player;
+            if (player == null) return;
             ItemStack stack = player.getHeldItemMainhand();
             if (stack.getItem() instanceof ItemMinigun) {
                 Minigun minigun = ((ItemMinigun) stack.getItem()).getMinigun(stack, player);
@@ -357,24 +351,6 @@ public class ClientEventHandler {
             }
         }
         RenderSystem.enableTexture();
-    }
-
-    @SubscribeEvent
-    public static void handleResolutionChange(GuiScreenEvent.InitGuiEvent event) {
-        Screen gui = event.getGui();
-        if (gui.getMinecraft().world != null) {
-            MainWindow mw = gui.getMinecraft().getMainWindow();
-            if (mw.getScaledWidth() != lastWidth || mw.getScaledHeight() != lastHeight) {
-                HUDHandler.instance().onResolutionChanged();
-                lastWidth = mw.getScaledWidth();
-                lastHeight = mw.getScaledHeight();
-            }
-        }
-    }
-
-    public static Pair<Integer,Integer> getScaledScreenSize() {
-        //noinspection SuspiciousNameCombination
-        return Pair.of(lastWidth, lastHeight);
     }
 
     @SubscribeEvent

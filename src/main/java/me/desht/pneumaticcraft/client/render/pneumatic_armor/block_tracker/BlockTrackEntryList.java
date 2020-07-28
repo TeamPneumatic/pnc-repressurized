@@ -7,13 +7,13 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class BlockTrackEntryList {
     public final NonNullList<IBlockTrackEntry> trackList = NonNullList.create();
 
-    public static final BlockTrackEntryList instance = new BlockTrackEntryList();
+    public static final BlockTrackEntryList INSTANCE = new BlockTrackEntryList();
 
     // initialize default Block Track Entries.
     private BlockTrackEntryList() {
@@ -22,16 +22,13 @@ public class BlockTrackEntryList {
         trackList.add(new BlockTrackEntryFluid());
         trackList.add(new BlockTrackEntryEndPortalFrame());
         trackList.add(new BlockTrackEntryMobSpawner());
-        trackList.add(new BlockTrackEntrySimple());
+        trackList.add(new BlockTrackEntryMisc());
         trackList.add(new BlockTrackEntryEnergy());
     }
 
     public List<IBlockTrackEntry> getEntriesForCoordinate(IBlockReader blockAccess, BlockPos pos, TileEntity te) {
-        List<IBlockTrackEntry> blockTrackers = new ArrayList<>();
-        for (IBlockTrackEntry entry : trackList) {
-            if (WidgetKeybindCheckBox.fromKeyBindingName(entry.getEntryName()).checked && entry.shouldTrackWithThisEntry(blockAccess, pos, blockAccess.getBlockState(pos), te))
-                blockTrackers.add(entry);
-        }
-        return blockTrackers;
+        return trackList.stream()
+                .filter(entry -> WidgetKeybindCheckBox.get(entry.getEntryID()).checked && entry.shouldTrackWithThisEntry(blockAccess, pos, blockAccess.getBlockState(pos), te))
+                .collect(Collectors.toList());
     }
 }

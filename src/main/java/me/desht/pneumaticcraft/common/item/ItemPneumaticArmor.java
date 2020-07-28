@@ -7,18 +7,18 @@ import me.desht.pneumaticcraft.api.client.IFOVModifierItem;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.ICustomDurabilityBar;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderCoordWireframe;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.UpgradeRenderHandlerList;
 import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.capabilities.AirHandlerItemStack;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.recipes.special.OneProbeCrafting;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.lib.NBTKeys;
@@ -56,6 +56,8 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 //@Optional.InterfaceList({
 //        @Optional.Interface(iface = "thaumcraft.api.items.IGoggles", modid = ModIds.THAUMCRAFT),
@@ -112,7 +114,7 @@ public class ItemPneumaticArmor extends ArmorItem
      * @return true if the player is wearing pneumatic armor
      */
     public static boolean isPlayerWearingAnyPneumaticArmor(PlayerEntity player) {
-        for (EquipmentSlotType slot : UpgradeRenderHandlerList.ARMOR_SLOTS) {
+        for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
             if (isPneumaticArmorPiece(player, slot)) return true;
         }
         return false;
@@ -149,21 +151,19 @@ public class ItemPneumaticArmor extends ArmorItem
             tooltip.add(new StringTextComponent("The One Probe installed").mergeStyle(TextFormatting.BLUE));
         }
 
-        // TODO supplementary search & tracker information
-//        Item searchedItem = getSearchedItem(stack);
-//        if (searchedItem != null) {
-//            for (int i = 0; i < tooltip.size(); i++) {
-//                // FIXME: bleh
-//                if (tooltip.get(i).getFormattedText().contains("Item Search")) {
-//                    ItemStack searchedStack = new ItemStack(searchedItem);
-//                    tooltip.set(i, tooltip.get(i).appendText(" (searching " + searchedStack.getDisplayName().getFormattedText() + ")"));
-//                    break;
-//                }
-//            }
-//        }
+        Item searchedItem = getSearchedItem(stack);
+        if (searchedItem != null) {
+            ItemStack searchStack = new ItemStack(searchedItem);
+            if (!searchStack.isEmpty()) {
+                tooltip.add(xlate("pneumaticcraft.armor.upgrade.search").appendString(": ").append(searchStack.getDisplayName()).mergeStyle(TextFormatting.YELLOW));
+            }
+        }
 
         BlockPos pos = getCoordTrackerPos(stack, worldIn);
-        if (pos != null) RenderCoordWireframe.addInfo(tooltip, worldIn, pos);
+        if (pos != null) {
+            tooltip.add(xlate("pneumaticcraft.armor.upgrade.coordinate_tracker")
+                    .appendString(": ").appendString(PneumaticCraftUtils.posToString(pos)).mergeStyle(TextFormatting.YELLOW));
+        }
     }
 
     @Override

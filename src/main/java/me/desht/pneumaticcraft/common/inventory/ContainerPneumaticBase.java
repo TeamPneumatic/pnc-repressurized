@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.common.network.*;
+import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.tileentity.IGUIButtonSensitive;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -19,13 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ContainerPneumaticBase<T extends TileEntityBase> extends Container implements IGUIButtonSensitive {
-//    private static final String[] ARMOR_SLOT_TEXTURES = new String[]{
-//            "item/empty_armor_slot_boots",
-//            "item/empty_armor_slot_leggings",
-//            "item/empty_armor_slot_chestplate",
-//            "item/empty_armor_slot_helmet"
-//    };
-
     public final T te;
     private final List<SyncedField<?>> syncedFields = new ArrayList<>();
     private boolean firstTick = true;
@@ -125,8 +119,6 @@ public class ContainerPneumaticBase<T extends TileEntityBase> extends Container 
         }
     }
 
-    private static final EquipmentSlotType[] VALID_EQUIPMENT_SLOTS = new EquipmentSlotType[] {EquipmentSlotType.HEAD, EquipmentSlotType.CHEST, EquipmentSlotType.LEGS, EquipmentSlotType.FEET};
-
     /*
      * This is pretty much lifted from the ContainerPlayer constructor
      * We can't use EntityArmorInvWrapper because the wrapped setStackInSlot() method always sends a "set slot"
@@ -137,7 +129,7 @@ public class ContainerPneumaticBase<T extends TileEntityBase> extends Container 
     @SuppressWarnings("SameParameterValue")
     void addArmorSlots(PlayerInventory inventoryPlayer, int xBase, int yBase) {
         for (int i = 0; i < 4; ++i) {
-            final EquipmentSlotType entityequipmentslot = VALID_EQUIPMENT_SLOTS[i];
+            final EquipmentSlotType entityequipmentslot = ArmorUpgradeRegistry.ARMOR_SLOTS[i];
             this.addSlot(new Slot(inventoryPlayer, 36 + (3 - i), xBase, yBase + i * 18) {
                 @Override
                 public int getSlotStackLimit() {
@@ -154,11 +146,6 @@ public class ContainerPneumaticBase<T extends TileEntityBase> extends Container 
                     ItemStack itemstack = this.getStack();
                     return (itemstack.isEmpty() || playerIn.isCreative() || !EnchantmentHelper.hasBindingCurse(itemstack)) && super.canTakeStack(playerIn);
                 }
-
-//                @OnlyIn(Dist.CLIENT)
-//                public String getSlotTexture() {
-//                    return ARMOR_SLOT_TEXTURES[entityequipmentslot.getIndex()];
-//                }
             });
         }
     }

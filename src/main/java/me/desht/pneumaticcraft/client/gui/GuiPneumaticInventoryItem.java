@@ -118,21 +118,23 @@ public abstract class GuiPneumaticInventoryItem extends GuiPneumaticContainerBas
     void addUpgradeTabs(Item item, String... what) {
         boolean leftSided = true;
         for (EnumUpgrade upgrade : EnumUpgrade.values()) {
-            int max = ApplicableUpgradesDB.getInstance().getMaxUpgrades(item, upgrade);
-            if (max > 0) {
-                ItemStack upgradeStack = upgrade.getItemStack();
-                List<String> text = new ArrayList<>();
-                text.add(TextFormatting.GRAY + I18n.format("pneumaticcraft.gui.tab.upgrades.max", max));
-                for (String w : what) {
-                    String key = "pneumaticcraft.gui.tab.info.item." + w + "." + upgrade.getName() + "Upgrade";
-                    if (I18n.hasKey(key)) {
-                        text.addAll(PneumaticCraftUtils.splitString(I18n.format(key), 30));
-                        break;
+            if (upgrade.isDepLoaded()) {
+                int max = ApplicableUpgradesDB.getInstance().getMaxUpgrades(item, upgrade);
+                if (max > 0) {
+                    ItemStack upgradeStack = upgrade.getItemStack();
+                    List<String> text = new ArrayList<>();
+                    text.add(TextFormatting.GRAY + I18n.format("pneumaticcraft.gui.tab.upgrades.max", max));
+                    for (String w : what) {
+                        String key = "pneumaticcraft.gui.tab.info.item." + w + "." + upgrade.getName() + "Upgrade";
+                        if (I18n.hasKey(key)) {
+                            text.addAll(PneumaticCraftUtils.splitString(I18n.format(key), 30));
+                            break;
+                        }
                     }
+                    addAnimatedStat(upgradeStack.getDisplayName(), upgradeStack, 0xFF6060FF, leftSided)
+                            .setTextWithoutCuttingString(text);
+                    leftSided = !leftSided;
                 }
-                addAnimatedStat(upgradeStack.getDisplayName(), upgradeStack, 0xFF6060FF, leftSided)
-                        .setTextWithoutCuttingString(text);
-                leftSided = !leftSided;
             }
         }
     }

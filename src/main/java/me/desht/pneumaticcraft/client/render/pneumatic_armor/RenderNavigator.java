@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.client.render.pneumatic_armor;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import me.desht.pneumaticcraft.client.render.ModRenderTypes;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.CoordTrackUpgradeHandler;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.CoordTrackClientHandler;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
@@ -12,6 +12,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.world.World;
 
 public class RenderNavigator {
@@ -28,10 +29,11 @@ public class RenderNavigator {
     public void updatePath() {
         PlayerEntity player = Minecraft.getInstance().player;
         MobEntity e = PneumaticCraftUtils.createDummyEntity(player);
-        path = e.getNavigator().getPathToPos(targetPos, 0);
+        e.setOnGround(player.isOnGround());
+        path = e.getNavigator().getPathToPos(targetPos, 1);
         // TODO: this just doesn't work anymore
         if (!tracedToDestination()) {
-            path = CoordTrackUpgradeHandler.getDronePath(player, targetPos);
+            path = CoordTrackClientHandler.getDronePath(player, targetPos);
         }
     }
 
@@ -43,6 +45,7 @@ public class RenderNavigator {
         matrixStack.push();
         matrixStack.translate(0, 0.01D, 0);
 
+        Matrix4f posMat = matrixStack.getLast().getMatrix();
         if (wirePath) {
             // Draws just wires
             // TODO line stippling
@@ -58,9 +61,9 @@ public class RenderNavigator {
                 }
                 PathPoint lastPoint = path.getPathPointFromIndex(i - 1);
                 PathPoint pathPoint = path.getPathPointFromIndex(i);
-                builder.pos(lastPoint.x + 0.5D, lastPoint.y, lastPoint.z + 0.5D).color(red, 1 - red, 0, 0.5f).endVertex();
-                builder.pos((lastPoint.x + pathPoint.x) / 2D + 0.5D, Math.max(lastPoint.y, pathPoint.y), (lastPoint.z + pathPoint.z) / 2D + 0.5D).color(red, 1 - red, 0, 0.5f).endVertex();
-                builder.pos(pathPoint.x + 0.5D, pathPoint.y, pathPoint.z + 0.5D).color(red, 1 - red, 0, 0.5f).endVertex();
+                builder.pos(posMat, lastPoint.x + 0.5F, lastPoint.y, lastPoint.z + 0.5F).color(red, 1 - red, 0, 0.5f).endVertex();
+                builder.pos(posMat, (lastPoint.x + pathPoint.x) / 2F + 0.5F, Math.max(lastPoint.y, pathPoint.y), (lastPoint.z + pathPoint.z) / 2F + 0.5F).color(red, 1 - red, 0, 0.5f).endVertex();
+                builder.pos(posMat, pathPoint.x + 0.5F, pathPoint.y, pathPoint.z + 0.5F).color(red, 1 - red, 0, 0.5f).endVertex();
             }
         } else {
             IVertexBuilder builder = buffer.getBuffer(ModRenderTypes.getNavPath(xRayEnabled, true));
@@ -81,10 +84,10 @@ public class RenderNavigator {
                     red = (path.getCurrentPathLength() - i) * 0.005F;
                 }
                 PathPoint pathPoint = path.getPathPointFromIndex(i);
-                builder.pos(pathPoint.x, pathPoint.y, pathPoint.z).color(red, 1 - red, 0, alphaValue).endVertex();
-                builder.pos(pathPoint.x, pathPoint.y, pathPoint.z + 1).color(red, 1 - red, 0, alphaValue).endVertex();
-                builder.pos(pathPoint.x + 1, pathPoint.y, pathPoint.z + 1).color(red, 1 - red, 0, alphaValue).endVertex();
-                builder.pos(pathPoint.x + 1, pathPoint.y, pathPoint.z).color(red, 1 - red, 0, alphaValue).endVertex();
+                builder.pos(posMat, pathPoint.x, pathPoint.y, pathPoint.z).color(red, 1 - red, 0, alphaValue).endVertex();
+                builder.pos(posMat, pathPoint.x, pathPoint.y, pathPoint.z + 1).color(red, 1 - red, 0, alphaValue).endVertex();
+                builder.pos(posMat, pathPoint.x + 1, pathPoint.y, pathPoint.z + 1).color(red, 1 - red, 0, alphaValue).endVertex();
+                builder.pos(posMat, pathPoint.x + 1, pathPoint.y, pathPoint.z).color(red, 1 - red, 0, alphaValue).endVertex();
             }
         }
 

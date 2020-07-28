@@ -26,8 +26,6 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.BlockSnapshot;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.FakePlayerFactory;
@@ -56,7 +54,6 @@ public class EntityTumblingBlock extends ThrowableEntity {
         Validate.isTrue(!stack.isEmpty() && stack.getItem() instanceof BlockItem);
 
         setShooter(thrower);
-//        owner = thrower;
         this.preventEntitySpawning = true;
         this.setPosition(x, y + (double)((1.0F - this.getHeight()) / 2.0F), z);
         this.setMotion(0, 0, 0);
@@ -92,7 +89,6 @@ public class EntityTumblingBlock extends ThrowableEntity {
         return dataManager.get(STATE_STACK);
     }
 
-    @OnlyIn(Dist.CLIENT)
     public BlockPos getOrigin()
     {
         return this.dataManager.get(ORIGIN);
