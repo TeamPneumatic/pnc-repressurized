@@ -51,7 +51,7 @@ public class GuiAirCannon extends GuiPneumaticContainerBase<ContainerAirCannon,T
         strengthTab.addSubWidget(new WidgetButtonExtended(60, 16, 20, 20, "+").withTag("+"));
         strengthTab.addSubWidget(new WidgetButtonExtended(82, 16, 20, 20, "++").withTag("++"));
 
-        addLabel(new StringTextComponent("GPS"),  50, 20);
+        addLabel(new StringTextComponent("GPS"),  guiLeft + 50, guiTop + 20);
     }
 
     @Override

@@ -12,8 +12,6 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.MathHelper;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class ActionWidgetDropdown extends ActionWidgetVariable<WidgetComboBox> {
 
@@ -158,7 +156,6 @@ public class ActionWidgetDropdown extends ActionWidgetVariable<WidgetComboBox> {
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
     public Screen getGui(GuiRemoteEditor guiRemote) {
         return new GuiRemoteDropdown(this, guiRemote);
     }

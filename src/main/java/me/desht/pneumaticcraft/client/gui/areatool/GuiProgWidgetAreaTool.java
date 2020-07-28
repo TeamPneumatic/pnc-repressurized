@@ -25,8 +25,12 @@ public class GuiProgWidgetAreaTool extends GuiProgWidgetArea {
         super.onClose();
 
         NetworkHandler.sendToServer(new PacketUpdateGPSAreaTool(progWidget, hand));
-        returnAction.run();
 
+    }
+
+    @Override
+    public void closeScreen() {
+        returnAction.run();
     }
 
     @Override

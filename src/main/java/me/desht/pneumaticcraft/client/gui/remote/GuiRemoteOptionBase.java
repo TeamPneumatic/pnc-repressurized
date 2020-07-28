@@ -16,6 +16,7 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,7 +32,7 @@ public class GuiRemoteOptionBase<A extends ActionWidget<?>> extends GuiPneumatic
     private WidgetTextFieldNumber xValueField, yValueField, zValueField;
 
     public GuiRemoteOptionBase(A actionWidget, GuiRemoteEditor guiRemote) {
-        super(new TranslationTextComponent("remote." + actionWidget.getId() + ".name"));
+        super(new TranslationTextComponent("pneumaticcraft.gui.remote.tray." + actionWidget.getId() + ".name"));
 
         this.actionWidget = actionWidget;
         this.guiRemote = guiRemote;
@@ -58,6 +59,8 @@ public class GuiRemoteOptionBase<A extends ActionWidget<?>> extends GuiPneumatic
     @Override
     public void init() {
         super.init();
+
+        minecraft.keyboardListener.enableRepeatEvents(true);
 
         addLabel(xlate("pneumaticcraft.gui.remote.enable"), guiLeft + 10, guiTop + 150);
         addLabel(title, width / 2, guiTop + 5, WidgetLabel.Alignment.CENTRE);
@@ -115,16 +118,25 @@ public class GuiRemoteOptionBase<A extends ActionWidget<?>> extends GuiPneumatic
 
     @Override
     public void onClose() {
+        minecraft.keyboardListener.enableRepeatEvents(false);
+
         actionWidget.setEnableVariable(enableField.getText());
         actionWidget.setEnablingValue(xValueField.getValue(), yValueField.getValue(), zValueField.getValue());
         if (actionWidget instanceof IActionWidgetLabeled) {
             ((IActionWidgetLabeled) actionWidget).setText(new StringTextComponent(labelField.getText()));
-            List<ITextComponent> l = Arrays.stream(tooltipField.getText().split(TOOLTIP_DELIMITER))
-                    .map(StringTextComponent::new)
-                    .collect(Collectors.toList());
-            ((IActionWidgetLabeled) actionWidget).setTooltip(l);
+            if (tooltipField.getText().isEmpty()) {
+                ((IActionWidgetLabeled) actionWidget).setTooltip(Collections.emptyList());
+            } else {
+                List<ITextComponent> l = Arrays.stream(tooltipField.getText().split(TOOLTIP_DELIMITER))
+                        .map(StringTextComponent::new)
+                        .collect(Collectors.toList());
+                ((IActionWidgetLabeled) actionWidget).setTooltip(l);
+            }
         }
+    }
 
+    @Override
+    public void closeScreen() {
         minecraft.displayGuiScreen(guiRemote);
     }
 }

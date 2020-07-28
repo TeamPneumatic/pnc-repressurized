@@ -269,6 +269,10 @@ public class GuiPastebin extends GuiPneumaticScreenBase {
     @Override
     public void onClose() {
         minecraft.keyboardListener.enableRepeatEvents(false);
+    }
+
+    @Override
+    public void closeScreen() {
         minecraft.displayGuiScreen(parentScreen);
     }
 

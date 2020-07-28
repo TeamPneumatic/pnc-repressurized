@@ -120,7 +120,6 @@ public class PneumaticCraftRepressurized {
         POIFixup.fixup();
         VillageStructures.init();
         ModNameCache.init();
-        ModEntities.registerGlobalAttributes();
 
         // stuff to do after every other mod is done initialising
         //noinspection deprecation
@@ -128,6 +127,8 @@ public class PneumaticCraftRepressurized {
             DispenserBlock.registerDispenseBehavior(ModItems.DRONE.get(), new BehaviorDispenseDrone());
             DispenserBlock.registerDispenseBehavior(ModItems.LOGISTICS_DRONE.get(), new BehaviorDispenseDrone());
             DispenserBlock.registerDispenseBehavior(ModItems.HARVESTING_DRONE.get(), new BehaviorDispenseDrone());
+
+            ModEntities.registerGlobalAttributes();
 
             ThirdPartyManager.instance().postInit();
 

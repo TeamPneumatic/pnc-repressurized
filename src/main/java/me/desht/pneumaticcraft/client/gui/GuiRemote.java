@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import me.desht.pneumaticcraft.client.gui.remote.RemoteLayout;
-import me.desht.pneumaticcraft.client.gui.remote.actionwidget.ActionWidget;
 import me.desht.pneumaticcraft.client.gui.remote.actionwidget.ActionWidgetVariable;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.inventory.ContainerRemote;
@@ -69,11 +68,10 @@ public class GuiRemote extends GuiPneumaticContainerBase<ContainerRemote,TileEnt
         buttons.clear();
         children.clear();
         init();
-        for (ActionWidget actionWidget : remoteLayout.getActionWidgets()) {
-            if (actionWidget instanceof ActionWidgetVariable) {
-                ((ActionWidgetVariable) actionWidget).onVariableChange();
-            }
-        }
+
+        remoteLayout.getActionWidgets().stream()
+                .filter(actionWidget -> actionWidget instanceof ActionWidgetVariable)
+                .forEach(actionWidget -> ((ActionWidgetVariable<?>) actionWidget).onVariableChange());
     }
 
     @Override

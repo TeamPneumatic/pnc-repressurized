@@ -22,7 +22,7 @@ public class GuiLogisticsLiquidFilter extends GuiProgWidgetLiquidFilter {
     }
 
     @Override
-    public void onClose() {
+    public void closeScreen() {
         minecraft.displayGuiScreen(parentScreen);
     }
 }

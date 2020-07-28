@@ -12,7 +12,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -73,7 +72,6 @@ public class MovingSounds {
         throw new IllegalArgumentException("Invalid moving sound " + s + " for focus object " + focus);
     }
 
-    @OnlyIn(Dist.CLIENT)
     public static void playMovingSound(Sound s, Object focus, Object... extraData) {
         TickableSound movingSound = createMovingSound(s, focus, extraData);
         if (movingSound != null) {

@@ -30,6 +30,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.client.event.InputEvent;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -79,7 +80,9 @@ public class RenderBlockTarget {
     }
 
     private List<IBlockTrackEntry> getApplicableEntries() {
-        return BlockTrackEntryList.INSTANCE.getEntriesForCoordinate(world, pos, te);
+        return world.isBlockLoaded(pos) ?
+                BlockTrackEntryList.INSTANCE.getEntriesForCoordinate(world, pos, te) :
+                Collections.emptyList();
     }
 
     public BlockPos getPos() {
