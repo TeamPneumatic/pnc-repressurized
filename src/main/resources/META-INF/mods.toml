@@ -1,3 +1,4 @@
+license="GNU GPLv3"
 modLoader="javafml"
 loaderVersion="[32,)"
 issueTrackerURL="https://github.com/TeamPneumatic/pnc-repressurized/issues"
