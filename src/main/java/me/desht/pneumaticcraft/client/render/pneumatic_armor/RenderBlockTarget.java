@@ -113,20 +113,20 @@ public class RenderBlockTarget {
         if (!world.isAirBlock(pos)) {
             textList = new ArrayList<>();
             if (ticksExisted > 120) {
-                stat.closeWindow();
+                stat.closeStat();
                 for (IBlockTrackEntry entry : applicableTrackEntries) {
                     if (blockTracker.countBlockTrackersOfType(entry) <= entry.spamThreshold()) {
-                        stat.openWindow();
+                        stat.openStat();
                         break;
                     }
                 }
                 if (isPlayerLookingAtTarget()) {
-                    stat.openWindow();
+                    stat.openStat();
                     addBlockTrackInfo(textList, applicableTrackEntries);
                 }
                 stat.setText(textList);
             } else if (ticksExisted < -30) {
-                stat.closeWindow();
+                stat.closeStat();
                 stat.setText(textList);
             }
         }

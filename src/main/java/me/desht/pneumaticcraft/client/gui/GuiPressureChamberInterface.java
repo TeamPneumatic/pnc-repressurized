@@ -87,7 +87,7 @@ public class GuiPressureChamberInterface extends GuiPneumaticContainerBase<Conta
 
         if (hasEnoughPressure && !te.hasEnoughPressure()) {
             hasEnoughPressure = false;
-            problemTab.openWindow();
+            problemTab.openStat();
         } else if (te.hasEnoughPressure()) {
             hasEnoughPressure = true;
         }

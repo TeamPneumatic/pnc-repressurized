@@ -197,7 +197,7 @@ public enum HUDHandler implements IKeyListener {
                         if (comHudHandler.isUpgradeInserted(slot, i) && comHudHandler.isUpgradeEnabled(slot, i)) {
                             IGuiAnimatedStat stat = clientHandler.getAnimatedStat();
                             if (stat != null) {
-                                stat.render(matrixStack, -1, -1, partialTicks);
+                                stat.renderStat(matrixStack, -1, -1, partialTicks);
                             }
                             clientHandler.render2D(matrixStack, partialTicks, pressure > 0F);
                         }
@@ -306,9 +306,9 @@ public enum HUDHandler implements IKeyListener {
                     IGuiAnimatedStat stat = clientHandler.getAnimatedStat();
                     if (stat != null) {
                         if (commonArmorHandler.getArmorPressure(slot) > upgradeHandler.getMinimumPressure()) {
-                            stat.openWindow();
+                            stat.openStat();
                         } else {
-                            stat.closeWindow();
+                            stat.closeStat();
                         }
                         stat.tickWidget();
                     }

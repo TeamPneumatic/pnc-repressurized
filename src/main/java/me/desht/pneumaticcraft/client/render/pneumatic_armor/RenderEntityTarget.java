@@ -136,9 +136,9 @@ public class RenderEntityTarget {
 
         if (ticksExisted > 120) {
             if (justRenderWhenHovering && !isLookingAtTarget) {
-                stat.closeWindow();
+                stat.closeStat();
             } else {
-                stat.openWindow();
+                stat.openStat();
             }
             textList = new ArrayList<>();
             for (IEntityTrackEntry tracker : trackEntries) {
@@ -154,7 +154,7 @@ public class RenderEntityTarget {
             RenderUtils.renderString3d("Acquiring Target...", 0, 0, 0xFF7F7F7F, matrixStack, buffer, false, true);
             RenderUtils.renderString3d((int)targetAcquireProgress + "%", 37, 24, 0xFF002F00, matrixStack, buffer, false, true);
         } else if (ticksExisted < -30) {
-            stat.closeWindow();
+            stat.closeStat();
             stat.render3d(matrixStack, buffer, partialTicks);
             RenderUtils.renderString3d("Lost Target!", 0, 0, 0xFF7F7F7F, matrixStack, buffer, false, true);
         }

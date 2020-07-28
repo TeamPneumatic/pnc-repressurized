@@ -191,14 +191,14 @@ public interface IGuiAnimatedStat extends ITickableWidget {
      *
      * @return the stat's height
      */
-    int getHeight();
+    int getStatHeight();
 
     /**
      * Returns the X size of this stat.
      *
      * @return the stat's width
      */
-    int getWidth();
+    int getStatWidth();
 
     /**
      * Get a bounding box for this stat.
@@ -214,23 +214,23 @@ public interface IGuiAnimatedStat extends ITickableWidget {
      * @param mouseY
      * @param partialTicks
      */
-    void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks);
+    void renderStat(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks);
 
     /**
      * Forces the stat to close.
      */
-    void closeWindow();
+    void closeStat();
 
     /**
      * Forces the stat to expand.
      */
-    void openWindow();
+    void openStat();
 
     /**
      * Returns true if the stat is expanding.
      *
      * @return
      */
-    boolean isClicked();
+    boolean isStatOpen();
 
 }

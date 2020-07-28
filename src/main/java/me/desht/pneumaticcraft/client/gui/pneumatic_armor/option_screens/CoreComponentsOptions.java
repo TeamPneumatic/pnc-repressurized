@@ -32,7 +32,7 @@ public class CoreComponentsOptions extends IOptionPage.SimpleToggleableOptions<C
                 xlate("pneumaticcraft.armor.gui.misc.moveMessageScreen"), b -> {
             getClientUpgradeHandler().testMessageStat = new WidgetAnimatedStat(null, new StringTextComponent("Test Message, keep in mind messages can be long!"),
                     WidgetAnimatedStat.StatIcon.NONE, 0x7000AA00, null, ArmorHUDLayout.INSTANCE.messageStat);
-            getClientUpgradeHandler().testMessageStat.openWindow();
+            getClientUpgradeHandler().testMessageStat.openStat();
             Minecraft.getInstance().displayGuiScreen(
                     new GuiMoveStat(getClientUpgradeHandler(), ArmorHUDLayout.LayoutTypes.MESSAGE, getClientUpgradeHandler().testMessageStat));
         }));

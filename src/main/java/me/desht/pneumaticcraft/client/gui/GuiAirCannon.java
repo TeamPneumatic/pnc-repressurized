@@ -70,7 +70,7 @@ public class GuiAirCannon extends GuiPneumaticContainerBase<ContainerAirCannon,T
             gpsX = te.gpsX;
             gpsY = te.gpsY;
             gpsZ = te.gpsZ;
-            statusStat.openWindow();
+            statusStat.openStat();
         }
     }
 

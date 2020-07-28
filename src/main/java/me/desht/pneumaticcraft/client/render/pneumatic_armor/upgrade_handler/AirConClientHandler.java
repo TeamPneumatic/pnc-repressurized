@@ -42,7 +42,7 @@ public class AirConClientHandler extends IArmorUpgradeClientHandler.SimpleToggle
                 currentAC--;
         }
 
-        if (acStat.isClicked()) {
+        if (acStat.isStatOpen()) {
             int ac = MathHelper.clamp(currentAC, -MAX_AC, MAX_AC);
             String bar = (ac < 0 ? TextFormatting.BLUE : TextFormatting.GOLD)
                     + Strings.repeat("|", Math.abs(ac))

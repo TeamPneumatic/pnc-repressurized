@@ -52,7 +52,7 @@ public class GuiMoveStat extends GuiPneumaticScreenBase {
         this.renderHandler = renderHandler;
         this.layoutItem = layoutItem;
 
-        movedStat.openWindow();
+        movedStat.openStat();
 
         CommonArmorHandler commonArmorHandler = CommonArmorHandler.getHandlerForPlayer();
         for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
@@ -72,7 +72,7 @@ public class GuiMoveStat extends GuiPneumaticScreenBase {
         if (movedStat != mainOptions.testMessageStat) {
             mainOptions.testMessageStat = new WidgetAnimatedStat(null, new StringTextComponent("Test Message, keep in mind messages can be long!"),
                     WidgetAnimatedStat.StatIcon.NONE, 0x7000AA00, null, ArmorHUDLayout.INSTANCE.messageStat);
-            mainOptions.testMessageStat.openWindow();
+            mainOptions.testMessageStat.openStat();
             otherStats.add(mainOptions.testMessageStat);
         }
     }
@@ -155,12 +155,12 @@ public class GuiMoveStat extends GuiPneumaticScreenBase {
 
         super.render(matrixStack, x, y, partialTicks);
 
-        movedStat.render(matrixStack,-1, -1, partialTicks);
+        movedStat.renderStat(matrixStack,-1, -1, partialTicks);
 
         otherStats.forEach(stat -> {
             int c = stat.getBackgroundColor();
             stat.setBackgroundColor(0x30606060);
-            stat.render(matrixStack, -1, -1, partialTicks);
+            stat.renderStat(matrixStack, -1, -1, partialTicks);
             stat.setBackgroundColor(c);
         });
     }

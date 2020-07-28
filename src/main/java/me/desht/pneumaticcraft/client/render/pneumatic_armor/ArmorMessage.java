@@ -40,9 +40,9 @@ public class ArmorMessage {
 
     void renderMessage(MatrixStack matrixStack, float partialTicks) {
         if (lifeSpan > 10) {
-            stat.openWindow();
+            stat.openStat();
         } else {
-            stat.closeWindow();
+            stat.closeStat();
         }
         stat.render(matrixStack, -1, -1, partialTicks);
     }

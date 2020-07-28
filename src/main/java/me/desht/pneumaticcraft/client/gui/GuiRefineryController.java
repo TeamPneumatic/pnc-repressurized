@@ -61,7 +61,7 @@ public class GuiRefineryController extends GuiPneumaticContainerBase<ContainerRe
         }
 
         if (outputs.size() < 2 || outputs.size() > 4) {
-            problemTab.openWindow();
+            problemTab.openStat();
         }
 
         nExposedFaces = HeatUtil.countExposedFaces(outputs);

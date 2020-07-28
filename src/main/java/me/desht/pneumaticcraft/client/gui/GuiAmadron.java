@@ -119,7 +119,7 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
             offer.setShoppingAmount(container.getShoppingCartAmount(offer.getOffer()));
         }
         if (!hadProblem && container.problemState != EnumProblemState.NO_PROBLEMS) {
-            problemTab.openWindow();
+            problemTab.openStat();
         }
         hadProblem = container.problemState != EnumProblemState.NO_PROBLEMS;
         orderButton.active = !container.isBasketEmpty();

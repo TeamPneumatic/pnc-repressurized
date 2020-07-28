@@ -100,7 +100,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
 
         affectedY = y;
         if (affectingStat != null) {
-            affectedY += affectingStat.getAffectedY() + affectingStat.getHeight();
+            affectedY += affectingStat.getAffectedY() + affectingStat.getStatHeight();
         }
     }
 
@@ -344,7 +344,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
 
         affectedY = y;
         if (affectingStat != null) {
-            affectedY += affectingStat.getAffectedY() + affectingStat.getHeight();
+            affectedY += affectingStat.getAffectedY() + affectingStat.getStatHeight();
         }
     }
 
@@ -393,12 +393,10 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int x, int y, float partialTicks) {
-        if (this.visible) {
-            int baseX = leftSided ? this.x - this.width : this.x;
-            this.isHovered = x >= baseX && y >= this.affectedY && x < baseX + this.width && y < this.affectedY + this.height;
-            renderButton(matrixStack, x, y, partialTicks);
-        }
+    public void renderStat(MatrixStack matrixStack, int x, int y, float partialTicks) {
+        // just proxies to the renderButton() method
+        // a separately-named interface method is used to avoid AbstractMethodError problems
+        renderButton(matrixStack, x, y, partialTicks);
     }
 
     @Override
@@ -416,6 +414,11 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
 
     @Override
     public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+        if (!this.visible) return;
+
+        int baseX = leftSided ? this.x - this.width : this.x;
+        this.isHovered = mouseX >= baseX && mouseY >= this.affectedY && mouseX < baseX + this.width && mouseY < this.affectedY + this.height;
+
         float zLevel = 0;
         FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
         int renderBaseX = (int) (oldBaseX + (x - oldBaseX) * partialTicks);
@@ -561,7 +564,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
             List<IGuiAnimatedStat> widgets = ((GuiPneumaticContainerBase<?,?>) gui).getStatWidgets();
             widgets.stream()
                     .filter(stat -> this != stat && stat.isLeftSided() == isLeftSided()) // when the stat is on the same side, close it.
-                    .forEach(IGuiAnimatedStat::closeWindow);
+                    .forEach(IGuiAnimatedStat::closeStat);
             for (Widget w : subWidgets) {
                 if (w instanceof TextFieldWidget) ((TextFieldWidget) w).setFocused2(true);
             }
@@ -651,17 +654,17 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
     }
 
     @Override
-    public void closeWindow() {
+    public void closeStat() {
         isClicked = false;
     }
 
     @Override
-    public void openWindow() {
+    public void openStat() {
         isClicked = true;
     }
 
     @Override
-    public boolean isClicked() {
+    public boolean isStatOpen() {
         return isClicked;
     }
 
@@ -678,6 +681,16 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
     @Override
     public int getBaseY() {
         return y;
+    }
+
+    @Override
+    public int getStatHeight() {
+        return getHeight();
+    }
+
+    @Override
+    public int getStatWidth() {
+        return getWidth();
     }
 
     @Override

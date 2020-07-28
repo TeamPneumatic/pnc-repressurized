@@ -54,7 +54,7 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
         String g2 = TextFormatting.GREEN.toString();
 
         PlayerEntity player = armorHandler.getPlayer();
-        if (jbStat.isClicked()) {
+        if (jbStat.isStatOpen()) {
             double mx = player.getPosX() - player.prevPosX;
             double my = player.getPosY() - player.prevPosY;
             double mz = player.getPosZ() - player.prevPosZ;
@@ -83,14 +83,14 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
     public void render2D(MatrixStack matrixStack, float partialTicks, boolean helmetEnabled) {
         super.render2D(matrixStack, partialTicks, helmetEnabled);
 
-        if (helmetEnabled && jbStat.isClicked()) {
+        if (helmetEnabled && jbStat.isStatOpen()) {
             FontRenderer fr = Minecraft.getInstance().fontRenderer;
             int xl = jbStat.getBaseX() + 5;
             int y = jbStat.getBaseY() + fr.FONT_HEIGHT + 8;
-            int xr = jbStat.getBaseX() + jbStat.getWidth() - 5;
+            int xr = jbStat.getBaseX() + jbStat.getStatWidth() - 5;
             if (jbStat.isLeftSided()) {
-                xl -= jbStat.getWidth();
-                xr -= jbStat.getWidth();
+                xl -= jbStat.getStatWidth();
+                xr -= jbStat.getStatWidth();
             }
             fr.drawStringWithShadow(matrixStack, l1, xl, y, 0x404040);
             fr.drawStringWithShadow(matrixStack, l2, xl, y + fr.FONT_HEIGHT, 0x404040);

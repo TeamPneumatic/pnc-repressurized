@@ -78,7 +78,7 @@ public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.Abst
                 powerStat.addSubWidget(pressureButton);
             }
             powerStat.setMinDimensionsAndReset(0, 0);
-            powerStat.openWindow();
+            powerStat.openStat();
         }
         return powerStat;
     }
