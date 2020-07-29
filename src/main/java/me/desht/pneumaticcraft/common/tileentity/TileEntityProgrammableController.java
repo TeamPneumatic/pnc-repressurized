@@ -223,7 +223,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
 
     private DroneItemHandler getDroneItemHandler() {
         if (droneItemHandler == null) {
-            droneItemHandler = new DroneItemHandler(this);
+            droneItemHandler = new DroneItemHandler(this, 1);
             itemHandlerSideConfigurator.updateHandler("droneInv", () -> droneItemHandler);
         }
         return droneItemHandler;
@@ -326,7 +326,8 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     }
 
     private void calculateUpgrades() {
-        int oldInvUpgrades = droneItemHandler.getSlots() - 1;
+        // can be null on initial placement
+        int oldInvUpgrades = droneItemHandler == null ? 0 : droneItemHandler.getSlots() - 1;
         int newInvUpgrades = Math.min(35, getUpgrades(EnumUpgrade.INVENTORY));
         if (oldInvUpgrades != newInvUpgrades) {
             resizeDroneInventory(oldInvUpgrades + 1, newInvUpgrades + 1);
@@ -340,7 +341,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     }
 
     private void resizeDroneInventory(int oldSize, int newSize) {
-        DroneItemHandler tmpHandler = new DroneItemHandler(this);
+        DroneItemHandler tmpHandler = new DroneItemHandler(this, newSize);
 
         for (int i = 0; i < oldSize && i < newSize; i++) {
             tmpHandler.setStackInSlot(i, droneItemHandler.getStackInSlot(i));
@@ -368,10 +369,10 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
         ownerID = tag.contains("ownerID") ? UUID.fromString(tag.getString("ownerID")) : FALLBACK_UUID;
         ownerName = tag.contains("ownerName") ? new StringTextComponent(tag.getString("ownerName")) : new StringTextComponent(FALLBACK_NAME);
 
-        droneItemHandler = new DroneItemHandler(this);
+        droneItemHandler = new DroneItemHandler(this, getUpgrades(EnumUpgrade.INVENTORY) + 1);
         ItemStackHandler tmpInv = new ItemStackHandler();
         tmpInv.deserializeNBT(tag.getCompound("droneItems"));
-        if (getDroneSlots() != droneItemHandler.getSlots() /*&& PneumaticCraftRepressurized.proxy.getClientWorld() == null*/) {
+        if (getDroneSlots() != droneItemHandler.getSlots()) {
             Log.warning("drone inventory size mismatch: dispenser upgrades = " + getDroneSlots() + ", saved inv size = " + droneItemHandler.getSlots());
         }
         for (int i = 0; i < tmpInv.getSlots() && i < droneItemHandler.getSlots(); i++) {
