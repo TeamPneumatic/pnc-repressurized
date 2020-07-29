@@ -42,10 +42,10 @@ repositories {
         name = 'Curios'
         url = "https://maven.theillusivec4.top/"
     }
-    maven {
-        name = 'Gigaherz mappings'
-        url 'http://dogforce-games.com/maven'
-    }
+//    maven {
+//        name = 'Gigaherz mappings'
+//        url 'http://dogforce-games.com/maven'
+//    }
 //    maven {
 //        name = "CoFH Maven"
 //        url = "http://maven.covers1624.net"
