@@ -1420,7 +1420,7 @@ public class EntityDrone extends EntityDroneBase implements
 
     private class EntityDroneItemHandler extends DroneItemHandler {
         EntityDroneItemHandler(IDrone holder) {
-            super(holder);
+            super(holder, holder.getUpgrades(EnumUpgrade.INVENTORY) + 1);
         }
 
         @Override

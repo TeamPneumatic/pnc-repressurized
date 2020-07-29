@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.util.fakeplayer;
 
 import me.desht.pneumaticcraft.api.drone.IDrone;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
@@ -15,8 +14,8 @@ public class DroneItemHandler extends ItemStackHandler {
     private ItemStack prevHeldStack = ItemStack.EMPTY;
     private boolean fakePlayerReady = false;
 
-    public DroneItemHandler(IDrone holder) {
-        super(holder.getUpgrades(EnumUpgrade.INVENTORY) + 1);
+    public DroneItemHandler(IDrone holder, int size) {
+        super(size);
         this.holder = holder;
     }
 
