@@ -20,8 +20,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.util.Arrays;
 
 public class DroneColorCrafting extends ShapelessRecipe {
-    private NonNullList<Ingredient> ingredients = null;
-
     // you'd think using Ingredient.fromTag(Tags.Items.Dyes) would work, but nope
     private static final Item[] DYES = new Item[DyeColor.values().length];
     static {
@@ -32,17 +30,6 @@ public class DroneColorCrafting extends ShapelessRecipe {
         super(idIn, "", new ItemStack(ModItems.DRONE.get()), NonNullList.from(Ingredient.EMPTY,
                     Ingredient.fromItems(DYES), Ingredient.fromItems(ModItems.DRONE.get()))
         );
-    }
-
-    @Override
-    public NonNullList<Ingredient> getIngredients() {
-        return super.getIngredients();
-//        if (ingredients == null) {
-//            ingredients = NonNullList.from(Ingredient.EMPTY,
-//                    Ingredient.fromTag(Tags.Items.DYES), Ingredient.fromItems(ModItems.DRONE.get())
-//            );
-//        }
-//        return ingredients;
     }
 
     private Pair<ItemStack, DyeColor> findItems(CraftingInventory inv) {
@@ -58,11 +45,12 @@ public class DroneColorCrafting extends ShapelessRecipe {
                 if (color != null) {
                     dye = color;
                 }
-            } else {
+            } else if (!stack.isEmpty()) {
                 return null;
             }
+            if (!drone.isEmpty() && dye != null) break;
         }
-        return Pair.of(drone, dye);
+        return drone.isEmpty() || dye == null ? null : Pair.of(drone, dye);
     }
 
     @Override

@@ -82,6 +82,7 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
         addButton(fluidLabel = new WidgetLabel(guiLeft + 8, guiTop + 90, StringTextComponent.EMPTY));
         updateLabels();
 
+        fluidWidgets.clear();
         IntStream.range(0, EntityLogisticsFrame.FLUID_FILTER_SLOTS).forEach(i -> {
             FluidStack stack = logistics.getFluidFilter(i);
             PointXY p = getFluidSlotPos(i);
@@ -178,12 +179,12 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
         facingTab = addAnimatedStat(StringTextComponent.EMPTY, new ItemStack(Items.MAP), 0xFFC0C0C0, false);
         facingTab.addPadding(8, 18);
 
-        addDirButton(0, 15, 62, "D");
-        addDirButton(1, 15, 20, "U");
-        addDirButton(2, 36, 20, "N");
-        addDirButton(3, 36, 62, "S");
-        addDirButton(4, 15, 41, "W");
-        addDirButton(5, 57, 41, "E");
+        addDirButton(0, 15, 62);
+        addDirButton(1, 15, 20);
+        addDirButton(2, 36, 20);
+        addDirButton(3, 36, 62);
+        addDirButton(4, 15, 41);
+        addDirButton(5, 57, 41);
 
         facingTab.addSubWidget(new WidgetButtonExtended(36, 41, 20, 20, StringTextComponent.EMPTY)
                 .setTooltipText(PneumaticCraftUtils.splitStringComponent(I18n.format("pneumaticcraft.gui.logistics_frame.facing.tooltip")))
@@ -193,8 +194,10 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
         updateFacing();
     }
 
-    private void addDirButton(int i, int x, int y, String label) {
-        facingTab.addSubWidget(facingButtons[i] = new WidgetButtonExtended(x, y, 20, 20, new StringTextComponent(label)));
+    private void addDirButton(int i, int x, int y) {
+        Direction dir = Direction.byIndex(i);
+        String label = dir.toString().substring(0, 1).toUpperCase();
+        facingTab.addSubWidget(facingButtons[i] = new WidgetButtonExtended(x, y, 20, 20, new StringTextComponent(label), b -> setFace(dir)));
     }
 
     private void updateFacing() {

@@ -12,17 +12,18 @@ import vazkii.patchouli.api.IVariableProvider;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
+@SuppressWarnings("unused")
 public class ProcessorAssemblySystem implements IComponentProcessor {
     private AssemblyRecipe recipe = null;
 
     @Override
     public void setup(IVariableProvider iVariableProvider) {
-        String recipeId = iVariableProvider.get("recipe").asString();
-        this.recipe = PneumaticCraftRecipeType.ASSEMBLY_DRILL.getRecipe(Minecraft.getInstance().world, new ResourceLocation(recipeId));
+        ResourceLocation recipeId = new ResourceLocation(iVariableProvider.get("recipe").asString());
+        this.recipe = PneumaticCraftRecipeType.ASSEMBLY_DRILL_LASER.getRecipe(Minecraft.getInstance().world, recipeId);
         if (recipe == null) {
-            this.recipe = PneumaticCraftRecipeType.ASSEMBLY_LASER.getRecipe(Minecraft.getInstance().world, new ResourceLocation(recipeId));
+            this.recipe = PneumaticCraftRecipeType.ASSEMBLY_DRILL.getRecipe(Minecraft.getInstance().world, recipeId);
             if (recipe == null) {
-                this.recipe = PneumaticCraftRecipeType.ASSEMBLY_DRILL_LASER.getRecipe(Minecraft.getInstance().world, new ResourceLocation(recipeId));
+                this.recipe = PneumaticCraftRecipeType.ASSEMBLY_LASER.getRecipe(Minecraft.getInstance().world, recipeId);
             }
         }
     }

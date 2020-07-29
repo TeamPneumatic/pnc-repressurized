@@ -11,14 +11,15 @@ import vazkii.patchouli.api.IComponentProcessor;
 import vazkii.patchouli.api.IVariable;
 import vazkii.patchouli.api.IVariableProvider;
 
+@SuppressWarnings("unused")
 public class ProcessorAmadronTrade implements IComponentProcessor {
     private AmadronOffer recipe = null;
     private String text = null;
 
     @Override
     public void setup(IVariableProvider iVariableProvider) {
-        String recipeId = iVariableProvider.get("recipe").asString();
-        recipe = PneumaticCraftRecipeType.AMADRON_OFFERS.getRecipe(Minecraft.getInstance().world, new ResourceLocation(recipeId));
+        ResourceLocation recipeId = new ResourceLocation(iVariableProvider.get("recipe").asString());
+        recipe = PneumaticCraftRecipeType.AMADRON_OFFERS.getRecipe(Minecraft.getInstance().world, recipeId);
         if (recipe == null) {
             Log.warning("Missing amadron offer recipe: " + recipeId);
         }

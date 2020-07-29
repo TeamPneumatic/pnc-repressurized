@@ -46,7 +46,7 @@ public class PressureGaugeRenderer2D {
      */
     public static void drawPressureGauge(MatrixStack matrixStack, FontRenderer fontRenderer, float minPressure, float maxPressure, float dangerPressure, float minWorkingPressure, float currentPressure, int xPos, int yPos, int fgColor) {
         RenderSystem.disableTexture();
-        RenderSystem.lineWidth(2.0F);
+        RenderSystem.lineWidth(1.0F);
 
         BufferBuilder wr = Tessellator.getInstance().getBuffer();
 

@@ -10,13 +10,14 @@ import vazkii.patchouli.api.IVariableProvider;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
+@SuppressWarnings("unused")
 public class ProcessorPressureChamber implements IComponentProcessor {
     private PressureChamberRecipe recipe = null;
 
     @Override
     public void setup(IVariableProvider iVariableProvider) {
-        String recipeId = iVariableProvider.get("recipe").asString();
-        this.recipe = PneumaticCraftRecipeType.PRESSURE_CHAMBER.getRecipe(Minecraft.getInstance().world, new ResourceLocation(recipeId));
+        ResourceLocation recipeId = new ResourceLocation(iVariableProvider.get("recipe").asString());
+        this.recipe = PneumaticCraftRecipeType.PRESSURE_CHAMBER.getRecipe(Minecraft.getInstance().world, recipeId);
     }
 
     @Override

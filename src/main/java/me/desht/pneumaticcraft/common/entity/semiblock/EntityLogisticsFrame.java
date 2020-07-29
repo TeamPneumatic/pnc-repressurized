@@ -380,6 +380,7 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase {
     public void writeToBuf(PacketBuffer payload) {
         super.writeToBuf(payload);
 
+        payload.writeByte(getFacing().getIndex());
         payload.writeBoolean(isSemiblockInvisible());
         payload.writeBoolean(whiteList);
         payload.writeBoolean(matchNBT);
@@ -396,6 +397,7 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase {
     public void readFromBuf(PacketBuffer payload) {
         super.readFromBuf(payload);
 
+        setFacing(Direction.byIndex(payload.readByte()));
         setSemiblockInvisible(payload.readBoolean());
         whiteList = payload.readBoolean();
         matchNBT = payload.readBoolean();

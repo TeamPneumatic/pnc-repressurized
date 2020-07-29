@@ -15,8 +15,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
 public class DroneUpgradeCrafting extends ShapelessRecipe {
-    private NonNullList<Ingredient> ingredients = null;
-
     // you'd think using Ingredient.fromTag(PneumaticCraftTags.Items.BASIC_DRONES) would work, but nope
     private static final Item[] DRONES = {
             ModItems.LOGISTICS_DRONE.get(),
@@ -32,18 +30,6 @@ public class DroneUpgradeCrafting extends ShapelessRecipe {
         );
     }
 
-//    @Override
-//    public NonNullList<Ingredient> getIngredients() {
-//        return NonNullList.create();
-////        if (ingredients == null) {
-////            ingredients = NonNullList.from(Ingredient.EMPTY,
-////                    Ingredient.fromItems(ModItems.PRINTED_CIRCUIT_BOARD.get()),
-////                    Ingredient.fromTag(PneumaticCraftTags.Items.BASIC_DRONES)
-////            );
-////        }
-////        return ingredients;
-//    }
-
     @Override
     public boolean matches(CraftingInventory inv, World worldIn) {
         int basicDrone = 0, pcb = 0;
@@ -53,7 +39,7 @@ public class DroneUpgradeCrafting extends ShapelessRecipe {
                 basicDrone++;
             } else if (stack.getItem() == ModItems.PRINTED_CIRCUIT_BOARD.get()) {
                 pcb++;
-            } else {
+            } else if (!stack.isEmpty()) {
                 return false;
             }
             if (basicDrone > 1 || pcb > 1) return false;

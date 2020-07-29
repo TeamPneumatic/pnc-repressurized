@@ -25,12 +25,6 @@ public class OneProbeCrafting extends ShapelessRecipe {
                 NonNullList.from(Ingredient.EMPTY, Ingredient.fromItems(ModItems.PNEUMATIC_HELMET.get()), Ingredient.fromItems(ONE_PROBE)));
     }
 
-    private static ItemStack makeOutputStack() {
-        ItemStack stack = new ItemStack(ModItems.PNEUMATIC_HELMET.get());
-        setOneProbeEnabled(stack);
-        return stack;
-    }
-
     @Override
     public boolean matches(CraftingInventory inv, World worldIn) {
         if (ONE_PROBE == null) return false;
@@ -60,6 +54,11 @@ public class OneProbeCrafting extends ShapelessRecipe {
         return output;
     }
 
+    @Override
+    public IRecipeSerializer<?> getSerializer() {
+        return ModRecipes.ONE_PROBE_HELMET_CRAFTING.get();
+    }
+
     private ItemStack findHelmet(CraftingInventory inv) {
         for (int i = 0; i < inv.getSizeInventory(); i++) {
             if (inv.getStackInSlot(i).getItem() == ModItems.PNEUMATIC_HELMET.get()) {
@@ -69,9 +68,10 @@ public class OneProbeCrafting extends ShapelessRecipe {
         return ItemStack.EMPTY;
     }
 
-    @Override
-    public IRecipeSerializer<?> getSerializer() {
-        return ModRecipes.ONE_PROBE_HELMET_CRAFTING.get();
+    private static ItemStack makeOutputStack() {
+        ItemStack stack = new ItemStack(ModItems.PNEUMATIC_HELMET.get());
+        setOneProbeEnabled(stack);
+        return stack;
     }
 
     public static boolean isOneProbeEnabled(ItemStack helmetStack) {

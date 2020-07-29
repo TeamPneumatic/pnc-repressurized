@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.authlib.GameProfile;
 import me.desht.pneumaticcraft.api.drone.DroneConstructingEvent;
+import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.api.drone.IPathNavigator;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
@@ -105,7 +106,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     private EntityProgrammableController drone;
     private DroneAIManager aiManager;
     private DroneFakePlayer fakePlayer;
-    private DroneItemHandler droneItemHandler;
+    private DroneItemHandler droneItemHandler = new DummyItemHandler(this);
     private final List<IProgWidget> progWidgets = new ArrayList<>();
     private final int[] redstoneLevels = new int[6];
     private final SideConfigurator<IItemHandler> itemHandlerSideConfigurator;
@@ -223,7 +224,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     }
 
     private DroneItemHandler getDroneItemHandler() {
-        if (droneItemHandler == null) {
+        if (droneItemHandler == null || droneItemHandler instanceof DummyItemHandler) {
             droneItemHandler = new DroneItemHandler(this, 1);
             itemHandlerSideConfigurator.updateHandler("droneInv", () -> droneItemHandler);
         }
@@ -681,5 +682,32 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     @Override
     public void setLogisticsManager(LogisticsManager logisticsManager) {
         this.logisticsManager = logisticsManager;
+    }
+
+    private static class DummyItemHandler extends DroneItemHandler {
+        public DummyItemHandler(IDrone holder) {
+            super(holder, 1);
+        }
+
+        @Nonnull
+        @Override
+        public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
+            return stack;
+        }
+
+        @Nonnull
+        @Override
+        public ItemStack extractItem(int slot, int amount, boolean simulate) {
+            return ItemStack.EMPTY;
+        }
+
+        @Override
+        protected boolean isFakePlayerReady() {
+            return false;
+        }
+
+        @Override
+        public void setStackInSlot(int slot, @Nonnull ItemStack stack) {
+        }
     }
 }
