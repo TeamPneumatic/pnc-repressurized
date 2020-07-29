@@ -6,7 +6,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.15.2
 
-## 1.4.2-?? (unreleased)
+## 1.4.2-58 (29 Jul 2020)
 
 ### Updates
 * Smart Chest filter slots can now also limit the number of items allowed in a slot
@@ -18,10 +18,11 @@ Changes are in reverse chronological order; newest changes at the top.
   * Default is to try leftmost item first, as before
   * Use button in GUI to toggle to round-robin export
   * Could be useful for example when feeding the player via Aerial Interface for a varied diet
-* Aerial Interface in player feed mode now informs the player what they just ate
+* Aerial Interface in player feed mode now informs the player what they were just fed
     
 ### Fixes
 * Fixed NPE when throwing some blocks with chestplate launcher
+* Fixed NPE when placing down a new Programmable Controller
 
 ## 1.4.1-56 (20 Jul 2020)
 
