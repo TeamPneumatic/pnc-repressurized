@@ -8,7 +8,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import java.util.Collection;
 import java.util.Collections;
 
-public class RenderRefineryOutput extends AbstractFluidTESR<TileEntityRefineryOutput> {
+public class RenderRefineryOutput extends AbstractFluidTER<TileEntityRefineryOutput> {
     private static final AxisAlignedBB BOUNDS_NS = new AxisAlignedBB(5 / 16f, 1 / 16f, 1 / 16f, 11 / 16f, 15 / 16f, 15 / 16f);
     private static final AxisAlignedBB BOUNDS_EW = new AxisAlignedBB(1 / 16f, 1 / 16f, 5 / 16f, 15 / 16f, 15 / 16f, 11 / 16f);
 

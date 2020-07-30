@@ -8,7 +8,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 
 import java.util.Collection;
 
-public class RenderEtchingTank extends AbstractFluidTESR<TileEntityEtchingTank> {
+public class RenderEtchingTank extends AbstractFluidTER<TileEntityEtchingTank> {
     private static final AxisAlignedBB TANK_BOUNDS = new AxisAlignedBB(2.5/16f, 2/16f, 2.5/16f, 13.5/16f, 15/16f, 13.5/16f);
 
     public RenderEtchingTank(TileEntityRendererDispatcher dispatcher) {

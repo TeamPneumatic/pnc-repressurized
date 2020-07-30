@@ -8,23 +8,23 @@ import net.minecraft.util.math.AxisAlignedBB;
 
 import java.util.Collection;
 
-public class RenderThermopneumaticProcessingPlant extends AbstractFluidTESR<TileEntityThermopneumaticProcessingPlant> {
+public class RenderThermopneumaticProcessingPlant extends AbstractFluidTER<TileEntityThermopneumaticProcessingPlant> {
     private static final AxisAlignedBB TANK_BOUNDS_1 = new AxisAlignedBB(10 / 16f, 1 / 16f, 1 / 16f, 15 / 16f, 11 / 16f, 6 / 16f);
     private static final AxisAlignedBB TANK_BOUNDS_2 = new AxisAlignedBB(2 / 16f, 1 / 16f, 1 / 16f, 7 / 16f, 11 / 16f, 6 / 16f);
 
     private static final AxisAlignedBB[] BOUNDS_IN = new AxisAlignedBB[4];
     static {
         BOUNDS_IN[0] = TANK_BOUNDS_1;
-        BOUNDS_IN[1] = AbstractFluidTESR.rotateY(BOUNDS_IN[0], 90);
-        BOUNDS_IN[2] = AbstractFluidTESR.rotateY(BOUNDS_IN[1], 90);
-        BOUNDS_IN[3] = AbstractFluidTESR.rotateY(BOUNDS_IN[2], 90);
+        BOUNDS_IN[1] = AbstractFluidTER.rotateY(BOUNDS_IN[0], 90);
+        BOUNDS_IN[2] = AbstractFluidTER.rotateY(BOUNDS_IN[1], 90);
+        BOUNDS_IN[3] = AbstractFluidTER.rotateY(BOUNDS_IN[2], 90);
     }
     private static final AxisAlignedBB[] BOUNDS_OUT = new AxisAlignedBB[4];
     static {
         BOUNDS_OUT[0] = TANK_BOUNDS_2;
-        BOUNDS_OUT[1] = AbstractFluidTESR.rotateY(BOUNDS_OUT[0], 90);
-        BOUNDS_OUT[2] = AbstractFluidTESR.rotateY(BOUNDS_OUT[1], 90);
-        BOUNDS_OUT[3] = AbstractFluidTESR.rotateY(BOUNDS_OUT[2], 90);
+        BOUNDS_OUT[1] = AbstractFluidTER.rotateY(BOUNDS_OUT[0], 90);
+        BOUNDS_OUT[2] = AbstractFluidTER.rotateY(BOUNDS_OUT[1], 90);
+        BOUNDS_OUT[3] = AbstractFluidTER.rotateY(BOUNDS_OUT[2], 90);
     }
 
     public RenderThermopneumaticProcessingPlant(TileEntityRendererDispatcher dispatcher) {

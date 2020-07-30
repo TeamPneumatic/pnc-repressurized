@@ -12,7 +12,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class RenderLiquidHopper extends AbstractFluidTESR<TileEntityLiquidHopper> {
+public class RenderLiquidHopper extends AbstractFluidTER<TileEntityLiquidHopper> {
     private static final AxisAlignedBB[] BOUNDS = new AxisAlignedBB[6];
     static {
         BOUNDS[Direction.DOWN.getIndex()] = new AxisAlignedBB(1 / 16f, 1.01 / 16f, 1 / 16f, 15 / 16f, 5 / 16f, 15 / 16f);

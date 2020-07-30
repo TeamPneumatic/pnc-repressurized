@@ -13,7 +13,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class RenderFluidTank extends AbstractFluidTESR<TileEntityFluidTank> {
+public class RenderFluidTank extends AbstractFluidTER<TileEntityFluidTank> {
     private static final AxisAlignedBB BOUNDS_NONE = new AxisAlignedBB(2 / 16f, 1.01 / 16f, 2 / 16f, 14 / 16f, 14.99 / 16f, 14 / 16f);
     private static final AxisAlignedBB BOUNDS_UP = new AxisAlignedBB(2 / 16f, 1.01 / 16f, 2 / 16f, 14 / 16f, 16 / 16f, 14 / 16f);
     private static final AxisAlignedBB BOUNDS_DOWN = new AxisAlignedBB(2 / 16f, 0 / 16f, 2 / 16f, 14 / 16f, 14.99 / 16f, 14 / 16f);
