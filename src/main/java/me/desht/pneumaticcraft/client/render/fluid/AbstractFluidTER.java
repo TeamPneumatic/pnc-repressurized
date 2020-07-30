@@ -60,19 +60,16 @@ public abstract class AbstractFluidTER<T extends TileEntityBase> extends TileEnt
         double by2 = bounds.maxY * 16;
         double bz1 = bounds.minZ * 16;
         double bz2 = bounds.maxZ * 16;
-
-        int ovL = combinedOverlay & 0xFFFF;
-        int ovH = (combinedOverlay & 0xFFFF0000) >> 16;
         
         if (tankRenderInfo.shouldRender(Direction.DOWN)) {
             float u1 = still.getInterpolatedU(bx1);
             float u2 = still.getInterpolatedU(bx2);
             float v1 = still.getInterpolatedV(bz1);
             float v2 = still.getInterpolatedV(bz2);
-            builder.pos(posMat, x1, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v2).overlay(ovL, ovH).lightmap(combinedLight).normal(0f, -1f, 0f).endVertex();
-            builder.pos(posMat, x1, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v1).overlay(ovL, ovH).lightmap(combinedLight).normal(0f, -1f, 0f).endVertex();
-            builder.pos(posMat, x2, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v1).overlay(ovL, ovH).lightmap(combinedLight).normal(0f, -1f, 0f).endVertex();
-            builder.pos(posMat, x2, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v2).overlay(ovL, ovH).lightmap(combinedLight).normal(0f, -1f, 0f).endVertex();
+            builder.pos(posMat, x1, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v2).overlay(combinedOverlay).lightmap(combinedLight).normal(0f, -1f, 0f).endVertex();
+            builder.pos(posMat, x1, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v1).overlay(combinedOverlay).lightmap(combinedLight).normal(0f, -1f, 0f).endVertex();
+            builder.pos(posMat, x2, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v1).overlay(combinedOverlay).lightmap(combinedLight).normal(0f, -1f, 0f).endVertex();
+            builder.pos(posMat, x2, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v2).overlay(combinedOverlay).lightmap(combinedLight).normal(0f, -1f, 0f).endVertex();
         }
 
         if (tankRenderInfo.shouldRender(Direction.UP)) {
@@ -80,10 +77,10 @@ public abstract class AbstractFluidTER<T extends TileEntityBase> extends TileEnt
             float u2 = still.getInterpolatedU(bx2);
             float v1 = still.getInterpolatedV(bz1);
             float v2 = still.getInterpolatedV(bz2);
-            builder.pos(posMat, x1, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v2).overlay(ovL, ovH).lightmap(combinedLight).normal(0f, 1f, 0f).endVertex();
-            builder.pos(posMat, x2, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v2).overlay(ovL, ovH).lightmap(combinedLight).normal(0f, 1f, 0f).endVertex();
-            builder.pos(posMat, x2, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v1).overlay(ovL, ovH).lightmap(combinedLight).normal(0f, 1f, 0f).endVertex();
-            builder.pos(posMat, x1, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v1).overlay(ovL, ovH).lightmap(combinedLight).normal(0f, 1f, 0f).endVertex();
+            builder.pos(posMat, x1, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v2).overlay(combinedOverlay).lightmap(combinedLight).normal(0f, 1f, 0f).endVertex();
+            builder.pos(posMat, x2, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v2).overlay(combinedOverlay).lightmap(combinedLight).normal(0f, 1f, 0f).endVertex();
+            builder.pos(posMat, x2, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v1).overlay(combinedOverlay).lightmap(combinedLight).normal(0f, 1f, 0f).endVertex();
+            builder.pos(posMat, x1, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v1).overlay(combinedOverlay).lightmap(combinedLight).normal(0f, 1f, 0f).endVertex();
         }
 
         if (tankRenderInfo.shouldRender(Direction.NORTH)) {
@@ -91,10 +88,10 @@ public abstract class AbstractFluidTER<T extends TileEntityBase> extends TileEnt
             float u2 = still.getInterpolatedU(bx2);
             float v1 = still.getInterpolatedV(by1);
             float v2 = still.getInterpolatedV(by2);
-            builder.pos(posMat, x1, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v1).overlay(ovL, ovH).lightmap(combinedLight).normal(0f, 0f, -1f).endVertex();
-            builder.pos(posMat, x1, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v2).overlay(ovL, ovH).lightmap(combinedLight).normal(0f, 0f, -1f).endVertex();
-            builder.pos(posMat, x2, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v2).overlay(ovL, ovH).lightmap(combinedLight).normal(0f, 0f, -1f).endVertex();
-            builder.pos(posMat, x2, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v1).overlay(ovL, ovH).lightmap(combinedLight).normal(0f, 0f, -1f).endVertex();
+            builder.pos(posMat, x1, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v1).overlay(combinedOverlay).lightmap(combinedLight).normal(0f, 0f, -1f).endVertex();
+            builder.pos(posMat, x1, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v2).overlay(combinedOverlay).lightmap(combinedLight).normal(0f, 0f, -1f).endVertex();
+            builder.pos(posMat, x2, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v2).overlay(combinedOverlay).lightmap(combinedLight).normal(0f, 0f, -1f).endVertex();
+            builder.pos(posMat, x2, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v1).overlay(combinedOverlay).lightmap(combinedLight).normal(0f, 0f, -1f).endVertex();
         }
 
         if (tankRenderInfo.shouldRender(Direction.SOUTH)) {
@@ -102,10 +99,10 @@ public abstract class AbstractFluidTER<T extends TileEntityBase> extends TileEnt
             float u2 = still.getInterpolatedU(bx2);
             float v1 = still.getInterpolatedV(by1);
             float v2 = still.getInterpolatedV(by2);
-            builder.pos(posMat, x2, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v1).overlay(ovL, ovH).lightmap(combinedLight).normal(0f, 0f, 1f).endVertex();
-            builder.pos(posMat, x2, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v2).overlay(ovL, ovH).lightmap(combinedLight).normal(0f, 0f, 1f).endVertex();
-            builder.pos(posMat, x1, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v2).overlay(ovL, ovH).lightmap(combinedLight).normal(0f, 0f, 1f).endVertex();
-            builder.pos(posMat, x1, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v1).overlay(ovL, ovH).lightmap(combinedLight).normal(0f, 0f, 1f).endVertex();
+            builder.pos(posMat, x2, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v1).overlay(combinedOverlay).lightmap(combinedLight).normal(0f, 0f, 1f).endVertex();
+            builder.pos(posMat, x2, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v2).overlay(combinedOverlay).lightmap(combinedLight).normal(0f, 0f, 1f).endVertex();
+            builder.pos(posMat, x1, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v2).overlay(combinedOverlay).lightmap(combinedLight).normal(0f, 0f, 1f).endVertex();
+            builder.pos(posMat, x1, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v1).overlay(combinedOverlay).lightmap(combinedLight).normal(0f, 0f, 1f).endVertex();
         }
 
         if (tankRenderInfo.shouldRender(Direction.WEST)) {
@@ -113,10 +110,10 @@ public abstract class AbstractFluidTER<T extends TileEntityBase> extends TileEnt
             float u2 = still.getInterpolatedU(by2);
             float v1 = still.getInterpolatedV(bz1);
             float v2 = still.getInterpolatedV(bz2);
-            builder.pos(posMat, x1, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v2).overlay(ovL, ovH).lightmap(combinedLight).normal(-1f, 0f, 0f).endVertex();
-            builder.pos(posMat, x1, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v2).overlay(ovL, ovH).lightmap(combinedLight).normal(-1f, 0f, 0f).endVertex();
-            builder.pos(posMat, x1, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v1).overlay(ovL, ovH).lightmap(combinedLight).normal(-1f, 0f, 0f).endVertex();
-            builder.pos(posMat, x1, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v1).overlay(ovL, ovH).lightmap(combinedLight).normal(-1f, 0f, 0f).endVertex();
+            builder.pos(posMat, x1, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v2).overlay(combinedOverlay).lightmap(combinedLight).normal(-1f, 0f, 0f).endVertex();
+            builder.pos(posMat, x1, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v2).overlay(combinedOverlay).lightmap(combinedLight).normal(-1f, 0f, 0f).endVertex();
+            builder.pos(posMat, x1, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v1).overlay(combinedOverlay).lightmap(combinedLight).normal(-1f, 0f, 0f).endVertex();
+            builder.pos(posMat, x1, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v1).overlay(combinedOverlay).lightmap(combinedLight).normal(-1f, 0f, 0f).endVertex();
         }
 
         if (tankRenderInfo.shouldRender(Direction.EAST)) {
@@ -124,10 +121,10 @@ public abstract class AbstractFluidTER<T extends TileEntityBase> extends TileEnt
             float u2 = still.getInterpolatedU(by2);
             float v1 = still.getInterpolatedV(bz1);
             float v2 = still.getInterpolatedV(bz2);
-            builder.pos(posMat, x2, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v1).overlay(ovL, ovH).lightmap(combinedLight).normal(1f, 0f, 0f).endVertex();
-            builder.pos(posMat, x2, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v1).overlay(ovL, ovH).lightmap(combinedLight).normal(1f, 0f, 0f).endVertex();
-            builder.pos(posMat, x2, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v2).overlay(ovL, ovH).lightmap(combinedLight).normal(1f, 0f, 0f).endVertex();
-            builder.pos(posMat, x2, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v2).overlay(ovL, ovH).lightmap(combinedLight).normal(1f, 0f, 0f).endVertex();
+            builder.pos(posMat, x2, y1, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v1).overlay(combinedOverlay).lightmap(combinedLight).normal(1f, 0f, 0f).endVertex();
+            builder.pos(posMat, x2, y2, z1).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v1).overlay(combinedOverlay).lightmap(combinedLight).normal(1f, 0f, 0f).endVertex();
+            builder.pos(posMat, x2, y2, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u2, v2).overlay(combinedOverlay).lightmap(combinedLight).normal(1f, 0f, 0f).endVertex();
+            builder.pos(posMat, x2, y1, z2).color(cols[1], cols[2], cols[3], cols[0]).tex(u1, v2).overlay(combinedOverlay).lightmap(combinedLight).normal(1f, 0f, 0f).endVertex();
         }
     }
 
