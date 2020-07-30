@@ -16,7 +16,7 @@
       "item": "pneumaticcraft:turbine_rotor"
     },
     "C": {
-      "item": "pneumaticcraft:air_compressor"
+      "item": "pneumaticcraft:advanced_air_compressor"
     }
   },
   "result": {

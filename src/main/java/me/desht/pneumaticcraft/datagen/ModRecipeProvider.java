@@ -262,7 +262,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 'B', Blocks.IRON_BARS,
                 'P', PneumaticCraftTags.Items.PLASTIC_SHEETS,
                 'R', ModItems.TURBINE_ROTOR.get(),
-                'C', ModBlocks.AIR_COMPRESSOR.get()
+                'C', ModBlocks.ADVANCED_AIR_COMPRESSOR.get()
         ).build(consumer);
 
         shaped(ModBlocks.ELEVATOR_BASE.get(), ModItems.PLASTIC.get(),
