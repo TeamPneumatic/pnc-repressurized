@@ -4,9 +4,29 @@ This is an overview of significant new features and fixes by release.  See https
 
 Changes are in reverse chronological order; newest changes at the top.
 
+## Minecraft 1.16.1
+
+The initial 1.16.1 release is largely equivalent in functionality to the 1.4.2 release (for MC 1.15.2), with a few minor player-visible changes.
+
+## 2.0.0-?? (unreleased)
+
+### Updates
+* The Programmable Controller can now optionally charge (with pressure and/or Forge Energy) the "drone's" held item (i.e. the item in inventory slot 0)
+  * Added a GUI tab with a checkbox to the controller's GUI to control this.
+* The Electrostatic Compressor now needs an Advanced Air Compressor to craft (rather than a basic Air Compressor)
+* A few heat-related changes
+  * Heat frames now take on their environment's ambient temperature when placed down instead of just using 30C
+  * Heat frames will now slowly cool (or warm) back to their ambient temperature when left idle
+  * Heat sinks now don't burn the player until they reach 60C (up from 50C).  Burn damage is less at 60C then it used to be, but hotter heat sinks now hurt more to stand in front of.
+  * Tintable blocks (Heat Sinks, Compressed Iron Blocks, etc.) now vary their tint much more smoothly as their temperature changes.
+
+
+### Fixes
+* Fixed fluid rendering tile entities not rendering when any GUI is open
+
 ## Minecraft 1.15.2
 
-## 1.4.2-?? (unreleased)
+## 1.4.2-58 (29 Jul 2020)
 
 ### Updates
 * Smart Chest filter slots can now also limit the number of items allowed in a slot
@@ -22,6 +42,7 @@ Changes are in reverse chronological order; newest changes at the top.
     
 ### Fixes
 * Fixed NPE when throwing some blocks with chestplate launcher
+* Fixed NPE when placing down a new Programmable Controller
 
 ## 1.4.1-56 (20 Jul 2020)
 
