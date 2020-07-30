@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableSet;
 import com.mojang.authlib.GameProfile;
+import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.drone.DroneConstructingEvent;
 import me.desht.pneumaticcraft.api.drone.IPathNavigator;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
@@ -19,10 +20,7 @@ import me.desht.pneumaticcraft.common.entity.EntityProgrammableController;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsFrame;
 import me.desht.pneumaticcraft.common.inventory.ContainerProgrammableController;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
-import me.desht.pneumaticcraft.common.network.DescSynced;
-import me.desht.pneumaticcraft.common.network.LazySynced;
-import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
+import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.tileentity.SideConfigurator.RelativeFace;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -125,6 +123,8 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     private int speedUpgrades;
     @DescSynced
     public boolean isIdle;
+    @GuiSynced
+    public boolean shouldChargeHeldItem;
 
     private UUID ownerID;
     private ITextComponent ownerName;
@@ -188,6 +188,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
             if (getPressure() >= getMinWorkingPressure()) {
                 if (!aiManager.isIdling()) addAir(-PneumaticValues.USAGE_PROGRAMMABLE_CONTROLLER);
                 aiManager.onUpdateTasks();
+                maybeChargeHeldItem();
             }
         } else {
             if (drone == null || !drone.isAlive()) {
@@ -198,6 +199,27 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
             }
             drone.setPosition(curX, curY, curZ);
         }
+    }
+
+    private void maybeChargeHeldItem() {
+        if (!shouldChargeHeldItem) return;
+
+        ItemStack held = droneItemHandler.getStackInSlot(0);
+
+        if (energy.getEnergyStored() > 100) {
+            held.getCapability(CapabilityEnergy.ENERGY).ifPresent(handler -> {
+                if (handler.getMaxEnergyStored() - handler.getEnergyStored() > 100) {
+                    handler.receiveEnergy(energy.extractEnergy(100, false), false);
+                }
+            });
+        }
+
+        held.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(handler -> {
+            if (getPressure() > handler.getPressure() && handler.getPressure() < handler.maxPressure()) {
+                handler.addAir(50);
+                airHandler.addAir(-50);
+            }
+        });
     }
 
     @Override
@@ -226,9 +248,12 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
 
     @Override
     public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player) {
-        if (itemHandlerSideConfigurator.handleButtonPress(tag)) {
+        if (tag.equals("charging")) {
+            shouldChargeHeldItem = !shouldChargeHeldItem;
+        } else if (itemHandlerSideConfigurator.handleButtonPress(tag)) {
             updateNeighbours = true;
         }
+        markDirty();
     }
 
     @Override
@@ -319,9 +344,11 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
             droneItemHandler.setStackInSlot(i, tmpInv.getStackInSlot(i).copy());
         }
 
-        energy.writeToNBT(tag);
+        energy.readFromNBT(tag);
 
         itemHandlerSideConfigurator.updateHandler("droneInv", () -> droneItemHandler);
+
+        shouldChargeHeldItem = tag.getBoolean("chargeHeld");
     }
 
     @Override
@@ -343,7 +370,9 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
         if (ownerID != null) tag.putString("ownerID", ownerID.toString());
         if (ownerName != null) tag.putString("ownerName", ownerName.getString());
 
-        energy.readFromNBT(tag);
+        energy.writeToNBT(tag);
+
+        tag.putBoolean("chargeHeld", shouldChargeHeldItem);
 
         return tag;
     }

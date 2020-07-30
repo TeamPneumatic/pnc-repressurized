@@ -1,10 +1,13 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetEnergy;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.ContainerProgrammableController;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammableController;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.resources.I18n;
@@ -22,6 +25,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class GuiProgrammableController extends GuiPneumaticContainerBase<ContainerProgrammableController,TileEntityProgrammableController>
         implements IGuiDrone
 {
+    private WidgetCheckBox shouldCharge;
 
     public GuiProgrammableController(ContainerProgrammableController container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
@@ -39,6 +43,18 @@ public class GuiProgrammableController extends GuiPneumaticContainerBase<Contain
                 .collect(Collectors.toList());
         addAnimatedStat(xlate("pneumaticcraft.gui.tab.info.programmable_controller.excluded"),
                 new ItemStack(ModItems.DRONE.get()), 0xFFFF5050, true).setText(exc);
+        WidgetAnimatedStat ch = addAnimatedStat(xlate("pneumaticcraft.gui.tab.info.programmable_controller.charging"),
+                new ItemStack(ModItems.CHARGING_MODULE.get()), 0xFFA0A0A0, false);
+        ch.addSubWidget(shouldCharge = new WidgetCheckBox(5, 15, 0x000000, xlate("pneumaticcraft.gui.tab.info.programmable_controller.chargeHeld")).withTag("charging"));
+        ch.addPadding(2, 20);
+        shouldCharge.setTooltip(PneumaticCraftUtils.splitStringComponent(I18n.format("pneumaticcraft.gui.tab.info.programmable_controller.chargeHeld.tooltip")));
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+
+        shouldCharge.checked = te.shouldChargeHeldItem;
     }
 
     @Override
