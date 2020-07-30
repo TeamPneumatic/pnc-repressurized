@@ -68,6 +68,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.nbt.ListNBT;
+import net.minecraft.nbt.NBTUtil;
 import net.minecraft.network.IPacket;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.datasync.DataParameter;
@@ -151,8 +152,8 @@ public class EntityDrone extends EntityDroneBase implements
         LASER_COLOR_MAP.put(new StringTextComponent("desht"), 0xff6000);
     }
 
-    private EntityDroneItemHandler droneItemHandler;
-    private final LazyOptional<IItemHandlerModifiable> droneItemHandlerCap = LazyOptional.of(this::getDroneItemHandler);
+    private final EntityDroneItemHandler droneItemHandler = new EntityDroneItemHandler(this);
+    private final LazyOptional<IItemHandlerModifiable> droneItemHandlerCap = LazyOptional.of(() -> droneItemHandler);
 
     private final FluidTank fluidTank = new FluidTank(Integer.MAX_VALUE);
     private final LazyOptional<IFluidHandler> fluidCap = LazyOptional.of(() -> fluidTank);
@@ -314,14 +315,6 @@ public class EntityDrone extends EntityDroneBase implements
                 .createMutableAttribute(Attributes.MAX_HEALTH, 40.0D)
                 .createMutableAttribute(Attributes.FOLLOW_RANGE, 75.0D);
     }
-
-//    @Override
-//    protected void registerAttributes() {
-//        super.registerAttributes();
-//        getAttributes().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(3.0D);
-//        getAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(40F);
-//        getAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(getRange());
-//    }
 
     @Nonnull
     @Override
@@ -493,7 +486,7 @@ public class EntityDrone extends EntityDroneBase implements
         speed = 0.15 + Math.min(10, getUpgrades(EnumUpgrade.SPEED)) * 0.015;
         healingInterval = getUpgrades(EnumUpgrade.ITEM_LIFE) > 0 ? 100 / getUpgrades(EnumUpgrade.ITEM_LIFE) : 0;
         if (!world.isRemote) {
-            getDroneItemHandler().setFakePlayerReady();
+            droneItemHandler.setFakePlayerReady();
             setHasMinigun(getUpgrades(EnumUpgrade.MINIGUN) > 0);
             MinecraftForge.EVENT_BUS.register(this);
             aiManager.setWidgets(progWidgets);
@@ -802,11 +795,10 @@ public class EntityDrone extends EntityDroneBase implements
 
     @Override
     protected void dropInventory() {
-        DroneItemHandler dih = getDroneItemHandler();
-        for (int i = 0; i < dih.getSlots(); i++) {
-            if (!dih.getStackInSlot(i).isEmpty()) {
-                entityDropItem(dih.getStackInSlot(i), 0);
-                dih.setStackInSlot(i, ItemStack.EMPTY);
+        for (int i = 0; i < droneItemHandler.getSlots(); i++) {
+            if (!droneItemHandler.getStackInSlot(i).isEmpty()) {
+                entityDropItem(droneItemHandler.getStackInSlot(i), 0);
+                droneItemHandler.setStackInSlot(i, ItemStack.EMPTY);
             }
         }
     }
@@ -885,13 +877,6 @@ public class EntityDrone extends EntityDroneBase implements
         }
     }
 
-    private EntityDroneItemHandler getDroneItemHandler() {
-        if (droneItemHandler == null) {
-            droneItemHandler = new EntityDroneItemHandler(this);
-        }
-        return droneItemHandler;
-    }
-
     protected BasicAirHandler getAirHandler() {
         if (airHandler == null) {
             int vol = ApplicableUpgradesDB.getInstance().getUpgradedVolume(PneumaticValues.DRONE_VOLUME, getUpgrades(EnumUpgrade.VOLUME));
@@ -919,7 +904,10 @@ public class EntityDrone extends EntityDroneBase implements
         tag.putInt("color", getDroneColor());
         tag.putBoolean("standby", standby);
         tag.put("variables", aiManager.writeToNBT(new CompoundNBT()));
-        tag.put("Inventory", getDroneItemHandler().serializeNBT());
+
+        ItemStackHandler tmpHandler = new ItemStackHandler(droneItemHandler.getSlots());
+        PneumaticCraftUtils.copyItemHandler(droneItemHandler, tmpHandler, droneItemHandler.getSlots());
+        tag.put("Inventory", tmpHandler.serializeNBT());
         tag.put(UpgradableItemUtils.NBT_UPGRADE_TAG, upgradeInventory.serializeNBT());
 
         fluidTank.writeToNBT(tag);
@@ -933,8 +921,8 @@ public class EntityDrone extends EntityDroneBase implements
         if (!displacedLiquids.isEmpty()) {
             ListNBT disp = new ListNBT();
             for (Map.Entry<BlockPos, BlockState> entry : displacedLiquids.entrySet()) {
-                CompoundNBT p = net.minecraft.nbt.NBTUtil.writeBlockPos(entry.getKey());
-                CompoundNBT s = net.minecraft.nbt.NBTUtil.writeBlockState(entry.getValue());
+                CompoundNBT p = NBTUtil.writeBlockPos(entry.getKey());
+                CompoundNBT s = NBTUtil.writeBlockState(entry.getValue());
                 ListNBT l = new ListNBT();
                 l.add(0, p);
                 l.add(1, s);
@@ -960,11 +948,10 @@ public class EntityDrone extends EntityDroneBase implements
         upgradeCache.invalidate();
         getAirHandler().deserializeNBT(tag.getCompound("airHandler"));
 
-        // we can't just deserialize the saved inv directly into the real inventory, since that
-        // also affects its size, meaning any added inventory upgrades wouldn't work
         ItemStackHandler tmpInv = new ItemStackHandler();
         tmpInv.deserializeNBT(tag.getCompound("Inventory"));
-        PneumaticCraftUtils.copyItemHandler(tmpInv, getDroneItemHandler());
+        PneumaticCraftUtils.copyItemHandler(tmpInv, droneItemHandler);
+        droneItemHandler.setUseableSlots(1 + getUpgrades(EnumUpgrade.INVENTORY));
 
         fluidTank.setCapacity(PneumaticValues.DRONE_TANK_SIZE * (1 + getUpgrades(EnumUpgrade.INVENTORY)));
         fluidTank.readFromNBT(tag);
@@ -979,8 +966,8 @@ public class EntityDrone extends EntityDroneBase implements
                 ListNBT l = (ListNBT) inbt;
                 CompoundNBT p = l.getCompound(0);
                 CompoundNBT s = l.getCompound(1);
-                BlockPos pos = net.minecraft.nbt.NBTUtil.readBlockPos(p);
-                BlockState state = net.minecraft.nbt.NBTUtil.readBlockState(s);
+                BlockPos pos = NBTUtil.readBlockPos(p);
+                BlockState state = NBTUtil.readBlockState(s);
                 displacedLiquids.put(pos, state);
             }
         }
@@ -1042,7 +1029,7 @@ public class EntityDrone extends EntityDroneBase implements
 
     @Override
     public IItemHandlerModifiable getInv() {
-        return getDroneItemHandler();
+        return droneItemHandler;
     }
 
     public double getSpeed() {
@@ -1257,11 +1244,10 @@ public class EntityDrone extends EntityDroneBase implements
 
     public void tryFireMinigun(LivingEntity target) {
         int slot = getSlotForAmmo();
-        DroneItemHandler dih = getDroneItemHandler();
         if (slot >= 0) {
-            ItemStack ammo = dih.getStackInSlot(slot);
+            ItemStack ammo = droneItemHandler.getStackInSlot(slot);
             if (getMinigun().setAmmoStack(ammo).tryFireMinigun(target)) {
-                dih.setStackInSlot(slot, ItemStack.EMPTY);
+                droneItemHandler.setStackInSlot(slot, ItemStack.EMPTY);
             }
         }
     }
@@ -1272,9 +1258,8 @@ public class EntityDrone extends EntityDroneBase implements
      * @return a slot number, or -1 if no ammo
      */
     public int getSlotForAmmo() {
-        DroneItemHandler dih = getDroneItemHandler();
-        for (int i = 0; i < dih.getSlots(); i++) {
-            if (dih.getStackInSlot(i).getItem() instanceof ItemGunAmmo) {
+        for (int i = 0; i < droneItemHandler.getSlots(); i++) {
+            if (droneItemHandler.getStackInSlot(i).getItem() instanceof ItemGunAmmo) {
                 return i;
             }
         }
@@ -1420,7 +1405,7 @@ public class EntityDrone extends EntityDroneBase implements
 
     private class EntityDroneItemHandler extends DroneItemHandler {
         EntityDroneItemHandler(IDrone holder) {
-            super(holder, holder.getUpgrades(EnumUpgrade.INVENTORY) + 1);
+            super(holder, 1);
         }
 
         @Override

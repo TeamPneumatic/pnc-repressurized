@@ -11,17 +11,21 @@ import javax.annotation.Nonnull;
 
 public class DroneItemHandler extends ItemStackHandler {
     private final IDrone holder;
+    private int useableSlots;
     private ItemStack prevHeldStack = ItemStack.EMPTY;
     private boolean fakePlayerReady = false;
 
-    public DroneItemHandler(IDrone holder, int size) {
-        super(size);
+    public DroneItemHandler(IDrone holder, int useableSlots) {
+        super(36);  // always has 36 slots to match a player main inv
         this.holder = holder;
+        this.useableSlots = useableSlots;
     }
 
     @Nonnull
     @Override
     public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
+        if (slot >= useableSlots) return stack;
+
         ItemStack res = super.insertItem(slot, stack, simulate);
         if (res.getCount() != stack.getCount() && !simulate) {
             copyItemToFakePlayer(slot);
@@ -32,6 +36,8 @@ public class DroneItemHandler extends ItemStackHandler {
     @Nonnull
     @Override
     public ItemStack extractItem(int slot, int amount, boolean simulate) {
+        if (slot >= useableSlots) return ItemStack.EMPTY;
+
         ItemStack res = super.extractItem(slot, amount, simulate);
         if (!res.isEmpty() && !simulate) {
             copyItemToFakePlayer(slot);
@@ -41,11 +47,19 @@ public class DroneItemHandler extends ItemStackHandler {
 
     @Override
     public void setStackInSlot(int slot, @Nonnull ItemStack stack) {
-        ItemStack prevStack = getStackInSlot(slot).copy();
+        if (slot >= useableSlots) return;
+
         super.setStackInSlot(slot, stack);
-        if (!stack.isItemEqual(prevStack) || stack.getCount() != prevStack.getCount()) {
-            copyItemToFakePlayer(slot);
-        }
+        copyItemToFakePlayer(slot);
+    }
+
+    @Override
+    public int getSlots() {
+        return Math.min(useableSlots, super.getSlots());
+    }
+
+    public void setUseableSlots(int useableSlots) {
+        this.useableSlots = useableSlots;
     }
 
     protected boolean isFakePlayerReady() {
@@ -53,7 +67,7 @@ public class DroneItemHandler extends ItemStackHandler {
     }
 
     /**
-     * Call this when it's safe to create a fake player (i.e. NOT when reading NBT during entity creation!)
+     * Call this when it's safe to create a fake player (i.e. NOT when reading NBT during entity/tile entity creation!)
      */
     public void setFakePlayerReady() {
         if (!fakePlayerReady && !holder.world().isRemote) {

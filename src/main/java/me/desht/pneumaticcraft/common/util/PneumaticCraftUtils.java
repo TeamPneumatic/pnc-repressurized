@@ -717,11 +717,16 @@ public class PneumaticCraftUtils {
         return ForgeEventFactory.getItemBurnTime(stack, ret == -1 ? ForgeHooks.getBurnTime(stack) : ret);
     }
 
-    public static void copyItemHandler(IItemHandler source, ItemStackHandler dest) {
-        dest.setSize(source.getSlots());
-        for (int i = 0; i < source.getSlots(); i++) {
+    public static void copyItemHandler(IItemHandler source, ItemStackHandler dest, int maxSlots) {
+        int nSlots = Math.min(maxSlots, source.getSlots());
+        dest.setSize(nSlots);
+        for (int i = 0; i < nSlots; i++) {
             dest.setStackInSlot(i, source.getStackInSlot(i).copy());
         }
+    }
+
+    public static void copyItemHandler(IItemHandler source, ItemStackHandler dest) {
+        copyItemHandler(source, dest, source.getSlots());
     }
 
     public static BlockPos getPosForEntity(Entity e) {

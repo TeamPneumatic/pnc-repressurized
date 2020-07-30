@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.common.tileentity;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.authlib.GameProfile;
 import me.desht.pneumaticcraft.api.drone.DroneConstructingEvent;
-import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.api.drone.IPathNavigator;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
@@ -94,6 +93,9 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
             RL("entity_import")
     );
 
+    private static final double SPEED_PER_UPGRADE = 0.05;
+    private static final double BASE_SPEED = 0.15;
+
     private final ProgrammableItemStackHandler inventory = new ProgrammableItemStackHandler(this);
     private final LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> inventory);
 
@@ -103,10 +105,11 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     private final PneumaticEnergyStorage energy = new PneumaticEnergyStorage(MAX_ENERGY);
     private final LazyOptional<IEnergyStorage> energyCap = LazyOptional.of(() -> energy);
 
+    private final DroneItemHandler droneItemHandler = new DroneItemHandler(this, 1);
+
     private EntityProgrammableController drone;
     private DroneAIManager aiManager;
     private DroneFakePlayer fakePlayer;
-    private DroneItemHandler droneItemHandler = new DummyItemHandler(this);
     private final List<IProgWidget> progWidgets = new ArrayList<>();
     private final int[] redstoneLevels = new int[6];
     private final SideConfigurator<IItemHandler> itemHandlerSideConfigurator;
@@ -126,8 +129,8 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     private UUID ownerID;
     private ITextComponent ownerName;
     private boolean updateNeighbours;
-    // Although this is only used by DroneAILogistics, it is here rather than there
-    // so it can persist, for performance reasons; DroneAILogistics is a short-lived object
+    // Although this is only used by DroneAILogistics, it is here rather than there so it can persist,
+    // for performance reasons; DroneAILogistics is a short-lived object and LogisticsManager is expensive to create
     private LogisticsManager logisticsManager;
 
     public TileEntityProgrammableController() {
@@ -161,7 +164,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
             updateNeighbours = false;
         }
 
-        double speed = getSpeed();
+        double speed = BASE_SPEED + speedUpgrades * SPEED_PER_UPGRADE;
         if (PneumaticCraftUtils.distBetweenSq(getPos(), targetX, targetY, targetZ) <= 1 && isIdle) {
             curX = targetX;
             curY = targetY;
@@ -200,19 +203,17 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     @Override
     public void remove() {
         super.remove();
+
         MinecraftForge.EVENT_BUS.unregister(this);
     }
 
     @Override
     public void onDescUpdate() {
         super.onDescUpdate();
+
         if (drone != null) {
             drone.remove();
         }
-    }
-
-    private double getSpeed() {
-        return Math.min(10, speedUpgrades) * 0.05 + 0.15;
     }
 
     private UUID getOwnerUUID() {
@@ -221,19 +222,6 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
             Log.warning(String.format("Programmable controller with owner '%s' has no UUID! Substituting a random UUID (%s).", ownerName, ownerID.toString()));
         }
         return ownerID;
-    }
-
-    private DroneItemHandler getDroneItemHandler() {
-        if (droneItemHandler == null || droneItemHandler instanceof DummyItemHandler) {
-            droneItemHandler = new DroneItemHandler(this, 1);
-            itemHandlerSideConfigurator.updateHandler("droneInv", () -> droneItemHandler);
-        }
-        return droneItemHandler;
-    }
-
-    private void initializeFakePlayer() {
-        fakePlayer = new DroneFakePlayer((ServerWorld) getWorld(), new GameProfile(getOwnerUUID(), "test"), this);
-        fakePlayer.connection = new FakeNetHandlerPlayerServer(ServerLifecycleHooks.getCurrentServer(), fakePlayer);
     }
 
     @Override
@@ -279,45 +267,6 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
         return new ContainerProgrammableController(i, playerInventory, getPos());
     }
 
-    private class ProgrammableItemStackHandler extends BaseItemStackHandler {
-        ProgrammableItemStackHandler(TileEntity te) {
-            super(te, INVENTORY_SIZE);
-        }
-
-        @Override
-        protected void onContentsChanged(int slot) {
-            super.onContentsChanged(slot);
-            ItemStack stack = getStackInSlot(slot);
-            progWidgets.clear();
-            if (!stack.isEmpty() && isProgrammableAndValidForDrone(TileEntityProgrammableController.this, stack)) {
-                progWidgets.addAll(TileEntityProgrammer.getProgWidgets(stack));
-                TileEntityProgrammer.updatePuzzleConnections(progWidgets);
-                isIdle = false;
-            } else {
-                setDugBlock(null);
-                targetX = getPos().getX() + 0.5;
-                targetY = getPos().getY() + 1.0;
-                targetZ = getPos().getZ() + 0.5;
-                boolean updateNeighbours = false;
-                for (int i = 0; i < redstoneLevels.length; i++) {
-                    if (redstoneLevels[i] > 0) {
-                        redstoneLevels[i] = 0;
-                        updateNeighbours = true;
-                    }
-                }
-                if (updateNeighbours) updateNeighbours();
-                isIdle = true;
-            }
-            if (!getWorld().isRemote) {
-                getAIManager().setWidgets(progWidgets);
-            }
-        }
-
-        @Override
-        public boolean isItemValid(int slot, ItemStack itemStack) {
-            return itemStack.isEmpty() || isProgrammableAndValidForDrone(TileEntityProgrammableController.this, itemStack);
-        }
-    }
 
     @Override
     public void onUpgradesChanged() {
@@ -328,8 +277,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     }
 
     private void calculateUpgrades() {
-        // can be null on initial placement
-        int oldInvUpgrades = droneItemHandler == null ? 0 : droneItemHandler.getSlots() - 1;
+        int oldInvUpgrades = droneItemHandler.getSlots() - 1;
         int newInvUpgrades = Math.min(35, getUpgrades(EnumUpgrade.INVENTORY));
         if (oldInvUpgrades != newInvUpgrades) {
             resizeDroneInventory(oldInvUpgrades + 1, newInvUpgrades + 1);
@@ -343,22 +291,15 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     }
 
     private void resizeDroneInventory(int oldSize, int newSize) {
-        DroneItemHandler tmpHandler = new DroneItemHandler(this, newSize);
-
-        for (int i = 0; i < oldSize && i < newSize; i++) {
-            tmpHandler.setStackInSlot(i, droneItemHandler.getStackInSlot(i));
-        }
-
         // if the inventory has shrunk, eject any excess items
         for (int i = newSize; i < oldSize; i++) {
             ItemStack stack = droneItemHandler.getStackInSlot(i);
             if (!stack.isEmpty()) {
+                droneItemHandler.setStackInSlot(i, ItemStack.EMPTY);
                 PneumaticCraftUtils.dropItemOnGround(stack, getWorld(), getPos().up());
             }
         }
-
-        droneItemHandler = tmpHandler;
-        itemHandlerSideConfigurator.updateHandler("droneInv", () -> droneItemHandler);
+        droneItemHandler.setUseableSlots(newSize);
     }
 
     @Override
@@ -371,15 +312,13 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
         ownerID = tag.contains("ownerID") ? UUID.fromString(tag.getString("ownerID")) : FALLBACK_UUID;
         ownerName = tag.contains("ownerName") ? new StringTextComponent(tag.getString("ownerName")) : new StringTextComponent(FALLBACK_NAME);
 
-        droneItemHandler = new DroneItemHandler(this, getUpgrades(EnumUpgrade.INVENTORY) + 1);
+        droneItemHandler.setUseableSlots(getUpgrades(EnumUpgrade.INVENTORY) + 1);
         ItemStackHandler tmpInv = new ItemStackHandler();
         tmpInv.deserializeNBT(tag.getCompound("droneItems"));
-        if (getDroneSlots() != droneItemHandler.getSlots()) {
-            Log.warning("drone inventory size mismatch: dispenser upgrades = " + getDroneSlots() + ", saved inv size = " + droneItemHandler.getSlots());
-        }
-        for (int i = 0; i < tmpInv.getSlots() && i < droneItemHandler.getSlots(); i++) {
+        for (int i = 0; i < Math.min(tmpInv.getSlots(), droneItemHandler.getSlots()); i++) {
             droneItemHandler.setStackInSlot(i, tmpInv.getStackInSlot(i).copy());
         }
+
         energy.writeToNBT(tag);
 
         itemHandlerSideConfigurator.updateHandler("droneInv", () -> droneItemHandler);
@@ -395,9 +334,9 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
         tank.writeToNBT(tankTag);
         tag.put("tank", tankTag);
 
-        ItemStackHandler handler = new ItemStackHandler(getDroneSlots());
-        for (int i = 0; i < getDroneSlots(); i++) {
-            handler.setStackInSlot(i, getDroneItemHandler().getStackInSlot(i));
+        ItemStackHandler handler = new ItemStackHandler(droneItemHandler.getSlots());
+        for (int i = 0; i < droneItemHandler.getSlots(); i++) {
+            handler.setStackInSlot(i, droneItemHandler.getStackInSlot(i));
         }
         tag.put("droneItems", handler.serializeNBT());
 
@@ -427,7 +366,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     protected void onFirstServerTick() {
         super.onFirstServerTick();
 
-        getDroneItemHandler().setFakePlayerReady();
+        droneItemHandler.setFakePlayerReady();
 
         calculateUpgrades();
         inventory.onContentsChanged(0);  // force initial read of any installed drone/network api
@@ -436,10 +375,6 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
         curZ = targetZ = getPos().getZ() + 0.5;
 
         MinecraftForge.EVENT_BUS.register(this);
-    }
-
-    private int getDroneSlots() {
-        return world != null && world.isRemote ? 0 : Math.min(36, 1 + getUpgrades(EnumUpgrade.INVENTORY));
     }
 
     private static boolean isProgrammableAndValidForDrone(IDroneBase drone, ItemStack programmable) {
@@ -474,7 +409,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
 
     @Override
     public IItemHandlerModifiable getInv() {
-        return getDroneItemHandler();
+        return droneItemHandler;
     }
 
     @Override
@@ -531,7 +466,8 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     @Override
     public DroneFakePlayer getFakePlayer() {
         if (fakePlayer == null) {
-            initializeFakePlayer();
+            fakePlayer = new DroneFakePlayer((ServerWorld) getWorld(), new GameProfile(getOwnerUUID(), ownerName + "_drone"), this);
+            fakePlayer.connection = new FakeNetHandlerPlayerServer(ServerLifecycleHooks.getCurrentServer(), fakePlayer);
         }
         return fakePlayer;
     }
@@ -551,7 +487,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     public void getContentsToDrop(NonNullList<ItemStack> drops) {
         super.getContentsToDrop(drops);
 
-        for (int i = 0; i < getDroneSlots(); i++) {
+        for (int i = 0; i < droneItemHandler.getSlots(); i++) {
             if (!fakePlayer.inventory.getStackInSlot(i).isEmpty()) {
                 drops.add(fakePlayer.inventory.getStackInSlot(i).copy());
             }
@@ -644,11 +580,10 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
 
     @Override
     public void overload(String msgKey, Object... params) {
-        NetworkHandler.sendToAllAround(
-                new PacketSpawnParticle(ParticleTypes.SMOKE,
-                        getPos().getX() - 0.5, getPos().getY() + 1, getPos().getZ() - 0.5,
-                        0, 0, 0, 10, 1, 1, 1),
-                getWorld());
+        NetworkHandler.sendToAllAround(new PacketSpawnParticle(ParticleTypes.SMOKE,
+                getPos().getX() - 0.5, getPos().getY() + 1, getPos().getZ() - 0.5,
+                0, 0, 0, 10, 1, 1, 1), getWorld()
+        );
     }
 
     @Override
@@ -684,30 +619,44 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
         this.logisticsManager = logisticsManager;
     }
 
-    private static class DummyItemHandler extends DroneItemHandler {
-        public DummyItemHandler(IDrone holder) {
-            super(holder, 1);
-        }
-
-        @Nonnull
-        @Override
-        public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-            return stack;
-        }
-
-        @Nonnull
-        @Override
-        public ItemStack extractItem(int slot, int amount, boolean simulate) {
-            return ItemStack.EMPTY;
+    private class ProgrammableItemStackHandler extends BaseItemStackHandler {
+        ProgrammableItemStackHandler(TileEntity te) {
+            super(te, INVENTORY_SIZE);
         }
 
         @Override
-        protected boolean isFakePlayerReady() {
-            return false;
+        protected void onContentsChanged(int slot) {
+            super.onContentsChanged(slot);
+            ItemStack stack = getStackInSlot(slot);
+            progWidgets.clear();
+            if (!stack.isEmpty() && isProgrammableAndValidForDrone(TileEntityProgrammableController.this, stack)) {
+                progWidgets.addAll(TileEntityProgrammer.getProgWidgets(stack));
+                TileEntityProgrammer.updatePuzzleConnections(progWidgets);
+                isIdle = false;
+            } else {
+                setDugBlock(null);
+                targetX = getPos().getX() + 0.5;
+                targetY = getPos().getY() + 1.0;
+                targetZ = getPos().getZ() + 0.5;
+                boolean updateNeighbours = false;
+                for (int i = 0; i < redstoneLevels.length; i++) {
+                    if (redstoneLevels[i] > 0) {
+                        redstoneLevels[i] = 0;
+                        updateNeighbours = true;
+                    }
+                }
+                if (updateNeighbours) updateNeighbours();
+                isIdle = true;
+            }
+            if (!getWorld().isRemote) {
+                getAIManager().setWidgets(progWidgets);
+            }
         }
 
         @Override
-        public void setStackInSlot(int slot, @Nonnull ItemStack stack) {
+        public boolean isItemValid(int slot, ItemStack itemStack) {
+            return itemStack.isEmpty() || isProgrammableAndValidForDrone(TileEntityProgrammableController.this, itemStack);
         }
     }
+
 }
