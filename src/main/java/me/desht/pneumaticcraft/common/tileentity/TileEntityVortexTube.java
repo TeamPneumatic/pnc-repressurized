@@ -21,9 +21,9 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
     private final IHeatExchangerLogic connectingExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
 
     @DescSynced
-    private final SyncedTemperature syncHot = new SyncedTemperature();
+    private final SyncedTemperature syncHot = new SyncedTemperature(hotHeatExchanger);
     @DescSynced
-    private final SyncedTemperature syncCold = new SyncedTemperature();
+    private final SyncedTemperature syncCold = new SyncedTemperature(coldHeatExchanger);
 
     public TileEntityVortexTube() {
         super(ModTileEntities.VORTEX_TUBE.get(), 20, 25, 2000, 0);
@@ -86,8 +86,8 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
                 coldHeatExchanger.addHeat(-generatedHeat);
                 hotHeatExchanger.addHeat(generatedHeat);
             }
-            syncHot.setCurrentTemp(hotHeatExchanger.getTemperature());
-            syncCold.setCurrentTemp(coldHeatExchanger.getTemperature());
+            syncHot.tick();
+            syncCold.tick();
         }
     }
 

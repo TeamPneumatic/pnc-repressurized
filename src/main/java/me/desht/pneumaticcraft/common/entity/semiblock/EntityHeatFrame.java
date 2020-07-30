@@ -55,7 +55,7 @@ public class EntityHeatFrame extends EntitySemiblockBase {
 
     private int coolingProgress;
 
-    private final SyncedTemperature syncedTemperature = new SyncedTemperature();
+    private final SyncedTemperature syncedTemperature = new SyncedTemperature(logic);
 
     public EntityHeatFrame(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
@@ -109,6 +109,10 @@ public class EntityHeatFrame extends EntitySemiblockBase {
     public void tick() {
         super.tick();
 
+        if (ticksExisted == 1) {
+            logic.initializeAmbientTemperature(world, getBlockPos());
+        }
+
         if (!getWorld().isRemote) {
             byte newStatus = IDLE;
             if (logic.getTemperature() > MIN_COOKING_TEMP) {
@@ -117,7 +121,15 @@ public class EntityHeatFrame extends EntitySemiblockBase {
                 newStatus = doCooling();
             }
             setStatus(newStatus);
-            syncedTemperature.setCurrentTemp(logic.getTemperature());
+            if (newStatus == IDLE) {
+                double delta = logic.getTemperature() - logic.getAmbientTemperature();
+                if (delta > 1) {
+                    logic.addHeat(-0.1);
+                } else if (delta < -1) {
+                    logic.addHeat(0.1);
+                }
+            }
+            syncedTemperature.tick();
             setSyncedTemperature(syncedTemperature.getSyncedTemp());
         } else {
             // client

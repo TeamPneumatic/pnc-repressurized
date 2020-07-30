@@ -25,15 +25,15 @@ public class HeatUtil {
 
         if (temperature < 273) {
             h = 180 + (300 - temperature) / 5;  // 180 -> 240: cyan -> blue
-            s = 0.25f + (273 - temperature) / 273f * 0.75f;
+            s = (273 - temperature) / 273f;
         } else if (temperature < 323) {
             h = 360;
             s = 0f;
         } else if (temperature < 873) {
-            h = (int) (temperature / 873f * 30f);  // red -> orange
-            s = temperature / 873f;
+            h = (int) ((temperature - 323) / 550f * 30f);  // red -> orange
+            s = (temperature - 323) / 550f;
         } else {
-            h = 30 + (int) (temperature / 2273f * 10f);  // orange -> yellow (part way)
+            h = 30 + (int) ((temperature - 873) / 1400f * 15f);  // orange -> yellow (part way)
             s = 1f;
         }
 

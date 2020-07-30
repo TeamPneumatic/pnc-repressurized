@@ -18,7 +18,7 @@ public class TileEntityCompressedIronBlock extends TileEntityTickableBase implem
     private final LazyOptional<IHeatExchangerLogic> heatCap = LazyOptional.of(() -> heatExchanger);
     private int comparatorOutput = 0;
     @DescSynced
-    private final SyncedTemperature syncedTemperature = new SyncedTemperature();
+    private final SyncedTemperature syncedTemperature = new SyncedTemperature(heatExchanger);
 
     public TileEntityCompressedIronBlock() {
         this(ModTileEntities.COMPRESSED_IRON_BLOCK.get());
@@ -45,7 +45,7 @@ public class TileEntityCompressedIronBlock extends TileEntityTickableBase implem
         super.tick();
 
         if (!getWorld().isRemote) {
-            syncedTemperature.setCurrentTemp(heatExchanger.getTemperature());
+            syncedTemperature.tick();
 
             int newComparatorOutput = HeatUtil.getComparatorOutput((int) heatExchanger.getTemperature());
             if (comparatorOutput != newComparatorOutput) {

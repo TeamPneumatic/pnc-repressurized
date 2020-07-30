@@ -71,8 +71,8 @@ public class BlockHeatSink extends BlockPneumaticCraft implements ColorHandlers.
             if (entity instanceof PlayerEntity && ((PlayerEntity) entity).isCreative()) return;
             te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY).ifPresent(heatExchanger -> {
                 double temp = heatExchanger.getTemperature();
-                if (temp > 323) { // +50C
-                    entity.attackEntityFrom(DamageSource.HOT_FLOOR, 2);
+                if (temp > 333) { // +60C
+                    entity.attackEntityFrom(DamageSource.HOT_FLOOR, 1f + ((float) temp - 333) * 0.05f);
                     if (temp > 373) { // +100C
                         entity.setFire(3);
                     }

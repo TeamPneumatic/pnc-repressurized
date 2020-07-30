@@ -61,7 +61,9 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
             if (shouldDropItem) {
                 getDrops().forEach(this::dropItem);
             }
-            world.notifyNeighborsOfStateChange(blockPos, world.getBlockState(blockPos).getBlock());
+            if (world.isAreaLoaded(blockPos, 1)) {
+                world.notifyNeighborsOfStateChange(blockPos, world.getBlockState(blockPos).getBlock());
+            }
         }
     }
 

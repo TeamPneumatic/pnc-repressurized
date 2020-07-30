@@ -58,7 +58,7 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase
         });
 
         for (int i = 0; i < syncedTemperatures.length; i++) {
-            syncedTemperatures[i] = new SyncedTemperature();
+            syncedTemperatures[i] = new SyncedTemperature(heatExchangers[i]);
         }
 
         connector1 = makeConnector(Direction.NORTH);
@@ -98,7 +98,7 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase
             }
 
             for (int i = 0; i < heatExchangers.length; i++) {
-                syncedTemperatures[i].setCurrentTemp(heatExchangers[i].getTemperature());
+                syncedTemperatures[i].tick();
             }
         }
     }

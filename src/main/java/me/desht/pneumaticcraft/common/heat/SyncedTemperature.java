@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.heat;
 
+import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 
 /**
@@ -8,10 +9,19 @@ import me.desht.pneumaticcraft.common.network.DescSynced;
  * manager to sync the temperature.
  */
 public class SyncedTemperature {
-    private int currentTemp = 300;
+    private static final int SYNC_RATE = 60;
+
+    private final IHeatExchangerLogic logic;
+
+    private int syncTimer = -1;
+    private int pendingTemp;
 
     @DescSynced
     private int syncedTemp = -1;
+
+    public SyncedTemperature(IHeatExchangerLogic logic) {
+        this.logic = logic;
+    }
 
     /**
      * Call client side to get the synced temperature.
@@ -22,19 +32,31 @@ public class SyncedTemperature {
     }
 
     /**
-     * Call server side on a regular basis to set the temperature of the heat exchanger.
-     *
-     * @param currentTemp the heat exchanger's current temp
+     * Call server side on a regular basis.
      */
-    public void setCurrentTemp(double currentTemp) {
-        this.currentTemp = (int) currentTemp;
+    public void tick() {
+        int currentTemp = logic.getTemperatureAsInt();
 
-        if (shouldSync()) {
-            this.syncedTemp = (int) currentTemp;
+        if (shouldSyncNow()) {
+            // large temperature delta: sync immediately
+            this.syncedTemp = currentTemp;
+            syncTimer = -1;
+        } else if (currentTemp != syncedTemp) {
+            // small temperature delta: schedule a sync to happen in 60 ticks, unless one is already scheduled
+            if (syncTimer == -1) syncTimer = SYNC_RATE;
+            pendingTemp = currentTemp;
+        }
+
+        if (syncTimer >= 0) {
+            if (--syncTimer == -1) {
+                this.syncedTemp = pendingTemp;
+            }
         }
     }
 
-    private boolean shouldSync() {
+    private boolean shouldSyncNow() {
+        int currentTemp = logic.getTemperatureAsInt();
+
         if (syncedTemp < 0) return true; // initial sync
 
         int delta = Math.abs(syncedTemp - currentTemp);
