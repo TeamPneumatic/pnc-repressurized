@@ -8,7 +8,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 The initial 1.16.1 release is largely equivalent in functionality to the 1.4.2 release (for MC 1.15.2), with a few minor player-visible changes.
 
-## 2.0.0-?? (unreleased)
+## 2.0.0-4 (30 Jul 2020)
 
 ### Updates
 * The Programmable Controller can now optionally charge (with pressure and/or Forge Energy) the "drone's" held item (i.e. the item in inventory slot 0)
