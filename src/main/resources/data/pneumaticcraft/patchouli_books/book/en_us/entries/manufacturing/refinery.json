@@ -29,7 +29,7 @@
     {
       "type": "text",
       "title": "Setup Tips",
-      "text": "Since the $(item)Refinery/$ is a multiblock with many faces exposed to the air, it can lose $(l:base_concepts/heat)Heat/$ quite rapidly if not well insulated. Therefore, it's strongly recommended to cover all unused faces of the multiblock to maximize efficiency. Note that any non-heat-conducting blocks can be used, including semi-solid blocks like $(item)slabs/$ or $(item)trapdoors/$."
+      "text": "Since the $(item)Refinery/$ is a multiblock with many faces exposed to the air, it can lose $(l:base_concepts/heat)Heat/$ quite rapidly if not well insulated. Therefore, it's strongly recommended to cover all unused faces of the multiblock to maximize efficiency. Note that any non-heat-conducting blocks can be used, including semi-solid blocks like $(item)slabs/$ or $(item)trapdoors/$, but $(l:machine/thermal_lagging)Thermal Lagging/$ is especially recommended."
     },
     {
       "type": "text",
