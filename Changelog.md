@@ -6,6 +6,13 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.15.2
 
+## 1.4.3-?? (unreleased)
+
+### Fixes
+* Fixed buggy drone right-click behaviour
+* Progwidget Item Filter GUI: don't gray out the "Match NBT" checkbox when the filter item has no NBT data
+  * Just because it has no NBT data doesn't mean actual instances of the item can't...
+
 ## 1.4.2-58 (29 Jul 2020)
 
 ### Updates
