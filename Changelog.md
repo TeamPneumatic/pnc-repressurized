@@ -8,6 +8,13 @@ Changes are in reverse chronological order; newest changes at the top.
 
 The initial 1.16.1 release is largely equivalent in functionality to the 1.4.2 release (for MC 1.15.2), with a few minor player-visible changes.
 
+## 2.0.1-?? (unreleased)
+
+### Fixes
+* Fixed buggy drone right-click behaviour
+* Progwidget Item Filter GUI: don't gray out the "Match NBT" checkbox when the filter item has no NBT data
+  * Just because it has no NBT data doesn't mean actual instances of the item can't...
+
 ## 2.0.0-4 (30 Jul 2020)
 
 ### Updates
