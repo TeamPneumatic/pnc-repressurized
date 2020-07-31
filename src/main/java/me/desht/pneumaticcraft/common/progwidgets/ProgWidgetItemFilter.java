@@ -3,9 +3,13 @@ package me.desht.pneumaticcraft.common.progwidgets;
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
+import me.desht.pneumaticcraft.common.item.ItemTagFilter;
+import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
+import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.BlockItem;
@@ -21,6 +25,7 @@ import net.minecraft.util.text.TextFormatting;
 import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -54,18 +59,6 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
         }
     }
 
-//    @Override
-//    public void renderExtraInfo() {
-//        ProgWidgetRenderer.renderItemFilterExtras(this);
-//        if (variable.isEmpty()) {
-//            if (!filter.isEmpty()) {
-//                GuiUtils.drawItemStack(filter, 10, 2, "");
-//            }
-//        } else {
-//            super.renderExtraInfo();
-//        }
-//    }
-
     @Override
     public String getExtraStringInfo() {
         return variable.isEmpty() ? "" : "\"" + variable + "\"";
@@ -88,16 +81,24 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
     public void getTooltip(List<ITextComponent> curTooltip) {
         super.getTooltip(curTooltip);
         if (!filter.isEmpty()) {
-            curTooltip.add(new StringTextComponent("Filter: ").mergeStyle(TextFormatting.AQUA).append(filter.getDisplayName()));
+            curTooltip.add(xlate("pneumaticcraft.gui.progWidget.itemFilter.filterLabel").mergeStyle(TextFormatting.AQUA)
+                    .appendString(": ").append(filter.getDisplayName()));
+            if (filter.getItem() == ModItems.TAG_FILTER.get()) {
+                curTooltip.addAll(ItemTagFilter.getConfiguredTagList(filter).stream()
+                        .map(s -> GuiConstants.bullet().append(new StringTextComponent(s.toString()).mergeStyle(TextFormatting.YELLOW)))
+                        .collect(Collectors.toList()));
+            }
             if (useModSimilarity) {
-                curTooltip.add(new StringTextComponent("- Using Mod Similarity").mergeStyle(TextFormatting.DARK_AQUA));
+                curTooltip.add(xlate("pneumaticcraft.gui.progWidget.itemFilter.matchMod", ModNameCache.getModName(filter.getItem()))
+                        .mergeStyle(TextFormatting.DARK_AQUA));
+            } else if (matchBlock) {
+                curTooltip.add(xlate("pneumaticcraft.gui.progWidget.itemFilter.matchBlock")
+                        .mergeStyle(TextFormatting.DARK_AQUA));
             } else {
-                curTooltip.add(new StringTextComponent((useItemDurability ? "- Using" : "- Ignoring") + " item damage").mergeStyle(TextFormatting.DARK_AQUA));
-                if (matchBlock) {
-                    curTooltip.add(new StringTextComponent("- Matching by block").mergeStyle(TextFormatting.DARK_AQUA));
-                } else {
-                    curTooltip.add(new StringTextComponent(useNBT ? "- Using NBT" : "- Ignoring NBT").mergeStyle(TextFormatting.DARK_AQUA));
-                }
+                curTooltip.add(xlate("pneumaticcraft.gui.progWidget.itemFilter." + (useItemDurability ? "useDurability" : "ignoreDurability"))
+                        .mergeStyle(TextFormatting.DARK_AQUA));
+                curTooltip.add(xlate("pneumaticcraft.gui.progWidget.itemFilter." + (useNBT ? "useNBT" : "ignoreNBT"))
+                        .mergeStyle(TextFormatting.DARK_AQUA));
             }
         }
     }

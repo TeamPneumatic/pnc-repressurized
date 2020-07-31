@@ -14,12 +14,15 @@ import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget.WidgetDifficulty;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetItemFilter;
+import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
+import org.apache.commons.lang3.StringUtils;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -45,25 +48,25 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase<ProgWidgetI
 
         addButton(checkBoxUseDurability = new WidgetCheckBox(guiLeft + 8, guiTop + 96, 0xFF404040,
                 xlate("pneumaticcraft.gui.logistics_frame.matchDurability"), b -> progWidget.useItemDurability = b.checked)
-                .setTooltip(xlate("pneumaticcraft.gui.logistics_frame.matchDurability.tooltip"))
+                .setTooltip(PneumaticCraftUtils.splitStringComponent(I18n.format("pneumaticcraft.gui.logistics_frame.matchDurability.tooltip")))
                 .setChecked(progWidget.useItemDurability)
         );
 
         addButton(checkBoxUseNBT = new WidgetCheckBox(guiLeft + 8, guiTop + 108, 0xFF404040,
                 xlate("pneumaticcraft.gui.logistics_frame.matchNBT"), b -> progWidget.useNBT = b.checked)
-                .setTooltip(xlate("pneumaticcraft.gui.logistics_frame.matchNBT.tooltip"))
+                .setTooltip(PneumaticCraftUtils.splitStringComponent(I18n.format("pneumaticcraft.gui.logistics_frame.matchNBT.tooltip")))
                 .setChecked(progWidget.useNBT)
         );
 
         addButton(checkBoxUseModSimilarity = new WidgetCheckBox(guiLeft + 8, guiTop + 120, 0xFF404040,
                 xlate("pneumaticcraft.gui.logistics_frame.matchModId"), b -> progWidget.useModSimilarity = b.checked)
-                .setTooltip(xlate("pneumaticcraft.gui.logistics_frame.matchModId.tooltip"))
+                .setTooltip(PneumaticCraftUtils.splitStringComponent(I18n.format("pneumaticcraft.gui.logistics_frame.matchModId.tooltip")))
                 .setChecked(progWidget.useModSimilarity)
         );
 
         addButton(checkBoxMatchBlock = new WidgetCheckBox(guiLeft + 8, guiTop + 132, 0xFF404040,
                 xlate("pneumaticcraft.gui.logistics_frame.matchBlockstate"), b -> progWidget.matchBlock = b.checked)
-                .setTooltip(xlate("pneumaticcraft.gui.logistics_frame.matchBlockstate.tooltip"))
+                .setTooltip(PneumaticCraftUtils.splitStringComponent(I18n.format("pneumaticcraft.gui.logistics_frame.matchBlockstate.tooltip")))
                 .setChecked(progWidget.matchBlock)
         );
 
@@ -108,10 +111,11 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase<ProgWidgetI
 
         ItemStack filter = progWidget.getRawFilter();
         checkBoxUseDurability.active = filter.getMaxDamage() > 0 && !checkBoxUseModSimilarity.checked;
-        checkBoxUseNBT.active = filter.hasTag() && !checkBoxUseModSimilarity.checked && !checkBoxMatchBlock.checked;
+        checkBoxUseNBT.active = !filter.isEmpty() && !checkBoxUseModSimilarity.checked && !checkBoxMatchBlock.checked;
         checkBoxUseModSimilarity.active = !filter.isEmpty() && !checkBoxMatchBlock.checked;
         TranslationTextComponent msg = xlate("pneumaticcraft.gui.logistics_frame.matchModId");
-        checkBoxUseModSimilarity.setMessage(filter.isEmpty() ? msg : msg.appendString(" (" + filter.getItem().getRegistryName().getNamespace() + ")"));
+        String modName = StringUtils.abbreviate(ModNameCache.getModName(filter.getItem()), 22);
+        checkBoxUseModSimilarity.setMessage(filter.isEmpty() ? msg : msg.appendString(" (" + modName + ")"));
         checkBoxMatchBlock.active = filter.getItem() instanceof BlockItem && !checkBoxUseNBT.checked && !checkBoxUseModSimilarity.checked;
     }
 
