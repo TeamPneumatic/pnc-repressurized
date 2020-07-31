@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.ProgWidgetRenderer;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
+import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -92,13 +93,16 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
         if (!filter.isEmpty()) {
             curTooltip.add(new StringTextComponent("Filter: ").applyTextStyle(TextFormatting.AQUA).appendSibling(filter.getDisplayName()));
             if (useModSimilarity) {
-                curTooltip.add(new StringTextComponent("- Using Mod Similarity").applyTextStyle(TextFormatting.DARK_AQUA));
+                String mod = " (" + ModNameCache.getModName(filter) + ")";
+                curTooltip.add(new StringTextComponent("- Matching by Mod" + mod).applyTextStyle(TextFormatting.DARK_AQUA));
             } else {
-                curTooltip.add(new StringTextComponent((useItemDurability ? "- Using" : "- Ignoring") + " item damage").applyTextStyle(TextFormatting.DARK_AQUA));
+                if (filter.getItem().getMaxDamage(filter) > 0) {
+                    curTooltip.add(new StringTextComponent((useItemDurability ? "- Matching" : "- Ignoring") + " item damage").applyTextStyle(TextFormatting.DARK_AQUA));
+                }
                 if (matchBlock) {
                     curTooltip.add(new StringTextComponent("- Matching by block").applyTextStyle(TextFormatting.DARK_AQUA));
                 } else {
-                    curTooltip.add(new StringTextComponent(useNBT ? "- Using NBT" : "- Ignoring NBT").applyTextStyle(TextFormatting.DARK_AQUA));
+                    curTooltip.add(new StringTextComponent(useNBT ? "- Matching NBT" : "- Ignoring NBT").applyTextStyle(TextFormatting.DARK_AQUA));
                 }
             }
         }

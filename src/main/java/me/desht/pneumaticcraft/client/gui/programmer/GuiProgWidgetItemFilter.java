@@ -104,7 +104,7 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase<ProgWidgetI
 
         ItemStack filter = progWidget.getRawFilter();
         checkBoxUseDurability.active = filter.getMaxDamage() > 0 && !checkBoxUseModSimilarity.checked;
-        checkBoxUseNBT.active = filter.hasTag() && !checkBoxUseModSimilarity.checked && !checkBoxMatchBlock.checked;
+        checkBoxUseNBT.active = !checkBoxUseModSimilarity.checked && !checkBoxMatchBlock.checked;
         checkBoxUseModSimilarity.active = !filter.isEmpty() && !checkBoxMatchBlock.checked;
         String msg = I18n.format("pneumaticcraft.gui.logistics_frame.matchModId");
         checkBoxUseModSimilarity.setMessage(filter.isEmpty() ? msg : msg + " (" + filter.getItem().getRegistryName().getNamespace() + ")");
