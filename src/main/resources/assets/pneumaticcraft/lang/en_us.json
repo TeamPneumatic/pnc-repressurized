@@ -826,7 +826,7 @@
    "pneumaticcraft.gui.progWidget.blockRightClick.sneaking.tooltip" : "If checked, the Drone will simulate sneak-right-clicking.",
    "pneumaticcraft.gui.progWidget.blockRightClick.clickType.click_item" : "Click Item",
    "pneumaticcraft.gui.progWidget.blockRightClick.clickType.click_block" : "Click Block",
-   "pneumaticcraft.gui.progWidget.blockRightClick.clickType.tooltip": "§fClick Item${br}§7Use the held item's right-click logic, e.g. use a Flint and Steel on a block${br}§fClick Block${br}§7Use the clicked block's right-click logic, e.g. placing some item on a Display Table",
+   "pneumaticcraft.gui.progWidget.blockRightClick.clickType.tooltip": "§fClick Item${br}§7Use the held item's right-click logic, e.g. use a Flint and Steel on a block${br}§fClick Block${br}§7Use the clicked block's right-click logic, e.g. activating a Lever",
    "pneumaticcraft.gui.progWidget.chargingStation.debug.cantNavigate" : "Cannot navigate to the Charging Station.",
    "pneumaticcraft.gui.progWidget.chargingStation.debug.claimed" : "Charging Station is claimed by another Drone already.",
    "pneumaticcraft.gui.progWidget.chargingStation.debug.noDispenserUpgrades" : "Charging Station does not have any Dispenser Upgrades.",

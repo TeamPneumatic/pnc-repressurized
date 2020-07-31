@@ -8,7 +8,8 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.util.FakePlayer;
 
-public class DroneFakePlayer extends FakePlayer {
+public class
+DroneFakePlayer extends FakePlayer {
     private final IDroneBase drone;
     private boolean sneaking;
 
