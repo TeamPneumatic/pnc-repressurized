@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
+import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModFluids;
@@ -140,6 +141,9 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements IR
                 fuelQuality = PneumaticRegistry.getInstance().getFuelRegistry().getFuelValue(tank.getFluid().getFluid()) / 110f;
             } else {
                 fuelQuality = tank.getFluid().getFluid() == ModFluids.KEROSENE.get() ? 10000f : 0f;
+            }
+            if (tank.getFluid().getFluid().isIn(PneumaticCraftTags.Fluids.KEROSENE)) {
+                fuelQuality *= 2.5f;  // kerosene is better than everything for lighting purposes
             }
             fuelQuality *= PNCConfig.Common.Machines.keroseneLampFuelEfficiency;
         }
