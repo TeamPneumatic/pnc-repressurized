@@ -35,7 +35,7 @@ public class JEIPressureChamberRecipeCategory implements IRecipeCategory<Pressur
 
     JEIPressureChamberRecipeCategory() {
 //        super(jeiHelpers);
-        background = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_PRESSURE_CHAMBER, 5, 11, 166, 130);
+        background = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_PRESSURE_CHAMBER, 5, 11, 166, 116);
         icon = JEIPlugin.jeiHelpers.getGuiHelper().createDrawableIngredient(new ItemStack(ModBlocks.PRESSURE_CHAMBER_WALL.get()));
         localizedName = I18n.format("pneumaticcraft.gui.pressureChamber");
         tickTimer = JEIPlugin.jeiHelpers.getGuiHelper().createTickTimer(60, 60, false);
@@ -72,7 +72,7 @@ public class JEIPressureChamberRecipeCategory implements IRecipeCategory<Pressur
         List<Ingredient> inputs = recipe.getInputsForDisplay();
         for (int i = 0; i < inputs.size(); i++) {
             int posX = 18 + i % 3 * 17;
-            int posY = 92 - i / 3 * 17;
+            int posY = 78 - i / 3 * 17;
             recipeLayout.getItemStacks().init(i, true, posX, posY);
             recipeLayout.getItemStacks().set(i, Arrays.asList(inputs.get(i).getMatchingStacks()));
         }
@@ -92,7 +92,7 @@ public class JEIPressureChamberRecipeCategory implements IRecipeCategory<Pressur
     @Override
     public void draw(PressureChamberRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
         float pressure = recipe.getCraftingPressure() * ((float) tickTimer.getValue() / tickTimer.getMaxValue());
-        PressureGaugeRenderer2D.drawPressureGauge(matrixStack, Minecraft.getInstance().fontRenderer, -1, PneumaticValues.MAX_PRESSURE_PRESSURE_CHAMBER, PneumaticValues.DANGER_PRESSURE_PRESSURE_CHAMBER, recipe.getCraftingPressure(), pressure, 120, 27);
+        PressureGaugeRenderer2D.drawPressureGauge(matrixStack, Minecraft.getInstance().fontRenderer, -1, PneumaticValues.MAX_PRESSURE_PRESSURE_CHAMBER, PneumaticValues.DANGER_PRESSURE_PRESSURE_CHAMBER, recipe.getCraftingPressure(), pressure, 130, 27);
     }
 
     @Override
@@ -107,8 +107,4 @@ public class JEIPressureChamberRecipeCategory implements IRecipeCategory<Pressur
         }
         return Collections.emptyList();
     }
-
-//    static Collection<IPressureChamberRecipe> getAllRecipes() {
-//        return PneumaticCraftRecipes.pressureChamberRecipes.values();
-//    }
 }

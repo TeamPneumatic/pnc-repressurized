@@ -43,6 +43,7 @@ public class ModItemTagsProvider extends ItemTagsProvider {
         appendToTag(ItemTags.STONE_BRICKS, PneumaticCraftTags.Items.REINFORCED_STONE_BRICKS);
 
         addItemsToTag(PneumaticCraftTags.Items.PLASTIC_SHEETS, ModItems.PLASTIC);
+        addItemsToTag(PneumaticCraftTags.Items.FLOUR, ModItems.WHEAT_FLOUR);
 
         addItemsToTag(PneumaticCraftTags.Items.UPGRADE_COMPONENTS, ModItems.UPGRADE_MATRIX, () -> Items.LAPIS_LAZULI);
 

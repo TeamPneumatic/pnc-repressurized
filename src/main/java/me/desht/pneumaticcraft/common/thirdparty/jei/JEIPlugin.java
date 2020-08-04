@@ -59,11 +59,13 @@ public class JEIPlugin implements IModPlugin {
                 new JEIAssemblyControllerCategory(),
                 new JEIThermopneumaticProcessingPlantCategory(),
                 new JEIRefineryCategory(),
+                new JEIFluidMixerCategory(),
                 new JEIUVLightBoxCategory(),
                 new JEIAmadronTradeCategory(),
                 new JEIHeatFrameCoolingCategory(),
                 new JEIPlasticSolidifyingCategory(),
-                new JEIEtchingTankCategory()
+                new JEIEtchingTankCategory(),
+                new JEIYeastCraftingCategory()
         );
         if (PNCConfig.Common.Recipes.explosionCrafting) {
             registry.addRecipeCategories(new JEIExplosionCraftingCategory());
@@ -82,11 +84,13 @@ public class JEIPlugin implements IModPlugin {
         addRecipeType(registration, PneumaticCraftRecipeType.ASSEMBLY_DRILL, ModCategoryUid.ASSEMBLY_CONTROLLER);
         addRecipeType(registration, PneumaticCraftRecipeType.ASSEMBLY_DRILL_LASER, ModCategoryUid.ASSEMBLY_CONTROLLER);
         addRecipeType(registration, PneumaticCraftRecipeType.AMADRON_OFFERS, ModCategoryUid.AMADRON_TRADE);
+        addRecipeType(registration, PneumaticCraftRecipeType.FLUID_MIXER, ModCategoryUid.FLUID_MIXER);
 
         // these have their own pseudo-recipes
         registration.addRecipes(JEIUVLightBoxCategory.getAllRecipes(), ModCategoryUid.UV_LIGHT_BOX);
         registration.addRecipes(JEIPlasticSolidifyingCategory.getAllRecipes(), ModCategoryUid.PLASTIC_SOLIDIFYING);
         registration.addRecipes(JEIEtchingTankCategory.getAllRecipes(), ModCategoryUid.ETCHING_TANK);
+        registration.addRecipes(JEIYeastCraftingCategory.getAllRecipes(), ModCategoryUid.YEAST_CRAFTING);
 
         for (RegistryObject<Item> item: ModItems.ITEMS.getEntries()) {
             addStackInfo(registration, new ItemStack(item.get()));
@@ -119,6 +123,7 @@ public class JEIPlugin implements IModPlugin {
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.UV_LIGHT_BOX.get()), ModCategoryUid.UV_LIGHT_BOX);
         registration.addRecipeCatalyst(new ItemStack(ModItems.HEAT_FRAME.get()), ModCategoryUid.HEAT_FRAME_COOLING);
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.ETCHING_TANK.get()), ModCategoryUid.ETCHING_TANK);
+        registration.addRecipeCatalyst(new ItemStack(ModBlocks.FLUID_MIXER.get()), ModCategoryUid.FLUID_MIXER);
     }
 
     @Override
@@ -127,6 +132,7 @@ public class JEIPlugin implements IModPlugin {
         registration.addRecipeClickArea(GuiPressureChamber.class, 100, 7, 60, 60, ModCategoryUid.PRESSURE_CHAMBER);
         registration.addRecipeClickArea(GuiRefineryController.class, 47, 33, 27, 47, ModCategoryUid.REFINERY);
         registration.addRecipeClickArea(GuiThermopneumaticProcessingPlant.class, 30, 36, 48, 30, ModCategoryUid.THERMO_PLANT);
+        registration.addRecipeClickArea(GuiFluidMixer.class, 50, 40, 47, 24, ModCategoryUid.FLUID_MIXER);
 
         registration.addGlobalGuiHandler(new GuiTabHandler());
 

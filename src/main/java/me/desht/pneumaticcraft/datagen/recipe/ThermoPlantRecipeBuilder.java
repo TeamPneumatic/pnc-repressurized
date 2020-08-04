@@ -22,11 +22,12 @@ public class ThermoPlantRecipeBuilder extends PneumaticCraftRecipeBuilder<Thermo
     private final ItemStack outputItem;
     private final TemperatureRange operatingTemperature;
     private final float requiredPressure;
+    private final float recipeSpeed;
     private final boolean exothermic;
 
     public ThermoPlantRecipeBuilder(FluidIngredient inputFluid, @Nullable Ingredient inputItem,
                                     FluidStack outputFluid, ItemStack outputItem, TemperatureRange operatingTemperature, float requiredPressure,
-                                    boolean exothermic) {
+                                    float recipeSpeed, boolean exothermic) {
         super(RL(PneumaticCraftRecipeTypes.THERMO_PLANT));
 
         this.inputFluid = inputFluid;
@@ -35,6 +36,7 @@ public class ThermoPlantRecipeBuilder extends PneumaticCraftRecipeBuilder<Thermo
         this.outputItem = outputItem;
         this.operatingTemperature = operatingTemperature;
         this.requiredPressure = requiredPressure;
+        this.recipeSpeed = recipeSpeed;
         this.exothermic = exothermic;
     }
 
@@ -56,6 +58,7 @@ public class ThermoPlantRecipeBuilder extends PneumaticCraftRecipeBuilder<Thermo
             if (!outputFluid.isEmpty()) json.add("fluid_output", ModCraftingHelper.fluidStackToJson(outputFluid));
             if (!operatingTemperature.isAny()) json.add("temperature", operatingTemperature.toJson());
             if (requiredPressure != 0f) json.addProperty("pressure", requiredPressure);
+            if (recipeSpeed != 1.0f) json.addProperty("speed", recipeSpeed);
             json.addProperty("exothermic", exothermic);
         }
     }

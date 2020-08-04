@@ -53,6 +53,10 @@ public class ModRecipes {
             = RECIPES.register(PneumaticCraftRecipeTypes.THERMO_PLANT,
             () -> new ThermoPlantRecipeImpl.Serializer<>(ThermoPlantRecipeImpl::new));
 
+    public static final RegistryObject<IRecipeSerializer<FluidMixerRecipe>> FLUID_MIXER
+            = RECIPES.register(PneumaticCraftRecipeTypes.FLUID_MIXER,
+            () -> new FluidMixerRecipeImpl.Serializer<>(FluidMixerRecipeImpl::new));
+
     public static final RegistryObject<SpecialRecipeSerializer<OneProbeCrafting>> ONE_PROBE_HELMET_CRAFTING
             = RECIPES.register("one_probe_helmet_crafting", () -> new SpecialRecipeSerializer<>(OneProbeCrafting::new));
     public static final RegistryObject<SpecialRecipeSerializer<GunAmmoPotionCrafting>> GUN_AMMO_POTION_CRAFTING

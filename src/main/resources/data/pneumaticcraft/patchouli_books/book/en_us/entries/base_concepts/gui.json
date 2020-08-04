@@ -1,6 +1,6 @@
 {
   "name": "GUI Concepts",
-  "icon": "minecraft:paper",
+  "icon": "pneumaticcraft:textures/gui/icon/gui_mouse.png",
   "category": "base_concepts",
   "pages": [
     {

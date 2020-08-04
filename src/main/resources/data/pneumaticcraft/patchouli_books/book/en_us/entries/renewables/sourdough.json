@@ -1,0 +1,25 @@
+{
+  "name": "Sourdough",
+  "icon": "pneumaticcraft:sourdough",
+  "category": "renewables",
+  "advancement": "pneumaticcraft:yeast_culture",
+  "pages": [
+    {
+      "type": "text",
+      "text": "$(thing)Sourdough/$ can be crafted with $(l:renewables/yeast_culture)Yeast Culture/$ and $(thing)Wheat Flour/$. It can be cooked into $(thing)Sourdough Bread/$, which is superior in nutritional quality (and taste!) to boring old vanilla $(thing)Bread/$."
+    },
+    {
+      "type": "crafting",
+      "recipe": "pneumaticcraft:sourdough",
+      "text": "$(i)You knead this/$"
+    },
+    {
+      "type": "pneumaticcraft:pressure_chamber",
+      "recipe": "pneumaticcraft:pressure_chamber/wheat_flour"
+    },
+    {
+      "type": "smelting",
+      "recipe": "pneumaticcraft:sourdough_bread"
+    }
+  ]
+}

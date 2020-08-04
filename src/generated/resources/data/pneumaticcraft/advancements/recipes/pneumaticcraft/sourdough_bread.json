@@ -2,16 +2,16 @@
   "parent": "minecraft:recipes/root",
   "rewards": {
     "recipes": [
-      "pneumaticcraft:thermo_plant/plastic"
+      "pneumaticcraft:sourdough_bread"
     ]
   },
   "criteria": {
-    "thermopneumatic_processing_plant": {
+    "has_dough": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "item": "pneumaticcraft:thermopneumatic_processing_plant"
+            "item": "pneumaticcraft:sourdough"
           }
         ]
       }
@@ -19,13 +19,13 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "pneumaticcraft:thermo_plant/plastic"
+        "recipe": "pneumaticcraft:sourdough_bread"
       }
     }
   },
   "requirements": [
     [
-      "thermopneumatic_processing_plant",
+      "has_dough",
       "has_the_recipe"
     ]
   ]

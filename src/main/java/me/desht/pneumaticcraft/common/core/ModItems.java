@@ -45,6 +45,10 @@ public class ModItems {
     public static final RegistryObject<Item> ADVANCED_PCB = register("advanced_pcb");
     public static final RegistryObject<Item> LOGISTICS_CORE = register("logistics_core");
     public static final RegistryObject<Item> UPGRADE_MATRIX = register("upgrade_matrix");
+    public static final RegistryObject<Item> WHEAT_FLOUR = register("wheat_flour");
+    public static final RegistryObject<Item> SOURDOUGH = register("sourdough");
+    public static final RegistryObject<Item> SOURDOUGH_BREAD = register("sourdough_bread",
+            () -> new Item(defaultProps().food(ModFoods.SOURDOUGH)));
 
     public static final RegistryObject<ItemGPSTool> GPS_TOOL = register("gps_tool", ItemGPSTool::new);
     public static final RegistryObject<ItemGPSAreaTool> GPS_AREA_TOOL = register("gps_area_tool", ItemGPSAreaTool::new);
@@ -53,6 +57,8 @@ public class ModItems {
     public static final RegistryObject<ItemMicromissiles> MICROMISSILES = register("micromissiles", ItemMicromissiles::new);
     public static final RegistryObject<ItemMemoryStick> MEMORY_STICK = register("memory_stick", ItemMemoryStick::new);
     public static final RegistryObject<ItemTagFilter> TAG_FILTER = register("tag_filter", ItemTagFilter::new);
+    public static final RegistryObject<ItemGlycerol> GLYCEROL = register("glycerol", ItemGlycerol::new);
+    public static final RegistryObject<ItemBandage> BANDAGE = register("bandage", ItemBandage::new);
 
     public static final RegistryObject<ItemPressurizable> AIR_CANISTER = register("air_canister",
             () -> new ItemPressurizable(PneumaticValues.AIR_CANISTER_MAX_AIR, PneumaticValues.AIR_CANISTER_VOLUME));
@@ -179,6 +185,14 @@ public class ModItems {
             ModFluids.LUBRICANT);
     public static final RegistryObject<ItemBucketPneumaticCraft> MEMORY_ESSENCE_BUCKET = registerBucket("memory_essence_bucket",
             ModFluids.MEMORY_ESSENCE);
+    public static final RegistryObject<ItemBucketPneumaticCraft> YEAST_CULTURE_BUCKET = registerBucket("yeast_culture_bucket",
+            ModFluids.YEAST_CULTURE);
+    public static final RegistryObject<ItemBucketPneumaticCraft> ETHANOL_BUCKET = registerBucket("ethanol_bucket",
+            ModFluids.ETHANOL);
+    public static final RegistryObject<ItemBucketPneumaticCraft> VEGETABLE_OIL_BUCKET = registerBucket("vegetable_oil_bucket",
+            ModFluids.VEGETABLE_OIL);
+    public static final RegistryObject<ItemBucketPneumaticCraft> BIODIESEL_BUCKET = registerBucket("biodiesel_bucket",
+            ModFluids.BIODIESEL);
 
     static {
         for (EnumUpgrade upgrade : EnumUpgrade.values()) {

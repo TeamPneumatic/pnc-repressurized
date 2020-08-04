@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smelting",
+  "ingredient": {
+    "item": "pneumaticcraft:sourdough"
+  },
+  "result": "pneumaticcraft:sourdough_bread",
+  "experience": 0.35,
+  "cookingtime": 100
+}

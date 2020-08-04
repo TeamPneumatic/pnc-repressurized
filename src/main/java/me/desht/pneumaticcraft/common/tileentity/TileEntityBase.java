@@ -246,7 +246,7 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
     }
 
     /**
-     * Encoded into the description packet. Also included in saved data read by {@link TileEntityBase#read(CompoundNBT)}.
+     * Encoded into the description packet. Also included in saved data read by {@link TileEntityBase#read(BlockState, CompoundNBT)}.
      *
      * Prefer to use @DescSynced where possible - use this either for complex fields not handled by @DescSynced,
      * or for non-ticking tile entities.

@@ -81,6 +81,8 @@ public abstract class ThermoPlantRecipe extends PneumaticCraftRecipe {
 
     public abstract ItemStack getOutputItem();
 
+    public abstract double getRecipeSpeed();
+
     /**
      * Check if this recipe is exothermic, i.e. produces heat rather than requiring it. Such recipes generally
      * have a maximum temperature defined, instead of (or as well as) a minimum temperature.

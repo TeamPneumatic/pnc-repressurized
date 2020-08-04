@@ -226,6 +226,10 @@ public class UpgradesDBSetup {
                 .with(EnumUpgrade.DISPENSER, 1)
                 .with(EnumUpgrade.MAGNET, 1)
                 .with(EnumUpgrade.RANGE, 4));
+        db.addApplicableUpgrades(ModTileEntities.FLUID_MIXER.get(), new Builder()
+                .with(EnumUpgrade.VOLUME, MAX_VOLUME)
+                .with(EnumUpgrade.SECURITY, 1)
+                .with(EnumUpgrade.DISPENSER, 1));
 
         // universal sensor needs some dynamic calculation...
         Builder sensorBuilder = new Builder();

@@ -51,6 +51,7 @@ public class PneumaticCraftTags {
         public static final ITag.INamedTag<Item> UPGRADE_COMPONENTS = modTag("upgrade_components");
         public static final ITag.INamedTag<Item> BASIC_DRONES = modTag("basic_drones");
         public static final ITag.INamedTag<Item> PLASTIC_SHEETS = modTag("plastic_sheets");
+        public static final ITag.INamedTag<Item> FLOUR = forgeTag("dusts/flour");
 
         public static final ITag.INamedTag<Item> INGOTS_COMPRESSED_IRON = forgeTag("ingots/compressed_iron");
         public static final ITag.INamedTag<Item> STORAGE_BLOCKS_COMPRESSED_IRON = forgeTag("storage_blocks/compressed_iron");
@@ -73,6 +74,7 @@ public class PneumaticCraftTags {
     public static class Fluids extends PneumaticCraftTags {
         public static final ITag.INamedTag<Fluid> OIL = forgeTag("oil");
         public static final ITag.INamedTag<Fluid> LUBRICANT = forgeTag("lubricant");
+        public static final ITag.INamedTag<Fluid> ETHANOL = forgeTag("ethanol");
 
         public static final ITag.INamedTag<Fluid> ETCHING_ACID = modTag("etching_acid");
         public static final ITag.INamedTag<Fluid> PLASTIC = modTag("plastic");
@@ -80,6 +82,9 @@ public class PneumaticCraftTags {
         public static final ITag.INamedTag<Fluid> KEROSENE = modTag("kerosene");
         public static final ITag.INamedTag<Fluid> GASOLINE = modTag("gasoline");
         public static final ITag.INamedTag<Fluid> LPG = modTag("lpg");
+        public static final ITag.INamedTag<Fluid> YEAST_CULTURE = modTag("yeast_culture");
+        public static final ITag.INamedTag<Fluid> VEGETABLE_OIL = modTag("vegetable_oil");
+        public static final ITag.INamedTag<Fluid> BIODIESEL = modTag("biodiesel");
 
         static ITag.INamedTag<Fluid> tag(String modid, String name) {
             return FluidTags.makeWrapperTag(new ResourceLocation(modid, name).toString());

@@ -88,7 +88,7 @@ public class JEIThermopneumaticProcessingPlantCategory implements IRecipeCategor
 
     @Override
     public void setRecipe(IRecipeLayout recipeLayout, ThermoPlantRecipe recipe, IIngredients ingredients) {
-        FluidStack in = ingredients.getInputs(VanillaTypes.FLUID).get(0).get(0);
+        FluidStack in = ingredients.getInputs(VanillaTypes.FLUID).isEmpty() ? FluidStack.EMPTY : ingredients.getInputs(VanillaTypes.FLUID).get(0).get(0);
 
         int inH = 64, outH = 64;
         FluidStack out = FluidStack.EMPTY;

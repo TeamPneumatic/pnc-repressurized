@@ -111,6 +111,7 @@ public class PneumaticValues {
     public static final int VOLUME_ELECTROSTATIC_COMPRESSOR = 50000;
     public static final int VOLUME_PNEUMATIC_PUMP = 10000;
     public static final int VOLUME_THERMAL_COMPRESSOR = 5000;
+    public static final int VOLUME_FLUID_MIXER = 3000;
 
     public static final int VOLUME_PRESSURE_CHAMBER_PER_EMPTY = 16000;
     public static final int VOLUME_VOLUME_UPGRADE = 5000;

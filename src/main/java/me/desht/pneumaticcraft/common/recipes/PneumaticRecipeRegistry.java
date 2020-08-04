@@ -58,12 +58,12 @@ public enum PneumaticRecipeRegistry implements IPneumaticRecipeRegistry {
     }
 
     @Override
-    public ThermoPlantRecipe thermoPlantRecipe(ResourceLocation id, @Nonnull FluidIngredient inputFluid, @Nullable Ingredient inputItem, FluidStack outputFluid, ItemStack outputItem, TemperatureRange operatingTemperature, float requiredPressure) {
-        return new ThermoPlantRecipeImpl(id, inputFluid, inputItem, outputFluid, outputItem, operatingTemperature, requiredPressure, false);
+    public ThermoPlantRecipe thermoPlantRecipe(ResourceLocation id, @Nonnull FluidIngredient inputFluid, @Nullable Ingredient inputItem, FluidStack outputFluid, ItemStack outputItem, TemperatureRange operatingTemperature, float requiredPressure, float speed) {
+        return new ThermoPlantRecipeImpl(id, inputFluid, inputItem, outputFluid, outputItem, operatingTemperature, requiredPressure, speed, false);
     }
 
     @Override
-    public ThermoPlantRecipe exothermicThermoPlantRecipe(ResourceLocation id, @Nonnull FluidIngredient inputFluid, @Nullable Ingredient inputItem, FluidStack outputFluid, ItemStack outputItem, TemperatureRange operatingTemperature, float requiredPressure) {
-        return new ThermoPlantRecipeImpl(id, inputFluid, inputItem, outputFluid, outputItem, operatingTemperature, requiredPressure, true);
+    public ThermoPlantRecipe exothermicThermoPlantRecipe(ResourceLocation id, @Nonnull FluidIngredient inputFluid, @Nullable Ingredient inputItem, FluidStack outputFluid, ItemStack outputItem, TemperatureRange operatingTemperature, float requiredPressure, float speed) {
+        return new ThermoPlantRecipeImpl(id, inputFluid, inputItem, outputFluid, outputItem, operatingTemperature, requiredPressure, speed, true);
     }
 }

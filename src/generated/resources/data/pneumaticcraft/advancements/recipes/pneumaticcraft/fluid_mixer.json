@@ -2,16 +2,16 @@
   "parent": "minecraft:recipes/root",
   "rewards": {
     "recipes": [
-      "pneumaticcraft:thermo_plant/lubricant"
+      "pneumaticcraft:fluid_mixer"
     ]
   },
   "criteria": {
-    "thermopneumatic_processing_plant": {
+    "has_small_tank": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
           {
-            "item": "pneumaticcraft:thermopneumatic_processing_plant"
+            "item": "pneumaticcraft:small_tank"
           }
         ]
       }
@@ -19,13 +19,13 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "pneumaticcraft:thermo_plant/lubricant"
+        "recipe": "pneumaticcraft:fluid_mixer"
       }
     }
   },
   "requirements": [
     [
-      "thermopneumatic_processing_plant",
+      "has_small_tank",
       "has_the_recipe"
     ]
   ]

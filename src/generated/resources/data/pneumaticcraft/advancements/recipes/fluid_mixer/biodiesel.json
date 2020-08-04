@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "pneumaticcraft:fluid_mixer/biodiesel"
+    ]
+  },
+  "criteria": {
+    "fluid_mixer": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:fluid_mixer"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "pneumaticcraft:fluid_mixer/biodiesel"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "fluid_mixer",
+      "has_the_recipe"
+    ]
+  ]
+}

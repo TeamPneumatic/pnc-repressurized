@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "pneumaticcraft:sourdough"
+    ]
+  },
+  "criteria": {
+    "has_wheat_flour": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:wheat_flour"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "pneumaticcraft:sourdough"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_wheat_flour",
+      "has_the_recipe"
+    ]
+  ]
+}

@@ -12,11 +12,14 @@ import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.inventory.ContainerThermopneumaticProcessingPlant;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityThermopneumaticProcessingPlant;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 
 import java.util.Collections;
 import java.util.List;
@@ -48,8 +51,7 @@ public class GuiThermopneumaticProcessingPlant extends
         tempWidget = new WidgetTemperature(guiLeft + 105, guiTop + 25, TemperatureRange.of(273, 673), 273, 50);
         addButton(tempWidget);
 
-        dumpButton = new WidgetButtonExtended(guiLeft + 12, guiTop + 86, 18, 20, "").withTag("dump");
-        dumpButton.setRenderedIcon(Textures.GUI_RIGHT_ARROW);
+        dumpButton = new WidgetButtonExtended(guiLeft + 14, guiTop + 86, 14, 14, "").withTag("dump");
         dumpButton.setTooltipText(PneumaticCraftUtils.splitStringComponent(I18n.format("pneumaticcraft.gui.thermopneumatic.moveInput")));
         addButton(dumpButton);
 
@@ -69,10 +71,10 @@ public class GuiThermopneumaticProcessingPlant extends
         tempWidget.autoScaleForTemperature();
 
         if (hasShiftDown()) {
-            dumpButton.setRenderedIcon(Textures.GUI_X_BUTTON);
+            dumpButton.setMessage(new StringTextComponent("X").mergeStyle(TextFormatting.RED));
             dumpButton.setTooltipText(PneumaticCraftUtils.splitStringComponent(I18n.format("pneumaticcraft.gui.thermopneumatic.dumpInput")));
         } else {
-            dumpButton.setRenderedIcon(Textures.GUI_RIGHT_ARROW);
+            dumpButton.setMessage(new StringTextComponent(GuiConstants.TRIANGLE_RIGHT).mergeStyle(TextFormatting.DARK_AQUA));
             dumpButton.setTooltipText(PneumaticCraftUtils.splitStringComponent(I18n.format("pneumaticcraft.gui.thermopneumatic.moveInput")));
         }
     }
@@ -121,6 +123,8 @@ public class GuiThermopneumaticProcessingPlant extends
                     .map(IHeatExchangerLogic::getTemperatureAsInt).orElseThrow(RuntimeException::new);
             if (temp < te.minTemperature) {
                 curInfo.add("pneumaticcraft.gui.tab.problems.notEnoughHeat");
+            } else if (temp > te.maxTemperature) {
+                curInfo.add("pneumaticcraft.gui.tab.problems.tooMuchHeat");
             }
         }
     }

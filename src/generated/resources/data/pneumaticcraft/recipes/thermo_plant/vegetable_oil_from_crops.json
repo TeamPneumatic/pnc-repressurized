@@ -1,0 +1,13 @@
+{
+  "type": "pneumaticcraft:thermo_plant",
+  "item_input": {
+    "tag": "forge:crops"
+  },
+  "fluid_output": {
+    "fluid": "pneumaticcraft:vegetable_oil",
+    "amount": 20
+  },
+  "pressure": 2.0,
+  "speed": 0.5,
+  "exothermic": false
+}

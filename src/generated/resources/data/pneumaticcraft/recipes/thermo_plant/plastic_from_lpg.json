@@ -1,0 +1,19 @@
+{
+  "type": "pneumaticcraft:thermo_plant",
+  "item_input": {
+    "item": "minecraft:coal"
+  },
+  "fluid_input": {
+    "type": "pneumaticcraft:fluid",
+    "tag": "pneumaticcraft:lpg",
+    "amount": 100
+  },
+  "fluid_output": {
+    "fluid": "pneumaticcraft:plastic",
+    "amount": 1000
+  },
+  "temperature": {
+    "min_temp": 373
+  },
+  "exothermic": false
+}

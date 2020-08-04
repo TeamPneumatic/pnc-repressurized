@@ -99,7 +99,7 @@ public class WidgetTemperature extends Widget implements ITooltipProvider {
 
     public void drawTicks(MatrixStack matrixStack) {
         FontRenderer font = Minecraft.getInstance().fontRenderer;
-        int tickTempC = findNearest(totalRange.getMin() - 273, tickInterval);
+        int tickTempC = findNearestCelsius(totalRange.getMin() - 273, tickInterval);
         int n = 0;
         while (tickTempC <= totalRange.getMax() - 273) {
             // draw...
@@ -140,7 +140,7 @@ public class WidgetTemperature extends Widget implements ITooltipProvider {
         return MathHelper.clamp((temp - totalRange.getMin()) * h / (totalRange.getMax() - totalRange.getMin()), 0, h + 4);
     }
 
-    private static int findNearest(int temp, int interval) {
+    private static int findNearestCelsius(int temp, int interval) {
         int q = temp % interval;
         if (q == 0) return temp;
         int n = temp - q;
@@ -181,21 +181,31 @@ public class WidgetTemperature extends Widget implements ITooltipProvider {
         }
     }
 
+    private static int roundDownK(int tempK, int interval) {
+        int tempC = tempK - 273;
+        int rem = tempC % interval;
+        return tempK - rem;
+    }
+
+    private static int roundUpK(int tempK, int interval) {
+        return roundDownK(tempK, interval) + interval;
+    }
+
     public static WidgetTemperature fromOperatingRange(int x, int y, TemperatureRange range) {
         int interval = calcInterval(range.getMax() - range.getMin());
-        int max;
-        if (range.hasMax()) {
-            max = findNearest(range.getMax(), interval) + 273 + interval;
+        TemperatureRange totalRange;
+        if (range.hasMin() && range.hasMax()) {
+            totalRange = TemperatureRange.of(roundDownK(range.getMin(), interval), roundUpK(range.getMax(), interval));
+        } else if (range.hasMin()) {
+            int minK = roundDownK(range.getMin(), interval);
+            totalRange = TemperatureRange.of(minK, minK + interval * 2);
+        } else if (range.hasMax()) {
+            totalRange = TemperatureRange.of(0, roundUpK(range.getMax(), interval));
         } else {
-            max = findNearest(range.getMin(), interval) + 273 + interval;
+            totalRange = TemperatureRange.of(0, 2273);
         }
-        int min;
-        if (range.hasMin()) {
-            min = findNearest(range.getMin(), interval) + 273;
-        } else {
-            min = range.getMin() < 273 ? 0 : 273;
-        }
-        return new WidgetTemperature(x, y, TemperatureRange.of(min, max), min, calcInterval(max - min)).setOperatingRange(range);
+        interval = calcInterval(totalRange.getMax() - totalRange.getMin()) * 2;
+        return new WidgetTemperature(x, y, totalRange, range.getMin(), interval).setOperatingRange(range);
     }
 
     private static int calcInterval(int r) {

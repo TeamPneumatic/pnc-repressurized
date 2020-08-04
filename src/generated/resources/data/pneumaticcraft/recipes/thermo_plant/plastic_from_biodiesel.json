@@ -1,11 +1,11 @@
 {
   "type": "pneumaticcraft:thermo_plant",
   "item_input": {
-    "tag": "minecraft:coals"
+    "item": "minecraft:charcoal"
   },
   "fluid_input": {
     "type": "pneumaticcraft:fluid",
-    "tag": "pneumaticcraft:lpg",
+    "tag": "pneumaticcraft:biodiesel",
     "amount": 100
   },
   "fluid_output": {

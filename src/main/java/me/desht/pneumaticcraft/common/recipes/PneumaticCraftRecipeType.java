@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketClearRecipeCache;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
 import me.desht.pneumaticcraft.common.recipes.machine.*;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityFluidMixer;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.item.crafting.RecipeManager;
@@ -48,6 +49,8 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
             = registerType(PneumaticCraftRecipeTypes.REFINERY);
     public static final PneumaticCraftRecipeType<ThermoPlantRecipeImpl> THERMO_PLANT
             = registerType(PneumaticCraftRecipeTypes.THERMO_PLANT);
+    public static final PneumaticCraftRecipeType<FluidMixerRecipeImpl> FLUID_MIXER
+            = registerType(PneumaticCraftRecipeTypes.FLUID_MIXER);
 
     private final Map<ResourceLocation, T> cachedRecipes = new HashMap<>();
     private final ResourceLocation registryName;
@@ -84,6 +87,7 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
         types.forEach(type -> type.cachedRecipes.clear());
 
         HeatFrameCoolingRecipeImpl.cacheMaxThresholdTemp(Collections.emptyList());  // clear the cached temp
+        TileEntityFluidMixer.clearCachedFluids();
     }
 
     public Map<ResourceLocation, T> getRecipes(World world) {
@@ -102,6 +106,8 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
                 Collection<AssemblyRecipe> drillRecipes = PneumaticCraftRecipeType.ASSEMBLY_DRILL.getRecipes(world).values();
                 Collection<AssemblyRecipe> laserRecipes = PneumaticCraftRecipeType.ASSEMBLY_LASER.getRecipes(world).values();
                 AssemblyRecipeImpl.calculateAssemblyChain(drillRecipes, laserRecipes).forEach((id, recipe) -> cachedRecipes.put(id, (T) recipe));
+            } else if (this == FLUID_MIXER) {
+                TileEntityFluidMixer.cacheRecipeFluids((List<FluidMixerRecipeImpl>) recipes);
             }
         }
 

@@ -115,12 +115,13 @@ public interface IPneumaticRecipeRegistry {
      * @param outputItem the output item
      * @param operatingTemperature the operating temperature range
      * @param requiredPressure the minimum pressure required (pass 0 if no specific pressure is required)
+     * @param speed recipe speed multiplier (smaller values mean recipe takes longer to process)
      * @return a Thermopneumatic Processing Plant recipe (pass {@link TemperatureRange#any()} if no specific temperature
      * is required)
      */
     ThermoPlantRecipe thermoPlantRecipe(
             ResourceLocation id, @Nonnull FluidIngredient inputFluid, @Nullable Ingredient inputItem,
-            FluidStack outputFluid, ItemStack outputItem, TemperatureRange operatingTemperature, float requiredPressure);
+            FluidStack outputFluid, ItemStack outputItem, TemperatureRange operatingTemperature, float requiredPressure, float speed);
 
     /**
      * Create a standard exothermic Thermopneumatic Processing Plant recipe.  Exothermic recipes produce heat rather than
@@ -134,9 +135,10 @@ public interface IPneumaticRecipeRegistry {
      * @param outputItem the output item
      * @param operatingTemperature the operating temperature range
      * @param requiredPressure the minimum pressure required (pass 0 if no specific pressure is required)
+     * @param speed recipe speed multiplier (smaller values mean recipe takes longer to process)
      * @return a Thermopneumatic Processing Plant recipe (pass {@link TemperatureRange#any()} if no specific temperature is required)
      */
     ThermoPlantRecipe exothermicThermoPlantRecipe(
             ResourceLocation id, @Nonnull FluidIngredient inputFluid, @Nullable Ingredient inputItem,
-            FluidStack outputFluid, ItemStack outputItem, TemperatureRange operatingTemperature, float requiredPressure);
+            FluidStack outputFluid, ItemStack outputItem, TemperatureRange operatingTemperature, float requiredPressure, float speed);
 }

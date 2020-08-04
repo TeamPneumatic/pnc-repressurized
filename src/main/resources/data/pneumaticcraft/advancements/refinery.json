@@ -8,7 +8,8 @@
     },
     "description": {
       "translate": "pneumaticcraft.achievement.refinery.desc"
-    }
+    },
+    "frame": "goal"
   },
   "parent": "pneumaticcraft:oil_bucket",
   "criteria": {
@@ -18,9 +19,16 @@
         "items": [
           {
             "item": "pneumaticcraft:refinery"
+          },
+          {
+            "item": "pneumaticcraft:refinery_output",
+            "count": 2
           }
         ]
       }
     }
+  },
+  "rewards": {
+    "experience": 20
   }
 }

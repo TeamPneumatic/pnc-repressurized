@@ -1,0 +1,15 @@
+{
+  "type": "pneumaticcraft:pressure_chamber",
+  "inputs": [
+    {
+      "tag": "forge:crops/wheat"
+    }
+  ],
+  "pressure": 1.5,
+  "results": [
+    {
+      "item": "pneumaticcraft:wheat_flour",
+      "count": 3
+    }
+  ]
+}

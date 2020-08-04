@@ -155,12 +155,15 @@ public class Textures {
     public static final ResourceLocation GUI_REINFORCED_CHEST = guiTexture("gui_reinforced_chest.png");
     public static final ResourceLocation GUI_SMART_CHEST = guiTexture("gui_smart_chest.png");
     public static final ResourceLocation GUI_TAG_WORKBENCH = guiTexture("gui_tag_workbench.png");
+    public static final ResourceLocation GUI_FLUID_MIXER = guiTexture("gui_fluid_mixer.png");
 
     public static final ResourceLocation GUI_JEI_PRESSURE_CHAMBER = guiTexture("jei/gui_jei_pressure_chamber.png");
     public static final ResourceLocation GUI_JEI_ASSEMBLY_CONTROLLER = guiTexture("jei/gui_jei_assembly_controller.png");
     public static final ResourceLocation GUI_JEI_MISC_RECIPES = guiTexture("jei/gui_jei_misc_recipes.png");
     public static final ResourceLocation GUI_JEI_ETCHING_TANK = guiTexture("jei/gui_jei_etching_tank.png");
+    public static final ResourceLocation GUI_JEI_FLUID_MIXER = guiTexture("jei/gui_jei_fluid_mixer.png");
     public static final ResourceLocation GUI_JEI_THERMOPNEUMATIC_PROCESSING_PLANT = guiTexture("jei/gui_jei_thermopneumatic_processing_plant.png");
+    public static final ResourceLocation GUI_JEI_YEAST_CRAFTING = guiTexture("jei/gui_jei_yeast_crafting.png");
     public static final ResourceLocation GUI_JEI_BONUS = guiTexture("jei/gui_jei_bonus.png");
 
     // misc GUI Icons

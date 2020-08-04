@@ -28,6 +28,7 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
     private final FluidStack outputFluid;
     private final Ingredient inputItem;
     private final float requiredPressure;
+    private final float recipeSpeed;
     private final boolean exothermic;
     private final TemperatureRange operatingTemperature;
     private final ItemStack outputItem;
@@ -35,7 +36,7 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
     public ThermoPlantRecipeImpl(
             ResourceLocation id, @Nonnull FluidIngredient inputFluid, @Nullable Ingredient inputItem,
             FluidStack outputFluid, ItemStack outputItem, TemperatureRange operatingTemperature, float requiredPressure,
-            boolean exothermic)
+            float recipeSpeed, boolean exothermic)
     {
         super(id);
 
@@ -45,13 +46,14 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
         this.outputItem = outputItem;
         this.operatingTemperature = operatingTemperature;
         this.requiredPressure = requiredPressure;
+        this.recipeSpeed = recipeSpeed;
         this.exothermic = exothermic;
     }
 
     @Override
     public boolean matches(FluidStack fluidStack, @Nonnull ItemStack stack) {
-        return (inputFluid == null || inputFluid.testFluid(fluidStack))
-                && (inputItem == null || inputItem.test(stack));
+        return (inputFluid == FluidIngredient.EMPTY || inputFluid.testFluid(fluidStack))
+                && (inputItem == Ingredient.EMPTY || inputItem.test(stack));
     }
 
     @Override
@@ -91,6 +93,11 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
     }
 
     @Override
+    public double getRecipeSpeed() {
+        return recipeSpeed;
+    }
+
+    @Override
     public void write(PacketBuffer buffer) {
         operatingTemperature.write(buffer);
         buffer.writeFloat(requiredPressure);
@@ -98,6 +105,7 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
         inputFluid.write(buffer);
         outputFluid.writeToPacket(buffer);
         buffer.writeItemStack(outputItem);
+        buffer.writeFloat(recipeSpeed);
         buffer.writeBoolean(exothermic);
     }
 
@@ -159,7 +167,9 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
 
             boolean exothermic = JSONUtils.getBoolean(json, "exothermic", false);
 
-            return factory.create(recipeId, (FluidIngredient) fluidInput, itemInput, fluidOutput, itemOutput, range, pressure, exothermic);
+            float recipeSpeed = JSONUtils.getFloat(json, "speed", 1.0f);
+
+            return factory.create(recipeId, (FluidIngredient) fluidInput, itemInput, fluidOutput, itemOutput, range, pressure, recipeSpeed, exothermic);
         }
 
         @Nullable
@@ -171,8 +181,9 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
             FluidIngredient fluidIn = (FluidIngredient) Ingredient.read(buffer);
             FluidStack fluidOut = FluidStack.readFromPacket(buffer);
             ItemStack itemOutput = buffer.readItemStack();
+            float recipeSpeed = buffer.readFloat();
             boolean exothermic = buffer.readBoolean();
-            return factory.create(recipeId, fluidIn, input, fluidOut, itemOutput, range, pressure, exothermic);
+            return factory.create(recipeId, fluidIn, input, fluidOut, itemOutput, range, pressure, recipeSpeed, exothermic);
         }
 
         @Override
@@ -183,7 +194,7 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
         public interface IFactory <T extends ThermoPlantRecipe> {
             T create(ResourceLocation id, @Nonnull FluidIngredient inputFluid, @Nullable Ingredient inputItem,
                      FluidStack outputFluid, ItemStack outputItem, TemperatureRange operatingTemperature, float requiredPressure,
-                     boolean exothermic);
+                     float recipeSpeed, boolean exothermic);
         }
     }
 }

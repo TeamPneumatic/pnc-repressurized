@@ -65,7 +65,7 @@ public class ModBlocks {
     }
 
     private static Block.Properties fluidProps() {
-        return Block.Properties.create(Material.WATER).doesNotBlockMovement().noDrops();
+        return Block.Properties.create(Material.WATER).doesNotBlockMovement().hardnessAndResistance(100f).noDrops();
     }
 
     public static final RegistryObject<BlockPressureTube> PRESSURE_TUBE = register("pressure_tube",
@@ -190,6 +190,8 @@ public class ModBlocks {
             BlockDroneInterface::new);
     public static final RegistryObject<BlockThermalLagging> THERMAL_LAGGING = register("thermal_lagging",
             BlockThermalLagging::new);
+    public static final RegistryObject<BlockFluidMixer> FLUID_MIXER = register("fluid_mixer",
+            BlockFluidMixer::new);
 
     public static final List<RegistryObject<BlockPlasticBrick>> PLASTIC_BRICKS = new ArrayList<>();
     static {
@@ -238,4 +240,12 @@ public class ModBlocks {
             () -> new FlowingFluidBlock(() -> (FlowingFluid) ModFluids.LPG.get(), fluidProps()));
     public static final RegistryObject<FlowingFluidBlock> MEMORY_ESSENCE = registerNoItem("memory_essence",
             () -> new FlowingFluidBlock(() -> (FlowingFluid) ModFluids.MEMORY_ESSENCE.get(), fluidProps()));
+    public static final RegistryObject<FlowingFluidBlock> YEAST_CULTURE = registerNoItem("yeast_culture",
+            () -> new FlowingFluidBlock(() -> (FlowingFluid) ModFluids.YEAST_CULTURE.get(), fluidProps()));
+    public static final RegistryObject<FlowingFluidBlock> ETHANOL = registerNoItem("ethanol",
+            () -> new FlowingFluidBlock(() -> (FlowingFluid) ModFluids.ETHANOL.get(), fluidProps()));
+    public static final RegistryObject<FlowingFluidBlock> VEGETABLE_OIL = registerNoItem("vegetable_oil",
+            () -> new FlowingFluidBlock(() -> (FlowingFluid) ModFluids.VEGETABLE_OIL.get(), fluidProps()));
+    public static final RegistryObject<FlowingFluidBlock> BIODIESEL = registerNoItem("biodiesel",
+            () -> new FlowingFluidBlock(() -> (FlowingFluid) ModFluids.BIODIESEL.get(), fluidProps()));
 }

@@ -1,0 +1,30 @@
+{
+  "display": {
+    "icon": {
+      "item": "pneumaticcraft:biodiesel_bucket"
+    },
+    "title": {
+      "translate": "pneumaticcraft.achievement.biodiesel"
+    },
+    "description": {
+      "translate": "pneumaticcraft.achievement.biodiesel.desc"
+    },
+    "frame": "goal"
+  },
+  "parent": "pneumaticcraft:ethanol",
+  "criteria": {
+    "pressure_tube": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:biodiesel_bucket"
+          }
+        ]
+      }
+    }
+  },
+  "rewards": {
+    "experience": 25
+  }
+}

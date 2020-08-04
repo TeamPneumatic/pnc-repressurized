@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "The $(item)Heat Pipe/$ is an insulated core of compressed iron which can transmit heat between blocks, without any thermal connection to adjacent air or fluid blocks. It's a more compact (and cheaper) alternative to using Compressed Iron Blocks to transmit heat.$(p)You can conceal Heat Pipes with the $(l:tools/camo_applicator)Camouflage Applicator/$."
+      "text": "The $(item)Heat Pipe/$ is an insulated core of compressed iron which can transmit heat between blocks, without any thermal connection to adjacent air or fluid blocks. It's a more compact (and cheaper) alternative to using $(thing)Compressed Iron Blocks/$ to transmit heat.$(p)You can conceal Heat Pipes with the $(l:tools/camo_applicator)Camouflage Applicator/$."
     },
     {
       "type": "image",

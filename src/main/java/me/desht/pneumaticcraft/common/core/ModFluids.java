@@ -39,6 +39,18 @@ public class ModFluids {
     public static final RegistryObject<Fluid> MEMORY_ESSENCE = register("memory_essence", FluidMemoryEssence.Source::new);
     public static final RegistryObject<Fluid> MEMORY_ESSENCE_FLOWING = register("memory_essence_flowing", FluidMemoryEssence.Flowing::new);
 
+    public static final RegistryObject<Fluid> YEAST_CULTURE = register("yeast_culture", FluidYeastCulture.Source::new);
+    public static final RegistryObject<Fluid> YEAST_CULTURE_FLOWING = register("yeast_culture_flowing", FluidYeastCulture.Flowing::new);
+
+    public static final RegistryObject<Fluid> ETHANOL = register("ethanol", FluidEthanol.Source::new);
+    public static final RegistryObject<Fluid> ETHANOL_FLOWING = register("ethanol_flowing", FluidEthanol.Flowing::new);
+
+    public static final RegistryObject<Fluid> VEGETABLE_OIL = register("vegetable_oil", FluidVegetableOil.Source::new);
+    public static final RegistryObject<Fluid> VEGETABLE_OIL_FLOWING = register("vegetable_oil_flowing", FluidVegetableOil.Flowing::new);
+
+    public static final RegistryObject<Fluid> BIODIESEL = register("biodiesel", FluidBiodiesel.Source::new);
+    public static final RegistryObject<Fluid> BIODIESEL_FLOWING = register("biodiesel_flowing", FluidBiodiesel.Flowing::new);
+
     private static <T extends Fluid> RegistryObject<T> register(String name, final Supplier<T> sup) {
         return FLUIDS.register(name, sup);
     }

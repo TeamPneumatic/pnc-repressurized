@@ -10,4 +10,5 @@ public class PneumaticCraftRecipeTypes {
     public static final String PRESSURE_CHAMBER = "pressure_chamber";
     public static final String REFINERY = "refinery";
     public static final String THERMO_PLANT = "thermo_plant";
+    public static final String FLUID_MIXER = "fluid_mixer";
 }

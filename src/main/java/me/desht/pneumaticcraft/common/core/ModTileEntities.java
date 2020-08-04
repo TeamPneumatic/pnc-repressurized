@@ -131,6 +131,8 @@ public class ModTileEntities {
     public static final RegistryObject<TileEntityType<TileEntityDroneInterface>> DRONE_INTERFACE
             = register("drone_interface", () -> new TileEntityType<>(TileEntityDroneInterface::new, ImmutableSet.of(ModBlocks.DRONE_INTERFACE.get()),
         null));
+    public static final RegistryObject<TileEntityType<TileEntityFluidMixer>> FLUID_MIXER
+            = register("fluid_mixer", () -> new TileEntityType<>(TileEntityFluidMixer::new, ImmutableSet.of(ModBlocks.FLUID_MIXER.get()), null));
 
     private static <T extends TileEntityType<?>> RegistryObject<T> register(String name, Supplier<T> sup) {
         return TILE_ENTITIES.register(name, sup);

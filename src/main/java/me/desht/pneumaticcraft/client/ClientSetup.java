@@ -118,6 +118,7 @@ public class ClientSetup {
         RenderTypeLookup.setRenderLayer(ModBlocks.APHORISM_TILE.get(), RenderType.getCutoutMipped());
         RenderTypeLookup.setRenderLayer(ModBlocks.ELEVATOR_FRAME.get(), RenderType.getCutout());
         RenderTypeLookup.setRenderLayer(ModBlocks.ETCHING_TANK.get(), RenderType.getCutoutMipped());
+        RenderTypeLookup.setRenderLayer(ModBlocks.FLUID_MIXER.get(), RenderType.getCutoutMipped());
         RenderTypeLookup.setRenderLayer(ModBlocks.KEROSENE_LAMP.get(), RenderType.getCutoutMipped());
         RenderTypeLookup.setRenderLayer(ModBlocks.LIQUID_HOPPER.get(), RenderType.getCutoutMipped());
         RenderTypeLookup.setRenderLayer(ModBlocks.PRESSURE_CHAMBER_GLASS.get(), RenderType.getCutout());
@@ -190,6 +191,7 @@ public class ClientSetup {
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.ELEVATOR_BASE.get(), RenderElevatorBase::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.ELEVATOR_CALLER.get(), RenderElevatorCaller::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.ETCHING_TANK.get(), RenderEtchingTank::new);
+        ClientRegistry.bindTileEntityRenderer(ModTileEntities.FLUID_MIXER.get(), RenderFluidMixer::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.KEROSENE_LAMP.get(), RenderKeroseneLamp::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.LIQUID_HOPPER.get(), RenderLiquidHopper::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.PRESSURE_CHAMBER_VALVE.get(), RenderPressureChamber::new);
@@ -226,6 +228,7 @@ public class ClientSetup {
         ScreenManager.registerFactory(ModContainers.ELEVATOR.get(), GuiElevator::new);
         ScreenManager.registerFactory(ModContainers.ETCHING_TANK.get(), GuiEtchingTank::new);
         ScreenManager.registerFactory(ModContainers.FLUID_TANK.get(), GuiFluidTank::new);
+        ScreenManager.registerFactory(ModContainers.FLUID_MIXER.get(), GuiFluidMixer::new);
         ScreenManager.registerFactory(ModContainers.FLUX_COMPRESSOR.get(), GuiFluxCompressor::new);
         ScreenManager.registerFactory(ModContainers.GAS_LIFT.get(), GuiGasLift::new);
         ScreenManager.registerFactory(ModContainers.INVENTORY_SEARCHER.get(), GuiInventorySearcher::new);

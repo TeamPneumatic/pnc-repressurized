@@ -31,7 +31,7 @@ public class JEIAssemblyControllerCategory implements IRecipeCategory<AssemblyRe
     private final IDrawableAnimated progressBar;
 
     JEIAssemblyControllerCategory() {
-        background = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_ASSEMBLY_CONTROLLER, 5, 11, 166, 130);
+        background = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_ASSEMBLY_CONTROLLER, 5, 11, 158, 98);
         icon = JEIPlugin.jeiHelpers.getGuiHelper().createDrawableIngredient(new ItemStack(ModBlocks.ASSEMBLY_CONTROLLER.get()));
         localizedName = I18n.format(ModBlocks.ASSEMBLY_CONTROLLER.get().getTranslationKey());
         IDrawableStatic d = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_ASSEMBLY_CONTROLLER, 173, 0, 24, 17);
@@ -77,7 +77,7 @@ public class JEIAssemblyControllerCategory implements IRecipeCategory<AssemblyRe
 
     @Override
     public void setRecipe(IRecipeLayout recipeLayout, AssemblyRecipe recipe, IIngredients ingredients) {
-        recipeLayout.getItemStacks().init(0, true, 28, 65);
+        recipeLayout.getItemStacks().init(0, true, 28, 55);
         recipeLayout.getItemStacks().set(0, ingredients.getInputs(VanillaTypes.ITEM).get(0));
         recipeLayout.getItemStacks().init(2, true, 132, 21);
         recipeLayout.getItemStacks().set(2, ingredients.getInputs(VanillaTypes.ITEM).get(1));
@@ -88,13 +88,13 @@ public class JEIAssemblyControllerCategory implements IRecipeCategory<AssemblyRe
             recipeLayout.getItemStacks().set(i + 3, ingredients.getInputs(VanillaTypes.ITEM).get(i + 2));
         }
 
-        recipeLayout.getItemStacks().init(1, false, 95, 65);
+        recipeLayout.getItemStacks().init(1, false, 95, 55);
         recipeLayout.getItemStacks().set(1, ingredients.getOutputs(VanillaTypes.ITEM).get(0));
     }
 
     @Override
     public void draw(AssemblyRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
-        progressBar.draw(matrixStack, 68, 75);
+        progressBar.draw(matrixStack, 68, 65);
         FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
         fontRenderer.drawString(matrixStack, "Required Machines", 5, 15, 0xFF404040);
         fontRenderer.drawString(matrixStack, "Prog.", 129, 9, 0xFF404040);
