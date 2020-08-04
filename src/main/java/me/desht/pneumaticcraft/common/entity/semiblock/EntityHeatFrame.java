@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.entity.semiblock;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
+import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import me.desht.pneumaticcraft.api.crafting.recipe.HeatFrameCoolingRecipe;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
@@ -27,8 +28,8 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidUtil;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -216,21 +217,29 @@ public class EntityHeatFrame extends EntitySemiblockBase {
         HeatFrameCoolingRecipe recipe = PneumaticCraftRecipeType.HEAT_FRAME_COOLING.findFirst(world, r -> r.matches(stack));
 
         if (recipe != null) {
-            ItemStack containerItem = stack.getItem().getContainerItem(stack);
-            // if stack contains any fluid, there must be only 1 item in the stack
-            if (stack.getCount() == 1 || FluidUtil.getFluidContained(stack).map(FluidStack::isEmpty).orElse(true)) {
-                ItemStack result = ItemHandlerHelper.copyStackWithSize(recipe.getOutput(), recipe.calculateOutputQuantity(logic.getTemperature()));
-                ItemStack remainder = ItemHandlerHelper.insertItem(handler, result, true);
-                if (remainder.isEmpty()) {
-                    handler.extractItem(slot, 1, false);
-                    if (!containerItem.isEmpty()) {
-                        handler.insertItem(slot, containerItem, false);
+            boolean extractedOK;
+            if (recipe.getInput() instanceof FluidIngredient) {
+                if (stack.getCount() != 1) return false;  // fluid-containing items must not be stacked!
+                extractedOK = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).map(fluidHandler -> {
+                    int toDrain = ((FluidIngredient) recipe.getInput()).getAmount();
+                    if (fluidHandler.drain(toDrain, IFluidHandler.FluidAction.EXECUTE).getAmount() == toDrain) {
+                        ItemStack containerStack = fluidHandler.getContainer().copy();
+                        handler.extractItem(slot, 1, false);
+                        handler.insertItem(slot, containerStack, false);
+                        return true;
                     }
-                    ItemHandlerHelper.insertItem(handler, result, false);
-                    lastValidSlot = slot;
-                    return true;
-                }
+                    return false;
+                }).orElse(false);
+            } else {
+                extractedOK = handler.extractItem(slot, 1, false).getCount() == 1;
             }
+            if (extractedOK) {
+                ItemStack result = ItemHandlerHelper.copyStackWithSize(recipe.getOutput(), recipe.calculateOutputQuantity(logic.getTemperature()));
+                ItemHandlerHelper.insertItem(handler, result, false);
+                lastValidSlot = slot;
+                return true;
+            }
+            return extractedOK;
         }
         return false;
     }

@@ -18,7 +18,7 @@ import javax.annotation.Nullable;
 import java.util.function.Predicate;
 
 public class FluidItemWrapper implements ICapabilityProvider {
-    private final ItemStack stack;
+    private ItemStack stack;
     private final String tankName;
     private final int capacity;
     private final Predicate<Fluid> fluidPredicate;
@@ -36,19 +36,19 @@ public class FluidItemWrapper implements ICapabilityProvider {
     }
 
     /**
-     * Serialize some tank data onto an ItemStack.  Used by the item's fluid handler capability.  If the tank is empty,
-     * it will be removed from the stack's NBT to keep it clean (helps with stackability)
+     * Serialize some tank data onto the handler's ItemStack.  Used by the item's fluid handler capability.  If the
+     * tank is empty, it will be removed from the stack's NBT to keep it clean (helps with stackability)
      * <p>
      * Data is serialized under the "BlockEntityTag" sub-tag, so will
      * be automatically deserialized back into the tile entity when this item (assuming it's from a block,
      * of course) is placed back down.
      *
      * @param tank the fluid tank
-     * @param stack the itemstack to save to
      * @param tagName name of the subtag in the itemstack's NBT to store the tank data
      */
-     static void serializeTank(FluidTank tank, ItemStack stack, String tagName) {
-         CompoundNBT tag = stack.getOrCreateChildTag(NBTKeys.BLOCK_ENTITY_TAG);
+     private void serializeTank(FluidTank tank, String tagName) {
+         ItemStack newStack = stack.copy();
+         CompoundNBT tag = newStack.getOrCreateChildTag(NBTKeys.BLOCK_ENTITY_TAG);
          CompoundNBT subTag = tag.getCompound(NBTKeys.NBT_SAVED_TANKS);
          if (!tank.getFluid().isEmpty()) {
              subTag.put(tagName, tank.writeToNBT(new CompoundNBT()));
@@ -60,12 +60,13 @@ public class FluidItemWrapper implements ICapabilityProvider {
          } else {
              tag.remove(NBTKeys.NBT_SAVED_TANKS);
              if (tag.isEmpty()) {
-                 stack.getTag().remove(NBTKeys.BLOCK_ENTITY_TAG);
-                 if (stack.getTag().isEmpty()) {
-                     stack.setTag(null);
+                 newStack.getTag().remove(NBTKeys.BLOCK_ENTITY_TAG);
+                 if (newStack.getTag().isEmpty()) {
+                     newStack.setTag(null);
                  }
              }
          }
+         stack = newStack;
     }
 
     /**
@@ -134,7 +135,7 @@ public class FluidItemWrapper implements ICapabilityProvider {
             if (fluidTank == null) return 0;
             int filled = fluidTank.fill(resource, doFill);
             if (filled > 0 && doFill == FluidAction.EXECUTE) {
-                serializeTank(fluidTank, stack, tankName);
+                serializeTank(fluidTank, tankName);
             }
             return filled;
         }
@@ -144,7 +145,7 @@ public class FluidItemWrapper implements ICapabilityProvider {
             if (fluidTank == null) return FluidStack.EMPTY;
             FluidStack drained = fluidTank.drain(resource, doDrain);
             if (!drained.isEmpty() && doDrain == FluidAction.EXECUTE) {
-                serializeTank(fluidTank, stack, tankName);
+                serializeTank(fluidTank, tankName);
             }
             return drained;
         }
@@ -154,7 +155,7 @@ public class FluidItemWrapper implements ICapabilityProvider {
             if (fluidTank == null) return FluidStack.EMPTY;
             FluidStack drained = fluidTank.drain(maxDrain, doDrain);
             if (!drained.isEmpty() && doDrain == FluidAction.EXECUTE) {
-                serializeTank(fluidTank, stack, tankName);
+                serializeTank(fluidTank, tankName);
             }
             return drained;
         }
