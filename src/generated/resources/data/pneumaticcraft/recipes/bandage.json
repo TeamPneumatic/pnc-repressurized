@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " G ",
+    "GCG",
+    " G "
+  ],
+  "key": {
+    "G": {
+      "item": "pneumaticcraft:glycerol"
+    },
+    "C": {
+      "tag": "minecraft:carpets"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:bandage"
+  }
+}

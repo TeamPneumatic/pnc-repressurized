@@ -2,7 +2,6 @@ package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.common.capabilities.AirHandlerItemStack;
-import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -14,6 +13,7 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import javax.annotation.Nullable;
 
 public class ItemPressurizable extends Item {
+
     private final int volume;
     private final float maxPressure;
 
@@ -25,7 +25,7 @@ public class ItemPressurizable extends Item {
         super(props);
 
         this.volume = volume;
-        this.maxPressure = (float)maxAir / volume;
+        this.maxPressure = (float) maxAir / volume;
     }
 
     @Override
@@ -59,9 +59,7 @@ public class ItemPressurizable extends Item {
     }
 
     static boolean shouldShowPressureDurability(ItemStack stack) {
-        if (PNCConfig.Client.alwaysShowPressureDurabilityBar) return true;
-
-        return stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
+                return stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
                 .map(airHandler -> airHandler.getPressure() < airHandler.maxPressure())
                 .orElse(false);
     }
@@ -86,5 +84,22 @@ public class ItemPressurizable extends Item {
         } else {
             return super.initCapabilities(stack, nbt);
         }
+    }
+
+    protected float getPressure(ItemStack stack) {
+        return stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).orElseThrow(RuntimeException::new).getPressure();
+    }
+
+//    protected void addAir(ItemStack stack, int amount) {
+//        int currentAir = getAir(stack);
+//        stack.getOrCreateTag().putInt(AirHandlerItemStack.AIR_NBT_KEY, MathHelper.clamp(currentAir + amount, 0, (int)maxPressure * volume));
+//    }
+
+    public static int getAir(ItemStack stack) {
+        CompoundNBT tag = stack.getTag();
+        if (tag != null) {
+            return tag.getInt(AirHandlerItemStack.AIR_NBT_KEY);
+        }
+        return 0;
     }
 }

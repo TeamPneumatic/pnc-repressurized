@@ -67,6 +67,11 @@ public class UpgradesDBSetup {
                 .with(EnumUpgrade.ENTITY_TRACKER, 4)
                 .with(EnumUpgrade.SECURITY, 1));
 
+        db.addApplicableUpgrades(ModItems.JACKHAMMER.get(), new Builder()
+                .with(EnumUpgrade.SPEED, 10)
+                .with(EnumUpgrade.VOLUME, MAX_VOLUME)
+        );
+
         // Pneumatic Armor
         List<Builder> armor = Arrays.asList(new Builder(), new Builder(), new Builder(), new Builder());
         for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {

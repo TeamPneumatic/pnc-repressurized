@@ -1,0 +1,20 @@
+{
+  "type": "pneumaticcraft:thermo_plant",
+  "item_input": {
+    "tag": "forge:ingots/compressed_iron"
+  },
+  "fluid_input": {
+    "type": "pneumaticcraft:fluid",
+    "tag": "forge:lubricant",
+    "amount": 4000
+  },
+  "item_output": {
+    "item": "pneumaticcraft:drill_bit_compressed_iron"
+  },
+  "temperature": {
+    "min_temp": 573
+  },
+  "pressure": 4.0,
+  "speed": 0.25,
+  "exothermic": false
+}

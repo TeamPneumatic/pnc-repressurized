@@ -15,6 +15,7 @@ import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.event.DateEventHandler;
+import me.desht.pneumaticcraft.common.item.ItemJackHammer;
 import me.desht.pneumaticcraft.common.item.ItemMinigun;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
@@ -110,45 +111,69 @@ public class ClientEventHandler {
 //    }
 
     @SubscribeEvent
-    public static void renderFirstPersonMinigunTraces(RenderGameOverlayEvent.Pre event) {
+    public static void onGuiOverlay(RenderGameOverlayEvent.Pre event) {
         if (event.getType() == RenderGameOverlayEvent.ElementType.CROSSHAIRS && Minecraft.getInstance().gameSettings.thirdPersonView == 0) {
-            Minecraft mc = Minecraft.getInstance();
-            PlayerEntity player = mc.player;
+            PlayerEntity player = Minecraft.getInstance().player;
             if (player == null) return;
             ItemStack stack = player.getHeldItemMainhand();
             if (stack.getItem() instanceof ItemMinigun) {
-                Minigun minigun = ((ItemMinigun) stack.getItem()).getMinigun(stack, player);
-                int w = event.getWindow().getScaledWidth();
-                int h = event.getWindow().getScaledHeight();
-
-                if (minigun.isMinigunActivated() && minigun.getMinigunSpeed() == Minigun.MAX_GUN_SPEED) {
-                    drawBulletTraces2D(minigun.getAmmoColor() | 0x40000000, w, h);
-                }
-
-                MatrixStack matrixStack = event.getMatrixStack();
-                ItemStack ammo = minigun.getAmmoStack();
-                if (!ammo.isEmpty()) {
-                    GuiUtils.renderItemStack(matrixStack, ammo,w / 2 + 16, h / 2 - 7);
-                    int remaining = ammo.getMaxDamage() - ammo.getDamage();
-                    matrixStack.push();
-                    matrixStack.translate(w / 2f + 32, h / 2f - 1, 0);
-                    matrixStack.scale(MINIGUN_TEXT_SIZE, MINIGUN_TEXT_SIZE, 1f);
-                    String text = remaining + "/" + ammo.getMaxDamage();
-                    mc.fontRenderer.drawString(matrixStack, text, 1, 0, 0);
-                    mc.fontRenderer.drawString(matrixStack, text, -1, 0, 0);
-                    mc.fontRenderer.drawString(matrixStack, text, 0, 1, 0);
-                    mc.fontRenderer.drawString(matrixStack, text, 0, -1, 0);
-                    mc.fontRenderer.drawString(matrixStack, text, 0, 0, minigun.getAmmoColor());
-                    matrixStack.pop();
-                }
-                mc.getTextureManager().bindTexture(Textures.MINIGUN_CROSSHAIR);
-                RenderSystem.enableBlend();
-                RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-                RenderSystem.color4f(0.2f, 1.0f, 0.2f, 0.6f);
-                AbstractGui.blit(matrixStack, w / 2 - 7, h / 2 - 7, 0, 0, 16, 16, 16, 16);
-                event.setCanceled(true);
+                renderFirstPersonMinigunTraces(event, player, stack);
+            } else if (stack.getItem() instanceof ItemJackHammer) {
+                renderJackHamerOverlay(event, player, stack);
             }
         }
+    }
+
+    private static void renderJackHamerOverlay(RenderGameOverlayEvent.Pre event, PlayerEntity player, ItemStack heldStack) {
+        if (player.isCrouching()) return;
+
+        Minecraft mc = Minecraft.getInstance();
+        MatrixStack matrixStack = event.getMatrixStack();
+        int w = event.getWindow().getScaledWidth();
+        int h = event.getWindow().getScaledHeight();
+
+        ItemJackHammer.DigMode digMode = ItemJackHammer.getDigMode(heldStack);
+        if (digMode != null && digMode.atLeast(ItemJackHammer.DigMode.MODE_1X2)) {
+            mc.getTextureManager().bindTexture(digMode.getGuiIcon());
+            RenderSystem.enableBlend();
+            RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+            RenderSystem.color4f(1f, 1f, 1f, 0.25f);
+            AbstractGui.blit(matrixStack, w / 2 + 7, h / 2 - 7, 0, 0, 16, 16, 16, 16);
+        }
+    }
+
+    private static void renderFirstPersonMinigunTraces(RenderGameOverlayEvent.Pre event, PlayerEntity player, ItemStack heldStack) {
+        Minecraft mc = Minecraft.getInstance();
+        Minigun minigun = ((ItemMinigun) heldStack.getItem()).getMinigun(heldStack, player);
+        int w = event.getWindow().getScaledWidth();
+        int h = event.getWindow().getScaledHeight();
+
+        if (minigun.isMinigunActivated() && minigun.getMinigunSpeed() == Minigun.MAX_GUN_SPEED) {
+            drawBulletTraces2D(minigun.getAmmoColor() | 0x40000000, w, h);
+        }
+
+        MatrixStack matrixStack = event.getMatrixStack();
+        ItemStack ammo = minigun.getAmmoStack();
+        if (!ammo.isEmpty()) {
+            GuiUtils.renderItemStack(matrixStack, ammo,w / 2 + 16, h / 2 - 7);
+            int remaining = ammo.getMaxDamage() - ammo.getDamage();
+            matrixStack.push();
+            matrixStack.translate(w / 2f + 32, h / 2f - 1, 0);
+            matrixStack.scale(MINIGUN_TEXT_SIZE, MINIGUN_TEXT_SIZE, 1f);
+            String text = remaining + "/" + ammo.getMaxDamage();
+            mc.fontRenderer.drawString(matrixStack, text, 1, 0, 0);
+            mc.fontRenderer.drawString(matrixStack, text, -1, 0, 0);
+            mc.fontRenderer.drawString(matrixStack, text, 0, 1, 0);
+            mc.fontRenderer.drawString(matrixStack, text, 0, -1, 0);
+            mc.fontRenderer.drawString(matrixStack, text, 0, 0, minigun.getAmmoColor());
+            matrixStack.pop();
+        }
+        mc.getTextureManager().bindTexture(Textures.MINIGUN_CROSSHAIR);
+        RenderSystem.enableBlend();
+        RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        RenderSystem.color4f(0.2f, 1.0f, 0.2f, 0.6f);
+        AbstractGui.blit(matrixStack, w / 2 - 7, h / 2 - 7, 0, 0, 16, 16, 16, 16);
+        event.setCanceled(true);
     }
 
     private static void drawBulletTraces2D(int color, int w, int h) {

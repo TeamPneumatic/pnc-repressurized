@@ -30,6 +30,8 @@ import me.desht.pneumaticcraft.client.util.ProgWidgetRenderer;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo;
 import me.desht.pneumaticcraft.common.core.*;
 import me.desht.pneumaticcraft.common.event.HackTickHandler;
+import me.desht.pneumaticcraft.common.item.ItemDrillBit;
+import me.desht.pneumaticcraft.common.item.ItemJackHammer;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.progwidgets.*;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
@@ -42,6 +44,7 @@ import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.util.InputMappings;
+import net.minecraft.item.ItemModelsProperties;
 import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.client.settings.KeyModifier;
@@ -95,6 +98,7 @@ public class ClientSetup {
 
         setBlockRenderLayers();
 
+        registerItemModelProperties();
         registerArmorClientUpgradeHandlers();
         registerEntityRenderers();
         registerTESRs();
@@ -107,6 +111,13 @@ public class ClientSetup {
         EntityTrackHandler.init();
         GuiArmorMainScreen.initHelmetCoreComponents();
         DramaSplash.getInstance();
+    }
+
+    private static void registerItemModelProperties() {
+        ItemModelsProperties.func_239418_a_(ModItems.JACKHAMMER.get(), RL("drill_bit"), (stack, world, entity) -> {
+            ItemDrillBit.DrillBitType type = ((ItemJackHammer) stack.getItem()).getDrillBit(stack);
+            return type == ItemDrillBit.DrillBitType.NONE ? 0f : 0.5f;
+        });
     }
 
     private static void registerProgWidgetExtraRenderers() {
@@ -223,6 +234,7 @@ public class ClientSetup {
         ScreenManager.registerFactory(ModContainers.CHARGING_ARMOR.get(), GuiPneumaticArmor::new);
         ScreenManager.registerFactory(ModContainers.CHARGING_DRONE.get(), GuiDrone::new);
         ScreenManager.registerFactory(ModContainers.CHARGING_MINIGUN.get(), GuiMinigun::new);
+        ScreenManager.registerFactory(ModContainers.CHARGING_JACKHAMMER.get(), GuiJackhammer::new);
         ScreenManager.registerFactory(ModContainers.CREATIVE_COMPRESSOR.get(), GuiCreativeCompressor::new);
         ScreenManager.registerFactory(ModContainers.ELECTROSTATIC_COMPRESSOR.get(), GuiElectrostaticCompressor::new);
         ScreenManager.registerFactory(ModContainers.ELEVATOR.get(), GuiElevator::new);
@@ -232,6 +244,7 @@ public class ClientSetup {
         ScreenManager.registerFactory(ModContainers.FLUX_COMPRESSOR.get(), GuiFluxCompressor::new);
         ScreenManager.registerFactory(ModContainers.GAS_LIFT.get(), GuiGasLift::new);
         ScreenManager.registerFactory(ModContainers.INVENTORY_SEARCHER.get(), GuiInventorySearcher::new);
+        ScreenManager.registerFactory(ModContainers.JACKHAMMER_SETUP.get(), GuiJackHammerSetup::new);
         ScreenManager.registerFactory(ModContainers.KEROSENE_LAMP.get(), GuiKeroseneLamp::new);
         ScreenManager.registerFactory(ModContainers.LIQUID_COMPRESSOR.get(), GuiLiquidCompressor::new);
         ScreenManager.registerFactory(ModContainers.LIQUID_HOPPER.get(), GuiLiquidHopper::new);

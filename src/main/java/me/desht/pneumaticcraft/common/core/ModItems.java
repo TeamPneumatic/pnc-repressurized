@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.block.tubes.*;
 import me.desht.pneumaticcraft.common.entity.living.*;
 import me.desht.pneumaticcraft.common.item.*;
+import me.desht.pneumaticcraft.common.item.ItemDrillBit.DrillBitType;
 import me.desht.pneumaticcraft.common.item.ItemNetworkComponent.NetworkComponentType;
 import me.desht.pneumaticcraft.common.semiblock.ItemSemiBlock;
 import me.desht.pneumaticcraft.lib.Names;
@@ -59,6 +60,7 @@ public class ModItems {
     public static final RegistryObject<ItemTagFilter> TAG_FILTER = register("tag_filter", ItemTagFilter::new);
     public static final RegistryObject<ItemGlycerol> GLYCEROL = register("glycerol", ItemGlycerol::new);
     public static final RegistryObject<ItemBandage> BANDAGE = register("bandage", ItemBandage::new);
+    public static final RegistryObject<ItemJackHammer> JACKHAMMER = register("jackhammer", ItemJackHammer::new);
 
     public static final RegistryObject<ItemPressurizable> AIR_CANISTER = register("air_canister",
             () -> new ItemPressurizable(PneumaticValues.AIR_CANISTER_MAX_AIR, PneumaticValues.AIR_CANISTER_VOLUME));
@@ -105,6 +107,11 @@ public class ModItems {
     public static final RegistryObject<ItemNetworkComponent> NETWORK_IO_PORT = register(NetworkComponentType.NETWORK_IO_PORT);
     public static final RegistryObject<ItemNetworkComponent> NETWORK_REGISTRY = register(NetworkComponentType.NETWORK_REGISTRY);
     public static final RegistryObject<ItemNetworkComponent> NETWORK_NODE = register(NetworkComponentType.NETWORK_NODE);
+
+    public static final RegistryObject<ItemDrillBit> IRON_DRILL_BIT = register(DrillBitType.IRON);
+    public static final RegistryObject<ItemDrillBit> COMPRESSED_IRON_DRILL_BIT = register(DrillBitType.COMPRESSED_IRON);
+    public static final RegistryObject<ItemDrillBit> DIAMOND_DRILL_BIT = register(DrillBitType.DIAMOND);
+    public static final RegistryObject<ItemDrillBit> NETHERITE_DRILL_BIT = register(DrillBitType.NETHERITE);
 
     public static final RegistryObject<ItemDrone> DRONE = register("drone",
             () -> new ItemDrone(EntityDrone::new, true));
@@ -220,6 +227,10 @@ public class ModItems {
 
     private static RegistryObject<ItemAssemblyProgram> register(final AssemblyProgramType type) {
         return register(type.getRegistryName(), () -> new ItemAssemblyProgram(type));
+    }
+
+    private static RegistryObject<ItemDrillBit> register(final DrillBitType type) {
+        return register(type.getRegistryName(), () -> new ItemDrillBit(type));
     }
 
     private static RegistryObject<Item> register(final String name) {

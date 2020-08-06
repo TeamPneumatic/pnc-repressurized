@@ -153,6 +153,9 @@ public class ConfigHelper {
         PNCConfig.Common.Logistics.itemTransportCost = common.logistics.itemTransportCost.get();
         PNCConfig.Common.Logistics.fluidTransportCost = common.logistics.fluidTransportCost.get();
         PNCConfig.Common.Logistics.minPressure = common.logistics.minPressure.get();
+
+        PNCConfig.Common.Jackhammer.baseAirUsage = common.jackhammer.baseAirUsage.get();
+        PNCConfig.Common.Jackhammer.maxVeinMinerRange = common.jackhammer.maxVeinMinerRange.get();
     }
 
     private static void setValueAndSave(final net.minecraftforge.fml.config.ModConfig modConfig, final String path, final Object newValue) {

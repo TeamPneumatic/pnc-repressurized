@@ -81,6 +81,7 @@ public class PneumaticValues {
     public static final int USAGE_PROGRAMMABLE_CONTROLLER = 10;//mL per tick when not idling
     public static final int USAGE_ITEM_MINIGUN = 20;//mL per tick while firing
     public static final int USAGE_ITEM_MANOMETER = 30;//mL per usage
+    public static final int USAGE_JACKHAMMER = 50;
 
     public static final int PRODUCTION_COMPRESSOR = 10; // mL per tick
     public static final int PRODUCTION_ADVANCED_COMPRESSOR = 50; // mL per tick
@@ -112,6 +113,7 @@ public class PneumaticValues {
     public static final int VOLUME_PNEUMATIC_PUMP = 10000;
     public static final int VOLUME_THERMAL_COMPRESSOR = 5000;
     public static final int VOLUME_FLUID_MIXER = 3000;
+    public static final int VOLUME_JACKHAMMER = 12000;
 
     public static final int VOLUME_PRESSURE_CHAMBER_PER_EMPTY = 16000;
     public static final int VOLUME_VOLUME_UPGRADE = 5000;
@@ -192,4 +194,5 @@ public class PneumaticValues {
     public static final int PNEUMATIC_LAUNCHER_MAX_UPGRADES = 4;
     public static final int PNEUMATIC_NIGHT_VISION_USAGE = 1;
     public static final int PNEUMATIC_HELMET_SCUBA_MULTIPLIER = 8;
+
 }

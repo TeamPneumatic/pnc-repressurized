@@ -163,5 +163,10 @@ public class PNCConfig {
             public static double fluidTransportCost;
             public static double minPressure;
         }
+
+        public static class Jackhammer {
+            public static int maxVeinMinerRange;
+            public static int baseAirUsage;
+        }
     }
 }

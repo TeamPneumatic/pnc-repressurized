@@ -390,6 +390,16 @@ public class ModRecipeProvider extends RecipeProvider {
                 ModBlocks.COMPRESSED_IRON_BLOCK.get()
         ).build(consumer, RL("compressed_iron_ingot_from_block"));
 
+        shaped(ModItems.JACKHAMMER.get(), ModItems.PLASTIC.get(),
+                "PBP/ITI/DCD",
+                'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
+                'B', PneumaticCraftTags.Blocks.STORAGE_BLOCKS_COMPRESSED_IRON,
+                'T', ModBlocks.PRESSURE_TUBE.get(),
+                'C', ModItems.PNEUMATIC_CYLINDER.get(),
+                'P', ModItems.PLASTIC.get(),
+                'D', Tags.Items.GEMS_DIAMOND
+        ).build(consumer);
+
         shaped(ModBlocks.KEROSENE_LAMP.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
                 " I /G G/IBI",
                 'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
@@ -1173,6 +1183,18 @@ public class ModRecipeProvider extends RecipeProvider {
                 new FluidStack(ModFluids.VEGETABLE_OIL.get(), 20), ItemStack.EMPTY,
                 TemperatureRange.any(), 2f, 0.5f, false
         ).build(consumer, RL("thermo_plant/vegetable_oil_from_crops"));
+        thermoPlant(FluidIngredient.of(2000, PneumaticCraftTags.Fluids.LUBRICANT), Ingredient.fromTag(Tags.Items.INGOTS_IRON),
+                FluidStack.EMPTY, new ItemStack(ModItems.IRON_DRILL_BIT.get()),
+                TemperatureRange.any(), 3f, 0.5f, false
+        ).build(consumer, RL("thermo_plant/iron_drill_bit"));
+        thermoPlant(FluidIngredient.of(4000, PneumaticCraftTags.Fluids.LUBRICANT), Ingredient.fromTag(PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON),
+                FluidStack.EMPTY, new ItemStack(ModItems.COMPRESSED_IRON_DRILL_BIT.get()),
+                TemperatureRange.min(573), 4f, 0.25f, false
+        ).build(consumer, RL("thermo_plant/compressed_iron_drill_bit"));
+        thermoPlant(FluidIngredient.of(8000, PneumaticCraftTags.Fluids.LUBRICANT), Ingredient.fromTag(Tags.Items.STORAGE_BLOCKS_DIAMOND),
+                FluidStack.EMPTY, new ItemStack(ModItems.DIAMOND_DRILL_BIT.get()),
+                TemperatureRange.min(773), 4.5f, 0.1f, false
+        ).build(consumer, RL("thermo_plant/diamond_drill_bit"));
 
         // assembly system
         assembly(Ingredient.fromItems(ModItems.EMPTY_PCB.get()), new ItemStack(ModItems.UNASSEMBLED_PCB.get()),
@@ -1190,6 +1212,9 @@ public class ModRecipeProvider extends RecipeProvider {
         assembly(Ingredient.fromTag(Tags.Items.STORAGE_BLOCKS_QUARTZ), new ItemStack(ModBlocks.APHORISM_TILE.get(), 4),
                 AssemblyProgramType.LASER)
                 .build(consumer, RL("assembly/aphorism_tile"));
+        assembly(Ingredient.fromItems(Items.NETHERITE_INGOT), new ItemStack(ModItems.NETHERITE_DRILL_BIT.get()),
+                AssemblyProgramType.DRILL)
+                .build(consumer, RL("assembly/netherite_drill_bit"));
 
         // amadron (core static offers only)
         amadronStatic(

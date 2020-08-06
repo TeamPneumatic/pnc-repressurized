@@ -22,6 +22,12 @@ public class WidgetTooltipArea extends Widget implements ITooltipProvider {
     }
 
     @Override
+    protected boolean clicked(double mouseX, double mouseY) {
+        // not clickable: any mouse clicks should be passed through to any other widget in this positions
+        return false;
+    }
+
+    @Override
     public void addTooltip(double mouseX, double mouseY, List<ITextComponent> curTip, boolean shiftPressed) {
         Collections.addAll(curTip, tooltip);
     }

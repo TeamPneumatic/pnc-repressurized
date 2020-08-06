@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "pneumaticcraft:bandage"
+    ]
+  },
+  "criteria": {
+    "has_glycerol": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:glycerol"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "pneumaticcraft:bandage"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_glycerol",
+      "has_the_recipe"
+    ]
+  ]
+}

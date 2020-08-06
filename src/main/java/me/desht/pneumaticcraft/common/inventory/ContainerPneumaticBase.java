@@ -13,6 +13,7 @@ import net.minecraft.inventory.container.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 
 import javax.annotation.Nonnull;
@@ -48,6 +49,8 @@ public class ContainerPneumaticBase<T extends TileEntityBase> extends Container 
             te = null;
         }
     }
+
+    static Hand getHand(PacketBuffer extraData) { return extraData.readBoolean() ? Hand.MAIN_HAND : Hand.OFF_HAND; }
 
     static BlockPos getTilePos(PacketBuffer extraData) {
         return extraData.readBlockPos();

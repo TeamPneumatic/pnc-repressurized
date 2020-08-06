@@ -48,6 +48,10 @@ public class ContainerChargingStationItemInventory extends ContainerPneumaticBas
         return new ContainerChargingStationItemInventory(ModContainers.CHARGING_ARMOR.get(), windowId, inv, data);
     }
 
+    public static ContainerChargingStationItemInventory createJackhammerContainer(int windowId, PlayerInventory inv, PacketBuffer data) {
+        return new ContainerChargingStationItemInventory(ModContainers.CHARGING_JACKHAMMER.get(), windowId, inv, data);
+    }
+
     private class UpgradeSlot extends SlotItemHandler {
         UpgradeSlot(TileEntityChargingStation te, int slotIndex, int posX, int posY) {
             super(te.getChargeableInventory(), slotIndex, posX, posY);
@@ -63,6 +67,5 @@ public class ContainerChargingStationItemInventory extends ContainerPneumaticBas
             super.onSlotChanged();
             ((ChargeableItemHandler) getItemHandler()).writeToNBT();
         }
-
     }
 }

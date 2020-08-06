@@ -33,6 +33,8 @@ public class ModContainers {
             = register("charging_drone", ContainerChargingStationItemInventory::createDroneContainer);
     public static final RegistryObject<ContainerType<ContainerChargingStationItemInventory>> CHARGING_ARMOR
             = register("charging_armor", ContainerChargingStationItemInventory::createArmorContainer);
+    public static final RegistryObject<ContainerType<ContainerChargingStationItemInventory>> CHARGING_JACKHAMMER =
+            register("charging_jackhammer", ContainerChargingStationItemInventory::createJackhammerContainer);
     public static final RegistryObject<ContainerType<ContainerCreativeCompressor>> CREATIVE_COMPRESSOR
             = register("creative_compressor", ContainerCreativeCompressor::new);
     public static final RegistryObject<ContainerType<ContainerElectrostaticCompressor>> ELECTROSTATIC_COMPRESSOR
@@ -113,6 +115,8 @@ public class ModContainers {
             = register("tag_workbench", ContainerTagWorkbench::new);
     public static final RegistryObject<ContainerType<ContainerFluidMixer>> FLUID_MIXER
             = register("fluid_mixer", ContainerFluidMixer::new);
+    public static final RegistryObject<ContainerType<ContainerJackhammerSetup>> JACKHAMMER_SETUP
+            = register("jackhammer_setup", ContainerJackhammerSetup::new);
 
     private static <C extends Container, T extends ContainerType<C>> RegistryObject<T> register(String name, IContainerFactory<? extends C> f) {
         //noinspection unchecked

@@ -24,6 +24,8 @@ public class PneumaticCraftTags {
 
         public static final ITag.INamedTag<Block> STORAGE_BLOCKS_COMPRESSED_IRON = forgeTag("storage_blocks/compressed_iron");
 
+        public static final ITag.INamedTag<Block> JACKHAMMER_ORES = modTag("jackhammer_ores");
+
         static ITag.INamedTag<Block> tag(String modid, String name) {
             return BlockTags.makeWrapperTag(new ResourceLocation(modid, name).toString());
         }

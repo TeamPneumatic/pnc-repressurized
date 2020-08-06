@@ -1,0 +1,20 @@
+{
+  "type": "pneumaticcraft:thermo_plant",
+  "item_input": {
+    "tag": "forge:storage_blocks/diamond"
+  },
+  "fluid_input": {
+    "type": "pneumaticcraft:fluid",
+    "tag": "forge:lubricant",
+    "amount": 8000
+  },
+  "item_output": {
+    "item": "pneumaticcraft:drill_bit_diamond"
+  },
+  "temperature": {
+    "min_temp": 773
+  },
+  "pressure": 4.5,
+  "speed": 0.1,
+  "exothermic": false
+}

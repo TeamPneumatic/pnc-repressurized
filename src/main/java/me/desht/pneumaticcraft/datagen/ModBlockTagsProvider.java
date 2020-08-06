@@ -19,7 +19,8 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
     }
 
     @Override
-    protected void registerTags() {
+    public void registerTags() {
+
         createAndAppend(PneumaticCraftTags.Blocks.REINFORCED_STONE, Tags.Blocks.STONE,
                 ModBlocks.REINFORCED_STONE);
         createAndAppend(PneumaticCraftTags.Blocks.REINFORCED_STONE_BRICKS, BlockTags.STONE_BRICKS,
@@ -39,9 +40,13 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
 
         createTag(PneumaticCraftTags.Blocks.PLASTIC_BRICKS, ModBlocks.PLASTIC_BRICKS.toArray(new Supplier[0]));
         createTag(PneumaticCraftTags.Blocks.FLUID_TANKS, ModBlocks.TANK_SMALL, ModBlocks.TANK_MEDIUM, ModBlocks.TANK_LARGE);
+
+        getOrCreateBuilder(Tags.Blocks.ORES);
+        getOrCreateBuilder(BlockTags.LOGS);
+        getOrCreateBuilder(PneumaticCraftTags.Blocks.JACKHAMMER_ORES).addTag(Tags.Blocks.ORES).addTag(BlockTags.LOGS);
     }
 
-    // with thanks to Tropicraft for these helper methods
+// with thanks to Tropicraft for these helper methods
 
     @SafeVarargs
     private final <T> T[] resolveAll(IntFunction<T[]> creator, Supplier<? extends T>... suppliers) {

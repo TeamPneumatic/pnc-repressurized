@@ -3,10 +3,10 @@ package me.desht.pneumaticcraft.common.capabilities;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerItem;
+import me.desht.pneumaticcraft.common.item.ItemPressurizable;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
@@ -16,7 +16,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class AirHandlerItemStack implements IAirHandlerItem, ICapabilityProvider {
-    private static final String AIR_NBT_KEY = "pneumaticcraft:air";
+    public static final String AIR_NBT_KEY = "pneumaticcraft:air";
 
     private final LazyOptional<IAirHandlerItem> holder = LazyOptional.of(() -> this);
 
@@ -43,11 +43,7 @@ public class AirHandlerItemStack implements IAirHandlerItem, ICapabilityProvider
 
     @Override
     public int getAir() {
-        CompoundNBT tagCompound = container.getTag();
-        if (tagCompound == null || !tagCompound.contains(AIR_NBT_KEY)) {
-            return 0;
-        }
-        return tagCompound.getInt(AIR_NBT_KEY);
+        return ItemPressurizable.getAir(container);
     }
 
     @Override

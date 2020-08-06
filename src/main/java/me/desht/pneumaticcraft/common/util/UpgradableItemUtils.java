@@ -15,6 +15,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.items.ItemStackHandler;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -111,6 +112,26 @@ public class UpgradableItemUtils {
             return upgrades[upgrade.ordinal()];
         }
         return 0;
+    }
+
+    public static List<Integer> getUpgradeList(ItemStack stack, EnumUpgrade... upgradeList) {
+        CompoundNBT tag = getSerializedUpgrades(stack);
+        List<Integer> res = new ArrayList<>();
+        if (!tag.isEmpty()) {
+            int[] upgrades = stack.getTag().getIntArray(NBT_UPGRADE_CACHE_TAG);
+            if (upgrades.length != EnumUpgrade.values().length) {
+                fixUpgradeCache(stack, tag);
+                upgrades = stack.getTag().getIntArray(NBT_UPGRADE_CACHE_TAG);
+            }
+            for (EnumUpgrade upgrade : upgradeList) {
+                res.add(upgrades[upgrade.ordinal()]);
+            }
+        } else {
+            for (int i = 0; i < upgradeList.length; i++) {
+                res.add(0);
+            }
+        }
+        return res;
     }
 
     public static boolean hasCreativeUpgrade(ItemStack stack) {

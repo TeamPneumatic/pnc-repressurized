@@ -122,6 +122,10 @@ public class CommonConfig {
         ForgeConfigSpec.DoubleValue minPressure;
     }
 
+    public static class Jackhammer {
+        ForgeConfigSpec.IntValue baseAirUsage;
+        ForgeConfigSpec.IntValue maxVeinMinerRange;
+    }
 
     public final General general = new General();
     public final Machines machines = new Machines();
@@ -134,6 +138,7 @@ public class CommonConfig {
     public final Amadron amadron = new Amadron();
     public final Heat heat = new Heat();
     public final Logistics logistics = new Logistics();
+    public final Jackhammer jackhammer = new Jackhammer();
 
     CommonConfig(final ForgeConfigSpec.Builder builder) {
         builder.push("General");
@@ -526,6 +531,17 @@ public class CommonConfig {
                 .comment("Minimum pressure for a Logistics Module to function")
                 .translation("pneumaticcraft.config.common.logistics.minPressure")
                 .defineInRange("min_pressure", 3.0, 0.0, 20.0);
+        builder.pop();
+
+        builder.push("Jackhammer");
+        jackhammer.maxVeinMinerRange = builder
+                .comment("Max veinmining range (distance from mined block) for Vein Miner Plus mode")
+                .translation("pneumaticcraft.config.common.jackhammer.maxVeinMinerRange")
+                .defineInRange("max_vein_miner_range", 10, 1, 32);
+        jackhammer.baseAirUsage = builder
+                .comment("Base Jackhammer air usage per block broken (speed upgrades increase this)")
+                .translation("pneumaticcraft.config.common.jackhammer.baseAirUsage")
+                .defineInRange("base_air_usage", PneumaticValues.USAGE_JACKHAMMER, 0, Integer.MAX_VALUE);
         builder.pop();
     }
 }
