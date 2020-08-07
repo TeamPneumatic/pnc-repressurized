@@ -20,9 +20,13 @@
       "text": "This process is temperature-sensitive: you will need to keep the Thermopneumatic Processing Plant's temperature between 30°C and 60°C. This is very easy in warmer biomes but may take a little effort in cooler areas - one thing to note is that the ambient temperature tend to rise as you dig deeper, so temperate biomes might be suitable if do your processing at a lower Y-level."
     },
     {
+      "type": "pneumaticcraft:thermo_plant",
+      "recipe": "pneumaticcraft:thermo_plant/yeast_culture"
+    },
+    {
       "type": "text",
       "title": "Method 2",
-      "text": "$(thing)Yeast Culture/$, being a living organism, is capable of replicating itself. To do this, pour a bucket of the culture into a pool in-world, and throw some $(thing)Sugar/$ into the pool. Now, pour a bucket of $(thing)Water/$ into a block space adjacent to the culture; you will see the water be converted into more culture after a second or two."
+      "text": "$(thing)Yeast Culture/$, being a living organism, is capable of replicating itself. To do this, pour a bucket of the culture into a pool in-world, and throw some $(thing)Sugar/$ into the pool.$(p)Now, pour a bucket of $(thing)Water/$ into a block space adjacent to the culture; you will see the water be converted into more culture after a second or two."
     },
     {
       "type": "text",

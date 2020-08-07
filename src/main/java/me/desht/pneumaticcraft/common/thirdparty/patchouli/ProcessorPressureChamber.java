@@ -2,13 +2,13 @@ package me.desht.pneumaticcraft.common.thirdparty.patchouli;
 
 import me.desht.pneumaticcraft.api.crafting.recipe.PressureChamberRecipe;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import vazkii.patchouli.api.IComponentProcessor;
 import vazkii.patchouli.api.IVariable;
 import vazkii.patchouli.api.IVariableProvider;
-
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 @SuppressWarnings("unused")
 public class ProcessorPressureChamber implements IComponentProcessor {
@@ -35,7 +35,8 @@ public class ProcessorPressureChamber implements IComponentProcessor {
                 return IVariable.from(recipe.getResultsForDisplay().get(index));
             }
         } else if (s.equals("pressure")) {
-            return IVariable.wrap(xlate("pneumaticcraft.gui.tooltip.pressure", recipe.getCraftingPressure()).getString());
+            String pr = PneumaticCraftUtils.roundNumberTo(recipe.getCraftingPressure(), 1);
+            return IVariable.wrap(I18n.format("pneumaticcraft.patchouli.processor.pressureChamber.desc", pr));
         }
 
         return null;

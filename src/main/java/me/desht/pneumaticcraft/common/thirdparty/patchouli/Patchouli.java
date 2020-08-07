@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.thirdparty.patchouli;
 
+import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.thirdparty.IDocsProvider;
@@ -14,11 +15,9 @@ import net.minecraft.util.Direction;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.config.ModConfig;
-import vazkii.patchouli.api.IMultiblock;
-import vazkii.patchouli.api.IStateMatcher;
-import vazkii.patchouli.api.IVariable;
-import vazkii.patchouli.api.PatchouliAPI;
+import vazkii.patchouli.api.*;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -74,6 +73,8 @@ public class Patchouli implements IThirdParty, IDocsProvider {
                 'W', edge, 'F', glass, '0', wall, 'V', valveUp, 'I', intI, 'O', intO, 'A', papi.airMatcher()
         ).setSymmetrical(true);
         papi.registerMultiblock(RL("pressure_chamber_5"), pc5);
+
+        VariableHelper.instance().registerSerializer(new FluidStackVariableSerializer(), FluidStack.class);
     }
 
     private boolean validEdge(BlockState state) {
@@ -131,6 +132,10 @@ public class Patchouli implements IThirdParty, IDocsProvider {
     static class Util {
         static IVariable getStacks(Ingredient ingr) {
             return IVariable.wrapList(Arrays.stream(ingr.getMatchingStacks()).map(IVariable::from).collect(Collectors.toList()));
+        }
+
+        public static IVariable getFluidStacks(FluidIngredient ingr) {
+            return IVariable.wrapList(ingr.getFluidStacks().stream().map(IVariable::from).collect(Collectors.toList()));
         }
     }
 }

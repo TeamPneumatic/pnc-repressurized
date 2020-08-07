@@ -6,7 +6,15 @@
   "pages": [
     {
       "type": "text",
-      "text": "$(item)Plastic/$ is an important crafting component in $(pncr).$(p)$(item)Molten Plastic/$ is made from $(l:manufacturing/refinery)LPG/$ and $(item)Coal/$ in the $(l:manufacturing/thermopneumatic_processing_plant)Thermopneumatic Processing Plant/$."
+      "text": "$(item)Plastic/$ is an important crafting component in $(pncr).$(p)$(item)Molten Plastic/$ is made from $(l:manufacturing/refinery)LPG/$ and $(item)Coal/$, or $(l:renewables/biodiesel)Biodiesel/$ and $(item)Charcoal/$ in the $(l:manufacturing/thermopneumatic_processing_plant)Thermopneumatic Processing Plant/$."
+    },
+    {
+      "type": "pneumaticcraft:thermo_plant",
+      "recipe": "pneumaticcraft:thermo_plant/plastic_from_lpg"
+    },
+    {
+      "type": "pneumaticcraft:thermo_plant",
+      "recipe": "pneumaticcraft:thermo_plant/plastic_from_biodiesel"
     },
     {
       "type": "spotlight",

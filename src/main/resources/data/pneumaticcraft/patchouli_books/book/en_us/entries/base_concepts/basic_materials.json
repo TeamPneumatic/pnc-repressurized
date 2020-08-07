@@ -28,7 +28,7 @@
             "type": "crafting",
             "anchor": "compressed_iron_block",
             "recipe": "pneumaticcraft:compressed_iron_block_from_ingot",
-            "text": "The $(item)Block of Compressed Iron/$ is an excellent $(l:base_concepts/heat)Heat Conductor/$ and can be used to provide more faces to attach $(l:machines/heat_sink)Heat Sinks/$ to heat-producing machines."
+            "text": "The $(item)Block of Compressed Iron/$ is an excellent $(l:base_concepts/heat)Heat Conductor/$ and can be used to provide more faces to attach $(l:machines/heat_sink)Heat Sinks/$ to heat-producing machines. However, see also $(l:machines/heat_pipe)Heat Pipes/$."
         },
         {
             "type": "pneumaticcraft:pressure_chamber",
