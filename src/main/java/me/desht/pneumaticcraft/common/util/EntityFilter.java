@@ -231,7 +231,7 @@ public class EntityFilter implements Predicate<Entity>, com.google.common.base.P
             if (typeClass != null) {
                 ok = typeClass.isAssignableFrom(entity.getClass());
             } else if (regex != null) {
-                Matcher m = regex.matcher(entity.getName().getUnformattedComponentText());
+                Matcher m = regex.matcher(entity.getName().getString());
                 ok = m.matches();
             }
             return ok && matchModifiers(entity);
