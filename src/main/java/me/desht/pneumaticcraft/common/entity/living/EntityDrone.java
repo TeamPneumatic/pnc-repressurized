@@ -259,6 +259,7 @@ public class EntityDrone extends EntityDroneBase implements
             }
             setDroneColor(stackTag.getInt(NBT_DRONE_COLOR));
             fluidTank.setCapacity(PneumaticValues.DRONE_TANK_SIZE * (1 + getUpgrades(EnumUpgrade.INVENTORY)));
+            droneItemHandler.setUseableSlots(1 + getUpgrades(EnumUpgrade.INVENTORY));
             if (stackTag.contains("Tank")) {
                 fluidTank.readFromNBT(stackTag.getCompound("Tank"));
             }
