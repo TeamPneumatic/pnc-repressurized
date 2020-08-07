@@ -20,6 +20,7 @@ import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
@@ -94,12 +95,25 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
         }
         
         pathfindingEntity.setStandby(false);
-        Path path = super.getPathToPos(pos, 0);
-        
-        // Only paths that actually end up where we want to are valid, not just halfway.
-        if(path != null){
+
+        Path path;
+        boolean tallBlockKludge = false;
+        BlockPos below = pos.down();
+        VoxelShape shape = world.getBlockState(below).getCollisionShape(world, below);
+        if (!shape.isEmpty() && shape.getBoundingBox().maxY > 1) {
+            // pathfinding to the space above a "tall" block and using distance == 0 doesn't work
+            // walls and fences are the main culprit here (any others?)
+            path = super.getPathToPos(pos, 1);
+            tallBlockKludge = true;
+        } else {
+            path = super.getPathToPos(pos, 0);
+        }
+
+        // Only paths that actually end up where we want to are valid, not just partway
+        // (but if we had to stop short due to a "tall" block, account for that)
+        if (path != null) {
             PathPoint lastPoint = path.getFinalPathPoint();
-            if(lastPoint != null && (lastPoint.x != pos.getX() || lastPoint.y != pos.getY() || lastPoint.z != pos.getZ())){
+            if (lastPoint != null && pos.manhattanDistance(lastPoint.func_224759_a()) > (tallBlockKludge ? 1 : 0)) {
                 path = null;
             }
         }
@@ -240,7 +254,7 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
     protected PathFinder getPathFinder(int r) {
         this.nodeProcessor = new NodeProcessorDrone();
         // no longer a need for PathFinderDrone subclass, since vanilla PathFinder takes a max distance param.
-        return new PathFinder(this.nodeProcessor, Integer.MAX_VALUE);
+        return new PathFinder(this.nodeProcessor, 1000);
     }
 
     @Override
