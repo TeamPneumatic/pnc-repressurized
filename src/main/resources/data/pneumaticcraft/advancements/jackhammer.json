@@ -1,0 +1,30 @@
+{
+  "display": {
+    "icon": {
+      "item": "pneumaticcraft:jackhammer"
+    },
+    "title": {
+      "translate": "pneumaticcraft.achievement.jackhammer"
+    },
+    "description": {
+      "translate": "pneumaticcraft.achievement.jackhammer.desc"
+    },
+    "frame": "goal"
+  },
+  "parent": "pneumaticcraft:plastic",
+  "criteria": {
+    "plastic": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:jackhammer"
+          }
+        ]
+      }
+    }
+  },
+  "rewards": {
+    "experience": 20
+  }
+}
