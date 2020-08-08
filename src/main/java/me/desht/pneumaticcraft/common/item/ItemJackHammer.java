@@ -142,12 +142,18 @@ public class ItemJackHammer extends ItemPressurizable implements IChargeableCont
         if (!player.getEntityWorld().isRemote && !player.isCrouching()) {
             ServerPlayerEntity serverPlayer = (ServerPlayerEntity) player;
             World world = serverPlayer.getEntityWorld();
-            List<Integer> upgrades = UpgradableItemUtils.getUpgradeList(itemstack, EnumUpgrade.SPEED, EnumUpgrade.RANGE, EnumUpgrade.MAGNET);
-            int speed = upgrades.get(0);
-            DigMode digMode = ItemJackHammer.getDigMode(itemstack);
+
             RayTraceResult brtr = PneumaticCraftUtils.getEntityLookedObject(player);
             if (brtr instanceof BlockRayTraceResult) {
                 itemstack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(airHandler -> {
+                    List<Integer> upgrades = UpgradableItemUtils.getUpgradeList(itemstack, EnumUpgrade.SPEED, EnumUpgrade.RANGE, EnumUpgrade.MAGNET);
+                    int speed = upgrades.get(0);
+                    DigMode digMode = ItemJackHammer.getDigMode(itemstack);
+                    DrillBitType bitType = getDrillBit(itemstack);
+                    if (digMode.getBitType().getTier() > bitType.getTier()) {
+                        // sanity check
+                        digMode = DigMode.MODE_1X1;
+                    }
                     Set<BlockPos> brokenPos = getBreakPositions(world, pos, ((BlockRayTraceResult) brtr).getFace(), player.getHorizontalFacing(), digMode);
                     brokenPos.remove(pos); // start pos already broken
 
@@ -315,7 +321,7 @@ public class ItemJackHammer extends ItemPressurizable implements IChargeableCont
             } catch (IllegalArgumentException ignored) {
             }
         }
-        return null;
+        return DigMode.MODE_1X1;
     }
 
     public static void setDigMode(ItemStack stack, DigMode mode) {

@@ -100,7 +100,7 @@ public class GuiJackHammerSetup extends GuiPneumaticContainerBase<ContainerJackh
         if (digMode.getBitType().getTier() > bitType.getTier() && digMode != DigMode.MODE_1X1) {
             // jackhammer currently has a selected dig type of a tier too high for the installed drill bit
             digMode = DigMode.MODE_1X1;
-            NetworkHandler.sendToServer(new PacketGuiButton("type:" + digMode.toString()));
+            NetworkHandler.sendToServer(new PacketGuiButton("digmode:" + digMode.toString()));
         }
 
         selectorButton.setRenderedIcon(digMode.getGuiIcon());
