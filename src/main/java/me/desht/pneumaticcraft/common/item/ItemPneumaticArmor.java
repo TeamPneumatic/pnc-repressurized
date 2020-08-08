@@ -198,6 +198,20 @@ public class ItemPneumaticArmor extends ArmorItem
         return multimap;
     }
 
+    @Nullable
+    @Override
+    public CompoundNBT getShareTag(ItemStack stack) {
+        CompoundNBT tag = super.getShareTag(stack);
+
+        // don't send air levels to the client because they can change every tick, meaning a lot of server->client chatter
+        // instead let the CommonArmorHandler sync air levels to client in a more efficient way
+        if (tag != null) {
+            tag = tag.copy();
+            tag.remove(AirHandlerItemStack.AIR_NBT_KEY);
+        }
+        return tag;
+    }
+
     /* ----------- Pneumatic Helmet helpers ---------- */
 
     public static int getIntData(ItemStack stack, String key, int def) {
