@@ -10,10 +10,38 @@ The initial 1.16.1 release is largely equivalent in functionality to the 1.4.2 r
 
 ## 2.0.1-?? (unreleased)
 
+### New
+* Added a Pneumatic Jackhammer!
+  * Powerful and customisable multi-tool which can efficiently break any block
+  * Multiple digging modes, selectable via GUI; better modes require better a Drill Bit to be attached
+  * Includes two vein miner modes: ores & logs only, and all blocks (requires the top-end Netherite Drill Bit)
+  * Upgradable with Speed Upgrades and Volume Upgrades: top speed is extremely fast, but extremely pressure-hungry
+  * Can also take a Fortune or Silk Touch enchanted book (swappable on the fly; no enchanting table needed)
+  * Documented more in the Patchouli manual (in the "Tools" section)
+* Added a Renewables system!
+  * Make Biodiesel via a multi-step process requiring the production of Yeast Solution, Ethanol and Vegetable Oil
+  * Biodiesel is equivalent to Diesel in fuel quality, and can also be used to make Lubricant and Plastic
+  * Some useful by-products & foods are also added:
+    * Bandages
+    * A way to get double the Speed Upgrades per bucket of Lubricant
+    * Sourdough Bread, Chips, Cod & Chips - all good-quality foods
+  * All documented in the Patchouli manual in a new "Renewables" section
+* Added a new Fluid Mixer machine which can mix two fluids into a new fluid and/or item
+  * Used by default for making Biodiesel
+  * Can also mix Water & Lava to make Obsidian
+  * More recipes can be added via datapacks
+
+### Updates
+* Kerosene is now much more efficient in the Kerosene Lamp than other fuels
+
 ### Fixes
-* Fixed buggy drone right-click behaviour
+* Fixed buggy drone right-click behaviour (ported forward from 1.5.2 version)
 * Progwidget Item Filter GUI: don't gray out the "Match NBT" checkbox when the filter item has no NBT data
   * Just because it has no NBT data doesn't mean actual instances of the item can't...
+* Fixed (worked around) a problem where drones would refuse to pathfind to the space above "tall" blocks
+  * "Tall" blocks being fences, walls, gates...
+* Fixed drones ignoring installed Inventory Upgrades
+* Fixed buggy Heat Frame cooling behaviour (would void some fluid containers such as Mekanism tanks)
 
 ## 2.0.0-4 (30 Jul 2020)
 
