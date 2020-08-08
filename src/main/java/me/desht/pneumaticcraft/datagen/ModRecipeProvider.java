@@ -303,6 +303,10 @@ public class ModRecipeProvider extends RecipeProvider {
                 'G', Tags.Items.GLASS_PANES
         ).build(consumer);
 
+        shapeless(ModItems.COD_N_CHIPS.get(), ModItems.CHIPS.get(),
+                ModItems.CHIPS.get(), Items.COOKED_COD, Items.PAPER
+        ).build(consumer);
+
         shaped(ModItems.FLOW_DETECTOR_MODULE.get(), ModItems.TURBINE_BLADE.get(),
                 "B B/ T /B B",
                 'B', ModItems.TURBINE_BLADE.get(),
@@ -1195,6 +1199,10 @@ public class ModRecipeProvider extends RecipeProvider {
                 FluidStack.EMPTY, new ItemStack(ModItems.DIAMOND_DRILL_BIT.get()),
                 TemperatureRange.min(773), 4.5f, 0.1f, false
         ).build(consumer, RL("thermo_plant/diamond_drill_bit"));
+        thermoPlant(FluidIngredient.of(100, PneumaticCraftTags.Fluids.VEGETABLE_OIL), Ingredient.fromTag(Tags.Items.CROPS_POTATO),
+                FluidStack.EMPTY, new ItemStack(ModItems.CHIPS.get(), 4),
+                TemperatureRange.min(423), 0f, 1.0f, false
+        ).build(consumer, RL("thermo_plant/chips"));
 
         // assembly system
         assembly(Ingredient.fromItems(ModItems.EMPTY_PCB.get()), new ItemStack(ModItems.UNASSEMBLED_PCB.get()),

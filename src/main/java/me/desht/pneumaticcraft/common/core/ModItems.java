@@ -13,10 +13,7 @@ import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.item.*;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -48,8 +45,10 @@ public class ModItems {
     public static final RegistryObject<Item> UPGRADE_MATRIX = register("upgrade_matrix");
     public static final RegistryObject<Item> WHEAT_FLOUR = register("wheat_flour");
     public static final RegistryObject<Item> SOURDOUGH = register("sourdough");
-    public static final RegistryObject<Item> SOURDOUGH_BREAD = register("sourdough_bread",
-            () -> new Item(defaultProps().food(ModFoods.SOURDOUGH)));
+
+    public static final RegistryObject<Item> SOURDOUGH_BREAD = registerFood("sourdough_bread", ModFoods.SOURDOUGH);
+    public static final RegistryObject<Item> CHIPS = registerFood("chips", ModFoods.CHIPS);
+    public static final RegistryObject<Item> COD_N_CHIPS = registerFood("cod_n_chips", ModFoods.COD_N_CHIPS);
 
     public static final RegistryObject<ItemGPSTool> GPS_TOOL = register("gps_tool", ItemGPSTool::new);
     public static final RegistryObject<ItemGPSAreaTool> GPS_AREA_TOOL = register("gps_area_tool", ItemGPSAreaTool::new);
@@ -239,6 +238,10 @@ public class ModItems {
 
     private static RegistryObject<ItemBucketPneumaticCraft> registerBucket(String name, Supplier<? extends Fluid> sup) {
         return register(name, () -> new ItemBucketPneumaticCraft(sup));
+    }
+
+    private static RegistryObject<Item> registerFood(final String name, Food food) {
+        return register(name, () -> new Item(defaultProps().food(food)));
     }
 
     private static void register(EnumUpgrade upgrade) {
