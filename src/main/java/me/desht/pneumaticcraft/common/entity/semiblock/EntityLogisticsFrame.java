@@ -114,8 +114,13 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase {
     public boolean canPlace(Direction facing) {
         TileEntity te = getCachedTileEntity();
         return te != null &&
-                (te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent()
-                        || te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).isPresent());
+                (te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing).isPresent()
+                        || te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing).isPresent());
+    }
+
+    @Override
+    public boolean canStay() {
+        return canPlace(getFacing());
     }
 
     public abstract int getColor();
