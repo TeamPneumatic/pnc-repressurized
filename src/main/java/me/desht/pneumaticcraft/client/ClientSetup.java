@@ -11,10 +11,6 @@ import me.desht.pneumaticcraft.client.gui.tubemodule.GuiAirGrateModule;
 import me.desht.pneumaticcraft.client.gui.tubemodule.GuiLogisticsModule;
 import me.desht.pneumaticcraft.client.gui.tubemodule.GuiPressureModule;
 import me.desht.pneumaticcraft.client.gui.tubemodule.GuiRedstoneModule;
-import me.desht.pneumaticcraft.client.model.custom.CamouflageModel;
-import me.desht.pneumaticcraft.client.model.custom.FluidItemModel;
-import me.desht.pneumaticcraft.client.model.custom.PressureGlassModel;
-import me.desht.pneumaticcraft.client.model.custom.RenderedItemModel;
 import me.desht.pneumaticcraft.client.particle.AirParticle;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
 import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
@@ -49,7 +45,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemModelsProperties;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
-import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.DeferredWorkQueue;
@@ -68,7 +63,6 @@ import java.util.Map;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
-//@Mod.EventBusSubscriber(modid = Names.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ClientSetup {
     public static final Map<String, Pair<Integer,KeyModifier>> keybindToKeyCodes = new HashMap<>();
 
@@ -97,14 +91,12 @@ public class ClientSetup {
     }
 
     public static void initLate() {
-        modelInit();
-
+        // stuff to do on the main thread
         setBlockRenderLayers();
-
         registerItemModelProperties();
         registerArmorClientUpgradeHandlers();
         registerEntityRenderers();
-        registerTESRs();
+        registerTileEntityRenderers();
         registerScreenFactories();
         registerProgWidgetScreenFactories();
         registerProgWidgetExtraRenderers();
@@ -159,13 +151,6 @@ public class ClientSetup {
         }
     }
 
-    private static void modelInit() {
-        ModelLoaderRegistry.registerLoader(RL("camouflaged"), CamouflageModel.Loader.INSTANCE);
-        ModelLoaderRegistry.registerLoader(RL("pressure_glass"), PressureGlassModel.Loader.INSTANCE);
-        ModelLoaderRegistry.registerLoader(RL("fluid_container_item"), FluidItemModel.Loader.INSTANCE);
-        ModelLoaderRegistry.registerLoader(RL("rendered_item"), RenderedItemModel.Loader.INSTANCE);
-    }
-
     private static void registerEntityRenderers() {
         // drones
         RenderingRegistry.registerEntityRenderingHandler(ModEntities.DRONE.get(), RenderDrone.REGULAR_FACTORY);
@@ -194,7 +179,7 @@ public class ClientSetup {
         RenderingRegistry.registerEntityRenderingHandler(ModEntities.TUMBLING_BLOCK.get(), RenderTumblingBlock.FACTORY);
     }
 
-    private static void registerTESRs() {
+    private static void registerTileEntityRenderers() {
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.ADVANCED_PRESSURE_TUBE.get(), RenderPressureTubeModule::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.APHORISM_TILE.get(), RenderAphorismTile::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.AIR_CANNON.get(), RenderAirCannon::new);
