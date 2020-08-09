@@ -53,7 +53,7 @@ public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.Abst
         } else {
             colour = TextFormatting.GREEN;
         }
-        return colour.toString() + String.format("%5.2f", pressure);
+        return colour.toString() + String.format("%4.1f", pressure);
     }
 
     @Override

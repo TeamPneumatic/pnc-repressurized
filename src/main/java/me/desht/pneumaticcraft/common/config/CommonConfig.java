@@ -57,6 +57,7 @@ public class CommonConfig {
     public static class Advanced {
         ForgeConfigSpec.BooleanValue disableKeroseneLampFakeAirBlock;
         ForgeConfigSpec.IntValue fluidTankUpdateRate;
+        ForgeConfigSpec.IntValue pressureSyncPrecision;
         ForgeConfigSpec.BooleanValue stopDroneAI;
     }
     public static class Micromissiles {
@@ -302,6 +303,10 @@ public class CommonConfig {
                 .comment("The minimum interval in ticks between which fluid tank contents should be synced to clients. Smaller values mean smoother visual tank updates, but more of a performance cost in terms of network syncing. Note that fluid tank sync packets are also only sent when a fluid tank changes by more than 1% of its capacity, or 1000mB, whichever is smaller.")
                 .translation("pneumaticcraft.config.common.advanced.fluid_tank_update_rate")
                 .defineInRange("fluid_tank_update_rate", 10, 1, 100);
+        advanced.pressureSyncPrecision = builder
+                .comment("Precision to which pressurizable item air levels are synced to client. Default of 10 is precise enough to show pressure to 1 decimal place, which is what is display in client tooltips & pneumatic armor HUD. Lower values will sync less precisely, reducing server->client network traffic. Values higher than 10 are not recommended (will cause extra network traffic for no benefit).")
+                .translation("pneumaticcraft.config.common.advanced.pressurizable_sync_precision")
+                .defineInRange("pressurizable_sync_precision", 10, 1, 100);
         advanced.stopDroneAI = builder
                 .comment("When set to true, Drones will not execute any program. This is useful to set to true when due to a bug Drones are lagging your server or crashing it. Please report the bug if you encounter it.")
                 .translation("pneumaticcraft.config.common.advanced.stop_drone_ai")

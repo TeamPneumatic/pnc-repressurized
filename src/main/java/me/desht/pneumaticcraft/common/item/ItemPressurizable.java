@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.common.capabilities.AirHandlerItemStack;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -90,10 +91,11 @@ public class ItemPressurizable extends Item {
         return stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).orElseThrow(RuntimeException::new).getPressure();
     }
 
-//    protected void addAir(ItemStack stack, int amount) {
-//        int currentAir = getAir(stack);
-//        stack.getOrCreateTag().putInt(AirHandlerItemStack.AIR_NBT_KEY, MathHelper.clamp(currentAir + amount, 0, (int)maxPressure * volume));
-//    }
+    @Nullable
+    @Override
+    public CompoundNBT getShareTag(ItemStack stack) {
+        return roundedPressure(stack);
+    }
 
     public static int getAir(ItemStack stack) {
         CompoundNBT tag = stack.getTag();
@@ -101,5 +103,27 @@ public class ItemPressurizable extends Item {
             return tag.getInt(AirHandlerItemStack.AIR_NBT_KEY);
         }
         return 0;
+    }
+
+    /**
+     * Get an ItemStack's NBT, rounding its air level for sync to client.
+     * Default precision of volume/10 is enough precision to display 1 decimal place of pressure,
+     * and will greatly reduce server->client chatter
+     * @param stack the itemstack being sync'd
+     * @return the item's NBT, but with the air level rounded
+     */
+    public static CompoundNBT roundedPressure(ItemStack stack) {
+        CompoundNBT tag = stack.getTag();
+
+        if (tag != null && tag.contains(AirHandlerItemStack.AIR_NBT_KEY)) {
+            return stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).map(h -> {
+                CompoundNBT tag2 = tag.copy();
+                int air = tag2.getInt(AirHandlerItemStack.AIR_NBT_KEY);
+                tag2.putInt(AirHandlerItemStack.AIR_NBT_KEY, air - air % (h.getVolume() / PNCConfig.Common.Advanced.pressureSyncPrecision));
+                return tag2;
+            }).orElseThrow(RuntimeException::new);
+        } else {
+            return tag;
+        }
     }
 }

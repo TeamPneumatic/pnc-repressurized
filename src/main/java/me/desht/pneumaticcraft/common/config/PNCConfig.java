@@ -97,6 +97,7 @@ public class PNCConfig {
             public static boolean disableKeroseneLampFakeAirBlock;
             public static int fluidTankUpdateRate;
             public static boolean stopDroneAI;
+            public static int pressureSyncPrecision;
         }
 
         public static class Micromissiles {

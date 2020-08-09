@@ -5,14 +5,14 @@ import me.desht.pneumaticcraft.common.item.ItemMachineUpgrade;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.IntArrayNBT;
+import net.minecraft.nbt.ByteArrayNBT;
 import net.minecraft.util.Direction;
 import net.minecraftforge.items.IItemHandler;
 
 import java.util.Arrays;
 
 public class UpgradeCache {
-    private final int[] upgradeCount = new int[EnumUpgrade.values().length];
+    private final byte[] upgradeCount = new byte[EnumUpgrade.values().length];
     private final IUpgradeHolder holder;
     private boolean isValid = false;
     private Direction ejectDirection;
@@ -43,7 +43,7 @@ public class UpgradeCache {
 
         IItemHandler handler = holder.getUpgradeHandler();
 
-        Arrays.fill(upgradeCount, 0);
+        Arrays.fill(upgradeCount, (byte)0);
         ejectDirection = null;
         for (int i = 0; i < handler.getSlots(); i++) {
             ItemStack stack = handler.getStackInSlot(i);
@@ -54,7 +54,7 @@ public class UpgradeCache {
                     Log.warning("found upgrade " + type + " in multiple slots! Ignoring.");
                     continue;
                 }
-                upgradeCount[type.ordinal()] = stack.getCount() * upgrade.getTier();
+                upgradeCount[type.ordinal()] = (byte)(stack.getCount() * upgrade.getTier());
                 handleExtraData(stack, type);
             } else if (!stack.isEmpty()) {
                 throw new IllegalStateException("found non-upgrade item in an upgrade handler! " + stack);
@@ -70,8 +70,8 @@ public class UpgradeCache {
         }
     }
 
-    public IntArrayNBT toNBT() {
+    public ByteArrayNBT toNBT() {
         validate();
-        return new IntArrayNBT(upgradeCount);
+        return new ByteArrayNBT(upgradeCount);
     }
 }

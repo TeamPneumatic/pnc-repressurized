@@ -76,7 +76,6 @@ public class CommonArmorHandler implements ICommonArmorHandler {
     private final List<LazyOptional<IAirHandlerItem>> airHandlers = new ArrayList<>();
     private final int[][] upgradeMatrix = new int [4][];
     private final int[] startupTimes = new int[4];
-    private final int[] prevAir = new int[4];
 
     private boolean isValid; // true if the handler is valid; gets invalidated if player disconnects
 
@@ -115,7 +114,6 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         Arrays.fill(startupTimes, 200);
         for (int i = 0; i < 4; i++) {
             airHandlers.add(LazyOptional.empty());
-            prevAir[i] = -1;
         }
         isValid = true;
     }
@@ -130,18 +128,6 @@ public class CommonArmorHandler implements ICommonArmorHandler {
 
     public static CommonArmorHandler getHandlerForPlayer() {
         return getHandlerForPlayer(ClientUtils.getClientPlayer());
-    }
-
-    /**
-     * Client-only: called to sync air from server
-     * @param slot equipment slot
-     * @param newAir new air amount
-     */
-    public void setAir(EquipmentSlotType slot, int newAir) {
-        airHandlers.get(slot.getIndex()).ifPresent(h -> {
-            int toAdd = newAir - h.getAir();
-            h.addAir(toAdd);
-        });
     }
 
     @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
@@ -200,7 +186,6 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         boolean armorActive = false;
         if (armorStack.getItem() instanceof ItemPneumaticArmor) {
             airHandlers.set(slot.getIndex(), armorStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY));
-            maybeSyncAir(slot);
             if (ticksSinceEquip[slot.getIndex()] == 0) {
                 initArmorInventory(slot);
             }
@@ -228,16 +213,6 @@ public class CommonArmorHandler implements ICommonArmorHandler {
                 onArmorRemoved(slot);
             }
             ticksSinceEquip[slot.getIndex()] = 0;
-        }
-    }
-
-    private void maybeSyncAir(EquipmentSlotType slot) {
-        if (player instanceof ServerPlayerEntity && (ticksSinceEquip[slot.getIndex()] & 0x7) == 0) {
-            int air = airHandlers.get(slot.getIndex()).orElseThrow(RuntimeException::new).getAir();
-            if (air != prevAir[slot.getIndex()]) {
-                NetworkHandler.sendToPlayer(new PacketSyncItemAir(slot, air), (ServerPlayerEntity) player);
-                prevAir[slot.getIndex()] = air;
-            }
         }
     }
 

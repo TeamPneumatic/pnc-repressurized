@@ -28,7 +28,8 @@ public class UpgradableItemUtils {
     public static final String NBT_CREATIVE = "CreativeUpgrade";
     public static final String NBT_UPGRADE_TAG = "UpgradeInventory";
     public static final int UPGRADE_INV_SIZE = 9;
-    private static final String NBT_UPGRADE_CACHE_TAG = "UpgradeInventoryCached";
+    private static final String NBT_UPGRADE_CACHE_TAG_OLD = "UpgradeInventoryCached";
+    private static final String NBT_UPGRADE_CACHE_TAG = "UpgradeCache";
 
     /**
      * Add a standardized tooltip listing the installed upgrades in the given item.
@@ -104,10 +105,10 @@ public class UpgradableItemUtils {
     public static int getUpgrades(ItemStack stack, EnumUpgrade upgrade) {
         CompoundNBT tag = getSerializedUpgrades(stack);
         if (!tag.isEmpty()) {
-            int[] upgrades = stack.getTag().getIntArray(NBT_UPGRADE_CACHE_TAG);
+            byte[] upgrades = stack.getTag().getByteArray(NBT_UPGRADE_CACHE_TAG);
             if (upgrades.length != EnumUpgrade.values().length) {
                 fixUpgradeCache(stack, tag);
-                upgrades = stack.getTag().getIntArray(NBT_UPGRADE_CACHE_TAG);
+                upgrades = stack.getTag().getByteArray(NBT_UPGRADE_CACHE_TAG);
             }
             return upgrades[upgrade.ordinal()];
         }
@@ -118,13 +119,13 @@ public class UpgradableItemUtils {
         CompoundNBT tag = getSerializedUpgrades(stack);
         List<Integer> res = new ArrayList<>();
         if (!tag.isEmpty()) {
-            int[] upgrades = stack.getTag().getIntArray(NBT_UPGRADE_CACHE_TAG);
+            byte[] upgrades = stack.getTag().getByteArray(NBT_UPGRADE_CACHE_TAG);
             if (upgrades.length != EnumUpgrade.values().length) {
                 fixUpgradeCache(stack, tag);
-                upgrades = stack.getTag().getIntArray(NBT_UPGRADE_CACHE_TAG);
+                upgrades = stack.getTag().getByteArray(NBT_UPGRADE_CACHE_TAG);
             }
             for (EnumUpgrade upgrade : upgradeList) {
-                res.add(upgrades[upgrade.ordinal()]);
+                res.add((int) upgrades[upgrade.ordinal()]);
             }
         } else {
             for (int i = 0; i < upgradeList.length; i++) {
@@ -152,5 +153,6 @@ public class UpgradableItemUtils {
         handler.deserializeNBT(tag);
         UpgradeCache cache = new UpgradeCache(() -> handler);
         stack.getTag().put(NBT_UPGRADE_CACHE_TAG, cache.toNBT());
+        stack.getTag().remove(NBT_UPGRADE_CACHE_TAG_OLD);
     }
 }

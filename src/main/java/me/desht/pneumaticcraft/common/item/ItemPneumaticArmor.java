@@ -92,6 +92,7 @@ public class ItemPneumaticArmor extends ArmorItem
     public static final String NBT_SPEED_BOOST = "speedBoost";
     public static final String NBT_BUILDER_MODE = "JetBootsBuilderMode";
     public static final String NBT_JET_BOOTS_POWER = "JetBootsPower";
+    private static final String NBT_SYNCED_AIR = "SyncedAir";
 
     public ItemPneumaticArmor(EquipmentSlotType equipmentSlotIn) {
         super(COMPRESSED_IRON_MATERIAL, equipmentSlotIn, ModItems.defaultProps());
@@ -201,15 +202,7 @@ public class ItemPneumaticArmor extends ArmorItem
     @Nullable
     @Override
     public CompoundNBT getShareTag(ItemStack stack) {
-        CompoundNBT tag = super.getShareTag(stack);
-
-        // don't send air levels to the client because they can change every tick, meaning a lot of server->client chatter
-        // instead let the CommonArmorHandler sync air levels to client in a more efficient way
-        if (tag != null) {
-            tag = tag.copy();
-            tag.remove(AirHandlerItemStack.AIR_NBT_KEY);
-        }
-        return tag;
+        return ItemPressurizable.roundedPressure(stack);
     }
 
     /* ----------- Pneumatic Helmet helpers ---------- */

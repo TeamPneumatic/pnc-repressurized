@@ -187,8 +187,6 @@ public class NetworkHandler {
 				PacketSyncSmartChest::toBytes, PacketSyncSmartChest::new, PacketSyncSmartChest::handle);
 		registerMessage(PacketClearRecipeCache.class,
 				PacketClearRecipeCache::toBytes, PacketClearRecipeCache::new, PacketClearRecipeCache::handle);
-		registerMessage(PacketSyncItemAir.class,
-				PacketSyncItemAir::toBytes, PacketSyncItemAir::new, PacketSyncItemAir::handle);
     }
 
 	public static <MSG> void registerMessage(Class<MSG> messageType, BiConsumer<MSG, PacketBuffer> encoder, Function<PacketBuffer, MSG> decoder, BiConsumer<MSG, Supplier<NetworkEvent.Context>> messageConsumer) {
