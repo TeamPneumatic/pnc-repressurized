@@ -36,6 +36,7 @@ public class ClientConfig {
         ForgeConfigSpec.DoubleValue minigunVolumeSentryTurret;
         ForgeConfigSpec.DoubleValue jetbootsVolume;
         ForgeConfigSpec.DoubleValue jetbootsVolumeBuilderMode;
+        ForgeConfigSpec.DoubleValue jackhammerVolume;
     }
 
     public ClientConfig.General general = new General();
@@ -142,6 +143,10 @@ public class ClientConfig {
                 .comment("Volume level of the Jet Boots when in Builder Mode")
                 .translation("pneumaticcraft.config.client.sound.jetboots_volume_builder_mode")
                 .defineInRange("jetboots_volume_builder_mode", 0.3d, 0d, 2d);
+        sound.jackhammerVolume = builder
+                .comment("Volume level of the Jackhammer")
+                .translation("pneumaticcraft.config.client.sound.jackhammer_volume")
+                .defineInRange("jackhammer_volume", 1.0d, 0d, 2d);
     }
 
     /**

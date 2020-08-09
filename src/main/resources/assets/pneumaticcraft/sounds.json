@@ -56,6 +56,18 @@
       "pneumaticcraft:hud_init"
     ]
   },
+  "jackhammer_loop":{
+    "category":"player",
+    "sounds":[
+      "pneumaticcraft:jackhammer_loop"
+    ]
+  },
+  "jackhammer_stop":{
+    "category":"player",
+    "sounds":[
+      "pneumaticcraft:jackhammer_stop"
+    ]
+  },
   "hud_init_complete":{
     "category":"player",
     "sounds":[

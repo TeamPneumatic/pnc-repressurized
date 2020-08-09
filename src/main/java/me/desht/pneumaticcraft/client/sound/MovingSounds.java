@@ -25,7 +25,8 @@ public class MovingSounds {
         JET_BOOTS,
         MINIGUN,
         ELEVATOR,
-        AIR_LEAK
+        AIR_LEAK,
+        JACKHAMMER
     }
 
     // track existing moving sound objects for blocks that can't easily tell when to start playing a sound
@@ -68,6 +69,10 @@ public class MovingSounds {
                     }
                 }
                 break;
+            case JACKHAMMER:
+                if (focus instanceof PlayerEntity) {
+                    return MovingSoundJackhammer.startOrContinue((PlayerEntity) focus);
+                }
         }
         throw new IllegalArgumentException("Invalid moving sound " + s + " for focus object " + focus);
     }

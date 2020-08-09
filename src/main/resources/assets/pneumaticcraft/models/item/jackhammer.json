@@ -6,7 +6,11 @@
 		"particle": "pneumaticcraft:item/jackhammer"
 	},
 	"overrides": [
-		{ "predicate":  { "pneumaticcraft:drill_bit" : 0.0 }, "model": "pneumaticcraft:item/jackhammer_no_bit" },
-		{ "predicate":  { "pneumaticcraft:drill_bit" : 0.5 }, "model": "pneumaticcraft:item/jackhammer_bit" }
+		{ "predicate":  { "pneumaticcraft:drill_bit" : 0.0 }, "model": "pneumaticcraft:item/jackhammer_bit_0" },
+		{ "predicate":  { "pneumaticcraft:drill_bit" : 0.1666 }, "model": "pneumaticcraft:item/jackhammer_bit_1" },
+		{ "predicate":  { "pneumaticcraft:drill_bit" : 0.3333 }, "model": "pneumaticcraft:item/jackhammer_bit_2" },
+		{ "predicate":  { "pneumaticcraft:drill_bit" : 0.5 }, "model": "pneumaticcraft:item/jackhammer_bit_3" },
+		{ "predicate":  { "pneumaticcraft:drill_bit" : 0.6666 }, "model": "pneumaticcraft:item/jackhammer_bit_4" },
+		{ "predicate":  { "pneumaticcraft:drill_bit" : 0.8333 }, "model": "pneumaticcraft:item/jackhammer_bit_5" }
 	]
 }

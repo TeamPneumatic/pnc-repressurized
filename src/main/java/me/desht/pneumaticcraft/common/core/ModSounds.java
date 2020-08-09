@@ -35,6 +35,8 @@ public class ModSounds {
     public static final RegistryObject<SoundEvent> CHIRP = register("chirp");
     public static final RegistryObject<SoundEvent> SCUBA = register("scuba");
     public static final RegistryObject<SoundEvent> LEAKING_GAS_LOW = register("leaking_gas_low");
+    public static final RegistryObject<SoundEvent> JACKHAMMER_LOOP = register("jackhammer_loop");
+    public static final RegistryObject<SoundEvent> JACKHAMMER_STOP = register("jackhammer_stop");
 
     private static RegistryObject<SoundEvent> register(String name) {
         return SOUNDS.register(name, () -> new SoundEvent(RL(name)));

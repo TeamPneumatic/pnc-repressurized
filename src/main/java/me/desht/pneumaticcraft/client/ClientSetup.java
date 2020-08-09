@@ -26,6 +26,7 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.entity_tracker.Enti
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.*;
 import me.desht.pneumaticcraft.client.render.tileentity.*;
 import me.desht.pneumaticcraft.client.render.tube_module.*;
+import me.desht.pneumaticcraft.client.sound.MovingSoundJackhammer;
 import me.desht.pneumaticcraft.client.util.ProgWidgetRenderer;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo;
 import me.desht.pneumaticcraft.common.core.*;
@@ -44,7 +45,9 @@ import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.util.InputMappings;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemModelsProperties;
+import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.client.settings.KeyModifier;
@@ -115,8 +118,13 @@ public class ClientSetup {
 
     private static void registerItemModelProperties() {
         ItemModelsProperties.func_239418_a_(ModItems.JACKHAMMER.get(), RL("drill_bit"), (stack, world, entity) -> {
-            ItemDrillBit.DrillBitType type = ((ItemJackHammer) stack.getItem()).getDrillBit(stack);
-            return type == ItemDrillBit.DrillBitType.NONE ? 0f : 0.5f;
+            if (world != null && entity instanceof PlayerEntity) {
+                ItemDrillBit.DrillBitType type = ((ItemJackHammer) stack.getItem()).getDrillBit(stack);
+                if (type == ItemDrillBit.DrillBitType.NONE) return 0f;
+                long l = MovingSoundJackhammer.lastJackHammerTime((PlayerEntity) entity);
+                if (l <= 20) return MathHelper.sin((world.getGameTime() % 4 / 4f) * 3.141529f);
+            }
+            return 0.99f;
         });
     }
 

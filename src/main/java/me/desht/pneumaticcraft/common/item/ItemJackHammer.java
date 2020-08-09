@@ -5,17 +5,22 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.client.ColorHandlers;
+import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModContainers;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.ContainerJackhammerSetup;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.item.ItemDrillBit.DrillBitType;
+import me.desht.pneumaticcraft.common.network.NetworkHandler;
+import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
+import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.block.Block;
@@ -43,7 +48,11 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraftforge.fml.network.PacketDistributor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -134,6 +143,11 @@ public class ItemJackHammer extends ItemPressurizable implements IChargeableCont
         int speed = UpgradableItemUtils.getUpgrades(stack, EnumUpgrade.SPEED);
         stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).orElseThrow(RuntimeException::new)
                 .addAir(-PneumaticValues.USAGE_JACKHAMMER * speed);
+        return true;
+    }
+
+    @Override
+    public boolean onEntitySwing(ItemStack stack, LivingEntity entity) {
         return true;
     }
 
@@ -456,6 +470,23 @@ public class ItemJackHammer extends ItemPressurizable implements IChargeableCont
                 return ench.containsKey(Enchantments.FORTUNE) || ench.containsKey(Enchantments.SILK_TOUCH);
             }
             return false;
+        }
+    }
+
+    @Mod.EventBusSubscriber(modid = Names.MOD_ID)
+    public static class Listener {
+        @SubscribeEvent
+        public static void onLeftClickBlock(PlayerInteractEvent.LeftClickBlock event) {
+            PlayerEntity player = event.getPlayer();
+            ItemStack stack = player.getHeldItem(event.getHand());
+            if (stack.getItem() == ModItems.JACKHAMMER.get() && ItemPressurizable.getAir(stack) > 0f) {
+                if (event.getWorld().isRemote) {
+                    MovingSounds.playMovingSound(MovingSounds.Sound.JACKHAMMER, event.getPlayer());
+                } else {
+                    NetworkHandler.sendToAllAround(new PacketPlayMovingSound(MovingSounds.Sound.JACKHAMMER, player),
+                            new PacketDistributor.TargetPoint(player.getPosX(), player.getPosY(), player.getPosZ(), 64, player.world.func_234923_W_()));
+                }
+            }
         }
     }
 }
