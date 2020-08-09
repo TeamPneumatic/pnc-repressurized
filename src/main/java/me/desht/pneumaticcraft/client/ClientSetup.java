@@ -48,6 +48,7 @@ import net.minecraft.client.util.InputMappings;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemModelsProperties;
 import net.minecraft.util.math.MathHelper;
+import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
 import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.client.settings.KeyModifier;
@@ -75,6 +76,7 @@ public class ClientSetup {
     public static void initEarly() {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::init);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::registerParticleFactories);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::registerModelLoaders);
     }
 
     static void init(FMLClientSetupEvent event) {
@@ -97,8 +99,6 @@ public class ClientSetup {
     }
 
     public static void initLate() {
-        modelInit();
-
         setBlockRenderLayers();
 
         registerItemModelProperties();
@@ -159,7 +159,7 @@ public class ClientSetup {
         }
     }
 
-    private static void modelInit() {
+    private static void registerModelLoaders(ModelRegistryEvent event) {
         ModelLoaderRegistry.registerLoader(RL("camouflaged"), CamouflageModel.Loader.INSTANCE);
         ModelLoaderRegistry.registerLoader(RL("pressure_glass"), PressureGlassModel.Loader.INSTANCE);
         ModelLoaderRegistry.registerLoader(RL("fluid_container_item"), FluidItemModel.Loader.INSTANCE);
