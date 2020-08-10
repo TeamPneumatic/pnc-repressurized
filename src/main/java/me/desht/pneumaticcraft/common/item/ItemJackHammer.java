@@ -147,7 +147,7 @@ public class ItemJackHammer extends ItemPressurizable implements IChargeableCont
 
     @Override
     public boolean onEntitySwing(ItemStack stack, LivingEntity entity) {
-        return true;
+        return getDrillBit(stack) != DrillBitType.NONE && getAir(stack) > 0f;
     }
 
     @Override
