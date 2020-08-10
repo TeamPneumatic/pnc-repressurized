@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.network;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.server.MinecraftServer;
@@ -229,7 +230,11 @@ public class NetworkHandler {
 		}
     }
 
-    public static void sendToDimension(Object message, RegistryKey<World> world) {
+	public static void sendToAllTracking(Object message, Entity entity) {
+		NETWORK.send(PacketDistributor.TRACKING_ENTITY.with(() -> entity), message);
+	}
+
+	public static void sendToDimension(Object message, RegistryKey<World> world) {
 		if (message instanceof ILargePayload) {
 			getSplitMessages((ILargePayload) message).forEach(part -> NETWORK.send(PacketDistributor.DIMENSION.with(() -> world), part));
 		} else {

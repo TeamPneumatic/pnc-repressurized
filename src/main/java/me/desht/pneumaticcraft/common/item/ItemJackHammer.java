@@ -52,7 +52,6 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.network.NetworkHooks;
-import net.minecraftforge.fml.network.PacketDistributor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -119,7 +118,7 @@ public class ItemJackHammer extends ItemPressurizable implements IChargeableCont
     @Override
     public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
         ItemStack stack = playerIn.getHeldItem(handIn);
-        if (playerIn.isCrouching()) return ActionResult.resultPass(stack);
+        if (!playerIn.isCrouching()) return ActionResult.resultPass(stack);
         if (!worldIn.isRemote) {
             NetworkHooks.openGui((ServerPlayerEntity) playerIn, new INamedContainerProvider() {
                 @Override
@@ -483,8 +482,7 @@ public class ItemJackHammer extends ItemPressurizable implements IChargeableCont
                 if (event.getWorld().isRemote) {
                     MovingSounds.playMovingSound(MovingSounds.Sound.JACKHAMMER, event.getPlayer());
                 } else {
-                    NetworkHandler.sendToAllAround(new PacketPlayMovingSound(MovingSounds.Sound.JACKHAMMER, player),
-                            new PacketDistributor.TargetPoint(player.getPosX(), player.getPosY(), player.getPosZ(), 64, player.world.func_234923_W_()));
+                    NetworkHandler.sendToAllTracking(new PacketPlayMovingSound(MovingSounds.Sound.JACKHAMMER, player), player);
                 }
             }
         }
