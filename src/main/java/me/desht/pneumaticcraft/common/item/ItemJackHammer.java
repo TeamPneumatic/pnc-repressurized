@@ -174,6 +174,9 @@ public class ItemJackHammer extends ItemPressurizable implements IChargeableCont
                     float air0 = air;
                     float usage = PneumaticValues.USAGE_JACKHAMMER * SPEED_MULT[speed];
                     for (BlockPos pos1 : brokenPos) {
+                        BlockState state1 = world.getBlockState(pos1);
+                        if (state1.getBlockHardness(world, pos1) < 0) continue;
+
                         int exp = ForgeHooks.onBlockBreakEvent(serverPlayer.world, serverPlayer.interactionManager.getGameType(), serverPlayer, pos1);
                         if (exp == -1) {
                             continue;
@@ -181,7 +184,6 @@ public class ItemJackHammer extends ItemPressurizable implements IChargeableCont
                         if (world.getTileEntity(pos1) != null) {
                             continue;
                         }
-                        BlockState state1 = world.getBlockState(pos1);
                         Block block = state1.getBlock();
                         boolean removed = state1.removedByPlayer(world, pos1, player, true, world.getFluidState(pos1));
                         if (removed) {
