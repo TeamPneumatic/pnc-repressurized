@@ -8,12 +8,14 @@ Changes are in reverse chronological order; newest changes at the top.
 
 The initial 1.16.1 release is largely equivalent in functionality to the 1.4.2 release (for MC 1.15.2), with a few minor player-visible changes.
 
-## 2.0.1-?? (unreleased)
+## 2.1.0-9 (11 Aug 2020)
+
+This release *requires* Forge 32.0.108 or newer.
 
 ### New
 * Added a Pneumatic Jackhammer!
   * Powerful and customisable multi-tool which can efficiently break any block
-  * Multiple digging modes, selectable via GUI; better modes require better a Drill Bit to be attached
+  * Multiple digging modes, selectable via GUI; better modes require a better Drill Bit to be attached
   * Includes two vein miner modes: ores & logs only, and all blocks (requires the top-end Netherite Drill Bit)
   * Upgradable with Speed Upgrades and Volume Upgrades: top speed is extremely fast, but extremely pressure-hungry
   * Can also take a Fortune or Silk Touch enchanted book (swappable on the fly; no enchanting table needed)
@@ -33,15 +35,26 @@ The initial 1.16.1 release is largely equivalent in functionality to the 1.4.2 r
 
 ### Updates
 * Kerosene is now much more efficient in the Kerosene Lamp than other fuels
-
+* Pneumatic Armor HUD now displays only 1 decimal place of pressure for armor pieces
+  * This is not just a cosmetic change, but part of an overall performance improvement with pressure sync'ing
+  * Previously sync'ing pressures of pneumatic items (including armor) was much too chatty in terms of server->client traffic
+  * Now only rounded air levels are sync'd to client, so the client generally knows item pressures with 0.1 bar of precision
+  * This is enough for the vast majority of display purposes; e.g. item pressure tooltips already display with 0.1 bar of precision
+  * Server->client traffic is now greatly reduced, especially for fast-changing pressures such as Jet Boots
+* Added the option to display graphical bars rather than numbers for Armor HUD pressure readouts
+  * Select this in main "Core Components" armor GUI - it's also persisted to client config (`show_pressure_numerically`) 
+ 
 ### Fixes
-* Fixed buggy drone right-click behaviour (ported forward from 1.5.2 version)
+* Fixed buggy drone "Right Click Block" behaviour (ported forward from 1.5.2 version)
 * Progwidget Item Filter GUI: don't gray out the "Match NBT" checkbox when the filter item has no NBT data
   * Just because it has no NBT data doesn't mean actual instances of the item can't...
 * Fixed (worked around) a problem where drones would refuse to pathfind to the space above "tall" blocks
   * "Tall" blocks being fences, walls, gates...
 * Fixed drones ignoring installed Inventory Upgrades
 * Fixed buggy Heat Frame cooling behaviour (would void some fluid containers such as Mekanism tanks)
+* Fixed Logistics Frames not being placeable on the Aerial Interface
+* Fixed possible race conditions when registering custom model loaders (pressure chamber glass, minigun, fluid tanks)
+  * Now using Forge `ModelRegistryEvent`, hence the 32.0.108 requirement
 
 ## 2.0.0-4 (30 Jul 2020)
 
