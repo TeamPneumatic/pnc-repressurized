@@ -11,6 +11,7 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.ILivingEntityData;
 import net.minecraft.entity.SpawnReason;
@@ -53,7 +54,8 @@ public class ItemDrone extends ItemPressurizable implements IChargeableContainer
             if (iStack.getItem() == ModItems.LOGISTICS_DRONE.get()) {
                 AdvancementTriggers.LOGISTICS_DRONE_DEPLOYED.trigger((ServerPlayerEntity) ctx.getPlayer());
             }
-            BlockPos placePos = pos.offset(ctx.getFace());
+            BlockState state = world.getBlockState(pos);
+            BlockPos placePos = state.getCollisionShape(world, pos).isEmpty() ? pos : pos.offset(ctx.getFace());
             spawnDrone(ctx.getPlayer(), world, pos, ctx.getFace(), placePos, iStack);
             iStack.shrink(1);
         }
