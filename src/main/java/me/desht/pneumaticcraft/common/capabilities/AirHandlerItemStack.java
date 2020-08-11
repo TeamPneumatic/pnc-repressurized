@@ -16,7 +16,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class AirHandlerItemStack implements IAirHandlerItem, ICapabilityProvider {
-    private static final String AIR_NBT_KEY = "pneumaticcraft:air";
+    public static final String AIR_NBT_KEY = "pneumaticcraft:air";
 
     private final LazyOptional<IAirHandlerItem> holder = LazyOptional.of(() -> this);
 

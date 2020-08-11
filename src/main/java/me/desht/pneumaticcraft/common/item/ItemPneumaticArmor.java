@@ -88,6 +88,8 @@ public class ItemPneumaticArmor extends ArmorItem
     public static final String NBT_SPEED_BOOST = "speedBoost";
     public static final String NBT_BUILDER_MODE = "JetBootsBuilderMode";
     public static final String NBT_JET_BOOTS_POWER = "JetBootsPower";
+    private static final String NBT_SYNCED_AIR = "SyncedAir";
+
 
     public ItemPneumaticArmor(EquipmentSlotType equipmentSlotIn) {
         super(COMPRESSED_IRON_MATERIAL, equipmentSlotIn, ModItems.defaultProps());
@@ -190,6 +192,12 @@ public class ItemPneumaticArmor extends ArmorItem
         }
 
         return multimap;
+    }
+
+    @Nullable
+    @Override
+    public CompoundNBT getShareTag(ItemStack stack) {
+        return ItemPressurizable.roundedPressure(stack);
     }
 
     /* ----------- Pneumatic Helmet helpers ---------- */

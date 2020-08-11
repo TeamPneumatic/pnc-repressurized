@@ -100,6 +100,7 @@ public class ConfigHelper {
         PNCConfig.Common.Advanced.disableKeroseneLampFakeAirBlock = common.advanced.disableKeroseneLampFakeAirBlock.get();
         PNCConfig.Common.Advanced.fluidTankUpdateRate = common.advanced.fluidTankUpdateRate.get();
         PNCConfig.Common.Advanced.stopDroneAI = common.advanced.stopDroneAI.get();
+        PNCConfig.Common.Advanced.pressureSyncPrecision = common.advanced.pressureSyncPrecision.get();
 
         PNCConfig.Common.Micromissiles.baseExplosionDamage = common.micromissiles.baseExplosionDamage.get();
         PNCConfig.Common.Micromissiles.damageTerrain = common.micromissiles.damageTerrain.get();

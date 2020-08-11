@@ -28,6 +28,12 @@ public class ItemPressurizable extends Item {
         this.maxPressure = (float)maxAir / volume;
     }
 
+    @Nullable
+    @Override
+    public CompoundNBT getShareTag(ItemStack stack) {
+        return roundedPressure(stack);
+    }
+
     @Override
     public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
         return false;
@@ -85,6 +91,28 @@ public class ItemPressurizable extends Item {
             return new AirHandlerItemStack(stack, volume, maxPressure);
         } else {
             return super.initCapabilities(stack, nbt);
+        }
+    }
+
+    /**
+     * Get an ItemStack's NBT, rounding its air level for sync to client.
+     * Default precision of volume/10 is enough precision to display 1 decimal place of pressure,
+     * and will greatly reduce server->client chatter
+     * @param stack the itemstack being sync'd
+     * @return the item's NBT, but with the air level rounded
+     */
+    public static CompoundNBT roundedPressure(ItemStack stack) {
+        CompoundNBT tag = stack.getTag();
+
+        if (tag != null && tag.contains(AirHandlerItemStack.AIR_NBT_KEY)) {
+            return stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).map(h -> {
+                CompoundNBT tag2 = tag.copy();
+                int air = tag2.getInt(AirHandlerItemStack.AIR_NBT_KEY);
+                tag2.putInt(AirHandlerItemStack.AIR_NBT_KEY, air - air % (h.getVolume() / PNCConfig.Common.Advanced.pressureSyncPrecision));
+                return tag2;
+            }).orElseThrow(RuntimeException::new);
+        } else {
+            return tag;
         }
     }
 }

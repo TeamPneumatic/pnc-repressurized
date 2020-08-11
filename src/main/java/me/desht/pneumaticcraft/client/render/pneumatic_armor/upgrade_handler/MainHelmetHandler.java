@@ -40,7 +40,7 @@ public class MainHelmetHandler implements IUpgradeRenderHandler {
         List<String> l = Arrays.stream(UpgradeRenderHandlerList.ARMOR_SLOTS)
                 .map(slot -> getPressureStr(player, slot))
                 .collect(Collectors.toList());
-        powerStat.setText(l);
+        powerStat.setTextWithoutCuttingString(l);
     }
 
     private String getPressureStr(PlayerEntity player, EquipmentSlotType slot) {
@@ -57,7 +57,7 @@ public class MainHelmetHandler implements IUpgradeRenderHandler {
         } else {
             colour = TextFormatting.GREEN;
         }
-        return colour.toString() + String.format("%5.2f", pressure);
+        return colour.toString() + String.format("%4.1f", pressure);
     }
 
     @Override
