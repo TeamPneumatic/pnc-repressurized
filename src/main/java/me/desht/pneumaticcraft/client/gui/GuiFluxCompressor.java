@@ -8,6 +8,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.inventory.ContainerFluxCompressor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityFluxCompressor;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
@@ -71,7 +72,9 @@ public class GuiFluxCompressor extends GuiPneumaticContainerBase<ContainerFluxCo
     @Override
     protected void addPressureStatInfo(List<String> pressureStatText) {
         super.addPressureStatInfo(pressureStatText);
-        pressureStatText.add(TextFormatting.BLACK + I18n.format("pneumaticcraft.gui.tooltip.maxProduction", te.getAirRate()));
+
+        pressureStatText.add(TextFormatting.BLACK + I18n.format("pneumaticcraft.gui.tooltip.maxProduction",
+                PneumaticCraftUtils.roundNumberTo(te.getAirRate(), 2)));
     }
 
     @Override
@@ -85,8 +88,8 @@ public class GuiFluxCompressor extends GuiPneumaticContainerBase<ContainerFluxCo
     @Override
     protected void addWarnings(List<String> curInfo) {
         super.addWarnings(curInfo);
-        if (te.getEfficiency() < 100) {
-            curInfo.add(I18n.format("pneumaticcraft.gui.tab.problems.advancedAirCompressor.efficiency", te.getEfficiency() + "%%"));
+        if (te.getHeatEfficiency() < 100) {
+            curInfo.add(I18n.format("pneumaticcraft.gui.tab.problems.advancedAirCompressor.efficiency", te.getHeatEfficiency() + "%%"));
         }
     }
 }

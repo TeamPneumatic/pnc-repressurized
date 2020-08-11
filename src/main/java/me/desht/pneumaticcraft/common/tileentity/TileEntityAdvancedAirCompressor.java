@@ -27,8 +27,8 @@ public class TileEntityAdvancedAirCompressor extends TileEntityAirCompressor {
     }
 
     @Override
-    protected void onFuelBurn(int burnedFuel) {
-        heatExchanger.addHeat(burnedFuel / 2D);
+    protected void addHeatForAir(int air) {
+        heatExchanger.addHeat(air / 20D);
     }
 
     @Override
@@ -37,7 +37,7 @@ public class TileEntityAdvancedAirCompressor extends TileEntityAirCompressor {
     }
 
     @Override
-    public int getEfficiency() {
+    public int getHeatEfficiency() {
         return HeatUtil.getEfficiency(heatExchanger.getTemperatureAsInt());
     }
 

@@ -47,6 +47,9 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
     private boolean isActive;
     @GuiSynced
     public int curFuelUsage;
+    @GuiSynced
+    public float airPerTick;
+    private float airBuffer;
 
     public TileEntityAirCompressor() {
         this(ModTileEntities.AIR_COMPRESSOR.get(), PneumaticValues.DANGER_PRESSURE_AIR_COMPRESSOR, PneumaticValues.MAX_PRESSURE_AIR_COMPRESSOR, PneumaticValues.VOLUME_AIR_COMPRESSOR);
@@ -75,6 +78,8 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
         super.tick();
 
         if (!getWorld().isRemote) {
+            airPerTick = getBaseProduction() * getSpeedMultiplierFromUpgrades() * getHeatEfficiency() / 100F;
+
             if (redstoneAllows() && burnTime < curFuelUsage) {
                 ItemStack fuelStack = itemHandler.getStackInSlot(FUEL_SLOT);
                 int itemBurnTime = PneumaticCraftUtils.getBurnTime(fuelStack);
@@ -89,8 +94,13 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
             if (burnTime >= curFuelUsage) {
                 burnTime -= curFuelUsage;
                 if (!getWorld().isRemote) {
-                    addAir((int) (getBaseProduction() * getSpeedMultiplierFromUpgrades() * getEfficiency() / 100D));
-                    onFuelBurn(curFuelUsage);
+                    airBuffer += airPerTick;
+                    if (airBuffer >= 1f) {
+                        int toAdd = (int) airBuffer;
+                        addAir(toAdd);
+                        airBuffer -= toAdd;
+                        addHeatForAir(toAdd);
+                    }
                 }
             }
             boolean wasActive = isActive;
@@ -104,10 +114,11 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
         }
     }
 
-    protected void onFuelBurn(int burnedFuel) {
+    protected void addHeatForAir(int air) {
+        // do nothing, override in advanced
     }
 
-    public int getEfficiency() {
+    public int getHeatEfficiency() {
         return 100;
     }
 
