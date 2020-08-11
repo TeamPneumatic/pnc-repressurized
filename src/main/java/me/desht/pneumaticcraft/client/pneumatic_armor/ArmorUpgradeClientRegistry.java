@@ -63,6 +63,9 @@ public enum ArmorUpgradeClientRegistry {
                 clientUpgradeHandlers.get(slot.getIndex()).add(clientHandler);
             }
         }
+
+        // now that everything is registered, we can get client handlers to process any config values needed
+        refreshConfig();
     }
 
     @SuppressWarnings("unchecked")
@@ -70,11 +73,15 @@ public enum ArmorUpgradeClientRegistry {
         return (T) class2HandlerMap.get(clazz);
     }
 
-//    public void refreshConfig() {
-//        for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
-//            for (IArmorUpgradeClientHandler renderHandler : getHandlersForSlot(slot)) {
-//                renderHandler.initConfig();
-//            }
-//        }
-//    }
+    public void refreshConfig() {
+        // we will get called really early (when client config is first loaded)
+        // at that point, no upgrade handlers (client or common) are yet registered
+        if (clientUpgradeHandlers.isEmpty()) return;
+
+        for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
+            for (IArmorUpgradeClientHandler renderHandler : getHandlersForSlot(slot)) {
+                renderHandler.initConfig();
+            }
+        }
+    }
 }

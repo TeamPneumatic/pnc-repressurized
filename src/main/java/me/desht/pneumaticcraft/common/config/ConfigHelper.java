@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.config;
 
 import com.google.common.collect.ImmutableMap;
+import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
 import me.desht.pneumaticcraft.common.config.ClientConfig.PathUpdateSetting;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget.WidgetDifficulty;
 import me.desht.pneumaticcraft.lib.Names;
@@ -35,6 +36,7 @@ public class ConfigHelper {
         PNCConfig.Client.Armor.wirePath = client.armor.wirePath.get();
         PNCConfig.Client.Armor.xRayEnabled = client.armor.xRayEnabled.get();
         PNCConfig.Client.Armor.pathUpdateSetting = client.armor.pathUpdateSetting.get();
+        PNCConfig.Client.Armor.showPressureNumerically = client.armor.showPressureNumerically.get();
 
         PNCConfig.Client.Sound.elevatorVolumeRunning = client.sound.elevatorVolumeRunning.get();
         PNCConfig.Client.Sound.elevatorVolumeStartStop = client.sound.elevatorVolumeStartStop.get();
@@ -46,8 +48,7 @@ public class ConfigHelper {
         PNCConfig.Client.Sound.jetbootsVolumeBuilderMode = client.sound.jetbootsVolumeBuilderMode.get();
         PNCConfig.Client.Sound.jackhammerVolume = client.sound.jackhammerVolume.get();
 
-//        ArmorUpgradeClientRegistry.getInstance().refreshConfig();
-//        UpgradeRenderHandlerList.instance().refreshConfig();
+        ArmorUpgradeClientRegistry.getInstance().refreshConfig();
     }
 
     static void refreshCommon(net.minecraftforge.fml.config.ModConfig config) {
@@ -187,6 +188,11 @@ public class ConfigHelper {
                 "armor.xray_enabled", xRayEnabled,
                 "armor.path_update_setting", pathUpdateSetting)
         );
+        refreshClient(clientConfig);
+    }
+
+    public static void setShowPressureNumerically(boolean numeric) {
+        setValueAndSave(clientConfig, "armor.show_pressure_numerically", numeric);
         refreshClient(clientConfig);
     }
 }

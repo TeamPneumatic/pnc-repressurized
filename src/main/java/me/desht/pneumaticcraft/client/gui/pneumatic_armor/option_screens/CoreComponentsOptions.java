@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiMoveStat;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.KeybindingButton;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.CoreComponentsClientHandler;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import net.minecraft.client.Minecraft;
@@ -36,6 +37,11 @@ public class CoreComponentsOptions extends IOptionPage.SimpleToggleableOptions<C
             Minecraft.getInstance().displayGuiScreen(
                     new GuiMoveStat(getClientUpgradeHandler(), ArmorHUDLayout.LayoutTypes.MESSAGE, getClientUpgradeHandler().testMessageStat));
         }));
+
+        gui.addWidget(new WidgetCheckBox(5, 45, 0xFFFFFFFF, xlate("pneumaticcraft.armor.gui.misc.showPressureNumerically"), b -> {
+            getClientUpgradeHandler().showPressureNumerically = b.checked;
+            getClientUpgradeHandler().saveToConfig();
+        }).setChecked(getClientUpgradeHandler().showPressureNumerically));
 
         changeKeybindingButton = new KeybindingButton(30, 172, 150, 20,
                 xlate("pneumaticcraft.armor.gui.misc.setKey"), KeyHandler.getInstance().keybindOpenOptions,

@@ -521,6 +521,7 @@
    "pneumaticcraft.armor.gui.misc.moveStatScreen": "Move Stat Screen...",
    "pneumaticcraft.armor.gui.misc.movePressureScreen": "Move Pressure Screen...",
    "pneumaticcraft.armor.gui.misc.moveMessageScreen": "Move Message Screen...",
+   "pneumaticcraft.armor.gui.misc.showPressureNumerically": "Show Pressure Numerically",
    "pneumaticcraft.armor.gui.misc.setKey": "Set Hotkey...",
    "pneumaticcraft.armor.gui.misc.searchItem": "Search For Item...",
    "pneumaticcraft.armor.gui.misc.settings": "Settings",

@@ -27,6 +27,7 @@ public class PNCConfig {
             public static boolean wirePath;
             public static boolean xRayEnabled;
             public static ClientConfig.PathUpdateSetting pathUpdateSetting;
+            public static boolean showPressureNumerically;
         }
 
         public static class Sound {

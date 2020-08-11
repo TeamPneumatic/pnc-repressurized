@@ -25,6 +25,7 @@ public class ClientConfig {
         ForgeConfigSpec.BooleanValue wirePath;
         ForgeConfigSpec.BooleanValue xRayEnabled;
         ForgeConfigSpec.EnumValue<PathUpdateSetting> pathUpdateSetting;
+        ForgeConfigSpec.BooleanValue showPressureNumerically;
     }
 
     public static class Sound {
@@ -108,6 +109,10 @@ public class ClientConfig {
                 .comment("How frequently should the Pneumatic Helmet Coordinate Tracker pathfinder path be recalculated?")
                 .translation("pneumaticcraft.config.client.armor.xray_enabled")
                 .defineEnum("path_update_setting", PathUpdateSetting.NORMAL);
+        armor.showPressureNumerically = builder
+                .comment("True: show pressure as numbers.  False: show pressure as horizontal bar.")
+                .translation("pneumaticcraft.config.client.armor.show_pressure_numerically")
+                .define("show_pressure_numerically", true);
         builder.pop();
 
         builder.push("sound");

@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler;
 
+import com.google.common.base.Strings;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
@@ -10,12 +11,15 @@ import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiArmorMainScreen;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.option_screens.CoreComponentsOptions;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 
@@ -24,8 +28,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.AbstractHandler {
+    private static final int MAX_BARS = 40;
+    private static final String[] BAR_STR_CACHE = new String[MAX_BARS + 1];
+
     private WidgetAnimatedStat powerStat;
     public WidgetAnimatedStat testMessageStat;
+    public boolean showPressureNumerically;  // false for numeric readout, true for horizontal bars
 
     public CoreComponentsClientHandler() {
         super(ArmorUpgradeRegistry.getInstance().coreComponentsHandler);
@@ -36,24 +44,51 @@ public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.Abst
         List<String> l = Arrays.stream(ArmorUpgradeRegistry.ARMOR_SLOTS)
                 .map(slot -> getPressureStr(armorHandler, slot))
                 .collect(Collectors.toList());
-        powerStat.setText(l);
+        powerStat.setTextWithoutCuttingString(l);
+    }
+
+    @Override
+    public void initConfig() {
+        showPressureNumerically = PNCConfig.Client.Armor.showPressureNumerically;
+    }
+
+    @Override
+    public void saveToConfig() {
+        ConfigHelper.setShowPressureNumerically(showPressureNumerically);
     }
 
     private String getPressureStr(ICommonArmorHandler handler, EquipmentSlotType slot) {
         if (!ItemPneumaticArmor.isPneumaticArmorPiece(handler.getPlayer(), slot))
-            return "-";
+            return TextFormatting.DARK_GRAY + "-";
         float pressure = handler.getArmorPressure(slot);
-        TextFormatting colour;
-        if (pressure < 0.5F) {
-            colour = TextFormatting.RED;
-        } else if (pressure < 2.0F) {
-            colour = TextFormatting.GOLD;
-        } else if (pressure < 4.0F) {
-            colour = TextFormatting.YELLOW;
+        if (showPressureNumerically) {
+            return getColourForPressure(pressure) + String.format("%4.1f", pressure);
         } else {
-            colour = TextFormatting.GREEN;
+            return getBarStr(pressure);
         }
-        return colour.toString() + String.format("%4.1f", pressure);
+    }
+
+    private TextFormatting getColourForPressure(float pressure) {
+        if (pressure < 0.5F) {
+            return TextFormatting.RED;
+        } else if (pressure < 2.0F) {
+            return TextFormatting.GOLD;
+        } else if (pressure < 4.0F) {
+            return TextFormatting.YELLOW;
+        } else {
+            return TextFormatting.GREEN;
+        }
+    }
+
+    private String getBarStr(float pressure) {
+        int scaled = (int) (MAX_BARS * pressure / 10f);
+        int idx = MathHelper.clamp(scaled, 0, MAX_BARS);
+        if (BAR_STR_CACHE[idx] == null) {
+            int n2 = MAX_BARS - scaled;
+            BAR_STR_CACHE[idx] = getColourForPressure(pressure) + Strings.repeat("|", scaled)
+                    + TextFormatting.DARK_GRAY + Strings.repeat("|", n2);
+        }
+        return BAR_STR_CACHE[idx];
     }
 
     @Override
