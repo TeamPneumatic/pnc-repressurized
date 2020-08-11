@@ -8,7 +8,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 The initial 1.16.1 release is largely equivalent in functionality to the 1.4.2 release (for MC 1.15.2), with a few minor player-visible changes.
 
-## 2.1.0-9 (11 Aug 2020)
+## 2.1.0-11 (11 Aug 2020)
 
 This release *requires* Forge 32.0.108 or newer.
 
