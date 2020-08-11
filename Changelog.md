@@ -6,6 +6,20 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.15.2
 
+## 1.4.4-?? (unreleased)
+
+### Updates
+* Pneumatic Armor HUD now displays only 1 decimal place of pressure for armor pieces
+  * This is not just a cosmetic change, but part of an overall performance improvement with pressure sync'ing
+  * Previously sync'ing pressures of pneumatic items (including armor) was much too chatty in terms of server->client traffic
+  * Now only rounded air levels are sync'd to client, so the client generally knows item pressures with 0.1 bar of precision
+  * This is enough for the vast majority of display purposes; e.g. item pressure tooltips already display with 0.1 bar of precision
+  * Server->client traffic is now greatly reduced, especially for fast-changing pressures such as Jet Boots
+* When placing a Drone down, if the block clicked has no collision box (e.g. flower, crop, etc.) then place the Drone on the that block instead of the adjacent block
+
+### Fixes
+* Fixed Logistics Frames not being placeable on the Aerial Interface
+
 ## 1.4.3-60 (6 Aug 2020)
 
 ### Fixes
