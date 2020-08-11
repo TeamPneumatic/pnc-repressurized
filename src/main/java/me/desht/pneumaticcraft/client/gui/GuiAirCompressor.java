@@ -46,10 +46,9 @@ public class GuiAirCompressor extends GuiPneumaticContainerBase<ContainerAirComp
     @Override
     protected void addPressureStatInfo(List<String> pressureStatText) {
         super.addPressureStatInfo(pressureStatText);
-        if (te.isActive()) {
-            float prod = Math.round(te.getBaseProduction() * te.getEfficiency() * te.getSpeedMultiplierFromUpgrades() / 100);
-            pressureStatText.add(TextFormatting.BLACK + I18n.format("pneumaticcraft.gui.tooltip.producingAir", PneumaticCraftUtils.roundNumberTo(prod, 1)));
-        }
+
+        pressureStatText.add(TextFormatting.BLACK + I18n.format("pneumaticcraft.gui.tooltip.maxProduction",
+                PneumaticCraftUtils.roundNumberTo(te.airPerTick, 2)));
     }
 
     @Override

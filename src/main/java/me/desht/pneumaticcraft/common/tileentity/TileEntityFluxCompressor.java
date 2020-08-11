@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
-import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.PNCConfig.Common.Machines;
 import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
@@ -28,13 +28,15 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class TileEntityFluxCompressor extends TileEntityPneumaticBase implements IRedstoneControlled, INamedContainerProvider {
+    private static final int BASE_FE_PRODUCTION = 40;
     private final PneumaticEnergyStorage energy = new PneumaticEnergyStorage(100000);
     private final LazyOptional<IEnergyStorage> energyCap = LazyOptional.of(() -> energy);
 
     @GuiSynced
     private int rfPerTick;
     @GuiSynced
-    private int airPerTick;
+    private float airPerTick;
+    private float airBuffer;
     @GuiSynced
     private int redstoneMode;
     @GuiSynced
@@ -49,7 +51,7 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase implements
         heatExchanger.setThermalCapacity(100);
     }
 
-    public int getEfficiency(){
+    public int getHeatEfficiency(){
         return HeatUtil.getEfficiency(heatExchanger.getTemperatureAsInt());
     }
 
@@ -59,13 +61,20 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase implements
 
         if (!world.isRemote) {
             if (world.getGameTime() % 5 == 0) {
-                airPerTick = (int) (40 * this.getSpeedUsageMultiplierFromUpgrades() * getEfficiency() * PNCConfig.Common.Machines.fluxCompressorEfficiency / 100 / 100);
-                rfPerTick = (int) (40 * this.getSpeedUsageMultiplierFromUpgrades());
+                airPerTick = (BASE_FE_PRODUCTION * this.getSpeedUsageMultiplierFromUpgrades()
+                        * (getHeatEfficiency() / 100f)
+                        * (Machines.fluxCompressorEfficiency / 100f));
+                rfPerTick = (int) (BASE_FE_PRODUCTION * this.getSpeedUsageMultiplierFromUpgrades());
             }
             if (redstoneAllows() && energy.getEnergyStored() >= rfPerTick) {
-                this.addAir(airPerTick);
+                airBuffer += airPerTick;
+                if (airBuffer >= 1f) {
+                    int toAdd = (int) airBuffer;
+                    this.addAir(toAdd);
+                    airBuffer -= toAdd;
+                    heatExchanger.addHeat(toAdd / 20d);
+                }
                 energy.extractEnergy(rfPerTick, false);
-                heatExchanger.addHeat(rfPerTick / 100D);
             }
             airHandler.setSideLeaking(hasNoConnectedAirHandlers() ? getRotation().getOpposite() : null);
         }
@@ -132,7 +141,7 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase implements
         return energy.getEnergyStored();
     }
 
-    public int getAirRate() {
+    public float getAirRate() {
         return airPerTick;
     }
 

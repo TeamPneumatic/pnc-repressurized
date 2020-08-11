@@ -53,10 +53,12 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
     private final LazyOptional<IFluidHandler> fluidCap = LazyOptional.of(() -> tank);
 
     private double internalFuelBuffer;
-    @GuiSynced
     private float burnMultiplier = 1f;  // how fast this fuel burns (and produces pressure)
     @GuiSynced
     public int redstoneMode;
+    @GuiSynced
+    public float airPerTick;
+    private float airBuffer;
     @DescSynced
     @GuiSynced
     public boolean isProducing;
@@ -83,6 +85,9 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
             processFluidItem(INPUT_SLOT, OUTPUT_SLOT);
 
             isProducing = false;
+
+            airPerTick = getBaseProduction() * burnMultiplier * this.getSpeedMultiplierFromUpgrades() * (getHeatEfficiency() / 100f);
+
             if (redstoneAllows()) {
                 double usageRate = getBaseProduction() * this.getSpeedUsageMultiplierFromUpgrades() * burnMultiplier;
                 if (internalFuelBuffer < usageRate) {
@@ -97,8 +102,14 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
                 if (internalFuelBuffer >= usageRate) {
                     isProducing = true;
                     internalFuelBuffer -= usageRate;
-                    onFuelBurn((int) usageRate);
-                    addAir((int) (getBaseProduction() * burnMultiplier * this.getSpeedMultiplierFromUpgrades() * getEfficiency() / 100));
+
+                    airBuffer += airPerTick;
+                    if (airBuffer >= 1f) {
+                        int toAdd = (int) airBuffer;
+                        addAir(toAdd);
+                        airBuffer -= toAdd;
+                        addHeatForAir(toAdd);
+                    }
                 }
             }
         } else {
@@ -108,10 +119,11 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
         }
     }
 
-    protected void onFuelBurn(int burnedFuel) {
+    protected void addHeatForAir(int air) {
+        // do nothing, override in advanced
     }
 
-    public int getEfficiency() {
+    public int getHeatEfficiency() {
         return 100;
     }
 
@@ -196,9 +208,5 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
         return new ContainerLiquidCompressor(i, playerInventory, getPos());
-    }
-
-    public float getBurnMultiplier() {
-        return burnMultiplier;
     }
 }
