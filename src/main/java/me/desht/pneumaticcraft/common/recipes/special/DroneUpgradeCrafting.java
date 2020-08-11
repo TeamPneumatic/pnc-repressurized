@@ -12,7 +12,6 @@ import net.minecraft.item.crafting.ShapelessRecipe;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
 
 public class DroneUpgradeCrafting extends ShapelessRecipe {
     // you'd think using Ingredient.fromTag(PneumaticCraftTags.Items.BASIC_DRONES) would work, but nope
@@ -28,23 +27,6 @@ public class DroneUpgradeCrafting extends ShapelessRecipe {
                     Ingredient.fromItems(ModItems.PRINTED_CIRCUIT_BOARD.get()),
                     Ingredient.fromItems(DRONES))
         );
-    }
-
-    @Override
-    public boolean matches(CraftingInventory inv, World worldIn) {
-        int basicDrone = 0, pcb = 0;
-        for (int i = 0; i < inv.getSizeInventory(); i++) {
-            ItemStack stack = inv.getStackInSlot(i);
-            if (isBasicDrone(stack)) {
-                basicDrone++;
-            } else if (stack.getItem() == ModItems.PRINTED_CIRCUIT_BOARD.get()) {
-                pcb++;
-            } else if (!stack.isEmpty()) {
-                return false;
-            }
-            if (basicDrone > 1 || pcb > 1) return false;
-        }
-        return true;
     }
 
     @Override
