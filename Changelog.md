@@ -8,9 +8,25 @@ Changes are in reverse chronological order; newest changes at the top.
 
 The initial 1.16.1 release is largely equivalent in functionality to the 1.4.2 release (for MC 1.15.2), with a few minor player-visible changes.
 
-## 2.1.0-11 (11 Aug 2020)
+Releases from 2.1.0 onward *require* Forge 32.0.108 or newer.
 
-This release *requires* Forge 32.0.108 or newer.
+## 2.1.1-14 (14 Aug 2020)
+
+### Updates
+* Tweaked heat & air output of advanced compressors somewhat
+  * All compressors now produce heat proportional to the air produced (adding 1 heat per 20 air/tick produced)
+  * This affects the Flux Compressor in particular, which was producing much less heat per air than the Advanced Compressor & Advanced Liquid Compressor
+  * Flux Compressor now produces double the heat it used to, so yes: this can be considered a nerf!
+  * Heat generation will drop a bit as efficiency drops (since less air is being produced)
+  * Fixed issue where fractional amounts of air/tick were getting rounded down (so compressors may produce very slightly more now, depending on circumstances)
+* Added Waila/Hwyla support back in
+* Drone placement tweak: if Drone is deployed on block with no collision box, deploy the Drone *in* that blockspace instead of the adjacent one
+
+### Fixes
+* Fixed Jackhammer being able to break bedrock (and other unbreakable blocks) in area dig modes
+* Fixed Drone upgrade crafting recipe not needing a PCB ingredient
+
+## 2.1.0-11 (11 Aug 2020)
 
 ### New
 * Added a Pneumatic Jackhammer!
