@@ -22,7 +22,9 @@ public class ThirdPartyManager {
     private static final ThirdPartyManager INSTANCE = new ThirdPartyManager();
 
     private static final GenericIntegrationHandler GENERIC = new GenericIntegrationHandler();
-    private static final IThirdParty DUMMY_HANDLER = new IThirdParty() {};
+
+    // for those mods which initialise implicitly (generally annotation-based)
+    private static final IThirdParty IMPLICIT_INIT = new IThirdParty() {};
 
     private final List<IThirdParty> thirdPartyMods = new ArrayList<>();
     private IDocsProvider docsProvider = new IDocsProvider.NoDocsProvider();
@@ -42,12 +44,12 @@ public class ThirdPartyManager {
         try {
             // Not using method refs here, because that can cause early class loading and we don't want that
             thirdPartyClasses.put(ModIds.COMPUTERCRAFT, () -> new ComputerCraft());
-//            thirdPartyClasses.put(ModIds.WAILA, () -> new Waila());  no 1.16 yet...
+            thirdPartyClasses.put(ModIds.WAILA, () -> IMPLICIT_INIT);
             thirdPartyClasses.put(ModIds.TOP, () -> new TheOneProbe());
             thirdPartyClasses.put(ModIds.CURIOS, () -> new Curios());
             thirdPartyClasses.put(ModIds.BOTANIA, () -> new Botania());
             thirdPartyClasses.put(ModIds.PATCHOULI, () -> new Patchouli());
-            thirdPartyClasses.put(ModIds.JEI, () -> DUMMY_HANDLER);  // implicit initialisation
+            thirdPartyClasses.put(ModIds.JEI, () -> IMPLICIT_INIT);
             thirdPartyClasses.put(ModIds.IMMERSIVE_ENGINEERING, () -> new ImmersiveEngineering());
             thirdPartyClasses.put(ModIds.MEKANISM, () -> new Mekanism());
 
