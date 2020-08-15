@@ -15,6 +15,7 @@ import me.desht.pneumaticcraft.common.inventory.ContainerPressureChamberValve;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
+import me.desht.pneumaticcraft.common.util.CountedItemStacks;
 import me.desht.pneumaticcraft.common.util.ItemStackHandlerIterable;
 import me.desht.pneumaticcraft.common.util.NBTUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -68,10 +69,11 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
     public float recipePressure;
 
     private final ItemStackHandler itemsInChamber = new ChamberStackHandler();
-    ItemStackHandler craftedItems = new OutputStackHandler();
+    final ItemStackHandler craftedItems = new OutputStackHandler();
     @DescSynced
-    CombinedInvWrapper allItems = new CombinedInvWrapper(itemsInChamber, craftedItems);
-    public final List<ItemStack> renderedItems = new ArrayList<>();
+    final CombinedInvWrapper allItems = new CombinedInvWrapper(itemsInChamber, craftedItems);
+
+    public final List<ItemStack> renderedItems = new ArrayList<>(); // list of non-empty stacks from allItems
 
     public List<TileEntityPressureChamberValve> accessoryValves;
     private final List<BlockPos> nbtValveList;  // temp store for positions of other valves read from NBT
@@ -134,7 +136,9 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
                     }
                 });
                 isValidRecipeInChamber = !applicableRecipes.isEmpty();
-                recipeRecalcNeeded = false;
+                // if we can't find a valid recipe, try coalescing itemstack in the chamber
+                // it's possible we have the right ingredients, but split across stacks
+                recipeRecalcNeeded = !isValidRecipeInChamber && coalesceItems();
             }
 
             processApplicableRecipes();
@@ -151,10 +155,26 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
                     double posX = multiBlockX + 1D + getWorld().rand.nextDouble() * (multiBlockSize - 2D);
                     double posY = multiBlockY + 1.5D + getWorld().rand.nextDouble() * (multiBlockSize - 2.5D);
                     double posZ = multiBlockZ + 1D + getWorld().rand.nextDouble() * (multiBlockSize - 2D);
-                    world.addParticle(AirParticleData.NORMAL, posX, posY, posZ, 0, 0, 0);
+                    getWorld().addParticle(AirParticleData.NORMAL, posX, posY, posZ, 0, 0, 0);
                 }
             }
         }
+    }
+
+    private boolean coalesceItems() {
+        CountedItemStacks count = new CountedItemStacks(itemsInChamber);
+        if (!count.canCoalesce()) return false;
+
+        NonNullList<ItemStack> coalesced = count.coalesce();
+        for (int i = 0; i < itemsInChamber.getSlots(); i++) {
+            if (i < coalesced.size()) {
+                itemsInChamber.setStackInSlot(i, coalesced.get(i));
+            } else {
+                itemsInChamber.setStackInSlot(i, ItemStack.EMPTY);
+            }
+        }
+
+        return true;
     }
 
     @Override
