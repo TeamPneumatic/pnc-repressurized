@@ -41,10 +41,11 @@ public abstract class BlockPressureChamberWallBase extends BlockPneumaticCraft i
         return PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityPressureChamberWall.class).map(te -> {
             TileEntityPressureChamberValve valve = te.getCore();
             if (valve != null) {
-                if (!world.isRemote) NetworkHooks.openGui((ServerPlayerEntity) player, valve, valve.getPos());
-                return ActionResultType.SUCCESS;
+                if (!world.isRemote) {
+                    NetworkHooks.openGui((ServerPlayerEntity) player, valve, valve.getPos());
+                }
             }
-            return ActionResultType.PASS;
+            return ActionResultType.SUCCESS;
         }).orElse(ActionResultType.PASS);
     }
 
