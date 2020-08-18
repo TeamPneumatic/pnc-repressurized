@@ -113,7 +113,7 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
         // (but if we had to stop short due to a "tall" block, account for that)
         if (path != null) {
             PathPoint lastPoint = path.getFinalPathPoint();
-            if (lastPoint != null && pos.manhattanDistance(lastPoint.func_224759_a()) > (tallBlockKludge ? 1 : 0)) {
+            if (lastPoint != null && pos.manhattanDistance(posForPoint(lastPoint)) > (tallBlockKludge ? 1 : 0)) {
                 path = null;
             }
         }
@@ -127,6 +127,10 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
         }
 
         return path;
+    }
+
+    private BlockPos posForPoint(PathPoint point) {
+        return new BlockPos(point.x, point.y, point.z);
     }
 
 //    @Override
