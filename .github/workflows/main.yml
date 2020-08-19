@@ -1,5 +1,3 @@
-# This is a basic workflow to help you get started with Actions
-
 name: "Build applicable branches on push or pull request"
 
 # Controls when the action will run. Triggers the workflow on push or pull request
@@ -29,8 +27,8 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
       - name: Clean gradle
         run: ./gradlew clean --no-daemon --max-workers 1
-      - name: Validate no assets
-        run: test ! -d ./src/generated
+      #- name: Validate no assets
+      #  run: test ! -d ./src/generated
       - name: Generate assets
         run: ./gradlew runData --no-daemon --max-workers 1
       - name: Validate assets
