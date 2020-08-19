@@ -27,10 +27,10 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
       - name: Clean gradle
         run: ./gradlew clean --no-daemon --max-workers 1
-      #- name: Validate no assets
-      #  run: test ! -d ./src/generated
+      - name: Remove any generated assets/data
+        run: rm -rf ./src/generated
       - name: Generate assets
-        run: ./gradlew runData --no-daemon --max-workers 1
+        run: ./gradlew runData --no-daemon --max-workers 1 || test -f ./src/generated/resources/.cache/cache
       - name: Validate assets
         run: test -d ./src/generated -a -f ./src/generated/resources/.cache/cache
       - name: Build with Gradle
