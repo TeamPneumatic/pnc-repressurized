@@ -10,6 +10,16 @@ The initial 1.16.1 release is largely equivalent in functionality to the 1.4.2 r
 
 Releases from 2.1.0 onward *require* Forge 32.0.108 or newer.
 
+## 2.1.2-?? (unreleased)
+
+### Updates
+* Drones (with the Pickup Items widget) will no longer "steal" items off Immersive Engineering conveyor belts
+  * Specifically, the widget now honours the "PreventRemoteMovement" entity tag
+  * This can be overridden via the widget's GUI when creating the drone program
+  
+### Fixes
+* Fixed (hopefully) an issue where client-side Logistics Frames would disappear on certain blocks
+
 ## 2.1.1-14 (14 Aug 2020)
 
 ### Updates
