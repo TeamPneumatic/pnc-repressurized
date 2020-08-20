@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 public class BlockTrackEntryInventory implements IBlockTrackEntry {
     @Override
     public boolean shouldTrackWithThisEntry(IBlockReader world, BlockPos pos, BlockState state, TileEntity te) {
-        if (te instanceof ChestTileEntity && state.get(ChestBlock.TYPE) == ChestType.RIGHT) {
+        if (te instanceof ChestTileEntity && state.has(ChestBlock.TYPE) && state.get(ChestBlock.TYPE) == ChestType.RIGHT) {
             // we'll only track the left side of double chest directly
             return false;
         }
