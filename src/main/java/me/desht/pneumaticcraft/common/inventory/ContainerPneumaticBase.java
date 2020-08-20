@@ -4,7 +4,6 @@ import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.tileentity.IGUIButtonSensitive;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -132,25 +131,12 @@ public class ContainerPneumaticBase<T extends TileEntityBase> extends Container 
     @SuppressWarnings("SameParameterValue")
     void addArmorSlots(PlayerInventory inventoryPlayer, int xBase, int yBase) {
         for (int i = 0; i < 4; ++i) {
-            final EquipmentSlotType entityequipmentslot = ArmorUpgradeRegistry.ARMOR_SLOTS[i];
-            this.addSlot(new Slot(inventoryPlayer, 36 + (3 - i), xBase, yBase + i * 18) {
-                @Override
-                public int getSlotStackLimit() {
-                    return 1;
-                }
-
-                @Override
-                public boolean isItemValid(ItemStack stack) {
-                    return stack.canEquip(entityequipmentslot, inventoryPlayer.player);
-                }
-
-                @Override
-                public boolean canTakeStack(PlayerEntity playerIn) {
-                    ItemStack itemstack = this.getStack();
-                    return (itemstack.isEmpty() || playerIn.isCreative() || !EnchantmentHelper.hasBindingCurse(itemstack)) && super.canTakeStack(playerIn);
-                }
-            });
+            this.addSlot(new SlotPlayer(inventoryPlayer, ArmorUpgradeRegistry.ARMOR_SLOTS[i], xBase, yBase + i * 18));
         }
+    }
+
+    void addOffhandSlot(PlayerInventory inventory, int x, int y) {
+        this.addSlot(new SlotPlayer(inventory, EquipmentSlotType.OFFHAND, x, y));
     }
 
     @Override

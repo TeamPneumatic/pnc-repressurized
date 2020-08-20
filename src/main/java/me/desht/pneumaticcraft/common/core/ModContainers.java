@@ -27,14 +27,14 @@ public class ModContainers {
             = register("assembly_controller", ContainerAssemblyController::new);
     public static final RegistryObject<ContainerType<ContainerChargingStation>> CHARGING_STATION
             = register("charging_station", ContainerChargingStation::new);
-    public static final RegistryObject<ContainerType<ContainerChargingStationItemInventory>> CHARGING_MINIGUN
-            = register("charging_minigun", ContainerChargingStationItemInventory::createMinigunContainer);
-    public static final RegistryObject<ContainerType<ContainerChargingStationItemInventory>> CHARGING_DRONE
-            = register("charging_drone", ContainerChargingStationItemInventory::createDroneContainer);
-    public static final RegistryObject<ContainerType<ContainerChargingStationItemInventory>> CHARGING_ARMOR
-            = register("charging_armor", ContainerChargingStationItemInventory::createArmorContainer);
-    public static final RegistryObject<ContainerType<ContainerChargingStationItemInventory>> CHARGING_JACKHAMMER =
-            register("charging_jackhammer", ContainerChargingStationItemInventory::createJackhammerContainer);
+    public static final RegistryObject<ContainerType<ContainerChargingStationUpgradeManager>> CHARGING_MINIGUN
+            = register("charging_minigun", ContainerChargingStationUpgradeManager::createMinigunContainer);
+    public static final RegistryObject<ContainerType<ContainerChargingStationUpgradeManager>> CHARGING_DRONE
+            = register("charging_drone", ContainerChargingStationUpgradeManager::createDroneContainer);
+    public static final RegistryObject<ContainerType<ContainerChargingStationUpgradeManager>> CHARGING_ARMOR
+            = register("charging_armor", ContainerChargingStationUpgradeManager::createArmorContainer);
+    public static final RegistryObject<ContainerType<ContainerChargingStationUpgradeManager>> CHARGING_JACKHAMMER =
+            register("charging_jackhammer", ContainerChargingStationUpgradeManager::createJackhammerContainer);
     public static final RegistryObject<ContainerType<ContainerCreativeCompressor>> CREATIVE_COMPRESSOR
             = register("creative_compressor", ContainerCreativeCompressor::new);
     public static final RegistryObject<ContainerType<ContainerElectrostaticCompressor>> ELECTROSTATIC_COMPRESSOR

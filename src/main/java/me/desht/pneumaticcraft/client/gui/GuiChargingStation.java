@@ -34,7 +34,7 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<ContainerCharg
     public GuiChargingStation(ContainerChargingStation container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
 
-        ySize = 176;
+        ySize = 182;
     }
 
     @Override
@@ -43,8 +43,9 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<ContainerCharg
 
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
-        guiSelectButton = new WidgetButtonExtended(xStart + 89, yStart + 15, 21, 20, "").withTag("open_upgrades");
+        guiSelectButton = new WidgetButtonExtended(xStart + 90, yStart + 22, 18, 19, "").withTag("open_upgrades");
         guiSelectButton.setRenderedIcon(Textures.GUI_UPGRADES_LOCATION);
+        guiSelectButton.visible = false;
         addButton(guiSelectButton);
     }
 
@@ -89,7 +90,7 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<ContainerCharg
     protected PointXY getGaugeLocation() {
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
-        return new PointXY(xStart + xSize * 3 / 4 + 10, yStart + ySize / 4 + 4);
+        return new PointXY(xStart + xSize * 3 / 4 + 10, yStart + ySize / 4 + 10);
     }
 
     @Override
@@ -150,7 +151,7 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<ContainerCharg
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
         float x = xStart + 117F;
-        float y = yStart + 50.5F;
+        float y = yStart + 56.5F;
         if (particleProgress < 0.5F) {
             y += particleProgress * 56;
         } else if (particleProgress < 0.7F) {

@@ -109,7 +109,7 @@ public class Textures {
     public static final ResourceLocation GUI_AIR_CANNON = guiTexture("gui_air_cannon.png");
     public static final ResourceLocation GUI_4UPGRADE_SLOTS = guiTexture("gui_pressure_chamber.png");
     public static final ResourceLocation GUI_CHARGING_STATION = guiTexture("gui_charging_station.png");
-    public static final ResourceLocation GUI_PNEUMATIC_ARMOR = guiTexture("gui_pneumatic_armor.png");
+    public static final ResourceLocation GUI_CHARGING_UPGRADE_MANAGER = guiTexture("gui_charging_upgrade_manager.png");
     public static final ResourceLocation GUI_PRESSURE_CHAMBER_INTERFACE = guiTexture("gui_pressure_chamber_interface.png");
     public static final ResourceLocation GUI_VACUUM_PUMP = guiTexture("gui_vacuum_pump.png");
     public static final ResourceLocation GUI_ITEM_SEARCHER = guiTexture("gui_item_searcher.png");

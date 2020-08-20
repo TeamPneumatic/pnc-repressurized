@@ -7,7 +7,7 @@ import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.common.block.BlockChargingStation;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerChargingStation;
-import me.desht.pneumaticcraft.common.inventory.ContainerChargingStationItemInventory;
+import me.desht.pneumaticcraft.common.inventory.ContainerChargingStationUpgradeManager;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.inventory.handler.ChargeableItemHandler;
 import me.desht.pneumaticcraft.common.item.IChargeableContainerProvider;
@@ -167,8 +167,10 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
                 updateNeighbours();
                 break;
             case "open_upgrades":
-                INamedContainerProvider provider = ((IChargeableContainerProvider) getChargingStack().getItem()).getContainerProvider(this);
-                NetworkHooks.openGui((ServerPlayerEntity) player, provider, getPos());
+                if (getChargingStack().getItem() instanceof IChargeableContainerProvider) {
+                    INamedContainerProvider provider = ((IChargeableContainerProvider) getChargingStack().getItem()).getContainerProvider(this);
+                    NetworkHooks.openGui((ServerPlayerEntity) player, provider, getPos());
+                }
                 break;
             case "close_upgrades":
                 NetworkHooks.openGui((ServerPlayerEntity) player, this, getPos());
@@ -350,8 +352,8 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
             // if any other player has a gui open for the previous item, force a reopen of the charging station gui
             for (PlayerEntity player : teCS.getWorld().getPlayers()) {
                 if (player instanceof ServerPlayerEntity
-                        && player.openContainer instanceof ContainerChargingStationItemInventory
-                        && ((ContainerChargingStationItemInventory) player.openContainer).te == te) {
+                        && player.openContainer instanceof ContainerChargingStationUpgradeManager
+                        && ((ContainerChargingStationUpgradeManager) player.openContainer).te == te) {
                     NetworkHooks.openGui((ServerPlayerEntity) player, TileEntityChargingStation.this, getPos());
                 }
             }

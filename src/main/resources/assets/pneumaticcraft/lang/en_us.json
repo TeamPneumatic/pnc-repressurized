@@ -140,7 +140,7 @@
    "gui.tooltip.block.pneumaticcraft.assembly_io_unit_import" : "Part of an Assembly line. Transfers items from an input inventory to an Assembly Platform.",
    "gui.tooltip.block.pneumaticcraft.assembly_laser" : "Part of an Assembly line. Lasers items on an Assembly Platform directly (not diagonally) adjacent to it.",
    "gui.tooltip.block.pneumaticcraft.assembly_platform" : "Part of an Assembly line. Holds items in place for drilling and lasering.",
-   "gui.tooltip.block.pneumaticcraft.charging_station" : "This machine is used to (dis)charge items which operate on pneumatic power, e.g. Drones, Pneumatic Wrenches and Vortex Cannons. It is also used to manage upgrades in those items which can accept upgrades.",
+   "gui.tooltip.block.pneumaticcraft.charging_station" : "This machine is used to (dis)charge items which operate on pneumatic power, e.g. Drones, Pneumatic Wrenches and Vortex Cannons.${br}${br}It is also used to manage upgrades in those items which can accept upgrades.",
    "gui.tooltip.block.pneumaticcraft.compressed_iron_block" : "A block used as crafting component. Also an excellent heat conductor (but also see Heat Pipes).",
    "gui.tooltip.block.pneumaticcraft.creative_compressor" : "A creative-only block used to generate any pressure you would like to test set-ups.",
    "gui.tooltip.block.pneumaticcraft.display_table" : "This table can hold and display a single item, which can be interacted with via automation (hoppers/drones/pipes...)",

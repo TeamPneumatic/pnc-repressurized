@@ -23,18 +23,17 @@ public class ContainerChargingStation extends ContainerPneumaticBase<TileEntityC
     public ContainerChargingStation(int i, PlayerInventory inventoryPlayer, BlockPos pos) {
         super(ModContainers.CHARGING_STATION.get(), i, inventoryPlayer, pos);
 
-        addSlot(new SlotItemHandler(te.getPrimaryInventory(), 0, 91, 39) {
+        addSlot(new SlotItemHandler(te.getPrimaryInventory(), 0, 91, 45) {
             @Override
             public int getSlotStackLimit() {
                 return 1;
             }
         });
 
-        addUpgradeSlots(42, 29);
-
-        addArmorSlots(inventoryPlayer, 8, 19);
-
-        addPlayerSlots(inventoryPlayer, 95);
+        addUpgradeSlots(42, 35);
+        addArmorSlots(inventoryPlayer, 8, 25);
+        addOffhandSlot(inventoryPlayer,28, 79);
+        addPlayerSlots(inventoryPlayer, 101);
     }
 
     @Override

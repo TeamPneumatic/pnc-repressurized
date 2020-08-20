@@ -4,7 +4,7 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
-import me.desht.pneumaticcraft.common.inventory.ContainerChargingStationItemInventory;
+import me.desht.pneumaticcraft.common.inventory.ContainerChargingStationUpgradeManager;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
@@ -21,13 +21,13 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiPneumaticArmor extends GuiPneumaticInventoryItem {
+public class GuiPneumaticArmor extends GuiChargingUpgradeManager {
 
     private final String registryName;  // for translation purposes
     private WidgetAnimatedStat statusStat;
     private final EquipmentSlotType equipmentSlot;
 
-    public GuiPneumaticArmor(ContainerChargingStationItemInventory container, PlayerInventory inv, ITextComponent displayString) {
+    public GuiPneumaticArmor(ContainerChargingStationUpgradeManager container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
 
         registryName = itemStack.getItem().getRegistryName().getPath();

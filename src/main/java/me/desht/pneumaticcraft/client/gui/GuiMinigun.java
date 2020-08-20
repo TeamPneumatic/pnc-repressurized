@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
-import me.desht.pneumaticcraft.common.inventory.ContainerChargingStationItemInventory;
+import me.desht.pneumaticcraft.common.inventory.ContainerChargingStationUpgradeManager;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.player.PlayerInventory;
@@ -8,8 +8,8 @@ import net.minecraft.util.text.ITextComponent;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiMinigun extends GuiPneumaticInventoryItem {
-    public GuiMinigun(ContainerChargingStationItemInventory container, PlayerInventory inv, ITextComponent displayString) {
+public class GuiMinigun extends GuiChargingUpgradeManager {
+    public GuiMinigun(ContainerChargingStationUpgradeManager container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
     }
 

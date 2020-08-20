@@ -1,16 +1,17 @@
 package me.desht.pneumaticcraft.client.gui;
 
-import me.desht.pneumaticcraft.common.inventory.ContainerChargingStationItemInventory;
+import me.desht.pneumaticcraft.common.inventory.ContainerChargingStationUpgradeManager;
 import me.desht.pneumaticcraft.common.item.ItemDrone;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 
-public class GuiDrone extends GuiPneumaticInventoryItem {
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-    public GuiDrone(ContainerChargingStationItemInventory container, PlayerInventory inv, ITextComponent displayString) {
+public class GuiDrone extends GuiChargingUpgradeManager {
+
+    public GuiDrone(ContainerChargingStationUpgradeManager container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
     }
 
@@ -22,7 +23,7 @@ public class GuiDrone extends GuiPneumaticInventoryItem {
             return; // should never happen...
         }
 
-        addAnimatedStat(new StringTextComponent("pneumaticcraft.gui.tab.info"), Textures.GUI_INFO_LOCATION, 0xFF8888FF, true)
+        addAnimatedStat(xlate("pneumaticcraft.gui.tab.info"), Textures.GUI_INFO_LOCATION, 0xFF8888FF, true)
                 .setText("pneumaticcraft.gui.tab.info.item.drone");
         addUpgradeTabs(itemStack.getItem(), itemStack.getItem().getRegistryName().getPath(), "drone");
     }

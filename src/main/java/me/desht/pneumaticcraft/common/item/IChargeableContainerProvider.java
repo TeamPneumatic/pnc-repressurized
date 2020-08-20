@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.item;
 
-import me.desht.pneumaticcraft.common.inventory.ContainerChargingStationItemInventory;
+import me.desht.pneumaticcraft.common.inventory.ContainerChargingStationUpgradeManager;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -24,9 +24,9 @@ public interface IChargeableContainerProvider {
 
     class Provider implements INamedContainerProvider {
         private final TileEntityChargingStation te;
-        private final ContainerType<? extends ContainerChargingStationItemInventory> type;
+        private final ContainerType<? extends ContainerChargingStationUpgradeManager> type;
 
-        public Provider(TileEntityChargingStation te, ContainerType<? extends ContainerChargingStationItemInventory> type) {
+        public Provider(TileEntityChargingStation te, ContainerType<? extends ContainerChargingStationUpgradeManager> type) {
             this.te = te;
             this.type = type;
         }
@@ -38,8 +38,8 @@ public interface IChargeableContainerProvider {
 
         @Nullable
         @Override
-        public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-            return new ContainerChargingStationItemInventory(type, i, playerInventory, te.getPos());
+        public Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+            return new ContainerChargingStationUpgradeManager(type, windowId, playerInventory, te.getPos());
         }
     }
 }

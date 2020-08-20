@@ -5,8 +5,9 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer2D;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
-import me.desht.pneumaticcraft.common.inventory.ContainerChargingStationItemInventory;
+import me.desht.pneumaticcraft.common.inventory.ContainerChargingStationUpgradeManager;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
@@ -26,21 +27,21 @@ import org.lwjgl.glfw.GLFW;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class GuiPneumaticInventoryItem extends GuiPneumaticContainerBase<ContainerChargingStationItemInventory,TileEntityChargingStation> {
+public abstract class GuiChargingUpgradeManager extends GuiPneumaticContainerBase<ContainerChargingStationUpgradeManager,TileEntityChargingStation> {
 
     protected final ItemStack itemStack;
     private Button guiBackButton;
 
-    GuiPneumaticInventoryItem(ContainerChargingStationItemInventory container, PlayerInventory inv, ITextComponent displayString) {
+    GuiChargingUpgradeManager(ContainerChargingStationUpgradeManager container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
         itemStack = te.getPrimaryInventory().getStackInSlot(TileEntityChargingStation.CHARGE_INVENTORY_INDEX);
 
-        ySize = 176;
+        ySize = 182;
     }
 
     @Override
     protected ResourceLocation getGuiTexture() {
-        return Textures.GUI_PNEUMATIC_ARMOR;
+        return Textures.GUI_CHARGING_UPGRADE_MANAGER;
     }
 
     @Override
@@ -49,7 +50,7 @@ public abstract class GuiPneumaticInventoryItem extends GuiPneumaticContainerBas
 
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
-        guiBackButton = new WidgetButtonExtended(xStart + 152, yStart + 4, 18, 18, GuiConstants.ARROW_LEFT_SHORT).withTag("close_upgrades");
+        guiBackButton = new WidgetButtonExtended(xStart + 8, yStart + 5, 16, 16, GuiConstants.TRIANGLE_LEFT).withTag("close_upgrades");
         addButton(guiBackButton);
     }
 
@@ -96,8 +97,16 @@ public abstract class GuiPneumaticInventoryItem extends GuiPneumaticContainerBas
     protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int x, int y) {
         font.func_238422_b_(matrixStack, itemStack.getDisplayName(), (xSize - font.func_238414_a_(itemStack.getDisplayName())) / 2f, 5, 0x404040);
 
+        int gaugeX = xSize * 3 / 4 + 10;
+        int gaugeY = ySize / 4 + 12;
+
         itemStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
-                .ifPresent(h -> PressureGaugeRenderer2D.drawPressureGauge(matrixStack, font, 0, h.maxPressure(), h.maxPressure(), 0, te.chargingItemPressure, xSize * 3 / 4 + 10, ySize / 4 + 4));
+                .ifPresent(h -> PressureGaugeRenderer2D.drawPressureGauge(matrixStack, font, 0, h.maxPressure(), h.maxPressure(), 0, te.chargingItemPressure, gaugeX, gaugeY));
+
+        matrixStack.push();
+        matrixStack.scale(2f, 2f, 2f);
+        GuiUtils.renderItemStack(matrixStack, itemStack, 3, 22);
+        matrixStack.pop();
     }
 
     @Override
