@@ -1,8 +1,9 @@
 package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.api.drone.IDrone;
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetAreaItemBase;
+import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetPickupItem;
 import me.desht.pneumaticcraft.common.util.IOHelper;
+import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.item.ItemEntity;
@@ -15,11 +16,11 @@ import java.util.List;
 
 public class DroneEntityAIPickupItems extends Goal {
     private final IDroneBase drone;
-    private final ProgWidgetAreaItemBase itemPickupWidget;
+    private final ProgWidgetPickupItem itemPickupWidget;
     private ItemEntity curPickingUpEntity;
     private final DistanceEntitySorter theNearestAttackableTargetSorter;
 
-    public DroneEntityAIPickupItems(IDroneBase drone, ProgWidgetAreaItemBase progWidgetPickupItem) {
+    public DroneEntityAIPickupItems(IDroneBase drone, ProgWidgetPickupItem progWidgetPickupItem) {
         this.drone = drone;
         setMutexFlags(EnumSet.allOf(Flag.class)); // so it won't run along with other AI tasks.
         itemPickupWidget = progWidgetPickupItem;
@@ -39,6 +40,9 @@ public class DroneEntityAIPickupItems extends Goal {
         }
         pickableItems.sort(theNearestAttackableTargetSorter);
         for (Entity ent : pickableItems) {
+            if (ent.getPersistentData().getBoolean(Names.PREVENT_REMOTE_MOVEMENT) && !itemPickupWidget.canSteal()) {
+                continue;
+            }
             ItemStack stack = ((ItemEntity) ent).getItem();
             if (itemPickupWidget.isItemValidForFilters(stack)) {
                 if (IOHelper.insert(drone, stack, null, true).isEmpty()) {
