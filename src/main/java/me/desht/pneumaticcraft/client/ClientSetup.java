@@ -110,13 +110,12 @@ public class ClientSetup {
 
     private static void registerItemModelProperties() {
         ItemModelsProperties.func_239418_a_(ModItems.JACKHAMMER.get(), RL("drill_bit"), (stack, world, entity) -> {
-            if (world != null && entity instanceof PlayerEntity) {
-                ItemDrillBit.DrillBitType type = ((ItemJackHammer) stack.getItem()).getDrillBit(stack);
-                if (type == ItemDrillBit.DrillBitType.NONE) return 0f;
-                long l = MovingSoundJackhammer.lastJackHammerTime((PlayerEntity) entity);
-                if (l <= 20) return MathHelper.sin((world.getGameTime() % 4 / 4f) * 3.141529f);
-            }
-            return 0.99f;
+            ItemDrillBit.DrillBitType type = ((ItemJackHammer) stack.getItem()).getDrillBit(stack);
+            if (type == ItemDrillBit.DrillBitType.NONE) return 0f;
+            if (world == null || !(entity instanceof PlayerEntity)) return 0.99f;
+            long l = MovingSoundJackhammer.lastJackHammerTime((PlayerEntity) entity);
+            if (l <= 20) return MathHelper.sin((world.getGameTime() % 4 / 4f) * 3.141529f);
+            else return 0.99f;
         });
     }
 
