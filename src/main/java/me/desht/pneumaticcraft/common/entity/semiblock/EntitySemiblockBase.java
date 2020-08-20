@@ -90,7 +90,7 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
             this.setDamageTaken(this.getDamageTaken() - 1.0F);
         }
 
-        if (isAlive() && !canStay()) {
+        if (!world.isRemote && isAlive() && !canStay()) {
             remove();
         }
     }
