@@ -98,7 +98,7 @@ public abstract class GuiChargingUpgradeManager extends GuiPneumaticContainerBas
         font.func_238422_b_(matrixStack, itemStack.getDisplayName(), (xSize - font.func_238414_a_(itemStack.getDisplayName())) / 2f, 5, 0x404040);
 
         int gaugeX = xSize * 3 / 4 + 10;
-        int gaugeY = ySize / 4 + 12;
+        int gaugeY = ySize / 4 + 10;
 
         itemStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
                 .ifPresent(h -> PressureGaugeRenderer2D.drawPressureGauge(matrixStack, font, 0, h.maxPressure(), h.maxPressure(), 0, te.chargingItemPressure, gaugeX, gaugeY));
