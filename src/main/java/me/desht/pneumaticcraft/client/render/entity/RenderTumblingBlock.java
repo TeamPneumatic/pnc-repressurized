@@ -46,14 +46,15 @@ public class RenderTumblingBlock extends EntityRenderer<EntityTumblingBlock> {
             World world = entity.getEntityWorld();
             if (state != world.getBlockState(entity.getPosition()) && state.getRenderType() != BlockRenderType.INVISIBLE) {
                 matrixStackIn.push();
+                if (entity.tumbleVec != null) {
+                    // spin the block on the x & z axes
+                    matrixStackIn.translate(0, 0.5, 0);
+                    float angle = ((entity.ticksExisted + partialTicks) * 18);
+                    matrixStackIn.rotate(entity.tumbleVec.rotationDegrees(angle));
+                    matrixStackIn.translate(-0.5, -0.5, -0.5);
+                }
+
                 BlockPos blockpos = new BlockPos(entity.getPosX(), entity.getBoundingBox().maxY, entity.getPosZ());
-
-                // spin the block on the x & z axes
-                matrixStackIn.translate(0, 0.5, 0);
-                float angle = ((entity.ticksExisted + partialTicks) * 36) % 360;  // * 36 : will rotate through 360 degrees twice / second
-                matrixStackIn.rotate(ROT_VEC.rotationDegrees(angle));
-                matrixStackIn.translate(-0.5D, -0.5D, -0.5D);
-
                 BlockRendererDispatcher blockrendererdispatcher = Minecraft.getInstance().getBlockRendererDispatcher();
                 for (RenderType type : RenderType.getBlockRenderTypes()) {
                     if (RenderTypeLookup.canRenderInLayer(state, type)) {

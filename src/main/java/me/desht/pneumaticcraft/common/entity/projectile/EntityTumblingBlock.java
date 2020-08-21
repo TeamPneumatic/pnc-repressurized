@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.entity.projectile;
 
 import com.mojang.authlib.GameProfile;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModEntities;
 import me.desht.pneumaticcraft.common.util.fakeplayer.FakeNetHandlerPlayerServer;
 import net.minecraft.block.BlockState;
@@ -23,6 +24,8 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
@@ -45,8 +48,13 @@ public class EntityTumblingBlock extends ThrowableEntity {
     private static final DataParameter<ItemStack> STATE_STACK = EntityDataManager.createKey(EntityTumblingBlock.class, DataSerializers.ITEMSTACK);
     private static FakePlayer fakePlayer;
 
+    private static final Vector3d Y_POS = new Vector3d(0, 1, 0);
+
+    public final Vector3f tumbleVec;  // used for rendering
+
     public EntityTumblingBlock(EntityType<EntityTumblingBlock> type, World worldIn) {
         super(type, worldIn);
+        this.tumbleVec = makeTumbleVec(worldIn, null);
     }
 
     public EntityTumblingBlock(World worldIn, LivingEntity thrower, double x, double y, double z, @Nonnull ItemStack stack) {
@@ -60,8 +68,20 @@ public class EntityTumblingBlock extends ThrowableEntity {
         this.prevPosX = x;
         this.prevPosY = y;
         this.prevPosZ = z;
+        this.tumbleVec = makeTumbleVec(worldIn, thrower);
         this.setOrigin(getPosition());
         dataManager.set(STATE_STACK, stack);
+    }
+
+    private Vector3f makeTumbleVec(World world, LivingEntity thrower) {
+        if (thrower != null) {
+            return new Vector3f(thrower.getLookVec().crossProduct(Y_POS));
+        } else if (world != null && world.isRemote) {
+            PlayerEntity player = ClientUtils.getClientPlayer();
+            return player == null ? null : new Vector3f(player.getLookVec().crossProduct(Y_POS));
+        } else {
+            return null;
+        }
     }
 
     @Override
