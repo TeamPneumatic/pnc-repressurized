@@ -16,13 +16,13 @@ Have fun!
 
 ## New Features in PneumaticCraft: Repressurized
 
-See the [Changelog](https://github.com/TeamPneumatic/pnc-repressurized/blob/master/Changelog.md for more information.
+See the [Changelog](https://github.com/TeamPneumatic/pnc-repressurized/blob/master/Changelog.md) for more information.
 
 Also see https://gist.github.com/desht/b604bd670f7f718bb4e6f20ff53893e2 for an overview of new and planned new features in PneumaticCraft for 1.14.4 and 1.15.2.
 
 ### Who is Team Pneumatic?
 
-Team Pneumatic consists of two developers: MineMaarten and desht; MineMaarten is the original author of PneumaticCraft for 1.6.x/1.7.x/1.8.x, and desht carried out the port to 1.12.2 and newer Minecraft releases.  MineMaarten is not currently actively developing, but desht is developing & maintaining the 1.15.2 version.  The 1.12.2 versions and 1.14.4 versions will also be maintained for now, but no new features will be added there, only fixes.
+Team Pneumatic consists of two developers: MineMaarten and desht; MineMaarten is the original author of PneumaticCraft for 1.6.x/1.7.x/1.8.x, and desht carried out the port to 1.12.2 and newer Minecraft releases.  MineMaarten is not currently actively developing, but desht is developing & maintaining the 1.15.2 and later versions.  The 1.12.2 versions and 1.14.4 versions are no longer actively maintained.
 
 Of course, being an open-source project, there are other welcome contributors - see https://github.com/TeamPneumatic/pnc-repressurized/graphs/contributors for a full list (this includes contributors to the original PneumaticCraft project too).
 

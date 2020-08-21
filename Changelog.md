@@ -6,7 +6,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.15.2
 
-## 1.4.4-?? (unreleased)
+## 1.4.4-64 (21 Aug 2020)
 
 ### Updates
 * Pneumatic Armor HUD now displays only 1 decimal place of pressure for armor pieces
@@ -16,9 +16,25 @@ Changes are in reverse chronological order; newest changes at the top.
   * This is enough for the vast majority of display purposes; e.g. item pressure tooltips already display with 0.1 bar of precision
   * Server->client traffic is now greatly reduced, especially for fast-changing pressures such as Jet Boots
 * When placing a Drone down, if the block clicked has no collision box (e.g. flower, crop, etc.) then place the Drone on the that block instead of the adjacent block
+* Drones (with the Pick up Items widget) will no longer "steal" items off Immersive Engineering conveyor belts
+  * Specifically, the widget now honours the "PreventRemoteMovement" entity tag
+  * This can be overridden via the widget's GUI when creating the drone program
+* Tweaked heat & air output of advanced compressors somewhat
+  * All compressors now produce heat proportional to the air produced (adding 1 heat per 20 air/tick produced)
+  * This affects the Flux Compressor in particular, which was producing much less heat per air than the Advanced Compressor & Advanced Liquid Compressor
+  * Flux Compressor now produces double the heat it used to, so yes: this can be considered a nerf!
+  * Heat generation will drop a bit as efficiency drops (since less air is being produced)
+  * Fixed issue where fractional amounts of air/tick were getting rounded down (so compressors may produce very slightly more now, depending on circumstances)
+* Reinforced Stone blocks are now a little easier to mine up (blast resistance has not been changed though)
 
 ### Fixes
 * Fixed Logistics Frames not being placeable on the Aerial Interface
+* Fixed client desync when placing items (e.g. torches) on a Pressure Chamber block from the offhand
+* Fixed (hopefully) an issue where client-side Logistics Frames would disappear on certain blocks
+  * This also caused a client-side crash if right-clicking a "missing" frame with the Logistics Configurator
+* Fixed Minigun item being rendered too far right in GUI context
+* Fixed occasional client-side crash with Block Tracker helmet upgrade enabled
+
 
 ## 1.4.3-60 (6 Aug 2020)
 
