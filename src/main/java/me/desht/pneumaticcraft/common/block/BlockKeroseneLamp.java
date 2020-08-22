@@ -1,9 +1,13 @@
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.item.ICustomTooltipName;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityKeroseneLamp;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.EnumProperty;
@@ -80,8 +84,14 @@ public class BlockKeroseneLamp extends BlockPneumaticCraft {
         return state.get(LIT) ? 15 : 0;
     }
 
-//    @Override
-//    public int getLightValue(BlockState state) {
-//        return state.get(LIT) ? 15 : 0;
-//    }
+    public static class ItemBlockKeroseneLamp extends BlockItem implements ICustomTooltipName {
+        public ItemBlockKeroseneLamp(Block blockIn) {
+            super(blockIn, ModItems.defaultProps());
+        }
+
+        @Override
+        public String getCustomTooltipTranslationKey() {
+            return PNCConfig.Common.Machines.keroseneLampCanUseAnyFuel ? getTranslationKey() : getTranslationKey() + ".kerosene_only";
+        }
+    }
 }

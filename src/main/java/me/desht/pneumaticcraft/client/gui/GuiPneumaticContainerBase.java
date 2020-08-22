@@ -13,6 +13,7 @@ import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.ContainerPneumaticBase;
+import me.desht.pneumaticcraft.common.item.ICustomTooltipName;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketGuiButton;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
@@ -78,7 +79,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         }
         if (te != null) {
             if (shouldAddInfoTab()) {
-                addInfoTab("gui.tooltip." + te.getBlockTranslationKey());
+                addInfoTab(ICustomTooltipName.getTranslationKey(new ItemStack(te.getBlockState().getBlock()), false));
             }
             if (shouldAddRedstoneTab() && te instanceof IRedstoneControl) {
                 addRedstoneTab();

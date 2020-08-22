@@ -157,7 +157,7 @@ public class ModBlocks {
     public static final RegistryObject<BlockThermopneumaticProcessingPlant> THERMOPNEUMATIC_PROCESSING_PLANT = register("thermopneumatic_processing_plant",
             BlockThermopneumaticProcessingPlant::new);
     public static final RegistryObject<BlockKeroseneLamp> KEROSENE_LAMP = register("kerosene_lamp",
-            BlockKeroseneLamp::new);
+            BlockKeroseneLamp::new, block -> () -> new BlockKeroseneLamp.ItemBlockKeroseneLamp(block.get()));
     public static final RegistryObject<BlockKeroseneLampLight> KEROSENE_LAMP_LIGHT = registerNoItem("kerosene_lamp_light",
             BlockKeroseneLampLight::new);
     public static final RegistryObject<BlockSentryTurret> SENTRY_TURRET = register("sentry_turret",

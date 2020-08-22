@@ -26,6 +26,7 @@ Releases from 2.1.0 onward *require* Forge 32.0.108 or newer.
 * Fixed Minigun item being rendered too far right in GUI context
 * Fixed Jackhammer item model always rendering with drill bit when not held by player (even when no bit is installed)
 
+
 ## 2.1.1-14 (14 Aug 2020)
 
 ### Updates
