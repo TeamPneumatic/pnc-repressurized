@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.util;
 
+import com.google.common.base.Splitter;
 import me.desht.pneumaticcraft.api.item.IInventoryItem;
 import me.desht.pneumaticcraft.api.item.ITagFilteringItem;
 import me.desht.pneumaticcraft.common.XPFluidManager;
@@ -143,25 +144,29 @@ public class PneumaticCraftUtils {
             StringTokenizer tok = new StringTokenizer(para, " ");
             int lineLen = 0;
             while (tok.hasMoreTokens()) {
-                String word = tok.nextToken();
-                int idx = word.lastIndexOf("\u00a7");
-                if (idx >= 0 && idx < word.length() - 1) {
-                    // note the formatting sequence so we can apply to next line if any
-                    format = word.substring(idx, idx + 2);
-                    // formatting sequence does not contribute to line length
-                    lineLen -= 2;
+                String token = tok.nextToken();
+                // the Splitter here ensures any very long words with no whitespace get split up
+                // also important for some localizations, e.g. Chinese text does not use whitespace
+                for (String word : Splitter.fixedLength(maxCharPerLine).split(token)) {
+                    int idx = word.lastIndexOf("\u00a7");
+                    if (idx >= 0 && idx < word.length() - 1) {
+                        // note any formatting sequence so it can also be applied to start of next line
+                        format = word.substring(idx, idx + 2);
+                        // formatting sequences do not contribute to line length
+                        lineLen -= 2;
+                    }
+                    if (lineLen + word.length() > maxCharPerLine) {
+                        result.add(builder.toString());
+                        builder.delete(0, builder.length());
+                        builder.append(format);
+                        lineLen = 0;
+                    } else if (lineLen > 0) {
+                        builder.append(" ");
+                        lineLen++;
+                    }
+                    builder.append(word);
+                    lineLen += word.length();
                 }
-                if (lineLen + word.length() > maxCharPerLine) {
-                    result.add(builder.toString());
-                    builder.delete(0, builder.length());
-                    builder.append(format);
-                    lineLen = 0;
-                } else if (lineLen > 0) {
-                    builder.append(" ");
-                    lineLen++;
-                }
-                builder.append(word);
-                lineLen += word.length();
             }
             result.add(builder.toString());
             builder.delete(0, builder.length());
