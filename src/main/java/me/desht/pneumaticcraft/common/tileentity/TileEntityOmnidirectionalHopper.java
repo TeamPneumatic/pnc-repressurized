@@ -137,7 +137,7 @@ public class TileEntityOmnidirectionalHopper extends TileEntityAbstractHopper {
         BlockPos inputPos = pos.offset(inputDir);
         if (!Block.hasSolidSide(world.getBlockState(inputPos), world, inputPos, inputDir.getOpposite())) {
             // Suck in item entities
-            for (ItemEntity entity : getNeighborItems()) {
+            for (ItemEntity entity : getNeighborItems(inputAABB)) {
                 ItemStack remainder = ItemHandlerHelper.insertItem(itemHandler, entity.getItem(), false); //IOHelper.insert(this, entity.getItem(), null, false);
                 if (remainder.isEmpty()) {
                     entity.remove();

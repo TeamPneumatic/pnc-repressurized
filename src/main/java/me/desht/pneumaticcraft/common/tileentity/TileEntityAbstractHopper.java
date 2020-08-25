@@ -30,7 +30,7 @@ public abstract class TileEntityAbstractHopper extends TileEntityTickableBase
     public boolean isCreative; // has a creative upgrade installed
     private boolean wasCreative = false;
     Direction inputDir = Direction.UP;
-    private AxisAlignedBB inputAABB; // region to check for item entities
+    AxisAlignedBB inputAABB; // region to check for item entities
 
     TileEntityAbstractHopper(TileEntityType type) {
         super(type, 4);
@@ -180,7 +180,7 @@ public abstract class TileEntityAbstractHopper extends TileEntityTickableBase
         return getDisplayNameInternal();
     }
 
-    List<ItemEntity> getNeighborItems() {
-        return inputAABB == null ? Collections.emptyList() : world.getEntitiesWithinAABB(ItemEntity.class, inputAABB, EntityPredicates.IS_ALIVE);
+    List<ItemEntity> getNeighborItems(AxisAlignedBB aabb) {
+        return aabb == null ? Collections.emptyList() : world.getEntitiesWithinAABB(ItemEntity.class, aabb, EntityPredicates.IS_ALIVE);
     }
 }

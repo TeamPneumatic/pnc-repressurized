@@ -19,6 +19,7 @@ import net.minecraft.item.BucketItem;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
@@ -38,6 +39,8 @@ import java.util.Map;
 
 public class TileEntityLiquidHopper extends TileEntityAbstractHopper implements ISerializableTanks {
     private int comparatorValue = -1;
+
+    private AxisAlignedBB outputAABB;
 
     @DescSynced
     @GuiSynced
@@ -60,6 +63,24 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper implements 
             comparatorValue = (int) (1 + ((float) fluidStack.getAmount() / tank.getCapacity() * 14f));
         }
         return comparatorValue;
+    }
+
+    @Override
+    protected void onFirstServerTick() {
+        super.onFirstServerTick();
+
+        setupOutputAABB();
+    }
+
+    @Override
+    public void onBlockRotated() {
+        super.onBlockRotated();
+
+        setupOutputAABB();
+    }
+
+    private void setupOutputAABB() {
+        outputAABB = new AxisAlignedBB(getPos().offset(getRotation()));
     }
 
     @Override
@@ -94,7 +115,7 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper implements 
 
         // try to fill any fluid-handling items in front of the output
         if (getWorld().isAirBlock(getPos().offset(dir))) {
-            for (ItemEntity entity : getNeighborItems()) {
+            for (ItemEntity entity : getNeighborItems(outputAABB)) {
                 FluidActionResult res = FluidUtil.tryFillContainer(entity.getItem(), tank, maxItems * 100, null, true);
                 if (res.success) {
                     entity.setItem(res.result);
@@ -133,7 +154,7 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper implements 
         }
 
         if (getWorld().isAirBlock(getPos().offset(inputDir))) {
-            for (ItemEntity entity : getNeighborItems()) {
+            for (ItemEntity entity : getNeighborItems(inputAABB)) {
                 // special case: buckets can only drain 1000 mB at a time
                 int max = entity.getItem().getItem() instanceof BucketItem ? 1000 : maxItems * 100;
                 FluidActionResult res = FluidUtil.tryEmptyContainer(entity.getItem(), tank, max, null, true);
