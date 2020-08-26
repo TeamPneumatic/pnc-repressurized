@@ -13,7 +13,6 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 
 import java.util.List;
 import java.util.Set;
@@ -21,7 +20,7 @@ import java.util.Set;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetGoToLocation extends ProgWidget implements IGotoWidget, IAreaProvider {
-    public boolean doneWhenDeparting;
+    private boolean doneWhenDeparting;
 
     public ProgWidgetGoToLocation() {
         super(ModProgWidgets.GOTO);
@@ -52,7 +51,7 @@ public class ProgWidgetGoToLocation extends ProgWidget implements IGotoWidget, I
     @Override
     public void getTooltip(List<ITextComponent> curTooltip) {
         super.getTooltip(curTooltip);
-        curTooltip.add(new StringTextComponent("Done when " + (doneWhenDeparting ? "departing" : "arrived")));
+        curTooltip.add(xlate("pneumaticcraft.gui.progWidget.goto.doneWhen" + (doneWhenDeparting ? "Departing" : "Arrived")));
     }
 
     @Override
