@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.client.gui;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.inventory.ContainerThermalCompressor;
@@ -29,11 +30,11 @@ public class GuiThermalCompressor extends GuiPneumaticContainerBase<ContainerThe
     public void init() {
         super.init();
 
-        addButton(tempWidgets[0] = new WidgetTemperatureSided(Direction.NORTH, 55).setDrawText(false));
-        addButton(tempWidgets[1] = new WidgetTemperatureSided(Direction.SOUTH, 65).setDrawText(false));
+        addButton(tempWidgets[0] = new WidgetTemperatureSided(Direction.SOUTH, 56).setDrawText(false));
+        addButton(tempWidgets[1] = new WidgetTemperatureSided(Direction.NORTH, 66).setDrawText(false));
 
-        addButton(tempWidgets[2] = new WidgetTemperatureSided(Direction.WEST, 88).setDrawText(true));
-        addButton(tempWidgets[3] = new WidgetTemperatureSided(Direction.EAST, 98).setDrawText(false));
+        addButton(tempWidgets[2] = new WidgetTemperatureSided(Direction.WEST, 89).setDrawText(true));
+        addButton(tempWidgets[3] = new WidgetTemperatureSided(Direction.EAST, 99).setDrawText(false));
     }
 
     @Override
@@ -98,10 +99,24 @@ public class GuiThermalCompressor extends GuiPneumaticContainerBase<ContainerThe
             min = Math.min(min, t);
             max = Math.max(max, t);
         }
+        int rounding = getRounding(max - min);
+        TemperatureRange range = TemperatureRange.of(
+                Math.max(0, WidgetTemperature.roundDownK(min - 1, rounding)),
+                Math.min(2273, WidgetTemperature.roundUpK(max + 1, rounding))
+        );
+        int interval = WidgetTemperature.calcInterval(range.getMax() - range.getMin());
         for (WidgetTemperatureSided temp : tempWidgets) {
-            temp.setTotalRange(TemperatureRange.of(Math.max(0, min - 50), Math.min(2273, max + 50)));
-            temp.autoScaleForTemperature();
+            temp.setTotalRange(range);
+            temp.setTickInterval(interval);
+//            temp.autoScaleForTemperature();
         }
+    }
+
+    private int getRounding(int range) {
+        if (range < 100) return 10;
+        else if (range < 250) return 25;
+        else if (range < 500) return 50;
+        else return 100;
     }
 
     private class WidgetTemperatureSided extends WidgetTemperature {
@@ -115,6 +130,14 @@ public class GuiThermalCompressor extends GuiPneumaticContainerBase<ContainerThe
         @Override
         public void addTooltip(double mouseX, double mouseY, List<String> curTip, boolean shift) {
             curTip.add(HeatUtil.formatHeatString(side, getTemperature()).getFormattedText());
+        }
+
+        @Override
+        public void renderButton(int mouseX, int mouseY, float partialTicks) {
+            super.renderButton(mouseX, mouseY, partialTicks);
+
+            String s = side.toString().substring(0, 1).toUpperCase();
+            GuiUtils.drawScaledText(font, s, x + 8, y - 4, 0x404040, 0.5f);
         }
     }
 }

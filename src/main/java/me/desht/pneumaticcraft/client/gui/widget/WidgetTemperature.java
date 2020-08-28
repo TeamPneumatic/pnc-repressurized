@@ -55,7 +55,7 @@ public class WidgetTemperature extends Widget implements ITooltipProvider {
         this.temperature = temperature;
     }
 
-    private void setTickInterval(int tickInterval) {
+    public void setTickInterval(int tickInterval) {
         this.tickInterval = tickInterval;
     }
 
@@ -105,10 +105,11 @@ public class WidgetTemperature extends Widget implements ITooltipProvider {
             if (yOffset != 0 && yOffset != height - 1) {
                 hLine(x + 6, x + 8, y - 1 + height - yOffset, 0x80C0C0C0);
             }
-            if (drawText && n++ % 2 == 0) {
+            if (drawText && n % 2 == 0) { // && (tickInterval > 10 || n > 0)) {
                 String s = Integer.toString(tickTempC);
                 GuiUtils.drawScaledText(font, s, x + 4 - font.getStringWidth(s) / 2, y - 2 + height - yOffset, 0xFF404040, 0.5f);
             }
+            n++;
             tickTempC += tickInterval;
         }
     }
@@ -179,6 +180,16 @@ public class WidgetTemperature extends Widget implements ITooltipProvider {
         }
     }
 
+    public static int roundDownK(int tempK, int interval) {
+        int tempC = tempK - 273;
+        int rem = tempC % interval;
+        return tempK - rem;
+    }
+
+    public static int roundUpK(int tempK, int interval) {
+        return roundDownK(tempK, interval) + interval;
+    }
+
     public static WidgetTemperature fromOperatingRange(int x, int y, TemperatureRange range) {
         int interval = calcInterval(range.getMax() - range.getMin());
         int max;
@@ -196,7 +207,7 @@ public class WidgetTemperature extends Widget implements ITooltipProvider {
         return new WidgetTemperature(x, y, TemperatureRange.of(min, max), min, calcInterval(max - min)).setOperatingRange(range);
     }
 
-    private static int calcInterval(int r) {
+    public static int calcInterval(int r) {
         int r1 = r / 10;
         if (r1 >= 200) {
             return 200;
@@ -206,8 +217,10 @@ public class WidgetTemperature extends Widget implements ITooltipProvider {
             return 50;
         } else if (r1 >= 15) {
             return 25;
+        } else if (r1 >= 5) {
+            return 10;
         } else {
-            return r1;
+            return 5;
         }
     }
 }
