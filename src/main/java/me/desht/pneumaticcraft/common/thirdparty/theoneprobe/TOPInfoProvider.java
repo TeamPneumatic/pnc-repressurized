@@ -70,7 +70,7 @@ public class TOPInfoProvider {
     private static void handlePneumatic(ProbeMode mode, IProbeInfo probeInfo, TileEntity pneumaticMachine) {
         pneumaticMachine.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).ifPresent(airHandler -> {
             String pressure = PneumaticCraftUtils.roundNumberTo(airHandler.getPressure(), 2);
-            String dangerPressure = PneumaticCraftUtils.roundNumberTo(airHandler.getPressure(), 1);
+            String dangerPressure = PneumaticCraftUtils.roundNumberTo(airHandler.getDangerPressure(), 1);
             probeInfo.text(xlate("pneumaticcraft.gui.tooltip.maxPressure", dangerPressure).mergeStyle(COLOR));
             if (mode == ProbeMode.EXTENDED) {
                 probeInfo.text(new StringTextComponent("Pressure:").mergeStyle(COLOR));
