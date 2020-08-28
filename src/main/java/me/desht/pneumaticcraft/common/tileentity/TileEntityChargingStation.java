@@ -47,6 +47,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     );
     private static final int INVENTORY_SIZE = 1;
     public static final int CHARGE_INVENTORY_INDEX = 0;
+    private static final int MAX_REDSTONE_UPDATE_FREQ = 10;  // in ticks; used to reduce lag from rapid updates
 
     @DescSynced
     private ItemStack chargingStackSynced = ItemStack.EMPTY;  // the item being charged, minus any nbt - for client display purposes
@@ -66,6 +67,8 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     public int redstoneMode;
     private boolean oldRedstoneStatus;
     private BlockState camoState;
+    private long lastRedstoneUpdate;
+    private int pendingRedstoneStatus = -1;
 
     public TileEntityChargingStation() {
         super(ModTileEntities.CHARGING_STATION.get(), PneumaticValues.DANGER_PRESSURE_CHARGING_STATION, PneumaticValues.MAX_PRESSURE_CHARGING_STATION, PneumaticValues.VOLUME_CHARGING_STATION, 4);
@@ -116,12 +119,24 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
             }
 
             if (oldRedstoneStatus != shouldEmitRedstone()) {
-                oldRedstoneStatus = shouldEmitRedstone();
-                updateNeighbours();
+                if (world.getGameTime() - lastRedstoneUpdate > MAX_REDSTONE_UPDATE_FREQ) {
+                    updateRedstoneOutput();
+                } else {
+                    pendingRedstoneStatus = shouldEmitRedstone() ? 1: 0;
+                }
+            } else if (pendingRedstoneStatus != -1 && world.getGameTime() - lastRedstoneUpdate > MAX_REDSTONE_UPDATE_FREQ) {
+                updateRedstoneOutput();
             }
 
             airHandler.setSideLeaking(hasNoConnectedAirHandlers() ? getRotation() : null);
         }
+    }
+
+    private void updateRedstoneOutput() {
+        oldRedstoneStatus = shouldEmitRedstone();
+        updateNeighbours();
+        pendingRedstoneStatus = -1;
+        lastRedstoneUpdate = world.getGameTime();
     }
 
     private List<IAirHandler> findChargeable() {
