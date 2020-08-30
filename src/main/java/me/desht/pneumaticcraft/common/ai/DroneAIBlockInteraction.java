@@ -111,7 +111,7 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
         return order == Ordering.CLOSEST || y == curY;
     }
 
-    public DroneAIBlockInteraction<W> setMaxActions(int maxActions) {
+    public DroneAIBlockInteraction<?> setMaxActions(int maxActions) {
         this.maxActions = maxActions;
         return this;
     }
