@@ -115,9 +115,12 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetBl
 
     private boolean rightClickBlock(FakePlayer fakePlayer, BlockPos pos, Direction faceDir) {
         PlayerInteractEvent.RightClickBlock event = ForgeHooks.onRightClickBlock(fakePlayer, Hand.MAIN_HAND, pos, faceDir);
-        if (event.isCanceled() || event.getUseItem() == Event.Result.DENY) {
-            return false;
+        if (event.isCanceled()) {
+            return event.getCancellationResult().isSuccessOrConsume();
         }
+//        if (event.getUseItem() == Event.Result.DENY) {
+//            return false;
+//        }
 
         if (event.getUseBlock() != Event.Result.DENY) {
             World world = fakePlayer.getEntityWorld();
