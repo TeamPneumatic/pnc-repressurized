@@ -11,7 +11,7 @@ authors="desht, MineMaarten"
     modId="pneumaticcraft"
     version="${version}"
     displayName="PneumaticCraft: Repressurized"
-    updateJSONURL="https://raw.githubusercontent.com/TeamPneumatic/pnc-repressurized/1.15/release_info.json" #optional
+    updateJSONURL="https://raw.githubusercontent.com/TeamPneumatic/pnc-repressurized/1.16/release_info.json" #optional
     description='''
 PneumaticCraft: Repressurized: doing cool stuff with compressed air.'''
 
@@ -19,6 +19,12 @@ PneumaticCraft: Repressurized: doing cool stuff with compressed air.'''
     modId="forge" #mandatory
     mandatory=true #mandatory
     versionRange="[32.0.108,)" #mandatory
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.pneumaticcraft]]
+    modId="immersiveengineering"
+    mandatory=false
+    versionRange="[1.16.1-4.0.0-118,)"
     ordering="NONE"
     side="BOTH"
 #[[dependencies.pneumaticcraft]]
