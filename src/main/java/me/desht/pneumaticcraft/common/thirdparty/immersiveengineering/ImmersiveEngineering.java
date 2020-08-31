@@ -11,6 +11,7 @@ import me.desht.pneumaticcraft.lib.ModIds;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.Block;
 import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.Fluids;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -36,7 +37,7 @@ public class ImmersiveEngineering implements IThirdParty {
         DieselHandler.registerFuel(PneumaticCraftTags.Fluids.DIESEL, 125);  // equivalent to IE biodiesel
         DieselHandler.registerFuel(PneumaticCraftTags.Fluids.BIODIESEL, 125);  // equivalent to IE biodiesel
 
-        if (IE_BIODIESEL != null) {
+        if (IE_BIODIESEL != null && IE_BIODIESEL != Fluids.EMPTY) {
             // equivalent to PNC:R diesel
             PneumaticRegistry.getInstance().getFuelRegistry().registerFuel(IE_BIODIESEL, 1000000, 0.8f);
         } else if (ModList.get().isLoaded(ModIds.IMMERSIVE_ENGINEERING)) {
