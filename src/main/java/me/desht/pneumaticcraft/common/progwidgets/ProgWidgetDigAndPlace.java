@@ -94,7 +94,7 @@ public abstract class ProgWidgetDigAndPlace extends ProgWidgetAreaItemBase imple
         return useMaxActions;
     }
 
-    DroneAIBlockInteraction setupMaxActions(DroneAIBlockInteraction ai, IMaxActions widget) {
+    DroneAIBlockInteraction<?> setupMaxActions(DroneAIBlockInteraction<?> ai, IMaxActions widget) {
         return widget.useMaxActions() ? ai.setMaxActions(widget.getMaxActions()) : ai;
     }
 }

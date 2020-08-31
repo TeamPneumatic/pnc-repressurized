@@ -48,23 +48,27 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetBl
     @Override
     protected boolean doBlockInteraction(BlockPos pos, double distToBlock) {
         visitedPositions.add(pos);
-        boolean result = rightClick(pos);
+        rightClick(pos);
         if (drone.getFakePlayer().getHeldItemMainhand().getCount() <= 0) {
             drone.getFakePlayer().setHeldItem(Hand.MAIN_HAND, ItemStack.EMPTY);
         }
         drone.getInv().setStackInSlot(0, drone.getFakePlayer().getHeldItemMainhand());
-        // note the negation here: return false if the operation succeeded, to indicate we're done
-        return !result;
+
+        // always return false here; the block's been clicked and we don't care about the operation result
+        // - just move on to the next block in the area next time
+        return false;
     }
 
-    private boolean rightClick(BlockPos pos) {
+    private void rightClick(BlockPos pos) {
         Direction faceDir = ISidedWidget.getDirForSides(((ISidedWidget) progWidget).getSides());
-        return progWidget.getClickType() == IBlockRightClicker.RightClickType.CLICK_ITEM ?
-                rightClickItem(drone.getFakePlayer(), pos, faceDir) :
-                rightClickBlock(drone.getFakePlayer(), pos, faceDir);
+        if (progWidget.getClickType() == IBlockRightClicker.RightClickType.CLICK_ITEM) {
+            rightClickItem(drone.getFakePlayer(), pos, faceDir);
+        } else {
+            rightClickBlock(drone.getFakePlayer(), pos, faceDir);
+        }
     }
 
-    private boolean rightClickItem(FakePlayer fakePlayer, BlockPos pos, Direction faceDir) {
+    private void rightClickItem(FakePlayer fakePlayer, BlockPos pos, Direction faceDir) {
         ItemStack stack = fakePlayer.getHeldItemMainhand();
         World world = fakePlayer.getEntityWorld();
 
@@ -72,23 +76,23 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetBl
         try {
             PlayerInteractEvent.RightClickBlock event = ForgeHooks.onRightClickBlock(fakePlayer, Hand.MAIN_HAND, pos, faceDir);
             if (event.isCanceled() || event.getUseItem() == Event.Result.DENY) {
-                return false;
+                return;
             }
 
             BlockRayTraceResult brtr = doTrace(world, pos, fakePlayer);
-            if (brtr == null) return false;
+            if (brtr == null) return;
 
             ActionResultType ret = stack.onItemUseFirst(new ItemUseContext(fakePlayer, Hand.MAIN_HAND, brtr));
-            if (ret != ActionResultType.PASS) return false;
+            if (ret != ActionResultType.PASS) return;
 
             if (stack.isEmpty() || fakePlayer.getCooldownTracker().hasCooldown(stack.getItem())) {
-                return false;
+                return;
             }
 
             if (stack.getItem() instanceof BlockItem) {
                 Block block = ((BlockItem)stack.getItem()).getBlock();
                 if (block instanceof CommandBlockBlock || block instanceof StructureBlock) {
-                    return false;
+                    return;
                 }
             }
 
@@ -102,38 +106,27 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetBl
                 if (fakePlayer.getHeldItem(Hand.MAIN_HAND).isEmpty()) {
                     net.minecraftforge.event.ForgeEventFactory.onPlayerDestroyItem(fakePlayer, copyBeforeUse, Hand.MAIN_HAND);
                 }
-                return result.isSuccessOrConsume();
-            } else {
-                return false;
             }
         } catch (Throwable e) {
             Log.error("DroneAIBlockInteract crashed! Stacktrace: ");
             e.printStackTrace();
-            return false;
         }
     }
 
-    private boolean rightClickBlock(FakePlayer fakePlayer, BlockPos pos, Direction faceDir) {
+    private void rightClickBlock(FakePlayer fakePlayer, BlockPos pos, Direction faceDir) {
         PlayerInteractEvent.RightClickBlock event = ForgeHooks.onRightClickBlock(fakePlayer, Hand.MAIN_HAND, pos, faceDir);
-        if (event.isCanceled()) {
-            return event.getCancellationResult().isSuccessOrConsume();
-        }
-//        if (event.getUseItem() == Event.Result.DENY) {
-//            return false;
-//        }
 
-        if (event.getUseBlock() != Event.Result.DENY) {
+        if (!event.isCanceled() && event.getUseItem() != Event.Result.DENY && event.getUseBlock() != Event.Result.DENY) {
             World world = fakePlayer.getEntityWorld();
             BlockState state = world.getBlockState(pos);
             BlockRayTraceResult brtr = doTrace(world, pos, fakePlayer);
-            if (brtr == null) return false;
-            ActionResultType res = state.onBlockActivated(world, fakePlayer, Hand.MAIN_HAND, brtr);
-            if (res.isSuccessOrConsume()) {
-                world.notifyBlockUpdate(pos, state, state, Constants.BlockFlags.DEFAULT);
-                return true;
+            if (brtr != null) {
+                ActionResultType res = state.onBlockActivated(world, fakePlayer, Hand.MAIN_HAND, brtr);
+                if (res.isSuccessOrConsume()) {
+                    world.notifyBlockUpdate(pos, state, state, Constants.BlockFlags.DEFAULT);
+                }
             }
         }
-        return false;
     }
 
     private BlockRayTraceResult doTrace(World world, BlockPos pos, FakePlayer fakePlayer) {
