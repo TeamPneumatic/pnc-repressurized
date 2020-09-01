@@ -6,7 +6,6 @@ import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -32,14 +31,14 @@ public class ItemPneumaticWrench extends ItemPressurizable {
         BlockPos pos = ctx.getPos();
         if (!world.isRemote) {
             BlockState state = world.getBlockState(pos);
-            Block block = state.getBlock();
-
             boolean didWork = stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).map(h -> {
                 float pressure = h.getPressure();
-                IPneumaticWrenchable wrenchable = IPneumaticWrenchable.forBlock(block);
+                IPneumaticWrenchable wrenchable = IPneumaticWrenchable.forBlock(state.getBlock());
                 if (wrenchable != null && pressure > 0.1f) {
-                    if (wrenchable.onWrenched(world, ctx.getPlayer(), pos, ctx.getFace(), hand) && !ctx.getPlayer().isCreative()) {
-                        h.addAir(-PneumaticValues.USAGE_PNEUMATIC_WRENCH);
+                    if (wrenchable.onWrenched(world, ctx.getPlayer(), pos, ctx.getFace(), hand)) {
+                        if (ctx.getPlayer() != null && !ctx.getPlayer().isCreative()) {
+                            h.addAir(-PneumaticValues.USAGE_PNEUMATIC_WRENCH);
+                        }
                         return true;
                     } else {
                         return false;
