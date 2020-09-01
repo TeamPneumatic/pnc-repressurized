@@ -10,7 +10,9 @@ The initial 1.16.1 release is largely equivalent in functionality to the 1.4.2 r
 
 Releases from 2.1.0 onward *require* Forge 32.0.108 or newer.
 
-## 2.1.2-?? (unreleased)
+## 2.2.0-?? (unreleased)
+
+Important: if you are also using Immersive Engineering, this release of PNC:R *requires* IE 1.16.1-4.0.0-118 or newer.
 
 ### Updates
 * Drones (with the Pick up Items widget) will no longer "steal" items off Immersive Engineering conveyor belts
@@ -19,13 +21,32 @@ Releases from 2.1.0 onward *require* Forge 32.0.108 or newer.
 * A few small cosmetic cleanups and improvements in the Charging Station GUI (including the item upgrade sub-GUI)
   * Upgrade sub-GUI no longer shows armor slots (it's pointless there)
 * Reinforced Stone blocks are now a little easier to mine up (blast resistance has not been changed though)
+* Sourdough Bread can now be used to make Culinary Construct sandwiches. Yum.
+* Overhauled the Drone special variables system a bit:
+  * New special variables: `$drone_pos`, `$player_pos`, `$controller_pos`, `$owner_pos`
+  * Existing variables `$drone`, `$player` & `$owner` still work but prefer to use the new ones
+  * Note that `$drone` gets the blockpos *above* the drone (which it always has), but `$drone_pos` gets the drone's real blockpos
+  * `$controller_pos` is completely new and gets the Programmable Controller's blockpos, or (0,0,0) if used by an actual drone entity
+  * Patchouli manual updated (Programming / Variables section) with much more detail.
+* Aerial Interface now supports Industrial Foregoing Essence as an XP fluid.
+* Waila now shows 2 decimal places of pressure in the focused block, same as The One Probe already does.
+* When Charging Station is set to output redstone, frequency of signal changes is now limited to at most once every 10 ticks
+  * This is to reduce lag caused by rapid output toggling, which can happen when the charged item is at or around the charging threshold
+* Thermal Compressor GUI: temperature gauge scales have been tweaked to hopefully show a clearer distinction between hot & cold sides
 
 ### Fixes
 * Fixed (hopefully) an issue where client-side Logistics Frames would disappear on certain blocks
   * This also caused a client-side crash if right-clicking a "missing" frame with the Logistics Configurator
 * Fixed Minigun item being rendered too far right in GUI context
 * Fixed Jackhammer item model always rendering with drill bit when not held by player (even when no bit is installed)
-
+* Fixed Pneumatic Wrench opening machine GUIs when rotating blocks in creative mode
+* Fixed drone Block Right Click widget sometimes bugging out, leaving the drone repeatedly trying to right-click the same block, even when an area is provided
+* Fixed The One Probe showing a block's current pressure where the max pressure should be shown
+* Fixed Goto programming widget GUI "Done when departed" and "Done when arrived" meanings being switched.
+* Fixed Liquid Hopper not being able to fill fillable items (buckets, tanks...) dropped in front of the hopper output side.
+* Fixed very long words not being split in GUI side tabs, causing unreadably small text
+  * This mainly affects languages such as Chinese, where whitespace is not necessarily used.
+* Fixed Programmer not showing programming widgets on hi-dpi displays (Macbooks)
 
 ## 2.1.1-14 (14 Aug 2020)
 
