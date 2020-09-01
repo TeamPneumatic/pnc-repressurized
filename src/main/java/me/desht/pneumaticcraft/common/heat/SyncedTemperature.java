@@ -28,7 +28,9 @@ public class SyncedTemperature {
      * @return the synced temperature
      */
     public int getSyncedTemp() {
-        return syncedTemp;
+        // -1 indicates no temp synced yet, so use the heat exchanger's default initial temp (generally the ambient biome temp)
+        // https://github.com/TeamPneumatic/pnc-repressurized/issues/602
+        return syncedTemp == -1 ? logic.getTemperatureAsInt() : syncedTemp;
     }
 
     /**
