@@ -56,6 +56,8 @@ public class ModItemTagsProvider extends ItemTagsProvider {
         appendToTag(Tags.Items.INGOTS, PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON);
 
         addItemsToTag(PneumaticCraftTags.Items.CURIO, ModItems.MEMORY_STICK);
+
+        addItemsToTag(PneumaticCraftTags.Items.BREAD, ModItems.SOURDOUGH_BREAD);
     }
 
     @SafeVarargs

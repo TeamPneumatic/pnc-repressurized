@@ -60,6 +60,8 @@ public class PneumaticCraftTags {
 
         public static final ITag.INamedTag<Item> CURIO = tag("curios", "curio");
 
+        public static final ITag.INamedTag<Item> BREAD = forgeTag("bread");
+
         static ITag.INamedTag<Item> tag(String modid, String name) {
             return ItemTags.makeWrapperTag(new ResourceLocation(modid, name).toString());
         }
