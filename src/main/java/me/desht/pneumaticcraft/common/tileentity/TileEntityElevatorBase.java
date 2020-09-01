@@ -3,8 +3,6 @@ package me.desht.pneumaticcraft.common.tileentity;
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
-import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
-import me.desht.pneumaticcraft.api.tileentity.IAirListener;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.block.BlockElevatorBase;
@@ -50,13 +48,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
-import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class TileEntityElevatorBase extends TileEntityPneumaticBase
-        implements IGUITextFieldSensitive, IRedstoneControlled, IMinWorkingPressure, IAirListener, ICamouflageableTE, INamedContainerProvider {
-
+public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
+        IGUITextFieldSensitive, IRedstoneControlled, IMinWorkingPressure,
+        ICamouflageableTE, INamedContainerProvider
+{
     private static final List<String> REDSTONE_LABELS = ImmutableList.of(
             "pneumaticcraft.gui.tab.redstoneBehaviour.elevator.button.redstone",
             "pneumaticcraft.gui.tab.redstoneBehaviour.elevator.button.elevatorCallers"
@@ -552,17 +550,6 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase
             return getCoreElevator().getCapability(cap, side);
         }
         return super.getCapability(cap, side);
-    }
-
-    @Override
-    public List<IAirHandlerMachine> addConnectedPneumatics(List<IAirHandlerMachine> airHandlers) {
-        TileEntity te = getTileCache()[Direction.DOWN.ordinal()].getTileEntity();
-        if (te instanceof TileEntityElevatorBase) {
-            TileEntityElevatorBase te1 = (TileEntityElevatorBase) te;
-            List<IAirHandlerMachine.Connection> l = te1.airHandler.getConnectedAirHandlers(te1);
-            airHandlers.addAll(l.stream().map(IAirHandlerMachine.Connection::getAirHandler).collect(Collectors.toList()));
-        }
-        return airHandlers;
     }
 
     @Override
