@@ -7,7 +7,7 @@
     {
       "type": "spotlight",
       "item": "pneumaticcraft:jackhammer",
-      "text": "The $(item)Pneumatic Jackhammer/$ is a highly versatile mining tool, which can break all types of block equally quickly, using $(l:base_concepts/pressure)pressure/$ to do so. Its mining speed and air capacity can be upgraded in a $(l:machines/charging_station)Charging Station/$ with $(l:base_concepts/upgrades#speed)Speed Upgrades/$ and $(l:base_concepts/upgrades#volume)Volume Upgrades/$, respectively."
+      "text": "The $(item)Pneumatic Jackhammer/$ is a highly versatile mining tool, which can break all types of block equally effectively, using $(l:base_concepts/pressure)pressure/$ to do so. Its mining speed and air capacity can be upgraded in a $(l:machines/charging_station)Charging Station/$ with $(l:base_concepts/upgrades#speed)Speed Upgrades/$ and $(l:base_concepts/upgrades#volume)Volume Upgrades/$, respectively."
     },
     {
       "type": "text",
@@ -17,7 +17,7 @@
     {
       "type": "text",
       "title": "Dig Modes",
-      "text": "The Jackhammer supports several dig modes, including some $(thing)veinminer/$ functionality, making it very easy to dig out large areas quickly. The dig modes supported depend on the $(thing)Drill Bit/$ you're using; better bits support more dig modes.$(p)To set a dig mode, open the Jackhammer GUI (right-click) and use the button in the lower left (see opposite)."
+      "text": "The Jackhammer supports several dig modes, including some $(thing)veinminer/$ functionality, making it very easy to dig out large areas quickly. The dig modes supported depend on the $(thing)Drill Bit/$ you're using; better bits support more dig modes (in addition to improved dig speed).$(p)To set a dig mode, open the Jackhammer GUI (right-click) and use the button in the lower right (see opposite)."
     },
     {
       "type": "image",

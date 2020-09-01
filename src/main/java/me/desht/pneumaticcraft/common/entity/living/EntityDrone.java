@@ -1176,6 +1176,11 @@ public class EntityDrone extends EntityDroneBase implements
     }
 
     @Override
+    public BlockPos getControllerPos() {
+        return BlockPos.ZERO;
+    }
+
+    @Override
     public void dropItem(ItemStack stack) {
         entityDropItem(stack, 0);
     }

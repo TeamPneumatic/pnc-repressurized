@@ -64,6 +64,12 @@ public interface IDrone extends ICapabilityProvider {
     Vector3d getDronePos();
 
     /**
+     * Get the position of the drone's controller. For actual drone entities, this will always be (0,0,0).  If the
+     * drone is actually a Programmable Controller, it will be the controller's block position.
+     */
+    BlockPos getControllerPos();
+
+    /**
      * Get the drone's path navigator object.
      *
      * @return the path navigator

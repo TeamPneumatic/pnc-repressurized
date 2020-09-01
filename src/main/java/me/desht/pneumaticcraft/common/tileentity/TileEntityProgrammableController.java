@@ -455,6 +455,11 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     }
 
     @Override
+    public BlockPos getControllerPos() {
+        return pos;
+    }
+
+    @Override
     public IPathNavigator getPathNavigator() {
         return new IPathNavigator() {
 

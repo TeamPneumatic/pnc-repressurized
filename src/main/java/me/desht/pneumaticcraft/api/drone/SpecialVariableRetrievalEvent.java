@@ -4,6 +4,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.eventbus.api.Event;
 
+import javax.annotation.Nullable;
+
 /**
  * Fired when a Drone is trying to get a special coordinate, by accessing a variable with '$' prefix.
  * These event are posted on the MinecraftForge.EVENT_BUS.
@@ -29,7 +31,12 @@ public abstract class SpecialVariableRetrievalEvent extends Event {
             return coordinate;
         }
 
-        public void setCoordinate(BlockPos coordinate) {
+        /**
+         * Update the blockpos coordinate for the special variable that was passed.
+         *
+         * @param coordinate the new coordinate; passing null is equivalent to passing BlockPos.ZERO
+         */
+        public void setCoordinate(@Nullable BlockPos coordinate) {
             this.coordinate = coordinate;
         }
 
