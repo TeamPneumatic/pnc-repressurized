@@ -265,7 +265,7 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
 
         @SubscribeEvent
         public static void onKeyPress(InputEvent.KeyInputEvent event) {
-            if (event.getAction() == GLFW.GLFW_PRESS) {
+            if (Minecraft.getInstance().currentScreen == null && event.getAction() == GLFW.GLFW_PRESS) {
                 WidgetKeybindCheckBox cb = dispatchMap.get(event.getKey() + "/" + event.getModifiers());
                 if (cb != null) {
                     cb.handleClick(0, 0, 0);
