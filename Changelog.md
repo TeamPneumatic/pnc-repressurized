@@ -10,7 +10,7 @@ The initial 1.16.1 release is largely equivalent in functionality to the 1.4.2 r
 
 Releases from 2.1.0 onward *require* Forge 32.0.108 or newer.
 
-## 2.2.0-?? (unreleased)
+## 2.2.0-29 (3 Sep 2020)
 
 Important: if you are also using Immersive Engineering, this release of PNC:R *requires* IE 1.16.1-4.0.0-118 or newer.
 
@@ -24,29 +24,33 @@ Important: if you are also using Immersive Engineering, this release of PNC:R *r
 * Sourdough Bread can now be used to make Culinary Construct sandwiches. Yum.
 * Overhauled the Drone special variables system a bit:
   * New special variables: `$drone_pos`, `$player_pos`, `$controller_pos`, `$owner_pos`
-  * Existing variables `$drone`, `$player` & `$owner` still work but prefer to use the new ones
-  * Note that `$drone` gets the blockpos *above* the drone (which it always has), but `$drone_pos` gets the drone's real blockpos
+  * Existing variables `$drone`, `$player` & `$owner` still work but it's recommended to use the new ones
+  * Note that `$drone` gets the blockpos *above* the drone (which it always has for historical reasons), but `$drone_pos` gets the drone's real blockpos
   * `$controller_pos` is completely new and gets the Programmable Controller's blockpos, or (0,0,0) if used by an actual drone entity
-  * Patchouli manual updated (Programming / Variables section) with much more detail.
+  * Patchouli manual is updated (see Programming / Variables section) with much more detail.
 * Aerial Interface now supports Industrial Foregoing Essence as an XP fluid.
 * Waila now shows 2 decimal places of pressure in the focused block, same as The One Probe already does.
 * When Charging Station is set to output redstone, frequency of signal changes is now limited to at most once every 10 ticks
-  * This is to reduce lag caused by rapid output toggling, which can happen when the charged item is at or around the charging threshold
+  * This should reduce lag caused by rapid output toggling, which can happen when the charged item is at or around the charging threshold
 * Thermal Compressor GUI: temperature gauge scales have been tweaked to hopefully show a clearer distinction between hot & cold sides
 
 ### Fixes
 * Fixed (hopefully) an issue where client-side Logistics Frames would disappear on certain blocks
   * This also caused a client-side crash if right-clicking a "missing" frame with the Logistics Configurator
+* Fixed Elevator sometimes entering an air feedback loop, rapidly leading to explosions
+* Fixed drone Block Right Click widget sometimes bugging out, leaving the drone repeatedly trying to right-click the same block, even when an area is provided
+* Fixed Goto programming widget GUI "Done when departed" and "Done when arrived" meanings being switched.
+* Fixed Programmer not showing programming widgets on hi-dpi displays (Macbooks)
+* Fixed Pressure Chamber crafting issue where items split across multiple stacks would not get recognised as valid recipe ingredients
+* Fixed Liquid Hopper not being able to fill fillable items (buckets, tanks...) dropped in front of the hopper output side.
+* Fixed Pneumatic Armor bound keys also triggering when any GUI is open, e.g. typing in a textfield
 * Fixed Minigun item being rendered too far right in GUI context
 * Fixed Jackhammer item model always rendering with drill bit when not held by player (even when no bit is installed)
 * Fixed Pneumatic Wrench opening machine GUIs when rotating blocks in creative mode
-* Fixed drone Block Right Click widget sometimes bugging out, leaving the drone repeatedly trying to right-click the same block, even when an area is provided
 * Fixed The One Probe showing a block's current pressure where the max pressure should be shown
-* Fixed Goto programming widget GUI "Done when departed" and "Done when arrived" meanings being switched.
-* Fixed Liquid Hopper not being able to fill fillable items (buckets, tanks...) dropped in front of the hopper output side.
 * Fixed very long words not being split in GUI side tabs, causing unreadably small text
   * This mainly affects languages such as Chinese, where whitespace is not necessarily used.
-* Fixed Programmer not showing programming widgets on hi-dpi displays (Macbooks)
+* Fixed heat-tintable blocks (e.g. Compressed Iron Block) flashing blue briefly when placed down
 
 ## 2.1.1-14 (14 Aug 2020)
 
