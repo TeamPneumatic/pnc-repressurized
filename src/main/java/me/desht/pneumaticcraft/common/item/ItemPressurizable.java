@@ -80,11 +80,7 @@ public class ItemPressurizable extends Item {
     @Nullable
     @Override
     public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt) {
-        if (this instanceof ItemPressurizable) {
-            return new AirHandlerItemStack(stack, volume, maxPressure);
-        } else {
-            return super.initCapabilities(stack, nbt);
-        }
+        return new AirHandlerItemStack(stack, volume, maxPressure);
     }
 
     protected float getPressure(ItemStack stack) {
