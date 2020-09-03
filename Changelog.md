@@ -6,6 +6,24 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.15.2
 
+## 1.4.5-69 (3 Sep 2020)
+
+### Updates
+* Aerial Interface now supports Industrial Foregoing Essence as an XP fluid.
+* When Charging Station is set to output redstone, frequency of signal changes is now limited to at most once every 10 ticks
+  * This should reduce lag caused by rapid output toggling, which can happen when the charged item is at or around the charging threshold
+* Thermal Compressor GUI: temperature gauge scales have been tweaked to hopefully show a clearer distinction between hot & cold sides
+* Waila now shows 2 decimal places of pressure in the focused block, same as The One Probe already does.
+
+### Fixes
+* Fixed Elevator sometimes entering an air feedback loop, rapidly leading to explosions
+* Fixed Pneumatic Wrench opening machine GUIs when rotating blocks in creative mode
+* Fixed very long words not being split in GUI side tabs, causing unreadably small text
+  * This mainly affects languages such as Chinese, where whitespace is not necessarily used.
+* Fixed heat-tintable blocks (e.g. Compressed Iron Block) flashing blue briefly when placed down
+* Fixed Pneumatic Armor bound keys also triggering when any GUI is open, e.g. typing in a textfield
+* Fixed Liquid Hopper not being able to fill fillable items (buckets, tanks...) dropped in front of the hopper output side.
+
 ## 1.4.4-64 (21 Aug 2020)
 
 ### Updates
@@ -34,7 +52,7 @@ Changes are in reverse chronological order; newest changes at the top.
   * This also caused a client-side crash if right-clicking a "missing" frame with the Logistics Configurator
 * Fixed Minigun item being rendered too far right in GUI context
 * Fixed occasional client-side crash with Block Tracker helmet upgrade enabled
-
+* Fixed Goto programming widget GUI "Done when departed" and "Done when arrived" meanings being switched.
 
 ## 1.4.3-60 (6 Aug 2020)
 
