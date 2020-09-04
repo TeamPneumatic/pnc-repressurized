@@ -67,6 +67,7 @@ public class ItemMemoryStick extends Item implements ColorHandlers.ITintableItem
                     if (!toDrain.isEmpty()) {
                         EnchantmentUtils.addPlayerXP(playerIn, toDrain.getAmount() / ratio);
                         handler.drain(toDrain.getAmount(), IFluidHandler.FluidAction.EXECUTE);
+                        playerIn.setHeldItem(handIn, handler.getContainer());
                     }
                 } else {
                     if (playerXp > 0) {
@@ -81,6 +82,7 @@ public class ItemMemoryStick extends Item implements ColorHandlers.ITintableItem
                         if (filled >= ratio) {
                             EnchantmentUtils.addPlayerXP(playerIn, -(filled / ratio));
                             handler.fill(new FluidStack(ModFluids.MEMORY_ESSENCE.get(), filled), IFluidHandler.FluidAction.EXECUTE);
+                            playerIn.setHeldItem(handIn, handler.getContainer());
                         }
                     }
                 }
