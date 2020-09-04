@@ -5,16 +5,20 @@ import me.desht.pneumaticcraft.common.XPFluidManager;
 import me.desht.pneumaticcraft.common.capabilities.FluidItemWrapper;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.network.NetworkHandler;
+import me.desht.pneumaticcraft.common.network.PacketLeftClickEmpty;
 import me.desht.pneumaticcraft.common.thirdparty.curios.Curios;
 import me.desht.pneumaticcraft.common.util.EnchantmentUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -30,12 +34,13 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fml.common.Mod;
 import org.apache.commons.lang3.tuple.Pair;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ItemMemoryStick extends Item implements ColorHandlers.ITintableItem {
+public class ItemMemoryStick extends Item implements ColorHandlers.ITintableItem, ILeftClickableItem {
     private static final String TANK_NAME = "Tank";
     private static final String NBT_ABSORB_ORBS = "AbsorbXPOrbs";
     private static final int XP_FLUID_CAPACITY = 512000;
@@ -167,6 +172,20 @@ public class ItemMemoryStick extends Item implements ColorHandlers.ITintableItem
         }
     }
 
+    @Override
+    public void onLeftClickEmpty(ServerPlayerEntity sender) {
+        toggleXPAbsorption(sender, sender.getHeldItemMainhand());
+    }
+
+    private static void toggleXPAbsorption(PlayerEntity player, ItemStack stack) {
+        if (stack.getItem() instanceof ItemMemoryStick) {
+            boolean absorb = shouldAbsorbXPOrbs(stack);
+            setAbsorbXPOrbs(stack, !absorb);
+            player.sendStatusMessage(new TranslationTextComponent("pneumaticcraft.message.memory_stick.absorb." + !absorb).mergeStyle(TextFormatting.YELLOW), true);
+            player.getEntityWorld().playSound(null, player.getPosition(), SoundEvents.BLOCK_NOTE_BLOCK_CHIME, SoundCategory.PLAYERS, 1f, absorb ? 1.5f : 2f);
+        }
+    }
+
     @Mod.EventBusSubscriber
     public static class Listener {
         private static final Map<PlayerEntity, Long> lastEvent = new HashMap<>();
@@ -174,16 +193,24 @@ public class ItemMemoryStick extends Item implements ColorHandlers.ITintableItem
 
         @SubscribeEvent
         public static void onLeftClick(PlayerInteractEvent.LeftClickBlock event) {
-            if (!event.getWorld().isRemote) {
-                long now = event.getWorld().getGameTime();
-                long last = lastEvent.getOrDefault(event.getPlayer(), 0L);
-                if (now - last > 2 && event.getItemStack().getItem() == ModItems.MEMORY_STICK.get()) {
-                    boolean absorb = shouldAbsorbXPOrbs(event.getItemStack());
-                    setAbsorbXPOrbs(event.getItemStack(), !absorb);
-                    event.getPlayer().sendStatusMessage(new TranslationTextComponent("pneumaticcraft.message.memory_stick.absorb." + !absorb).mergeStyle(TextFormatting.YELLOW), true);
-                    event.setCanceled(true);
-                    lastEvent.put(event.getPlayer(), now);
+            if (event.getItemStack().getItem() instanceof ItemMemoryStick) {
+                if (!event.getWorld().isRemote) {
+                    long now = event.getWorld().getGameTime();
+                    long last = lastEvent.getOrDefault(event.getPlayer(), 0L);
+                    if (now - last > 5) {
+                        toggleXPAbsorption(event.getPlayer(), event.getItemStack());
+                        lastEvent.put(event.getPlayer(), now);
+                    }
                 }
+                event.setCanceled(true);
+            }
+        }
+
+        @SubscribeEvent
+        public static void onLeftClickEmpty(PlayerInteractEvent.LeftClickEmpty event) {
+            // client only event, but let's be paranoid...
+            if (event.getWorld().isRemote && event.getItemStack().getItem() instanceof ItemMemoryStick) {
+                NetworkHandler.sendToServer(new PacketLeftClickEmpty());
             }
         }
 
@@ -194,6 +221,7 @@ public class ItemMemoryStick extends Item implements ColorHandlers.ITintableItem
                 stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).ifPresent(handler -> {
                     if (PneumaticCraftUtils.fillTankWithOrb(handler, event.getOrb(), IFluidHandler.FluidAction.EXECUTE)) {
                         // orb's xp can fit in the memory stick: remove the entity, cancel the event
+                        stack.setTag(handler.getContainer().getTag());
                         event.getOrb().remove();
                         event.setCanceled(true);
                     }
@@ -227,13 +255,14 @@ public class ItemMemoryStick extends Item implements ColorHandlers.ITintableItem
             return stack;
         }
 
+        @Nonnull
         private static ItemStack getMemoryStick(PlayerEntity player, String inv, int slot) {
             if (inv.isEmpty()) {
                 return player.inventory.getStackInSlot(slot);
             } else if (Curios.available) {
                 return Curios.getStack(player, inv, slot);
             }
-            return null;
+            return ItemStack.EMPTY;
         }
     }
 }
