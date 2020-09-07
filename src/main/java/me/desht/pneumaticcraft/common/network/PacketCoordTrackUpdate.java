@@ -1,12 +1,15 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -45,6 +48,7 @@ public class PacketCoordTrackUpdate extends LocationIntPacket {
             ItemStack stack = ctx.get().getSender().getItemStackFromSlot(EquipmentSlotType.HEAD);
             if (stack.getItem() instanceof ItemPneumaticArmor) {
                 ItemPneumaticArmor.setCoordTrackerPos(stack, GlobalPos.of(DimensionType.byName(dimensionID), pos));
+                ctx.get().getSender().sendStatusMessage(new StringTextComponent(PneumaticCraftUtils.posToString(pos)).applyTextStyle(TextFormatting.YELLOW), true);
             }
         });
         ctx.get().setPacketHandled(true);

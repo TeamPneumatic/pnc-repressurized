@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.Coo
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.Matrix4f;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.pathfinding.Path;
@@ -43,6 +44,7 @@ public class RenderNavigator {
         matrixStack.push();
         matrixStack.translate(0, 0.01D, 0);
 
+        Matrix4f posMat = matrixStack.getLast().getMatrix();
         if (wirePath) {
             // Draws just wires
             // TODO line stippling
@@ -58,9 +60,9 @@ public class RenderNavigator {
                 }
                 PathPoint lastPoint = path.getPathPointFromIndex(i - 1);
                 PathPoint pathPoint = path.getPathPointFromIndex(i);
-                builder.pos(lastPoint.x + 0.5D, lastPoint.y, lastPoint.z + 0.5D).color(red, 1 - red, 0, 0.5f).endVertex();
-                builder.pos((lastPoint.x + pathPoint.x) / 2D + 0.5D, Math.max(lastPoint.y, pathPoint.y), (lastPoint.z + pathPoint.z) / 2D + 0.5D).color(red, 1 - red, 0, 0.5f).endVertex();
-                builder.pos(pathPoint.x + 0.5D, pathPoint.y, pathPoint.z + 0.5D).color(red, 1 - red, 0, 0.5f).endVertex();
+                builder.pos(posMat, lastPoint.x + 0.5F, lastPoint.y, lastPoint.z + 0.5F).color(red, 1 - red, 0, 0.5F).endVertex();
+                builder.pos(posMat, (lastPoint.x + pathPoint.x) / 2F + 0.5F, Math.max(lastPoint.y, pathPoint.y), (lastPoint.z + pathPoint.z) / 2F + 0.5F).color(red, 1 - red, 0, 0.5f).endVertex();
+                builder.pos(posMat, pathPoint.x + 0.5F, pathPoint.y, pathPoint.z + 0.5F).color(red, 1 - red, 0, 0.5f).endVertex();
             }
         } else {
             IVertexBuilder builder = buffer.getBuffer(ModRenderTypes.getNavPath(xRayEnabled, true));
@@ -81,10 +83,10 @@ public class RenderNavigator {
                     red = (path.getCurrentPathLength() - i) * 0.005F;
                 }
                 PathPoint pathPoint = path.getPathPointFromIndex(i);
-                builder.pos(pathPoint.x, pathPoint.y, pathPoint.z).color(red, 1 - red, 0, alphaValue).endVertex();
-                builder.pos(pathPoint.x, pathPoint.y, pathPoint.z + 1).color(red, 1 - red, 0, alphaValue).endVertex();
-                builder.pos(pathPoint.x + 1, pathPoint.y, pathPoint.z + 1).color(red, 1 - red, 0, alphaValue).endVertex();
-                builder.pos(pathPoint.x + 1, pathPoint.y, pathPoint.z).color(red, 1 - red, 0, alphaValue).endVertex();
+                builder.pos(posMat, pathPoint.x, pathPoint.y, pathPoint.z).color(red, 1 - red, 0, alphaValue).endVertex();
+                builder.pos(posMat, pathPoint.x, pathPoint.y, pathPoint.z + 1).color(red, 1 - red, 0, alphaValue).endVertex();
+                builder.pos(posMat, pathPoint.x + 1, pathPoint.y, pathPoint.z + 1).color(red, 1 - red, 0, alphaValue).endVertex();
+                builder.pos(posMat, pathPoint.x + 1, pathPoint.y, pathPoint.z).color(red, 1 - red, 0, alphaValue).endVertex();
             }
         }
 
