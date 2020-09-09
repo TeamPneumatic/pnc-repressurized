@@ -245,7 +245,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
                 // 2) Programs using variables where we don't necessarily have the values at compile-time
                 IDroneBase drone = aiManager.getDrone();
                 Log.warning(String.format("Drone @ %s (DIM %s) was killed due to excessively large area (%d > %d). See 'I:maxProgrammingArea' in config.",
-                        drone.getDronePos().toString(), drone.world().func_234923_W_().func_240901_a_().toString(), size, maxSize));
+                        drone.getDronePos().toString(), drone.world().getDimensionKey().func_240901_a_().toString(), size, maxSize));
                 drone.overload("areaTooLarge", maxSize);
                 return;
             }

@@ -145,7 +145,7 @@ public class CommonConfig {
         builder.push("General");
         general.oilGenerationChance = builder
                 .worldRestart()
-                .comment("Chance per chunk in percentage to generate an Oil Lake. Set to 0 for no oil lakes.")
+                .comment("Chance per chunk in percentage to generate an Oil Lake (although a surface lake is 4 times rarer). Set to 0 for no oil lakes.")
                 .translation("pneumaticcraft.config.common.general.oilGenerationChance")
                 .defineInRange("oil_generation_chance", 15, 0, 100);
         general.enableDungeonLoot = builder
@@ -166,9 +166,9 @@ public class CommonConfig {
                 .defineInRange("max_programming_area", 250000, 1, Integer.MAX_VALUE);
         general.oilWorldGenBlacklist = builder
                 .worldRestart()
-                .comment("Oil worldgen blacklist: add dimension IDs to this list if you don't want oil worldgen to happen there.")
+                .comment("Oil worldgen blacklist: add biome IDs to this list if you don't want oil worldgen to happen there.")
                 .translation("pneumaticcraft.config.common.general.oil_world_gen_blacklist")
-                .define("oil_world_gen_blacklist", Lists.newArrayList("minecraft:the_nether", "minecraft:the_end"));
+                .define("oil_world_gen_blacklist", Lists.newArrayList("minecraft:soul_sand_valley", "minecraft:crimson_forest", "minecraft:warped_forest", "minecraft:the_void", "minecraft:the_end", "minecraft:small_end_islands", "minecraft:end_midlands", "minecraft:end_highlands", "minecraft:end_barrens"));
         general.minFluidFuelTemperature = builder
                 .worldRestart()
                 .comment("Fluids at least as hot as this temperature (Kelvin) will be auto-registered as Liquid Compressor fuels, the quality being dependent on fluid temperature.")

@@ -56,7 +56,7 @@ public class WidgetCheckBox extends Widget implements ITaggedWidget, ITooltipPro
                 drawTick(matrixStack);
             }
             FontRenderer fr = Minecraft.getInstance().fontRenderer;
-            fr.func_238422_b_(matrixStack, getMessage(), x + 3 + CHECKBOX_WIDTH, y + CHECKBOX_HEIGHT / 2f - fr.FONT_HEIGHT / 2f, active ? color : 0xFF888888);
+            fr.func_238422_b_(matrixStack, getMessage().func_241878_f(), x + 3 + CHECKBOX_WIDTH, y + CHECKBOX_HEIGHT / 2f - fr.FONT_HEIGHT / 2f, active ? color : 0xFF888888);
         }
     }
 

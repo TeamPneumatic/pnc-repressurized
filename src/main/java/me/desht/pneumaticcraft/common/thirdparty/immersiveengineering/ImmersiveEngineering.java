@@ -1,9 +1,7 @@
 package me.desht.pneumaticcraft.common.thirdparty.immersiveengineering;
 
-import blusunrize.immersiveengineering.api.energy.DieselHandler;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.harvesting.HarvestHandler;
-import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.harvesting.HarvestHandlerCactusLike;
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
 import me.desht.pneumaticcraft.lib.Log;
@@ -34,8 +32,8 @@ public class ImmersiveEngineering implements IThirdParty {
         MinecraftForge.EVENT_BUS.register(ElectricAttackHandler.class);
         IEHeatHandler.registerHeatHandler();
 
-        DieselHandler.registerFuel(PneumaticCraftTags.Fluids.DIESEL, 125);  // equivalent to IE biodiesel
-        DieselHandler.registerFuel(PneumaticCraftTags.Fluids.BIODIESEL, 125);  // equivalent to IE biodiesel
+//        DieselHandler.registerFuel(PneumaticCraftTags.Fluids.DIESEL, 125);  // equivalent to IE biodiesel
+//        DieselHandler.registerFuel(PneumaticCraftTags.Fluids.BIODIESEL, 125);  // equivalent to IE biodiesel
 
         if (IE_BIODIESEL != null && IE_BIODIESEL != Fluids.EMPTY) {
             // equivalent to PNC:R diesel

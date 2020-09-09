@@ -137,7 +137,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
                 soundName = ModSounds.ELEVATOR_RISING_START.get();
                 isStopped = false;
                 if (!getWorld().isRemote && shouldPlaySounds()) {
-                    PacketDistributor.TargetPoint tp = new PacketDistributor.TargetPoint(pos.getX(), pos.getY(), pos.getZ(), 1024, world.func_234923_W_());
+                    PacketDistributor.TargetPoint tp = new PacketDistributor.TargetPoint(pos.getX(), pos.getY(), pos.getZ(), 1024, world.getDimensionKey());
                     NetworkHandler.sendToAllAround(new PacketPlayMovingSound(MovingSounds.Sound.ELEVATOR, getCoreElevator()), tp);
                 }
             }
@@ -163,7 +163,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
                 soundName = ModSounds.ELEVATOR_RISING_START.get();
                 isStopped = false;
                 if (!world.isRemote && shouldPlaySounds()) {
-                    PacketDistributor.TargetPoint tp = new PacketDistributor.TargetPoint(pos.getX(), pos.getY(), pos.getZ(), 1024, world.func_234923_W_());
+                    PacketDistributor.TargetPoint tp = new PacketDistributor.TargetPoint(pos.getX(), pos.getY(), pos.getZ(), 1024, world.getDimensionKey());
                     NetworkHandler.sendToAllAround(new PacketPlayMovingSound(MovingSounds.Sound.ELEVATOR, getCoreElevator()), tp);
                 }
             }

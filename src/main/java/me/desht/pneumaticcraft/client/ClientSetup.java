@@ -78,6 +78,8 @@ public class ClientSetup {
         MinecraftForge.EVENT_BUS.register(AreaRenderManager.getInstance());
         MinecraftForge.EVENT_BUS.register(KeyHandler.getInstance());
 
+        registerEntityRenderers();
+
         EntityTrackHandler.registerDefaultEntries();
         ThirdPartyManager.instance().clientInit();
 
@@ -95,7 +97,6 @@ public class ClientSetup {
         setBlockRenderLayers();
         registerItemModelProperties();
         registerArmorClientUpgradeHandlers();
-        registerEntityRenderers();
         registerTileEntityRenderers();
         registerScreenFactories();
         registerProgWidgetScreenFactories();

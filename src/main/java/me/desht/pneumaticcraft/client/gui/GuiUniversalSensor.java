@@ -116,7 +116,7 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
             sensor.getAdditionalInfo(info);
             int yOff = 0;
             for (ITextComponent line : info) {
-                font.func_238422_b_(matrixStack, line, 70, 48 + yOff, 0x404040);
+                font.func_238422_b_(matrixStack, line.func_241878_f(), 70, 48 + yOff, 0x404040);
                 yOff += font.FONT_HEIGHT;
             }
         }

@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.inventory.ContainerSmartChest.N_COLS;
 import static me.desht.pneumaticcraft.common.tileentity.TileEntitySmartChest.CHEST_SIZE;
@@ -197,7 +198,7 @@ public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest
             ItemStack stack = te.getFilter(hoveredSlot.slotNumber);
             List<ITextComponent> l = PneumaticCraftUtils.splitStringComponent(I18n.format("pneumaticcraft.gui.smart_chest.filter",
                     stack.getDisplayName().getString(), stack.getCount()), 40);
-            renderTooltip(matrixStack, l, x, y);
+            renderTooltip(matrixStack, l.stream().map(ITextComponent::func_241878_f).collect(Collectors.toList()), x, y);
         }
     }
 

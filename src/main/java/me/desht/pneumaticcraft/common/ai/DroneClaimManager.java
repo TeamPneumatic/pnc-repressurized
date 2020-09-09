@@ -18,7 +18,7 @@ public class DroneClaimManager {
     private static final int TIMEOUT = DroneAIManager.TICK_RATE + 1;
 
     public static DroneClaimManager getInstance(World world) {
-        return claimManagers.computeIfAbsent(world.func_234923_W_().func_240901_a_(), k -> new DroneClaimManager());
+        return claimManagers.computeIfAbsent(world.getDimensionKey().func_240901_a_(), k -> new DroneClaimManager());
     }
 
     /**

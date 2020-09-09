@@ -6,7 +6,6 @@ import me.desht.pneumaticcraft.common.entity.semiblock.EntitySemiblockBase;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -48,8 +47,16 @@ public class ItemSemiBlock extends Item {
      */
     public EntitySemiblockBase createEntity(World world, ItemStack stack, PlayerEntity player, BlockPos pos) {
         EntityType<?> type = ForgeRegistries.ENTITIES.getValue(getRegistryName());
-        Entity e = type.create(world, stack.getTag(), null, player, pos, SpawnReason.NATURAL, false, true);
-        return e instanceof EntitySemiblockBase ? (EntitySemiblockBase) e : null;
+//        Entity e = type.create(world, stack.getTag(), null, player, pos, SpawnReason.NATURAL, false, true);
+        if (type != null) {
+            Entity e = type.create(world);
+            if (e != null) {
+                e.setLocationAndAngles(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0f, 0f);
+                EntityType.applyItemNBT(world, player, e, stack.getTag());
+                return e instanceof EntitySemiblockBase ? (EntitySemiblockBase) e : null;
+            }
+        }
+        return null;
     }
 
     private ActionResultType placeSemiblock(ItemUseContext context) {

@@ -166,7 +166,7 @@ public class FluidIngredient extends Ingredient {
             int amount = JSONUtils.getInt(json, "amount", 1000);
             if (json.has("tag")) {
                 ResourceLocation rl = new ResourceLocation(JSONUtils.getString(json, "tag"));
-                if (TagCollectionManager.func_232928_e_().func_232926_c_().get(rl) == null) throw new JsonSyntaxException("Unknown fluid tag '" + rl + "'");
+                if (TagCollectionManager.func_242178_a().func_241837_c().get(rl) == null) throw new JsonSyntaxException("Unknown fluid tag '" + rl + "'");
 //                if (FluidTags.getCollection().get(rl) == null) throw new JsonSyntaxException("Unknown fluid tag '" + rl + "'");
                 return new FluidIngredient(rl, amount);
             } else if (json.has("fluid")) {

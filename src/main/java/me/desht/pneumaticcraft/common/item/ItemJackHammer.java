@@ -46,6 +46,7 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -189,8 +190,8 @@ public class ItemJackHammer extends ItemPressurizable implements IChargeableCont
                         if (removed) {
                             block.onPlayerDestroy(world, pos1, state1);
                             block.harvestBlock(world, player, pos1, state1, null, itemstack);
-                            if (exp > 0) {
-                                block.dropXpOnBlockBreak(world, pos1, exp);
+                            if (exp > 0 && world instanceof ServerWorld) {
+                                block.dropXpOnBlockBreak((ServerWorld) world, pos1, exp);
                             }
                             if (!player.isCreative()) {
                                 air -= usage;

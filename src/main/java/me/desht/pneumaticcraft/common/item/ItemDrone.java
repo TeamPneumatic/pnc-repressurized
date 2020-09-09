@@ -26,6 +26,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.IServerWorld;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
@@ -49,7 +50,7 @@ public class ItemDrone extends ItemPressurizable implements IChargeableContainer
     public ActionResultType onItemUse(ItemUseContext ctx) {
         World world = ctx.getWorld();
         BlockPos pos = ctx.getPos();
-        if (!world.isRemote) {
+        if (world instanceof IServerWorld) {
             ItemStack iStack = ctx.getPlayer().getHeldItem(ctx.getHand());
             if (iStack.getItem() == ModItems.LOGISTICS_DRONE.get()) {
                 AdvancementTriggers.LOGISTICS_DRONE_DEPLOYED.trigger((ServerPlayerEntity) ctx.getPlayer());
@@ -90,7 +91,9 @@ public class ItemDrone extends ItemPressurizable implements IChargeableContainer
             TileEntityProgrammer.updatePuzzleConnections(drone.progWidgets);
         }
 
-        drone.onInitialSpawn(world, world.getDifficultyForLocation(placePos), SpawnReason.TRIGGERED, new ILivingEntityData() {}, null);
+        if (world instanceof IServerWorld) {
+            drone.onInitialSpawn((IServerWorld) world, world.getDifficultyForLocation(placePos), SpawnReason.TRIGGERED, new ILivingEntityData() {}, null);
+        }
     }
 
     @Override

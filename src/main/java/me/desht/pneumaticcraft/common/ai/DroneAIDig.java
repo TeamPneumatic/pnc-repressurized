@@ -12,6 +12,7 @@ import net.minecraft.network.play.client.CPlayerDiggingPacket;
 import net.minecraft.server.management.PlayerInteractionManager;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.server.ServerWorld;
 
@@ -129,7 +130,7 @@ public class DroneAIDig<W extends ProgWidgetAreaItemBase & IToolUser> extends Dr
         return state.getDrops(
                 new LootContext.Builder((ServerWorld) drone.world())
                         .withParameter(LootParameters.BLOCK_STATE, state)
-                        .withParameter(LootParameters.POSITION, pos)
+                        .withParameter(LootParameters.field_237457_g_, Vector3d.copyCentered(pos))
                         .withParameter(LootParameters.TOOL, drone.getInv().getStackInSlot(0))
         );
     }

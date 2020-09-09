@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticDoor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticDoorBase;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.Block;
@@ -121,7 +122,7 @@ public class BlockPneumaticDoor extends BlockPneumaticCraft {
         if (state.get(TOP_DOOR)) {
             return belowState.getBlock() == this;
         } else {
-            return Block.hasSolidSide(belowState, world, down, Direction.UP);
+            return PneumaticCraftUtils.blockHasSolidSide(belowState, world, down, Direction.UP);
         }
     }
 

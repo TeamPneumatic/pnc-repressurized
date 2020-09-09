@@ -75,14 +75,14 @@ public class StackedIngredient extends Ingredient {
             throw new JsonParseException("An ingredient entry is either a tag or an item, not both");
         } else if (json.has("item")) {
             ResourceLocation resourcelocation1 = new ResourceLocation(JSONUtils.getString(json, "item"));
-            Item item = Registry.ITEM.getValue(resourcelocation1)
+            Item item = Registry.ITEM.func_241873_b(resourcelocation1)
                     .orElseThrow(() -> new JsonSyntaxException("Unknown item '" + resourcelocation1 + "'"));
             int count = json.has("count") ? JSONUtils.getInt(json, "count") : 1;
             return new Ingredient.SingleItemList(new ItemStack(item, count));
         } else if (json.has("tag")) {
             ResourceLocation resourcelocation = new ResourceLocation(JSONUtils.getString(json, "tag"));
 //            ITag<Item> tag = ItemTags.getCollection().get(resourcelocation);
-            ITag<Item> tag = TagCollectionManager.func_232928_e_().func_232925_b_().get(resourcelocation);
+            ITag<Item> tag = TagCollectionManager.func_242178_a().func_241836_b().get(resourcelocation);
             if (tag == null) {
                 throw new JsonSyntaxException("Unknown item tag '" + resourcelocation + "'");
             } else {

@@ -62,6 +62,6 @@ public enum HackTickHandler {
     }
 
     private ResourceLocation getKey(World w) {
-        return w.func_234923_W_().func_240901_a_();
+        return w.getDimensionKey().func_240901_a_();
     }
 }

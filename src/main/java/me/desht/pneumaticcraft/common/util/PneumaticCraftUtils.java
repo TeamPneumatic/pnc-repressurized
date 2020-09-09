@@ -603,7 +603,7 @@ public class PneumaticCraftUtils {
      * @return true if the block could be placed, false otherwise
      */
     public static boolean tryPlaceBlock(World w, BlockPos pos, PlayerEntity player, Direction face, BlockState newState) {
-        BlockSnapshot snapshot = BlockSnapshot.create(w, pos);
+        BlockSnapshot snapshot = BlockSnapshot.create(w.getDimensionKey(), w, pos);
         if (!ForgeEventFactory.onBlockPlace(player, snapshot, face)) {
             w.setBlockState(pos, newState);
             return true;
@@ -772,5 +772,10 @@ public class PneumaticCraftUtils {
             orb.xpValue = orb.xpValue - Math.max(1, filled / ratio);  // partial fill, adjust the orb
         }
         return filled == fluidAmount;
+    }
+
+    // this method from Block went missing in 1.16.2
+    public static boolean blockHasSolidSide(BlockState state, IBlockReader worldIn, BlockPos pos, Direction side) {
+        return Block.doesSideFillSquare(state.getRenderShape(worldIn, pos), side);
     }
 }

@@ -42,10 +42,10 @@ repositories {
         name = 'Curios'
         url = "https://maven.theillusivec4.top/"
     }
-//    maven {
-//        name = 'Gigaherz mappings'
-//        url 'http://dogforce-games.com/maven'
-//    }
+    maven {
+        name = 'Gigaherz mappings'
+        url = 'https://dogforce-games.com/maven/'
+    }
 //    maven {
 //        name = "CoFH Maven"
 //        url = "http://maven.covers1624.net"
@@ -142,38 +142,52 @@ sourceSets.main.resources {
 }
 
 minecraft {
-    mappings channel: 'snapshot', version: "${mappings_version}"
+//    mappings channel: 'snapshot', version: "${mappings_version}"
+    mappings channel: 'snapshot', version: "20200820-1.16.1"
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
     runs {
-        client = {
+        client {
             // recommended logging data for a userdev environment
-//            properties 'forge.logging.markers': 'SCAN,REGISTRIES,REGISTRYDUMP'
-            properties 'forge.logging.markers': 'CONFIG'
-            // recommended logging level for the console
-            properties 'forge.logging.console.level': 'debug'
-            ideaModule '${project.name}.main'
-            workingDirectory project.file('run').canonicalPath
-            source sourceSets.main
-        }
-        server = {
-            // recommended logging data for a userdev environment
-            properties 'forge.logging.markers': 'CONFIG'
-            // recommended logging level for the console
-            properties 'forge.logging.console.level': 'debug'
-            ideaModule '${project.name}.main'
-            workingDirectory project.file('run').canonicalPath
-            source sourceSets.main
-        }
-        data {
-            workingDirectory project.file('run')
-            property 'forge.logging.console.level', 'debug'
+            property 'forge.logging.markers', ''
             property 'fml.earlyprogresswindow', 'false'
+            // recommended logging level for the console
+            property 'forge.logging.console.level', 'debug'
+
+            property 'mixin.env.disableRefMap', 'true'
+            ideaModule "${project.name}.main"
+            workingDirectory project.file('run').canonicalPath
             mods {
                 pneumaticcraft {
                     source sourceSets.main
                 }
             }
-            args '--mod', 'pneumaticcraft', '--all', '--output', file('src/generated/resources/')
+        }
+        server {
+            property 'forge.logging.markers', 'CONFIG'
+            property 'forge.logging.console.level', 'debug'
+            property 'mixin.env.disableRefMap', 'true'
+            ideaModule "${project.name}.main"
+            workingDirectory project.file('run').canonicalPath
+            mods {
+                pneumaticcraft {
+                    source sourceSets.main
+                }
+            }
+        }
+        data {
+            property 'forge.logging.console.level', 'debug'
+            property 'fml.earlyprogresswindow', 'false'
+            property 'mixin.env.disableRefMap', 'true'
+            ideaModule "${project.name}.main"
+            workingDirectory project.file('run')
+            forceExit false
+            mods {
+                pneumaticcraft {
+                    source sourceSets.main
+                }
+            }
+            args '--mod', 'pneumaticcraft', '--all', '--output', file('src/generated/resources/'),
+                    '--existing', sourceSets.main.resources.srcDirs[0]
             environment 'target', 'fmluserdevdata'
         }
     }
@@ -181,18 +195,19 @@ minecraft {
 
 dependencies {
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
-    compileOnly fg.deobf ("mcjty.theoneprobe:TheOneProbe-${mc_version_major}:${top_version}:api")
-    runtimeOnly fg.deobf ("mcjty.theoneprobe:TheOneProbe-${mc_version_major}:${top_version}")
-    compileOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}:api")
-    runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}")
-    compileOnly fg.deobf("top.theillusivec4.curios:curios:${curios_version}:api")
-    runtimeOnly fg.deobf("top.theillusivec4.curios:curios:${curios_version}")
+    compileOnly fg.deobf ("mcjty.theoneprobe:TheOneProbe-1.16:${top_version}:api")
+    runtimeOnly fg.deobf ("mcjty.theoneprobe:TheOneProbe-1.16:${top_version}")
+    compileOnly fg.deobf("mezz.jei:jei-1.16.2:${jei_version}:api")
+    runtimeOnly fg.deobf("mezz.jei:jei-1.16.2:${jei_version}")
+    compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}:api")
+    runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}")
     compileOnly fg.deobf("vazkii.botania:Botania:${botania_version}:api")
     runtimeOnly fg.deobf("vazkii.botania:Botania:${botania_version}")
-    compile fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}")
-    compile fg.deobf("org.squiddev:cc-tweaked-${mc_version}:${cc_tweaked_version}")
-    compile fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:${immersive_engineering_version}")
-    compile fg.deobf("curse.maven:mekanism:${mekanism_curse_id}")
+    compileOnly fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}:api")
+    runtimeOnly fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}")
+    compile fg.deobf("org.squiddev:cc-tweaked-1.16.2:${cc_tweaked_version}")
+//    compile fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:${immersive_engineering_version}")
+//    compile fg.deobf("curse.maven:mekanism:${mekanism_curse_id}")
     compile fg.deobf("curse.maven:hwyla:${hwyla_curse_id}")
 
 //    compileOnly fg.deobf("mcp.mobius.waila:Hwyla:${hwyla_version}:api")

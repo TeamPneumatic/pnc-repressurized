@@ -120,7 +120,7 @@ public class GuiInventorySearcher extends ContainerScreen<ContainerInventorySear
 
     @Override
     protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int mouseX, int mouseY) {
-        font.func_238422_b_(matrixStack, getTitle(), this.width / 2f, 5, 0x404040);
+        font.func_238422_b_(matrixStack, getTitle().func_241878_f(), this.width / 2f, 5, 0x404040);
 
         // darken out all non-matching slots
         for (int i = 0; i < this.container.inventorySlots.size() - 1; ++i) {
@@ -138,7 +138,7 @@ public class GuiInventorySearcher extends ContainerScreen<ContainerInventorySear
         super.render(matrixStack, par1, par2, par3);
 
         if (this.hoveredSlot != null && stackPredicate.test(this.hoveredSlot.getStack())) {
-            func_230459_a_(matrixStack, par1, par2);  // renderHoveredTooltip
+            renderHoveredTooltip(matrixStack, par1, par2);
         }
     }
 }

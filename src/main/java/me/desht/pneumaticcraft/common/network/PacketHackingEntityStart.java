@@ -55,7 +55,7 @@ public class PacketHackingEntityStart {
                 Entity entity = player.world.getEntityByID(entityId);
                 if (entity != null) {
                     CommonArmorHandler.getHandlerForPlayer(player).setHackedEntity(entity);
-                    NetworkHandler.sendToAllAround(this, new PacketDistributor.TargetPoint(entity.getPosX(), entity.getPosY(), entity.getPosZ(), 64, entity.world.func_234923_W_()));
+                    NetworkHandler.sendToAllAround(this, new PacketDistributor.TargetPoint(entity.getPosX(), entity.getPosY(), entity.getPosZ(), 64, entity.world.getDimensionKey()));
                 }
             }
         });

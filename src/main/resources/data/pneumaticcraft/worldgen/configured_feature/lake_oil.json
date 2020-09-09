@@ -1,0 +1,22 @@
+{
+  "config": {
+    "feature": {
+      "config": {
+        "state": {
+          "Properties": {
+            "level": "0"
+          },
+          "Name": "pneumaticcraft:oil"
+        }
+      },
+      "type": "minecraft:lake"
+    },
+    "decorator": {
+      "config": {
+        "chance": 80
+      },
+      "type": "pneumaticcraft:oil_lake"
+    }
+  },
+  "type": "minecraft:decorated"
+}

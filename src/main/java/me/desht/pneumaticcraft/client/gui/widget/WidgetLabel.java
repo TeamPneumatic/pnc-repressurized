@@ -115,10 +115,10 @@ public class WidgetLabel extends Widget implements ITooltipProvider {
                 matrixStack.push();
                 matrixStack.scale(scale, scale, scale);
                 matrixStack.translate(drawX, y, 0);
-                fr.func_238422_b_(matrixStack, getMessage(), drawX, y, color);
+                fr.func_238422_b_(matrixStack, getMessage().func_241878_f(), drawX, y, color);
                 matrixStack.pop();
             } else {
-                fr.func_238422_b_(matrixStack, getMessage(), drawX, y, color);
+                fr.func_238422_b_(matrixStack, getMessage().func_241878_f(), drawX, y, color);
             }
         }
     }

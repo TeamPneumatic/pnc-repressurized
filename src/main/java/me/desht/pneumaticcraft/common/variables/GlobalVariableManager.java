@@ -44,7 +44,7 @@ public class GlobalVariableManager extends WorldSavedData {
 
     private static ServerWorld getOverworld() {
         if (overworld == null) {
-            overworld = ServerLifecycleHooks.getCurrentServer().getWorld(World.field_234918_g_);
+            overworld = ServerLifecycleHooks.getCurrentServer().getWorld(World.OVERWORLD);
             if (overworld == null) {
                 throw new IllegalStateException("Overworld not initialized!");
             }

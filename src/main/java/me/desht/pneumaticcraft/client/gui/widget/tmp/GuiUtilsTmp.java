@@ -13,6 +13,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.text.ITextProperties;
+import net.minecraft.util.text.LanguageMap;
+import net.minecraft.util.text.Style;
 import net.minecraftforge.client.event.RenderTooltipEvent;
 import net.minecraftforge.common.MinecraftForge;
 import org.lwjgl.opengl.GL11;
@@ -209,33 +211,67 @@ public class GuiUtilsTmp {
         cachedTooltipStack = ItemStack.EMPTY;
     }
 
+    public static void drawGradientRect(Matrix4f mat, int zLevel, int left, int top, int right, int bottom, int startColor, int endColor)
+    {
+        float startAlpha = (float)(startColor >> 24 & 255) / 255.0F;
+        float startRed   = (float)(startColor >> 16 & 255) / 255.0F;
+        float startGreen = (float)(startColor >>  8 & 255) / 255.0F;
+        float startBlue  = (float)(startColor       & 255) / 255.0F;
+        float endAlpha   = (float)(endColor   >> 24 & 255) / 255.0F;
+        float endRed     = (float)(endColor   >> 16 & 255) / 255.0F;
+        float endGreen   = (float)(endColor   >>  8 & 255) / 255.0F;
+        float endBlue    = (float)(endColor         & 255) / 255.0F;
+
+        RenderSystem.enableDepthTest();
+        RenderSystem.disableTexture();
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.shadeModel(GL11.GL_SMOOTH);
+
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder buffer = tessellator.getBuffer();
+        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+        buffer.pos(mat, right,    top, zLevel).color(startRed, startGreen, startBlue, startAlpha).endVertex();
+        buffer.pos(mat,  left,    top, zLevel).color(startRed, startGreen, startBlue, startAlpha).endVertex();
+        buffer.pos(mat,  left, bottom, zLevel).color(  endRed,   endGreen,   endBlue,   endAlpha).endVertex();
+        buffer.pos(mat, right, bottom, zLevel).color(  endRed,   endGreen,   endBlue,   endAlpha).endVertex();
+        tessellator.draw();
+
+        RenderSystem.shadeModel(GL11.GL_FLAT);
+        RenderSystem.disableBlend();
+        RenderSystem.enableTexture();
+    }
+
+    public static void drawInscribedRect(MatrixStack mStack, int x, int y, int boundsWidth, int boundsHeight, int rectWidth, int rectHeight)
+    {
+        drawInscribedRect(mStack, x, y, boundsWidth, boundsHeight, rectWidth, rectHeight, true, true);
+    }
+
+    public static void drawInscribedRect(MatrixStack mStack, int x, int y, int boundsWidth, int boundsHeight, int rectWidth, int rectHeight, boolean centerX, boolean centerY)
+    {
+        if (rectWidth * boundsHeight > rectHeight * boundsWidth) {
+            int h = boundsHeight;
+            boundsHeight = (int) (boundsWidth * ((double) rectHeight / rectWidth));
+            if (centerY) y += (h - boundsHeight) / 2;
+        } else {
+            int w = boundsWidth;
+            boundsWidth = (int) (boundsHeight * ((double) rectWidth / rectHeight));
+            if (centerX) x += (w - boundsWidth) / 2;
+        }
+
+        AbstractGui.blit(mStack, x, y, boundsWidth, boundsHeight, 0.0f,0.0f, rectWidth, rectHeight, rectWidth, rectHeight);
+    }
+
+
     public static void drawHoveringText(MatrixStack mStack, List<? extends ITextProperties> textLines, int mouseX, int mouseY, int screenWidth, int screenHeight, int maxTextWidth, FontRenderer font)
     {
         drawHoveringText(mStack, textLines, mouseX, mouseY, screenWidth, screenHeight, maxTextWidth, DEFAULT_BACKGROUND_COLOR, DEFAULT_BORDER_COLOR_START, DEFAULT_BORDER_COLOR_END, font);
     }
 
-    /**
-     *  Draws a tooltip box on the screen with text in it.
-     *  Automatically positions the box relative to the mouse to match Mojang's implementation.
-     *  Automatically wraps text when there is not enough space on the screen to display the text without wrapping.
-     *  Can have a maximum width set to avoid creating very wide tooltips.
-     *
-     * @param textLines the lines of text to be drawn in a hovering tooltip box.
-     * @param mouseX the mouse X position
-     * @param mouseY the mouse Y position
-     * @param screenWidth the available screen width for the tooltip to drawn in
-     * @param screenHeight the available  screen height for the tooltip to drawn in
-     * @param maxTextWidth the maximum width of the text in the tooltip box.
-     *                     Set to a negative number to have no max width.
-     * @param backgroundColor The background color of the box
-     * @param borderColorStart The starting color of the box border
-     * @param borderColorEnd The ending color of the box border. The border color will be smoothly interpolated
-     *                       between the start and end values.
-     * @param font the font for drawing the text in the tooltip box
-     */
-    public static void drawHoveringText(MatrixStack mStack, List<? extends ITextProperties> textLines, int mouseX, int mouseY, int screenWidth, int screenHeight, int maxTextWidth, int backgroundColor, int borderColorStart, int borderColorEnd, FontRenderer font)
+    public static void drawHoveringText(MatrixStack mStack, List<? extends ITextProperties> textLines, int mouseX, int mouseY, int screenWidth, int screenHeight,
+                                        int maxTextWidth, int backgroundColor, int borderColorStart, int borderColorEnd, FontRenderer font)
     {
-        drawHoveringText(cachedTooltipStack, mStack, textLines, mouseX, mouseY, screenWidth, screenHeight, maxTextWidth, backgroundColor, borderColorStart, borderColorEnd, font);
+        drawHoveringText(ItemStack.EMPTY, mStack, textLines, mouseX, mouseY, screenWidth, screenHeight, maxTextWidth, backgroundColor, borderColorStart, borderColorEnd, font);
     }
 
     public static void drawHoveringText(@Nonnull final ItemStack stack, MatrixStack mStack, List<? extends ITextProperties> textLines, int mouseX, int mouseY, int screenWidth, int screenHeight, int maxTextWidth, FontRenderer font)
@@ -244,13 +280,11 @@ public class GuiUtilsTmp {
     }
 
     /**
-     * Use this version if calling from somewhere where ItemStack context is available.
-     *
-     * @see #drawHoveringText(MatrixStack, List, int, int, int, int, int, int, int, int, FontRenderer)
+     * Temporary replacement until https://github.com/MinecraftForge/MinecraftForge/pull/7268 is in Forge
      */
-    //TODO, Validate rendering is the same as the original
-    public static void drawHoveringText(@Nonnull final ItemStack stack, MatrixStack mStack, List<? extends ITextProperties> textLines, int mouseX, int mouseY, int screenWidth, int screenHeight, int maxTextWidth, int backgroundColor, int borderColorStart, int borderColorEnd, FontRenderer font)
-    {
+    public static void drawHoveringText(@Nonnull final ItemStack stack, MatrixStack mStack, List<? extends ITextProperties> textLines, int mouseX, int mouseY,
+                                        int screenWidth, int screenHeight, int maxTextWidth,
+                                        int backgroundColor, int borderColorStart, int borderColorEnd, FontRenderer font) {
         if (!textLines.isEmpty())
         {
             RenderTooltipEvent.Pre event = new RenderTooltipEvent.Pre(stack, textLines, mStack, mouseX, mouseY, screenWidth, screenHeight, maxTextWidth, font);
@@ -304,7 +338,7 @@ public class GuiUtilsTmp {
                 for (int i = 0; i < textLines.size(); i++)
                 {
                     ITextProperties textLine = textLines.get(i);
-                    List<ITextProperties> wrappedLine = font.func_238425_b_(textLine, tooltipTextWidth);
+                    List<ITextProperties> wrappedLine = font.func_238420_b_().func_238362_b_(textLine, tooltipTextWidth, Style.EMPTY);
                     if (i == 0)
                         titleLinesCount = wrappedLine.size();
 
@@ -371,7 +405,7 @@ public class GuiUtilsTmp {
             {
                 ITextProperties line = textLines.get(lineNumber);
                 if (line != null)
-                    font.func_238416_a_(line, (float)tooltipX, (float)tooltipY, -1, true, mat, renderType, false, 0, 15728880);
+                    font.func_238416_a_(LanguageMap.getInstance().func_241870_a(line), (float)tooltipX, (float)tooltipY, -1, true, mat, renderType, false, 0, 15728880);
 
                 if (lineNumber + 1 == titleLinesCount)
                     tooltipY += 2;
@@ -387,56 +421,5 @@ public class GuiUtilsTmp {
             RenderSystem.enableDepthTest();
             RenderSystem.enableRescaleNormal();
         }
-    }
-
-    public static void drawGradientRect(Matrix4f mat, int zLevel, int left, int top, int right, int bottom, int startColor, int endColor)
-    {
-        float startAlpha = (float)(startColor >> 24 & 255) / 255.0F;
-        float startRed   = (float)(startColor >> 16 & 255) / 255.0F;
-        float startGreen = (float)(startColor >>  8 & 255) / 255.0F;
-        float startBlue  = (float)(startColor       & 255) / 255.0F;
-        float endAlpha   = (float)(endColor   >> 24 & 255) / 255.0F;
-        float endRed     = (float)(endColor   >> 16 & 255) / 255.0F;
-        float endGreen   = (float)(endColor   >>  8 & 255) / 255.0F;
-        float endBlue    = (float)(endColor         & 255) / 255.0F;
-
-        RenderSystem.enableDepthTest();
-        RenderSystem.disableTexture();
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.shadeModel(GL11.GL_SMOOTH);
-
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder buffer = tessellator.getBuffer();
-        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-        buffer.pos(mat, right,    top, zLevel).color(startRed, startGreen, startBlue, startAlpha).endVertex();
-        buffer.pos(mat,  left,    top, zLevel).color(startRed, startGreen, startBlue, startAlpha).endVertex();
-        buffer.pos(mat,  left, bottom, zLevel).color(  endRed,   endGreen,   endBlue,   endAlpha).endVertex();
-        buffer.pos(mat, right, bottom, zLevel).color(  endRed,   endGreen,   endBlue,   endAlpha).endVertex();
-        tessellator.draw();
-
-        RenderSystem.shadeModel(GL11.GL_FLAT);
-        RenderSystem.disableBlend();
-        RenderSystem.enableTexture();
-    }
-
-    public static void drawInscribedRect(MatrixStack mStack, int x, int y, int boundsWidth, int boundsHeight, int rectWidth, int rectHeight)
-    {
-        drawInscribedRect(mStack, x, y, boundsWidth, boundsHeight, rectWidth, rectHeight, true, true);
-    }
-
-    public static void drawInscribedRect(MatrixStack mStack, int x, int y, int boundsWidth, int boundsHeight, int rectWidth, int rectHeight, boolean centerX, boolean centerY)
-    {
-        if (rectWidth * boundsHeight > rectHeight * boundsWidth) {
-            int h = boundsHeight;
-            boundsHeight = (int) (boundsWidth * ((double) rectHeight / rectWidth));
-            if (centerY) y += (h - boundsHeight) / 2;
-        } else {
-            int w = boundsWidth;
-            boundsWidth = (int) (boundsHeight * ((double) rectWidth / rectHeight));
-            if (centerX) x += (w - boundsWidth) / 2;
-        }
-
-        AbstractGui.blit(mStack, x, y, boundsWidth, boundsHeight, 0.0f,0.0f, rectWidth, rectHeight, rectWidth, rectHeight);
     }
 }

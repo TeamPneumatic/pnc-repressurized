@@ -29,7 +29,7 @@ public class RenderItemMinigun extends ItemStackTileEntityRenderer {
             if (owningPlayer instanceof PlayerEntity) {
                 Minigun minigun = ((ItemMinigun) stack.getItem()).getMinigun(stack, (PlayerEntity) owningPlayer);
                 matrixStack.push();
-                if (mc.gameSettings.thirdPersonView != 0 || player.getEntityId() != owningPlayer.getEntityId()) {
+                if (!mc.gameSettings.func_243230_g().func_243192_a() || player.getEntityId() != owningPlayer.getEntityId()) {
                     // rendering our own gun in 3rd person, or rendering someone else's gun
                     matrixStack.scale(1f, -1f, -1f);
                     matrixStack.rotate(Vector3f.XP.rotationDegrees(-90f));

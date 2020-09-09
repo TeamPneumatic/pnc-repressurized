@@ -685,7 +685,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
 
     @Override
     public int getStatHeight() {
-        return getHeight();
+        return getHeightRealms();
     }
 
     @Override
@@ -694,7 +694,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
     }
 
     @Override
-    public int getHeight() {
+    public int getHeightRealms() {
         return height;
     }
 

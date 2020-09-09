@@ -93,7 +93,7 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
     public Map<ResourceLocation, T> getRecipes(World world) {
         if (world == null) {
             // we should pretty much always have a world, but here's a fallback: the overworld
-            world = ServerLifecycleHooks.getCurrentServer().getWorld(World.field_234918_g_);
+            world = ServerLifecycleHooks.getCurrentServer().getWorld(World.OVERWORLD);
             if (world == null) return Collections.emptyMap();
         }
 

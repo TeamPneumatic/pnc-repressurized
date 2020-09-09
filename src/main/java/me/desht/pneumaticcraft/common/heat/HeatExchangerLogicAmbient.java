@@ -18,7 +18,9 @@ public class HeatExchangerLogicAmbient extends HeatExchangerLogicConstant {
 
         // biome temp of 0.8 is plains: let's call that the baseline
         // max (vanilla) is 2.0 for desert / nether, min is -0.5 for snowy taiga mountains
-        float t = world.getBiome(pos).getDefaultTemperature() - 0.8f;
+        float t = world.getBiome(pos).getTemperature(pos) - 0.8f;
+
+        // TODO 1.16.2 - looks like getTemperature(pos) might be height-aware? in which case, following code can go
 
         int h = 0;
         if (pos.getY() > 80) {

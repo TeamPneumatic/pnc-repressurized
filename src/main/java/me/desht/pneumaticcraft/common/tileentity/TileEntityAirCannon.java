@@ -631,7 +631,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
 
         launchedEntity.setPosition(initialPos.x, initialPos.y, initialPos.z);
         NetworkHandler.sendToAllAround(new PacketSetEntityMotion(launchedEntity, velocity),
-                new PacketDistributor.TargetPoint(initialPos.x, initialPos.y, initialPos.z, 64, world.func_234923_W_()));
+                new PacketDistributor.TargetPoint(initialPos.x, initialPos.y, initialPos.z, 64, world.getDimensionKey()));
         if (launchedEntity instanceof FireballEntity) {
             // fireball velocity is handled a little differently...
             FireballEntity fireball = (FireballEntity) launchedEntity;
@@ -689,9 +689,9 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
                 return new SmallFireballEntity(world, player, 0, 0, 0);
             } else if (item == Items.SNOWBALL) {
                 return new SnowballEntity(world, player);
-            } else if (item instanceof SpawnEggItem) {
+            } else if (item instanceof SpawnEggItem && world instanceof ServerWorld) {
                 EntityType<?> type = ((SpawnEggItem) item).getType(stack.getTag());
-                Entity e = type.spawn(world, stack, player, player.getPosition(), SpawnReason.SPAWN_EGG, false, false);
+                Entity e = type.spawn((ServerWorld) world, stack, player, player.getPosition(), SpawnReason.SPAWN_EGG, false, false);
                 if (e instanceof LivingEntity && stack.hasDisplayName()) {
                     e.setCustomName(stack.getDisplayName());
                 }

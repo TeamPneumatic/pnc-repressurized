@@ -53,7 +53,7 @@ public class WidgetRadioButton extends Widget implements ITooltipProvider {
         if (checked) {
             drawCircle(matrixStack, x + BUTTON_WIDTH / 2f, y + BUTTON_HEIGHT / 2f, 1, enabled ? 0xFFFFFFFF : 0xFFAAAAAA);
         }
-        fontRenderer.func_238422_b_(matrixStack, getMessage(), x + 1 + BUTTON_WIDTH,
+        fontRenderer.func_238422_b_(matrixStack, getMessage().func_241878_f(), x + 1 + BUTTON_WIDTH,
                 y + BUTTON_HEIGHT / 2f - fontRenderer.FONT_HEIGHT / 2f, enabled ? color : 0xFF888888);
     }
 

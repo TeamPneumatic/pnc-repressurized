@@ -50,7 +50,7 @@ public class JetBootsStateTracker {
             state.enabled = enabled;
             state.active = active;
             state.builderMode = builderMode;
-            if (sendPacket) NetworkHandler.sendToDimension(new PacketJetBootsStateSync(player, state), player.world.func_234923_W_());
+            if (sendPacket) NetworkHandler.sendToDimension(new PacketJetBootsStateSync(player, state), player.world.getDimensionKey());
         }
     }
 
@@ -89,7 +89,7 @@ public class JetBootsStateTracker {
         // inform other players
         if (isPneumaticArmorPiece(newPlayer, EquipmentSlotType.FEET)) {
             JetBootsStateTracker.JetBootsState state = tracker.getJetBootsState(newPlayer);
-            if (state != null) NetworkHandler.sendToDimension(new PacketJetBootsStateSync(newPlayer, state), newPlayer.getEntityWorld().func_234923_W_());
+            if (state != null) NetworkHandler.sendToDimension(new PacketJetBootsStateSync(newPlayer, state), newPlayer.getEntityWorld().getDimensionKey());
         }
     }
 

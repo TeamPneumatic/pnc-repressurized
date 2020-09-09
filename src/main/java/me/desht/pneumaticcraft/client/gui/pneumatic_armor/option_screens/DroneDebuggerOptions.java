@@ -116,8 +116,8 @@ public class DroneDebuggerOptions extends IOptionPage.SimpleToggleableOptions<Dr
         int screenHeight = guiScreen.height;
 
         if (selectedDrone != null) {
-            Minecraft.getInstance().fontRenderer.func_238407_a_(matrixStack, xlate("pneumaticcraft.gui.progWidget.debug.droneName",  selectedDrone.getName().getString()), 20, screenHeight - 15, 0xFFFFFFFF);
-            Minecraft.getInstance().fontRenderer.func_238407_a_(matrixStack, xlate("pneumaticcraft.gui.progWidget.debug.routine",  selectedDrone.getLabel()), screenWidth / 2f, screenHeight - 15, 0xFFFFFFFF);
+            Minecraft.getInstance().fontRenderer.func_238407_a_(matrixStack, xlate("pneumaticcraft.gui.progWidget.debug.droneName",  selectedDrone.getName().getString()).func_241878_f(), 20, screenHeight - 15, 0xFFFFFFFF);
+            Minecraft.getInstance().fontRenderer.func_238407_a_(matrixStack, xlate("pneumaticcraft.gui.progWidget.debug.routine",  selectedDrone.getLabel()).func_241878_f(), screenWidth / 2f, screenHeight - 15, 0xFFFFFFFF);
         }
 
         matrixStack.push();

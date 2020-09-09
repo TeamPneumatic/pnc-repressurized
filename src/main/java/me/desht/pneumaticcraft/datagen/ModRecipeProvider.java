@@ -867,7 +867,7 @@ public class ModRecipeProvider extends RecipeProvider {
         standardUpgrade(EnumUpgrade.ITEM_LIFE, Items.CLOCK, Items.APPLE).build(consumer);
         standardUpgrade(EnumUpgrade.MAGNET, PneumaticCraftTags.Items.PLASTIC_SHEETS, PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON).build(consumer);
         standardUpgrade(EnumUpgrade.MINIGUN, ModItems.MINIGUN.get(), Tags.Items.GUNPOWDER).build(consumer);
-        standardUpgrade(EnumUpgrade.RANGE, Items.BOW, Tags.Items.ARROWS).build(consumer);
+        standardUpgrade(EnumUpgrade.RANGE, Items.BOW, ItemTags.ARROWS).build(consumer);
         standardUpgrade(EnumUpgrade.SEARCH, Items.GOLDEN_CARROT, Items.ENDER_EYE).build(consumer);
         standardUpgrade(EnumUpgrade.SECURITY, ModItems.SAFETY_TUBE_MODULE.get(), Tags.Items.OBSIDIAN).build(consumer);
         standardUpgrade(EnumUpgrade.SPEED, FluidIngredient.of(1000, ModFluids.LUBRICANT.get()), Items.SUGAR).build(consumer);

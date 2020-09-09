@@ -13,6 +13,7 @@ import net.minecraft.util.text.ITextComponent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public abstract class GuiPneumaticScreenBase extends Screen {
     public int guiLeft, guiTop, xSize, ySize;
@@ -78,7 +79,7 @@ public abstract class GuiPneumaticScreenBase extends Screen {
 //                    localizedTooltip.addAll(Arrays.asList(lines));
 //                }
 //            }
-            renderTooltip(matrixStack, tooltip, x, y);
+            renderTooltip(matrixStack, tooltip.stream().map(ITextComponent::func_241878_f).collect(Collectors.toList()), x, y);
             RenderHelper.enableStandardItemLighting();
         }
         RenderSystem.color4f(0.25f, 0.25f, 0.25f, 1.0f);

@@ -252,7 +252,7 @@ public class GuiItemSearcher extends ContainerScreen<ContainerItemSearcher> {
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.disableLighting();
 
-        func_230459_a_(matrixStack, x, y);
+        renderHoveredTooltip(matrixStack, x, y);
     }
 
     /**

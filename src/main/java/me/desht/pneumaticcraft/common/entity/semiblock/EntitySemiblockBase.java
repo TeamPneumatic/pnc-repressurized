@@ -274,7 +274,7 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
         if (!world.isRemote) {
             Direction dir = this instanceof IDirectionalSemiblock ? ((IDirectionalSemiblock) this).getSide() : null;
             if (SemiblockTracker.getInstance().putSemiblock(world, blockPos, this)) {
-                MinecraftForge.EVENT_BUS.post(new SemiblockEvent.PlaceEvent(world.getWorld(), blockPos, this));
+                MinecraftForge.EVENT_BUS.post(new SemiblockEvent.PlaceEvent(world, blockPos, this));
             } else {
                 Log.error("found existing semiblock at %s, pos=%s, dir=%s", world, blockPos, dir);
             }
@@ -288,7 +288,7 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
         if (!world.isRemote) {
             Direction dir = this instanceof IDirectionalSemiblock ? ((IDirectionalSemiblock) this).getSide() : null;
             SemiblockTracker.getInstance().clearSemiblock(world, blockPos, dir);
-            MinecraftForge.EVENT_BUS.post(new SemiblockEvent.BreakEvent(world.getWorld(), blockPos, this));
+            MinecraftForge.EVENT_BUS.post(new SemiblockEvent.BreakEvent(world, blockPos, this));
         }
 
         onBroken();

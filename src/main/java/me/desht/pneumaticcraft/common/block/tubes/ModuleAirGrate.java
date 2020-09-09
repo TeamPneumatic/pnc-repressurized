@@ -6,8 +6,8 @@ import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityHeatSink;
 import me.desht.pneumaticcraft.common.util.EntityFilter;
 import me.desht.pneumaticcraft.common.util.IOHelper;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.item.ItemEntity;
@@ -109,7 +109,7 @@ public class ModuleAirGrate extends TubeModule {
                 double x = (entity.getPosX() - pos.getX() - 0.5D) / d0;
                 double y = (entity.getPosY() + entity.getEyeHeight() - pos.getY() - 0.5D) / d0;
                 BlockPos entityPos = entity.getPosition();
-                if (!Block.hasSolidSide(world.getBlockState(entityPos), world, entityPos, Direction.UP) && !world.isAirBlock(entityPos)) {
+                if (!PneumaticCraftUtils.blockHasSolidSide(world.getBlockState(entityPos), world, entityPos, Direction.UP) && !world.isAirBlock(entityPos)) {
                     y -= 0.15;  // kludge: avoid entities getting stuck on edges, e.g. farmland->full block
                 }
                 double z = (entity.getPosZ() - pos.getZ() - 0.5D) / d0;

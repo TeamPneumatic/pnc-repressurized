@@ -29,7 +29,7 @@ public class ActionWidgetDropdown extends ActionWidgetVariable<WidgetComboBox> {
         x = widget.x;
         y = widget.y;
         width = widget.getWidth();
-        height = widget.getHeight();
+        height = widget.getHeightRealms();
         widget.setText(I18n.format("pneumaticcraft.gui.remote.tray.dropdown.name"));
         widget.setTooltip(PneumaticCraftUtils.splitStringComponent(I18n.format("pneumaticcraft.gui.remote.tray.dropdown.tooltip")));
     }

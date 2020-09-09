@@ -396,7 +396,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
 
         String str = widgetPage + 1 + "/" + maxPage;
         font.drawString(matrixStack, str, xRight + 22 - font.getStringWidth(str) / 2, yBottom + 4, 0x404040);
-        font.func_238422_b_(matrixStack, xlate("pneumaticcraft.gui.programmer.difficulty"), xRight - 36, yBottom + 20, 0x404040);
+        font.func_238422_b_(matrixStack, xlate("pneumaticcraft.gui.programmer.difficulty").func_241878_f(), xRight - 36, yBottom + 20, 0x404040);
 
         if (showingWidgetProgress == 0) {
             programmerUnit.renderForeground(matrixStack, x, y, draggingWidget);

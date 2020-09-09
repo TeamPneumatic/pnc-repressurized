@@ -493,7 +493,7 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
     }
 
     private static boolean isValidAndInRange(World world, BlockPos pos, boolean placementRange, TileEntitySecurityStation station) {
-        if (!station.isRemoved() && station.getWorld().func_234923_W_().compareTo(world.func_234923_W_()) == 0 && station.hasValidNetwork()) {
+        if (!station.isRemoved() && station.getWorld().getDimensionKey().compareTo(world.getDimensionKey()) == 0 && station.hasValidNetwork()) {
             AxisAlignedBB aabb = station.getAffectedBoundingBox();
             if (placementRange) aabb = aabb.grow(16);
             return aabb.contains(Vector3d.copyCentered(pos));

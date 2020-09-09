@@ -27,6 +27,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.registries.ObjectHolder;
 
@@ -130,7 +131,7 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase i
                         BlockPos pos = entity.getPosition();
                         if (posSet.contains(pos) || posSet.contains(pos.down())) {
                             if (!net.minecraftforge.event.ForgeEventFactory.onEntityStruckByLightning(entity, bolt)) {
-                                entity.onStruckByLightning(bolt);
+                                entity.func_241841_a((ServerWorld) getWorld(), bolt);
                             }
                         }
                     }

@@ -238,9 +238,11 @@ public class EventHandlerPneumaticCraft {
 
     @SubscribeEvent
     public void onWorldLoad(WorldEvent.Load event) {
-        World world = event.getWorld().getWorld();
-        if (!world.isRemote) {
-            ModuleNetworkManager.getInstance(world).invalidateCache();
+        if (event.getWorld() instanceof World) {
+            World world = (World) event.getWorld();
+            if (!world.isRemote) {
+                ModuleNetworkManager.getInstance(world).invalidateCache();
+            }
         }
     }
 
@@ -337,6 +339,6 @@ public class EventHandlerPneumaticCraft {
 
     @SubscribeEvent
     public void onTagsUpdated(TagsUpdatedEvent event) {
-        PneumaticHelmetRegistry.getInstance().resolveBlockTags(event.getTagManager().getBlocks());
+        PneumaticHelmetRegistry.getInstance().resolveBlockTags(event.getTagManager().func_241835_a());
     }
 }

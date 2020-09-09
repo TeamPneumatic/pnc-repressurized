@@ -8,7 +8,6 @@ import me.desht.pneumaticcraft.common.inventory.handler.ComparatorItemStackHandl
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -136,7 +135,7 @@ public class TileEntityOmnidirectionalHopper extends TileEntityAbstractHopper {
         }
 
         BlockPos inputPos = pos.offset(inputDir);
-        if (!Block.hasSolidSide(world.getBlockState(inputPos), world, inputPos, inputDir.getOpposite())) {
+        if (!PneumaticCraftUtils.blockHasSolidSide(world.getBlockState(inputPos), world, inputPos, inputDir.getOpposite())) {
             // Suck in item entities
             for (ItemEntity entity : getNeighborItems(inputAABB)) {
                 ItemStack remainder = ItemHandlerHelper.insertItem(itemHandler, entity.getItem(), false); //IOHelper.insert(this, entity.getItem(), null, false);
@@ -233,7 +232,7 @@ public class TileEntityOmnidirectionalHopper extends TileEntityAbstractHopper {
         @Nonnull
         @Override
         public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-            if (!Block.hasSolidSide(world.getBlockState(pos), world, pos, outputDir.getOpposite())) {
+            if (!PneumaticCraftUtils.blockHasSolidSide(world.getBlockState(pos), world, pos, outputDir.getOpposite())) {
                 if (!simulate) {
                     PneumaticCraftUtils.dropItemOnGroundPrecisely(stack, world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
                 }

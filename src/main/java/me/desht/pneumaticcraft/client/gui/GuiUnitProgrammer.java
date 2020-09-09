@@ -29,6 +29,7 @@ import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -108,7 +109,7 @@ public class GuiUnitProgrammer extends Screen {
             addAdditionalInfoToTooltip(progWidget, tooltip);
 
             if (!tooltip.isEmpty()) {
-                renderTooltip(matrixStack, tooltip, x - guiLeft, y - guiTop);
+                renderTooltip(matrixStack, tooltip.stream().map(ITextComponent::func_241878_f).collect(Collectors.toList()), x - guiLeft, y - guiTop);
             }
         }
     }

@@ -10,7 +10,7 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.tags.ITag;
-import net.minecraft.tags.TagCollection;
+import net.minecraft.tags.ITagCollection;
 import net.minecraft.util.ResourceLocation;
 import org.apache.commons.lang3.Validate;
 
@@ -76,7 +76,7 @@ public class PneumaticHelmetRegistry implements IPneumaticHelmetRegistry {
      *
      * @param tags the newly updated block tags
      */
-    public void resolveBlockTags(TagCollection<Block> tags) {
+    public void resolveBlockTags(ITagCollection<Block> tags) {
         hackableTaggedBlocks.clear();
         pendingBlockTags.forEach((id, hackable) -> tags.get(id).getAllElements().forEach(block -> hackableTaggedBlocks.put(block, hackable)));
     }

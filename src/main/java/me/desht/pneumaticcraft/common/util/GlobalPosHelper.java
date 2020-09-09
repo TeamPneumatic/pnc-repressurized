@@ -19,13 +19,13 @@ public class GlobalPosHelper {
     public static CompoundNBT toNBT(GlobalPos globalPos) {
         CompoundNBT tag = new CompoundNBT();
         tag.put("pos", net.minecraft.nbt.NBTUtil.writeBlockPos(globalPos.getPos()));
-        tag.putString("dim", globalPos.func_239646_a_().func_240901_a_().toString());
+        tag.putString("dim", globalPos.getDimension().func_240901_a_().toString());
         return tag;
     }
 
     public static GlobalPos fromNBT(CompoundNBT tag) {
         RegistryKey<World> worldKey = RegistryKey.func_240903_a_(Registry.WORLD_KEY, new ResourceLocation(tag.getString("dim")));
-        return GlobalPos.func_239648_a_(worldKey, NBTUtil.readBlockPos(tag.getCompound("pos")));
+        return GlobalPos.getPosition(worldKey, NBTUtil.readBlockPos(tag.getCompound("pos")));
     }
 
     public static JsonElement toJson(GlobalPos pos) {
@@ -35,7 +35,7 @@ public class GlobalPosHelper {
         posObj.addProperty("z", pos.getPos().getZ());
 
         JsonObject obj = new JsonObject();
-        obj.addProperty("dimension", pos.func_239646_a_().func_240901_a_().toString());
+        obj.addProperty("dimension", pos.getDimension().func_240901_a_().toString());
         obj.add("pos", posObj);
         return obj;
     }
@@ -48,24 +48,24 @@ public class GlobalPosHelper {
                 JSONUtils.getInt(posObj, "y"),
                 JSONUtils.getInt(posObj, "z")
         );
-        return GlobalPos.func_239648_a_(worldKey, pos);
+        return GlobalPos.getPosition(worldKey, pos);
     }
 
     public static ServerWorld getWorldForGlobalPos(GlobalPos pos) {
-        return ServerLifecycleHooks.getCurrentServer().getWorld(pos.func_239646_a_());
+        return ServerLifecycleHooks.getCurrentServer().getWorld(pos.getDimension());
     }
 
     public static GlobalPos makeGlobalPos(World w, BlockPos pos) {
-        return GlobalPos.func_239648_a_(w.func_234923_W_(), pos);
+        return GlobalPos.getPosition(w.getDimensionKey(), pos);
     }
 
     public static boolean isSameWorld(GlobalPos pos, World world) {
-        return pos.func_239646_a_().compareTo(world.func_234923_W_()) == 0;
+        return pos.getDimension().compareTo(world.getDimensionKey()) == 0;
     }
 
     public static String prettyPrint(GlobalPos pos) {
         BlockPos p = pos.getPos();
-        String dim = pos.func_239646_a_().func_240901_a_().toString();
+        String dim = pos.getDimension().func_240901_a_().toString();
         return String.format("%s [%d,%d,%d]", dim, p.getX(), p.getY(), p.getZ());
     }
 

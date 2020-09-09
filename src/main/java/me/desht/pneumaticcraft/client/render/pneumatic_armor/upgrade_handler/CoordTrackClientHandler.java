@@ -113,7 +113,7 @@ public class CoordTrackClientHandler extends IArmorUpgradeClientHandler.Abstract
     @Override
     public void render3D(MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks) {
         if (coordTracker != null) {
-            if (!Minecraft.getInstance().player.world.func_234923_W_().func_240901_a_().equals(coordTracker.world.func_234923_W_().func_240901_a_()))
+            if (!Minecraft.getInstance().player.world.getDimensionKey().func_240901_a_().equals(coordTracker.world.getDimensionKey().func_240901_a_()))
                 return;
             coordTracker.render(matrixStack, buffer, partialTicks);
             if (PNCConfig.Client.Armor.pathEnabled && navigator != null) {

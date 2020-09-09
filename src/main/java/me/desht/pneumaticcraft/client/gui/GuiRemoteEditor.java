@@ -142,7 +142,7 @@ public class GuiRemoteEditor extends GuiRemote {
 
     private boolean isOutsideProgrammingArea(ActionWidget<?> actionWidget) {
         Widget w = actionWidget.getWidget();
-        return w.x < guiLeft || w.y < guiTop || w.x + w.getWidth() > guiLeft + 183 || w.y + w.getHeight() > guiTop + ySize;
+        return w.x < guiLeft || w.y < guiTop || w.x + w.getWidth() > guiLeft + 183 || w.y + w.getHeightRealms() > guiTop + ySize;
     }
 
     @Override

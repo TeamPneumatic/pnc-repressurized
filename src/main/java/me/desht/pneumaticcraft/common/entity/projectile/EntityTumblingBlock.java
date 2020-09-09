@@ -163,7 +163,7 @@ public class EntityTumblingBlock extends ThrowableEntity {
         BlockPos pos = state.isReplaceable(ctx) ? pos0 : pos0.offset(face);
 
         if (world.getBlockState(pos).isReplaceable(ctx)) {
-            BlockSnapshot snapshot = BlockSnapshot.create(world, pos);
+            BlockSnapshot snapshot = BlockSnapshot.create(world.getDimensionKey(), world, pos);
             if (!ForgeEventFactory.onBlockPlace(placer, snapshot, face)) {
                 ActionResultType res = ((BlockItem) stack.getItem()).tryPlace(ctx);
                 return res == ActionResultType.SUCCESS || res == ActionResultType.CONSUME;
