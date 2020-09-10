@@ -78,8 +78,12 @@ public enum EnumUpgrade {
     }
 
     public ItemStack getItemStack() {
+        return getItemStack(1);
+    }
+
+    public ItemStack getItemStack(int count) {
         Item item = getItem();
-        return item == null ? ItemStack.EMPTY : new ItemStack(getItem());
+        return item == null ? ItemStack.EMPTY : new ItemStack(getItem(), count);
     }
 
     public String getItemName(int tier) {
