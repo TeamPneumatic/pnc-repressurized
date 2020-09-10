@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.util;
 
-import me.desht.pneumaticcraft.common.core.ModEntities;
 import me.desht.pneumaticcraft.common.entity.living.EntityAmadrone;
 import me.desht.pneumaticcraft.common.progwidgets.*;
 import net.minecraft.entity.CreatureEntity;
@@ -16,22 +15,6 @@ import org.apache.commons.lang3.Validate;
 import java.util.Arrays;
 
 public class ProgrammedDroneUtils {
-    /**
-     * Create an Amadrone: 10 speed upgrades, 35 inventory upgrades, 100000mL of air
-     *
-     * @param world the world
-     * @param pos drone's position
-     * @return the delivery drone
-     */
-    private static EntityAmadrone makeDeliveryDrone(World world, BlockPos pos) {
-        EntityAmadrone drone = new EntityAmadrone(ModEntities.AMADRONE.get(), world);
-
-        int startY = world.getHeight(Heightmap.Type.WORLD_SURFACE, pos.add(30, 0, 0)).getY() + 27 + world.rand.nextInt(6);
-        drone.setPosition(pos.getX() + 27 + world.rand.nextInt(6), startY, pos.getZ() + world.rand.nextInt(6) - 3);
-
-        return drone;
-    }
-
     public static CreatureEntity deliverItemsAmazonStyle(GlobalPos gPos, ItemStack... deliveredStacks) {
         World world = GlobalPosHelper.getWorldForGlobalPos(gPos);
         BlockPos pos = gPos.getPos();
@@ -42,7 +25,7 @@ public class ProgrammedDroneUtils {
         Arrays.stream(deliveredStacks).forEach(stack -> Validate.isTrue(!stack.isEmpty(),
                 "You can't supply an empty stack to be delivered!"));
 
-        EntityAmadrone drone = makeDeliveryDrone(world, pos);
+        EntityAmadrone drone = EntityAmadrone.makeAmadrone(world, pos);
 
         // Program the drone
         DroneProgramBuilder builder = new DroneProgramBuilder();
@@ -78,7 +61,7 @@ public class ProgrammedDroneUtils {
         Validate.notNull(deliveredFluid, "Can't deliver a null FluidStack");
         Validate.isTrue(deliveredFluid.getAmount() > 0, "Can't deliver a FluidStack with an amount of <= 0");
 
-        EntityAmadrone drone = makeDeliveryDrone(world, pos);
+        EntityAmadrone drone = EntityAmadrone.makeAmadrone(world, pos);
 
         // Program the drone
         DroneProgramBuilder builder = new DroneProgramBuilder();
@@ -101,7 +84,7 @@ public class ProgrammedDroneUtils {
         Validate.isTrue(queriedStacks.length > 0 && queriedStacks.length <= 36, "Must retrieve between 1 & 36 itemstacks!");
         Arrays.stream(queriedStacks).forEach(stack -> Validate.isTrue(!stack.isEmpty(), "Cannot retrieve an empty stack!"));
 
-        EntityAmadrone drone = makeDeliveryDrone(world, pos);
+        EntityAmadrone drone = EntityAmadrone.makeAmadrone(world, pos);
 
         // Program the drone
         DroneProgramBuilder builder = new DroneProgramBuilder();
@@ -130,7 +113,7 @@ public class ProgrammedDroneUtils {
         Validate.notNull(queriedFluid, "Can't retrieve a null FluidStack");
         Validate.isTrue(queriedFluid.getAmount() > 0, "Can't retrieve a FluidStack with an amount of <= 0");
 
-        EntityAmadrone drone = makeDeliveryDrone(world, pos);
+        EntityAmadrone drone = EntityAmadrone.makeAmadrone(world, pos);
 
         // Program the drone
         DroneProgramBuilder builder = new DroneProgramBuilder();
