@@ -39,7 +39,7 @@ public class DroneEntityAIInventoryExport extends DroneAIImExBase<ProgWidgetInve
                                 if (progWidget.useCount()) {
                                     droneStack.setCount(Math.min(droneStack.getCount(), getRemainingCount()));
                                 }
-                                ItemStack remainder = IOHelper.insert(te, droneStack.copy(), Direction.byIndex(side), simulate);
+                                ItemStack remainder = IOHelper.insertStacked(te, droneStack.copy(), Direction.byIndex(side), simulate);
                                 int stackSize = drone.getInv().getStackInSlot(i).getCount() - (remainder.isEmpty() ? droneStack.getCount() : droneStack.getCount() - remainder.getCount());
                                 droneStack.setCount(stackSize);
                                 int exportedItems = oldCount - stackSize;

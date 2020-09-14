@@ -125,28 +125,19 @@ public class IOHelper {
     }
 
     @Nonnull
-    public static ItemStack insert(TileEntity tile, ItemStack itemStack, boolean simulate) {
-        for (Direction side : Direction.values()) {
-            ItemStack inserted = getInventoryForTE(tile, side)
-                    .map(handler -> ItemHandlerHelper.insertItem(handler, itemStack.copy(), simulate))
-                    .orElse(ItemStack.EMPTY);
-            if (inserted.getCount() < itemStack.getCount()) return inserted;
-        }
-        return itemStack;
-    }
-
-    @Nonnull
-    public static ItemStack insert(TileEntity tile, ItemStack itemStack, Direction side, boolean simulate) {
-        return getInventoryForTE(tile, side).map(handler -> ItemHandlerHelper.insertItem(handler, itemStack, simulate)).orElse(itemStack);
-    }
-
-    @Nonnull
     public static ItemStack insert(ICapabilityProvider provider, ItemStack itemStack, Direction side, boolean simulate) {
         return provider.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, side)
                 .map(handler -> ItemHandlerHelper.insertItem(handler, itemStack, simulate))
                 .orElse(itemStack);
     }
-    
+
+    @Nonnull
+    public static ItemStack insertStacked(ICapabilityProvider provider, ItemStack itemStack, Direction side, boolean simulate) {
+        return provider.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, side)
+                .map(handler -> ItemHandlerHelper.insertItemStacked(handler, itemStack, simulate))
+                .orElse(itemStack);
+    }
+
     /**
      * Try to transfer a single item between two item handlers
      *
