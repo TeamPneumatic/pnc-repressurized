@@ -10,6 +10,15 @@ The initial 1.16.1 release is largely equivalent in functionality to the 1.4.2 r
 
 Releases from 2.1.0 onward *require* Forge 32.0.108 or newer.
 
+## 2.2.1-32 (14 Sep 2020)
+
+### Fixes
+* Fixed Amadrones thinking they had only one inventory slot, causing orders with more than 64 of an item to fail
+* Fixed Memory Stick sopmetimes losing its stored experience
+* Left-clicking Memory Stick to toggle XP absorption mode now also works when left-clicking air (previously required a block to be clicked)
+* Drone "Inventory Export" widget will now try to keep items stacked in the inventory it's exporting to
+  * This also applies to Collector Drones, which use the "Inventory Export" widget internally
+
 ## 2.2.0-29 (3 Sep 2020)
 
 Important: if you are also using Immersive Engineering, this release of PNC:R *requires* IE 1.16.1-4.0.0-118 or newer.
