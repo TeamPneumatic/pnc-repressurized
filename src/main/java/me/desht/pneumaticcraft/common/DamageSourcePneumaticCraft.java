@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common;
 
+import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.DamageSource;
@@ -13,11 +14,11 @@ public class DamageSourcePneumaticCraft extends DamageSource {
     public static final DamageSourcePneumaticCraft FREEZING = new DamageSourcePneumaticCraft("freezing", 2);
     public static final DamageSourcePneumaticCraft PLASTIC_BLOCK = new DamageSourcePneumaticCraft("plastic_block", 2);
 
-    private final int deathMessages;
+    private final int deathMessageCount;
 
     private DamageSourcePneumaticCraft(String damageType, int messages) {
         super(damageType);
-        deathMessages = messages;
+        deathMessageCount = messages;
     }
 
     DamageSourcePneumaticCraft(String damageType) {
@@ -39,19 +40,16 @@ public class DamageSourcePneumaticCraft extends DamageSource {
         return super.setFireDamage();
     }
 
-    /**
-     * Returns the message to be displayed on player death.
-     */
     @Override
-    public ITextComponent getDeathMessage(LivingEntity par1EntityLivingBase) {
-        int messageNumber = par1EntityLivingBase.getRNG().nextInt(deathMessages) + 1;
+    public ITextComponent getDeathMessage(LivingEntity dyingEntity) {
+        int messageNumber = dyingEntity.getRNG().nextInt(deathMessageCount) + 1;
 
-        LivingEntity entitylivingbase1 = par1EntityLivingBase.getAttackingEntity();
-        String s = "death.attack." + damageType + messageNumber;
+        LivingEntity killer = dyingEntity.getAttackingEntity();
+        String s = Names.MOD_ID + ".death.attack." + damageType + messageNumber;
         String s1 = s + ".player";
-        return entitylivingbase1 != null && I18n.hasKey(s1) ?
-                new TranslationTextComponent(s1, par1EntityLivingBase.getDisplayName(), entitylivingbase1.getDisplayName()) :
-                new TranslationTextComponent(s, par1EntityLivingBase.getDisplayName());
+        return killer != null && I18n.hasKey(s1) ?
+                new TranslationTextComponent(s1, dyingEntity.getDisplayName(), killer.getDisplayName()) :
+                new TranslationTextComponent(s, dyingEntity.getDisplayName());
     }
 
     public static class DamageSourceDroneOverload extends DamageSourcePneumaticCraft {
@@ -68,7 +66,7 @@ public class DamageSourcePneumaticCraft extends DamageSource {
         }
 
         @Override
-        public ITextComponent getDeathMessage(LivingEntity par1EntityLivingBase) {
+        public ITextComponent getDeathMessage(LivingEntity dyingEntity) {
             return new TranslationTextComponent("pneumaticcraft.death.drone.overload." + msgKey, params);
         }
     }
