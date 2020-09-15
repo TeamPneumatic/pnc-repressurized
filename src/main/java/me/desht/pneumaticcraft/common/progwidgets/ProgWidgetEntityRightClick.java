@@ -6,10 +6,10 @@ import me.desht.pneumaticcraft.common.ai.DroneEntityBase;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.entity.AgeableEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
@@ -18,7 +18,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -74,7 +74,7 @@ public class ProgWidgetEntityRightClick extends ProgWidget implements IAreaProvi
     @Override
     public Goal getWidgetAI(IDroneBase drone, IProgWidget progWidget) {
         return new DroneEntityBase<IEntityProvider, LivingEntity>(drone, (IEntityProvider) progWidget) {
-            private final List<Entity> visitedEntities = new ArrayList<>();
+            private final Set<Entity> visitedEntities = new HashSet<>();
 
             @Override
             protected boolean isEntityValid(Entity entity) {
@@ -84,18 +84,24 @@ public class ProgWidgetEntityRightClick extends ProgWidget implements IAreaProvi
             @Override
             protected boolean doAction() {
                 visitedEntities.add(targetedEntity);
-                boolean activated = false;
                 ItemStack stack = drone.getInv().getStackInSlot(0);
-                if (stack.getItem().itemInteractionForEntity(stack, drone.getFakePlayer(), targetedEntity, Hand.MAIN_HAND)) {
-                    activated = true;
+                PlayerEntity fakePlayer = drone.getFakePlayer();
+                if (stack.getItem().itemInteractionForEntity(stack, fakePlayer, targetedEntity, Hand.MAIN_HAND)
+                        || targetedEntity.processInitialInteract(fakePlayer, Hand.MAIN_HAND)) {
+                    // fake player's inventory has probably been modified in some way
+                    // copy items back to drone inventory, dropping on the ground any items that don't fit
+                    for (int i = 0; i < fakePlayer.inventory.mainInventory.size(); i++) {
+                        ItemStack fakePlayerStack = fakePlayer.inventory.mainInventory.get(i);
+                        if (i < drone.getInv().getSlots()) {
+                            drone.getInv().setStackInSlot(i, fakePlayerStack);
+                        } else if (!fakePlayerStack.isEmpty()) {
+                            drone.dropItem(fakePlayerStack);
+                            fakePlayer.inventory.mainInventory.set(i, ItemStack.EMPTY);
+                        }
+                    }
                 }
-                if (!activated && targetedEntity instanceof AgeableEntity
-                        && ((AgeableEntity) targetedEntity).processInteract(drone.getFakePlayer(), Hand.MAIN_HAND)) {
-                    activated = true;
-                }
-                return false;//return activated; <-- will right click as long as it's sucessfully activated.
+                return false; // always returning false, to indicate we're done trying
             }
-
         };
     }
 

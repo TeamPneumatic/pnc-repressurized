@@ -3,6 +3,8 @@ package me.desht.pneumaticcraft.common.ai;
 import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.List;
@@ -35,4 +37,5 @@ public interface IDroneBase extends IDrone {
 
     void setLogisticsManager(LogisticsManager logisticsManager);
 
+    void playSound(SoundEvent soundEvent, SoundCategory category, float volume, float pitch);
 }

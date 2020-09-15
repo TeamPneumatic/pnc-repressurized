@@ -42,9 +42,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -275,46 +273,6 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
         return new ContainerProgrammableController(i, playerInventory, getPos());
-    }
-
-    private class ProgrammableItemStackHandler extends BaseItemStackHandler {
-        ProgrammableItemStackHandler(TileEntity te) {
-            super(te, INVENTORY_SIZE);
-        }
-
-        @Override
-        protected void onContentsChanged(int slot) {
-            super.onContentsChanged(slot);
-            ItemStack stack = getStackInSlot(slot);
-            progWidgets.clear();
-            if (!stack.isEmpty() && isProgrammableAndValidForDrone(TileEntityProgrammableController.this, stack)) {
-                progWidgets.addAll(TileEntityProgrammer.getProgWidgets(stack));
-                TileEntityProgrammer.updatePuzzleConnections(progWidgets);
-                isIdle = false;
-            } else {
-                setDugBlock(null);
-                targetX = getPos().getX() + 0.5;
-                targetY = getPos().getY() + 1.0;
-                targetZ = getPos().getZ() + 0.5;
-                boolean updateNeighbours = false;
-                for (int i = 0; i < redstoneLevels.length; i++) {
-                    if (redstoneLevels[i] > 0) {
-                        redstoneLevels[i] = 0;
-                        updateNeighbours = true;
-                    }
-                }
-                if (updateNeighbours) updateNeighbours();
-                isIdle = true;
-            }
-            if (!getWorld().isRemote) {
-                getAIManager().setWidgets(progWidgets);
-            }
-        }
-
-        @Override
-        public boolean isItemValid(int slot, ItemStack itemStack) {
-            return itemStack.isEmpty() || isProgrammableAndValidForDrone(TileEntityProgrammableController.this, itemStack);
-        }
     }
 
     @Override
@@ -681,4 +639,50 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     public void setLogisticsManager(LogisticsManager logisticsManager) {
         this.logisticsManager = logisticsManager;
     }
+
+    @Override
+    public void playSound(SoundEvent soundEvent, SoundCategory category, float volume, float pitch) {
+        // nothing
+    }
+
+    private class ProgrammableItemStackHandler extends BaseItemStackHandler {
+        ProgrammableItemStackHandler(TileEntity te) {
+            super(te, INVENTORY_SIZE);
+        }
+
+        @Override
+        protected void onContentsChanged(int slot) {
+            super.onContentsChanged(slot);
+            ItemStack stack = getStackInSlot(slot);
+            progWidgets.clear();
+            if (!stack.isEmpty() && isProgrammableAndValidForDrone(TileEntityProgrammableController.this, stack)) {
+                progWidgets.addAll(TileEntityProgrammer.getProgWidgets(stack));
+                TileEntityProgrammer.updatePuzzleConnections(progWidgets);
+                isIdle = false;
+            } else {
+                setDugBlock(null);
+                targetX = getPos().getX() + 0.5;
+                targetY = getPos().getY() + 1.0;
+                targetZ = getPos().getZ() + 0.5;
+                boolean updateNeighbours = false;
+                for (int i = 0; i < redstoneLevels.length; i++) {
+                    if (redstoneLevels[i] > 0) {
+                        redstoneLevels[i] = 0;
+                        updateNeighbours = true;
+                    }
+                }
+                if (updateNeighbours) updateNeighbours();
+                isIdle = true;
+            }
+            if (!getWorld().isRemote) {
+                getAIManager().setWidgets(progWidgets);
+            }
+        }
+
+        @Override
+        public boolean isItemValid(int slot, ItemStack itemStack) {
+            return itemStack.isEmpty() || isProgrammableAndValidForDrone(TileEntityProgrammableController.this, itemStack);
+        }
+    }
+
 }

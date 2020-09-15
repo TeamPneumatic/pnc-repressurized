@@ -1292,6 +1292,11 @@ public class EntityDrone extends EntityDroneBase implements
     }
 
     @Override
+    public void playSound(SoundEvent soundEvent, SoundCategory category, float volume, float pitch) {
+        world.playSound(null, getPosition(), soundEvent, category, volume, pitch);
+    }
+
+    @Override
     public void updateLabel() {
         dataManager.set(LABEL, getAIManager() != null ? getAIManager().getLabel() : "Main");
     }
