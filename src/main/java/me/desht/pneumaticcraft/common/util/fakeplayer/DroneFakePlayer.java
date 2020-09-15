@@ -4,6 +4,8 @@ import com.mojang.authlib.GameProfile;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import net.minecraft.entity.item.ExperienceOrbEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.util.FakePlayer;
@@ -22,6 +24,11 @@ public class DroneFakePlayer extends FakePlayer {
         Vector3d pos = drone.getDronePos();
         ExperienceOrbEntity orb = new ExperienceOrbEntity(drone.world(), pos.x, pos.y, pos.z, amount);
         drone.world().addEntity(orb);
+    }
+
+    @Override
+    public void playSound(SoundEvent soundEvent, SoundCategory category, float volume, float pitch) {
+        drone.playSound(soundEvent, category, volume, pitch);
     }
 
     @Override
