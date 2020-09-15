@@ -76,11 +76,11 @@ public class GuiAssemblyController extends GuiPneumaticContainerBase<ContainerAs
             textList.addAll(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.tab.problems.assembly_controller.no_program")));
         } else {
             if (te.isMachineDuplicate) {
-                String key = I18n.format(te.duplicateMachine.getTranslationKey());
-                textList.addAll(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.tab.problems.assembly_controller.duplicateMachine", key)));
+                String s = te.duplicateMachine == null ? "<???>" : I18n.format(te.duplicateMachine.getTranslationKey());
+                textList.addAll(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.tab.problems.assembly_controller.duplicateMachine", s)));
             } else if (te.isMachineMissing) {
-                String key = I18n.format(te.missingMachine.getTranslationKey());
-                textList.addAll(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.tab.problems.assembly_controller.missingMachine", key)));
+                String s = te.missingMachine == null ? "<???>" : I18n.format(te.missingMachine.getTranslationKey());
+                textList.addAll(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.tab.problems.assembly_controller.missingMachine", s)));
             } else {
                 te.curProgram.addProgramProblem(textList);
             }
