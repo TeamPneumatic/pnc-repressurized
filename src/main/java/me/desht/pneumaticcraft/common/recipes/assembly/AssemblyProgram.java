@@ -29,7 +29,6 @@ public abstract class AssemblyProgram {
         IO_UNIT_IMPORT(ModBlocks.ASSEMBLY_IO_UNIT_IMPORT),
         CONTROLLER(ModBlocks.ASSEMBLY_CONTROLLER);
 
-
         private final RegistryObject<? extends Block> blockSupplier;
 
         EnumMachine(RegistryObject<? extends Block> blockSupplier) {

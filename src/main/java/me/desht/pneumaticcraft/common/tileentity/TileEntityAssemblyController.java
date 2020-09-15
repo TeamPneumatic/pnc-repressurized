@@ -45,15 +45,15 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase
     };
     private final LazyOptional<IItemHandler> inventoryCap = LazyOptional.of(() -> itemHandler);
 
-    private AssemblyProgram curProgram;
+    public AssemblyProgram curProgram;
     @GuiSynced
-    private boolean isMachineMissing;
+    public boolean isMachineMissing;
     @GuiSynced
-    private boolean isMachineDuplicate;
+    public boolean isMachineDuplicate;
     @GuiSynced
-    private EnumMachine missingMachine;
+    public EnumMachine missingMachine;
     @GuiSynced
-    private EnumMachine duplicateMachine;
+    public EnumMachine duplicateMachine;
     private boolean goingToHomePosition;
     @DescSynced
     public String displayedText = "";
