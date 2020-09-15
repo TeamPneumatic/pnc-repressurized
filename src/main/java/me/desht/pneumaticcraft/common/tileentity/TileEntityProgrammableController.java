@@ -41,9 +41,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
@@ -651,6 +649,11 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     @Override
     public void setLogisticsManager(LogisticsManager logisticsManager) {
         this.logisticsManager = logisticsManager;
+    }
+
+    @Override
+    public void playSound(SoundEvent soundEvent, SoundCategory category, float volume, float pitch) {
+        // nothing
     }
 
     private class ProgrammableItemStackHandler extends BaseItemStackHandler {
