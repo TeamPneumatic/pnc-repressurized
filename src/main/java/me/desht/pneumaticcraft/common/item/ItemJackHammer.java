@@ -77,7 +77,7 @@ public class ItemJackHammer extends ItemPressurizable implements IChargeableCont
     private static final String NBT_DIG_MODE = "DigMode";
 
     public ItemJackHammer() {
-        super(PneumaticValues.VOLUME_JACKHAMMER * 10, PneumaticValues.VOLUME_JACKHAMMER);
+        super(ModItems.defaultProps().maxStackSize(1), PneumaticValues.VOLUME_JACKHAMMER * 10, PneumaticValues.VOLUME_JACKHAMMER);
     }
 
     public static DrillBitHandler getDrillBitHandler(ItemStack stack) {
@@ -119,7 +119,7 @@ public class ItemJackHammer extends ItemPressurizable implements IChargeableCont
     @Override
     public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
         ItemStack stack = playerIn.getHeldItem(handIn);
-        if (!playerIn.isCrouching()) return ActionResult.resultPass(stack);
+        if (!playerIn.isCrouching() || stack.getCount() != 1) return ActionResult.resultPass(stack);
         if (!worldIn.isRemote) {
             NetworkHooks.openGui((ServerPlayerEntity) playerIn, new INamedContainerProvider() {
                 @Override
