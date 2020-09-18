@@ -1123,7 +1123,7 @@
    "pneumaticcraft.gui.tab.info.logisticsRequester.aeIntegration" : "When checked, Logistic Drones will inform the AE Network about providable items (which then can be 'crafted'). When asked to craft, the Requester Frame is set up to request the requested items.",
    "pneumaticcraft.gui.tab.info.programmable_controller.excluded" : "Excluded Pieces",
    "pneumaticcraft.gui.tab.info.smart_chest.push_pull.title" : "Push/Pull Modes",
-   "pneumaticcraft.gui.tab.info.smart_chest.slots" : "§eAlt + Left-Click${br}§f• If the clicked slot is empty and has no filter, mark the slot and all following slots as closed. All following slots must also be currently empty.${br}• If the clicked slot is empty and has a filter, remove the filter.${br}• If there is an item in the slot, toggle filtering for the slot.",
+   "pneumaticcraft.gui.tab.info.smart_chest.slots" : "§eAlt + Left-Click${br}§f• Empty slot: mark slot (and all following slots) closed${br}• Empty closed or filtered slot: remove filter${br}• Item in slot: filter on that item${br}• Also hold Shift to set item limit to max${br}${br}§eAlt + Mouse Wheel${br}§f• Filtered slot: adjust item limit${br}• Also hold Shift for fast adjust${br}${br}§eAlt + Cursor Up/Down${br}§f• Adjust item limit, like Alt + Mouse Wheel",
    "pneumaticcraft.gui.tab.info.smart_chest.slots.title" : "Slot Interaction",
    "pneumaticcraft.gui.tab.info.tubeModule" : "§0In this interface you can define exactly how a module should behave, dependent on the redstone signal. The signal will be proportional to the pressure interpolated between the lower and higher bounds.",
    "pneumaticcraft.gui.tab.liquidCompressor.fuel" : "Available Fuels",

@@ -245,7 +245,7 @@ public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest
                     fill(sx, sy, sx + 16, sy + 16, 0x8080D080);
                 }
                 RenderSystem.scaled(0.5, 0.5, 0.5);
-                font.drawString(label, 2 * (sx + 16 - font.getStringWidth(label) / 2f), 2 * (sy + 1), 0xFFFFFFA0);
+                font.drawStringWithShadow(label, 2 * (sx + 16 - font.getStringWidth(label) / 2f), 2 * (sy + 1), 0xFFFFFFA0);
                 RenderSystem.scaled(2.0, 2.0, 2.0);
                 RenderSystem.popMatrix();
             }
@@ -273,7 +273,7 @@ public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest
             } else {
                 // alt-click an item - toggle filtering for it
                 if (te.getFilter(slotId).isEmpty()) {
-                    te.setFilter(slotId, stack);
+                    te.setFilter(slotId, hasShiftDown() ? ItemHandlerHelper.copyStackWithSize(stack, stack.getMaxStackSize()) : stack);
                 } else {
                     te.setFilter(slotId, ItemStack.EMPTY);
                 }
