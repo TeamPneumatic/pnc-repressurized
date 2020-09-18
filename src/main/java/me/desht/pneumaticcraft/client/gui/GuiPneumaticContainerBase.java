@@ -246,7 +246,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         IGuiAnimatedStat stat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.info"), Textures.GUI_INFO_LOCATION, 0xFF8888FF, true);
         stat.setText(info);
         if (!ThirdPartyManager.instance().getDocsProvider().isInstalled()) {
-            stat.appendText(Arrays.asList("", "pneumaticcraft.gui.tab.info.assistIGW"));
+            stat.appendText(Arrays.asList("", "pneumaticcraft.gui.tab.info.installDocsProvider"));
         }
     }
 

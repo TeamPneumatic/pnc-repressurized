@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
@@ -20,8 +21,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class JEIPlasticSolidifyingCategory implements IRecipeCategory<JEIPlasticSolidifyingCategory.PlasticSolidifyingRecipe> {
     private final String localizedName;
@@ -86,7 +85,7 @@ public class JEIPlasticSolidifyingCategory implements IRecipeCategory<JEIPlastic
     public List<ITextComponent> getTooltipStrings(PlasticSolidifyingRecipe recipe, double mouseX, double mouseY) {
         List<ITextComponent> res = new ArrayList<>();
         if (mouseX >= 23 && mouseX <= 60) {
-            res.add(xlate("pneumaticcraft.gui.jei.tooltip.plasticSolidifying"));
+            res.addAll(PneumaticCraftUtils.splitStringComponent(I18n.format("pneumaticcraft.gui.jei.tooltip.plasticSolidifying")));
         }
         return res;
     }
