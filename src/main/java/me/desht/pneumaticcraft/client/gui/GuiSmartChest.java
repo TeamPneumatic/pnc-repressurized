@@ -65,7 +65,7 @@ public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest
     public void init() {
         super.init();
 
-        addAnimatedStat(xlate("pneumaticcraft.gui.tab.info.smart_chest.slots.title"), Textures.GUI_MOUSE_LOCATION, 0xFF00AAFF, true)
+        addAnimatedStat(xlate("pneumaticcraft.gui.tab.info.smart_chest.slots.title"), Textures.GUI_MOUSE_LOCATION, 0xFF0090D0, true)
                 .setText("pneumaticcraft.gui.tab.info.smart_chest.slots");
 
         statusStat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.status"), new ItemStack(ModBlocks.SMART_CHEST.get()), 0xFFFFAA00, false);
@@ -251,7 +251,7 @@ public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest
                     fill(matrixStack, sx, sy, sx + 16, sy + 16, 0x8080D080);
                 }
                 matrixStack.scale(0.5f, 0.5f, 0.5f);
-                font.drawString(matrixStack, label, 2 * (sx + 16 - font.getStringWidth(label) / 2f), 2 * (sy + 1), 0xFFFFFFA0);
+                font.drawStringWithShadow(matrixStack, label, 2 * (sx + 16 - font.getStringWidth(label) / 2f), 2 * (sy + 1), 0xFFFFFFA0);
                 matrixStack.scale(2.0f, 2.0f, 2.0f);
                 matrixStack.pop();
             }
@@ -279,7 +279,7 @@ public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest
             } else {
                 // alt-click an item - toggle filtering for it
                 if (te.getFilter(slotId).isEmpty()) {
-                    te.setFilter(slotId, stack);
+                    te.setFilter(slotId, hasShiftDown() ? ItemHandlerHelper.copyStackWithSize(stack, stack.getMaxStackSize()) : stack);
                 } else {
                     te.setFilter(slotId, ItemStack.EMPTY);
                 }
