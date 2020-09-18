@@ -4,11 +4,47 @@ This is an overview of significant new features and fixes by release.  See https
 
 Changes are in reverse chronological order; newest changes at the top.
 
+## Minecraft 1.16.3
+
+The initial 2.4.0 release for MC 1.16.3 release is largely equivalent in functionality to the 2.2.2 release (for MC 1.16.1) with a couple of small worldgen-related changes.
+ 
+Releases from 2.4.0 onward *require* Forge 34.0.9 or newer.
+
+## 2.4.0-36 (18 Sep 2020)
+
+### Updates
+* Oil Lake worldgen blacklisting is now done by biome ID instead of dimension ID (see `oil_world_gen_blacklist` in `config/pneumaticcraft-common.toml`)
+* Oil Lakes can now generate in the Basalt Deltas biome in the Nether (but no other Nether biomes)
+
+## Minecraft 1.16.2
+
+*There were no public releases for Minecraft 1.16.2 (would have been PneumaticCraft: Repressurized 2.3.x).*
+
 ## Minecraft 1.16.1
 
 The initial 1.16.1 release is largely equivalent in functionality to the 1.4.2 release (for MC 1.15.2), with a few minor player-visible changes.
 
 Releases from 2.1.0 onward *require* Forge 32.0.108 or newer.
+
+## 2.2.2-35 (18 Sep 2020)
+
+## Updates
+* All pressurizable tool items are now unstackable (does not apply to drones or air canisters)
+* When Alt-clicking an item in the Smart Chest GUI, holding Shift as well will set the slot item limit to the stack's max size instead of the stack's current size
+
+## Fixes
+* Fixed drone "Right Click Entity" prog widget not always working (e.g. milking cows with an empty bucket failed)
+* Fixed air dupe exploit with stacked pressurizable items and the Charging Module
+* Fixed player death message translations
+
+## 2.2.1-32 (14 Sep 2020)
+
+### Fixes
+* Fixed Amadrones thinking they had only one inventory slot, causing orders with more than 64 of an item to fail
+* Fixed Memory Stick sometimes losing its stored experience
+* Left-clicking Memory Stick to toggle XP absorption mode now also works when left-clicking air (previously required a block to be clicked)
+* Drone "Inventory Export" widget will now try to keep items stacked in the inventory it's exporting to
+  * This also applies to Collector Drones, which use the "Inventory Export" widget internally
 
 ## 2.2.0-29 (3 Sep 2020)
 
