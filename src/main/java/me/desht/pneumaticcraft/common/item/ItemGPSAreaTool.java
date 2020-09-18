@@ -78,15 +78,17 @@ public class ItemGPSAreaTool extends Item implements IPositionProvider {
     @Override
     public void addInformation(ItemStack stack, World worldIn, List<ITextComponent> infoList, ITooltipFlag par4) {
         super.addInformation(stack, worldIn, infoList, par4);
-        for(int index = 0; index < 2; index++){
-            BlockPos pos = getGPSLocation(worldIn, stack, index);
-            infoList.add(new StringTextComponent(getMessageText(pos, index)).mergeStyle(index == 0 ? TextFormatting.RED : TextFormatting.GREEN));
-            String varName = getVariable(stack, index);
-            if (!varName.isEmpty()) {
-                infoList.add(xlate("pneumaticcraft.gui.tooltip.gpsTool.variable", varName));
+        if (worldIn != null) {
+            for (int index = 0; index < 2; index++) {
+                BlockPos pos = getGPSLocation(worldIn, stack, index);
+                infoList.add(new StringTextComponent(getMessageText(pos, index)).mergeStyle(index == 0 ? TextFormatting.RED : TextFormatting.GREEN));
+                String varName = getVariable(stack, index);
+                if (!varName.isEmpty()) {
+                    infoList.add(xlate("pneumaticcraft.gui.tooltip.gpsTool.variable", varName));
+                }
             }
+            getArea(stack).addAreaTypeTooltip(infoList);
         }
-        getArea(stack).addAreaTypeTooltip(infoList);
     }
 
     @Override
