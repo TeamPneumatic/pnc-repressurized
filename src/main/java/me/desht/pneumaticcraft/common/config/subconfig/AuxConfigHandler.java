@@ -36,7 +36,7 @@ public class AuxConfigHandler {
         }
     }
 
-    public static void postInit() {
+    public static void init() {
         for(IAuxConfig subConfig : EXTERNAL_CONFIGS) {
             try {
                 subConfig.postInit();

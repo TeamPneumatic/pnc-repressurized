@@ -39,7 +39,7 @@ public class ThirdPartyManager {
     }
 
     @SuppressWarnings("Convert2MethodRef")
-    public void index() {
+    private void discoverMods() {
         Map<String, Supplier<? extends IThirdParty>> thirdPartyClasses = new HashMap<>();
         try {
             // Not using method refs here, because that can cause early class loading and we don't want that
@@ -93,6 +93,8 @@ public class ThirdPartyManager {
     }
 
     public void init() {
+        discoverMods();
+
         GENERIC.init();
         for (IThirdParty thirdParty : thirdPartyMods) {
             try {

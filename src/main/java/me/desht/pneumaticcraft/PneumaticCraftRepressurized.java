@@ -29,8 +29,6 @@ import me.desht.pneumaticcraft.common.util.Reflections;
 import me.desht.pneumaticcraft.common.util.upgrade.UpgradesDBSetup;
 import me.desht.pneumaticcraft.common.villages.POIFixup;
 import me.desht.pneumaticcraft.common.villages.VillageStructures;
-import me.desht.pneumaticcraft.common.core.ModDecorators;
-import me.desht.pneumaticcraft.common.event.EventHandlerWorldGen;
 import me.desht.pneumaticcraft.datagen.*;
 import me.desht.pneumaticcraft.datagen.loot.ModLootFunctions;
 import me.desht.pneumaticcraft.lib.Log;
@@ -46,7 +44,6 @@ import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.DeferredWorkQueue;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
@@ -58,6 +55,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 @Mod(Names.MOD_ID)
 public class PneumaticCraftRepressurized {
     public PneumaticCraftRepressurized() {
+        IEventBus forgeBus = MinecraftForge.EVENT_BUS;
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
 
         ConfigHolder.init();
@@ -66,10 +64,31 @@ public class PneumaticCraftRepressurized {
         DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> ClientSetup::initEarly);
 
         modBus.addListener(this::commonSetup);
-        MinecraftForge.EVENT_BUS.addListener(this::serverStopping);
-        MinecraftForge.EVENT_BUS.addListener(this::addReloadListeners);
-        MinecraftForge.EVENT_BUS.addListener(this::registerCommands);
 
+        forgeBus.addListener(this::serverStopping);
+        forgeBus.addListener(this::addReloadListeners);
+        forgeBus.addListener(this::registerCommands);
+
+        registerAllDeferredRegistryObjects(modBus);
+
+        Reflections.init();
+        PneumaticRegistry.init(PneumaticCraftAPIHandler.getInstance());
+        AdvancementTriggers.registerTriggers();
+
+        ModLootFunctions.init();
+
+        forgeBus.register(new TickHandlerPneumaticCraft());
+        forgeBus.register(new EventHandlerPneumaticCraft());
+        forgeBus.register(new EventHandlerAmadron());
+        forgeBus.register(new EventHandlerPneumaticArmor());
+        forgeBus.register(new EventHandlerUniversalSensor());
+        forgeBus.register(new DroneSpecialVariableHandler());
+        forgeBus.register(new EventHandlerWorldGen());
+        forgeBus.register(ItemGPSAreaTool.EventHandler.class);
+        forgeBus.register(HackTickHandler.instance());
+    }
+
+    private void registerAllDeferredRegistryObjects(IEventBus modBus) {
         ModBlocks.BLOCKS.register(modBus);
         ModItems.ITEMS.register(modBus);
         ModFluids.FLUIDS.register(modBus);
@@ -83,33 +102,14 @@ public class PneumaticCraftRepressurized {
         ModVillagers.POI.register(modBus);
         ModVillagers.PROFESSIONS.register(modBus);
 
-        // Note: custom registries not handled via deferred registration (harvest handlers, hoe handlers, progwidgets)
-        // since Forge doesn't support this (yet?)
-
-        Reflections.init();
-        PneumaticRegistry.init(PneumaticCraftAPIHandler.getInstance());
-        AdvancementTriggers.registerTriggers();
-
-        ModLootFunctions.init();
-
-        MinecraftForge.EVENT_BUS.register(new TickHandlerPneumaticCraft());
-        MinecraftForge.EVENT_BUS.register(new EventHandlerPneumaticCraft());
-        MinecraftForge.EVENT_BUS.register(new EventHandlerAmadron());
-        MinecraftForge.EVENT_BUS.register(new EventHandlerPneumaticArmor());
-        MinecraftForge.EVENT_BUS.register(new EventHandlerUniversalSensor());
-        MinecraftForge.EVENT_BUS.register(new DroneSpecialVariableHandler());
-        MinecraftForge.EVENT_BUS.register(new EventHandlerWorldGen());
-        MinecraftForge.EVENT_BUS.register(ItemGPSAreaTool.EventHandler.class);
-        MinecraftForge.EVENT_BUS.register(HackTickHandler.instance());
+        // TODO: custom registries not handled via deferred registration (harvest handlers, hoe handlers, progwidgets)
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {
         Log.info(Names.MOD_NAME + " is loading!");
 
-        ThirdPartyManager.instance().index();
-
         ThirdPartyManager.instance().init();
-        AuxConfigHandler.postInit();
+        AuxConfigHandler.init();
         registerCapabilities();
         NetworkHandler.init();
         FluidSetup.init();
@@ -117,14 +117,11 @@ public class PneumaticCraftRepressurized {
         HackableHandler.addDefaultEntries();
         SensorHandler.getInstance().init();
         UpgradesDBSetup.init();
-//        ModWorldGen.init();
         POIFixup.fixup();
         VillageStructures.init();
         ModNameCache.init();
 
-        // stuff to do after every other mod is done initialising
-        //noinspection deprecation
-        DeferredWorkQueue.runLater(() -> {
+        event.enqueueWork(() -> {
             DispenserBlock.registerDispenseBehavior(ModItems.DRONE.get(), new BehaviorDispenseDrone());
             DispenserBlock.registerDispenseBehavior(ModItems.LOGISTICS_DRONE.get(), new BehaviorDispenseDrone());
             DispenserBlock.registerDispenseBehavior(ModItems.HARVESTING_DRONE.get(), new BehaviorDispenseDrone());

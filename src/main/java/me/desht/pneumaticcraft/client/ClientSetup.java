@@ -47,7 +47,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
 import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.DeferredWorkQueue;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
@@ -83,8 +82,7 @@ public class ClientSetup {
         EntityTrackHandler.registerDefaultEntries();
         ThirdPartyManager.instance().clientInit();
 
-        //noinspection deprecation
-        DeferredWorkQueue.runLater(ClientSetup::initLate);
+        event.enqueueWork(ClientSetup::initLate);
     }
 
     public static void registerParticleFactories(ParticleFactoryRegisterEvent event) {
