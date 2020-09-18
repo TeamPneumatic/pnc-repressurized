@@ -22,23 +22,23 @@ import java.util.function.Supplier;
  */
 public class BiomeModifier
 {
-    private final Biome biome;
-
-    public BiomeModifier(Biome biome)
-    {
-        this.biome = biome;
-    }
-
-    public void addFeature(GenerationStage.Decoration stage, ConfiguredFeature<?, ?> newFeature)
-    {
-        final int index = stage.ordinal();
-        List<List<Supplier<ConfiguredFeature<?, ?>>>> allFeatures = new ArrayList<>(biome.func_242440_e().field_242484_f);
-        while(allFeatures.size() <= index)
-            allFeatures.add(new ArrayList<>());
-        List<Supplier<ConfiguredFeature<?, ?>>> oreGen = new ArrayList<>(allFeatures.get(index));
-        oreGen.add(() -> newFeature);
-        allFeatures.set(index, oreGen);
-        biome.func_242440_e().field_242484_f = allFeatures;
-    }
+//    private final Biome biome;
+//
+//    public BiomeModifier(Biome biome)
+//    {
+//        this.biome = biome;
+//    }
+//
+//    public void addFeature(GenerationStage.Decoration stage, ConfiguredFeature<?, ?> newFeature)
+//    {
+//        final int index = stage.ordinal();
+//        List<List<Supplier<ConfiguredFeature<?, ?>>>> allFeatures = new ArrayList<>(biome.func_242440_e().field_242484_f);
+//        while(allFeatures.size() <= index)
+//            allFeatures.add(new ArrayList<>());
+//        List<Supplier<ConfiguredFeature<?, ?>>> oreGen = new ArrayList<>(allFeatures.get(index));
+//        oreGen.add(() -> newFeature);
+//        allFeatures.set(index, oreGen);
+//        biome.getGenerationSettings().field_242484_f = allFeatures;
+//    }
 }
 

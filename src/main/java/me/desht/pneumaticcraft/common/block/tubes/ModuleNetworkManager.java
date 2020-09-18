@@ -15,7 +15,7 @@ public class ModuleNetworkManager {
     private boolean needInvalidate = false;
 
     public static ModuleNetworkManager getInstance(World w) {
-        return INSTANCES.computeIfAbsent(w.getDimensionKey().func_240901_a_(), dimId -> new ModuleNetworkManager());
+        return INSTANCES.computeIfAbsent(w.getDimensionKey().getLocation(), dimId -> new ModuleNetworkManager());
     }
 
     Set<TubeModule> getConnectedModules(TubeModule module) {

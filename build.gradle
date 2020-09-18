@@ -204,8 +204,8 @@ dependencies {
     runtimeOnly fg.deobf("vazkii.botania:Botania:${botania_version}")
     compileOnly fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}:api")
     runtimeOnly fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}")
-    compile fg.deobf("org.squiddev:cc-tweaked-1.16.2:${cc_tweaked_version}")
-//    compile fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:${immersive_engineering_version}")
+    compile fg.deobf("org.squiddev:cc-tweaked-${mc_version}:${cc_tweaked_version}")
+    compile fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:${immersive_engineering_version}")
 //    compile fg.deobf("curse.maven:mekanism:${mekanism_curse_id}")
     compile fg.deobf("curse.maven:hwyla:${hwyla_curse_id}")
 

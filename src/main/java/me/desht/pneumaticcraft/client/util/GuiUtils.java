@@ -62,8 +62,8 @@ public class GuiUtils {
             matrixStack.scale(1.0F, -1.0F, 1.0F);
             matrixStack.scale(16.0F, 16.0F, 16.0F);
             IRenderTypeBuffer.Impl buffer = Minecraft.getInstance().getRenderTypeBuffers().getBufferSource();
-            boolean flag = !bakedmodel.func_230044_c_();
-            if (!bakedmodel.func_230044_c_()) {
+            boolean flag = !bakedmodel.isSideLit();
+            if (!bakedmodel.isSideLit()) {
                 RenderHelper.setupGuiFlatDiffuseLighting();
             }
             itemRenderer.renderItem(stack, ItemCameraTransforms.TransformType.GUI, false, matrixStack, buffer, 15728880, OverlayTexture.NO_OVERLAY, bakedmodel);

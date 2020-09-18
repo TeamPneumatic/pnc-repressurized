@@ -164,7 +164,7 @@ public class FluidItemModel implements IDynamicBakedModel {
     }
 
     @Override
-    public boolean func_230044_c_() {
+    public boolean isSideLit() {
         return false;
     }
 
@@ -239,7 +239,7 @@ public class FluidItemModel implements IDynamicBakedModel {
 
         @Nullable
         @Override
-        public IBakedModel func_239290_a_(IBakedModel original, ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
+        public IBakedModel getOverrideModel(IBakedModel original, ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
             if (stack.getItem() instanceof IFluidRendered) {
                 IFluidItemRenderInfoProvider infoProvider = ((IFluidRendered) stack.getItem()).getFluidItemRenderer();
                 modelIn.tanksToRender = infoProvider.getTanksToRender(stack);

@@ -39,7 +39,7 @@ public class WorldDayLightSensor implements IPollSensorSetting {
     }
 
     private int updatePower(World worldIn, BlockPos pos) {
-        if (worldIn.func_230315_m_().hasSkyLight()) {  // getDimensionType
+        if (worldIn.getDimensionType().hasSkyLight()) {
             int i = worldIn.getLightFor(LightType.SKY, pos) - worldIn.getSkylightSubtracted();
             float f = worldIn.getCelestialAngleRadians(1.0F);
             float f1 = f < (float) Math.PI ? 0.0F : (float) Math.PI * 2F;

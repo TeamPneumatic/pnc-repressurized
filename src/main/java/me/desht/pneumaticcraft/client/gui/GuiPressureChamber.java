@@ -39,7 +39,7 @@ public class GuiPressureChamber extends GuiPneumaticContainerBase<ContainerPress
         super.drawGuiContainerForegroundLayer(matrixStack, x, y);
 
         ITextComponent title = xlate("pneumaticcraft.gui.pressureChamberTitle", te.multiBlockSize + "x" + te.multiBlockSize + "x" + te.multiBlockSize);
-        font.func_238422_b_(matrixStack, title.func_241878_f(), (xSize - font.func_238414_a_(title)) / 2f, 6, 0x404040);
+        font.func_238422_b_(matrixStack, title.func_241878_f(), (xSize - font.getStringPropertyWidth(title)) / 2f, 6, 0x404040);
     }
 
     @Override

@@ -401,7 +401,7 @@ public class NBTUtils {
     public static List<ITextComponent> deserializeTextComponents(ListNBT l) {
         return l.stream()
                 .filter(nbt -> nbt instanceof StringNBT)
-                .map(nbt -> ITextComponent.Serializer.func_240643_a_(nbt.getString()))  // fromJsonStrict
+                .map(nbt -> ITextComponent.Serializer.getComponentFromJson(nbt.getString()))  // fromJsonStrict
                 .collect(Collectors.toList());
     }
 }

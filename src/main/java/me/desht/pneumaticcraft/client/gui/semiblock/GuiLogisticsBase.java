@@ -70,7 +70,7 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
 
         ITextComponent invisibleText = xlate("pneumaticcraft.gui.logistics_frame.invisible");
         WidgetCheckBox invisible;
-        addButton(invisible = new WidgetCheckBox(guiLeft + xSize - 18 - font.func_238414_a_(invisibleText), guiTop + 16, 0xFF404040, invisibleText, b -> {
+        addButton(invisible = new WidgetCheckBox(guiLeft + xSize - 18 - font.getStringPropertyWidth(invisibleText), guiTop + 16, 0xFF404040, invisibleText, b -> {
             logistics.setSemiblockInvisible(b.checked);
             syncToServer();
         }).setChecked(logistics.isSemiblockInvisible()));

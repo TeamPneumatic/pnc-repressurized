@@ -1,6 +1,6 @@
 license="GNU GPLv3"
 modLoader="javafml"
-loaderVersion="[33,)"
+loaderVersion="[34,)"
 issueTrackerURL="https://github.com/TeamPneumatic/pnc-repressurized/issues"
 displayURL="https://minecraft.curseforge.com/projects/pneumaticcraft-repressurized"
 #logoFile=""
@@ -18,7 +18,7 @@ PneumaticCraft: Repressurized: doing cool stuff with compressed air.'''
 [[dependencies.pneumaticcraft]]
     modId="forge" #mandatory
     mandatory=true #mandatory
-    versionRange="[33.0.42,)" #mandatory
+    versionRange="[34.0.9,)" #mandatory
     ordering="NONE"
     side="BOTH"
 #[[dependencies.pneumaticcraft]]
@@ -36,6 +36,6 @@ PneumaticCraft: Repressurized: doing cool stuff with compressed air.'''
 [[dependencies.pneumaticcraft]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.16.2]"
+    versionRange="[1.16.3]"
     ordering="NONE"
     side="BOTH"

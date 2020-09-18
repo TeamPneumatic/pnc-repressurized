@@ -109,7 +109,7 @@ public class TileEntitySerializerFunction extends LootFunction {
     }
 
     @Override
-    public LootFunctionType func_230425_b_() {
+    public LootFunctionType getFunctionType() {
         return ModLootFunctions.TE_SERIALIZER;
     }
 

@@ -208,7 +208,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         addButton(filterField);
 
         ITextComponent name = xlate("pneumaticcraft.gui.programmer.name");
-        addLabel(name, guiLeft + xRight - 102 - font.func_238414_a_(name), guiTop + 5, 0xFF404040);
+        addLabel(name, guiLeft + xRight - 102 - font.getStringPropertyWidth(name), guiTop + 5, 0xFF404040);
 
         updateVisibleProgWidgets();
 

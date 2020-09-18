@@ -34,19 +34,11 @@ public class VillageStructures {
     }
 
     private static void addToPool(ResourceLocation pool, ResourceLocation toAdd, int weight) {
-        JigsawPattern old = WorldGenRegistries.field_243656_h.getOrDefault(pool);
+        JigsawPattern old = WorldGenRegistries.JIGSAW_POOL.getOrDefault(pool);
         List<JigsawPiece> shuffled = old != null ? old.getShuffledPieces(new Random()) : ImmutableList.of();
         List<Pair<JigsawPiece, Integer>> newPieces = shuffled.stream().map(p -> new Pair<>(p, 1)).collect(Collectors.toList());
         newPieces.add(new Pair<>(new LegacySingleJigsawPiece(Either.left(toAdd), () -> ProcessorLists.field_244101_a, PlacementBehaviour.RIGID), weight));
         ResourceLocation name = old.getName();
-        Registry.register(WorldGenRegistries.field_243656_h, pool, new JigsawPattern(pool, name, newPieces));
-
-//        JigsawPattern old = JigsawManager.REGISTRY.get(pool);
-//        List<JigsawPiece> shuffled = old.getShuffledPieces(new Random());
-//        List<Pair<JigsawPiece, Integer>> newPieces = shuffled.stream()
-//                .map(p -> new Pair<>(p, 1))
-//                .collect(Collectors.toList());
-//        newPieces.add(new Pair<>(new SingleJigsawPiece(toAdd.toString()), weight)); // ImmutableList.of(), JigsawPattern.PlacementBehaviour.RIGID), weight));
-//        JigsawManager.REGISTRY.register(new JigsawPattern(pool, old.getFallback(), newPieces, PlacementBehaviour.RIGID));
+        Registry.register(WorldGenRegistries.JIGSAW_POOL, pool, new JigsawPattern(pool, name, newPieces));
     }
 }

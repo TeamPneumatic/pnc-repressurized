@@ -14,6 +14,6 @@ public interface IActionWidgetLabeled {
     List<ITextComponent> getTooltip();
 
     default ITextComponent deserializeTextComponent(String s) {
-        return ITextComponent.Serializer.func_240643_a_(s);
+        return ITextComponent.Serializer.getComponentFromJson(s);
     }
 }

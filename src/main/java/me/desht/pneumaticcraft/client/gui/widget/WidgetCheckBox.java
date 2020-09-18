@@ -33,7 +33,7 @@ public class WidgetCheckBox extends Widget implements ITaggedWidget, ITooltipPro
 
         this.x = x;
         this.y = y;
-        this.width = CHECKBOX_WIDTH + 3 + Minecraft.getInstance().fontRenderer.func_238414_a_(text);
+        this.width = CHECKBOX_WIDTH + 3 + Minecraft.getInstance().fontRenderer.getStringPropertyWidth(text);
         this.color = color;
         this.pressable = pressable;
     }

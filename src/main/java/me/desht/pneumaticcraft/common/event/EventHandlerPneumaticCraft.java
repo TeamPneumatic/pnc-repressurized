@@ -339,6 +339,6 @@ public class EventHandlerPneumaticCraft {
 
     @SubscribeEvent
     public void onTagsUpdated(TagsUpdatedEvent event) {
-        PneumaticHelmetRegistry.getInstance().resolveBlockTags(event.getTagManager().func_241835_a());
+        PneumaticHelmetRegistry.getInstance().resolveBlockTags(event.getTagManager().getBlockTags());
     }
 }

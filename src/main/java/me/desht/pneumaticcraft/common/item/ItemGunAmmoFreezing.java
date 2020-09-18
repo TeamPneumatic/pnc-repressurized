@@ -80,8 +80,7 @@ public class ItemGunAmmoFreezing extends ItemGunAmmo {
     public int onBlockHit(Minigun minigun, ItemStack ammo, BlockRayTraceResult brtr) {
         World world = minigun.getWorld();
         BlockPos pos = brtr.getPos();
-        // world.getDimensionType().doesFluidVaporize()
-        if (!world.func_230315_m_().func_236040_e_() && minigun.dispenserWeightedPercentage(PNCConfig.Common.Minigun.freezingAmmoBlockIceChance)) {
+        if (!world.getDimensionType().isUltrawarm() && minigun.dispenserWeightedPercentage(PNCConfig.Common.Minigun.freezingAmmoBlockIceChance)) {
             BlockPos pos1;
             if (world.getBlockState(pos).getShape(world, pos) == VoxelShapes.fullCube() || brtr.getFace() != Direction.UP) {
                 pos1 = pos.offset(brtr.getFace());

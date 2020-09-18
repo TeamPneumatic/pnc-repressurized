@@ -110,7 +110,7 @@ public class ClientSetup {
     }
 
     private static void registerItemModelProperties() {
-        ItemModelsProperties.func_239418_a_(ModItems.JACKHAMMER.get(), RL("drill_bit"), (stack, world, entity) -> {
+        ItemModelsProperties.registerProperty(ModItems.JACKHAMMER.get(), RL("drill_bit"), (stack, world, entity) -> {
             ItemDrillBit.DrillBitType type = ((ItemJackHammer) stack.getItem()).getDrillBit(stack);
             if (type == ItemDrillBit.DrillBitType.NONE) return 0f;
             if (world == null || !(entity instanceof PlayerEntity)) return 0.99f;

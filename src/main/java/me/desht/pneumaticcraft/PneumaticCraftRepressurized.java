@@ -30,7 +30,7 @@ import me.desht.pneumaticcraft.common.util.upgrade.UpgradesDBSetup;
 import me.desht.pneumaticcraft.common.villages.POIFixup;
 import me.desht.pneumaticcraft.common.villages.VillageStructures;
 import me.desht.pneumaticcraft.common.worldgen.ModDecorators;
-import me.desht.pneumaticcraft.common.worldgen.ModWorldGen;
+import me.desht.pneumaticcraft.common.worldgen.EventHandlerWorldGen;
 import me.desht.pneumaticcraft.datagen.*;
 import me.desht.pneumaticcraft.datagen.loot.ModLootFunctions;
 import me.desht.pneumaticcraft.lib.Log;
@@ -98,6 +98,7 @@ public class PneumaticCraftRepressurized {
         MinecraftForge.EVENT_BUS.register(new EventHandlerPneumaticArmor());
         MinecraftForge.EVENT_BUS.register(new EventHandlerUniversalSensor());
         MinecraftForge.EVENT_BUS.register(new DroneSpecialVariableHandler());
+        MinecraftForge.EVENT_BUS.register(new EventHandlerWorldGen());
         MinecraftForge.EVENT_BUS.register(ItemGPSAreaTool.EventHandler.class);
         MinecraftForge.EVENT_BUS.register(HackTickHandler.instance());
     }
@@ -116,7 +117,7 @@ public class PneumaticCraftRepressurized {
         HackableHandler.addDefaultEntries();
         SensorHandler.getInstance().init();
         UpgradesDBSetup.init();
-        ModWorldGen.init();
+//        ModWorldGen.init();
         POIFixup.fixup();
         VillageStructures.init();
         ModNameCache.init();

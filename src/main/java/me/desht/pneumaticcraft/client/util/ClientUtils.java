@@ -143,7 +143,7 @@ public class ClientUtils {
         // TODO world.getMaxHeight() ?
         BlockPos pos = new BlockPos.Mutable(player.getPosX(), 255, player.getPosZ());
         if (player.world.isBlockLoaded(pos)) {
-            return player.world.func_230315_m_().func_236021_a_(player.world.getLight(pos));
+            return player.world.getDimensionType().getAmbientLight(player.world.getLight(pos));
         } else {
             return 0.0F;
         }
@@ -162,7 +162,7 @@ public class ClientUtils {
         IBakedModel model = Minecraft.getInstance().getBlockRendererDispatcher().getModelForState(state);
         List<BakedQuad> quads = model.getQuads(state, face, Minecraft.getInstance().world.rand, EmptyModelData.INSTANCE);
         if (!quads.isEmpty()) {
-            TextureAtlasSprite sprite = quads.get(0).func_187508_a();
+            TextureAtlasSprite sprite = quads.get(0).getSprite();
             return new float[] { sprite.getMinU(), sprite.getMinV(), sprite.getMaxU(), sprite.getMaxV() };
         } else {
             return null;

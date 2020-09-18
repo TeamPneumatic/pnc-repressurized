@@ -8,7 +8,6 @@ import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat.StatIcon;
-import me.desht.pneumaticcraft.client.gui.widget.tmp.GuiUtilsTmp;
 import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer2D;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
@@ -193,7 +192,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
     private int getWidestRedstoneLabel() {
         int max = 0;
         for (int i = 0; i < te.getRedstoneModeCount(); i++) {
-            max = Math.max(max, font.func_238414_a_(te.getRedstoneButtonText(i)));
+            max = Math.max(max, font.getStringPropertyWidth(te.getRedstoneButtonText(i)));
         }
         return max;
     }
@@ -293,7 +292,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
     @Override
     protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int x, int y) {
         if (getInvNameOffset() != null) {
-            font.func_238422_b_(matrixStack, title.func_241878_f(), xSize / 2f - font.func_238414_a_(title) / 2f + getInvNameOffset().x, 5 + getInvNameOffset().y, getTitleColor());
+            font.func_238422_b_(matrixStack, title.func_241878_f(), xSize / 2f - font.getStringPropertyWidth(title) / 2f + getInvNameOffset().x, 5 + getInvNameOffset().y, getTitleColor());
         }
 
         if (getInvTextOffset() != null) {
@@ -491,7 +490,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
     }
 
     void drawHoveringString(MatrixStack matrixStack, List<? extends ITextProperties> text, int x, int y, FontRenderer fontRenderer) {
-        GuiUtilsTmp.drawHoveringText(matrixStack, text, x, y, width, height, -1, fontRenderer);
+        net.minecraftforge.fml.client.gui.GuiUtils.drawHoveringText(matrixStack, text, x, y, width, height, -1, fontRenderer);
     }
 
     WidgetButtonExtended getButtonFromRectangle(String tag, Rectangle2d buttonSize, String buttonText, Button.IPressable pressable) {

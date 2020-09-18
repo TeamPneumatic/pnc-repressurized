@@ -2,19 +2,20 @@ package me.desht.pneumaticcraft.client.gui.widget;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import me.desht.pneumaticcraft.client.gui.widget.tmp.ExtendedButtonTmp;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketGuiButton;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
+import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraftforge.fml.client.gui.widget.ExtendedButton;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
@@ -24,7 +25,7 @@ import java.util.List;
  * Extension of GuiButtonExt that add: 1) a string tag which is sent to the server when clicked (PacketGuiButton),
  * 2) ability to draw itemstack or textured icons & 3) can render its area when invisible
  */
-public class WidgetButtonExtended extends ExtendedButtonTmp implements ITaggedWidget, ITooltipProvider {
+public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidget, ITooltipProvider {
     public enum IconPosition { MIDDLE, LEFT, RIGHT }
     private ItemStack[] renderedStacks;
 
@@ -36,7 +37,7 @@ public class WidgetButtonExtended extends ExtendedButtonTmp implements ITaggedWi
     private IconPosition iconPosition = IconPosition.MIDDLE;
     private String tag = null;
 
-    public WidgetButtonExtended(int startX, int startY, int xSize, int ySize, ITextComponent buttonText, IPressable pressable) {
+    public WidgetButtonExtended(int startX, int startY, int xSize, int ySize, ITextComponent buttonText, Button.IPressable pressable) {
         super(startX, startY, xSize, ySize, buttonText, pressable);
     }
 

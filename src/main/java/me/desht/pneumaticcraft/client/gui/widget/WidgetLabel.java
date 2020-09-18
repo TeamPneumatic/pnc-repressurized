@@ -28,7 +28,7 @@ public class WidgetLabel extends Widget implements ITooltipProvider {
     public WidgetLabel(int x, int y, ITextComponent text, int color) {
         super(x, y, 0, 0, text);
         this.color = color;
-        this.width = Minecraft.getInstance().fontRenderer.func_238414_a_(getMessage());
+        this.width = Minecraft.getInstance().fontRenderer.getStringPropertyWidth(getMessage());
         this.height = Minecraft.getInstance().fontRenderer.FONT_HEIGHT;
     }
 
@@ -91,7 +91,7 @@ public class WidgetLabel extends Widget implements ITooltipProvider {
     public void setMessage(ITextComponent p_setMessage_1_) {
         super.setMessage(p_setMessage_1_);
 
-        width = Minecraft.getInstance().fontRenderer.func_238414_a_(getMessage());
+        width = Minecraft.getInstance().fontRenderer.getStringPropertyWidth(getMessage());
     }
 
     @Override

@@ -231,7 +231,7 @@ public class BlockElevatorFrame extends BlockPneumaticCraft implements IWaterLog
             // build it scaffolding-style
             if (!world.isRemote) {
                 BlockPos.Mutable mPos = new BlockPos.Mutable(pos.getX(), pos.getY(), pos.getZ());
-                int worldHeight = world.func_230315_m_().func_241513_m_();
+                int worldHeight = world.getDimensionType().getLogicalHeight();
                 while (mPos.getY() < worldHeight && world.getBlockState(mPos).getBlock() == this) {
                     mPos.move(Direction.UP);
                 }

@@ -36,7 +36,7 @@ public class WidgetRadioButton extends Widget implements ITooltipProvider {
     public WidgetRadioButton(int x, int y, int color, ITextComponent text, Consumer<WidgetRadioButton> pressable) {
         super(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, text);
 
-        this.width = BUTTON_WIDTH + fontRenderer.func_238414_a_(getMessage());
+        this.width = BUTTON_WIDTH + fontRenderer.getStringPropertyWidth(getMessage());
         this.height = BUTTON_HEIGHT;
         this.color = color;
         this.pressable = pressable;
@@ -78,7 +78,7 @@ public class WidgetRadioButton extends Widget implements ITooltipProvider {
     }
 
     public Rectangle2d getBounds() {
-        return new Rectangle2d(x, y, BUTTON_WIDTH + fontRenderer.func_238414_a_(getMessage()), BUTTON_HEIGHT);
+        return new Rectangle2d(x, y, BUTTON_WIDTH + fontRenderer.getStringPropertyWidth(getMessage()), BUTTON_HEIGHT);
     }
 
     @Override

@@ -95,7 +95,7 @@ public abstract class GuiChargingUpgradeManager extends GuiPneumaticContainerBas
 
     @Override
     protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int x, int y) {
-        font.func_238422_b_(matrixStack, itemStack.getDisplayName().func_241878_f(), (xSize - font.func_238414_a_(itemStack.getDisplayName())) / 2f, 5, 0x404040);
+        font.func_238422_b_(matrixStack, itemStack.getDisplayName().func_241878_f(), (xSize - font.getStringPropertyWidth(itemStack.getDisplayName())) / 2f, 5, 0x404040);
 
         int gaugeX = xSize * 3 / 4 + 10;
         int gaugeY = ySize / 4 + 10;

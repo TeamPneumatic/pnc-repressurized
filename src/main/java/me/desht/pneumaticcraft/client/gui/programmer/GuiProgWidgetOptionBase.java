@@ -31,7 +31,7 @@ public abstract class GuiProgWidgetOptionBase<P extends IProgWidget> extends Gui
         super.init();
 
         ITextComponent title = xlate(progWidget.getTranslationKey());
-        addLabel(title, width / 2 - font.func_238414_a_(title) / 2, guiTop + 5);
+        addLabel(title, width / 2 - font.getStringPropertyWidth(title) / 2, guiTop + 5);
     }
 
     @Override

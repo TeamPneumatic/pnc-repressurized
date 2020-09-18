@@ -94,7 +94,7 @@ public class GuiThermopneumaticProcessingPlant extends
     protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int x, int y) {
         matrixStack.push();
         matrixStack.scale(0.95f, 1f, 1f);
-        font.func_238422_b_(matrixStack, title.func_241878_f(), xSize / 2f - font.func_238414_a_(title) / 2.1f , 5, 0x404040);
+        font.func_238422_b_(matrixStack, title.func_241878_f(), xSize / 2f - font.getStringPropertyWidth(title) / 2.1f , 5, 0x404040);
         matrixStack.pop();
         super.drawGuiContainerForegroundLayer(matrixStack, x, y);
 

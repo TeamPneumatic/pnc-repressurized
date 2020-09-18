@@ -94,7 +94,7 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
         ITextComponent labelStr = xlate("pneumaticcraft.gui.sentryTurret.targetFilter");
         filterLabel = new WidgetLabel(guiLeft + 12, guiTop + 130, labelStr);
         addButton(filterLabel);
-        int textBoxX = guiLeft + 12 + font.func_238414_a_(labelStr) + 5;
+        int textBoxX = guiLeft + 12 + font.getStringPropertyWidth(labelStr) + 5;
         int textBoxWidth = xSize - (textBoxX - guiLeft) - 20;
         textField = new WidgetTextField(font, textBoxX, guiTop + 128, textBoxWidth, 10);
         textField.setText(entityFilter);
@@ -113,7 +113,7 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
         addButton(new WidgetTooltipArea(guiLeft + 96, guiTop + 103, 15, 15, xlate("pneumaticcraft.gui.micromissile.damage")));
 
         ITextComponent saveLabel = xlate("pneumaticcraft.gui.micromissile.saveDefault");
-        int buttonWidth = font.func_238414_a_(saveLabel) + 10;
+        int buttonWidth = font.getStringPropertyWidth(saveLabel) + 10;
         int buttonX = guiLeft + (xSize - buttonWidth) / 2;
         addButton(new WidgetButtonExtended(buttonX, guiTop + 160, buttonWidth, 20, saveLabel, b -> sendSettingsToServer(true)));
 

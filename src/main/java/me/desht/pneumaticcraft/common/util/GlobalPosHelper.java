@@ -19,12 +19,12 @@ public class GlobalPosHelper {
     public static CompoundNBT toNBT(GlobalPos globalPos) {
         CompoundNBT tag = new CompoundNBT();
         tag.put("pos", net.minecraft.nbt.NBTUtil.writeBlockPos(globalPos.getPos()));
-        tag.putString("dim", globalPos.getDimension().func_240901_a_().toString());
+        tag.putString("dim", globalPos.getDimension().getLocation().toString());
         return tag;
     }
 
     public static GlobalPos fromNBT(CompoundNBT tag) {
-        RegistryKey<World> worldKey = RegistryKey.func_240903_a_(Registry.WORLD_KEY, new ResourceLocation(tag.getString("dim")));
+        RegistryKey<World> worldKey = RegistryKey.getOrCreateKey(Registry.WORLD_KEY, new ResourceLocation(tag.getString("dim")));
         return GlobalPos.getPosition(worldKey, NBTUtil.readBlockPos(tag.getCompound("pos")));
     }
 
@@ -35,13 +35,13 @@ public class GlobalPosHelper {
         posObj.addProperty("z", pos.getPos().getZ());
 
         JsonObject obj = new JsonObject();
-        obj.addProperty("dimension", pos.getDimension().func_240901_a_().toString());
+        obj.addProperty("dimension", pos.getDimension().getLocation().toString());
         obj.add("pos", posObj);
         return obj;
     }
 
     public static GlobalPos fromJson(JsonObject json) {
-        RegistryKey<World> worldKey = RegistryKey.func_240903_a_(Registry.WORLD_KEY, new ResourceLocation(JSONUtils.getString(json, "dimension")));
+        RegistryKey<World> worldKey = RegistryKey.getOrCreateKey(Registry.WORLD_KEY, new ResourceLocation(JSONUtils.getString(json, "dimension")));
         JsonObject posObj = json.get("pos").getAsJsonObject();
         BlockPos pos = new BlockPos(
                 JSONUtils.getInt(posObj, "x"),
@@ -65,7 +65,7 @@ public class GlobalPosHelper {
 
     public static String prettyPrint(GlobalPos pos) {
         BlockPos p = pos.getPos();
-        String dim = pos.getDimension().func_240901_a_().toString();
+        String dim = pos.getDimension().getLocation().toString();
         return String.format("%s [%d,%d,%d]", dim, p.getX(), p.getY(), p.getZ());
     }
 

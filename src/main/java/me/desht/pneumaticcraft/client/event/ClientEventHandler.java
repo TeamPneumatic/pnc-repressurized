@@ -113,7 +113,7 @@ public class ClientEventHandler {
     @SubscribeEvent
     public static void onGuiOverlay(RenderGameOverlayEvent.Pre event) {
         // gameSettings.getPointOfView().isFirstPerson(), or some such
-        if (event.getType() == RenderGameOverlayEvent.ElementType.CROSSHAIRS && Minecraft.getInstance().gameSettings.func_243230_g().func_243192_a()) {
+        if (event.getType() == RenderGameOverlayEvent.ElementType.CROSSHAIRS && Minecraft.getInstance().gameSettings.getPointOfView().func_243192_a()) {
             PlayerEntity player = Minecraft.getInstance().player;
             if (player == null) return;
             ItemStack stack = player.getHeldItemMainhand();
@@ -211,7 +211,7 @@ public class ClientEventHandler {
     public static void renderThirdPersonMinigunTraces(RenderPlayerEvent.Post event) {
         // render everyone else's (and ours, in 3rd person camera) minigun bullet traces
         PlayerEntity player = event.getPlayer();
-        if (player == Minecraft.getInstance().player && Minecraft.getInstance().gameSettings.func_243230_g().func_243192_a()) return;
+        if (player == Minecraft.getInstance().player && Minecraft.getInstance().gameSettings.getPointOfView().func_243192_a()) return;
 
         ItemStack curItem = player.getHeldItemMainhand();
         if (curItem.getItem() == ModItems.MINIGUN.get()) {

@@ -9,12 +9,12 @@ import net.minecraft.world.World;
 
 public class PacketUtil {
     public static void writeGlobalPos(PacketBuffer buf, GlobalPos gPos) {
-        buf.writeResourceLocation(gPos.getDimension().func_240901_a_());
+        buf.writeResourceLocation(gPos.getDimension().getLocation());
         buf.writeBlockPos(gPos.getPos());
     }
 
     public static GlobalPos readGlobalPos(PacketBuffer buf) {
-        RegistryKey<World> worldKey = RegistryKey.func_240903_a_(Registry.WORLD_KEY, buf.readResourceLocation());
+        RegistryKey<World> worldKey = RegistryKey.getOrCreateKey(Registry.WORLD_KEY, buf.readResourceLocation());
         BlockPos pos = buf.readBlockPos();
         return GlobalPos.getPosition(worldKey, pos);
     }

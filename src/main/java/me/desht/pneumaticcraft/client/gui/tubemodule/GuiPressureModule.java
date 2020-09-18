@@ -59,7 +59,7 @@ public class GuiPressureModule extends GuiTubeModule<TubeModule> {
         addLabel(new StringTextComponent("higher"), guiLeft + 140, guiTop + 33);
 
 //        String titleText = title.getFormattedText();
-        addLabel(title, width / 2 - font.func_238414_a_(title) / 2, guiTop + 5);
+        addLabel(title, width / 2 - font.getStringPropertyWidth(title) / 2, guiTop + 5);
 
         lowerBoundField = new TextFieldWidget(font, xStart + 15, yStart + 43, 30, 10,
                 new StringTextComponent(PneumaticCraftUtils.roundNumberTo(module.lowerBound, 1)));

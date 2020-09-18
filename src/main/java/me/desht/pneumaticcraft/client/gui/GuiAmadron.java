@@ -52,7 +52,7 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
         super.init();
 
         ITextComponent amadron = xlate("pneumaticcraft.gui.amadron.title");
-        addLabel(amadron, guiLeft + xSize / 2 - font.func_238414_a_(amadron) / 2, guiTop + 5, 0xFFFFFF);
+        addLabel(amadron, guiLeft + xSize / 2 - font.getStringPropertyWidth(amadron) / 2, guiTop + 5, 0xFFFFFF);
         addLabel(xlate("pneumaticcraft.gui.search"), guiLeft + 76 - font.getStringWidth(I18n.format("pneumaticcraft.gui.search")), guiTop + 41, 0xFFFFFF);
 
         addInfoTab(I18n.format("gui.tooltip.item.pneumaticcraft.amadron_tablet"));

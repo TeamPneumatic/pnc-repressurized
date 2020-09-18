@@ -245,7 +245,7 @@ public class FluidUtils {
             if (world.isAirBlock(pos) || isNotSolid || isReplaceable
                     || block instanceof ILiquidContainer && ((ILiquidContainer)block).canContainFluid(world, pos, blockstate, toPlace.getFluid())) {
                 if (action.execute()) {
-                    if (world.func_230315_m_().func_236040_e_() && fluid.isIn(FluidTags.WATER)) {
+                    if (world.getDimensionType().isUltrawarm() && fluid.isIn(FluidTags.WATER)) {
                         // no pouring water in the nether!
                         playEvaporationEffects(world, pos);
                     } else if (block instanceof ILiquidContainer) {

@@ -36,7 +36,7 @@ public class GuiPressureModuleSimple extends GuiTubeModule<TubeModule> {
     public void init() {
         super.init();
 
-        addLabel(title, width / 2 - font.func_238414_a_(title) / 2, guiTop + 5);
+        addLabel(title, width / 2 - font.getStringPropertyWidth(title) / 2, guiTop + 5);
 
         WidgetCheckBox advancedMode = new WidgetCheckBox(guiLeft + 6, guiTop + 20, 0xFF404040, xlate("pneumaticcraft.gui.tubeModule.advancedConfig"), b -> {
             module.advancedConfig = true;
@@ -53,11 +53,11 @@ public class GuiPressureModuleSimple extends GuiTubeModule<TubeModule> {
         if (module instanceof TubeModuleRedstoneReceiving) {
             thresholdField.setValue(((TubeModuleRedstoneReceiving) module).getThreshold());
             ITextComponent s = xlate("pneumaticcraft.gui.tubeModule.simpleConfig.threshold");
-            addLabel(s, guiLeft + 80 - font.func_238414_a_(s), guiTop + 36);
+            addLabel(s, guiLeft + 80 - font.getStringPropertyWidth(s), guiTop + 36);
         } else {
             thresholdField.setValue(module.lowerBound);
             ITextComponent s = xlate("pneumaticcraft.gui.tubeModule.simpleConfig.turn");
-            addLabel(s,guiLeft + 80 - font.func_238414_a_(s), guiTop + 36);
+            addLabel(s,guiLeft + 80 - font.getStringPropertyWidth(s), guiTop + 36);
             moreOrLessButton = new WidgetButtonExtended(guiLeft + 85, guiTop + 33, 16, 16, module.lowerBound < module.higherBound ? ">" : "<", b -> flipThreshold());
             moreOrLessButton.setTooltipText(xlate(module.lowerBound < module.higherBound ?
                     "pneumaticcraft.gui.tubeModule.simpleConfig.higherThan" :
