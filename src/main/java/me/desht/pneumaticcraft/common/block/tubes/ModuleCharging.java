@@ -28,6 +28,7 @@ public class ModuleCharging extends TubeModule {
             pressureTube.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).ifPresent(airHandler -> {
                 for (int slot = 0; slot < itemHandler.getSlots(); slot++) {
                     ItemStack chargedItem = itemHandler.getStackInSlot(slot);
+                    if (chargedItem.isEmpty()) continue;
                     chargedItem.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(airHandlerItem -> {
                         float itemPressure = airHandlerItem.getPressure();
                         float itemVolume = airHandlerItem.getVolume();
@@ -36,14 +37,14 @@ public class ModuleCharging extends TubeModule {
                         if (itemPressure > airHandler.getPressure() + 0.01F && itemPressure > 0F) {
                             // move air from item to charger (tube)
                             int airToMove = Math.min(Math.min(airToTransfer, airInItem), (int) (delta * airHandler.getVolume()));
-                            airHandlerItem.addAir(-airToMove);
+                            airHandlerItem.addAir(-airToMove / chargedItem.getCount());
                             airHandler.addAir(airToMove);
                         } else if (itemPressure < airHandler.getPressure() - 0.01F && itemPressure < airHandlerItem.maxPressure()) {
                             // move air from charger (tube) to item
                             int maxAirInItem = (int) (airHandlerItem.maxPressure() * itemVolume);
                             int airToMove = Math.min(Math.min(airToTransfer, airHandler.getAir()), maxAirInItem - airInItem);
                             airToMove = Math.min((int) (delta * itemVolume), airToMove);
-                            airHandlerItem.addAir(airToMove);
+                            airHandlerItem.addAir(airToMove / chargedItem.getCount());
                             airHandler.addAir(-airToMove);
                         }
                     });
