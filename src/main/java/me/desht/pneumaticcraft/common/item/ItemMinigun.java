@@ -52,7 +52,7 @@ public class ItemMinigun extends ItemPressurizable implements IChargeableContain
     public static final String NBT_LOCKED_SLOT = "LockedSlot";
 
     public ItemMinigun() {
-        super(ModItems.defaultProps().setISTER(() -> RenderItemMinigun::new), PneumaticValues.AIR_CANISTER_MAX_AIR, PneumaticValues.AIR_CANISTER_VOLUME);
+        super(ModItems.toolProps().setISTER(() -> RenderItemMinigun::new), PneumaticValues.AIR_CANISTER_MAX_AIR, PneumaticValues.AIR_CANISTER_VOLUME);
     }
 
     public static MagazineHandler getMagazine(ItemStack stack) {
@@ -135,7 +135,7 @@ public class ItemMinigun extends ItemPressurizable implements IChargeableContain
     public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand handIn) {
         ItemStack stack = player.getHeldItem(handIn);
         if (!world.isRemote) {
-            if (player.isSneaking()) {
+            if (player.isSneaking() && stack.getCount() == 1) {
                 NetworkHooks.openGui((ServerPlayerEntity) player, new INamedContainerProvider() {
                     @Override
                     public ITextComponent getDisplayName() {

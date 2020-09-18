@@ -77,7 +77,7 @@ public class ItemJackHammer extends ItemPressurizable implements IChargeableCont
     private static final String NBT_DIG_MODE = "DigMode";
 
     public ItemJackHammer() {
-        super(ModItems.defaultProps().maxStackSize(1), PneumaticValues.VOLUME_JACKHAMMER * 10, PneumaticValues.VOLUME_JACKHAMMER);
+        super(ModItems.toolProps(), PneumaticValues.VOLUME_JACKHAMMER * 10, PneumaticValues.VOLUME_JACKHAMMER);
     }
 
     public static DrillBitHandler getDrillBitHandler(ItemStack stack) {

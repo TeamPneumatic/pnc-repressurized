@@ -212,6 +212,10 @@ public class ModItems {
         return new Item.Properties().group(ItemGroups.PNC_CREATIVE_TAB);
     }
 
+    public static Item.Properties toolProps() {
+        return defaultProps().maxStackSize(1);
+    }
+
     public static Item.Properties bucketProps() {
         return defaultProps().maxStackSize(1).containerItem(Items.BUCKET);
     }
