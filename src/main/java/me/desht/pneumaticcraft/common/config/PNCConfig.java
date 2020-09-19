@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.config;
 
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget.WidgetDifficulty;
+import me.desht.pneumaticcraft.common.villages.VillagerTradesRegistration;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.Set;
@@ -163,6 +164,11 @@ public class PNCConfig {
             public static double itemTransportCost;
             public static double fluidTransportCost;
             public static double minPressure;
+        }
+
+        public static class Villagers {
+            public static boolean addMechanicHouse;
+            public static VillagerTradesRegistration.WhichTrades whichTrades;
         }
     }
 }

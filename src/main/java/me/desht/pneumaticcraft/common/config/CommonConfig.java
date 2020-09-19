@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.config;
 
 import com.google.common.collect.Lists;
+import me.desht.pneumaticcraft.common.villages.VillagerTradesRegistration;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraftforge.common.ForgeConfigSpec;
 
@@ -123,6 +124,10 @@ public class CommonConfig {
         ForgeConfigSpec.DoubleValue minPressure;
     }
 
+    public static class Villagers {
+        ForgeConfigSpec.BooleanValue addMechanicHouse;
+        ForgeConfigSpec.EnumValue<VillagerTradesRegistration.WhichTrades> whichTrades;
+    }
 
     public final General general = new General();
     public final Machines machines = new Machines();
@@ -135,6 +140,7 @@ public class CommonConfig {
     public final Amadron amadron = new Amadron();
     public final Heat heat = new Heat();
     public final Logistics logistics = new Logistics();
+    public final Villagers villagers = new Villagers();
 
     CommonConfig(final ForgeConfigSpec.Builder builder) {
         builder.push("General");
@@ -531,6 +537,19 @@ public class CommonConfig {
                 .comment("Minimum pressure for a Logistics Module to function")
                 .translation("pneumaticcraft.config.common.logistics.minPressure")
                 .defineInRange("min_pressure", 3.0, 0.0, 20.0);
+        builder.pop();
+
+        builder.push("Villagers");
+        villagers.addMechanicHouse = builder
+                .comment("Add a village house for the Pressure Mechanic? Note: setting this to false won't affect any already-generated houses, only disable new generation.")
+                .translation("pneumaticcraft.config.common.villagers.add_mechanic_house")
+                .worldRestart()
+                .define("addMechanicHouse", true);
+        villagers.whichTrades = builder
+                .comment("Which trades should the Pressure Mechanic offer? ALL will offer all trades. PCB_BLUEPRINT will offer *only* the PCB Blueprint, an item required for normal progression through the mod. NONE will offer nothing (but the PCB Blueprint is also available via Amadron by default). Note that changing this won't affect any already-spawned Pressure Mechanics.")
+                .translation("pneumaticcraft.config.common.villagers.mechanic_trades")
+                .worldRestart()
+                .defineEnum("mechanicTrades", VillagerTradesRegistration.WhichTrades.ALL);
         builder.pop();
     }
 }
