@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.villages;
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.WorldGenRegistries;
@@ -21,15 +22,17 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
 public class VillageStructures {
     public static void init() {
-        PlainsVillagePools.init();
-        SavannaVillagePools.init();
-        TaigaVillagePools.init();
-        DesertVillagePools.init();
-        SnowyVillagePools.init();
+        if (PNCConfig.Common.Villagers.addMechanicHouse) {
+            PlainsVillagePools.init();
+            SavannaVillagePools.init();
+            TaigaVillagePools.init();
+            DesertVillagePools.init();
+            SnowyVillagePools.init();
 
-        for (String biome : new String[] { "plains", "desert", "savanna", "taiga", "snowy" }) {
-            addToPool(new ResourceLocation("village/" + biome + "/houses"),
-                    RL("villages/mechanic_house_" + biome), 8);
+            for (String biome : new String[]{"plains", "desert", "savanna", "taiga", "snowy"}) {
+                addToPool(new ResourceLocation("village/" + biome + "/houses"),
+                        RL("villages/mechanic_house_" + biome), 8);
+            }
         }
     }
 

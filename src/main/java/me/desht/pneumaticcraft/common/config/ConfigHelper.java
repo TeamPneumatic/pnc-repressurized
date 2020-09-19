@@ -159,6 +159,9 @@ public class ConfigHelper {
 
         PNCConfig.Common.Jackhammer.baseAirUsage = common.jackhammer.baseAirUsage.get();
         PNCConfig.Common.Jackhammer.maxVeinMinerRange = common.jackhammer.maxVeinMinerRange.get();
+
+        PNCConfig.Common.Villagers.addMechanicHouse = common.villagers.addMechanicHouse.get();
+        PNCConfig.Common.Villagers.whichTrades = common.villagers.whichTrades.get();
     }
 
     private static void setValueAndSave(final net.minecraftforge.fml.config.ModConfig modConfig, final String path, final Object newValue) {
