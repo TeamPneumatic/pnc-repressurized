@@ -557,7 +557,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
 
         @Override
         public int getTankCapacity(int tank) {
-            return 0;
+            return Integer.MAX_VALUE;
         }
 
         @Override
