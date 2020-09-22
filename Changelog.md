@@ -6,6 +6,27 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.15.2
 
+## 1.5.0-73 (22 Sep 2020)
+Important: if you are also using Immersive Engineering, this release *requires* IE 4.0.0-117 or newer.
+
+### Updates
+* Added some config control over villager trades and house generation (primarily for the use of progression-based modpacks). See the `Villages` section in `config/pneumaticcraft-common.toml`
+  * `addMechanicHouse` (boolean - default true) controls whether or not Pressure Mechanic houses can appear in villages
+  * `mechanicTrades` (NONE, PCB_BLUEPRINT or ALL - default ALL) defines which trades a Pressure Mechanic offers
+  * Note that neither setting is retroactive - any already-generated houses and villagers will not be affected by this
+* All pressurizable tool items are now unstackable (does not apply to drones or air canisters)
+* When Alt-clicking an item in the Smart Chest GUI, holding Shift as well will set the slot item limit to the stack's max size instead of the stack's current size
+
+### Fixes
+* Fixed drone "Right Click Entity" prog widget not always working (e.g. milking cows with an empty bucket failed)
+* Fixed air dupe exploit with stacked pressurizable items and the Charging Module
+* Fixed player death message translations
+* Fixed Amadrones thinking they had only one inventory slot, causing orders with more than 64 of an item to fail
+* Fixed Memory Stick sometimes losing its stored experience
+* Drone "Inventory Export" widget will now try to keep items stacked in the inventory it's exporting to
+  * This also applies to Collector Drones, which use the "Inventory Export" widget internally
+* Fixed Pneumatic Armor Coordinate Tracker upgrade not rendering in-world targets properly when activated
+
 ## 1.4.5-69 (3 Sep 2020)
 
 ### Updates
