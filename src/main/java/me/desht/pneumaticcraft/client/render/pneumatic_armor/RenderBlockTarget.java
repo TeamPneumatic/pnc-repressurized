@@ -200,10 +200,12 @@ public class RenderBlockTarget {
 
     private void renderBlockHighlight(MatrixStack matrixStack, IRenderTypeBuffer buffer, World world, BlockPos pos, float partialTicks) {
         BlockState state = world.getBlockState(pos);
+        VoxelShape shape = state.getShape(world, pos);
+        if (shape.isEmpty()) return;
 
         float progress = ((world.getGameTime() & 0x1f) + partialTicks) / 32f;
         float cycle = MathHelper.sin((float) (progress * Math.PI));
-        VoxelShape shape = state.getShape(world, pos);
+
         float shrink = (shape == VoxelShapes.fullCube() ? 0.05f : 0f) + cycle / 60f;
         AxisAlignedBB aabb = shape.getBoundingBox().shrink(shrink);
 
