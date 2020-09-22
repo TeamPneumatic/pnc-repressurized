@@ -54,6 +54,7 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadr
     private final WidgetTextFieldNumber[] amountFields = new WidgetTextFieldNumber[2];
     private final BlockPos[] positions = new BlockPos[2];
     private Button addButton;
+    private boolean openingSubGUI = false;
 
     public GuiAmadronAddTrade(ContainerAmadronAddTrade container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
@@ -76,6 +77,7 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadr
             positions[settingSlot] = gpsSearchGui.getSearchStack().isEmpty() ?
                     null : ItemGPSTool.getGPSLocation(gpsSearchGui.getSearchStack());
         }
+        openingSubGUI = false;
         searchGui = null;
         fluidGui = null;
         invSearchGui = null;
@@ -154,7 +156,9 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadr
 
     @Override
     public void onClose() {
-        NetworkHandler.sendToServer(new PacketGuiButton("showAmadron"));
+        if (!openingSubGUI) {
+            NetworkHandler.sendToServer(new PacketGuiButton("showAmadron"));
+        }
     }
 
     @Override
@@ -198,6 +202,7 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadr
     }
 
     private void openItemSearchGui(int slot) {
+        openingSubGUI = true;
         ClientUtils.openContainerGui(ModContainers.ITEM_SEARCHER.get(),
                 new TranslationTextComponent("pneumaticcraft.gui.amadron.addTrade.itemSearch"));
         if (minecraft.currentScreen instanceof GuiItemSearcher) {
@@ -208,6 +213,7 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadr
     }
 
     private void openInventorySearchGui(int slot) {
+        openingSubGUI = true;
         ClientUtils.openContainerGui(ModContainers.INVENTORY_SEARCHER.get(),
                 new TranslationTextComponent("pneumaticcraft.gui.amadron.addTrade.invSearch"));
         if (minecraft.currentScreen instanceof GuiInventorySearcher) {
@@ -218,6 +224,7 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadr
     }
 
     private void openFluidSearchGui(int slot) {
+        openingSubGUI = true;
         settingSlot = slot;
         fluidGui = new GuiLogisticsLiquidFilter(this);
         fluidGui.setFilter(fluidFilters[slot].getFluid());
@@ -225,6 +232,7 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadr
     }
 
     private void openGPSGui(int slot) {
+        openingSubGUI = true;
         ClientUtils.openContainerGui(ModContainers.INVENTORY_SEARCHER.get(),
                 new TranslationTextComponent("pneumaticcraft.gui.amadron.addTrade.gpsSearch"));
         if (minecraft.currentScreen instanceof GuiInventorySearcher) {
