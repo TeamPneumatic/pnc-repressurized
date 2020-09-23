@@ -52,6 +52,7 @@ public class ThirdPartyManager {
             thirdPartyClasses.put(ModIds.JEI, () -> IMPLICIT_INIT);
             thirdPartyClasses.put(ModIds.IMMERSIVE_ENGINEERING, () -> new ImmersiveEngineering());
             thirdPartyClasses.put(ModIds.MEKANISM, () -> new Mekanism());
+            thirdPartyClasses.put(ModIds.AE2, () -> IMPLICIT_INIT);
 
             // these were supported 1.12.2 and may or may not come back...
 

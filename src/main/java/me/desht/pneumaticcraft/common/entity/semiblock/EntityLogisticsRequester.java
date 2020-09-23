@@ -1,23 +1,43 @@
 package me.desht.pneumaticcraft.common.entity.semiblock;
 
 import me.desht.pneumaticcraft.common.core.ModContainers;
+import me.desht.pneumaticcraft.common.semiblock.IProvidingInventoryListener;
 import me.desht.pneumaticcraft.common.semiblock.ISpecificRequester;
+import me.desht.pneumaticcraft.common.thirdparty.ae2.AE2Integration;
+import me.desht.pneumaticcraft.common.thirdparty.ae2.AE2RequesterIntegration;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.datasync.DataParameter;
+import net.minecraft.network.datasync.DataSerializers;
+import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 
-public class EntityLogisticsRequester extends EntityLogisticsFrame implements ISpecificRequester/*, IProvidingInventoryListener*/ {
+public class EntityLogisticsRequester extends EntityLogisticsFrame implements ISpecificRequester, IProvidingInventoryListener {
+    private static final DataParameter<Boolean> AE2_ENABLED = EntityDataManager.createKey(EntityLogisticsRequester.class, DataSerializers.BOOLEAN);
+
     private int minItems = 1;
     private int minFluid = 1;
 
+    private AE2RequesterIntegration ae2requester = null;
+
     public EntityLogisticsRequester(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
+    }
+
+    @Override
+    protected void registerData() {
+        super.registerData();
+
+        if (AE2Integration.isAvailable()) {
+            getDataManager().register(AE2_ENABLED, false);
+        }
     }
 
     @Override
@@ -95,10 +115,40 @@ public class EntityLogisticsRequester extends EntityLogisticsFrame implements IS
         minFluid = payload.readVarInt();
     }
 
-//    @Override
-//    public void notify(TileEntityAndFace teAndFace) {
-//
-//    }
+    @Override
+    public void tick() {
+        super.tick();
+
+        if (!world.isRemote && AE2Integration.isAvailable()) {
+            getAE2integration().maybeCheckForInterface();
+        }
+    }
+
+    @Override
+    public void notify(TileEntityAndFace teAndFace) {
+        if (AE2Integration.isAvailable()) {
+            getAE2integration().maybeAddTE(teAndFace);
+        }
+    }
+
+    @Override
+    protected void onBroken() {
+        super.onBroken();
+
+        if (AE2Integration.isAvailable()) {
+            getAE2integration().shutdown();
+        }
+    }
+
+    @Override
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player) {
+        super.handleGUIButtonPress(tag, shiftHeld, player);
+
+        if (tag.equals("ae2") && AE2Integration.isAvailable()) {
+            setAE2enabled(!isAE2enabled());
+            getAE2integration().setEnabled(isAE2enabled());
+        }
+    }
 
     @Override
     public int amountRequested(ItemStack stack) {
@@ -153,5 +203,20 @@ public class EntityLogisticsRequester extends EntityLogisticsFrame implements IS
             }
         }
         return requesting;
+    }
+
+    private void setAE2enabled(boolean enabled) {
+        getDataManager().set(AE2_ENABLED, enabled);
+    }
+
+    public boolean isAE2enabled() {
+        return AE2Integration.isAvailable() && getDataManager().get(AE2_ENABLED);
+    }
+
+    public AE2RequesterIntegration getAE2integration() {
+        if (ae2requester == null) {
+            ae2requester = new AE2RequesterIntegration(this);
+        }
+        return ae2requester;
     }
 }

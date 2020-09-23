@@ -1206,7 +1206,7 @@
    "pneumaticcraft.gui.tab.info.logistic_frame_storage" : "§0Storage frames can receive resources from Active Providers and supply resources to Requesters.${br}${br}By default the framed inventory accepts any item from providing inventories. By adding items to this filter, only items specified can be inserted via the logistics network. Add items from your inventory or search for an item/fluid by right clicking an empty slot.",
    "pneumaticcraft.gui.tab.info.logisticsRequester.aeIntegration.enable" : "Enable Integration",
    "pneumaticcraft.gui.tab.info.logisticsRequester.aeIntegration.title" : "AE2 Integration",
-   "pneumaticcraft.gui.tab.info.logisticsRequester.aeIntegration" : "When checked, Logistics Drones will inform the AE Network about providable items (which then can be 'crafted'). When asked to craft, the Requester Frame is set up to request the requested items.",
+   "pneumaticcraft.gui.tab.info.logisticsRequester.aeIntegration" : "When checked, Logistics Drones will inform the AE2 Network about logistics-providable items (which then appear as 'craftable' items in AE2). When crafting is requested, AE2 will set up the Requester Frame to request the requested items.",
    "pneumaticcraft.gui.tab.info.programmable_controller.excluded" : "Excluded Pieces",
    "pneumaticcraft.gui.tab.info.programmable_controller.charging" : "Held Item Charging",
    "pneumaticcraft.gui.tab.info.programmable_controller.chargeHeld" : "Charge Held Item",
