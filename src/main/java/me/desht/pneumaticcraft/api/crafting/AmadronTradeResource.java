@@ -46,6 +46,10 @@ public class AmadronTradeResource {
         fluid = stack;
     }
 
+    public boolean isEmpty() {
+        return item.isEmpty() && fluid.isEmpty();
+    }
+
     /**
      * Checks if these two resources are equivalent: same resource, but don't check amounts.
      * @param other the trade resource to compare

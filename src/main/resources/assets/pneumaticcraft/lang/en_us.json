@@ -1526,7 +1526,7 @@
    "pneumaticcraft.igwtab.entry.printed_circuit_boards" : "Printed Circuit Boards",
    "pneumaticcraft.igwtab.entry.worldgen" : "Worldgen",
    "pneumaticcraft.itemGroup.pneumaticcraft" : "PneumaticCraft: Repressurized",
-   "pneumaticcraft.message.amadron.duplicateOffer" : "§c[Amadron] Can't add trade: The same trade has been added already.",
+   "pneumaticcraft.message.amadron.duplicateOffer" : "§c[Amadron] Can't add trade: Trade is invalid or has already been added.",
    "pneumaticcraft.message.amadron.duplicateReversedOffer" : "§c[Amadron] Can't add trade: You have a trade already with reversed trading items.",
    "pneumaticcraft.message.amadron.playerAddedTrade" : "§b[Amadron] §6%s§b is now selling §6%s§b for §6%s§b.",
    "pneumaticcraft.message.amadron.playerBought" : "§a[Amadron] §6%s§b bought from you §6%d§b order(s) of: §6%s§b for §6%s§b.",
