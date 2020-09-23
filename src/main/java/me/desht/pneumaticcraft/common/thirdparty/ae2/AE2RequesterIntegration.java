@@ -312,7 +312,7 @@ public class AE2RequesterIntegration implements IGridBlock, IGridHost, ICrafting
 
     @Override
     public IItemList<IAEItemStack> getAvailableItems(IItemList<IAEItemStack> iItemList) {
-        for (IAEItemStack stack : getProvidingItems()) {
+        for (IAEItemStack stack : getProvidingItems(true)) {
             stack.setCountRequestable(stack.getStackSize());
             iItemList.addRequestable(stack);
         }
@@ -351,7 +351,7 @@ public class AE2RequesterIntegration implements IGridBlock, IGridHost, ICrafting
         if (craftingWatcher != null) craftingWatcher.reset();
 
         // watch any items that are in providing inventories
-        for (IAEItemStack stack : getProvidingItems()) {
+        for (IAEItemStack stack : getProvidingItems(false)) {
             if (stackWatcher != null) stackWatcher.add(stack);
             if (craftingWatcher != null) craftingWatcher.add(stack);
             if (cHelper != null) cHelper.setEmitable(stack);
@@ -368,7 +368,7 @@ public class AE2RequesterIntegration implements IGridBlock, IGridHost, ICrafting
         }
     }
 
-    private List<IAEItemStack> getProvidingItems() {
+    private List<IAEItemStack> getProvidingItems(boolean initialList) {
         List<IAEItemStack> stacks = new ArrayList<>();
         Iterator<TileEntityAndFace> iter = providingInventories.iterator();
         while (iter.hasNext()) {
@@ -378,8 +378,12 @@ public class AE2RequesterIntegration implements IGridBlock, IGridHost, ICrafting
                 ok = IOHelper.getInventoryForTE(teFace.getTileEntity(), teFace.getFace()).map(inv -> {
                     for (int i = 0; i < inv.getSlots(); i++) {
                         ItemStack stack = inv.getStackInSlot(i);
-                        if (!stack.isEmpty())
-                            stacks.add(AE2PNCAddon.api.storage().getStorageChannel(IItemStorageChannel.class).createStack(stack));
+                        if (!stack.isEmpty()) {
+                            IAEItemStack aeStack = AE2PNCAddon.api.storage().getStorageChannel(IItemStorageChannel.class).createStack(stack);
+                            if (aeStack != null) {
+                                stacks.add(initialList ? aeStack : aeStack.setStackSize(0).setCountRequestable(stack.getCount()));
+                            }
+                        }
                     }
                     return true;
                 }).orElse(false);
