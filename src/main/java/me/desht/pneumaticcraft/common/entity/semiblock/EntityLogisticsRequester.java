@@ -22,6 +22,8 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 public class EntityLogisticsRequester extends EntityLogisticsFrame implements ISpecificRequester, IProvidingInventoryListener {
     private static final DataParameter<Boolean> AE2_ENABLED = EntityDataManager.createKey(EntityLogisticsRequester.class, DataSerializers.BOOLEAN);
 
+    private static final String NBT_AE2_INTEGRATION = "AE2_Integration";
+
     private int minItems = 1;
     private int minFluid = 1;
 
@@ -77,6 +79,10 @@ public class EntityLogisticsRequester extends EntityLogisticsFrame implements IS
 
         setMinItemOrderSize(tag.getInt(NBT_MIN_ITEMS));
         setMinFluidOrderSize(tag.getInt(NBT_MIN_FLUID));
+
+        if (AE2Integration.isAvailable()) {
+            setAE2enabled(tag.getBoolean(NBT_AE2_INTEGRATION));
+        }
     }
 
     @Override
@@ -86,6 +92,9 @@ public class EntityLogisticsRequester extends EntityLogisticsFrame implements IS
         tag.putInt(NBT_MIN_ITEMS, getMinItemOrderSize());
         tag.putInt(NBT_MIN_FLUID, getMinFluidOrderSize());
 
+        if (AE2Integration.isAvailable()) {
+            tag.putBoolean(NBT_AE2_INTEGRATION, isAE2enabled());
+        }
         return tag;
     }
 
