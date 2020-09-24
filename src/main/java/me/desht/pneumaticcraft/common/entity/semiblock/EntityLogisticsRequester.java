@@ -6,13 +6,11 @@ import me.desht.pneumaticcraft.common.util.IOHelper;
 import net.minecraft.entity.EntityType;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 
-public class EntityLogisticsRequester extends EntityLogisticsFrame implements ISpecificRequester/*, IProvidingInventoryListener*/ {
+public class EntityLogisticsRequester extends EntityLogisticsFrame implements ISpecificRequester {
     private int minItems = 1;
     private int minFluid = 1;
 
@@ -35,38 +33,24 @@ public class EntityLogisticsRequester extends EntityLogisticsFrame implements IS
         return ModContainers.LOGISTICS_FRAME_REQUESTER.get();
     }
 
+    @Override
     public int getMinItemOrderSize() {
         return minItems;
     }
 
+    @Override
     public void setMinItemOrderSize(int minItems) {
         this.minItems = minItems;
     }
 
+    @Override
     public int getMinFluidOrderSize() {
         return minFluid;
     }
 
+    @Override
     public void setMinFluidOrderSize(int minFluid) {
         this.minFluid = minFluid;
-    }
-
-    @Override
-    protected void readAdditional(CompoundNBT tag) {
-        super.readAdditional(tag);
-
-        setMinItemOrderSize(tag.getInt(NBT_MIN_ITEMS));
-        setMinFluidOrderSize(tag.getInt(NBT_MIN_FLUID));
-    }
-
-    @Override
-    public CompoundNBT serializeNBT(CompoundNBT tag) {
-        tag = super.serializeNBT(tag);
-
-        tag.putInt(NBT_MIN_ITEMS, getMinItemOrderSize());
-        tag.putInt(NBT_MIN_FLUID, getMinFluidOrderSize());
-
-        return tag;
     }
 
     @Override
@@ -78,27 +62,6 @@ public class EntityLogisticsRequester extends EntityLogisticsFrame implements IS
     public boolean supportsBlacklisting() {
         return false;
     }
-
-    @Override
-    public void writeToBuf(PacketBuffer payload) {
-        super.writeToBuf(payload);
-
-        payload.writeVarInt(minItems);
-        payload.writeVarInt(minFluid);
-    }
-
-    @Override
-    public void readFromBuf(PacketBuffer payload) {
-        super.readFromBuf(payload);
-
-        minItems = payload.readVarInt();
-        minFluid = payload.readVarInt();
-    }
-
-//    @Override
-//    public void notify(TileEntityAndFace teAndFace) {
-//
-//    }
 
     @Override
     public int amountRequested(ItemStack stack) {

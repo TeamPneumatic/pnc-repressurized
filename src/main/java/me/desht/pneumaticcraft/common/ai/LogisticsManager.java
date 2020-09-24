@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsFrame;
-import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsRequester;
 import me.desht.pneumaticcraft.common.semiblock.IProvidingInventoryListener;
 import me.desht.pneumaticcraft.common.semiblock.IProvidingInventoryListener.TileEntityAndFace;
 import me.desht.pneumaticcraft.common.semiblock.ISpecificProvider;
@@ -45,7 +44,7 @@ public class LogisticsManager {
                     for (EntityLogisticsFrame provider : logistics.get(i)) {
                         if (provider.shouldProvideTo(priority)) {
                             if (!item.isEmpty()) {
-                                int requestedAmount = getRequestedAmount(requester, item);
+                                int requestedAmount = getRequestedAmount(requester, item, false);
                                 if (requestedAmount > 0) {
                                     ItemStack stack = item.copy();
                                     stack.setCount(requestedAmount);
@@ -53,7 +52,7 @@ public class LogisticsManager {
                                     return tasks;
                                 }
                             } else if (!fluid.isEmpty()) {
-                                int requestedAmount = getRequestedAmount(requester, fluid);
+                                int requestedAmount = getRequestedAmount(requester, fluid, false);
                                 if (requestedAmount > 0) {
                                     fluid = fluid.copy();
                                     fluid.setAmount(requestedAmount);
@@ -83,7 +82,7 @@ public class LogisticsManager {
                 for (int i = 0; i < itemHandler.getSlots(); i++) {
                     ItemStack providingStack = itemHandler.getStackInSlot(i);
                     if (!providingStack.isEmpty() && (!(provider instanceof ISpecificProvider) || ((ISpecificProvider) provider).canProvide(providingStack))) {
-                        int requestedAmount = getRequestedAmount(requester, providingStack);
+                        int requestedAmount = getRequestedAmount(requester, providingStack, true);
                         if (requestedAmount > 0) {
                             ItemStack stack = providingStack.copy();
                             stack.setCount(requestedAmount);
@@ -101,7 +100,7 @@ public class LogisticsManager {
                     boolean canDrain = IntStream.range(0, fluidHandler.getTanks()).anyMatch(i -> fluidHandler.isFluidValid(i, providingStack));
                     if (canDrain &&
                             (!(provider instanceof ISpecificProvider) || ((ISpecificProvider) provider).canProvide(providingStack))) {
-                        int requestedAmount = getRequestedAmount(requester, providingStack);
+                        int requestedAmount = getRequestedAmount(requester, providingStack, true);
                         if (requestedAmount > 0) {
                             FluidStack stack = providingStack.copy();
                             stack.setAmount(requestedAmount);
@@ -113,39 +112,43 @@ public class LogisticsManager {
         }
     }
 
-    private static int getRequestedAmount(EntityLogisticsFrame requester, ItemStack providingStack) {
+    private static int getRequestedAmount(EntityLogisticsFrame requester, ItemStack providingStack, boolean honourMin) {
         TileEntity te = requester.getCachedTileEntity();
         if (te == null) return 0;
 
         int requestedAmount = requester instanceof ISpecificRequester ? ((ISpecificRequester) requester).amountRequested(providingStack) : providingStack.getMaxStackSize();
-        int minOrderSize = requester instanceof EntityLogisticsRequester ? ((EntityLogisticsRequester) requester).getMinItemOrderSize() : 1;
+        int minOrderSize = honourMin && requester instanceof ISpecificRequester ? ((ISpecificRequester) requester).getMinItemOrderSize() : 1;
+
         if (requestedAmount < minOrderSize) return 0;
         providingStack = providingStack.copy();
-        providingStack.setCount(requestedAmount);
+        if (requestedAmount < providingStack.getCount()) providingStack.setCount(requestedAmount);
         ItemStack remainder = providingStack.copy();
         remainder.grow(requester.getIncomingItems(providingStack));
         remainder = IOHelper.insert(te, remainder, requester.getFacing(), true);
         providingStack.shrink(remainder.getCount());
-        return Math.max(providingStack.getCount(), 0);
+        return providingStack.getCount() < minOrderSize ? 0 : Math.max(providingStack.getCount(), 0);
     }
 
-    private static int getRequestedAmount(EntityLogisticsFrame requester, FluidStack providingStack) {
+    private static int getRequestedAmount(EntityLogisticsFrame requester, FluidStack providingStack, boolean honourMin) {
+        TileEntity te = requester.getCachedTileEntity();
+        if (te == null) return 0;
+
         int requestedAmount = requester instanceof ISpecificRequester ? ((ISpecificRequester) requester).amountRequested(providingStack) : providingStack.getAmount();
-        int minOrderSize = requester instanceof EntityLogisticsRequester ? ((EntityLogisticsRequester) requester).getMinFluidOrderSize() : 1;
+        int minOrderSize = honourMin && requester instanceof ISpecificRequester ? ((ISpecificRequester) requester).getMinFluidOrderSize() : 1;
+
         if (requestedAmount < minOrderSize) return 0;
         providingStack = providingStack.copy();
-        providingStack.setAmount(requestedAmount);
+        if (requestedAmount < providingStack.getAmount()) providingStack.setAmount(requestedAmount);
         FluidStack remainder = providingStack.copy();
         remainder.grow(requester.getIncomingFluid(remainder.getFluid()));
-        if (requester.getCachedTileEntity() == null) return 0;
-        requester.getCachedTileEntity().getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, requester.getFacing()).ifPresent(fluidHandler -> {
+        te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, requester.getFacing()).ifPresent(fluidHandler -> {
             int fluidFilled = fluidHandler.fill(remainder, IFluidHandler.FluidAction.SIMULATE);
             if (fluidFilled > 0) {
                 remainder.shrink(fluidFilled);
             }
         });
         providingStack.shrink(remainder.getAmount());
-        return providingStack.getAmount();
+        return providingStack.getAmount() < minOrderSize ? 0 : providingStack.getAmount();
     }
 
     public static class LogisticsTask implements Comparable<LogisticsTask> {
@@ -179,12 +182,12 @@ public class LogisticsManager {
         public boolean isStillValid(Object stack) {
             if (stack instanceof ItemStack) {
                 if (!transportingItem.isEmpty()) {
-                    int requestedAmount = getRequestedAmount(requester, (ItemStack) stack);
+                    int requestedAmount = getRequestedAmount(requester, (ItemStack) stack, false);
                     return requestedAmount == ((ItemStack) stack).getCount();
                 }
             } else if (stack instanceof FluidStack) {
                 if (!transportingFluid.isEmpty()) {
-                    int requestedAmount = getRequestedAmount(requester, (FluidStack) stack);
+                    int requestedAmount = getRequestedAmount(requester, (FluidStack) stack, false);
                     return requestedAmount == ((FluidStack) stack).getAmount();
                 }
             } else {

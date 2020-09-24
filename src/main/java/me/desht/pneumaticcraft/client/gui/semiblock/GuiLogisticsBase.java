@@ -13,6 +13,7 @@ import me.desht.pneumaticcraft.common.inventory.ContainerLogistics;
 import me.desht.pneumaticcraft.common.inventory.SlotPhantom;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncSemiblock;
+import me.desht.pneumaticcraft.common.semiblock.ISpecificRequester;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -44,6 +45,8 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
     private WidgetLabel itemLabel;
     private WidgetLabel fluidLabel;
     private final List<WidgetFluidStack> fluidWidgets = new ArrayList<>();
+    private WidgetTextFieldNumber minItemsField;
+    private WidgetTextFieldNumber minFluidField;
 
     public GuiLogisticsBase(ContainerLogistics container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
@@ -93,6 +96,42 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
             addFacingTab();
         }
         addJeiFilterInfoTab();
+
+        if (logistics instanceof ISpecificRequester) {
+            addMinOrderSizeTab();
+        }
+    }
+
+    private void addMinOrderSizeTab() {
+        WidgetAnimatedStat minAmountStat = addAnimatedStat("pneumaticcraft.gui.logistics_frame.min_amount", new ItemStack(Blocks.CHEST), 0xFFC0C080, false);
+        minAmountStat.addPadding(7, 21);
+
+        WidgetLabel minItemsLabel = new WidgetLabel(5, 20, I18n.format("pneumaticcraft.gui.logistics_frame.min_items"));
+        minItemsLabel.setTooltipText(I18n.format("pneumaticcraft.gui.logistics_frame.min_items.tooltip"));
+        minAmountStat.addSubWidget(minItemsLabel);
+        minItemsField = new WidgetTextFieldNumber(font, 5, 30, 30, 12)
+                .setRange(1, 64)
+                .setValue(((ISpecificRequester) logistics).getMinItemOrderSize());
+        minItemsField.setResponder(s -> sendDelayed(8));
+        minAmountStat.addSubWidget(minItemsField);
+
+        WidgetLabel minFluidLabel = new WidgetLabel(5, 47, I18n.format("pneumaticcraft.gui.logistics_frame.min_fluid"));
+        minFluidLabel.setTooltipText(I18n.format("pneumaticcraft.gui.logistics_frame.min_fluid.tooltip"));
+        minAmountStat.addSubWidget(minFluidLabel);
+        minFluidField = new WidgetTextFieldNumber(font, 5, 57, 50, 12)
+                .setRange(1, 16000)
+                .setValue(((ISpecificRequester) logistics).getMinFluidOrderSize());
+        minFluidField.setResponder(s -> sendDelayed(8));
+        minAmountStat.addSubWidget(minFluidField);
+    }
+
+    @Override
+    protected void doDelayedAction() {
+        if (logistics instanceof ISpecificRequester) {
+            ((ISpecificRequester) logistics).setMinItemOrderSize(minItemsField.getValue());
+            ((ISpecificRequester) logistics).setMinFluidOrderSize(minFluidField.getValue());
+            syncToServer();
+        }
     }
 
     public void updateItemFilter(int slot, ItemStack stack) {
