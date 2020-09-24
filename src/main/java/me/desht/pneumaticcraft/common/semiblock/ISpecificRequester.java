@@ -10,4 +10,10 @@ public interface ISpecificRequester {
     int amountRequested(ItemStack stack);
 
     int amountRequested(FluidStack stack);
+
+    int getMinItemOrderSize();
+    void setMinItemOrderSize(int min);
+
+    int getMinFluidOrderSize();
+    void setMinFluidOrderSize(int min);
 }

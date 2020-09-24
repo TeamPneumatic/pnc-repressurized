@@ -10,6 +10,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 
 public class EntityLogisticsStorage extends EntityLogisticsFrame implements ISpecificProvider, ISpecificRequester {
+    private int minItems = 1;
+    private int minFluid = 1;
+
     public EntityLogisticsStorage(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
     }
@@ -47,5 +50,25 @@ public class EntityLogisticsStorage extends EntityLogisticsFrame implements ISpe
     @Override
     public int amountRequested(FluidStack stack) {
         return passesFilter(stack.getFluid()) ? stack.getAmount() : 0;
+    }
+
+    @Override
+    public int getMinItemOrderSize() {
+        return minItems;
+    }
+
+    @Override
+    public void setMinItemOrderSize(int min) {
+        minItems = min;
+    }
+
+    @Override
+    public int getMinFluidOrderSize() {
+        return minFluid;
+    }
+
+    @Override
+    public void setMinFluidOrderSize(int min) {
+        minFluid = min;
     }
 }

@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.common.inventory.ContainerLogistics;
 import me.desht.pneumaticcraft.common.item.ItemLogisticsFrame;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncSemiblock;
+import me.desht.pneumaticcraft.common.semiblock.ISpecificRequester;
 import me.desht.pneumaticcraft.common.semiblock.ItemSemiBlock;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.entity.Entity;
@@ -286,6 +287,11 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase {
         setMatchModId(tag.getBoolean(NBT_MATCH_MODID));
         setWhiteList(tag.getBoolean(NBT_WHITELIST));
         setFacing(tag.contains(NBT_SIDE) ? Direction.byIndex(tag.getInt(NBT_SIDE)) : Direction.UP);
+
+        if (this instanceof ISpecificRequester) {
+            ((ISpecificRequester) this).setMinItemOrderSize(Math.max(1, tag.getInt(ISpecificRequester.NBT_MIN_ITEMS)));
+            ((ISpecificRequester) this).setMinFluidOrderSize(Math.max(1, tag.getInt(ISpecificRequester.NBT_MIN_FLUID)));
+        }
     }
 
     @Override
@@ -300,6 +306,10 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase {
         tag.putBoolean(NBT_MATCH_MODID, isMatchModId());
         tag.putBoolean(NBT_WHITELIST, isWhiteList());
         if (getFacing() != null) tag.putInt(NBT_SIDE, getFacing().getIndex());
+        if (this instanceof ISpecificRequester) {
+            tag.putInt(ISpecificRequester.NBT_MIN_ITEMS, ((ISpecificRequester) this).getMinItemOrderSize());
+            tag.putInt(ISpecificRequester.NBT_MIN_FLUID, ((ISpecificRequester) this).getMinFluidOrderSize());
+        }
 
         return tag;
     }
@@ -396,6 +406,10 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase {
             payload.writeItemStack(itemFilterHandler.getStackInSlot(i));
         }
         fluidFilters.write(payload);
+        if (this instanceof ISpecificRequester) {
+            payload.writeVarInt(((ISpecificRequester) this).getMinItemOrderSize());
+            payload.writeVarInt(((ISpecificRequester) this).getMinFluidOrderSize());
+        }
     }
 
     @Override
@@ -413,6 +427,10 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase {
             itemFilterHandler.setStackInSlot(i, payload.readItemStack());
         }
         fluidFilters = new FluidFilter(payload);
+        if (this instanceof ISpecificRequester) {
+            ((ISpecificRequester) this).setMinItemOrderSize(payload.readVarInt());
+            ((ISpecificRequester) this).setMinFluidOrderSize(payload.readVarInt());
+        }
     }
 
     /**
