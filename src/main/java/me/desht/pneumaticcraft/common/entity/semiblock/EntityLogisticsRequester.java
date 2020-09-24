@@ -35,18 +35,22 @@ public class EntityLogisticsRequester extends EntityLogisticsFrame implements IS
         return ModContainers.LOGISTICS_FRAME_REQUESTER.get();
     }
 
+    @Override
     public int getMinItemOrderSize() {
         return minItems;
     }
 
+    @Override
     public void setMinItemOrderSize(int minItems) {
         this.minItems = minItems;
     }
 
+    @Override
     public int getMinFluidOrderSize() {
         return minFluid;
     }
 
+    @Override
     public void setMinFluidOrderSize(int minFluid) {
         this.minFluid = minFluid;
     }
@@ -94,12 +98,7 @@ public class EntityLogisticsRequester extends EntityLogisticsFrame implements IS
         minItems = payload.readVarInt();
         minFluid = payload.readVarInt();
     }
-
-//    @Override
-//    public void notify(TileEntityAndFace teAndFace) {
-//
-//    }
-
+    
     @Override
     public int amountRequested(ItemStack stack) {
         int totalRequestingAmount = getTotalRequestedAmount(stack);
