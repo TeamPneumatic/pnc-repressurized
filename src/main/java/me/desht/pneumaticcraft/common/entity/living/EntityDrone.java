@@ -94,6 +94,7 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -722,6 +723,15 @@ public class EntityDrone extends EntityDroneBase implements
                 }
             }
             return true;
+        }  else if (stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).isPresent()) {
+            if (player.world.isRemote) return true;
+            return stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).map(handler -> {
+                if (handler.getFluidInTank(0).isEmpty()) {
+                    return player.world.isRemote || FluidUtil.interactWithFluidHandler(player, hand, fluidTank);
+                } else {
+                    return false;
+                }
+            }).orElseThrow(RuntimeException::new);
         } else {
             DyeColor color = DyeColor.getColor(stack);
             if (color != null) {
