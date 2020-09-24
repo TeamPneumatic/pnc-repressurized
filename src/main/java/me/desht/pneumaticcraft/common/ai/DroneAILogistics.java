@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.ai.LogisticsManager.LogisticsTask;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsFrame;
+import me.desht.pneumaticcraft.common.progwidgets.ILiquidExport;
 import me.desht.pneumaticcraft.common.progwidgets.ILiquidFiltered;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetAreaItemBase;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetInventoryBase;
@@ -101,13 +102,13 @@ public class DroneAILogistics extends Goal {
     }
 
     public boolean execute(LogisticsTask task) {
-        if (!drone.getInv().getStackInSlot(0).isEmpty()) {
+        if (!drone.getInv().getStackInSlot(0).isEmpty() && !task.transportingItem.isEmpty()) {
             if (hasNoPathTo(task.requester.getBlockPos())) return false;
             curAI = new DroneEntityAIInventoryExport(drone,
                     new FakeWidgetLogistics(task.requester.getBlockPos(), task.requester.getFacing(), task.transportingItem));
-        } else if (drone.getFluidTank().getFluidAmount() > 0) {
+        } else if (drone.getFluidTank().getFluidAmount() > 0 && !task.transportingFluid.isEmpty()) {
             if (hasNoPathTo(task.requester.getBlockPos())) return false;
-            curAI = new DroneAILiquidExport(drone,
+            curAI = new DroneAILiquidExport<>(drone,
                     new FakeWidgetLogistics(task.requester.getBlockPos(), task.requester.getFacing(), task.transportingFluid));
         } else if (!task.transportingItem.isEmpty()) {
             if (hasNoPathTo(task.provider.getBlockPos())) return false;
@@ -115,7 +116,7 @@ public class DroneAILogistics extends Goal {
                     new FakeWidgetLogistics(task.provider.getBlockPos(), task.provider.getFacing(), task.transportingItem));
         } else {
             if (hasNoPathTo(task.provider.getBlockPos())) return false;
-            curAI = new DroneAILiquidImport(drone,
+            curAI = new DroneAILiquidImport<>(drone,
                     new FakeWidgetLogistics(task.provider.getBlockPos(),  task.provider.getFacing(), task.transportingFluid));
         }
         if (curAI.shouldExecute()) {
@@ -134,7 +135,7 @@ public class DroneAILogistics extends Goal {
         return true;
     }
 
-    private static class FakeWidgetLogistics extends ProgWidgetInventoryBase implements ILiquidFiltered {
+    private static class FakeWidgetLogistics extends ProgWidgetInventoryBase implements ILiquidFiltered, ILiquidExport {
         private final ItemStack stack;
         private final FluidStack fluid;
         private final Set<BlockPos> area;
@@ -210,6 +211,14 @@ public class DroneAILogistics extends Goal {
             return fluid == this.fluid.getFluid();
         }
 
+        @Override
+        public void setPlaceFluidBlocks(boolean placeFluidBlocks) {
+        }
+
+        @Override
+        public boolean isPlacingFluidBlocks() {
+            return false;
+        }
     }
 
 }
