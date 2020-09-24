@@ -97,6 +97,7 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -713,6 +714,8 @@ public class EntityDrone extends EntityDroneBase implements
 
     @Override
     public ActionResultType func_230254_b_(PlayerEntity player, Hand hand) {
+        if (!getOwnerUUID().equals(player.getUniqueID())) return ActionResultType.PASS;
+
         ItemStack stack = player.getHeldItem(hand);
         if (stack.getItem() == ModItems.GPS_TOOL.get()) {
             if (!world.isRemote) {
@@ -725,6 +728,16 @@ public class EntityDrone extends EntityDroneBase implements
                 }
             }
             return ActionResultType.SUCCESS;
+        } else if (stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).isPresent()) {
+            if (player.world.isRemote) return ActionResultType.CONSUME;
+            return stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).map(handler -> {
+                if (handler.getFluidInTank(0).isEmpty()) {
+                    boolean ok = player.world.isRemote || FluidUtil.interactWithFluidHandler(player, hand, fluidTank);
+                    return ok ? ActionResultType.CONSUME : ActionResultType.PASS;
+                } else {
+                    return ActionResultType.PASS;
+                }
+            }).orElseThrow(RuntimeException::new);
         } else {
             DyeColor color = DyeColor.getColor(stack);
             if (color != null) {
@@ -889,8 +902,8 @@ public class EntityDrone extends EntityDroneBase implements
     @Override
     public void printManometerMessage(PlayerEntity player, List<ITextComponent> curInfo) {
         if (hasCustomName()) curInfo.add(getCustomName().deepCopy().mergeStyle(TextFormatting.AQUA));
-        curInfo.add(xlate("pneumaticcraft.entityTracker.info.tamed", getFakePlayer().getName()));
-        curInfo.add(xlate("pneumaticcraft.gui.tooltip.pressure", PneumaticCraftUtils.roundNumberTo(getAirHandler().getPressure(), 1) + " bar."));
+        curInfo.add(xlate("pneumaticcraft.entityTracker.info.tamed", getOwnerName().getString()));
+        curInfo.add(xlate("pneumaticcraft.gui.tooltip.pressure", PneumaticCraftUtils.roundNumberTo(getAirHandler().getPressure(), 2)));
     }
 
     @Override
