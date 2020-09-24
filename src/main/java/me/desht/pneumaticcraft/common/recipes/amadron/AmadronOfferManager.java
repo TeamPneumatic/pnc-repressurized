@@ -63,10 +63,11 @@ public enum AmadronOfferManager {
      * Try to add a player->player offer.
      *
      * @param offer the offer to add
-     * @return true if the offer was added, false if an equivalent offer already exists
+     * @return true if the offer was added, false if an equivalent offer already exists or the offer is invalid
      */
     public boolean addPlayerOffer(AmadronPlayerOffer offer) {
         if (hasSimilarPlayerOffer(offer)) return false;
+        if (offer.input.isEmpty() || offer.output.isEmpty()) return false;
 
         getPlayerOffers().put(offer.getId(), offer);
         addOffer(activeOffers, offer);
