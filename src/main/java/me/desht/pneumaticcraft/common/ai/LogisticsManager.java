@@ -12,6 +12,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.items.CapabilityItemHandler;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -59,9 +60,11 @@ public class LogisticsManager {
                                     tasks.add(new LogisticsTask(provider, requester, fluid));
                                     return tasks;
                                 }
-                            } else {
-                                tryProvide(provider, requester, tasks);
                             }
+                            // it could be that the drone is carrying some item or fluid it can't drop off right now
+                            // however it might still be able to transfer the other resource type (i.e. transfer items if
+                            // it's holding a fluid, and vice versa)
+                            tryProvide(provider, requester, tasks, item.isEmpty(), fluid.isEmpty());
                         }
                     }
                 }
@@ -70,40 +73,44 @@ public class LogisticsManager {
         return tasks;
     }
 
-    private void tryProvide(EntityLogisticsFrame provider, EntityLogisticsFrame requester, PriorityQueue<LogisticsTask> tasks) {
+    private void tryProvide(EntityLogisticsFrame provider, EntityLogisticsFrame requester, PriorityQueue<LogisticsTask> tasks, boolean tryItems, boolean tryFluids) {
         if (provider.getCachedTileEntity() == null) return;
 
-        IOHelper.getInventoryForTE(provider.getCachedTileEntity(), provider.getFacing()).ifPresent(providingInventory -> {
-            if (requester instanceof IProvidingInventoryListener)
-                ((IProvidingInventoryListener) requester).notify(new TileEntityAndFace(provider.getCachedTileEntity(), provider.getFacing()));
-            for (int i = 0; i < providingInventory.getSlots(); i++) {
-                ItemStack providingStack = providingInventory.getStackInSlot(i);
-                if (!providingStack.isEmpty() && (!(provider instanceof ISpecificProvider) || ((ISpecificProvider) provider).canProvide(providingStack))) {
-                    int requestedAmount = getRequestedAmount(requester, providingStack);
-                    if (requestedAmount > 0) {
-                        ItemStack stack = providingStack.copy();
-                        stack.setCount(requestedAmount);
-                        tasks.add(new LogisticsTask(provider, requester, stack));
+        if (tryItems) {
+            provider.getCachedTileEntity().getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, provider.getFacing()).ifPresent(itemHandler -> {
+                if (requester instanceof IProvidingInventoryListener)
+                    ((IProvidingInventoryListener) requester).notify(new TileEntityAndFace(provider.getCachedTileEntity(), provider.getFacing()));
+                for (int i = 0; i < itemHandler.getSlots(); i++) {
+                    ItemStack providingStack = itemHandler.getStackInSlot(i);
+                    if (!providingStack.isEmpty() && (!(provider instanceof ISpecificProvider) || ((ISpecificProvider) provider).canProvide(providingStack))) {
+                        int requestedAmount = getRequestedAmount(requester, providingStack);
+                        if (requestedAmount > 0) {
+                            ItemStack stack = providingStack.copy();
+                            stack.setCount(requestedAmount);
+                            tasks.add(new LogisticsTask(provider, requester, stack));
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
 
-        provider.getCachedTileEntity().getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, provider.getFacing()).ifPresent(fluidHandler -> {
-            FluidStack providingStack = fluidHandler.drain(16000, IFluidHandler.FluidAction.SIMULATE);
-            if (!providingStack.isEmpty()) {
-                boolean canDrain = IntStream.range(0, fluidHandler.getTanks()).anyMatch(i -> fluidHandler.isFluidValid(i, providingStack));
-                if (canDrain &&
-                        (!(provider instanceof ISpecificProvider) || ((ISpecificProvider) provider).canProvide(providingStack))) {
-                    int requestedAmount = getRequestedAmount(requester, providingStack);
-                    if (requestedAmount > 0) {
-                        FluidStack stack = providingStack.copy();
-                        stack.setAmount(requestedAmount);
-                        tasks.add(new LogisticsTask(provider, requester, stack));
+        if (tryFluids) {
+            provider.getCachedTileEntity().getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, provider.getFacing()).ifPresent(fluidHandler -> {
+                FluidStack providingStack = fluidHandler.drain(16000, IFluidHandler.FluidAction.SIMULATE);
+                if (!providingStack.isEmpty()) {
+                    boolean canDrain = IntStream.range(0, fluidHandler.getTanks()).anyMatch(i -> fluidHandler.isFluidValid(i, providingStack));
+                    if (canDrain &&
+                            (!(provider instanceof ISpecificProvider) || ((ISpecificProvider) provider).canProvide(providingStack))) {
+                        int requestedAmount = getRequestedAmount(requester, providingStack);
+                        if (requestedAmount > 0) {
+                            FluidStack stack = providingStack.copy();
+                            stack.setAmount(requestedAmount);
+                            tasks.add(new LogisticsTask(provider, requester, stack));
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
     }
 
     private static int getRequestedAmount(EntityLogisticsFrame requester, ItemStack providingStack) {
