@@ -339,7 +339,7 @@ public class AE2RequesterIntegration implements IGridBlock, IGridHost, ICrafting
 
     @Override
     public int getPriority() {
-        return 3;
+        return 0;
     }
 
     @Override
