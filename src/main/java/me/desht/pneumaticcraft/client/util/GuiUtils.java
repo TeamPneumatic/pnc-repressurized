@@ -185,7 +185,7 @@ public class GuiUtils {
         worldrenderer.pos(posMat, xCoord, yCoord + 16, zLevel).color(cols[1], cols[2], cols[3], cols[0]).tex(uMin, vMax).endVertex();
         worldrenderer.pos(posMat,xCoord + 16 - maskRight, yCoord + 16, zLevel).color(cols[1], cols[2], cols[3], cols[0]).tex(uMax, vMax).endVertex();
         worldrenderer.pos(posMat, xCoord + 16 - maskRight, yCoord + maskTop, zLevel).color(cols[1], cols[2], cols[3], cols[0]).tex(uMax, vMin).endVertex();
-        worldrenderer.pos(posMat, xCoord, yCoord + maskTop, zLevel).tex(uMin, vMin).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
+        worldrenderer.pos(posMat, xCoord, yCoord + maskTop, zLevel).color(cols[1], cols[2], cols[3], cols[0]).tex(uMin, vMin).endVertex();
         tessellator.draw();
     }
 
