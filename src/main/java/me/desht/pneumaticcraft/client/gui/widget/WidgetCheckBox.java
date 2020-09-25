@@ -64,21 +64,21 @@ public class WidgetCheckBox extends Widget implements ITaggedWidget, ITooltipPro
 
     private void drawTick(MatrixStack matrixStack) {
         RenderSystem.disableTexture();
+        int r, g, b;
         if (active) {
-            RenderSystem.color4f(0.5f, 1, 0.5f, 1);
+            r = 128; g = 255; b = 128;
         } else {
-            RenderSystem.color4f(0.8f, 0.8f, 0.8f, 1);
+            r = g = b = 192;
         }
         BufferBuilder wr = Tessellator.getInstance().getBuffer();
-        RenderSystem.lineWidth(2);
+        RenderSystem.lineWidth(3);
         Matrix4f posMat = matrixStack.getLast().getMatrix();
-        wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
-        wr.pos(posMat, x + 2, y + 5, 0f).endVertex();
-        wr.pos(posMat, x + 5, y + 7, 0f).endVertex();
-        wr.pos(posMat, x + 8, y + 3, 0f).endVertex();
+        wr.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION_COLOR);
+        wr.pos(posMat, x + 2, y + 5, 0f).color(r, g, b, 255).endVertex();
+        wr.pos(posMat, x + 5, y + 7, 0f).color(r, g, b, 255).endVertex();
+        wr.pos(posMat, x + 8, y + 3, 0f).color(r, g, b, 255).endVertex();
         Tessellator.getInstance().draw();
         RenderSystem.enableTexture();
-        RenderSystem.color4f(0.25f, 0.25f, 0.25f, 1);
     }
 
     @Override
