@@ -18,7 +18,7 @@ public class GuiProgWidgetDig extends GuiProgWidgetDigAndPlace<ProgWidgetDig>{
 
         WidgetCheckBox requiresDiggingTool = new WidgetCheckBox(guiLeft + 8, guiTop + 85, 0xFF404040,
                 xlate("pneumaticcraft.gui.progWidget.dig.requiresDiggingTool"), b -> progWidget.setRequiresTool(b.checked));
-        requiresDiggingTool.setTooltip(xlate("pneumaticcraft.gui.progWidget.dig.requiresDiggingTool.tooltip"));
+        requiresDiggingTool.setTooltipKey("pneumaticcraft.gui.progWidget.dig.requiresDiggingTool.tooltip");
         requiresDiggingTool.checked = progWidget.requiresTool();
         addButton(requiresDiggingTool);
     }

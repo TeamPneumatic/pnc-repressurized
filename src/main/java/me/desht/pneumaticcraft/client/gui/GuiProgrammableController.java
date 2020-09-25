@@ -7,7 +7,6 @@ import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.ContainerProgrammableController;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammableController;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.resources.I18n;
@@ -47,7 +46,7 @@ public class GuiProgrammableController extends GuiPneumaticContainerBase<Contain
                 new ItemStack(ModItems.CHARGING_MODULE.get()), 0xFFA0A0A0, false);
         ch.addSubWidget(shouldCharge = new WidgetCheckBox(5, 15, 0x000000, xlate("pneumaticcraft.gui.tab.info.programmable_controller.chargeHeld")).withTag("charging"));
         ch.addPadding(2, 20);
-        shouldCharge.setTooltip(PneumaticCraftUtils.splitStringComponent(I18n.format("pneumaticcraft.gui.tab.info.programmable_controller.chargeHeld.tooltip")));
+        shouldCharge.setTooltipKey("pneumaticcraft.gui.tab.info.programmable_controller.chargeHeld.tooltip");
     }
 
     @Override

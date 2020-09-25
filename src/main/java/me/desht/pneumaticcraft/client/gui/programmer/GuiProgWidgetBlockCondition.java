@@ -19,14 +19,15 @@ public class GuiProgWidgetBlockCondition extends GuiProgWidgetCondition<ProgWidg
                 xlate("pneumaticcraft.gui.progWidget.conditionBlock.checkForAir"),
                         b -> progWidget.checkingForAir = b.checked)
                 .setChecked(progWidget.checkingForAir)
-                .setTooltip(xlate("pneumaticcraft.gui.progWidget.conditionBlock.checkForAir.tooltip"))
+                .setTooltipKey("pneumaticcraft.gui.progWidget.conditionBlock.checkForAir.tooltip")
         );
 
         addButton(new WidgetCheckBox(guiLeft + 5, guiTop + 72, 0xFF404040,
                 xlate("pneumaticcraft.gui.progWidget.conditionBlock.checkForLiquids"),
                 b -> progWidget.checkingForLiquids = b.checked)
                 .setChecked(progWidget.checkingForLiquids)
-                .setTooltip(xlate("pneumaticcraft.gui.progWidget.conditionBlock.checkForLiquids.tooltip")));
+                .setTooltipKey("pneumaticcraft.gui.progWidget.conditionBlock.checkForLiquids.tooltip")
+        );
     }
 
     @Override

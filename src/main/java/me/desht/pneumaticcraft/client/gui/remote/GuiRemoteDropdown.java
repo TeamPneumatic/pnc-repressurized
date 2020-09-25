@@ -35,9 +35,9 @@ public class GuiRemoteDropdown extends GuiRemoteVariable<ActionWidgetDropdown> {
         widthField.minValue = 10;
         addButton(widthField);
 
-        sortCheckBox = new WidgetCheckBox(guiLeft + 10, guiTop + 120, 0x404040, xlate("pneumaticcraft.gui.remote.dropdown.sort"));
-        sortCheckBox.checked = actionWidget.getSorted();
-        sortCheckBox.setTooltip(xlate("pneumaticcraft.gui.remote.dropdown.sort.tooltip"));
+        sortCheckBox = new WidgetCheckBox(guiLeft + 10, guiTop + 120, 0x404040, xlate("pneumaticcraft.gui.remote.dropdown.sort"))
+                .setTooltipKey("pneumaticcraft.gui.remote.dropdown.sort.tooltip")
+                .setChecked(actionWidget.getSorted());
         addButton(sortCheckBox);
     }
 

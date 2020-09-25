@@ -45,11 +45,10 @@ public class GuiProgWidgetBlockRightClick extends GuiProgWidgetDigAndPlace<ProgW
         addButton(clickTypeSelector);
 
         checkboxSneaking = new WidgetCheckBox(guiLeft + 8, guiTop + 83, 0xFF404040,
-                xlate("pneumaticcraft.gui.progWidget.blockRightClick.sneaking"));
-        checkboxSneaking.setChecked(progWidget.isSneaking());
-        checkboxSneaking.setTooltip(xlate("pneumaticcraft.gui.progWidget.blockRightClick.sneaking.tooltip"));
+                xlate("pneumaticcraft.gui.progWidget.blockRightClick.sneaking"))
+                .setChecked(progWidget.isSneaking())
+                .setTooltipKey("pneumaticcraft.gui.progWidget.blockRightClick.sneaking.tooltip");
         addButton(checkboxSneaking);
-
     }
 
     @Override

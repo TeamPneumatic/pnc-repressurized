@@ -7,8 +7,11 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.common.progwidgets.area.AreaType;
-import me.desht.pneumaticcraft.common.util.*;
+import me.desht.pneumaticcraft.common.util.JsonToNBTConverter;
+import me.desht.pneumaticcraft.common.util.LegacyAreaWidgetConverter;
 import me.desht.pneumaticcraft.common.util.LegacyAreaWidgetConverter.EnumOldAreaType;
+import me.desht.pneumaticcraft.common.util.NBTToJsonConverter;
+import me.desht.pneumaticcraft.common.util.PastebinHandler;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -20,6 +23,7 @@ import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.util.Constants;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -114,13 +118,13 @@ public class GuiPastebin extends GuiPneumaticScreenBase {
         prettyCB = new WidgetCheckBox(0, guiTop + 102, 0xFF404040, xlate("pneumaticcraft.gui.pastebin.pretty"),
                 b -> shouldMerge = b.checked);
         prettyCB.x = guiLeft + (170 - prettyCB.getWidth());
-        prettyCB.setTooltip(PneumaticCraftUtils.splitStringComponent(I18n.format("pneumaticcraft.gui.pastebin.pretty.tooltip")));
+        prettyCB.setTooltipKey("pneumaticcraft.gui.pastebin.pretty.tooltip");
         addButton(prettyCB);
 
         WidgetCheckBox mergeCB = new WidgetCheckBox(0, guiTop + 155, 0xFF404040, xlate("pneumaticcraft.gui.pastebin.merge"),
                 b -> shouldMerge = b.checked);
         mergeCB.x = guiLeft + (170 - mergeCB.getWidth());
-        mergeCB.setTooltip(PneumaticCraftUtils.splitStringComponent(I18n.format("pneumaticcraft.gui.pastebin.merge.tooltip")));
+        mergeCB.setTooltipKey("pneumaticcraft.gui.pastebin.merge.tooltip");
         addButton(mergeCB);
 
         addLabel(xlate("pneumaticcraft.gui.pastebin.pastebinLink"), guiLeft + 10, guiTop + 120);
@@ -156,7 +160,7 @@ public class GuiPastebin extends GuiPneumaticScreenBase {
 
     private void getFromClipboard() {
         readFromString(minecraft.keyboardListener.getClipboardString());
-        statusMessage = xlate("pneumaticcraft.gui.pastebin.retrievedFromClipboard");
+//        statusMessage = xlate("pneumaticcraft.gui.pastebin.retrievedFromClipboard");
     }
 
     @Override
@@ -220,7 +224,7 @@ public class GuiPastebin extends GuiPneumaticScreenBase {
             setTempMessage(xlate("pneumaticcraft.gui.pastebin.retrievedFromPastebin"));
         } catch (Exception e) {
             e.printStackTrace();
-            statusMessage = xlate("pneumaticcraft.gui.pastebin.invalidFormattedPastebin");
+            setTempMessage(xlate("pneumaticcraft.gui.pastebin.invalidFormattedPastebin").mergeStyle(TextFormatting.GOLD));
         }
     }
 

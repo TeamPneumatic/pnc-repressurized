@@ -7,7 +7,6 @@ import me.desht.pneumaticcraft.client.gui.widget.ITooltipProvider;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
@@ -54,34 +53,24 @@ public abstract class GuiPneumaticScreenBase extends Screen {
     @Override
     public void render(MatrixStack matrixStack, int x, int y, float partialTicks) {
         RenderSystem.color4f(1f, 1f, 1f, 1.0f);
+
         if (getTexture() != null) {
             minecraft.getTextureManager().bindTexture(getTexture());
             blit(matrixStack, guiLeft, guiTop, 0, 0, xSize, ySize);
         }
+
         super.render(matrixStack, x, y, partialTicks);
 
-        RenderSystem.enableTexture();
-        RenderSystem.color4f(0.25f, 0.25f, 0.25f, 1.0f);
+//        RenderSystem.enableTexture();
 
         List<ITextComponent> tooltip = new ArrayList<>();
         boolean shift = Screen.hasShiftDown();
-        for (Widget widget : buttons) {
-            if (widget instanceof ITooltipProvider && widget.isHovered()) {
-                ((ITooltipProvider) widget).addTooltip(x, y, tooltip, shift);
-            }
-        }
+        buttons.stream()
+                .filter(widget -> widget instanceof ITooltipProvider && widget.isHovered())
+                .forEach(widget -> ((ITooltipProvider) widget).addTooltip(x, y, tooltip, shift));
+
         if (!tooltip.isEmpty()) {
-//            List<ITextComponent> localizedTooltip = new ArrayList<>();
-//            for (String line : tooltip) {
-//                String localizedLine = I18n.format(line);
-//                for (String wrappedLine : localizedLine.split("\\\\n")) {
-//                    String[] lines = WordUtils.wrap(wrappedLine, 50).split(System.getProperty("line.separator"));
-//                    localizedTooltip.addAll(Arrays.asList(lines));
-//                }
-//            }
             renderTooltip(matrixStack, tooltip.stream().map(ITextComponent::func_241878_f).collect(Collectors.toList()), x, y);
-            RenderHelper.enableStandardItemLighting();
         }
-        RenderSystem.color4f(0.25f, 0.25f, 0.25f, 1.0f);
     }
 }

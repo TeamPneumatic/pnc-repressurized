@@ -18,11 +18,11 @@ public class GuiProgWidgetExternalProgram extends GuiProgWidgetAreaShow<ProgWidg
     public void init() {
         super.init();
 
-        shareVariables = new WidgetCheckBox(guiLeft + 10, guiTop + 22, 0xFF404040,
-                xlate("pneumaticcraft.gui.progWidget.externalProgram.shareVariables"));
-        addButton(shareVariables);
-        shareVariables.setTooltip(xlate("pneumaticcraft.gui.progWidget.externalProgram.shareVariables.tooltip"));
-        shareVariables.setChecked(progWidget.shareVariables);
+        addButton(shareVariables = new WidgetCheckBox(guiLeft + 10, guiTop + 22, 0xFF404040,
+                xlate("pneumaticcraft.gui.progWidget.externalProgram.shareVariables"))
+                .setTooltipKey("pneumaticcraft.gui.progWidget.externalProgram.shareVariables.tooltip")
+                .setChecked(progWidget.shareVariables)
+        );
     }
 
     @Override

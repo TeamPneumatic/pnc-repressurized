@@ -118,8 +118,8 @@ public class GuiRedstoneModule extends GuiTubeModule<ModuleRedstone> {
                 return super.mouseClicked(mouseX, mouseY, button);
             }
         };
-        invertCheckBox.checked = module.isInverted();
-        invertCheckBox.setTooltip(xlate("pneumaticcraft.gui.redstoneModule.invert.tooltip"));
+        invertCheckBox.setChecked(module.isInverted());
+        invertCheckBox.setTooltipKey("pneumaticcraft.gui.redstoneModule.invert.tooltip");
         addButton(invertCheckBox);
 
         updateWidgetVisibility();

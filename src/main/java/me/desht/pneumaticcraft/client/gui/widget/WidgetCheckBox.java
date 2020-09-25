@@ -4,12 +4,14 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketGuiButton;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.text.ITextComponent;
 import org.lwjgl.opengl.GL11;
@@ -88,17 +90,21 @@ public class WidgetCheckBox extends Widget implements ITaggedWidget, ITooltipPro
         }
     }
 
-    public WidgetCheckBox setTooltip(ITextComponent tooltip) {
-        this.tooltip.clear();
-        if (tooltip != null && !tooltip.getString().isEmpty()) {
-            this.tooltip.add(tooltip);
-        }
-        return this;
-    }
+//    public WidgetCheckBox setTooltip(ITextComponent tooltip) {
+//        this.tooltip.clear();
+//        if (tooltip != null && !tooltip.getString().isEmpty()) {
+//            this.tooltip.add(tooltip);
+//        }
+//        return this;
+//    }
 
     public WidgetCheckBox setTooltip(List<ITextComponent> tooltip) {
         this.tooltip = tooltip;
         return this;
+    }
+
+    public WidgetCheckBox setTooltipKey(String translationKey) {
+        return setTooltip(PneumaticCraftUtils.splitStringComponent(I18n.format(translationKey)));
     }
 
     public List<ITextComponent> getTooltip() {

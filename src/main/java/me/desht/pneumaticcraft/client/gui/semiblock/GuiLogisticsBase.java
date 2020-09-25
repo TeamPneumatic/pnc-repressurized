@@ -78,8 +78,7 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
             syncToServer();
         }).setChecked(logistics.isSemiblockInvisible()));
 
-        invisible.setTooltip(PneumaticCraftUtils.splitStringComponent(
-                I18n.format("pneumaticcraft.gui.logistics_frame.invisible.tooltip")));
+        invisible.setTooltipKey("pneumaticcraft.gui.logistics_frame.invisible.tooltip");
 
         addButton(itemLabel = new WidgetLabel(guiLeft + 8, guiTop + 18, StringTextComponent.EMPTY));
         addButton(fluidLabel = new WidgetLabel(guiLeft + 8, guiTop + 90, StringTextComponent.EMPTY));
@@ -184,7 +183,7 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
             logistics.setMatchDurability(b.checked);
             syncToServer();
         })
-                .setTooltip(PneumaticCraftUtils.splitStringComponent(I18n.format("pneumaticcraft.gui.logistics_frame.matchDurability.tooltip")))
+                .setTooltipKey("pneumaticcraft.gui.logistics_frame.matchDurability.tooltip")
                 .setChecked(logistics.isMatchDurability());
         filterTab.addSubWidget(matchDurability);
 
@@ -192,7 +191,7 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
             logistics.setMatchNBT(b.checked);
             syncToServer();
         })
-                .setTooltip(PneumaticCraftUtils.splitStringComponent(I18n.format("pneumaticcraft.gui.logistics_frame.matchNBT.tooltip")))
+                .setTooltipKey("pneumaticcraft.gui.logistics_frame.matchNBT.tooltip")
                 .setChecked(logistics.isMatchNBT());
         filterTab.addSubWidget(matchNBT);
 
@@ -200,7 +199,7 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
             logistics.setMatchModId(b.checked);
             syncToServer();
         })
-                .setTooltip(PneumaticCraftUtils.splitStringComponent(I18n.format("pneumaticcraft.gui.logistics_frame.matchModId.tooltip")))
+                .setTooltipKey("pneumaticcraft.gui.logistics_frame.matchModId.tooltip")
                 .setChecked(logistics.isMatchModId());
         filterTab.addSubWidget(matchModId);
 

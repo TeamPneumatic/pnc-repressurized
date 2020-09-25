@@ -41,8 +41,7 @@ public class GuiPressureModuleSimple extends GuiTubeModule<TubeModule> {
         WidgetCheckBox advancedMode = new WidgetCheckBox(guiLeft + 6, guiTop + 20, 0xFF404040, xlate("pneumaticcraft.gui.tubeModule.advancedConfig"), b -> {
             module.advancedConfig = true;
             NetworkHandler.sendToServer(new PacketUpdatePressureModule(module));
-        }).setTooltip(xlate("pneumaticcraft.gui.tubeModule.advancedConfig.tooltip"));
-        advancedMode.checked = false;
+        }).setTooltipKey("pneumaticcraft.gui.tubeModule.advancedConfig.tooltip").setChecked(false);
         addButton(advancedMode);
 
         thresholdField = new WidgetTextFieldNumber(font, guiLeft + 105, guiTop + 35, 30, font.FONT_HEIGHT + 2).setDecimals(1);

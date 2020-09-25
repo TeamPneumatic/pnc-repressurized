@@ -17,7 +17,7 @@ public class GuiProgWidgetPickupItem extends GuiProgWidgetAreaShow<ProgWidgetPic
 
         addButton(new WidgetCheckBox(guiLeft + 8, guiTop + 25, 0xFF404040,
                 xlate("pneumaticcraft.gui.progWidget.pickup.canSteal"), b -> progWidget.setCanSteal(b.checked))
-                .setTooltip(xlate("pneumaticcraft.gui.progWidget.pickup.canSteal.tooltip"))
+                .setTooltipKey("pneumaticcraft.gui.progWidget.pickup.canSteal.tooltip")
                 .setChecked(progWidget.canSteal())
         );
     }

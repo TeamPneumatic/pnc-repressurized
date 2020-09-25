@@ -35,9 +35,9 @@ public abstract class GuiProgWidgetDigAndPlace<P extends ProgWidgetDigAndPlace> 
                     xlate("pneumaticcraft.gui.progWidget.digAndPlace.useMaxActions"), b -> {
                 progWidget.setUseMaxActions(b.checked);
                 textField.setVisible(progWidget.useMaxActions());
-            });
-            useMaxActions.setTooltip(xlate("pneumaticcraft.gui.progWidget.digAndPlace.useMaxActions.tooltip"));
-            useMaxActions.checked = progWidget.useMaxActions();
+            })
+                    .setTooltipKey("pneumaticcraft.gui.progWidget.digAndPlace.useMaxActions.tooltip")
+                    .setChecked(progWidget.useMaxActions());
             addButton(useMaxActions);
 
             textField = new WidgetTextFieldNumber(font, guiLeft + 20, guiTop + 128, 30, 11);
