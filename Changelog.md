@@ -10,6 +10,28 @@ The initial 2.4.0 release for MC 1.16.3 release is largely equivalent in functio
  
 Releases from 2.4.0 onward *require* Forge 34.0.9 or newer.
 
+## 2.4.1-42 (25 Sep 2020)
+
+### Updates
+* AE2 Support has returned!  Tested with AE2 8.1.0-alpha.3
+  * To summarise: place a Requester Frame on an ME Interface, and tick the "AE2 Integration" checkbox in the AE2 GUI tab
+  * Then all items provided via PNC Logistics will appear as "craftable" items in AE2
+  * Request crafting of such items to get an available Logistics Drone to fetch those items from PNC Logistics and deposit them into the ME Interface
+* Logistics drone behaviour tweaks:
+  * If a drone is carrying some resource (item or fluid) that it's unable to drop off, it will now still be able to handle requests for the other resource type
+  * Drones will now also ignore minimum order sizes if dropping off a resource they're already carrying (but continue to honour minimum order sizes if it means collecting that resource from a provider frame)
+  * Storage and Default Storage frames now also support specifying minimum order sizes
+* It's now possible to right-click a Drone (that you own) with an empty fluid tank to drain any stored liquid from its internal tank
+  * This may be useful if you end up with a Logistics Drone which can't drop off its fluid (items are dropped when a drone is wrenched, but fluid is not)
+* Added some config control over villager trades and house generation (primarily for the use of progression-based modpacks). See the `Villages` section in `config/pneumaticcraft-common.toml`
+  * `addMechanicHouse` (boolean - default true) controls whether Pressure Mechanic houses can appear in villages
+  * `mechanicTrades` (NONE, PCB_BLUEPRINT or ALL - default ALL) defines which trades a Pressure Mechanic offers
+  * Note that neither setting is retroactive - any already-generated houses and villagers will not be affected by this
+
+### Fixes
+* Fixed client crash when rendering fluid textures in GUI's
+* Fixed Amadron trade addition GUI bug where trying to open item/search GUIs just returned to the main Amadron GUI
+ 
 ## 2.4.0-36 (18 Sep 2020)
 
 ### Updates
