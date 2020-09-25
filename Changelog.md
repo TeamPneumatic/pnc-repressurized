@@ -10,7 +10,7 @@ The initial 2.4.0 release for MC 1.16.3 release is largely equivalent in functio
  
 Releases from 2.4.0 onward *require* Forge 34.0.9 or newer.
 
-## 2.4.1-42 (25 Sep 2020)
+## 2.4.1-44 (25 Sep 2020)
 
 ### Updates
 * AE2 Support has returned!  Tested with AE2 8.1.0-alpha.3
