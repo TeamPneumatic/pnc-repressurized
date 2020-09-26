@@ -10,6 +10,25 @@ The initial 2.0.0 release for MC 1.16.1 is largely equivalent in functionality t
 
 Releases from 2.1.0 onward *require* Forge 32.0.108 or newer.
 
+## 2.2.3-45 (26 Sep 2020)
+
+### Updates
+* Added some config control over villager trades and house generation (primarily for the use of progression-based modpacks). See the `Villages` section in `config/pneumaticcraft-common.toml`
+  * `addMechanicHouse` (boolean - default true) controls whether Pressure Mechanic houses can appear in villages
+  * `mechanicTrades` (NONE, PCB_BLUEPRINT or ALL - default ALL) defines which trades a Pressure Mechanic offers
+  * Note that neither setting is retroactive - any already-generated houses and villagers will not be affected by this
+* Logistics drone behaviour tweaks:
+  * If a drone is carrying some resource (item or fluid) that it's unable to drop off, it will now still be able to handle requests for the other resource type
+  * Drones will now also ignore minimum order sizes if dropping off a resource they're already carrying (but continue to honour minimum order sizes if it means collecting that resource from a provider frame)
+  * Storage and Default Storage frames now also support specifying minimum order sizes
+* It's now possible to right-click a Drone (that you own) with an empty fluid tank to drain any stored liquid from its internal tank
+  * This may be useful if you end up with a Logistics Drone which can't drop off its fluid (items are dropped when a drone is wrenched, but fluid is not)
+  
+### Fixes
+* Fixed Safety Valve tube modules not releasing air when they're supposed to
+* Fixed Amadron trade addition GUI bug where trying to open item/search GUIs just returned to the main Amadron GUI
+* Fixed client crash when breaking waterlogged chests with Block Tracker helmet upgrade active
+
 ## 2.2.2-35 (18 Sep 2020)
 
 ## Updates
