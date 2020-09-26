@@ -133,6 +133,9 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     public void tick() {
         boolean hasModules = false;
         boolean hasClosedSide = false;
+
+        if (!getWorld().isRemote) airHandler.setSideLeaking(null);
+
         for (Direction dir : Direction.VALUES) {
             if (modules[dir.getIndex()] != null) {
                 hasModules = true;
@@ -144,17 +147,14 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
             }
         }
 
-        if (!getWorld().isRemote) {
-            airHandler.setSideLeaking(null);
-            if (!hasModules && !hasClosedSide) {
-                // check for possibility of air leak due to unconnected tube
-                List<IAirHandlerMachine.Connection> l = airHandler.getConnectedAirHandlers(this);
-                if (l.size() == 1) {
-                    IAirHandlerMachine.Connection c = l.get(0);
-                    Direction d = c.getDirection();
-                    if (d != null) {
-                        airHandler.setSideLeaking(canConnectPneumatic(d.getOpposite()) ? d.getOpposite() : null);
-                    }
+        if (!getWorld().isRemote && !hasModules && !hasClosedSide) {
+            // check for possibility of air leak due to unconnected tube
+            List<IAirHandlerMachine.Connection> l = airHandler.getConnectedAirHandlers(this);
+            if (l.size() == 1) {
+                IAirHandlerMachine.Connection c = l.get(0);
+                Direction d = c.getDirection();
+                if (d != null) {
+                    airHandler.setSideLeaking(canConnectPneumatic(d.getOpposite()) ? d.getOpposite() : null);
                 }
             }
         }
