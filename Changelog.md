@@ -10,7 +10,7 @@ The initial 2.0.0 release for MC 1.16.1 is largely equivalent in functionality t
 
 Releases from 2.1.0 onward *require* Forge 32.0.108 or newer.
 
-## 2.2.3-45 (26 Sep 2020)
+## 2.2.3-47 (26 Sep 2020)
 
 ### Updates
 * Added some config control over villager trades and house generation (primarily for the use of progression-based modpacks). See the `Villages` section in `config/pneumaticcraft-common.toml`
