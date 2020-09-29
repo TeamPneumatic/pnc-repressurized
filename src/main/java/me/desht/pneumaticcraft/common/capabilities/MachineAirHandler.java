@@ -174,14 +174,16 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
         World world = ownerTE.getWorld();
         BlockPos pos = ownerTE.getPos();
 
+        float pressure = getPressure();
+
         if (!world.isRemote) {
             if (getAir() > 0) {
-                int leakedAmount = (int) (getPressure() * PneumaticValues.AIR_LEAK_FACTOR) + 20;
+                int leakedAmount = (int) (pressure * PneumaticValues.AIR_LEAK_FACTOR) + 20;
                 if (leakedAmount > getAir()) leakedAmount = getAir();
                 onAirDispersion(ownerTE, leakDir, -leakedAmount);
                 addAir(-leakedAmount);
             } else if (getAir() < 0) {
-                int leakedAmount = -(int) (getPressure() * PneumaticValues.AIR_LEAK_FACTOR) + 20;
+                int leakedAmount = -(int) (pressure * PneumaticValues.AIR_LEAK_FACTOR) + 20;
                 if (getAir() > leakedAmount) leakedAmount = -getAir();
                 onAirDispersion(ownerTE, leakDir, leakedAmount);
                 addAir(leakedAmount);
@@ -192,7 +194,10 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
             double mz = actualLeakDir.getZOffset();
             double speed = getPressure() * 0.1F;
             if (getAir() > 0) {
-                world.addParticle(AirParticleData.DENSE, pos.getX() + 0.5D + mx * 0.6, pos.getY() + 0.5D + my * 0.6, pos.getZ() + 0.5D + mz * 0.6, mx * speed, my * speed, mz * speed);
+                if (pressure > 1f || pressure > 0.5f && world.rand.nextBoolean() || world.rand.nextInt(3) == 0) {
+                    world.addParticle(AirParticleData.DENSE, pos.getX() + 0.5D + mx * 0.6, pos.getY() + 0.5D + my * 0.6, pos.getZ() + 0.5D + mz * 0.6,
+                            mx * speed, my * speed, mz * speed);
+                }
             } else if (getAir() < 0 && world.rand.nextBoolean()) {
                 world.addParticle(AirParticleData.NORMAL, pos.getX() + 0.5D + mx, pos.getY() + 0.5D + my, pos.getZ() + 0.5D + mz, mx * speed, my * speed, mz * speed);
             }
