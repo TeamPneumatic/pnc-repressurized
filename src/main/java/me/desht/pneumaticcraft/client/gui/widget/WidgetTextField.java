@@ -57,4 +57,13 @@ public class WidgetTextField extends TextFieldWidget implements ITooltipProvider
             curTip.addAll(tooltip);
         }
     }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (canWrite() && button == 1) {
+            setText("");
+            return true;
+        }
+        return super.mouseClicked(mouseX, mouseY, button);
+    }
 }
