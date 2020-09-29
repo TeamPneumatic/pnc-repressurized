@@ -30,7 +30,10 @@ import me.desht.pneumaticcraft.common.item.ItemGPSTool;
 import me.desht.pneumaticcraft.common.item.ItemGunAmmo;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
-import me.desht.pneumaticcraft.common.network.*;
+import me.desht.pneumaticcraft.common.network.NetworkHandler;
+import me.desht.pneumaticcraft.common.network.PacketSendDroneDebugEntry;
+import me.desht.pneumaticcraft.common.network.PacketShowWireframe;
+import me.desht.pneumaticcraft.common.network.PacketSyncDroneEntityProgWidgets;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetGoToLocation;
 import me.desht.pneumaticcraft.common.tileentity.PneumaticEnergyStorage;
@@ -1418,7 +1421,7 @@ public class EntityDrone extends EntityDroneBase implements
 
         @Override
         public void playSound(SoundEvent soundName, float volume, float pitch) {
-            NetworkHandler.sendToAllAround(new PacketPlaySound(soundName, SoundCategory.NEUTRAL, getPosX(), getPosY(), getPosZ(), volume, pitch, true), world);
+            world.playSound(null, getPosition(), soundName, SoundCategory.NEUTRAL, volume, pitch);
         }
 
         @Override

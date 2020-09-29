@@ -42,7 +42,6 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
 
 public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
@@ -277,7 +276,6 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
                 return new StringTextComponent("");
             }
 
-            @Nullable
             @Override
             public Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity playerEntity) {
                 return new ContainerAmadronAddTrade(windowId, playerInventory);

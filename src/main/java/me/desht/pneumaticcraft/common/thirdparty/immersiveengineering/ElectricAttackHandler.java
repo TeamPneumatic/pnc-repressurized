@@ -6,7 +6,6 @@ import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
@@ -59,7 +58,7 @@ public class ElectricAttackHandler {
 
     private static void playLeakSound(Entity e) {
         if (e.world.getGameTime() - sounds.getOrDefault(e.getUniqueID(), 0L) > 16) {
-            NetworkHandler.sendToAllAround(new PacketPlaySound(ModSounds.LEAKING_GAS.get(), SoundCategory.PLAYERS, e.getPosX(), e.getPosY(), e.getPosZ(), 0.5f, 0.7f, true), e.world);
+            e.world.playSound(null, e.getPosition(), ModSounds.LEAKING_GAS.get(), SoundCategory.PLAYERS, 0.5f, 0.7f);
             sounds.put(e.getUniqueID(), e.world.getGameTime());
         }
     }

@@ -3,8 +3,6 @@ package me.desht.pneumaticcraft.common.item;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
-import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
@@ -114,8 +112,7 @@ public class ItemGunAmmoStandard extends ItemGunAmmo {
                     for (EffectInstance effect : effects) {
                         entity.addPotionEffect(new EffectInstance(effect));
                     }
-                    NetworkHandler.sendToAllAround(new PacketPlaySound(SoundEvents.ENTITY_SPLASH_POTION_BREAK, SoundCategory.PLAYERS,
-                            entity.getPosX(), entity.getPosY(), entity.getPosZ(), 1.0f, 1.0f, true), entity.world);
+                    entity.world.playSound(null, entity.getPosition(), SoundEvents.ENTITY_SPLASH_POTION_BREAK, SoundCategory.PLAYERS, 1f, 1f);
                 } else if (potion.getItem() == Items.SPLASH_POTION || potion.getItem() == Items.LINGERING_POTION) {
                     PotionEntity entityPotion = new PotionEntity(shooter.world, shooter);
                     entityPotion.setItem(potion);

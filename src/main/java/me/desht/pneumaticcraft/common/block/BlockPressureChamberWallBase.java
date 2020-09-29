@@ -44,8 +44,9 @@ public abstract class BlockPressureChamberWallBase extends BlockPneumaticCraft i
                 if (!world.isRemote) {
                     NetworkHooks.openGui((ServerPlayerEntity) player, valve, valve.getPos());
                 }
+                return ActionResultType.SUCCESS;
             }
-            return ActionResultType.SUCCESS;
+            return ActionResultType.PASS;
         }).orElse(ActionResultType.PASS);
     }
 

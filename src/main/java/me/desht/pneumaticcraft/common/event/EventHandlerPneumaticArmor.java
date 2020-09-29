@@ -9,7 +9,6 @@ import me.desht.pneumaticcraft.common.item.ItemMinigun;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.network.PacketSendArmorHUDMessage;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
@@ -128,7 +127,7 @@ public class EventHandlerPneumaticArmor {
                 float sz = player.getRNG().nextFloat() * 0.6F - 0.3F;
                 NetworkHandler.sendToAllAround(new PacketSpawnParticle(AirParticleData.DENSE, player.getPosX(), player.getPosY(), player.getPosZ(), sx, 0.1, sz), player.world);
             }
-            NetworkHandler.sendToAllAround(new PacketPlaySound(ModSounds.SHORT_HISS.get(), SoundCategory.PLAYERS, player.getPosX(), player.getPosY(), player.getPosZ(), 0.3f, 0.8f, false), player.world);
+            player.world.playSound(null, player.getPosition(), ModSounds.SHORT_HISS.get(), SoundCategory.PLAYERS, 0.3f, 0.8f);
             handler.addAir(EquipmentSlotType.FEET, (int) -airNeeded);
         }
     }
@@ -151,7 +150,7 @@ public class EventHandlerPneumaticArmor {
                             NetworkHandler.sendToAllAround(new PacketSpawnParticle(AirParticleData.DENSE, player.getPosX() + sx, player.getPosY() + 1, player.getPosZ() + sz, sx / 4, -0.2, sz / 4), player.world);
                         }
                         if ((player.ticksExisted & 0xf) == 0) {
-                            NetworkHandler.sendToAllAround(new PacketPlaySound(ModSounds.LEAKING_GAS.get(), SoundCategory.PLAYERS, player.getPosX(), player.getPosY(), player.getPosZ(), 0.5f, 0.7f, false), player.world);
+                            player.world.playSound(null, player.getPosition(), ModSounds.LEAKING_GAS.get(), SoundCategory.PLAYERS, 1f, 0.7f);
                             tryExtinguish(player);
                         }
                     }

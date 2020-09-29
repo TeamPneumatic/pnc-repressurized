@@ -11,8 +11,6 @@ import me.desht.pneumaticcraft.common.item.ItemGunAmmo;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
-import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.util.EntityDistanceComparator;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.fakeplayer.FakeNetHandlerPlayerServer;
@@ -328,9 +326,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
 
         @Override
         public void playSound(SoundEvent soundName, float volume, float pitch) {
-            NetworkHandler.sendToAllAround(new PacketPlaySound(soundName, SoundCategory.BLOCKS,
-                    getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5,
-                    volume, pitch, false), world);
+            world.playSound(null, getPos(), soundName, SoundCategory.BLOCKS, volume, pitch);
         }
 
         @Override

@@ -6,8 +6,6 @@ import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ItemTubeModule;
-import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAdvancedPressureTube;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -270,10 +268,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
                     neighborChanged(world.getBlockState(pos), world, pos, this, pos.offset(side), false);
                     world.notifyNeighborsOfStateChange(pos, this);
                     if (!player.isCreative()) heldStack.shrink(1);
-                    NetworkHandler.sendToAllAround(
-                            new PacketPlaySound(SoundType.GLASS.getStepSound(), SoundCategory.BLOCKS, pos.getX(), pos.getY(), pos.getZ(),
-                                    SoundType.GLASS.getVolume() * 5.0f, SoundType.GLASS.getPitch() * 0.9f, false),
-                            world);
+                    world.playSound(null, pos, SoundType.GLASS.getStepSound(), SoundCategory.BLOCKS, SoundType.GLASS.getVolume() * 5.0f, SoundType.GLASS.getPitch() * 0.9f);
                     ModuleNetworkManager.getInstance(world).invalidateCache();
                 }
                 if (!simulate) module.onPlaced();

@@ -6,7 +6,6 @@ import me.desht.pneumaticcraft.api.drone.IPathNavigator;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MobEntity;
@@ -129,11 +128,6 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
         return path;
     }
 
-//    @Override
-//    public float getPathSearchRange() {
-//        return (float) pathfindingEntity.getRange();
-//    }
-
     @Override
     public boolean isGoingToTeleport() {
         return teleportCounter >= 0;
@@ -148,7 +142,7 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
     public void tick() {
         if (isGoingToTeleport()) {
             if (teleportCounter == 0 || teleportCounter == 60) {
-                NetworkHandler.sendToAllAround(new PacketPlaySound(ModSounds.HUD_INIT.get(), SoundCategory.PLAYERS, pathfindingEntity.getPosX(), pathfindingEntity.getPosY(), pathfindingEntity.getPosZ(), 0.1F, teleportCounter == 0 ? 0.7F : 1F, true), pathfindingEntity.world);
+                pathfindingEntity.world.playSound(null, pathfindingEntity.getPosition(), ModSounds.HUD_INIT.get(), SoundCategory.NEUTRAL, 0.3f, teleportCounter == 0 ? 0.7F : 1F);
             }
 
             if (teleportCounter < TELEPORT_TICKS - 40) {

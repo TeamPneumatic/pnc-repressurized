@@ -656,7 +656,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
             double velZ = velocity.z * 0.4D + (world.rand.nextGaussian() - 0.5D) * 0.05D;
             NetworkHandler.sendToAllAround(new PacketSpawnParticle(AirParticleData.DENSE, initialPos.x, initialPos.y, initialPos.z, velX, velY, velZ), world);
         }
-        NetworkHandler.sendToAllAround(new PacketPlaySound(ModSounds.AIR_CANNON.get(), SoundCategory.BLOCKS, initialPos.x, initialPos.y, initialPos.z, 1.0F, world.rand.nextFloat() / 4F + 0.75F, true), world);
+        world.playSound(null, initialPos.x, initialPos.y, initialPos.z, ModSounds.AIR_CANNON.get(), SoundCategory.BLOCKS, 1f,world.rand.nextFloat() / 4f + 0.75f);
     }
 
     /**
