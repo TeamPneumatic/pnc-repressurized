@@ -11,6 +11,7 @@ import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.thirdparty.curios.Curios;
 import me.desht.pneumaticcraft.common.tileentity.SideConfigurator.RelativeFace;
 import me.desht.pneumaticcraft.common.util.EnchantmentUtils;
+import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -614,7 +615,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
         }
     }
 
-    public enum FeedMode {
+    public enum FeedMode implements ITranslatableEnum {
         FRUGAL("frugal", Items.COOKED_BEEF),
         GREEDY("greedy", Items.APPLE),
         SMART("smart", Items.GOLDEN_APPLE);
@@ -627,12 +628,13 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
             this.stack = new ItemStack(item);
         }
 
+        @Override
         public String getTranslationKey() {
             return "pneumaticcraft.gui.tab.info.aerialInterface.feedMode." + key;
         }
 
         public String getDescTranslationKey() {
-            return "pneumaticcraft.gui.tab.info.aerialInterface.feedMode." + key + ".desc";
+            return getTranslationKey() + ".desc";
         }
 
         public ItemStack getIconStack() {
