@@ -10,6 +10,11 @@ The initial 2.4.0 release for MC 1.16.3 release is largely equivalent in functio
  
 Releases from 2.4.0 onward *require* Forge 34.0.9 or newer.
 
+## 2.4.2-?? (unreleased)
+
+### Fixes
+* Fixed Safety Valve tube modules not releasing air when they're supposed to
+
 ## 2.4.1-44 (25 Sep 2020)
 
 ### Updates
