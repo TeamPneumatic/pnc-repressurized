@@ -1,0 +1,12 @@
+{
+  "multipart": [
+    { "when":  { "facing" : "east", "open" : "false" }, "apply": { "model": "pneumaticcraft:block/vacuum_trap_closed" }},
+    { "when":  { "facing" : "west", "open" : "false"  }, "apply": { "model": "pneumaticcraft:block/vacuum_trap_closed", "y" : 180 }},
+    { "when":  { "facing" : "north", "open" : "false"  }, "apply": { "model": "pneumaticcraft:block/vacuum_trap_closed", "y" : 270 }},
+    { "when":  { "facing" : "south", "open" : "false"  }, "apply": { "model": "pneumaticcraft:block/vacuum_trap_closed", "y" : 90 }},
+    { "when":  { "facing" : "east", "open" : "true" }, "apply": { "model": "pneumaticcraft:block/vacuum_trap_open" }},
+    { "when":  { "facing" : "west", "open" : "true"  }, "apply": { "model": "pneumaticcraft:block/vacuum_trap_open", "y" : 180 }},
+    { "when":  { "facing" : "north", "open" : "true"  }, "apply": { "model": "pneumaticcraft:block/vacuum_trap_open", "y" : 270 }},
+    { "when":  { "facing" : "south", "open" : "true"  }, "apply": { "model": "pneumaticcraft:block/vacuum_trap_open", "y" : 90 }}
+  ]
+}

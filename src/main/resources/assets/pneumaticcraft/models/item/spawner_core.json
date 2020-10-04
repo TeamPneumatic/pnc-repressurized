@@ -1,0 +1,6 @@
+{
+   "textures" : {
+      "layer0" : "pneumaticcraft:item/spawner_core"
+   },
+   "parent" : "item/generated"
+}

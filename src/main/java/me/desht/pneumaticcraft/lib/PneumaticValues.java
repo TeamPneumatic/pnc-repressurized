@@ -81,7 +81,8 @@ public class PneumaticValues {
     public static final int USAGE_PROGRAMMABLE_CONTROLLER = 10;//mL per tick when not idling
     public static final int USAGE_ITEM_MINIGUN = 20;//mL per tick while firing
     public static final int USAGE_ITEM_MANOMETER = 30;//mL per usage
-    public static final int USAGE_JACKHAMMER = 50;
+    public static final int USAGE_JACKHAMMER = 50; // mL per block broken
+    public static final int USAGE_VACUUM_TRAP = 50; // mL per mob absorbed
 
     public static final int PRODUCTION_COMPRESSOR = 10; // mL per tick
     public static final int PRODUCTION_ADVANCED_COMPRESSOR = 50; // mL per tick
@@ -114,6 +115,7 @@ public class PneumaticValues {
     public static final int VOLUME_THERMAL_COMPRESSOR = 5000;
     public static final int VOLUME_FLUID_MIXER = 3000;
     public static final int VOLUME_JACKHAMMER = 12000;
+    public static final int VOLUME_VACUUM_TRAP = 10000;
 
     public static final int VOLUME_PRESSURE_CHAMBER_PER_EMPTY = 16000;
     public static final int VOLUME_VOLUME_UPGRADE = 5000;

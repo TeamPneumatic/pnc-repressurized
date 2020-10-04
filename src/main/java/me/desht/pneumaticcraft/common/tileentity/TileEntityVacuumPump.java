@@ -84,8 +84,7 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements IRe
         if (!getWorld().isRemote) {
             if (turnTimer >= 0) turnTimer--;
 
-            if (airHandler.getPressure() > PneumaticValues.MIN_PRESSURE_VACUUM_PUMP && vacuumHandler.getPressure() > -0.99F
-                    && redstoneAllows()) {
+            if (airHandler.getPressure() > PneumaticValues.MIN_PRESSURE_VACUUM_PUMP && vacuumHandler.getPressure() > -0.99F && redstoneAllows()) {
                 if (turnTimer == -1) {
                     turning = true;
                 }

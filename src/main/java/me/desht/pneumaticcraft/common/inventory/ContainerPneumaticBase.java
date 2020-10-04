@@ -61,9 +61,7 @@ public class ContainerPneumaticBase<T extends TileEntityBase> extends Container 
     }
 
     void addSyncedFields(Object annotatedObject) {
-        List<SyncedField<?>> fields = NetworkUtils.getSyncedFields(annotatedObject, GuiSynced.class);
-        for (SyncedField<?> field : fields)
-            addSyncedField(field);
+        NetworkUtils.getSyncedFields(annotatedObject, GuiSynced.class).forEach(this::addSyncedField);
     }
 
     public void updateField(int index, Object value) {
@@ -260,7 +258,6 @@ public class ContainerPneumaticBase<T extends TileEntityBase> extends Container 
             return slotClickPhantom(slot, dragType, clickType, player);
         }
         return super.slotClick(slotId, dragType, clickType, player);
-
     }
 
     @Nonnull

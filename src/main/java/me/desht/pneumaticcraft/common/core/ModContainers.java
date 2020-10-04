@@ -117,6 +117,8 @@ public class ModContainers {
             = register("fluid_mixer", ContainerFluidMixer::new);
     public static final RegistryObject<ContainerType<ContainerJackhammerSetup>> JACKHAMMER_SETUP
             = register("jackhammer_setup", ContainerJackhammerSetup::new);
+    public static final RegistryObject<ContainerType<ContainerVacuumTrap>> VACUUM_TRAP
+            = register("vacuum_trap", ContainerVacuumTrap::new);
 
     private static <C extends Container, T extends ContainerType<C>> RegistryObject<T> register(String name, IContainerFactory<? extends C> f) {
         //noinspection unchecked

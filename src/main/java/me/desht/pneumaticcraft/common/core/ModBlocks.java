@@ -192,6 +192,8 @@ public class ModBlocks {
             BlockThermalLagging::new);
     public static final RegistryObject<BlockFluidMixer> FLUID_MIXER = register("fluid_mixer",
             BlockFluidMixer::new);
+    public static final RegistryObject<BlockVacuumTrap> VACUUM_TRAP = register("vacuum_trap",
+            BlockVacuumTrap::new);
 
     public static final List<RegistryObject<BlockPlasticBrick>> PLASTIC_BRICKS = new ArrayList<>();
     static {

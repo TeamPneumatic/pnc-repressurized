@@ -265,6 +265,7 @@ public class ClientSetup {
         ScreenManager.registerFactory(ModContainers.UNIVERSAL_SENSOR.get(), GuiUniversalSensor::new);
         ScreenManager.registerFactory(ModContainers.UV_LIGHT_BOX.get(), GuiUVLightBox::new);
         ScreenManager.registerFactory(ModContainers.VACUUM_PUMP.get(), GuiVacuumPump::new);
+        ScreenManager.registerFactory(ModContainers.VACUUM_TRAP.get(), GuiVacuumTrap::new);
     }
 
     private static void registerProgWidgetScreenFactories() {

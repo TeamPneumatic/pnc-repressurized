@@ -463,10 +463,14 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
      */
     protected void addProblems(List<ITextComponent> curInfo) {
         if (te instanceof IMinWorkingPressure) {
-            IMinWorkingPressure minWork = (IMinWorkingPressure) te;
-            if (((TileEntityPneumaticBase) te).getPressure() < minWork.getMinWorkingPressure()) {
+            float min = ((IMinWorkingPressure) te).getMinWorkingPressure();
+            float pressure = ((TileEntityPneumaticBase) te).getPressure();
+            if (min > 0 && pressure < min) {
                 curInfo.add(xlate("pneumaticcraft.gui.tab.problems.notEnoughPressure"));
-                curInfo.add(xlate("pneumaticcraft.gui.tab.problems.applyPressure", minWork.getMinWorkingPressure()).mergeStyle(TextFormatting.BLACK));
+                curInfo.add(xlate("pneumaticcraft.gui.tab.problems.applyPressure", min));
+            } else if (min < 0 && pressure > min) {
+                curInfo.add(xlate("pneumaticcraft.gui.tab.problems.notEnoughVacuum"));
+                curInfo.add(xlate("pneumaticcraft.gui.tab.problems.applyVacuum", min));
             }
         }
     }

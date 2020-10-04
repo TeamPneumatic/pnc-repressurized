@@ -133,6 +133,8 @@ public class ModTileEntities {
         null));
     public static final RegistryObject<TileEntityType<TileEntityFluidMixer>> FLUID_MIXER
             = register("fluid_mixer", () -> new TileEntityType<>(TileEntityFluidMixer::new, ImmutableSet.of(ModBlocks.FLUID_MIXER.get()), null));
+    public static final RegistryObject<TileEntityType<TileEntityVacuumTrap>> VACUUM_TRAP
+            = register("vacuum_trap", () -> new TileEntityType<>(TileEntityVacuumTrap::new, ImmutableSet.of(ModBlocks.VACUUM_TRAP.get()), null));
 
     private static <T extends TileEntityType<?>> RegistryObject<T> register(String name, Supplier<T> sup) {
         return TILE_ENTITIES.register(name, sup);

@@ -235,6 +235,10 @@ public class UpgradesDBSetup {
                 .with(EnumUpgrade.VOLUME, MAX_VOLUME)
                 .with(EnumUpgrade.SECURITY, 1)
                 .with(EnumUpgrade.DISPENSER, 1));
+        db.addApplicableUpgrades(ModTileEntities.VACUUM_TRAP.get(), new Builder()
+                .with(EnumUpgrade.VOLUME, MAX_VOLUME)
+                .with(EnumUpgrade.RANGE, 6)
+                .with(EnumUpgrade.SECURITY, 1));
 
         // universal sensor needs some dynamic calculation...
         Builder sensorBuilder = new Builder();

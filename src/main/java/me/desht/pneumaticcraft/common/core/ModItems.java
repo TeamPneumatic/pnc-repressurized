@@ -59,7 +59,7 @@ public class ModItems {
     public static final RegistryObject<ItemTagFilter> TAG_FILTER = register("tag_filter", ItemTagFilter::new);
     public static final RegistryObject<ItemGlycerol> GLYCEROL = register("glycerol", ItemGlycerol::new);
     public static final RegistryObject<ItemBandage> BANDAGE = register("bandage", ItemBandage::new);
-    public static final RegistryObject<ItemJackHammer> JACKHAMMER = register("jackhammer", ItemJackHammer::new);
+    public static final RegistryObject<ItemSpawnerCore> SPAWNER_CORE = register("spawner_core", ItemSpawnerCore::new);
 
     public static final RegistryObject<ItemPressurizable> AIR_CANISTER = register("air_canister",
             () -> new ItemPressurizable(PneumaticValues.AIR_CANISTER_MAX_AIR, PneumaticValues.AIR_CANISTER_VOLUME));
@@ -79,6 +79,8 @@ public class ModItems {
             ItemMinigun::new);
     public static final RegistryObject<ItemCamoApplicator> CAMO_APPLICATOR = register("camo_applicator",
             ItemCamoApplicator::new);
+    public static final RegistryObject<ItemJackHammer> JACKHAMMER = register("jackhammer",
+            ItemJackHammer::new);
 
     public static final RegistryObject<ItemPneumaticArmor> PNEUMATIC_HELMET = register("pneumatic_helmet",
             () -> new ItemPneumaticArmor(EquipmentSlotType.HEAD));
