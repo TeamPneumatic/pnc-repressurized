@@ -32,7 +32,7 @@ public class BasicAirHandler implements IAirHandler, INBTSerializable<CompoundNB
     @Override
     public void addAir(int amount) {
         // floor at -1 bar, which is a hard vacuum
-        airAmount = Math.max(airAmount + amount, -baseVolume);
+        airAmount = Math.max(airAmount + amount, -getVolume());
     }
 
     @Override
