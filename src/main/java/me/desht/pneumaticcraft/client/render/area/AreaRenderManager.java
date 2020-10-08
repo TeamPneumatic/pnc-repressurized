@@ -172,7 +172,7 @@ public class AreaRenderManager {
     public AreaRenderer showArea(Set<BlockPos> area, int color, TileEntity areaShower) {
         if (areaShower == null) return null;
         removeHandlers(areaShower);
-        AreaRenderer handler = new AreaRenderer(area, color, false);
+        AreaRenderer handler = new AreaRenderer(area, color, true);
         showHandlers.put(new BlockPos(areaShower.getPos().getX(), areaShower.getPos().getY(), areaShower.getPos().getZ()), handler);
         return handler;
     }
