@@ -12,7 +12,15 @@ Releases from 2.4.0 onward *require* Forge 34.0.9 or newer.
 
 ## 2.4.2-?? (unreleased)
 
+### Updates
+* GUI textfields in various places can now all be right-clicked to clear their current text
+* Hopefully improved air particle rendering
+
 ### Fixes
+* Fixed Safety Valve tube modules not releasing air when they're supposed to
+* Ensure oil lakes configured feature is properly registered (not doing so can cause compat problems with other mods' worldgen)
+* Fixed server crash (ConcurrentModificationException) related to Skeleton Horse traps
+* Programmer area previewing now disables depth testing (i.e. preview blocks are no longer hidden when in or behind solid blocks)
 * Fixed Safety Valve tube modules not releasing air when they're supposed to
 
 ## 2.4.1-44 (25 Sep 2020)
