@@ -6,6 +6,19 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.15.2
 
+## 1.5.1-?? (unreleased) 
+
+### Updates
+* Logistics drone behaviour tweaks:
+  * If a drone is carrying some resource (item or fluid) that it's unable to drop off, it will now still be able to handle requests for the other resource type
+  * Drones will now also ignore minimum order sizes if dropping off a resource they're already carrying (but continue to honour minimum order sizes if it means collecting that resource from a provider frame)
+  * Storage and Default Storage frames now also support specifying minimum order sizes
+  
+### Fixes
+* Fixed server crash (ConcurrentModificationException) related to Skeleton Horse traps
+* Fixed volume upgrades not being properly taken into account for negative pressures (e.g. Vacuum Pump)
+* Programmer area previewing now disables depth testing (i.e. preview blocks are no longer hidden when in or behind solid blocks)
+
 ## 1.5.0-73 (22 Sep 2020)
 Important: if you are also using Immersive Engineering, this release *requires* IE 4.0.0-117 or newer.
 
