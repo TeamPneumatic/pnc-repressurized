@@ -93,7 +93,7 @@ public class PneumaticProvider {
                 CompoundNBT subtag = list.getCompound(i);
                 FluidStack fluidStack = FluidStack.loadFluidStackFromNBT(subtag);
                 ITextComponent fluidDesc = fluidStack.isEmpty() ?
-                        xlate("pneumaticcraft.gui.liquid.empty") :
+                        xlate("pneumaticcraft.gui.misc.empty") :
                         new StringTextComponent(fluidStack.getAmount() + "mB ").append(xlate(fluidStack.getTranslationKey()));
                 tooltip.add(new StringTextComponent("Tank #" + (i + 1) + ": ")
                         .append(fluidDesc.deepCopy().mergeStyle(TextFormatting.AQUA)));

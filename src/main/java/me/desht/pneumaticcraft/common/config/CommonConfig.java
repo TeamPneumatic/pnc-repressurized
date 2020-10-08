@@ -15,6 +15,7 @@ public class CommonConfig {
         ForgeConfigSpec.DoubleValue fuelBucketEfficiency;
         ForgeConfigSpec.IntValue maxProgrammingArea;
         ForgeConfigSpec.ConfigValue<List<String>> oilWorldGenBlacklist;
+        ForgeConfigSpec.ConfigValue<List<String>> vacuumTrapBlacklist;
         ForgeConfigSpec.IntValue minFluidFuelTemperature;
         ForgeConfigSpec.BooleanValue useUpDyesWhenColoring;
         ForgeConfigSpec.BooleanValue dronesRenderHeldItem;
@@ -193,6 +194,10 @@ public class CommonConfig {
                 .comment("Are drones allowed to import Experience Orbs and convert them to Memory Essence fluid?")
                 .translation("pneumaticcraft.config.client.general.drones_can_import_xp_orbs")
                 .define("drones_can_import_xp_orbs", true);
+        general.vacuumTrapBlacklist = builder
+                .comment("Blacklisted entity ID's, which the Vacuum Trap will not try to absorb. Note that players, tamed entities, boss entities, and PneumaticCraft drones may never be absorbed, regardless of config settings.")
+                .translation("pneumaticcraft.config.common.general.vacuum_trap_blacklist")
+                .define("vacuum_trap_blacklist", Lists.newArrayList());
         builder.pop();
 
         builder.push("Machine Properties");

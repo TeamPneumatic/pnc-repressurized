@@ -62,10 +62,12 @@ public class ConfigHelper {
         PNCConfig.Common.General.minFluidFuelTemperature = common.general.minFluidFuelTemperature.get();
         PNCConfig.Common.General.oilGenerationChance = common.general.oilGenerationChance.get();
         PNCConfig.Common.General.oilWorldGenBlacklist = common.general.oilWorldGenBlacklist.get()
-                .stream().map(ResourceLocation::new).collect(Collectors.toSet());
+                .stream().map(resourceName -> new ResourceLocation(resourceName.toLowerCase())).collect(Collectors.toSet());
         PNCConfig.Common.General.useUpDyesWhenColoring = common.general.useUpDyesWhenColoring.get();
         PNCConfig.Common.General.dronesRenderHeldItem = common.general.dronesRenderHeldItem.get();
         PNCConfig.Common.General.dronesCanImportXPOrbs = common.general.dronesCanImportXPOrbs.get();
+        PNCConfig.Common.General.vacuumTrapBlacklist = common.general.vacuumTrapBlacklist.get()
+                .stream().map(resourceName -> new ResourceLocation(resourceName.toLowerCase())).collect(Collectors.toSet());
 
         PNCConfig.Common.Machines.aerialInterfaceArmorCompat = common.machines.aerialInterfaceArmorCompat.get();
         PNCConfig.Common.Machines.cropSticksGrowthBoostChance = common.machines.cropSticksGrowthBoostChance.get();

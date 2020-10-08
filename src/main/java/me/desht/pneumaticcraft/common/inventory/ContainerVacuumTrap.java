@@ -27,7 +27,7 @@ public class ContainerVacuumTrap extends ContainerPneumaticBase<TileEntityVacuum
         addPlayerSlots(invPlayer, 84);
     }
 
-    private static class SlotSpawnerCore extends SlotItemHandler {
+    public static class SlotSpawnerCore extends SlotItemHandler {
         public SlotSpawnerCore(IItemHandler itemHandler, int index, int xPosition, int yPosition) {
             super(itemHandler, index, xPosition, yPosition);
         }

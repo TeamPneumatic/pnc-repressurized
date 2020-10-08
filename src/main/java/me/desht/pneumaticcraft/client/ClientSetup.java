@@ -126,6 +126,7 @@ public class ClientSetup {
     private static void setBlockRenderLayers() {
         RenderTypeLookup.setRenderLayer(ModBlocks.APHORISM_TILE.get(), RenderType.getCutoutMipped());
         RenderTypeLookup.setRenderLayer(ModBlocks.ELEVATOR_FRAME.get(), RenderType.getCutout());
+        RenderTypeLookup.setRenderLayer(ModBlocks.EMPTY_SPAWNER.get(), RenderType.getCutout());
         RenderTypeLookup.setRenderLayer(ModBlocks.ETCHING_TANK.get(), RenderType.getCutoutMipped());
         RenderTypeLookup.setRenderLayer(ModBlocks.FLUID_MIXER.get(), RenderType.getCutoutMipped());
         RenderTypeLookup.setRenderLayer(ModBlocks.KEROSENE_LAMP.get(), RenderType.getCutoutMipped());
@@ -203,6 +204,7 @@ public class ClientSetup {
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.REFINERY_OUTPUT.get(), RenderRefineryOutput::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.SECURITY_STATION.get(), RenderSecurityStation::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.SENTRY_TURRET.get(), RenderSentryTurret::new);
+        ClientRegistry.bindTileEntityRenderer(ModTileEntities.SPAWNER_EXTRACTOR.get(), RenderSpawnerExtractor::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.TANK_SMALL.get(), RenderFluidTank::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.TANK_MEDIUM.get(), RenderFluidTank::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.TANK_LARGE.get(), RenderFluidTank::new);
@@ -259,6 +261,7 @@ public class ClientSetup {
         ScreenManager.registerFactory(ModContainers.SECURITY_STATION_HACKING.get(), GuiSecurityStationHacking::new);
         ScreenManager.registerFactory(ModContainers.SENTRY_TURRET.get(), GuiSentryTurret::new);
         ScreenManager.registerFactory(ModContainers.SMART_CHEST.get(), GuiSmartChest::new);
+        ScreenManager.registerFactory(ModContainers.SPAWNER_EXTRACTOR.get(), GuiSpawnerExtractor::new);
         ScreenManager.registerFactory(ModContainers.TAG_MATCHER.get(), GuiTagWorkbench::new);
         ScreenManager.registerFactory(ModContainers.THERMAL_COMPRESSOR.get(), GuiThermalCompressor::new);
         ScreenManager.registerFactory(ModContainers.THERMOPNEUMATIC_PROCESSING_PLANT.get(), GuiThermopneumaticProcessingPlant::new);

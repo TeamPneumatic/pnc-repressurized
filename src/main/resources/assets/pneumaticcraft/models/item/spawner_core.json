@@ -1,6 +1,7 @@
 {
    "textures" : {
-      "layer0" : "pneumaticcraft:item/spawner_core"
+      "layer0" : "pneumaticcraft:item/spawner_core_0",
+      "layer1" : "pneumaticcraft:item/spawner_core_1"
    },
    "parent" : "item/generated"
 }

@@ -1,0 +1,9 @@
+{
+  "multipart": [
+    { "apply":  { "model": "pneumaticcraft:block/spawner_extractor" }},
+    { "when":  { "north": true }, "apply":  { "model": "pneumaticcraft:block/pressure_tube_connected", "x": 90 }},
+    { "when":  { "south": true }, "apply":  { "model": "pneumaticcraft:block/pressure_tube_connected", "x": 90, "y": 180 }},
+    { "when":  { "west": true }, "apply":  { "model": "pneumaticcraft:block/pressure_tube_connected", "x": 90, "y": 270 }},
+    { "when":  { "east": true }, "apply":  { "model": "pneumaticcraft:block/pressure_tube_connected", "x": 90, "y": 90 }}
+  ]
+}

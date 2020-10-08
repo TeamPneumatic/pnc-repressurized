@@ -32,6 +32,7 @@ public class Textures {
     public static final ResourceLocation MODEL_DRONE_MINIGUN = modelTexture("drone_minigun.png");
     public static final ResourceLocation MODEL_HEAT_FRAME = modelTexture("heat_frame.png");
     public static final ResourceLocation MODEL_SENTRY_TURRET = modelTexture("sentry_turret.png");
+    public static final ResourceLocation MODEL_SPAWNER_EXTRACTOR = modelTexture("spawner_extractor_top.png");
 
     // Tube Module textures
     public static final ResourceLocation MODEL_FLOW_DETECTOR = tubeModuleTexture("flow_detector.png");

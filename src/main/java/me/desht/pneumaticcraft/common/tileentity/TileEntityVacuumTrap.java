@@ -2,18 +2,20 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.inventory.ContainerVacuumTrap;
-import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.item.ItemSpawnerCore;
+import me.desht.pneumaticcraft.common.item.ItemSpawnerCore.SpawnerCoreItemHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
+import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.MoverType;
+import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
@@ -39,14 +41,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TileEntityVacuumTrap extends TileEntityPneumaticBase implements IMinWorkingPressure, INamedContainerProvider {
-    private final VacuumTrapItemHandler inv = new VacuumTrapItemHandler();
+    public enum Problems implements ITranslatableEnum {
+        OK,
+        NO_CORE,
+        CORE_FULL,
+        TRAP_CLOSED;
+
+        @Override
+        public String getTranslationKey() {
+            return "pneumaticcraft.gui.tab.problems.vacuum_trap." + this.toString().toLowerCase();
+        }
+    }
+
+    private final SpawnerCoreItemHandler inv = new SpawnerCoreItemHandler();
     private final LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> inv);
 
-    private ItemSpawnerCore.SpawnerCoreStats coreStats;
-    private final List<LivingEntity> targetEntities = new ArrayList<>();
+    private final List<MobEntity> targetEntities = new ArrayList<>();
 
     @DescSynced
     private boolean isCoreLoaded;
+    @DescSynced
+    public Problems problem = Problems.OK;
 
     public TileEntityVacuumTrap() {
         super(ModTileEntities.VACUUM_TRAP.get(), PneumaticValues.DANGER_PRESSURE_TIER_ONE, PneumaticValues.MAX_PRESSURE_TIER_ONE, PneumaticValues.VOLUME_VACUUM_TRAP, 4);
@@ -57,24 +72,31 @@ public class TileEntityVacuumTrap extends TileEntityPneumaticBase implements IMi
         super.tick();
 
         if (!world.isRemote) {
-            isCoreLoaded = coreStats != null;
+            isCoreLoaded = inv.getStats() != null;
 
-            if (isOpen() && isCoreLoaded && coreStats.getUnused() > 0 && getPressure() < getMinWorkingPressure()) {
+            if (isOpen() && isCoreLoaded && inv.getStats().getUnused() > 0 && getPressure() <= getMinWorkingPressure()) {
                 if ((world.getGameTime() & 0xf) == 0) {
                     scanForEntities();
                 }
                 Vector3d trapVec = Vector3d.copyCentered(pos);
-                for (LivingEntity e : targetEntities) {
-                    if (!e.isAlive()) continue;
+                for (MobEntity e : targetEntities) {
+                    if (!e.isAlive() || e.getTags().contains(TileEntitySpawnerExtractor.DEFENDER_TAG)) continue;
                     if (e.getDistanceSq(trapVec) < 2) {
                         absorbEntity(e);
-                        addAir((int) (10 * e.getHealth()));
+                        addAir((int) (PneumaticValues.USAGE_VACUUM_TRAP * e.getHealth()));
                     } else {
-                        Vector3d vec = trapVec.subtract(e.getPositionVec()).normalize().scale(0.15);
-                        e.move(MoverType.SELF, vec);
+                        e.getNavigator().tryMoveToXYZ(trapVec.getX(), trapVec.getY(), trapVec.getZ(), 1.0);
                     }
                 }
             }
+            if (!isCoreLoaded)
+                problem = Problems.NO_CORE;
+            else if (inv.getStats().getUnused() == 0)
+                problem = Problems.CORE_FULL;
+            else if (!isOpen())
+                problem = Problems.TRAP_CLOSED;
+            else
+                problem = Problems.OK;
         } else {
             if (isOpen() && isCoreLoaded && world.rand.nextBoolean()) {
                 ClientUtils.emitParticles(world, pos, ParticleTypes.PORTAL);
@@ -82,11 +104,11 @@ public class TileEntityVacuumTrap extends TileEntityPneumaticBase implements IMi
         }
     }
 
-    private void absorbEntity(LivingEntity e) {
-        int amount = e instanceof MobEntity && ((MobEntity) e).getAttackTarget() instanceof PlayerEntity ? 2 + e.world.rand.nextInt(3) : 1;
-        if (coreStats.addAmount(e.getType(), amount)) {
+    private void absorbEntity(MobEntity e) {
+        int amount = e.getAttackTarget() instanceof PlayerEntity ? 2 + e.world.rand.nextInt(3) : 1;
+        if (inv.getStats().addAmount(e.getType(), amount)) {
             e.remove();
-            ItemSpawnerCore.SpawnerCoreStats.serialize(coreStats, inv.getStackInSlot(0));
+            inv.getStats().serialize(inv.getStackInSlot(0));
             world.playSound(null, pos, SoundEvents.BLOCK_PORTAL_TRIGGER, SoundCategory.BLOCKS, 1f, 2f);
             if (world instanceof ServerWorld) {
                 ((ServerWorld) world).spawnParticle(ParticleTypes.CLOUD, e.getPosX(), e.getPosY() + 0.5, e.getPosZ(), 5, 0, 1, 0, 0);
@@ -98,12 +120,14 @@ public class TileEntityVacuumTrap extends TileEntityPneumaticBase implements IMi
         targetEntities.clear();
 
         AxisAlignedBB aabb = new AxisAlignedBB(pos).grow(3 + getUpgrades(EnumUpgrade.RANGE));
-        targetEntities.addAll(world.getEntitiesWithinAABB(LivingEntity.class, aabb, this::isApplicable));
+        targetEntities.addAll(world.getEntitiesWithinAABB(MobEntity.class, aabb, this::isApplicable));
     }
 
     private boolean isApplicable(LivingEntity e) {
-        // TODO a more configurable filter is needed here
-        return e.isNonBoss() && !(e instanceof PlayerEntity || e instanceof EntityDrone);
+        return e.isNonBoss()
+                && !(e instanceof EntityDrone)
+                && !(e instanceof TameableEntity && ((TameableEntity) e).isTamed())
+                && !PNCConfig.Common.General.vacuumTrapBlacklist.contains(e.getType().getRegistryName());
     }
 
     @Override
@@ -143,7 +167,6 @@ public class TileEntityVacuumTrap extends TileEntityPneumaticBase implements IMi
         super.read(state, tag);
 
         inv.deserializeNBT(tag.getCompound("Items"));
-        readSpawnerCoreStats();
     }
 
     @Override
@@ -180,34 +203,5 @@ public class TileEntityVacuumTrap extends TileEntityPneumaticBase implements IMi
 
     public boolean isOpen() {
         return getBlockState().getBlock() == ModBlocks.VACUUM_TRAP.get() && getBlockState().get(BlockStateProperties.OPEN);
-    }
-
-    private void readSpawnerCoreStats() {
-        coreStats = inv.getStackInSlot(0).isEmpty() ? null : ItemSpawnerCore.SpawnerCoreStats.forItemStack(inv.getStackInSlot(0));
-    }
-
-    private class VacuumTrapItemHandler extends BaseItemStackHandler {
-        public VacuumTrapItemHandler() {
-            super(1);
-        }
-
-        @Override
-        public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
-            return stack.getItem() instanceof ItemSpawnerCore;
-        }
-
-        @Override
-        public int getSlotLimit(int slot) {
-            return 1;
-        }
-
-        @Override
-        protected void onContentsChanged(int slot) {
-            super.onContentsChanged(slot);
-
-            if (slot == 0) {
-                readSpawnerCoreStats();
-            }
-        }
     }
 }

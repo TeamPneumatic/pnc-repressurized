@@ -138,7 +138,7 @@ public class TOPInfoProvider {
             for (int i = 0; i < handler.getTanks(); i++) {
                 FluidStack fluidStack = handler.getFluidInTank(i);
                 ITextComponent fluidDesc = fluidStack.isEmpty() ?
-                        xlate("pneumaticcraft.gui.liquid.empty") :
+                        xlate("pneumaticcraft.gui.misc.empty") :
                         new StringTextComponent(fluidStack.getAmount() + "mB ").append(xlate(fluidStack.getTranslationKey()));
                 probeInfo.text(new StringTextComponent("Tank #" + (i + 1) + ": ")
                         .append(fluidDesc.deepCopy().mergeStyle(TextFormatting.AQUA)));
