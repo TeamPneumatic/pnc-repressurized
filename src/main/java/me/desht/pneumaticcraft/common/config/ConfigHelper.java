@@ -198,4 +198,8 @@ public class ConfigHelper {
         setValueAndSave(clientConfig, "armor.show_pressure_numerically", numeric);
         refreshClient(clientConfig);
     }
+
+    public static int getOilLakeChance() {
+        return ConfigHolder.common.general.oilGenerationChance.get();
+    }
 }

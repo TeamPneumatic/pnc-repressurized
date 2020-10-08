@@ -38,10 +38,12 @@ import net.minecraft.block.DispenserBlock;
 import net.minecraft.data.BlockTagsProvider;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.item.Item;
+import net.minecraft.world.gen.feature.Feature;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
@@ -86,6 +88,9 @@ public class PneumaticCraftRepressurized {
         forgeBus.register(new EventHandlerWorldGen());
         forgeBus.register(ItemGPSAreaTool.EventHandler.class);
         forgeBus.register(HackTickHandler.instance());
+
+        modBus.addGenericListener(Feature.class, EventPriority.LOW, EventHandlerWorldGen::registerConfiguredFeatures);
+        forgeBus.addListener(EventPriority.HIGH, EventHandlerWorldGen::onBiomeLoading);
     }
 
     private void registerAllDeferredRegistryObjects(IEventBus modBus) {
