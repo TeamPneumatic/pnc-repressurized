@@ -58,7 +58,7 @@ public class ItemMicromissiles extends Item {
     }
 
     public ItemMicromissiles() {
-        super(ModItems.defaultProps().maxStackSize(1));
+        super(ModItems.defaultProps().maxStackSize(1).defaultMaxDamage(100));
     }
 
     @Override

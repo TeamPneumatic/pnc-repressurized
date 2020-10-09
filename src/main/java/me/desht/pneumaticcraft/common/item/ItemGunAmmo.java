@@ -34,12 +34,12 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public abstract class ItemGunAmmo extends Item implements ColorHandlers.ITintableItem {
 
     public ItemGunAmmo() {
-        super(ModItems.defaultProps().maxStackSize(1).setNoRepair());
+        super(ModItems.defaultProps().maxStackSize(1).setNoRepair().defaultMaxDamage(1000));
     }
 
     @Override
     public int getMaxDamage(ItemStack stack) {
-        return 1000;
+        return PNCConfig.Common.Minigun.standardAmmoCartridgeSize;
     }
 
     /**
