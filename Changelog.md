@@ -8,20 +8,30 @@ Changes are in reverse chronological order; newest changes at the top.
 
 The initial 2.4.0 release for MC 1.16.3 release is largely equivalent in functionality to the 2.2.2 release (for MC 1.16.1) with a couple of small worldgen-related changes.
  
-Releases from 2.4.0 onward *require* Forge 34.0.9 or newer.
+Releases from 2.4.2 onward *require* Forge 34.1.0 or later.
 
 ## 2.4.2-?? (unreleased)
 
 ### Updates
+* Mekanism integration has returned!  To recap:
+  * Mekanism and PneumaticCraft blocks can exchange heat
+    * See `config/pneumaticcraft-common.toml`, "Integration" section, for some settings on heat exchange properties
+  * Mekanism Fuelwood and Resistive Heaters can be used to heat PNC:R machines like the Refinery or Thermopneumatic Processing Plant
+  * PNC:R Vortex Tube can be used to heat the Mekanism boiler
+  * Heat cables (PNC:R Heat Pipes and Mekanism Thermodynamic Conductors will connect to Mekanism and PNC:R machines, respectively)
+  * Mekanism Liquid Ethylene and Liquid Hydrogen can be used as fuels in PNC:R Liquid Compressors
+  * Mekanism Configurator can be used to wrench PNC:R blocks
 * GUI textfields in various places can now all be right-clicked to clear their current text
 * Hopefully improved air particle rendering
+* Cyclic XP Juice is now supported in the Aerial Interface
 
 ### Fixes
 * Fixed Safety Valve tube modules not releasing air when they're supposed to
 * Ensure oil lakes configured feature is properly registered (not doing so can cause compat problems with other mods' worldgen)
 * Fixed server crash (ConcurrentModificationException) related to Skeleton Horse traps
 * Programmer area previewing now disables depth testing (i.e. preview blocks are no longer hidden when in or behind solid blocks)
-* Fixed Safety Valve tube modules not releasing air when they're supposed to
+* Fixed Minigun Ammo and Micromissiles having infinite durability
+* Fixed Micromissile tooltips not fully rendering
 
 ## 2.4.1-44 (25 Sep 2020)
 

@@ -18,7 +18,7 @@ PneumaticCraft: Repressurized: doing cool stuff with compressed air.'''
 [[dependencies.pneumaticcraft]]
     modId="forge" #mandatory
     mandatory=true #mandatory
-    versionRange="[34.0.9,)" #mandatory
+    versionRange="[34.1.0,)" #mandatory
     ordering="NONE"
     side="BOTH"
 #[[dependencies.pneumaticcraft]]
