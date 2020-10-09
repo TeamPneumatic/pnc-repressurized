@@ -22,14 +22,14 @@ public class GenericIntegrationHandler implements IThirdParty {
     private void registerXPFluids() {
         // XP fluids are pretty mod-agnostic (just a fluid ID ResourceLocation).  So handle
         // XP fluid registration here rather than in mod-specific modules.
-        // TODO 1.14+ consider moving to fluid tags for this
 
         maybeRegisterXPFluid(new ResourceLocation("industrialforegoing", "essence"), 20);
+        maybeRegisterXPFluid(new ResourceLocation("cyclic", "xpjuice"), 20);
 
-//        maybeRegisterXPFluid("xpjuice", 20);  // XP Juice from EnderIO, Cyclic, OpenBlocks, others?
 //        maybeRegisterXPFluid("experience", 20);  // CoFH Essence of Knowledge
     }
 
+    @SuppressWarnings("SameParameterValue")
     private void maybeRegisterXPFluid(ResourceLocation fluidName, int xpRatio) {
         Fluid fluid = ForgeRegistries.FLUIDS.getValue(fluidName);
         if (fluid != null && fluid != Fluids.EMPTY) {
