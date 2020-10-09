@@ -4,36 +4,28 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.authlib.GameProfile;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
-import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
-import me.desht.pneumaticcraft.common.entity.projectile.EntityTumblingBlock;
 import me.desht.pneumaticcraft.common.inventory.ContainerAirCannon;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
-import me.desht.pneumaticcraft.common.network.*;
-import me.desht.pneumaticcraft.common.particle.AirParticleData;
+import me.desht.pneumaticcraft.common.network.DescSynced;
+import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.network.LazySynced;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethod;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethodRegistry;
 import me.desht.pneumaticcraft.common.util.EntityDistanceComparator;
 import me.desht.pneumaticcraft.common.util.IOHelper;
+import me.desht.pneumaticcraft.common.util.ItemLaunching;
 import me.desht.pneumaticcraft.common.util.fakeplayer.FakeNetHandlerPlayerServer;
 import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.entity.item.BoatEntity;
-import net.minecraft.entity.item.ExperienceBottleEntity;
 import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.item.TNTEntity;
-import net.minecraft.entity.item.minecart.MinecartEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.entity.projectile.*;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.*;
@@ -48,13 +40,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -591,7 +581,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
                 }
             }
 
-            launchEntity(launchedEntity,
+            ItemLaunching.launchEntity(launchedEntity,
                     new Vector3d(getPos().getX() + 0.5D, getPos().getY() + 1.8D, getPos().getZ() + 0.5D),
                     new Vector3d(velocity[0], velocity[1], velocity[2]),
                     shootingInventory);
@@ -602,7 +592,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     }
 
     private Entity getPayloadEntity() {
-        Entity e = getEntityToLaunch(getWorld(), itemHandler.getStackInSlot(CANNON_SLOT), getFakePlayer(),
+        Entity e = ItemLaunching.getEntityToLaunch(getWorld(), itemHandler.getStackInSlot(CANNON_SLOT), getFakePlayer(),
                 getUpgrades(EnumUpgrade.DISPENSER) > 0, false);
         if (e instanceof ItemEntity) {
             // 1200 ticks left to live = 60s
@@ -622,96 +612,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
         return fakePlayer;
     }
 
-    public static void launchEntity(Entity launchedEntity, Vector3d initialPos, Vector3d velocity, boolean doSpawn) {
-        World world = launchedEntity.getEntityWorld();
 
-        if (launchedEntity.getRidingEntity() != null) {
-            launchedEntity.stopRiding();
-        }
-
-        launchedEntity.setPosition(initialPos.x, initialPos.y, initialPos.z);
-        NetworkHandler.sendToAllAround(new PacketSetEntityMotion(launchedEntity, velocity),
-                new PacketDistributor.TargetPoint(initialPos.x, initialPos.y, initialPos.z, 64, world.getDimensionKey()));
-        if (launchedEntity instanceof FireballEntity) {
-            // fireball velocity is handled a little differently...
-            FireballEntity fireball = (FireballEntity) launchedEntity;
-            fireball.accelerationX = velocity.x * 0.05;
-            fireball.accelerationY = velocity.y * 0.05;
-            fireball.accelerationZ = velocity.z * 0.05;
-        } else {
-            launchedEntity.setMotion(velocity);
-        }
-        launchedEntity.setOnGround(false);
-//        launchedEntity.collided = false;
-        launchedEntity.collidedHorizontally = false;
-        launchedEntity.collidedVertically = false;
-
-        if (doSpawn && !world.isRemote) {
-            world.addEntity(launchedEntity);
-        }
-
-        for (int i = 0; i < 5; i++) {
-            double velX = velocity.x * 0.4D + (world.rand.nextGaussian() - 0.5D) * 0.05D;
-            double velY = velocity.y * 0.4D + (world.rand.nextGaussian() - 0.5D) * 0.05D;
-            double velZ = velocity.z * 0.4D + (world.rand.nextGaussian() - 0.5D) * 0.05D;
-            NetworkHandler.sendToAllAround(new PacketSpawnParticle(AirParticleData.DENSE, initialPos.x, initialPos.y, initialPos.z, velX, velY, velZ), world);
-        }
-        world.playSound(null, initialPos.x, initialPos.y, initialPos.z, ModSounds.AIR_CANNON.get(), SoundCategory.BLOCKS, 1f,world.rand.nextFloat() / 4f + 0.75f);
-    }
-
-    /**
-     * Get the entity to launch for a given item.
-     *
-     * @param world the world
-     * @param stack the item stack to be fired
-     * @param hasDispenser true if dispenser-like behaviour should be used
-     * @param fallingBlocks true if block items should be spawned as falling block entities rather than item entities
-     * @return the entity to launch
-     */
-    public static Entity getEntityToLaunch(World world, ItemStack stack, PlayerEntity player, boolean hasDispenser, boolean fallingBlocks) {
-        Item item = stack.getItem();
-        if (hasDispenser) {
-            if (item == Blocks.TNT.asItem()) {
-                TNTEntity tnt = new TNTEntity(world, 0, 0, 0, player);
-                tnt.setFuse(80);
-                return tnt;
-            } else if (item == Items.EXPERIENCE_BOTTLE) {
-                return new ExperienceBottleEntity(world, player);
-            } else if (item instanceof PotionItem) {
-                PotionEntity potionEntity = new PotionEntity(world, player);
-                potionEntity.setItem(stack);
-                return potionEntity;
-            } else if (item instanceof ArrowItem) {
-                return ((ArrowItem) item).createArrow(world, stack, player);
-            } else if (item == Items.EGG) {
-                return new EggEntity(world, player);
-            } else if (item == Items.FIRE_CHARGE) {
-                return new SmallFireballEntity(world, player, 0, 0, 0);
-            } else if (item == Items.SNOWBALL) {
-                return new SnowballEntity(world, player);
-            } else if (item instanceof SpawnEggItem && world instanceof ServerWorld) {
-                EntityType<?> type = ((SpawnEggItem) item).getType(stack.getTag());
-                Entity e = type.spawn((ServerWorld) world, stack, player, player.getPosition(), SpawnReason.SPAWN_EGG, false, false);
-                if (e instanceof LivingEntity && stack.hasDisplayName()) {
-                    e.setCustomName(stack.getDisplayName());
-                }
-                return e;
-            } else if (item instanceof MinecartItem) {
-                return MinecartEntity.create(world, 0, 0, 0, ((MinecartItem) item).minecartType);
-            }  else if (item instanceof BoatItem) {
-                return new BoatEntity(world, 0, 0, 0);
-            } else if (item == Items.FIREWORK_ROCKET) {
-                return new FireworkRocketEntity(world, 0, 0, 0, stack);
-            }
-        }
-        if (fallingBlocks && item instanceof BlockItem) {
-            return new EntityTumblingBlock(world, player, 0, 0, 0, stack);
-        } else {
-            ItemEntity e = new ItemEntity(world, 0, 0, 0, stack);
-            e.setPickupDelay(20);
-            return e;
-        }
-    }
 
     private Entity getCloseEntityIfUpgraded() {
         int entityUpgrades = Math.min(5, getUpgrades(EnumUpgrade.ENTITY_TRACKER));

@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityAirCannon;
+import me.desht.pneumaticcraft.common.util.ItemLaunching;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -47,13 +47,15 @@ public class PacketChestplateLauncher {
     }
 
     private void handleLaunch(ServerPlayerEntity player) {
+        if (player == null) return;
+
         ItemStack stack = player.getHeldItemOffhand();
         CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
         int upgrades = handler.getUpgradeCount(EquipmentSlotType.CHEST, EnumUpgrade.DISPENSER, PneumaticValues.PNEUMATIC_LAUNCHER_MAX_UPGRADES);
 
         if (handler.getArmorPressure(EquipmentSlotType.CHEST) > 0.1f && handler.isArmorReady(EquipmentSlotType.CHEST) && upgrades > 0 && !stack.isEmpty()) {
             ItemStack toFire = player.isCreative() ? ItemHandlerHelper.copyStackWithSize(stack, 1) : stack.split(1);
-            Entity launchedEntity = TileEntityAirCannon.getEntityToLaunch(player.getEntityWorld(), toFire, player,true, true);
+            Entity launchedEntity = ItemLaunching.getEntityToLaunch(player.getEntityWorld(), toFire, player,true, true);
 
             if (launchedEntity instanceof AbstractArrowEntity) {
                 AbstractArrowEntity arrow = (AbstractArrowEntity) launchedEntity;
@@ -62,7 +64,7 @@ public class PacketChestplateLauncher {
             }
 
             Vector3d velocity = player.getLookVec().normalize().scale(amount * upgrades * SCALE_FACTOR);
-            TileEntityAirCannon.launchEntity(launchedEntity, player.getEyePosition(1f).add(0, -0.1, 0), velocity, true);
+            ItemLaunching.launchEntity(launchedEntity, player.getEyePosition(1f).add(0, -0.1, 0), velocity, true);
 
             if (!player.isCreative()) {
                 int usedAir = (int) (20 * upgrades * amount);
