@@ -756,7 +756,7 @@
    "pneumaticcraft.gui.micromissile.mode.dumb" : "Dumb",
    "pneumaticcraft.gui.micromissile.mode.smart" : "Smart",
    "pneumaticcraft.gui.micromissile.modeTooltip" : "§eSmart Mode: §fmissiles actively seek out and lock to the nearest target which matches the entity filter (if any). You can balance between Top Speed, Turn Speed and Damage.${br}§eDumb Mode: §fmissiles fly in a straight line only and accelerate fairly slowly, but deal high damage.",
-   "pneumaticcraft.gui.micromissile.remaining" : "Missiles Remaining: §b%d",
+   "pneumaticcraft.gui.micromissile.remaining" : "Missiles Remaining: ",
    "pneumaticcraft.gui.micromissile.saveDefault" : "Save as Default",
    "pneumaticcraft.gui.micromissile.topSpeed" : "Top Speed",
    "pneumaticcraft.gui.micromissile.turnSpeed" : "Turn Speed",

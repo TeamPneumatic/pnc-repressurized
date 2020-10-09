@@ -186,13 +186,14 @@ public class TooltipEventHandler {
         {
             int width = 0;
             FontRenderer fr = event.getFontRenderer();
-            int y = event.getY() + fr.FONT_HEIGHT * 2 + 5;
+            int vSpace = fr.FONT_HEIGHT + 1;
+            int y = event.getY() + vSpace * 2 + 2;
             MatrixStack matrixStack = event.getMatrixStack();
             matrixStack.push();
-            matrixStack.translate(0, 0, 300);
-            width = Math.max(width, renderString(matrixStack, fr, (I18n.format("pneumaticcraft.gui.micromissile.topSpeed")), event.getX(), y));
-            width = Math.max(width, renderString(matrixStack, fr, (I18n.format("pneumaticcraft.gui.micromissile.turnSpeed")), event.getX(), y + fr.FONT_HEIGHT));
-            width = Math.max(width, renderString(matrixStack, fr, (I18n.format("pneumaticcraft.gui.micromissile.damage")), event.getX(), y + fr.FONT_HEIGHT * 2));
+            matrixStack.translate(0, 0, 500);
+            width = Math.max(width, fr.getStringWidth(I18n.format("pneumaticcraft.gui.micromissile.topSpeed")));
+            width = Math.max(width, fr.getStringWidth(I18n.format("pneumaticcraft.gui.micromissile.turnSpeed")));
+            width = Math.max(width, fr.getStringWidth(I18n.format("pneumaticcraft.gui.micromissile.damage")));
             matrixStack.pop();
 
             int barX = event.getX() + width + 2;
@@ -203,8 +204,8 @@ public class TooltipEventHandler {
             GL11.glLineStipple(1, (short) 0xFEFE);
             RenderSystem.shadeModel(GL11.GL_SMOOTH);
             drawLine(matrixStack, barX, y, (int) (barW * NBTUtils.getFloat(stack, ItemMicromissiles.NBT_TOP_SPEED)));
-            drawLine(matrixStack, barX, y + fr.FONT_HEIGHT, (int) (barW * NBTUtils.getFloat(stack, ItemMicromissiles.NBT_TURN_SPEED)));
-            drawLine(matrixStack, barX, y + 2 * fr.FONT_HEIGHT, (int) (barW * NBTUtils.getFloat(stack, ItemMicromissiles.NBT_DAMAGE)));
+            drawLine(matrixStack, barX, y + vSpace, (int) (barW * NBTUtils.getFloat(stack, ItemMicromissiles.NBT_TURN_SPEED)));
+            drawLine(matrixStack, barX, y + 2 * vSpace, (int) (barW * NBTUtils.getFloat(stack, ItemMicromissiles.NBT_DAMAGE)));
             RenderSystem.lineWidth(1);
             GL11.glDisable(GL11.GL_LINE_STIPPLE);
             RenderSystem.shadeModel(GL11.GL_FLAT);
@@ -219,10 +220,4 @@ public class TooltipEventHandler {
         bb.pos(posMat, x + length, y + 4, 0).color(0, 192, 0, 255).endVertex();
         Tessellator.getInstance().draw();
     }
-
-    private static int renderString(MatrixStack matrixStack, FontRenderer fr, String s, int x, int y) {
-        fr.drawStringWithShadow(matrixStack, s, x, y, 0xFFFFFFFF);
-        return fr.getStringWidth(s);
-    }
-
 }

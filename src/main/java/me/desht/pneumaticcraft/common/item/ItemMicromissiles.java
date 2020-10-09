@@ -124,15 +124,16 @@ public class ItemMicromissiles extends Item {
     public void addInformation(ItemStack stack, World worldIn, List<ITextComponent> curInfo, ITooltipFlag extraInfo) {
         super.addInformation(stack, worldIn, curInfo, extraInfo);
 
-        curInfo.add(xlate("pneumaticcraft.gui.micromissile.remaining", stack.getMaxDamage() - stack.getDamage()));
+        curInfo.add(xlate("pneumaticcraft.gui.micromissile.remaining")
+                .append(new StringTextComponent(Integer.toString(stack.getMaxDamage() - stack.getDamage())).mergeStyle(TextFormatting.AQUA))
+        );
         if (stack.hasTag()) {
             FireMode mode = getFireMode(stack);
             if (mode == FireMode.SMART) {
                 CompoundNBT tag = stack.getTag();
-                // padding for ClientEventHandler#renderTooltipEvent() to draw in
-                curInfo.add(new StringTextComponent(" "));
-                curInfo.add(new StringTextComponent(" "));
-                curInfo.add(new StringTextComponent(" "));
+                curInfo.add(xlate("pneumaticcraft.gui.micromissile.topSpeed"));
+                curInfo.add(xlate("pneumaticcraft.gui.micromissile.turnSpeed"));
+                curInfo.add(xlate("pneumaticcraft.gui.micromissile.damage"));
                 String filter = tag.getString(NBT_FILTER);
                 if (!filter.isEmpty()) {
                     curInfo.add(xlate("pneumaticcraft.gui.sentryTurret.targetFilter")
@@ -141,8 +142,8 @@ public class ItemMicromissiles extends Item {
                 }
             }
             curInfo.add(xlate("pneumaticcraft.gui.micromissile.firingMode")
-                    .appendString(": " + TextFormatting.AQUA)
-                    .append(xlate(mode.getTranslationKey())));
+                    .appendString(": ")
+                    .append(xlate(mode.getTranslationKey()).mergeStyle(TextFormatting.AQUA)));
             if (PNCConfig.Common.Micromissiles.damageTerrain) {
                 curInfo.add(xlate("pneumaticcraft.gui.tooltip.terrainWarning"));
             } else {
