@@ -20,6 +20,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.IntStream;
 
 // since this is both a receiver and an emitter, we won't use either redstone superclass here
@@ -321,15 +322,16 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
         this.constantVal = constantVal;
     }
 
-    public enum EnumRedstoneDirection {
+    public enum EnumRedstoneDirection implements ITranslatableEnum {
         INPUT, OUTPUT;
 
         public EnumRedstoneDirection toggle() {
             return this == INPUT ? OUTPUT : INPUT;
         }
 
+        @Override
         public String getTranslationKey() {
-            return "pneumaticcraft.gui.redstoneModule." + toString().toLowerCase();
+            return "pneumaticcraft.gui.redstoneModule." + toString().toLowerCase(Locale.ROOT);
         }
     }
 
@@ -356,7 +358,7 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
 
         @Override
         public String getTranslationKey() {
-            return "pneumaticcraft.gui.redstoneModule.operation_" + this.toString().toLowerCase();
+            return "pneumaticcraft.gui.redstoneModule.operation_" + this.toString().toLowerCase(Locale.ROOT);
         }
 
         public boolean useOtherColor() {

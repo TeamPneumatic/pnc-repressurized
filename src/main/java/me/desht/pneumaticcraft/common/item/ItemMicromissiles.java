@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.config.subconfig.MicromissileDefaults;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.entity.projectile.EntityMicromissile;
+import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.Blocks;
@@ -29,6 +30,7 @@ import net.minecraftforge.fml.common.Mod;
 import org.apache.commons.lang3.Validate;
 
 import java.util.List;
+import java.util.Locale;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -41,7 +43,7 @@ public class ItemMicromissiles extends Item {
     public static final String NBT_PY = "py";
     public static final String NBT_FIRE_MODE = "fireMode";
 
-    public enum FireMode {
+    public enum FireMode implements ITranslatableEnum {
         SMART, DUMB;
 
         public static FireMode fromString(String mode) {
@@ -52,8 +54,9 @@ public class ItemMicromissiles extends Item {
             }
         }
 
+        @Override
         public String getTranslationKey() {
-            return "pneumaticcraft.gui.micromissile.mode." + this.toString().toLowerCase();
+            return "pneumaticcraft.gui.micromissile.mode." + this.toString().toLowerCase(Locale.ROOT);
         }
     }
 

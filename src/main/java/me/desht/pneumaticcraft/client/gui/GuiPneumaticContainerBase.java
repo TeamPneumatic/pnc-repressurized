@@ -175,7 +175,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
                     int max = te.getApplicableUpgrades().get(upgrade);
                     text.add(TextFormatting.WHITE + "" + TextFormatting.UNDERLINE + upgrade.getItemStack().getDisplayName().getString());
                     text.add(TextFormatting.GRAY + I18n.format("pneumaticcraft.gui.tab.upgrades.max", max));
-                    String upgradeName = upgrade.toString().toLowerCase();
+                    String upgradeName = upgrade.toString().toLowerCase(Locale.ROOT);
                     String k = "pneumaticcraft.gui.tab.upgrades." + upgradeCategory() + "." + upgradeName;
                     text.add(TextFormatting.BLACK + (I18n.hasKey(k) ? I18n.format(k) : I18n.format("pneumaticcraft.gui.tab.upgrades.generic." + upgradeName)));
                     text.add("");

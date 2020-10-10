@@ -7,6 +7,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 public interface ISensorSetting {
@@ -83,7 +84,7 @@ public interface ISensorSetting {
      * @return some description text for the sensor
      */
     static List<String> _getDescription(String path) {
-        String key = path.toLowerCase().replaceAll("[/ ]", "_").replace(".", "");
+        String key = path.toLowerCase(Locale.ROOT).replaceAll("[/ ]", "_").replace(".", "");
         return ImmutableList.of("pneumaticcraft.gui.universalSensor.desc." + key);
     }
 }

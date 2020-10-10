@@ -12,6 +12,7 @@ import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.util.IOHelper;
+import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -36,10 +37,7 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class TileEntityPressureChamberInterface extends TileEntityPressureChamberWall
         implements ITickableTileEntity, IRedstoneControlled, INamedContainerProvider {
@@ -79,11 +77,12 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
     @GuiSynced
     public boolean exportAny;
 
-    public enum InterfaceDirection {
+    public enum InterfaceDirection implements ITranslatableEnum {
         NONE, IMPORT, EXPORT;
 
+        @Override
         public String getTranslationKey() {
-            return "pneumaticcraft.gui.pressureChamberInterface.mode." + toString().toLowerCase();
+            return "pneumaticcraft.gui.pressureChamberInterface.mode." + toString().toLowerCase(Locale.ROOT);
         }
     }
 

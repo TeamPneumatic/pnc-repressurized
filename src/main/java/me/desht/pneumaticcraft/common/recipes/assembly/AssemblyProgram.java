@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.item.ItemAssemblyProgram;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyController;
+import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.GuiConstants;
 import net.minecraft.block.Block;
@@ -15,13 +16,14 @@ import net.minecraftforge.fml.RegistryObject;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 
 public abstract class AssemblyProgram {
     public enum EnumAssemblyProblem {
         NO_PROBLEM, NO_INPUT, NO_OUTPUT
     }
 
-    public enum EnumMachine {
+    public enum EnumMachine implements ITranslatableEnum {
         PLATFORM(ModBlocks.ASSEMBLY_PLATFORM),
         DRILL(ModBlocks.ASSEMBLY_DRILL),
         LASER(ModBlocks.ASSEMBLY_LASER),
@@ -35,8 +37,9 @@ public abstract class AssemblyProgram {
             this.blockSupplier = blockSupplier;
         }
 
+        @Override
         public String getTranslationKey() {
-            return "block.pneumaticcraft.assembly_" + this.toString().toLowerCase();
+            return "block.pneumaticcraft.assembly_" + this.toString().toLowerCase(Locale.ROOT);
         }
 
         public Block getMachineBlock() {

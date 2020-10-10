@@ -7,6 +7,8 @@ import net.minecraft.item.Items;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import java.util.Locale;
+
 public enum EnumUpgrade {
     VOLUME("volume"),
     DISPENSER("dispenser"),
@@ -87,7 +89,7 @@ public enum EnumUpgrade {
     }
 
     public String getItemName(int tier) {
-        String name = this.toString().toLowerCase() + "_upgrade";
+        String name = this.toString().toLowerCase(Locale.ROOT) + "_upgrade";
         return maxTier > 1 ? name + "_" + tier : name;
     }
 

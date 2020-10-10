@@ -6,6 +6,7 @@ import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
+import java.util.Locale;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
@@ -50,7 +51,7 @@ public abstract class AssemblyRecipe extends PneumaticCraftRecipe {
         DRILL, LASER, DRILL_LASER;
 
         public String getRegistryName() {
-            return "assembly_program_" + this.toString().toLowerCase();
+            return "assembly_program_" + this.toString().toLowerCase(Locale.ROOT);
         }
 
         public ResourceLocation getRecipeType() {

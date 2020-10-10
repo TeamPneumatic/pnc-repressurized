@@ -22,6 +22,7 @@ import me.desht.pneumaticcraft.common.thirdparty.computer_common.ComputerEventMa
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethod;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethodRegistry;
 import me.desht.pneumaticcraft.common.util.GlobalTileEntityCacheManager;
+import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
 import net.minecraft.block.BlockState;
@@ -45,6 +46,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -565,14 +567,15 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
         }
     }
 
-    public enum SensorStatus {
+    public enum SensorStatus implements ITranslatableEnum {
         OK,
         MISSING_GPS,
         MISSING_UPGRADE,
         NO_SENSOR;
 
+        @Override
         public String getTranslationKey() {
-            return "pneumaticcraft.gui.universalSensor.status." + toString().toLowerCase();
+            return "pneumaticcraft.gui.universalSensor.status." + toString().toLowerCase(Locale.ROOT);
         }
     }
 }

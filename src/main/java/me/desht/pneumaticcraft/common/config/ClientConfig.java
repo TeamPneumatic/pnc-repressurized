@@ -4,6 +4,8 @@ import me.desht.pneumaticcraft.common.progwidgets.IProgWidget.WidgetDifficulty;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import net.minecraftforge.common.ForgeConfigSpec;
 
+import java.util.Locale;
+
 public class ClientConfig {
     public static class General {
         ForgeConfigSpec.BooleanValue aphorismDrama;
@@ -178,7 +180,7 @@ public class ClientConfig {
 
         @Override
         public String getTranslationKey() {
-            return "pneumaticcraft.armor.gui.coordinateTracker.pathUpdate." + toString().toLowerCase();
+            return "pneumaticcraft.armor.gui.coordinateTracker.pathUpdate." + toString().toLowerCase(Locale.ROOT);
         }
     }
 }

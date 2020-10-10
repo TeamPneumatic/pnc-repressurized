@@ -7,6 +7,7 @@ import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
+import java.util.Locale;
 
 public class AssemblyRecipeBuilder extends PneumaticCraftRecipeBuilder<AssemblyRecipeBuilder> {
     private final Ingredient input;
@@ -36,7 +37,7 @@ public class AssemblyRecipeBuilder extends PneumaticCraftRecipeBuilder<AssemblyR
         public void serialize(JsonObject json) {
             json.add("input", input.serialize());
             json.add("result", SerializerHelper.serializeOneItemStack(output));
-            json.addProperty("program", program.toString().toLowerCase());
+            json.addProperty("program", program.toString().toLowerCase(Locale.ROOT));
         }
     }
 }

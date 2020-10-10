@@ -11,13 +11,15 @@ import net.minecraft.util.IStringSerializable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 
+import java.util.Locale;
+
 public class BlockPressureChamberWall extends BlockPressureChamberWallBase {
     public enum EnumWallState implements IStringSerializable {
         NONE, CENTER, XEDGE, ZEDGE, YEDGE, XMIN_YMIN_ZMIN, XMIN_YMIN_ZMAX, XMIN_YMAX_ZMIN, XMIN_YMAX_ZMAX;
 
         @Override
         public String getString() {
-            return toString().toLowerCase();
+            return toString().toLowerCase(Locale.ROOT);
         }
     }
 

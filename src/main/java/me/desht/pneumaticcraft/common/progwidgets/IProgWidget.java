@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.common.progwidgets;
 import me.desht.pneumaticcraft.api.drone.IProgWidgetBase;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.item.DyeColor;
 import net.minecraft.nbt.CompoundNBT;
@@ -173,8 +172,10 @@ public interface IProgWidget extends IProgWidgetBase {
         }
 
         public String getTranslationKey() {
-            return I18n.format("pneumaticcraft.gui.progWidget.difficulty." + name);
+            return "pneumaticcraft.gui.progWidget.difficulty." + name;
         }
+
+        public String getTooltipTranslationKey() { return "pneumaticcraft.gui.programmer.difficulty." + name + ".tooltip"; }
     }
 
     /**

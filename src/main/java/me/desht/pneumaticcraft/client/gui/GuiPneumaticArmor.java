@@ -18,6 +18,7 @@ import net.minecraft.util.text.TextFormatting;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -41,7 +42,7 @@ public class GuiPneumaticArmor extends GuiChargingUpgradeManager {
                 .setText("gui.tab.info.item." + registryName);
         statusStat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.status"), itemStack, 0xFFFFAA00, false);
 
-        addUpgradeTabs(itemStack.getItem(), "armor." + equipmentSlot.toString().toLowerCase(), "armor.generic");
+        addUpgradeTabs(itemStack.getItem(), "armor." + equipmentSlot.toString().toLowerCase(Locale.ROOT), "armor.generic");
     }
 
     @Override

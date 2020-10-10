@@ -14,6 +14,8 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistry;
 
+import java.util.Locale;
+
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
@@ -54,7 +56,7 @@ public class ModHarvestHandlers {
          */
         public Block convert(Block in, TreePart to) {
             ResourceLocation rl = new ResourceLocation(in.getRegistryName().toString().replace(
-                    "_" + this.toString().toLowerCase(), "_" + to.toString().toLowerCase())
+                    "_" + this.toString().toLowerCase(Locale.ROOT), "_" + to.toString().toLowerCase(Locale.ROOT))
             );
             return ForgeRegistries.BLOCKS.getValue(rl);
         }

@@ -9,6 +9,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 
 import java.util.Collection;
+import java.util.Locale;
 
 public class HeatUtil {
     private static final int COMPARATOR_MIN = -200 + 273;
@@ -76,7 +77,7 @@ public class HeatUtil {
     }
 
     public static ITextComponent formatHeatString(Direction face, String temp) {
-        return PneumaticCraftUtils.xlate("pneumaticcraft.waila.temperature." + face.toString().toLowerCase())
+        return PneumaticCraftUtils.xlate("pneumaticcraft.waila.temperature." + face.toString().toLowerCase(Locale.ROOT))
                 .appendString(TextFormatting.WHITE.toString() + temp)
                 .mergeStyle(TextFormatting.GRAY);
     }

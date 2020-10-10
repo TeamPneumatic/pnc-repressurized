@@ -158,7 +158,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
             addButton(dButton);
             difficultyButtons.add(dButton);
             dButton.otherChoices = difficultyButtons;
-            dButton.setTooltip(xlate("pneumaticcraft.gui.programmer.difficulty." + difficulty.toString().toLowerCase() + ".tooltip"));
+            dButton.setTooltip(xlate(difficulty.getTooltipTranslationKey()));
         }
 
         addButton(new WidgetButtonExtended(xStart + 5, yStart + yBottom + 4, 87, 20,
