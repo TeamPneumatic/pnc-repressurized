@@ -10,7 +10,13 @@ The initial 2.4.0 release for MC 1.16.3 release is largely equivalent in functio
  
 Releases from 2.4.2 onward *require* Forge 34.1.0 or later.
 
-## 2.4.2-?? (unreleased)
+## 2.4.3-?? (unreleased)
+
+### Fixes
+* Fix start up crash in certain locales
+  * e.g. Turkish, or any other locale where lowercasing a capital letter gives a non-ASCII character
+
+## 2.4.2-49 (9 Oct 2020)
 
 ### Updates
 * Mekanism integration has returned!  To recap:
