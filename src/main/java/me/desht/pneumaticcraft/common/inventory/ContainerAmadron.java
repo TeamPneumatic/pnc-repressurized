@@ -298,9 +298,9 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
                 stacks.add(stack);
                 amount -= stack.getCount();
             }
-            if (stacks.isEmpty()) {
+            if (stacks.isEmpty() || stacks.size() > 36) {
                 // shouldn't happen but see https://github.com/TeamPneumatic/pnc-repressurized/issues/399
-                Log.error(String.format("retrieveOrderItems: got empty itemstack list for offer %d x %s @ %s", times, queryingItems.toString(), itemGPos.toString()));
+                Log.error(String.format("retrieveOrderItems: unexpected size (%d) for itemstack list for offer %d x %s @ %s", stacks.size(), times, queryingItems.toString(), itemGPos.toString()));
                 return null;
             }
             return (EntityAmadrone) DroneRegistry.getInstance().retrieveItemsAmazonStyle(itemGPos, stacks.toArray(new ItemStack[0]));
