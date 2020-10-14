@@ -40,6 +40,7 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fml.network.NetworkHooks;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
@@ -292,15 +293,15 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
             ItemStack queryingItems = offer.getInput().getItem();
             int amount = queryingItems.getCount() * times;
             NonNullList<ItemStack> stacks = NonNullList.create();
-            while (amount > 0) {
-                ItemStack stack = queryingItems.copy();
-                stack.setCount(Math.min(amount, stack.getMaxStackSize()));
+            while (amount > 0 && stacks.size() < 36) {
+                ItemStack stack = ItemHandlerHelper.copyStackWithSize(queryingItems, Math.min(amount, queryingItems.getMaxStackSize()));
                 stacks.add(stack);
                 amount -= stack.getCount();
             }
-            if (stacks.isEmpty() || stacks.size() > 36) {
+            if (stacks.isEmpty()) {
                 // shouldn't happen but see https://github.com/TeamPneumatic/pnc-repressurized/issues/399
-                Log.error(String.format("retrieveOrderItems: unexpected size (%d) for itemstack list for offer %d x %s @ %s", stacks.size(), times, queryingItems.toString(), itemGPos.toString()));
+                Log.error(String.format("retrieveOrderItems: got empty itemstack list for offer %s: %d x %s @ %s",
+                        offer.getId().toString(), times, queryingItems.toString(), itemGPos.toString()));
                 return null;
             }
             return (EntityAmadrone) DroneRegistry.getInstance().retrieveItemsAmazonStyle(itemGPos, stacks.toArray(new ItemStack[0]));
