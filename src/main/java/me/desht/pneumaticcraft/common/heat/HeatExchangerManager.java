@@ -15,6 +15,7 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
@@ -31,12 +32,12 @@ public enum HeatExchangerManager implements IHeatRegistry {
     }
 
     @Nonnull
-    public LazyOptional<IHeatExchangerLogic> getLogic(IWorld world, BlockPos pos, Direction side) {
+    public LazyOptional<IHeatExchangerLogic> getLogic(World world, BlockPos pos, Direction side) {
         return getLogic(world, pos, side, IHeatExchangerLogic.ALL_BLOCKS);
     }
 
     @Nonnull
-    public LazyOptional<IHeatExchangerLogic> getLogic(IWorld world, BlockPos pos, Direction side, BiPredicate<IWorld,BlockPos> blockFilter) {
+    public LazyOptional<IHeatExchangerLogic> getLogic(World world, BlockPos pos, Direction side, BiPredicate<IWorld,BlockPos> blockFilter) {
         if (!world.isAreaLoaded(pos, 0)) return LazyOptional.empty();
         TileEntity te = world.getTileEntity(pos);
         if (te != null && te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY, side).isPresent()) {
