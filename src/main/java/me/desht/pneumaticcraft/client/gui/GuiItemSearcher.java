@@ -10,7 +10,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.client.util.ITooltipFlag.TooltipFlags;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.EquipmentSlotType;
@@ -31,6 +31,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -286,10 +287,17 @@ public class GuiItemSearcher extends ContainerScreen<ContainerItemSearcher> {
         
         SearchEntry(ItemStack stack) {
             this.stack = stack;
-            List<String> t = stack.getTooltip(minecraft.player, minecraft.gameSettings.advancedItemTooltips ? ITooltipFlag.TooltipFlags.ADVANCED : ITooltipFlag.TooltipFlags.NORMAL).stream()
-                    .map(ITextComponent::getString)
-                    .collect(Collectors.toList());
-            tooltip = StringUtils.join(t, "\n").toLowerCase();
+
+            List<String> l;
+            try {
+                l = stack.getTooltip(minecraft.player, minecraft.gameSettings.advancedItemTooltips ? TooltipFlags.ADVANCED : TooltipFlags.NORMAL).stream()
+                        .map(ITextComponent::getString)
+                        .collect(Collectors.toList());
+            } catch (Exception ignored) {
+                // it's possible some modded item could have a buggy addInformation() implementation
+                l = Collections.emptyList();
+            }
+            tooltip = StringUtils.join(l, "\n").toLowerCase();
         }
         
         @Override
