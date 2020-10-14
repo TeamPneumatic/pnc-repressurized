@@ -6,32 +6,20 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.15.2
 
-## 1.5.1-?? (unreleased) 
+## 1.5.1-81 (14 Oct 2020)
 
 ### Updates
-* Logistics drone behaviour tweaks:
-  * If a drone is carrying some resource (item or fluid) that it's unable to drop off, it will now still be able to handle requests for the other resource type
-  * Drones will now also ignore minimum order sizes if dropping off a resource they're already carrying (but continue to honour minimum order sizes if it means collecting that resource from a provider frame)
-  * Storage and Default Storage frames now also support specifying minimum order sizes
-  
-### Fixes
-* Fixed server crash (ConcurrentModificationException) related to Skeleton Horse traps
-* Fixed volume upgrades not being properly taken into account for negative pressures (e.g. Vacuum Pump)
-* Programmer area previewing now disables depth testing (i.e. preview blocks are no longer hidden when in or behind solid blocks)
-
-## 1.5.1-?? (unreleased)
-
-### Updates
-* Logistics drone behaviour tweaks:
+* Logistics drone behaviour improvements:
   * If a drone is carrying some resource (item or fluid) that it's unable to drop off, it will now still be able to handle requests for the other resource type
   * Drones will now also ignore minimum order sizes if dropping off a resource they're already carrying (but continue to honour minimum order sizes if it means collecting that resource from a provider frame)
   * Storage and Default Storage frames now also support specifying minimum order sizes
 * It's now possible to right-click a Drone (that you own) with an empty fluid tank to drain any stored liquid from its internal tank
   * This may be useful if you end up with a Logistics Drone which can't drop off its fluid (items are dropped when a drone is wrenched, but fluid is not)
+* The Universal Sensor heat sensor can now read the heat level of Heat Frames
   
 ### Fixes
-* Fixed odd crash which can sometimes occur when placing Amadron orders
-  * Could not reproduce this myself but it also happened in 1.12.2 and the workaround for that got missed in porting
+* Fixed server crash caused by Amadrones trying to restock more than 36 stacks of a player offer at once
+  * Drone carrying limit is 36 stacks; if more is available for restocking, multiple trips will now be made
 * Programmer area previewing now disables depth testing (i.e. preview blocks are no longer hidden when in or behind solid blocks)
 * Fixed server crash (ConcurrentModificationException) related to Skeleton Horse traps
 * Fixed Volume Upgrades not being taken into account for negative pressures (Vacuum Pump)
