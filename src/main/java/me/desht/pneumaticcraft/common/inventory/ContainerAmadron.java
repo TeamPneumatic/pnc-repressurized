@@ -19,6 +19,7 @@ import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -294,6 +295,11 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
                 stack.setCount(Math.min(amount, stack.getMaxStackSize()));
                 stacks.add(stack);
                 amount -= stack.getCount();
+            }
+            if (stacks.isEmpty()) {
+                // shouldn't happen but see https://github.com/TeamPneumatic/pnc-repressurized/issues/399
+                Log.error(String.format("retrieveOrderItems: got empty itemstack list for offer %d x %s @ %s", times, queryingItems.toString(), itemGPos.toString()));
+                return null;
             }
             return (EntityAmadrone) DroneRegistry.getInstance().retrieveItemsAmazonStyle(itemGPos, stacks.toArray(new ItemStack[0]));
         } else if (offer.getInput().getType() == AmadronTradeResource.Type.FLUID) {
