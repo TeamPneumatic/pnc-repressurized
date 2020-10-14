@@ -186,7 +186,7 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
     }
 
     private static boolean matchFilter(ItemStack stack, BlockState blockState, ProgWidgetItemFilter filter) {
-        if (filter.matchBlock && stack.isEmpty() && blockState != null && filter.getFilter().getItem() instanceof BlockItem) {
+        if (filter.matchBlock && blockState != null && filter.getFilter().getItem() instanceof BlockItem) {
             // match by block
             return blockState.getBlock() == ((BlockItem) filter.getFilter().getItem()).getBlock();
         } else {
