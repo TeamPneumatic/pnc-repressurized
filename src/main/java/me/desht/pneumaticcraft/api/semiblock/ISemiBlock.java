@@ -13,6 +13,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
 import java.util.List;
 
@@ -22,7 +23,7 @@ import java.util.List;
  * <p>
  * While semiblocks are implemented as entities, this is an implementation detail which should not be relied upon.
  */
-public interface ISemiBlock {
+public interface ISemiBlock extends ICapabilityProvider {
     /**
      * Get a unique ID for this semiblock, which should match the corresponding item's registry name.
      * @return a semiblock ID
