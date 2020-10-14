@@ -19,6 +19,23 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed volume upgrades not being properly taken into account for negative pressures (e.g. Vacuum Pump)
 * Programmer area previewing now disables depth testing (i.e. preview blocks are no longer hidden when in or behind solid blocks)
 
+## 1.5.1-?? (unreleased)
+
+### Updates
+* Logistics drone behaviour tweaks:
+  * If a drone is carrying some resource (item or fluid) that it's unable to drop off, it will now still be able to handle requests for the other resource type
+  * Drones will now also ignore minimum order sizes if dropping off a resource they're already carrying (but continue to honour minimum order sizes if it means collecting that resource from a provider frame)
+  * Storage and Default Storage frames now also support specifying minimum order sizes
+* It's now possible to right-click a Drone (that you own) with an empty fluid tank to drain any stored liquid from its internal tank
+  * This may be useful if you end up with a Logistics Drone which can't drop off its fluid (items are dropped when a drone is wrenched, but fluid is not)
+  
+### Fixes
+* Fixed odd crash which can sometimes occur when placing Amadron orders
+  * Could not reproduce this myself but it also happened in 1.12.2 and the workaround for that got missed in porting
+* Programmer area previewing now disables depth testing (i.e. preview blocks are no longer hidden when in or behind solid blocks)
+* Fixed server crash (ConcurrentModificationException) related to Skeleton Horse traps
+* Fixed Volume Upgrades not being taken into account for negative pressures (Vacuum Pump)
+
 ## 1.5.0-73 (22 Sep 2020)
 Important: if you are also using Immersive Engineering, this release *requires* IE 4.0.0-117 or newer.
 
