@@ -83,6 +83,10 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundNBT> {
         }
     }
 
+    public void invalidateCaps() {
+        entries.forEach(e -> e.lazy.invalidate());
+    }
+
     private int setDefaultSides(RelativeFace... defaultRelativeFaces) {
         Validate.isTrue(entries.size() <= Byte.MAX_VALUE, "No more than " + Byte.MAX_VALUE + " entries allowed");
         byte idx = (byte) (entries.size() - 1);
