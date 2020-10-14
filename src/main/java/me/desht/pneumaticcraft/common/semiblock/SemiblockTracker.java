@@ -7,7 +7,7 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.IWorldReader;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
@@ -49,7 +49,7 @@ public enum SemiblockTracker {
      * @param pos the block
      * @return the entity at the given pos
      */
-    public ISemiBlock getSemiblock(World world, BlockPos pos) {
+    public ISemiBlock getSemiblock(IWorldReader world, BlockPos pos) {
         return getSemiblock(world, pos, null);
     }
 
@@ -60,7 +60,7 @@ public enum SemiblockTracker {
      * @param direction face of the blockpos, or null for the block itself
      * @return the entity, or null if none was found
      */
-    public ISemiBlock getSemiblock(World world, BlockPos pos, Direction direction) {
+    public ISemiBlock getSemiblock(IWorldReader world, BlockPos pos, Direction direction) {
         Map<BlockPos, SemiblockCollection> map = semiblockMap.get(getKey(world));
         if (map == null) return null;
         SemiblockCollection sc = map.get(pos);
@@ -73,7 +73,7 @@ public enum SemiblockTracker {
      * @param pos the blockpos
      * @return a collection of all the semiblocks at the given position
      */
-    public Stream<ISemiBlock> getAllSemiblocks(World world, BlockPos pos) {
+    public Stream<ISemiBlock> getAllSemiblocks(IWorldReader world, BlockPos pos) {
         return getAllSemiblocks(world, pos, null);
     }
 
@@ -85,7 +85,7 @@ public enum SemiblockTracker {
      * @param offsetDir a direction to offset if needed
      * @return a stream of all the semiblocks at the given position
      */
-    public Stream<ISemiBlock> getAllSemiblocks(World world, BlockPos pos, Direction offsetDir) {
+    public Stream<ISemiBlock> getAllSemiblocks(IWorldReader world, BlockPos pos, Direction offsetDir) {
         Map<BlockPos, SemiblockCollection> map = semiblockMap.computeIfAbsent(getKey(world), k -> new HashMap<>());
         if (map.isEmpty()) return Stream.empty();
         SemiblockCollection sc = map.get(pos);
@@ -99,7 +99,7 @@ public enum SemiblockTracker {
      * @param pos the blockpos
      * @param direction the side of the block, or null for the block itself
      */
-    public void clearSemiblock(World world, BlockPos pos, Direction direction) {
+    public void clearSemiblock(IWorldReader world, BlockPos pos, Direction direction) {
         Map<BlockPos, SemiblockCollection> map = semiblockMap.computeIfAbsent(getKey(world), k -> new HashMap<>());
         SemiblockCollection sc = map.get(pos);
         if (sc != null) sc.clear(direction);
@@ -113,7 +113,7 @@ public enum SemiblockTracker {
      * @param entity the semiblock entity
      * @return true if it was added OK, false if there was already a semiblock there (which is an error)
      */
-    public boolean putSemiblock(World world, BlockPos pos, ISemiBlock entity) {
+    public boolean putSemiblock(IWorldReader world, BlockPos pos, ISemiBlock entity) {
         Map<BlockPos, SemiblockCollection> map = semiblockMap.computeIfAbsent(getKey(world), k -> new HashMap<>());
 
         SemiblockCollection sc = map.get(pos);
@@ -131,7 +131,7 @@ public enum SemiblockTracker {
      * @param aabb a bounding box which contains all the wanted semiblocks
      * @return a stream of semiblock in the area
      */
-    public Stream<ISemiBlock> getSemiblocksInArea(World world, AxisAlignedBB aabb) {
+    public Stream<ISemiBlock> getSemiblocksInArea(IWorldReader world, AxisAlignedBB aabb) {
         Map<BlockPos, SemiblockCollection> map = semiblockMap.computeIfAbsent(getKey(world), k -> new HashMap<>());
 
         return map.entrySet().stream()
@@ -139,7 +139,7 @@ public enum SemiblockTracker {
                 .flatMap(e -> e.getValue().getAll());
     }
 
-    private ResourceLocation getKey(World world) {
+    private ResourceLocation getKey(IWorldReader world) {
         return world.getDimension().getType().getRegistryName();
     }
 
