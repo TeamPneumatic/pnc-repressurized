@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.universal_sensor.IBlockAndCoordinatePollSensor;
+import me.desht.pneumaticcraft.common.heat.HeatExchangerManager;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
@@ -41,12 +42,17 @@ public class BlockHeatSensor implements IBlockAndCoordinatePollSensor {
 
     @Override
     public int getRedstoneValue(World world, BlockPos pos, int sensorRange, String textBoxText, Set<BlockPos> positions) {
-        double temperature = Double.MIN_VALUE;
+        double temperature = 0D;
         for (BlockPos p : positions) {
+            temperature = Math.max(temperature, HeatExchangerManager.getInstance().getLogic(world, p, null)
+                    .map(IHeatExchangerLogic::getTemperature).orElse(0d));
             TileEntity te = world.getTileEntity(p);
-            for (Direction d : Direction.VALUES) {
-                temperature = Math.max(temperature, te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY, d)
-                        .map(IHeatExchangerLogic::getTemperature).orElse(0d));
+            if (te != null) {
+                // possibly sided TE?
+                for (Direction side : Direction.VALUES) {
+                    temperature = Math.max(temperature, te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY, side)
+                            .map(IHeatExchangerLogic::getTemperature).orElse(0d));
+                }
             }
         }
         return NumberUtils.isCreatable(textBoxText) ?
