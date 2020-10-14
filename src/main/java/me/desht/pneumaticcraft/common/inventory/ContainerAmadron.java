@@ -290,7 +290,7 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
             ItemStack queryingItems = offer.getInput().getItem();
             int amount = queryingItems.getCount() * times;
             NonNullList<ItemStack> stacks = NonNullList.create();
-            while (amount > 0) {
+            while (amount > 0 && stacks.size() < 36) {
                 ItemStack stack = queryingItems.copy();
                 stack.setCount(Math.min(amount, stack.getMaxStackSize()));
                 stacks.add(stack);
