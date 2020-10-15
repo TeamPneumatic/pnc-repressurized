@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.thirdparty;
 
-import joptsimple.internal.Strings;
 import me.desht.pneumaticcraft.common.config.subconfig.ThirdPartyConfig;
 import me.desht.pneumaticcraft.common.thirdparty.botania.Botania;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.ComputerCraft;
@@ -90,7 +89,7 @@ public class ThirdPartyManager {
             }
         }
 
-        Log.info("Thirdparty integration activated for [" + Strings.join(modNames, ", ") + "]");
+        Log.info("Thirdparty integration activated for [" + String.join(",", modNames) + "]");
     }
 
     public void init() {
