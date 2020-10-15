@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiArmorMainScreen;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.ContainerItemSearcher;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -10,20 +10,22 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.renderer.Rectangle2d;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag.TooltipFlags;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentData;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.inventory.container.ClickType;
 import net.minecraft.inventory.container.Slot;
+import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -40,17 +42,21 @@ import java.util.stream.Stream;
 public class GuiItemSearcher extends ContainerScreen<ContainerItemSearcher> {
     private static final ResourceLocation GUI_TEXTURE = Textures.GUI_ITEM_SEARCHER;
     private static final ResourceLocation SCROLL_TEXTURE = new ResourceLocation("textures/gui/container/creative_inventory/tabs.png");
+    private static final int SEARCH_SLOT = 48;
+
     private static List<SearchEntry> cachedSearchEntries;
-    private final ItemStackHandler inventory = new ItemStackHandler(49);
+
+    private final ItemStackHandler inventory = new ItemStackHandler(49);  // 6 * 8 slots, plus the selected item
     private final Screen parentScreen;
     // Amount scrolled in Creative mode inventory (0 = top, 1 = bottom)
-    private float currentScroll;
+    private double currentScroll;
     // True if the scrollbar is being dragged
     private boolean isScrolling;
     // True if the left mouse button was held down last time drawScreen was called.
-    private boolean wasClicking;
     private TextFieldWidget searchField;
-    private boolean firstRun = true;
+    private Rectangle2d scrollArea;
+    private String lastSearch = "";
+    private int updateCounter = 0;
 
     public GuiItemSearcher(ContainerItemSearcher container, PlayerInventory playerInventory, ITextComponent displayString) {
         super(container, playerInventory, displayString);
@@ -68,20 +74,20 @@ public class GuiItemSearcher extends ContainerScreen<ContainerItemSearcher> {
 
     @Nonnull
     public ItemStack getSearchStack() {
-        return inventory.getStackInSlot(48);
+        return inventory.getStackInSlot(SEARCH_SLOT);
     }
 
     public void setSearchStack(@Nonnull ItemStack stack) {
-        inventory.setStackInSlot(48, stack);
+        inventory.setStackInSlot(SEARCH_SLOT, stack);
     }
 
     @Override
-    protected void handleMouseClick(Slot par1Slot, int par2, int par3, ClickType par4) {
-        if (par1Slot != null) {
-            if (par1Slot.slotNumber == 48) {
-                par1Slot.putStack(ItemStack.EMPTY);
+    protected void handleMouseClick(Slot slot, int slotId, int mouseButton, ClickType type) {
+        if (slot != null) {
+            if (slot.slotNumber == SEARCH_SLOT) {
+                slot.putStack(ItemStack.EMPTY);
             } else {
-                inventory.setStackInSlot(48, par1Slot.getStack());
+                inventory.setStackInSlot(SEARCH_SLOT, slot.getStack());
             }
         }
     }
@@ -95,18 +101,29 @@ public class GuiItemSearcher extends ContainerScreen<ContainerItemSearcher> {
 
         buttons.clear();
         children.clear();
+
         minecraft.keyboardListener.enableRepeatEvents(true);
-        searchField = new TextFieldWidget(font, guiLeft + 20, guiTop + 36, 89, font.FONT_HEIGHT, StringTextComponent.EMPTY);
+
+        searchField = new WidgetTextField(font, guiLeft + 8, guiTop + 36, 89, font.FONT_HEIGHT);
         searchField.setMaxStringLength(15);
         searchField.setEnableBackgroundDrawing(true);
         searchField.setVisible(true);
-        searchField.setTextColor(16777215);
-        searchField.setResponder(s -> updateCreativeSearch());
+        searchField.setTextColor(0xFFFFFF);
+        searchField.setResponder(s -> textFieldResponder());
         addButton(searchField);
         setListener(searchField);
         searchField.setFocused2(true);
 
+        scrollArea = new Rectangle2d(guiLeft + 156, guiTop + 48, 14, 112);
+
         updateCreativeSearch();
+    }
+
+    private void textFieldResponder() {
+        if (!searchField.getText().equals(lastSearch)) {
+            updateCounter = 5;
+        }
+        lastSearch = searchField.getText();
     }
 
     @Override
@@ -115,7 +132,7 @@ public class GuiItemSearcher extends ContainerScreen<ContainerItemSearcher> {
         if (parentScreen != null) {
             minecraft.displayGuiScreen(parentScreen);
             if (parentScreen instanceof ContainerScreen) {
-                minecraft.player.openContainer = ((ContainerScreen) parentScreen).getContainer();
+                minecraft.player.openContainer = ((ContainerScreen<?>) parentScreen).getContainer();
             }
         } else {
             super.closeScreen();
@@ -126,10 +143,12 @@ public class GuiItemSearcher extends ContainerScreen<ContainerItemSearcher> {
     public void tick() {
         super.tick();
 
+        if (updateCounter > 0 && --updateCounter == 0) {
+            updateCreativeSearch();
+        }
+
         if (parentScreen instanceof GuiArmorMainScreen
                 && minecraft.player.getItemStackFromSlot(EquipmentSlotType.HEAD).getItem() != ModItems.PNEUMATIC_HELMET.get()) {
-//                minecraft.displayGuiScreen(parentScreen);
-//                onClose();
             closeScreen();
         }
     }
@@ -145,9 +164,7 @@ public class GuiItemSearcher extends ContainerScreen<ContainerItemSearcher> {
 
     private void getAllEnchantedBooks(Enchantment enchantment, NonNullList<ItemStack> list) {
         for (int i = enchantment.getMinLevel(); i <= enchantment.getMaxLevel(); ++i) {
-            ItemStack itemstack = new ItemStack(Items.ENCHANTED_BOOK);
-            itemstack.addEnchantment(enchantment, i);
-            list.add(itemstack);
+            list.add(EnchantedBookItem.getEnchantedItemStack(new EnchantmentData(enchantment, i)));
         }
     }
 
@@ -156,7 +173,9 @@ public class GuiItemSearcher extends ContainerScreen<ContainerItemSearcher> {
             NonNullList<ItemStack> itemList = NonNullList.create();
 
             for (Item item : ForgeRegistries.ITEMS.getValues()) {
-                if (item != null) itemList.add(new ItemStack(item));
+                NonNullList<ItemStack> l = NonNullList.create();
+                if (item != null && item.getGroup() != null) item.fillItemGroup(item.getGroup(), l);
+                itemList.addAll(l);
             }
 
             for (Enchantment enchantment : ForgeRegistries.ENCHANTMENTS.getValues()) {
@@ -186,19 +205,6 @@ public class GuiItemSearcher extends ContainerScreen<ContainerItemSearcher> {
         container.scrollTo(0.0F);
     }
 
-    /**
-     * Draw the foreground layer for the GuiContainer (everything in front of the items)
-     */
-    @Override
-    protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int par1, int par2) {
-        font.drawString(matrixStack, "Item Searcher", 23, 5, 0x404040);
-        font.drawString(matrixStack, "Search Box", 23, 25, 0x404040);
-        font.drawString(matrixStack, "Target", 113, 10, 0x404040);
-    }
-
-    /**
-     * returns (if you are not on the inventoryTab) and (the flag isn't set) and( you have more than 1 page of items)
-     */
     private boolean needsScrollBars() {
         return container.hasMoreThan1PageOfItemsInList();
     }
@@ -208,57 +214,60 @@ public class GuiItemSearcher extends ContainerScreen<ContainerItemSearcher> {
         if (dir != 0 && needsScrollBars()) {
             int j = container.itemList.size() / 9 - 5 + 1;
             float i = dir > 0 ? 1f : -1f;
-            currentScroll = MathHelper.clamp(currentScroll - i /  j, 0F, 1F);
+            currentScroll = MathHelper.clamp(currentScroll - i / j, 0.0, 1.0);
             container.scrollTo(currentScroll);
             return true;
         }
         return super.mouseScrolled(x, y, dir);
     }
 
-    /**
-     * Draws the screen and all the components in it.
-     */
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        isScrolling = button == 0 && needsScrollBars() && scrollArea.contains((int)mouseX, (int)mouseY);
+        if (isScrolling) {
+            scrollTo(mouseY);
+            return true;
+        }
+        return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+        if (isScrolling) {
+            scrollTo(mouseY);
+            return true;
+        }
+        return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+    }
+
+    private void scrollTo(double mouseY) {
+        currentScroll = (mouseY - scrollArea.getY()) / scrollArea.getHeight();
+        currentScroll = MathHelper.clamp(currentScroll, 0F, 1F);
+        container.scrollTo(currentScroll);
+    }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        isScrolling = false;
+
+        return super.mouseReleased(mouseX, mouseY, button);
+    }
+
     @Override
     public void render(MatrixStack matrixStack, int x, int y, float partialTicks) {
         renderBackground(matrixStack);
 
-        boolean isLeftClicking = minecraft.gameSettings.keyBindAttack.isKeyDown();
-        int x1 = guiLeft + 156;
-        int y1 = guiTop + 48;
-        int x2 = x1 + 14;
-        int y2 = y1 + 112;
-
-        if (!wasClicking && isLeftClicking && x >= x1 && y >= y1 && x < x2 && y < y2) {
-            isScrolling = needsScrollBars();
-        }
-
-        if (!isLeftClicking) {
-            isScrolling = false;
-        }
-
-        wasClicking = isLeftClicking;
-
-        if (isScrolling) {
-            currentScroll = (y - y1 - 7.5F) / (y2 - y1 - 15.0F);
-            currentScroll = MathHelper.clamp(currentScroll, 0F, 1F);
-            container.scrollTo(currentScroll);
-        }
-        if (firstRun) {
-            firstRun = false;
-            container.scrollTo(0);
-        }
-
         super.render(matrixStack, x, y, partialTicks);
-
-        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.disableLighting();
 
         renderHoveredTooltip(matrixStack, x, y);
     }
 
-    /**
-     * Draw the background layer for the GuiContainer (everything behind the items)
-     */
+    @Override
+    protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int par1, int par2) {
+        font.drawString(matrixStack, I18n.format("pneumaticcraft.armor.upgrade.search"), 5, 5, 0x404040);
+        font.drawString(matrixStack, I18n.format("pneumaticcraft.gui.progWidget.itemFilter.filterLabel"), 8, 25, 0x404040);
+    }
+
     @Override
     protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float par1, int par2, int par3) {
         minecraft.getTextureManager().bindTexture(GUI_TEXTURE);
@@ -266,17 +275,14 @@ public class GuiItemSearcher extends ContainerScreen<ContainerItemSearcher> {
         int yStart = (height - ySize) / 2;
         blit(matrixStack, xStart, yStart, 0, 0, xSize, ySize);
 
-        int i1 = guiLeft + 156;
-        int k = guiTop + 48;
-        int l = k + 112;
+        int x = scrollArea.getX();
+        int y1 = scrollArea.getY();
+        int y2 = y1 + scrollArea.getHeight();
         minecraft.getTextureManager().bindTexture(SCROLL_TEXTURE);
-        blit(matrixStack, i1, k + (int) ((l - k - 17) * currentScroll), 232 + (needsScrollBars() ? 0 : 12), 0, 12, 15);
+        blit(matrixStack, x, y1 + (int) ((y2 - y1 - 17) * currentScroll), 232 + (needsScrollBars() ? 0 : 12), 0, 12, 15);
 
     }
 
-    /**
-     * Returns the creative inventory
-     */
     public IItemHandlerModifiable getInventory() {
         return inventory;
     }

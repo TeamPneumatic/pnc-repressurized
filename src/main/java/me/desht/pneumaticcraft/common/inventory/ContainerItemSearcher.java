@@ -33,7 +33,7 @@ public class ContainerItemSearcher extends Container {
             }
         }
 
-        addSlot(new SlotPhantomUnstackable(gui.getInventory(), 48, 124, 25));
+        addSlot(new SlotPhantomUnstackable(gui.getInventory(), 48, 148, 12));
         scrollTo(0.0F);
     }
 
@@ -46,7 +46,7 @@ public class ContainerItemSearcher extends Container {
      * Updates the gui slots ItemStack's based on scroll position.
      * @param scrollPos scroll position, the range 0.0 - 1.0
      */
-    public void scrollTo(float scrollPos) {
+    public void scrollTo(double scrollPos) {
         int i = itemList.size() / SEARCH_COLS - SEARCH_ROWS + 1;
         int j = Math.max(0, (int) (scrollPos * i + 0.5D));
 
