@@ -10,6 +10,11 @@ The initial 2.4.0 release for MC 1.16.3 release is largely equivalent in functio
  
 Releases from 2.4.2 onward *require* Forge 34.1.0 or later.
 
+## 2.4.4-59 (15 Oct 2020)
+
+### Fixes
+* Hotfix: fix init crash which will affect some Java installations (I was wrongly using a library routine not guaranteed to be present at runtime)
+
 ## 2.4.3-58 (15 Oct 2020)
 
 ### Updates
