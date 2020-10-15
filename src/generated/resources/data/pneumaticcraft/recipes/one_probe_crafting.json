@@ -1,3 +1,16 @@
 {
-  "type": "pneumaticcraft:one_probe_helmet_crafting"
+  "type": "forge:conditional",
+  "recipes": [
+    {
+      "conditions": [
+        {
+          "modid": "theoneprobe",
+          "type": "forge:mod_loaded"
+        }
+      ],
+      "recipe": {
+        "type": "pneumaticcraft:one_probe_helmet_crafting"
+      }
+    }
+  ]
 }
