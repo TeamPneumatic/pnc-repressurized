@@ -54,10 +54,10 @@ repositories {
 //        name = "OpenComputers"
 //        url = "http://maven.cil.li/"
 //    }
-//    maven {
-//        name = "K-4u Mod maven"
-//        url = "https://modmaven.k-4u.nl/"
-//    }
+    maven {
+        name = "K-4u Mod maven"
+        url = "https://modmaven.k-4u.nl/"
+    }
 //    maven {
 //        name = "ic2"
 //        url = "http://maven.ic2.player.to/"
@@ -208,11 +208,10 @@ dependencies {
     compile fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:${immersive_engineering_version}")
     compile fg.deobf("curse.maven:mekanism:${mekanism_curse_id}")
     compile fg.deobf("curse.maven:hwyla:${hwyla_curse_id}")
-    compile fg.deobf("curse.maven:ae2:${ae2_curse_id}")
+    compileOnly fg.deobf("appeng:appliedenergistics2:${ae2_version}:api")
+    runtimeOnly fg.deobf("appeng:appliedenergistics2:${ae2_version}")
 
-//    compileOnly fg.deobf("appeng:appliedenergistics2:${ae2_version}:api")
-//    runtimeOnly fg.deobf("appeng:appliedenergistics2:${ae2_version}")
-
+//    compile fg.deobf("curse.maven:ae2:${ae2_curse_id}")
 //    compileOnly fg.deobf("mcp.mobius.waila:Hwyla:${hwyla_version}:api")
 //    runtimeOnly fg.deobf("mcp.mobius.waila:Hwyla:${hwyla_version}")
 //    compileOnly "cofh:RedstoneFlux:1.12-${redstone_flux_version}:universal"
