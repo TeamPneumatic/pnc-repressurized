@@ -10,6 +10,24 @@ The initial 2.0.0 release for MC 1.16.1 is largely equivalent in functionality t
 
 Releases from 2.1.0 onward *require* Forge 32.0.108 or newer.
 
+## 2.2.4-60 (17 Oct 2020)
+
+### Updates
+* Universal Sensor heat sensor can now read the temperature of Heat Frames
+  * Also other non-tile entity blocks such as magma, campfires, ice, etc...
+
+### Fixes
+* Fixed Dig progwidget not being able to blacklist blocks by blockstate
+* Fixed occasional Aerial Interface crashes on player login when connected to FE cables
+* Fix start up crash in certain locales
+  * e.g. Turkish, or any other locale where lowercasing a capital letter gives a non-ASCII character
+* Fixed server crash caused by Amadrones trying to restock more than 36 stacks of a player offer at once
+  * Drone carrying limit is 36 stacks; if more is available for restocking, multiple trips will now be made
+* Fixed Volume Upgrades not being taken into account for negative pressures (Vacuum Pump)
+* Fixed init crash which will affect some Java installations (I was wrongly using a library routine not guaranteed to be present at runtime)
+* Fixed server crash (ConcurrentModificationException) related to Skeleton Horse traps
+* Programmer area previewing now disables depth testing (i.e. preview blocks are no longer hidden when in or behind solid blocks)
+
 ## 2.2.3-47 (26 Sep 2020)
 
 ### Updates
