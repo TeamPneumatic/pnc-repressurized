@@ -1314,6 +1314,11 @@ public class EntityDrone extends EntityDroneBase implements
     }
 
     @Override
+    public void addAirToDrone(int air) {
+        airHandler.addAir(air);
+    }
+
+    @Override
     public void updateLabel() {
         dataManager.set(LABEL, getAIManager() != null ? getAIManager().getLabel() : "Main");
     }

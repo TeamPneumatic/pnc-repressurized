@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.ai;
 
 import com.google.common.collect.Lists;
-import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.drone.IPathNavigator;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
@@ -160,7 +159,7 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
                 teleportCounter = -1;
                 setPath(null, 0);
                 pathfindingEntity.getMoveHelper().setMoveTo(telPos.getX(), telPos.getY(), telPos.getZ(), pathfindingEntity.getSpeed());
-                pathfindingEntity.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY).ifPresent(h -> h.addAir(-10000));
+                pathfindingEntity.addAirToDrone(-10000);
             }
         } else {
             // super.onUpdateNavigation();

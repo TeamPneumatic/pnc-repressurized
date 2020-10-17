@@ -71,7 +71,7 @@ import java.util.*;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
-public class TileEntityProgrammableController extends TileEntityPneumaticBase
+        public class TileEntityProgrammableController extends TileEntityPneumaticBase
         implements IMinWorkingPressure, IDroneBase, ISideConfigurable, INamedContainerProvider {
     private static final int INVENTORY_SIZE = 1;
     private static final String FALLBACK_NAME = "[ProgController]";
@@ -654,6 +654,11 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     @Override
     public void playSound(SoundEvent soundEvent, SoundCategory category, float volume, float pitch) {
         // nothing
+    }
+
+    @Override
+    public void addAirToDrone(int air) {
+        airHandler.addAir(air);
     }
 
     private class ProgrammableItemStackHandler extends BaseItemStackHandler {

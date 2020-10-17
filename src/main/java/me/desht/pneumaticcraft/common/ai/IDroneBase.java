@@ -38,4 +38,6 @@ public interface IDroneBase extends IDrone {
     void setLogisticsManager(LogisticsManager logisticsManager);
 
     void playSound(SoundEvent soundEvent, SoundCategory category, float volume, float pitch);
+
+    void addAirToDrone(int air);
 }

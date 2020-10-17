@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.ai;
 
-import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.common.progwidgets.IBlockOrdered;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetAreaItemBase;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -83,8 +82,7 @@ public class DroneAIPlace<W extends ProgWidgetAreaItemBase & IBlockOrdered /*& I
                     BlockItemUseContext ctx = getPlacementContext(pos, pos, droneStack);
                     ActionResultType res = blockItem.tryPlace(ctx);
                     if (res == ActionResultType.SUCCESS) {
-                        drone.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY)
-                                .ifPresent(h -> h.addAir(-PneumaticValues.DRONE_USAGE_PLACE));
+                        drone.addAirToDrone(-PneumaticValues.DRONE_USAGE_PLACE);
                         if (slot == 0 && drone.getInv().getStackInSlot(slot).isEmpty()) {
                             // kludge to force update of visible held item
                             drone.getInv().setStackInSlot(slot, ItemStack.EMPTY);
