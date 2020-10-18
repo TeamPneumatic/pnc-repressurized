@@ -22,7 +22,6 @@ Releases from 2.4.2 onward *require* Forge 34.1.0 or later.
   * Also other non-tile entity blocks such as magma, campfires, ice, etc...
 
 ### Fixes
-* Fixed Dig progwidget not being able to blacklist blocks by blockstate
 * Fixed occasional Aerial Interface crashes on player login when connected to FE cables
 * Fix start up crash in certain locales
   * e.g. Turkish, or any other locale where lowercasing a capital letter gives a non-ASCII character
