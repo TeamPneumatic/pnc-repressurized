@@ -1633,5 +1633,6 @@
    "programmingPuzzle.pneumaticcraft.suicide.name" : "Suicide",
    "programmingPuzzle.pneumaticcraft.teleport.name" : "Teleport to location",
    "programmingPuzzle.pneumaticcraft.text.name" : "Text",
+   "programmingPuzzle.pneumaticcraft.void_item.name" : "Void Item",
    "programmingPuzzle.pneumaticcraft.wait.name" : "Wait"
 }

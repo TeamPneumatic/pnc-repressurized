@@ -36,6 +36,7 @@ public class ModProgWidgets {
     public static final ProgWidgetType<ProgWidgetEntityRightClick> ENTITY_RIGHT_CLICK = null;
     public static final ProgWidgetType<ProgWidgetPickupItem> PICKUP_ITEM = null;
     public static final ProgWidgetType<ProgWidgetDropItem> DROP_ITEM = null;
+    public static final ProgWidgetType<ProgWidgetVoidItem> VOID_ITEM = null;
     public static final ProgWidgetType<ProgWidgetInventoryExport> INVENTORY_EXPORT = null;
     public static final ProgWidgetType<ProgWidgetInventoryImport> INVENTORY_IMPORT = null;
     public static final ProgWidgetType<ProgWidgetLiquidExport> LIQUID_EXPORT = null;
@@ -103,6 +104,7 @@ public class ModProgWidgets {
             register(r, "entity_right_click", ProgWidgetEntityRightClick::new);
             register(r, "pickup_item", ProgWidgetPickupItem::new);
             register(r, "drop_item", ProgWidgetDropItem::new);
+            register(r, "void_item", ProgWidgetVoidItem::new);
             register(r, "inventory_export", ProgWidgetInventoryExport::new);
             register(r, "inventory_import", ProgWidgetInventoryImport::new);
             register(r, "liquid_export", ProgWidgetLiquidExport::new);

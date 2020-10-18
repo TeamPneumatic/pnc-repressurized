@@ -160,6 +160,7 @@ public class PneumaticValues {
     public static final int DRONE_USAGE_PLACE = 100;//per block, Based on BC filler, 25MJ/block.
     public static final int DRONE_USAGE_INV = 10;//per stack
     public static final int DRONE_USAGE_ATTACK = 200;//per hit
+    public static final int DRONE_USAGE_VOID = 1;//per item
 
     public static final float DEF_SPEED_UPGRADE_MULTIPLIER = 1.5F;
     public static final float DEF_SPEED_UPGRADE_USAGE_MULTIPLIER = 1.65F;
