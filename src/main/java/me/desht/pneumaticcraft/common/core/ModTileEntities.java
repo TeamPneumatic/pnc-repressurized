@@ -136,7 +136,9 @@ public class ModTileEntities {
     public static final RegistryObject<TileEntityType<TileEntityVacuumTrap>> VACUUM_TRAP
             = register("vacuum_trap", () -> new TileEntityType<>(TileEntityVacuumTrap::new, ImmutableSet.of(ModBlocks.VACUUM_TRAP.get()), null));
     public static final RegistryObject<TileEntityType<TileEntitySpawnerExtractor>> SPAWNER_EXTRACTOR
-            = register("spawner_extractor", () -> new TileEntityType<>(TileEntitySpawnerExtractor::new, ImmutableSet.of(ModBlocks.SPAWNER_EXTRACTOR.get()), null)) ;
+            = register("spawner_extractor", () -> new TileEntityType<>(TileEntitySpawnerExtractor::new, ImmutableSet.of(ModBlocks.SPAWNER_EXTRACTOR.get()), null));
+    public static final RegistryObject<TileEntityType<TileEntityPressurizedSpawner>> PRESSURIZED_SPAWNER
+            = register("pressurized_spawner", () -> new TileEntityType<>(TileEntityPressurizedSpawner::new, ImmutableSet.of(ModBlocks.PRESSURIZED_SPAWNER.get()), null));
 
     private static <T extends TileEntityType<?>> RegistryObject<T> register(String name, Supplier<T> sup) {
         return TILE_ENTITIES.register(name, sup);

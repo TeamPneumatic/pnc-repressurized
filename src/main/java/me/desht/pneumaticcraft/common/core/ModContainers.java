@@ -121,6 +121,8 @@ public class ModContainers {
             = register("vacuum_trap", ContainerVacuumTrap::new);
     public static final RegistryObject<ContainerType<ContainerSpawnerExtractor>> SPAWNER_EXTRACTOR
             = register("spawner_extractor", ContainerSpawnerExtractor::new);
+    public static final RegistryObject<ContainerType<ContainerPressurizedSpawner>> PRESSURIZED_SPAWNER
+            = register("pressurized_spawner", ContainerPressurizedSpawner::new) ;
 
     private static <C extends Container, T extends ContainerType<C>> RegistryObject<T> register(String name, IContainerFactory<? extends C> f) {
         //noinspection unchecked

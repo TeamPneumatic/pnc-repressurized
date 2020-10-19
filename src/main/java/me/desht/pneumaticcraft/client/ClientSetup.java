@@ -133,6 +133,7 @@ public class ClientSetup {
         RenderTypeLookup.setRenderLayer(ModBlocks.LIQUID_HOPPER.get(), RenderType.getCutoutMipped());
         RenderTypeLookup.setRenderLayer(ModBlocks.PRESSURE_CHAMBER_GLASS.get(), RenderType.getCutout());
         RenderTypeLookup.setRenderLayer(ModBlocks.PRESSURE_TUBE.get(), RenderType.getCutout());
+        RenderTypeLookup.setRenderLayer(ModBlocks.PRESSURIZED_SPAWNER.get(), RenderType.getCutout());
         RenderTypeLookup.setRenderLayer(ModBlocks.REFINERY.get(), RenderType.getCutoutMipped());
         RenderTypeLookup.setRenderLayer(ModBlocks.REFINERY_OUTPUT.get(), RenderType.getCutoutMipped());
         RenderTypeLookup.setRenderLayer(ModBlocks.TANK_SMALL.get(), RenderType.getCutoutMipped());
@@ -200,6 +201,7 @@ public class ClientSetup {
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.PRESSURE_CHAMBER_VALVE.get(), RenderPressureChamber::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.PRESSURE_CHAMBER_INTERFACE.get(), RenderPressureChamberInterface::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.PRESSURE_TUBE.get(), RenderPressureTubeModule::new);
+        ClientRegistry.bindTileEntityRenderer(ModTileEntities.PRESSURIZED_SPAWNER.get(), RenderPressurizedSpawner::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.REFINERY.get(), RenderRefineryController::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.REFINERY_OUTPUT.get(), RenderRefineryOutput::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.SECURITY_STATION.get(), RenderSecurityStation::new);
@@ -250,6 +252,7 @@ public class ClientSetup {
         ScreenManager.registerFactory(ModContainers.PNEUMATIC_DYNAMO.get(), GuiPneumaticDynamo::new);
         ScreenManager.registerFactory(ModContainers.PRESSURE_CHAMBER_VALVE.get(), GuiPressureChamber::new);
         ScreenManager.registerFactory(ModContainers.PRESSURE_CHAMBER_INTERFACE.get(), GuiPressureChamberInterface::new);
+        ScreenManager.registerFactory(ModContainers.PRESSURIZED_SPAWNER.get(), GuiPressurizedSpawner::new);
         ScreenManager.registerFactory(ModContainers.PROGRAMMER.get(), GuiProgrammer::new);
         ScreenManager.registerFactory(ModContainers.PROGRAMMABLE_CONTROLLER.get(), GuiProgrammableController::new);
         ScreenManager.registerFactory(ModContainers.REFINERY.get(), GuiRefineryController::new);

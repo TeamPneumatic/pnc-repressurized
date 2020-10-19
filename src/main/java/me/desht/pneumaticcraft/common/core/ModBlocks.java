@@ -198,6 +198,8 @@ public class ModBlocks {
             BlockSpawnerExtractor::new);
     public static final RegistryObject<BlockEmptySpawner> EMPTY_SPAWNER = register("empty_spawner",
             BlockEmptySpawner::new);
+    public static final RegistryObject<BlockPressurizedSpawner> PRESSURIZED_SPAWNER = register("pressurized_spawner",
+            BlockPressurizedSpawner::new);
 
     public static final List<RegistryObject<BlockPlasticBrick>> PLASTIC_BRICKS = new ArrayList<>();
     static {
