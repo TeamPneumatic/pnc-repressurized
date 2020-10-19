@@ -2,7 +2,10 @@ package me.desht.pneumaticcraft.common.config.subconfig;
 
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Names;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.fml.loading.FMLPaths;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,11 +21,11 @@ public class AuxConfigHandler {
     };
 
     public static void preInit() {
-        File configDir = FMLPaths.CONFIGDIR.get().toFile();
+        File defaultConfigDir = new File(FMLPaths.CONFIGDIR.get().toFile(), Names.MOD_ID);
         for (IAuxConfig subConfig : EXTERNAL_CONFIGS) {
-            File subFolder = new File(configDir, Names.MOD_ID);
-            if (subFolder.exists() || subFolder.mkdirs()) {
-                File subFile = new File(subFolder, subConfig.getConfigFilename() + ".cfg");
+            if (subConfig.useWorldSpecificDir()) continue;  // world-specific configs can't be handled in pre-init; there's no world yet
+            if (defaultConfigDir.exists() || defaultConfigDir.mkdirs()) {
+                File subFile = new File(defaultConfigDir, subConfig.getConfigFilename() + ".cfg");
                 try {
                     subConfig.preInit(subFile);
                 } catch(IOException e) {
@@ -37,17 +40,48 @@ public class AuxConfigHandler {
     }
 
     public static void postInit() {
-        for(IAuxConfig subConfig : EXTERNAL_CONFIGS) {
-            try {
-                subConfig.postInit();
-            } catch(IOException e) {
-                Log.error("Config file " + subConfig.getConfigFilename() + " failed to create! Unexpected things can happen!");
-                e.printStackTrace();
-            } catch (ClassCastException e) {
-                Log.error("Config file " + subConfig.getConfigFilename() + " appears to be invalid JSON! Unexpected things can happen!");
-                e.printStackTrace();
+        File defaultConfigDir = new File(FMLPaths.CONFIGDIR.get().toFile(), Names.MOD_ID);
+        for (IAuxConfig subConfig : EXTERNAL_CONFIGS) {
+            File subFolder = subConfig.useWorldSpecificDir() ? getWorldSpecificDir() : defaultConfigDir;
+            if (subFolder.exists() || subFolder.mkdirs()) {
+                File subFile = new File(subFolder, subConfig.getConfigFilename() + ".cfg");
+                if (!subFile.exists() && subConfig.useWorldSpecificDir()) {
+                    maybeMigrateFile(new File(defaultConfigDir, subConfig.getConfigFilename() + ".cfg"), subFile);
+                }
+                try {
+                    subConfig.postInit(subFile);
+                } catch (IOException e) {
+                    Log.error("Config file " + subConfig.getConfigFilename() + " failed to create! Unexpected things can happen!");
+                    e.printStackTrace();
+                } catch (ClassCastException e) {
+                    Log.error("Config file " + subConfig.getConfigFilename() + " appears to be invalid JSON! Unexpected things can happen!");
+                    e.printStackTrace();
+                }
             }
         }
     }
 
+    private static void maybeMigrateFile(File oldFile, File newFile) {
+        // on first time load with new per-world config system: check if we need to migrate
+        // a config file from the general config dir to the world-specific dir
+        try {
+            if (oldFile.exists()) {
+                FileUtils.moveFile(oldFile, newFile);
+                Log.info("Migrated " + oldFile + " to " + newFile);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static File getWorldSpecificDir() {
+        File worldDir = ServerLifecycleHooks.getCurrentServer().getWorld(DimensionType.OVERWORLD).getSaveHandler().getWorldDirectory();
+        return new File(worldDir, Names.MOD_ID);
+    }
+
+    public static void clearPerWorldConfigs() {
+        for (IAuxConfig subConfig : EXTERNAL_CONFIGS) {
+            if (subConfig.useWorldSpecificDir()) subConfig.clear();
+        }
+    }
 }

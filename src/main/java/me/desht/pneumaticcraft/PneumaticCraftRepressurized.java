@@ -122,7 +122,6 @@ public class PneumaticCraftRepressurized {
         ThirdPartyManager.instance().index();
 
         ThirdPartyManager.instance().init();
-        AuxConfigHandler.postInit();
         registerCapabilities();
         NetworkHandler.init();
         FluidSetup.init();
@@ -175,11 +174,15 @@ public class PneumaticCraftRepressurized {
         ModCommands.register(event.getCommandDispatcher());
     }
 
-    private void serverStopping(FMLServerStoppingEvent event) {
-        AmadronOfferManager.getInstance().saveAll();
+    private void serverStarted(FMLServerStartedEvent event) {
+        AuxConfigHandler.postInit();
     }
 
-    private void serverStarted(FMLServerStartedEvent event) {
+    private void serverStopping(FMLServerStoppingEvent event) {
+        AmadronOfferManager.getInstance().saveAll();
+
+        // if we're on single-player, reset is needed here to stop world-specific configs crossing worlds
+        AuxConfigHandler.clearPerWorldConfigs();
     }
 
     static class ClientHandler {

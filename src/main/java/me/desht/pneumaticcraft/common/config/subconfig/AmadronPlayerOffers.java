@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
 import net.minecraft.util.ResourceLocation;
 
@@ -42,6 +43,11 @@ public class AmadronPlayerOffers extends AuxConfigJson {
     }
 
     @Override
+    public void clear() {
+        playerOffers.clear();
+    }
+
+    @Override
     protected void writeToJson(JsonObject json) {
         JsonArray array = new JsonArray();
         for (AmadronPlayerOffer offer : playerOffers.values()) {
@@ -63,5 +69,12 @@ public class AmadronPlayerOffers extends AuxConfigJson {
                 e.printStackTrace();
             }
         }
+        // need to get the newly-read offers into the offer manager, which has already loaded static & villager offers
+        AmadronOfferManager.getInstance().addPlayerOffers();
+    }
+
+    @Override
+    public boolean useWorldSpecificDir() {
+        return true;
     }
 }

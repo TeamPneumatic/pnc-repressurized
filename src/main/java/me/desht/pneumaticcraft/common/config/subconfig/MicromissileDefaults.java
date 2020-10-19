@@ -19,7 +19,7 @@ public class MicromissileDefaults extends AuxConfigJson {
     private static final Map<UUID, Entry> defaults = new HashMap<>();
 
     private MicromissileDefaults() {
-        super(false);
+        super(true);
     }
 
     @Override

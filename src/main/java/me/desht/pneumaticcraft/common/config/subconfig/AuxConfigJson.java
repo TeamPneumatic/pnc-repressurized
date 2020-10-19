@@ -24,7 +24,8 @@ public abstract class AuxConfigJson implements IAuxConfig {
     }
 
     @Override
-    public void postInit() throws IOException {
+    public void postInit(File file) throws IOException {
+        this.file = file;
         if (!inPreInit) {
             processFile();
         }
@@ -36,6 +37,7 @@ public abstract class AuxConfigJson implements IAuxConfig {
             writeToFile();
         } else {
             if (file.createNewFile()) {
+                clear();
                 writeToFile();
             }
         }

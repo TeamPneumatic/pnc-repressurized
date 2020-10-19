@@ -25,7 +25,7 @@ public class ArmorHUDLayout extends AuxConfigJson {
     public LayoutItem jetBootsStat = JET_BOOTS_DEF;
 
     private ArmorHUDLayout() {
-        super(false);
+        super(true);
     }
 
     @Override
@@ -91,12 +91,6 @@ public class ArmorHUDLayout extends AuxConfigJson {
         LayoutItem(float x, float y, boolean leftSided) {
             this.x = x;
             this.y = y;
-            this.leftSided = leftSided;
-        }
-
-        LayoutItem(int screenX, int screenY, int x, int y, boolean leftSided) {
-            this.x = (float) x / (float) screenX;
-            this.y = (float) y / (float) screenY;
             this.leftSided = leftSided;
         }
 
