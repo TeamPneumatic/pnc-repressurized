@@ -55,7 +55,10 @@ public class DroneAIPlace<W extends ProgWidgetAreaItemBase & IBlockOrdered /*& I
                     }
                     Block placingBlock = ((BlockItem) droneStack.getItem()).getBlock();
                     BlockState state = placingBlock.getStateForPlacement(getPlacementContext(placerPos, pos, droneStack));
-                    if (worldCache.checkNoEntityCollision(null, state.getShape(drone.world(), pos))) {
+                    if (state == null) {
+                        drone.addDebugEntry("pneumaticcraft.gui.progWidget.place.debug.cantPlaceBlock", pos);
+                        failedOnPlacement = true;
+                    } else if (worldCache.checkNoEntityCollision(null, state.getShape(drone.world(), pos))) {
                         if (state.isValidPosition(drone.world(), pos)) {
                             return true;
                         } else {
