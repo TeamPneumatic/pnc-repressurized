@@ -6,6 +6,12 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.15.2
 
+## 1.5.2-?? (unreleased)
+
+### Fixes
+* Fix crash when trying to place certain unplaceable blocks (e.g. Farmer's Delight Rice when water is absent)
+* Fix crash when trying to merge drone programs on dedicated server
+
 ## 1.5.1-81 (14 Oct 2020)
 
 ### Updates
