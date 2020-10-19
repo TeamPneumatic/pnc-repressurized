@@ -19,7 +19,6 @@ import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.NBTKeys;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -112,8 +111,8 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
 
         if (!progWidgets.isEmpty() && !mergedWidgets.isEmpty()) {
             // move merged widgets so they definitely don't overlap any existing widgets
-            Rectangle2d extents1 = getPuzzleExtents(progWidgets);
-            Rectangle2d extents2 = getPuzzleExtents(mergedWidgets);
+            PuzzleExtents extents1 = getPuzzleExtents(progWidgets);
+            PuzzleExtents extents2 = getPuzzleExtents(mergedWidgets);
             for (IProgWidget w : mergedWidgets) {
                 w.setX(w.getX() - extents2.getX() + extents1.getX() + extents1.getWidth() + 10);
                 w.setY(w.getY() - extents2.getY() + extents1.getY());
@@ -147,7 +146,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
      * @param widgets the widget list
      * @return a bounding box
      */
-    private Rectangle2d getPuzzleExtents(List<IProgWidget> widgets) {
+    private PuzzleExtents getPuzzleExtents(List<IProgWidget> widgets) {
         int minX = Integer.MAX_VALUE;
         int maxX = Integer.MIN_VALUE;
         int minY = Integer.MAX_VALUE;
@@ -158,7 +157,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
             minY = Math.min(minY, w.getY());
             maxY = Math.max(maxY, w.getY() + w.getHeight());
         }
-        return new Rectangle2d(minX, minY, maxX - minX, maxY - minY);
+        return new PuzzleExtents(minX, minY, maxX - minX, maxY - minY);
     }
 
     public void readProgWidgetsFromNBT(CompoundNBT tag) {
@@ -605,6 +604,41 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
         @Override
         public boolean isItemValid(int slot, ItemStack itemStack) {
             return itemStack.getItem() instanceof IProgrammable && ((IProgrammable) itemStack.getItem()).canProgram(itemStack);
+        }
+    }
+
+    // yep, this is basically Rectangle2d, but that's client only, so...
+    private static class PuzzleExtents {
+        private final int x;
+        private final int y;
+        private final int width;
+        private final int height;
+
+        PuzzleExtents(int xIn, int yIn, int widthIn, int heightIn) {
+            this.x = xIn;
+            this.y = yIn;
+            this.width = widthIn;
+            this.height = heightIn;
+        }
+
+        public int getX() {
+            return this.x;
+        }
+
+        public int getY() {
+            return this.y;
+        }
+
+        public int getWidth() {
+            return this.width;
+        }
+
+        public int getHeight() {
+            return this.height;
+        }
+
+        public boolean contains(int x, int y) {
+            return x >= this.x && x <= this.x + this.width && y >= this.y && y <= this.y + this.height;
         }
     }
 }
