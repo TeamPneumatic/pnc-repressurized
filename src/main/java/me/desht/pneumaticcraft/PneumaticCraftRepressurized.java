@@ -51,6 +51,7 @@ import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
+import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
 import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
@@ -67,6 +68,7 @@ public class PneumaticCraftRepressurized {
 
         modBus.addListener(this::commonSetup);
 
+        forgeBus.addListener(this::serverStarted);
         forgeBus.addListener(this::serverStopping);
         forgeBus.addListener(this::addReloadListeners);
         forgeBus.addListener(this::registerCommands);
@@ -85,7 +87,6 @@ public class PneumaticCraftRepressurized {
         forgeBus.register(new EventHandlerPneumaticArmor());
         forgeBus.register(new EventHandlerUniversalSensor());
         forgeBus.register(new DroneSpecialVariableHandler());
-        forgeBus.register(new EventHandlerWorldGen());
         forgeBus.register(ItemGPSAreaTool.EventHandler.class);
         forgeBus.register(HackTickHandler.instance());
 
@@ -114,7 +115,6 @@ public class PneumaticCraftRepressurized {
         Log.info(Names.MOD_NAME + " is loading!");
 
         ThirdPartyManager.instance().init();
-        AuxConfigHandler.init();
         registerCapabilities();
         NetworkHandler.init();
         FluidSetup.init();
@@ -164,8 +164,15 @@ public class PneumaticCraftRepressurized {
         ModCommands.register(event.getDispatcher());
     }
 
+    private void serverStarted(FMLServerStartedEvent event) {
+        AuxConfigHandler.postInit();
+    }
+
     private void serverStopping(FMLServerStoppingEvent event) {
         AmadronOfferManager.getInstance().saveAll();
+
+        // if we're on single-player, reset is needed here to stop world-specific configs crossing worlds
+        AuxConfigHandler.clearPerWorldConfigs();
     }
 
     @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)

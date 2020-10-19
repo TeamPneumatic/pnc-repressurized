@@ -215,14 +215,18 @@ public enum AmadronOfferManager {
         }
 
         // finally, player->player trades
+        addPlayerOffers();
+
+        // send active list to all clients (but not the local player for an integrated server)
+        NetworkHandler.sendNonLocal(new PacketSyncAmadronOffers());
+    }
+
+    public void addPlayerOffers() {
         getPlayerOffers().forEach((id, playerOffer) -> {
             addOffer(activeOffers, playerOffer);
             addOffer(allOffers, playerOffer);
             addOffer(allOffers, playerOffer.getReversedOffer());
         });
-
-        // send active list to all clients (but not the local player for an integrated server)
-        NetworkHandler.sendNonLocal(new PacketSyncAmadronOffers());
     }
 
     private AmadronOffer pickRandomPeriodicTrade(Random rand) {
