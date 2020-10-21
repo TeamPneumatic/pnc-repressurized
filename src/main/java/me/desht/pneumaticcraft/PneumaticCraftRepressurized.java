@@ -29,6 +29,7 @@ import me.desht.pneumaticcraft.common.util.Reflections;
 import me.desht.pneumaticcraft.common.util.upgrade.UpgradesDBSetup;
 import me.desht.pneumaticcraft.common.villages.POIFixup;
 import me.desht.pneumaticcraft.common.villages.VillageStructures;
+import me.desht.pneumaticcraft.common.worldgen.ModWorldGen;
 import me.desht.pneumaticcraft.datagen.*;
 import me.desht.pneumaticcraft.datagen.loot.ModLootFunctions;
 import me.desht.pneumaticcraft.lib.Log;
@@ -38,7 +39,6 @@ import net.minecraft.block.DispenserBlock;
 import net.minecraft.data.BlockTagsProvider;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.item.Item;
-import net.minecraft.world.gen.feature.Feature;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
@@ -90,8 +90,7 @@ public class PneumaticCraftRepressurized {
         forgeBus.register(ItemGPSAreaTool.EventHandler.class);
         forgeBus.register(HackTickHandler.instance());
 
-        modBus.addGenericListener(Feature.class, EventPriority.LOW, EventHandlerWorldGen::registerConfiguredFeatures);
-        forgeBus.addListener(EventPriority.HIGH, EventHandlerWorldGen::onBiomeLoading);
+        forgeBus.addListener(EventPriority.HIGH, ModWorldGen::onBiomeLoading);
     }
 
     private void registerAllDeferredRegistryObjects(IEventBus modBus) {
@@ -127,6 +126,8 @@ public class PneumaticCraftRepressurized {
         ModNameCache.init();
 
         event.enqueueWork(() -> {
+            ModWorldGen.registerConfiguredFeatures();
+
             DispenserBlock.registerDispenseBehavior(ModItems.DRONE.get(), new BehaviorDispenseDrone());
             DispenserBlock.registerDispenseBehavior(ModItems.LOGISTICS_DRONE.get(), new BehaviorDispenseDrone());
             DispenserBlock.registerDispenseBehavior(ModItems.HARVESTING_DRONE.get(), new BehaviorDispenseDrone());

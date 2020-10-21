@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.common.event;
+package me.desht.pneumaticcraft.common.worldgen;
 
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
@@ -11,15 +11,14 @@ import net.minecraft.world.gen.feature.BlockStateFeatureConfig;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.placement.ChanceConfig;
-import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.world.BiomeLoadingEvent;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
-public class EventHandlerWorldGen {
+public class ModWorldGen {
     public static ConfiguredFeature<?,?> OIL_LAKES;
 
-    public static void registerConfiguredFeatures(RegistryEvent.Register<Feature<?>> event) {
+    public static void registerConfiguredFeatures() {
         Registry<ConfiguredFeature<?, ?>> registry = WorldGenRegistries.CONFIGURED_FEATURE;
 
         OIL_LAKES = Feature.LAKE
