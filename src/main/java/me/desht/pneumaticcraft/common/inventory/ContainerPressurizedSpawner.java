@@ -14,9 +14,9 @@ public class ContainerPressurizedSpawner extends ContainerPneumaticBase<TileEnti
     public ContainerPressurizedSpawner(int windowId, PlayerInventory invPlayer, BlockPos pos) {
         super(ModContainers.PRESSURIZED_SPAWNER.get(), windowId, invPlayer, pos);
 
-        addSlot(new ContainerVacuumTrap.SlotSpawnerCore(te.getPrimaryInventory(), 0, 79, 38));
+        addSlot(new ContainerVacuumTrap.SlotSpawnerCore(te.getPrimaryInventory(), 0, 62, 38));
 
-        addUpgradeSlots(17, 29);
+        addUpgradeSlots(8, 29);
 
         addPlayerSlots(invPlayer, 84);
     }

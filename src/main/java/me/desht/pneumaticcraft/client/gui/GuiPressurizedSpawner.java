@@ -8,7 +8,6 @@ import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.ContainerPressurizedSpawner;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressurizedSpawner;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityVacuumTrap;
-import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
@@ -40,17 +39,15 @@ public class GuiPressurizedSpawner extends GuiPneumaticContainerBase<ContainerPr
     public void tick() {
         super.tick();
 
-        int spawnRate = te.getSpawnInterval();
-        int airUsage = (int) (PneumaticValues.USAGE_PRESSURIZED_SPAWNER * te.getSpeedUsageMultiplierFromUpgrades());
         infoStat.setText(ImmutableList.of(
-            I18n.format("pneumaticcraft.gui.tab.status.pressurizedSpawner.spawnRate", spawnRate),
-            I18n.format("pneumaticcraft.gui.tab.status.pressurizedSpawner.airUsage", airUsage)
+            I18n.format("pneumaticcraft.gui.tab.status.pressurizedSpawner.spawnRate", te.getSpawnInterval()),
+            I18n.format("pneumaticcraft.gui.tab.status.pressurizedSpawner.airUsage", te.getAirUsage())
         ));
     }
 
     @Override
     protected ResourceLocation getGuiTexture() {
-        return Textures.GUI_VACUUM_TRAP;
+        return Textures.GUI_PRESSURIZED_SPAWNER;
     }
 
     @Override

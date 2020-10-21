@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.inventory.ContainerVacuumTrap;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityVacuumTrap;
@@ -14,6 +15,13 @@ import java.util.List;
 public class GuiVacuumTrap extends GuiPneumaticContainerBase<ContainerVacuumTrap, TileEntityVacuumTrap> {
     public GuiVacuumTrap(ContainerVacuumTrap container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
+    }
+
+    @Override
+    public void init() {
+        super.init();
+
+        addButton(new WidgetTank(guiLeft + 98, guiTop + 14, te.getFluidTank()));
     }
 
     @Override
@@ -41,6 +49,9 @@ public class GuiVacuumTrap extends GuiPneumaticContainerBase<ContainerVacuumTrap
         super.addWarnings(curInfo);
         if (te.problem == TileEntityVacuumTrap.Problems.TRAP_CLOSED) {
             curInfo.add(I18n.format(te.problem.getTranslationKey()));
+        }
+        if (te.getFluidTank().getFluidAmount() < TileEntityVacuumTrap.MEMORY_ESSENCE_AMOUNT) {
+            curInfo.add(I18n.format("pneumaticcraft.gui.tab.problems.vacuum_trap.no_memory_essence"));
         }
     }
 }

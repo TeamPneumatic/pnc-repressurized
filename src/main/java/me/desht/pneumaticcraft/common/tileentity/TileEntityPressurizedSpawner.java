@@ -47,7 +47,7 @@ public class TileEntityPressurizedSpawner extends TileEntityPneumaticBase
     private int counter = BASE_SPAWN_INTERVAL;
     @DescSynced
     private boolean running;
-    public final RangeLines rangeLines = new RangeLines(0x805A3C92);
+    public final RangeLines rangeLines = new RangeLines(0x80703CAA);
     private int prevRange;
 
     public TileEntityPressurizedSpawner() {
@@ -68,9 +68,9 @@ public class TileEntityPressurizedSpawner extends TileEntityPneumaticBase
                 running = true;
                 if (--counter <= 0) {
                     if (!trySpawnSomething(stats)) {
-                        ((ServerWorld) world).spawnParticle(ParticleTypes.SMOKE, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, 5, 0, 0, 0, 0);
+                        ((ServerWorld) world).spawnParticle(ParticleTypes.POOF, pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, 5, 0, 0, 0, 0);
                     }
-                    addAir((int) (-PneumaticValues.USAGE_PRESSURIZED_SPAWNER * getSpeedUsageMultiplierFromUpgrades()));
+                    addAir(-getAirUsage());
                     counter = getSpawnInterval();
                 }
             }
@@ -85,7 +85,9 @@ public class TileEntityPressurizedSpawner extends TileEntityPneumaticBase
             int range = getRange();
             if (prevRange != range || prevRange == 0) {
                 prevRange = range;
-                if (!firstRun) rangeLines.startRendering(range);
+                if (!firstRun) {
+                    rangeLines.startRendering(range);
+                }
             }
             rangeLines.tick(world.rand);
         }
@@ -96,7 +98,7 @@ public class TileEntityPressurizedSpawner extends TileEntityPneumaticBase
         if (type != null && world instanceof ServerWorld) {
             ServerWorld serverworld = (ServerWorld)world;
             int spawnRange = getRange();
-            int maxNearbyEntities = 16;
+            int maxNearbyEntities = 32;
             double x = (double)pos.getX() + (serverworld.rand.nextDouble() - world.rand.nextDouble()) * (double)spawnRange + 0.5D;
             double y = pos.getY() + serverworld.rand.nextInt(3) - 1;
             double z = (double)pos.getZ() + (serverworld.rand.nextDouble() - world.rand.nextDouble()) * (double)spawnRange + 0.5D;
@@ -126,6 +128,8 @@ public class TileEntityPressurizedSpawner extends TileEntityPneumaticBase
     public int getSpawnInterval() {
         return (int)(BASE_SPAWN_INTERVAL / getSpeedMultiplierFromUpgrades());
     }
+
+    public int getAirUsage() { return PneumaticValues.USAGE_PRESSURIZED_SPAWNER * (getUpgrades(EnumUpgrade.SPEED) + 1); }
 
     @Override
     public IItemHandler getPrimaryInventory() {

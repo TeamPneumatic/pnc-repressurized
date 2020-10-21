@@ -10,6 +10,7 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 
 import javax.annotation.Nonnull;
+import java.lang.ref.WeakReference;
 
 /**
  * A fluid tank which smartly syncs its fluid and amount to clients to avoid performance problems due to excessive
@@ -24,13 +25,13 @@ public class SmartSyncTank extends FluidTank {
     private boolean pending = false;
 
     private int syncTimer = -1;
-    private final TileEntity owner;
+    private final WeakReference<TileEntity> owner;
     private final int threshold;
 
     SmartSyncTank(TileEntity owner, int capacity) {
         super(capacity);
 
-        this.owner = owner;
+        this.owner = new WeakReference<>(owner);
         this.threshold = Math.min(1000, capacity / 100);
     }
 
@@ -38,18 +39,21 @@ public class SmartSyncTank extends FluidTank {
      * Call from the holding TE's tick() method on both client and server
      */
     public void tick() {
-        if (owner.getWorld().isRemote) {
-            super.setFluid(ClientUtils.isGuiOpen() ? syncedFluidStackGui : syncedFluidStackDesc);
-        } else {
-            if (syncTimer > 0) {
-                syncTimer--;
-            } else if (syncTimer == 0) {
-                if (pending) {
-                    syncedFluidStackDesc = getFluid().copy();
-                    pending = false;
-                    syncTimer = PNCConfig.Common.Advanced.fluidTankUpdateRate;
-                } else {
-                    syncTimer = -1;
+        TileEntity te = owner.get();
+        if (te != null) {
+            if (te.getWorld().isRemote) {
+                super.setFluid(ClientUtils.isGuiOpen() ? syncedFluidStackGui : syncedFluidStackDesc);
+            } else {
+                if (syncTimer > 0) {
+                    syncTimer--;
+                } else if (syncTimer == 0) {
+                    if (pending) {
+                        syncedFluidStackDesc = getFluid().copy();
+                        pending = false;
+                        syncTimer = PNCConfig.Common.Advanced.fluidTankUpdateRate;
+                    } else {
+                        syncTimer = -1;
+                    }
                 }
             }
         }
@@ -111,7 +115,9 @@ public class SmartSyncTank extends FluidTank {
         // We don't use onContentsChanged() for sync purposes, because its gets called even for simulated changes,
         // and we have no way of knowing whether or not this is a simulation.
 
-        owner.markDirty();
+        if (owner.get() != null) {
+            owner.get().markDirty();
+        }
     }
 
     @Override

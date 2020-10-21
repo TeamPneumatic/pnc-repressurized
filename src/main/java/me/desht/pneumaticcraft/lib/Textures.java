@@ -160,6 +160,7 @@ public class Textures {
     public static final ResourceLocation GUI_FLUID_MIXER = guiTexture("gui_fluid_mixer.png");
     public static final ResourceLocation GUI_JACKHAMMER_SETUP = guiTexture("gui_jackhammer_setup.png");
     public static final ResourceLocation GUI_VACUUM_TRAP = guiTexture("gui_vacuum_trap.png");
+    public static final ResourceLocation GUI_PRESSURIZED_SPAWNER = guiTexture("gui_pressurized_spawner.png");
 
     public static final ResourceLocation GUI_JEI_PRESSURE_CHAMBER = guiTexture("jei/gui_jei_pressure_chamber.png");
     public static final ResourceLocation GUI_JEI_ASSEMBLY_CONTROLLER = guiTexture("jei/gui_jei_assembly_controller.png");

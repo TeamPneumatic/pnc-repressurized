@@ -84,7 +84,7 @@ public class PneumaticValues {
     public static final int USAGE_JACKHAMMER = 50; // mL per block broken
     public static final int USAGE_VACUUM_TRAP = 10; // mL per mob absorbed per point of mob health
     public static final int USAGE_SPAWNER_EXTRACTOR = 1; // mL per tick added while extractor is running
-    public static final int USAGE_PRESSURIZED_SPAWNER = 25; // mL per spawn attempt (even if unsuccessful)
+    public static final int USAGE_PRESSURIZED_SPAWNER = 150; // mL per spawn attempt (even if unsuccessful)
 
     public static final int PRODUCTION_COMPRESSOR = 10; // mL per tick
     public static final int PRODUCTION_ADVANCED_COMPRESSOR = 50; // mL per tick

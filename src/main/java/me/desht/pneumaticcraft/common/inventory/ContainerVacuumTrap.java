@@ -20,9 +20,9 @@ public class ContainerVacuumTrap extends ContainerPneumaticBase<TileEntityVacuum
     public ContainerVacuumTrap(int windowId, PlayerInventory invPlayer, BlockPos pos) {
         super(ModContainers.VACUUM_TRAP.get(), windowId, invPlayer, pos);
 
-        addSlot(new SlotSpawnerCore(te.getPrimaryInventory(), 0, 79, 38));
+        addSlot(new SlotSpawnerCore(te.getPrimaryInventory(), 0, 62, 38));
 
-        addUpgradeSlots(17, 29);
+        addUpgradeSlots(8, 29);
 
         addPlayerSlots(invPlayer, 84);
     }

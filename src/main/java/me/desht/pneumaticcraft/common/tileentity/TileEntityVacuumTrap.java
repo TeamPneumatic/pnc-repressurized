@@ -1,15 +1,18 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
+import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.inventory.ContainerVacuumTrap;
 import me.desht.pneumaticcraft.common.item.ItemSpawnerCore;
 import me.desht.pneumaticcraft.common.item.ItemSpawnerCore.SpawnerCoreItemHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
+import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
@@ -32,15 +35,24 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-public class TileEntityVacuumTrap extends TileEntityPneumaticBase implements IMinWorkingPressure, INamedContainerProvider {
+public class TileEntityVacuumTrap extends TileEntityPneumaticBase implements IMinWorkingPressure, INamedContainerProvider, ISerializableTanks {
+
+    public static final int MEMORY_ESSENCE_AMOUNT = 1000;
+
     public enum Problems implements ITranslatableEnum {
         OK,
         NO_CORE,
@@ -58,6 +70,10 @@ public class TileEntityVacuumTrap extends TileEntityPneumaticBase implements IMi
 
     private final List<MobEntity> targetEntities = new ArrayList<>();
 
+    @GuiSynced
+    private final SmartSyncTank xpTank = new XPTank();
+    private final LazyOptional<IFluidHandler> fluidCap = LazyOptional.of(() -> xpTank);
+
     @DescSynced
     private boolean isCoreLoaded;
     @DescSynced
@@ -70,6 +86,8 @@ public class TileEntityVacuumTrap extends TileEntityPneumaticBase implements IMi
     @Override
     public void tick() {
         super.tick();
+
+        xpTank.tick();
 
         if (!world.isRemote) {
             isCoreLoaded = inv.getStats() != null;
@@ -105,11 +123,15 @@ public class TileEntityVacuumTrap extends TileEntityPneumaticBase implements IMi
     }
 
     private void absorbEntity(MobEntity e) {
-        int amount = e.getAttackTarget() instanceof PlayerEntity ? 2 + e.world.rand.nextInt(3) : 1;
-        if (inv.getStats().addAmount(e.getType(), amount)) {
+        int toAdd = 1;
+        if (xpTank.getFluid().getAmount() >= MEMORY_ESSENCE_AMOUNT) {
+            toAdd += e.world.rand.nextInt(3) + 1;
+        }
+        if (inv.getStats().addAmount(e.getType(), toAdd)) {
             e.remove();
+            if (toAdd > 1) xpTank.drain(MEMORY_ESSENCE_AMOUNT, IFluidHandler.FluidAction.EXECUTE);
             inv.getStats().serialize(inv.getStackInSlot(0));
-            world.playSound(null, pos, SoundEvents.BLOCK_PORTAL_TRIGGER, SoundCategory.BLOCKS, 1f, 2f);
+            e.world.playSound(null, pos, SoundEvents.BLOCK_PORTAL_TRIGGER, SoundCategory.BLOCKS, 1f, 2f);
             if (world instanceof ServerWorld) {
                 ((ServerWorld) world).spawnParticle(ParticleTypes.CLOUD, e.getPosX(), e.getPosY() + 0.5, e.getPosZ(), 5, 0, 1, 0, 0);
             }
@@ -128,6 +150,26 @@ public class TileEntityVacuumTrap extends TileEntityPneumaticBase implements IMi
                 && !(e instanceof EntityDrone)
                 && !(e instanceof TameableEntity && ((TameableEntity) e).isTamed())
                 && !PNCConfig.Common.General.vacuumTrapBlacklist.contains(e.getType().getRegistryName());
+    }
+
+    @Nonnull
+    @Override
+    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+        if (cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) {
+            return fluidCap.cast();
+        } else {
+            return super.getCapability(cap, side);
+        }
+    }
+
+    public FluidTank getFluidTank() {
+        return xpTank;
+    }
+
+    @Nonnull
+    @Override
+    public Map<String, FluidTank> getSerializableTanks() {
+        return ImmutableMap.of("Tank", xpTank);
     }
 
     @Override
@@ -203,5 +245,16 @@ public class TileEntityVacuumTrap extends TileEntityPneumaticBase implements IMi
 
     public boolean isOpen() {
         return getBlockState().getBlock() == ModBlocks.VACUUM_TRAP.get() && getBlockState().get(BlockStateProperties.OPEN);
+    }
+
+    private class XPTank extends SmartSyncTank {
+        public XPTank() {
+            super(TileEntityVacuumTrap.this, 16000);
+        }
+
+        @Override
+        public boolean isFluidValid(FluidStack stack) {
+            return stack.getFluid() == ModFluids.MEMORY_ESSENCE.get();
+        }
     }
 }
