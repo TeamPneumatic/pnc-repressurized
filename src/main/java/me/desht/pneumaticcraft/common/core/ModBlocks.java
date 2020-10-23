@@ -193,7 +193,7 @@ public class ModBlocks {
     public static final RegistryObject<BlockFluidMixer> FLUID_MIXER = register("fluid_mixer",
             BlockFluidMixer::new);
     public static final RegistryObject<BlockVacuumTrap> VACUUM_TRAP = register("vacuum_trap",
-            BlockVacuumTrap::new);
+            BlockVacuumTrap::new, block -> () -> new BlockVacuumTrap.ItemBlockVacuumTrap(block.get()));
     public static final RegistryObject<BlockSpawnerExtractor> SPAWNER_EXTRACTOR = register("spawner_extractor",
             BlockSpawnerExtractor::new);
     public static final RegistryObject<BlockEmptySpawner> EMPTY_SPAWNER = register("empty_spawner",

@@ -1,11 +1,18 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.item.ItemSpawnerCore;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityVacuumTrap;
 import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
+import me.desht.pneumaticcraft.lib.NBTKeys;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
@@ -14,10 +21,17 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.shapes.IBooleanFunction;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.items.ItemStackHandler;
 
+import javax.annotation.Nullable;
+import java.util.List;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 import static net.minecraft.state.properties.BlockStateProperties.OPEN;
 import static net.minecraft.state.properties.BlockStateProperties.POWERED;
 
@@ -94,5 +108,25 @@ public class BlockVacuumTrap extends BlockPneumaticCraft {
     @Override
     protected Class<? extends TileEntity> getTileEntityClass() {
         return TileEntityVacuumTrap.class;
+    }
+
+    public static class ItemBlockVacuumTrap extends BlockItem {
+        public ItemBlockVacuumTrap(BlockVacuumTrap blockVacuumTrap) {
+            super(blockVacuumTrap, ModItems.defaultProps());
+        }
+
+        @Override
+        public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+            super.addInformation(stack, worldIn, tooltip, flagIn);
+
+            CompoundNBT tag = stack.getChildTag(NBTKeys.BLOCK_ENTITY_TAG);
+            if (tag != null && tag.contains("Items")) {
+                ItemStackHandler handler = new ItemStackHandler(1);
+                handler.deserializeNBT(tag.getCompound("Items"));
+                if (handler.getStackInSlot(0).getItem() instanceof ItemSpawnerCore) {
+                    tooltip.add(xlate("pneumaticcraft.message.vacuum_trap.coreInstalled").mergeStyle(TextFormatting.YELLOW));
+                }
+            }
+        }
     }
 }

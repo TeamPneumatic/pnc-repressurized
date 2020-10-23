@@ -9,7 +9,6 @@ import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.inventory.ContainerVacuumTrap;
-import me.desht.pneumaticcraft.common.item.ItemSpawnerCore;
 import me.desht.pneumaticcraft.common.item.ItemSpawnerCore.SpawnerCoreItemHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
@@ -221,15 +220,9 @@ public class TileEntityVacuumTrap extends TileEntityPneumaticBase implements IMi
 
     @Override
     public void getContentsToDrop(NonNullList<ItemStack> drops) {
-        super.getContentsToDrop(drops);
-
-        if (!isOpen()) {
-            // if closed, spawner core stays inside the trap when broken
-            for (int i = 0; i < drops.size(); i++) {
-                if (drops.get(i).getItem() instanceof ItemSpawnerCore) {
-                    drops.set(i, ItemStack.EMPTY);
-                }
-            }
+        // if we're wrenching, any spawner core should stay in the trap
+        if (!shouldPreserveStateOnBreak()) {
+            super.getContentsToDrop(drops);
         }
     }
 
@@ -237,8 +230,8 @@ public class TileEntityVacuumTrap extends TileEntityPneumaticBase implements IMi
     public void serializeExtraItemData(CompoundNBT blockEntityTag, boolean preserveState) {
         super.serializeExtraItemData(blockEntityTag, preserveState);
 
-        if (!isOpen()) {
-            // if closed, spawner core stays inside the trap when broken
+        if (preserveState) {
+            // if wrenching, spawner core stays inside the trap when broken
             blockEntityTag.put("Items", inv.serializeNBT());
         }
     }
