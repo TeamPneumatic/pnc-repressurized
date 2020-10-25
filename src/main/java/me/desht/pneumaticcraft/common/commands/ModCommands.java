@@ -34,6 +34,7 @@ public class ModCommands {
         );
 
         dispatcher.register(Commands.literal("amadrone_deliver")
+                .requires(cs -> cs.hasPermissionLevel(2))
                 .then(argument("toPos", BlockPosArgument.blockPos())
                         .then(argument("fromPos", BlockPosArgument.blockPos())
                                 .executes(ctx -> amadroneDeliver(ctx.getSource(), getLoadedBlockPos(ctx, "toPos"), getLoadedBlockPos(ctx, "fromPos")))
@@ -83,7 +84,7 @@ public class ModCommands {
 
         int status = IOHelper.getInventoryForTE(te).map(inv -> {
             List<ItemStack> deliveredStacks = new ArrayList<>();
-            for (int i = 0; i < inv.getSlots() && deliveredStacks.size() < 65; i++) {
+            for (int i = 0; i < inv.getSlots() && deliveredStacks.size() < 36; i++) {
                 if (!inv.getStackInSlot(i).isEmpty()) deliveredStacks.add(inv.getStackInSlot(i));
             }
             if (deliveredStacks.size() > 0) {
