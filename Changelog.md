@@ -6,11 +6,18 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.15.2
 
-## 1.5.2-?? (unreleased)
+## 1.5.2-83 (25 Oct 2020)
+
+### Updates
+* The `/amadron_deliver` command now requires players to have op level 2 or greater
+* Moved Amadron player offers from global config (`config/pneumaticcraft/AmadronPlayerOffers.cfg`) to per-world file (`world/pneumaticcraft/AmadronPlayerOffers.cfg`)
+  * Existing player offers in your instance will be automatically moved across, but make a backup of the above file before upgrading if you're concerned
+  * This isn't very relevant for single-player worlds since player offers are very much a multiplayer feature
+* Dry Ice (from the Powah mod) is now treated as a cold source (-100C) by PneumaticCraft
 
 ### Fixes
-* Fix crash when trying to place certain unplaceable blocks (e.g. Farmer's Delight Rice when water is absent)
-* Fix crash when trying to merge drone programs on dedicated server
+* Fixed server NPE when drones try to place certain unplaceable blocks (e.g. Farmer's Delight rice when there's no water block)
+* Fixed dedicated server crash (NoClassDefFoundError) when trying to merge drone programs
 
 ## 1.5.1-81 (14 Oct 2020)
 
