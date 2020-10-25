@@ -6,9 +6,19 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.16.3
 
-The initial 2.4.0 release for MC 1.16.3 release is largely equivalent in functionality to the 2.2.2 release (for MC 1.16.1) with a couple of small worldgen-related changes.
- 
-Releases from 2.4.2 onward *require* Forge 34.1.0 or later.
+## 2.4.5-62 (25 Oct 2020)
+
+### Updates
+* Added a new "Void Item" progwidget for drones to use
+  * Could be useful for writing quarry programs...
+* The `/amadron_deliver` command now requires players to have op level 2 or greater
+* Moved Amadron player offers from global config (`config/pneumaticcraft/AmadronPlayerOffers.cfg`) to per-world file (`world/pneumaticcraft/AmadronPlayerOffers.cfg`)
+  * Existing player offers in your instance will be automatically moved across, but make a backup of the above file before upgrading if you're concerned
+  * This isn't very relevant for single-player worlds since player offers are very much a multiplayer feature
+
+### Fixes
+* Fixed server NPE when drones try to place certain unplaceable blocks (e.g. Farmer's Delight rice when there's no water block)
+* Fixed dedicated server crash (NoClassDefFoundError) when trying to merge drone programs
 
 ## 2.4.4-59 (15 Oct 2020)
 
@@ -30,6 +40,8 @@ Releases from 2.4.2 onward *require* Forge 34.1.0 or later.
 * Fixed Volume Upgrades not being taken into account for negative pressures (Vacuum Pump)
 
 ## 2.4.2-49 (9 Oct 2020)
+ 
+Releases from 2.4.2 onward *require* Forge 34.1.0 or later.
 
 ### Updates
 * Mekanism integration has returned!  To recap:
@@ -75,6 +87,8 @@ Releases from 2.4.2 onward *require* Forge 34.1.0 or later.
 * Fixed Amadron trade addition GUI bug where trying to open item/search GUIs just returned to the main Amadron GUI
  
 ## 2.4.0-36 (18 Sep 2020)
+
+The initial 2.4.0 release for MC 1.16.3 release is largely equivalent in functionality to the 2.2.2 release (for MC 1.16.1) with a couple of small worldgen-related changes.
 
 ### Updates
 * Oil Lake worldgen blacklisting is now done by biome ID instead of dimension ID (see `oil_world_gen_blacklist` in `config/pneumaticcraft-common.toml`)
