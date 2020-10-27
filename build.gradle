@@ -56,7 +56,7 @@ repositories {
 //    }
     maven {
         name = "K-4u Mod maven"
-        url = "https://modmaven.k-4u.nl/"
+        url = "https://modmaven.dev/"
     }
 //    maven {
 //        name = "ic2"
