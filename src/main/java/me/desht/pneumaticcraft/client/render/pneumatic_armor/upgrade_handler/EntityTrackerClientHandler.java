@@ -22,6 +22,7 @@ import me.desht.pneumaticcraft.common.util.EntityFilter;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.HangingEntity;
@@ -29,7 +30,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -37,6 +38,8 @@ import net.minecraftforge.common.MinecraftForge;
 import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.stream.Stream;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.AbstractHandler {
     private static final int ENTITY_TRACK_THRESHOLD = 7;
@@ -102,7 +105,8 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
         if (targets.size() > ENTITY_TRACK_THRESHOLD) {
             if (!shouldStopSpamOnEntityTracking) {
                 shouldStopSpamOnEntityTracking = true;
-                HUDHandler.getInstance().addMessage(new ArmorMessage(new StringTextComponent("Stopped spam on Entity Tracker"), new ArrayList<>(), 60, 0x7700AA00));
+                ITextComponent msg = xlate("pneumaticcraft.blockTracker.message.stopSpam", I18n.format("pneumaticcraft.armor.upgrade.entity_tracker"));
+                HUDHandler.getInstance().addMessage(new ArmorMessage(msg, new ArrayList<>(), 60, 0x7700AA00));
             }
         } else {
             shouldStopSpamOnEntityTracking = false;
@@ -118,12 +122,13 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
                     text.add(TextFormatting.GRAY + target.entity.getDisplayName().getString());
                     text.addAll(target.getEntityText());
                 } else {
-                    text.add(TextFormatting.GRAY + "Acquiring target...");
+                    text.add(TextFormatting.GRAY + I18n.format("pneumaticcraft.entityTracker.info.acquiring"));
                 }
             }
         }
-        if (text.size() == 0) {
-            text.add("Filter mode: " + (entityFilter.toString().isEmpty() ? "None" : entityFilter.toString()));
+        if (text.isEmpty()) {
+            String f = entityFilter.toString();
+            text.add(I18n.format("pneumaticcraft.gui.entityFilter") + ": " + (f.isEmpty() ? "-" : f));
         }
         entityTrackInfo.setText(text);
     }
@@ -157,7 +162,7 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
     public WidgetAnimatedStat getAnimatedStat() {
         if (entityTrackInfo == null) {
             WidgetAnimatedStat.StatIcon icon = WidgetAnimatedStat.StatIcon.of(EnumUpgrade.ENTITY_TRACKER.getItemStack());
-            entityTrackInfo = new WidgetAnimatedStat(null, new StringTextComponent("Current tracked entities:"), icon,
+            entityTrackInfo = new WidgetAnimatedStat(null, xlate("pneumaticcraft.entityTracker.info.trackedEntities"), icon,
                      0x3000AA00, null, ArmorHUDLayout.INSTANCE.entityTrackerStat);
             entityTrackInfo.setMinDimensionsAndReset(0, 0);
         }

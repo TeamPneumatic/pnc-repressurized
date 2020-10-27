@@ -29,7 +29,6 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -39,6 +38,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.AbstractHandler {
     static final int BLOCK_TRACKING_RANGE = 30;
@@ -267,7 +268,7 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
             blockTrackInfo.setMessage(focusedTarget.stat.getMessage());
             textList.addAll(focusedTarget.textList);
         } else {
-            blockTrackInfo.setMessage(new StringTextComponent("Current tracked blocks:"));
+            blockTrackInfo.setMessage(xlate("pneumaticcraft.blockTracker.info.trackedBlocks")); //new StringTextComponent("Current tracked blocks:"));
 
             blockTypeCount.forEach((k, v) -> {
                 if (v > 0 && WidgetKeybindCheckBox.get(k).checked) {
@@ -275,7 +276,7 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
                 }
             });
 
-            if (textList.size() == 0) textList.add("Tracking no blocks currently.");
+            if (textList.size() == 0) textList.add(I18n.format("pneumaticcraft.blockTracker.info.noTrackedBlocks"));
         }
 
         blockTrackInfo.setText(textList);
@@ -320,7 +321,7 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
     public WidgetAnimatedStat getAnimatedStat() {
         if (blockTrackInfo == null) {
             WidgetAnimatedStat.StatIcon icon = WidgetAnimatedStat.StatIcon.of(EnumUpgrade.BLOCK_TRACKER.getItemStack());
-            blockTrackInfo = new WidgetAnimatedStat(null, new StringTextComponent("Current tracked blocks:"),
+            blockTrackInfo = new WidgetAnimatedStat(null, xlate("pneumaticcraft.blockTracker.info.trackedBlocks"),
                     icon, 0x3000AA00, null, ArmorHUDLayout.INSTANCE.blockTrackerStat);
             blockTrackInfo.setMinDimensionsAndReset(0, 0);
         }
