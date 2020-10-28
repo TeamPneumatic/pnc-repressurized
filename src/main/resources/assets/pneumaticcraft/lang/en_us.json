@@ -1479,7 +1479,7 @@
    "pneumaticcraft.waila.tubeModule.threshold" : "Threshold: §e%d bar",
    "ppneumaticcraft.pressure_tube" : "This block is used to transport air. It can be camouflaged and Tube Modules can be placed on it to provide additional functionality.",
    "programmingPuzzle.pneumaticcraft.area.name" : "Area",
-   "programmingPuzzle.pneumaticcraft.block_right_click.name" : "Right Click Block",
+   "programmingPuzzle.pneumaticcraft.block_right_click.name" : "Right Click",
    "programmingPuzzle.pneumaticcraft.comment.name" : "Comment",
    "programmingPuzzle.pneumaticcraft.computer_control.name" : "Computer Control",
    "programmingPuzzle.pneumaticcraft.condition_block.name" : "Condition: Block",
