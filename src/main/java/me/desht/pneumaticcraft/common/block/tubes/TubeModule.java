@@ -133,7 +133,7 @@ public abstract class TubeModule {
     }
 
     public void writeToNBT(CompoundNBT nbt) {
-        nbt.putInt("dir", dir.ordinal());
+        nbt.putInt("dir", dir.getIndex());
         nbt.putBoolean("upgraded", upgraded);
         nbt.putFloat("lowerBound", lowerBound);
         nbt.putFloat("higherBound", higherBound);

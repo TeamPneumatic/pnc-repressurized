@@ -2,9 +2,9 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraftforge.fml.network.NetworkEvent;
 
@@ -37,16 +37,13 @@ public abstract class PacketUpdateTubeModule extends LocationIntPacket {
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            TileEntity te = ctx.get().getSender().getServerWorld().getTileEntity(pos);
-            if (te instanceof TileEntityPressureTube) {
-                TubeModule module = ((TileEntityPressureTube)te).modules[moduleSide.getIndex()];
-                if (module != null) {
-                    PlayerEntity player = ctx.get().getSender();
-                    onModuleUpdate(module, player);
-                }
+        ctx.get().enqueueWork(() -> PneumaticCraftUtils.getTileEntityAt(ctx.get().getSender().getServerWorld(), pos, TileEntityPressureTube.class).ifPresent(te -> {
+            TubeModule tm = te.getModule(moduleSide);
+            if (tm != null) {
+                PlayerEntity player = ctx.get().getSender();
+                onModuleUpdate(tm, player);
             }
-        });
+        }));
         ctx.get().setPacketHandled(true);
     }
 

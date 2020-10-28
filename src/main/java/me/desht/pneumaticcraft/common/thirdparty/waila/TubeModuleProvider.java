@@ -11,6 +11,7 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
@@ -42,7 +43,7 @@ public class TubeModuleProvider {
                 for (int i = 0; i < moduleList.size(); i++) {
                     CompoundNBT moduleTag = moduleList.getCompound(i);
                     if (side == moduleTag.getInt("side")) {
-                        TubeModule module = tube.modules[side];
+                        TubeModule module = tube.getModule(Direction.byIndex(side));
                         if (module != null) {
                             module.readFromNBT(moduleTag);
                             module.addInfo(tooltip);

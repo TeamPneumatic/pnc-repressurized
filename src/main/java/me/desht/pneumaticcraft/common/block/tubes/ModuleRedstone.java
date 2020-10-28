@@ -19,6 +19,7 @@ import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.IntStream;
@@ -287,11 +288,11 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
         int newInputLevel = redstoneDirection == EnumRedstoneDirection.INPUT ?
                 pressureTube.getWorld().getRedstonePower(pressureTube.getPos().offset(getDirection()), getDirection()) : 0;
 
-        for (TubeModule module : pressureTube.modules) {
-            if (module instanceof TubeModuleRedstoneEmitting) {
-                newInputLevel = Math.max(newInputLevel, module.getRedstoneLevel());
-            }
-        }
+        newInputLevel = Math.max(newInputLevel,  pressureTube.tubeModules()
+                .filter(tm -> tm instanceof TubeModuleRedstoneEmitting)
+                .max(Comparator.comparingInt(TubeModule::getRedstoneLevel))
+                .map(TubeModule::getRedstoneLevel)
+                .orElse(0));
 
         if (newInputLevel != inputLevel) {
             inputLevel = newInputLevel;

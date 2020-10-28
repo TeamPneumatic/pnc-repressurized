@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.common.block.tubes.ModuleLogistics;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.Direction;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -52,7 +53,7 @@ public class PacketUpdateLogisticsModule extends LocationIntPacket {
         ctx.get().enqueueWork(() -> {
             TileEntityPressureTube te = TileEntityPressureTube.getTube(ClientUtils.getClientTE(pos));
             if (te != null) {
-                TubeModule module = te.modules[side];
+                TubeModule module = te.getModule(Direction.byIndex(side));
                 if (module instanceof ModuleLogistics) {
                     ((ModuleLogistics) module).onUpdatePacket(status, colorIndex);
                 }

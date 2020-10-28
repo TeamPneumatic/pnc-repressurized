@@ -84,7 +84,7 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundNBT> {
     }
 
     public void invalidateCaps() {
-        entries.forEach(e -> e.lazy.invalidate());
+        entries.forEach(e -> { if (e.lazy != null) e.lazy.invalidate(); });
     }
 
     private int setDefaultSides(RelativeFace... defaultRelativeFaces) {

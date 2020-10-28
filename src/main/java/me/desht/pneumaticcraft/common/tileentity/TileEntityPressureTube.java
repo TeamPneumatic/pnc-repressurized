@@ -30,15 +30,20 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 public class TileEntityPressureTube extends TileEntityPneumaticBase implements IAirListener, IManoMeasurable, ICamouflageableTE {
     @DescSynced
-    public final boolean[] sidesClosed = new boolean[6];
-    public TubeModule[] modules = new TubeModule[6];
+    private final boolean[] sidesClosed = new boolean[6];
+    private final TubeModule[] modules = new TubeModule[6];
     private BlockState camoState;
     private AxisAlignedBB renderBoundingBox = null;
     private Direction inLineModuleDir = null;  // only one inline module allowed
+    private final List<Direction> connectedNeighbours = new ArrayList<>();
 
     public TileEntityPressureTube() {
         this(ModTileEntities.PRESSURE_TUBE.get(), PneumaticValues.DANGER_PRESSURE_PRESSURE_TUBE, PneumaticValues.MAX_PRESSURE_PRESSURE_TUBE, PneumaticValues.VOLUME_PRESSURE_TUBE, 0);
@@ -62,11 +67,10 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     public CompoundNBT write(CompoundNBT nbt) {
         super.write(nbt);
 
-        byte connected = 0, closed = 0;
+        byte closed = 0;
         for (int i = 0; i < 6; i++) {
             if (sidesClosed[i]) closed |= 1 << i;
         }
-        nbt.putByte("sidesConnected", connected);
         nbt.putByte("sidesClosed", closed);
         return nbt;
     }
@@ -81,12 +85,12 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
 
     public void writeModulesToNBT(CompoundNBT tag) {
         ListNBT moduleList = new ListNBT();
-        for (int i = 0; i < modules.length; i++) {
-            if (modules[i] != null) {
+        for (Direction d : Direction.VALUES) {
+            TubeModule tm = getModule(d);
+            if (tm != null) {
                 CompoundNBT moduleTag = new CompoundNBT();
-                moduleTag.putString("type", modules[i].getType().toString());
-                modules[i].writeToNBT(moduleTag);
-                moduleTag.putInt("side", i);
+                moduleTag.putString("type", tm.getType().toString());
+                tm.writeToNBT(moduleTag);
                 moduleList.add(moduleTag);
             }
         }
@@ -97,19 +101,17 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     public void readFromPacket(CompoundNBT tag) {
         super.readFromPacket(tag);
 
-        modules = new TubeModule[6];
-        ListNBT moduleList = tag.getList("modules", 10);
+        Arrays.fill(modules, null);
+        ListNBT moduleList = tag.getList("modules", Constants.NBT.TAG_COMPOUND);
         for (int i = 0; i < moduleList.size(); i++) {
             CompoundNBT moduleTag = moduleList.getCompound(i);
             Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(moduleTag.getString("type")));
             if (item instanceof ItemTubeModule) {
                 TubeModule module = ((ItemTubeModule) item).createModule();
-                if (module != null) {
-                    module.readFromNBT(moduleTag);
-                    setModule(module, Direction.byIndex(moduleTag.getInt("side")));
-                }
+                module.readFromNBT(moduleTag);
+                setModule(module.getDirection(), module);
             } else {
-                Log.error("received unknown tube module ID from server: " + moduleTag.getString("type"));
+                Log.error("unknown tube module type: " + moduleTag.getString("type"));
             }
         }
         updateRenderBoundingBox();
@@ -137,26 +139,21 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
         if (!getWorld().isRemote) airHandler.setSideLeaking(null);
 
         for (Direction dir : Direction.VALUES) {
-            if (modules[dir.getIndex()] != null) {
+            TubeModule tm = getModule(dir);
+            if (tm != null) {
                 hasModules = true;
-                modules[dir.getIndex()].shouldDrop = true;
-                modules[dir.getIndex()].update();
+                tm.shouldDrop = true;
+                tm.update();
             }
-            if (sidesClosed[dir.getIndex()]) {
+            if (isSideClosed(dir)) {
                 hasClosedSide = true;
             }
         }
 
-        if (!getWorld().isRemote && !hasModules && !hasClosedSide) {
-            // check for possibility of air leak due to unconnected tube
-            List<IAirHandlerMachine.Connection> l = airHandler.getConnectedAirHandlers(this);
-            if (l.size() == 1) {
-                IAirHandlerMachine.Connection c = l.get(0);
-                Direction d = c.getDirection();
-                if (d != null) {
-                    airHandler.setSideLeaking(canConnectPneumatic(d.getOpposite()) ? d.getOpposite() : null);
-                }
-            }
+        // check for possibility of air leak due to unconnected tube
+        if (!getWorld().isRemote && !hasModules && !hasClosedSide && connectedNeighbours.size() == 1) {
+            Direction d = connectedNeighbours.get(0).getOpposite();
+            airHandler.setSideLeaking(canConnectPneumatic(d) ? d : null);
         }
 
         super.tick();
@@ -166,9 +163,9 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     @Override
     public void onAirDispersion(IAirHandlerMachine handler, @Nullable Direction side, int airDispersed) {
         if (side != null) {
-            int intSide = side.ordinal();
-            if (modules[intSide] instanceof IInfluenceDispersing) {
-                ((IInfluenceDispersing) modules[intSide]).onAirDispersion(airDispersed);
+            TubeModule tm = getModule(side);
+            if (tm instanceof IInfluenceDispersing) {
+                ((IInfluenceDispersing) tm).onAirDispersion(airDispersed);
             }
         }
     }
@@ -176,9 +173,9 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     @Override
     public int getMaxDispersion(IAirHandlerMachine handler, @Nullable Direction side) {
         if (side != null) {
-            int intSide = side.ordinal();
-            if (modules[intSide] instanceof IInfluenceDispersing) {
-                return ((IInfluenceDispersing) modules[intSide]).getMaxDispersion();
+            TubeModule tm = getModule(side);
+            if (tm instanceof IInfluenceDispersing) {
+                return ((IInfluenceDispersing) tm).getMaxDispersion();
             }
         }
         return Integer.MAX_VALUE;
@@ -188,11 +185,23 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
         return modules[side.getIndex()];
     }
 
-    public boolean mayPlaceModule(Direction side) {
-        return inLineModuleDir == null && modules[side.ordinal()] == null && !sidesClosed[side.ordinal()];
+    public boolean isSideClosed(Direction side) {
+        return sidesClosed[side.getIndex()];
     }
 
-    public void setModule(TubeModule module, Direction side) {
+    public void setSideClosed(Direction side, boolean closed) {
+        sidesClosed[side.getIndex()] = closed;
+    }
+
+    public Stream<TubeModule> tubeModules() {
+        return Arrays.stream(modules).filter(Objects::nonNull);
+    }
+
+    public boolean mayPlaceModule(Direction side) {
+        return inLineModuleDir == null && getModule(side) == null && !isSideClosed(side);
+    }
+
+    public void setModule(Direction side, TubeModule module) {
         if (module != null) {
             module.setDirection(side);
             module.setTube(this);
@@ -215,8 +224,8 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     @Override
     public boolean canConnectPneumatic(Direction side) {
         return (inLineModuleDir == null || inLineModuleDir.getAxis() == side.getAxis())
-                && !sidesClosed[side.ordinal()]
-                && (modules[side.ordinal()] == null || modules[side.ordinal()].isInline());
+                && !isSideClosed(side)
+                && (getModule(side) == null || getModule(side).isInline());
     }
 
     @Override
@@ -233,6 +242,10 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
         for (TubeModule module : modules) {
             if (module != null) module.onNeighborBlockUpdate();
         }
+
+        List<IAirHandlerMachine.Connection> l = airHandler.getConnectedAirHandlers(this);
+        connectedNeighbours.clear();
+        l.forEach(connection -> connectedNeighbours.add(connection.getDirection()));
     }
 
     @Override
@@ -241,8 +254,8 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     }
 
     public TileEntity getConnectedNeighbor(Direction dir) {
-        int idx = dir.getIndex();
-        if (!sidesClosed[idx] && (modules[idx] == null || modules[idx].isInline() && dir.getAxis() == modules[idx].getDirection().getAxis())) {
+        TubeModule tm = getModule(dir);
+        if (!isSideClosed(dir) && (tm == null || tm.isInline() && dir.getAxis() == tm.getDirection().getAxis())) {
             TileEntity te = getCachedNeighbor(dir);
             if (te != null && te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, dir.getOpposite()).isPresent()) {
                 return te;
@@ -260,10 +273,8 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     public void printManometerMessage(PlayerEntity player, List<ITextComponent> text) {
         RayTraceResult mop = PneumaticCraftUtils.getEntityLookedObject(player);
         if (mop != null && mop.hitInfo instanceof Direction) {
-            Direction dir = (Direction) mop.hitInfo;
-            if (modules[dir.ordinal()] != null) {
-                modules[dir.ordinal()].addInfo(text);
-            }
+            TubeModule tm = getModule((Direction) mop.hitInfo);
+            if (tm != null) tm.addInfo(text);
         }
     }
 

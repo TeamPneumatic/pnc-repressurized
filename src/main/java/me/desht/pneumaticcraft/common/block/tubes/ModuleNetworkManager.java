@@ -37,11 +37,9 @@ public class ModuleNetworkManager {
         pendingTubes.push(module.getTube());
         while (!pendingTubes.isEmpty()) {
             TileEntityPressureTube tube = pendingTubes.pop();
-            for (TubeModule m : tube.modules) {
-                if (m instanceof INetworkedModule && module.getClass() == m.getClass()) {
-                    modules.add(m);
-                }
-            }
+            tube.tubeModules()
+                    .filter(tm -> tm instanceof INetworkedModule && module.getClass() == tm.getClass())
+                    .forEach(modules::add);
             for (Direction dir : Direction.VALUES) {
                 TileEntity newTube = tube.getConnectedNeighbor(dir);
                 if (newTube instanceof TileEntityPressureTube && !traversedTubes.contains(newTube)) {

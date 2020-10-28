@@ -46,7 +46,7 @@ public class PacketTubeModuleColor extends LocationIntPacket {
         ctx.get().enqueueWork(() -> {
             TileEntityPressureTube te = TileEntityPressureTube.getTube(ctx.get().getSender().getServerWorld().getTileEntity(pos));
             if (te != null) {
-                TubeModule module = te.modules[side.getIndex()];
+                TubeModule module = te.getModule(side);
                 if (module instanceof INetworkedModule) {
                     ((INetworkedModule) module).setColorChannel(ourColor);
                 }

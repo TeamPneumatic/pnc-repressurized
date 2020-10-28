@@ -40,14 +40,8 @@ public class RenderPressureTubeModule extends TileEntityRenderer<TileEntityPress
         } else if (mc.player.getHeldItem(Hand.OFF_HAND).getItem() instanceof ItemTubeModule) {
             holdingModule = Hand.OFF_HAND;
         }
-        boolean render = false;
-        for (int i = 0; i < tile.modules.length; i++) {
-            if (tile.modules[i] != null) {
-                render = true;
-                break;
-            }
-        }
-        if (!render && holdingModule == null)
+
+        if (tile.tubeModules().noneMatch(e -> true) && holdingModule == null)
             return;
 
         matrixStack.push();
@@ -57,14 +51,14 @@ public class RenderPressureTubeModule extends TileEntityRenderer<TileEntityPress
         // "fake" module is for showing a preview of where the module would be placed
         if (holdingModule != null) attachFakeModule(mc, tile, holdingModule);
 
-        for (int i = 0; i < tile.modules.length; i++) {
-            TubeModule module = tile.modules[i];
+        for (Direction dir : Direction.VALUES) {
+            TubeModule module = tile.getModule(dir);
             if (module != null) {
                 // FIXME: map lookup isn't ideal for performance here: need a cached index-based lookup of module->model
                 getModel(module).renderModule(module, matrixStack, buffer, partialTicks, combinedLight, combinedOverlay);
 
                 if (module.isFake()) {
-                    tile.setModule(null, Direction.byIndex(i));
+                    tile.setModule(dir, null);
                 }
             }
         }

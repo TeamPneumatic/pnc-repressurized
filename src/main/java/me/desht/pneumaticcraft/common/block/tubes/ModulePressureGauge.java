@@ -21,11 +21,10 @@ public class ModulePressureGauge extends TubeModuleRedstoneEmitting {
                 if (pressureTube.getWorld().getGameTime() % 20 == 0)
                     NetworkHandler.sendToAllAround(new PacketUpdatePressureBlock(getTube(), null, h.getSideLeaking(), h.getAir()), getTube().getWorld());
                 if (setRedstone(getRedstone(h.getPressure()))) {
-                    for (TubeModule module : pressureTube.modules) {
-                        if (module instanceof ModuleRedstone) {
-                            ((ModuleRedstone) module).setInputLevel(-1);  // force a recalc on next tick
-                        }
-                    }
+                    // force a recalc on next tick
+                    pressureTube.tubeModules()
+                            .filter(tm -> tm instanceof ModuleRedstone)
+                            .forEach(tm -> ((ModuleRedstone) tm).setInputLevel(-1));
                 }
             });
         }

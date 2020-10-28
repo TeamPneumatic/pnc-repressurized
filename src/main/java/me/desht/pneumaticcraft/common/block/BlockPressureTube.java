@@ -152,7 +152,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
             BlockState state = stateIn;
             for (Direction dir : Direction.VALUES) {
                 ConnectionType type = ConnectionType.UNCONNECTED;
-                if (tePT.sidesClosed[dir.getIndex()]) {
+                if (tePT.isSideClosed(dir)) {
                     type = ConnectionType.CLOSED;
                 } else if (tePT.canConnectPneumatic(dir)) {
                     TileEntity neighbourTE = worldIn.getTileEntity(currentPos.offset(dir));
@@ -192,15 +192,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
     public VoxelShape getUncamouflagedShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext ctx) {
         VoxelShape res = getCachedShape(state);
         TileEntityPressureTube te = getPressureTube(reader, pos);
-        if (te != null) {
-            for (TubeModule module : te.modules) {
-                if (module != null) {
-                    res = VoxelShapes.combineAndSimplify(res, module.getShape(), IBooleanFunction.OR);
-                }
-            }
-        }
-
-        return res;
+        return te != null ? te.tubeModules().map(TubeModule::getShape).reduce(res, VoxelShapes::or) : res;
     }
 
     private VoxelShape getCachedShape(BlockState state) {
@@ -263,7 +255,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
             TubeModule module = ((ItemTubeModule) heldStack.getItem()).createModule();
             if (tePT.mayPlaceModule(side)) {
                 if (simulate) module.markFake();
-                tePT.setModule(module, side);
+                tePT.setModule(side, module);
                 if (!simulate && !world.isRemote) {
                     neighborChanged(world.getBlockState(pos), world, pos, this, pos.offset(side), false);
                     world.notifyNeighborsOfStateChange(pos, this);
@@ -303,7 +295,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
         TubeHitInfo tubeHitInfo = getHitInfo(rayTraceResult);
         if (tubeHitInfo.type == TubeHitInfo.PartType.MODULE) {
             TileEntityPressureTube tube = getPressureTube(world, pos);
-            return tube == null ? null : tube.modules[tubeHitInfo.dir.ordinal()];
+            return tube == null ? null : tube.getModule(tubeHitInfo.dir);
         }
         return null;
     }
@@ -372,10 +364,10 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
         }
 
         // now check attached tube modules
-        TubeModule[] modules = tube.modules;
         for (Direction dir : Direction.VALUES) {
-            if (modules[dir.getIndex()] != null) {
-                AxisAlignedBB tubeAABB = modules[dir.getIndex()].getShape().getBoundingBox();
+            TubeModule tm = tube.getModule(dir);
+            if (tm != null) {
+                AxisAlignedBB tubeAABB = tm.getShape().getBoundingBox();
                 brtr = AxisAlignedBB.rayTrace(Collections.singletonList(tubeAABB), origin, direction, pos);
                 if (isCloserIntersection(origin, bestRTR, brtr)) {
                     brtr.hitInfo = new TubeHitInfo(dir, TubeHitInfo.PartType.MODULE);  // tube module
@@ -402,9 +394,9 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
         } else if (tubeHitInfo.type == TubeHitInfo.PartType.MODULE) {
             TileEntityPressureTube tube = getPressureTube(world, pos);
             if (tube != null) {
-                TubeModule module = tube.modules[tubeHitInfo.dir.ordinal()];
-                if (module != null) {
-                    return new ItemStack(module.getItem());
+                TubeModule tm = tube.getModule(tubeHitInfo.dir);
+                if (tm != null) {
+                    return new ItemStack(tm.getItem());
                 }
             }
         }
@@ -428,7 +420,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
                         entity.onCollideWithPlayer(player);
                     }
                 }
-                tube.setModule(null, module.getDirection());
+                tube.setModule(module.getDirection(), null);
                 neighborChanged(world.getBlockState(pos), world, pos, this, pos.offset(side), false);
                 world.notifyNeighborsOfStateChange(pos, this);
             } else {
@@ -440,11 +432,11 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
             if (module != null) {
                 module.onActivated(player, hand);
             } else {
-                // close (or reopen) this side of the pipe
+                // toggle closed/open for this side of the pipe
                 Pair<Boolean, Direction> lookData = getLookedTube(world, pos, player);
                 if (lookData != null) {
                     Direction sideHit = lookData.getRight();
-                    tube.sidesClosed[sideHit.ordinal()] = !tube.sidesClosed[sideHit.ordinal()];
+                    tube.setSideClosed(sideHit, !tube.isSideClosed(sideHit));
                     tube.onNeighborBlockUpdate();
                     world.setBlockState(pos, recalculateState(world, pos, world.getBlockState(pos)));
                 }
@@ -467,11 +459,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
     private static NonNullList<ItemStack> getModuleDrops(TileEntityPressureTube tube) {
         NonNullList<ItemStack> drops = NonNullList.create();
         if (tube != null) {
-            for (TubeModule module : tube.modules) {
-                if (module != null) {
-                    drops.addAll(module.getDrops());
-                }
-            }
+            tube.tubeModules().map(TubeModule::getDrops).forEach(drops::addAll);
         }
         return drops;
     }
@@ -512,9 +500,11 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
         if (tePt != null) {
             int redstoneLevel = 0;
             for (Direction face : Direction.VALUES) {
-                if (tePt.modules[face.ordinal()] != null) {
-                    if (side.getOpposite() == face || face != side && tePt.modules[face.ordinal()].isInline()) {//if we are on the same side, or when we have an 'in line' module that is not on the opposite side.
-                        redstoneLevel = Math.max(redstoneLevel, tePt.modules[face.ordinal()].getRedstoneLevel());
+                TubeModule tm = tePt.getModule(face);
+                if (tm != null) {
+                    if (side.getOpposite() == face || face != side && tm.isInline()) {
+                        // if we are on the same side, or when we have an 'in line' module that is not on the opposite side.
+                        redstoneLevel = Math.max(redstoneLevel, tm.getRedstoneLevel());
                     }
                 }
             }

@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -70,9 +71,9 @@ public class PacketSyncRedstoneModuleToServer extends LocationIntPacket {
         ctx.get().enqueueWork(() -> {
             TileEntity te = ctx.get().getSender().world.getTileEntity(pos);
             if (te instanceof TileEntityPressureTube) {
-                TubeModule m = ((TileEntityPressureTube) te).modules[side];
-                if (m instanceof ModuleRedstone) {
-                    ModuleRedstone mr = (ModuleRedstone) m;
+                TubeModule tm = ((TileEntityPressureTube) te).getModule(Direction.byIndex(side));
+                if (tm instanceof ModuleRedstone) {
+                    ModuleRedstone mr = (ModuleRedstone) tm;
                     EnumRedstoneDirection prev = mr.getRedstoneDirection();
                     mr.setRedstoneDirection(input ? EnumRedstoneDirection.INPUT : EnumRedstoneDirection.OUTPUT);
                     mr.setColorChannel(ourColor);

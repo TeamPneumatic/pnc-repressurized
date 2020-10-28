@@ -31,11 +31,10 @@ public class ItemTubeModule extends Item {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void addInformation(ItemStack par1ItemStack, World par2EntityPlayer, List<ITextComponent> par3List, ITooltipFlag par4) {
-        super.addInformation(par1ItemStack, par2EntityPlayer, par3List, par4);
+    public void addInformation(ItemStack stack, World world, List<ITextComponent> tooltip, ITooltipFlag flag) {
+        super.addInformation(stack, world, tooltip, flag);
+
         TubeModule module = createModule();
-        if (module != null) {
-            par3List.add(new StringTextComponent("In line: " + (module.isInline() ? "Yes" : "No")).mergeStyle(TextFormatting.DARK_AQUA));
-        }
+        tooltip.add(new StringTextComponent("In line: " + (module.isInline() ? "Yes" : "No")).mergeStyle(TextFormatting.DARK_AQUA));
     }
 }
