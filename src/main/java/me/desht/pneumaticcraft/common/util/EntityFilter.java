@@ -216,7 +216,7 @@ public class EntityFilter implements Predicate<Entity>, com.google.common.base.P
                 Validate.isTrue(modifier.length == 2, "Invalid modifier syntax: " + splits[i]);
                 Modifier m;
                 try {
-                    m = Modifier.valueOf(modifier[0].toUpperCase());
+                    m = Modifier.valueOf(modifier[0].toUpperCase(Locale.ROOT));
                 } catch (Exception e) {
                     throw new IllegalArgumentException("Unknown modifier: " + modifier[0]);
                 }

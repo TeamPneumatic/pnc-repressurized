@@ -21,6 +21,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nonnull;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.stream.IntStream;
 
@@ -136,7 +137,7 @@ public class AmadronTradeResource {
     }
 
     public static AmadronTradeResource fromJson(JsonObject obj) throws CommandSyntaxException {
-        Type type = Type.valueOf(obj.get("type").getAsString().toUpperCase());
+        Type type = Type.valueOf(obj.get("type").getAsString().toUpperCase(Locale.ROOT));
         ResourceLocation rl = new ResourceLocation(obj.get("id").getAsString());
         int amount = obj.get("amount").getAsInt();
         switch (type) {

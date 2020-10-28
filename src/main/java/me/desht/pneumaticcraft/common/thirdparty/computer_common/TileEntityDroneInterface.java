@@ -33,10 +33,7 @@ import net.minecraftforge.common.util.Constants;
 import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
@@ -607,7 +604,7 @@ public class TileEntityDroneInterface extends TileEntity implements ITickableTil
             @Override
             public Object[] call(Object[] args) {
                 requireArgs(args, 1, "<string> upgrade_name");
-                EnumUpgrade upgrade = EnumUpgrade.valueOf(((String) args[0]).toUpperCase());
+                EnumUpgrade upgrade = EnumUpgrade.valueOf(((String) args[0]).toUpperCase(Locale.ROOT));
                 return new Object[]{(double) validateAndGetDrone().getUpgrades(upgrade)};
             }
         });

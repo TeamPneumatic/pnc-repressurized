@@ -7,6 +7,7 @@ import org.apache.commons.lang3.Validate;
 
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 
 public abstract class LuaMethod implements ILuaMethod {
     private final String methodName;
@@ -21,7 +22,7 @@ public abstract class LuaMethod implements ILuaMethod {
     }
 
     protected Direction getDirForString(String luaParm) {
-        return Direction.valueOf(luaParm.toUpperCase());
+        return Direction.valueOf(luaParm.toUpperCase(Locale.ROOT));
     }
 
     LinkedHashMap<Integer, String> getStringTable(List<String> list) {

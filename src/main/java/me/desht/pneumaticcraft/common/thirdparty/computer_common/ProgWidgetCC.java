@@ -148,7 +148,7 @@ public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrder
     }
 
     private Set<BlockPos> getArea(int x1, int y1, int z1, int x2, int y2, int z2, String areaType) throws IllegalArgumentException {
-        EnumOldAreaType type = EnumOldAreaType.valueOf(areaType.toUpperCase());
+        EnumOldAreaType type = EnumOldAreaType.valueOf(areaType.toUpperCase(Locale.ROOT));
         ProgWidgetArea helperWidget = new ProgWidgetArea();
         helperWidget.x1 = x1;
         helperWidget.y1 = y1;
