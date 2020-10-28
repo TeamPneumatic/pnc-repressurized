@@ -46,7 +46,7 @@ import java.util.Map;
 
 public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumaticBase
         implements IMinWorkingPressure, IRedstoneControlled, ISerializableTanks,
-        IAutoFluidEjecting, INamedContainerProvider {
+        IAutoFluidEjecting, INamedContainerProvider, IComparatorSupport {
 
     private static final int INVENTORY_SIZE = 1;
     private static final int CRAFTING_TIME = 60 * 100;
@@ -126,7 +126,12 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
                 currentRecipe = findApplicableRecipe();
                 searchForRecipe = false;
             }
+            boolean hadRecipe = hasRecipe;
             hasRecipe = currentRecipe != null;
+            if (hasRecipe != hadRecipe) {
+                getWorld().updateComparatorOutputLevel(getPos(), getBlockState().getBlock());
+            }
+
             didWork = false;
             if (hasRecipe) {
                 requiredPressure = currentRecipe.getRequiredPressure();
@@ -294,6 +299,11 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
 
     public IItemHandler getOutputInventory() {
         return outputItemHandler;
+    }
+
+    @Override
+    public int getComparatorValue() {
+        return hasRecipe ? 15 : 0;
     }
 
     private class ThermopneumaticFluidTankInput extends SmartSyncTank {
