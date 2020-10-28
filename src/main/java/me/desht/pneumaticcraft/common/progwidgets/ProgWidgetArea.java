@@ -93,6 +93,23 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     }
 
     @Override
+    public String getExtraStringInfo() {
+        StringBuilder res = new StringBuilder();
+        if (!coord1Variable.isEmpty()) {
+            res.append("\"").append(coord1Variable).append("\"");
+        } else if (x1 != 0 && y1 != 0 && z1 != 0) {
+            res.append(String.format("%d, %d, %d", x1, y1, z1));
+        }
+        if (res.length() > 0) res.append("${br}");
+        if (!coord2Variable.isEmpty()) {
+            res.append("\"").append(coord2Variable).append("\"");
+        } else if (x2 != 0 && y2 != 0 && z2 != 0) {
+            res.append(String.format("%d, %d, %d", x2, y2, z2));
+        }
+        return res.toString();
+    }
+
+    @Override
     public void getTooltip(List<ITextComponent> curTooltip) {
         super.getTooltip(curTooltip);
 
