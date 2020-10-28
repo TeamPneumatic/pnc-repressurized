@@ -6,6 +6,14 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.16.3
 
+## 2.4.6-?? (unreleased)
+
+### Updates
+* Pressure tube performance improvement (was unnecessarily computing connections every tick when it's only necessary to do so on neighbour block updates)
+
+### Fixes
+* Fixed a few locale-related errors in recipe deserialization
+
 ## 2.4.5-62 (25 Oct 2020)
 
 ### Updates
