@@ -167,6 +167,12 @@ public class GuiHelmetMainScreen extends GuiPneumaticScreenBase implements IGuiS
     }
 
     @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+        return upgradeOptions.get(pageNumber).page.mouseDragged(mouseX, mouseY, button, dragX, dragY)
+                || super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+    }
+
+    @Override
     public <T extends Widget> T addWidget(T w) {
         return addButton(w);
     }

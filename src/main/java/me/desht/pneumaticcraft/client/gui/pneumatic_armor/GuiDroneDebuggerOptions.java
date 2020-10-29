@@ -182,6 +182,11 @@ public class GuiDroneDebuggerOptions extends IOptionPage.SimpleToggleableOptions
         return programmerUnit.getScrollBar().mouseScrolled(mouseX, mouseY, mouseButton);
     }
 
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+        return programmerUnit.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+    }
+
     private class DebugInfoProgrammerUnit extends GuiUnitProgrammer {
 
         DebugInfoProgrammerUnit(List<IProgWidget> progWidgets, FontRenderer fontRenderer, int guiLeft,
