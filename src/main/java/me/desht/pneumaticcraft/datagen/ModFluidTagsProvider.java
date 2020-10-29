@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.datagen;
 
 import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.core.ModFluids;
+import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.FluidTagsProvider;
 import net.minecraft.fluid.Fluid;
@@ -13,7 +14,7 @@ import java.util.function.Supplier;
 
 public class ModFluidTagsProvider extends FluidTagsProvider {
     public ModFluidTagsProvider(DataGenerator generatorIn) {
-        super(generatorIn);
+        super(generatorIn, Names.MOD_ID, null);
     }
 
     @Override

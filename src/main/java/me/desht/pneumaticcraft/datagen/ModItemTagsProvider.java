@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.datagen;
 
 import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.data.BlockTagsProvider;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.ItemTagsProvider;
@@ -17,7 +18,7 @@ import java.util.function.Supplier;
 
 public class ModItemTagsProvider extends ItemTagsProvider {
     public ModItemTagsProvider(DataGenerator generatorIn, BlockTagsProvider blockTagsProvider) {
-        super(generatorIn, blockTagsProvider);
+        super(generatorIn, blockTagsProvider, Names.MOD_ID, null);
     }
 
     @Override
