@@ -209,7 +209,7 @@ dependencies {
     compile fg.deobf("curse.maven:mekanism:${mekanism_curse_id}")
     compile fg.deobf("curse.maven:hwyla:${hwyla_curse_id}")
     compileOnly fg.deobf("appeng:appliedenergistics2:${ae2_version}:api")
-    runtimeOnly fg.deobf("appeng:appliedenergistics2:${ae2_version}")
+//    runtimeOnly fg.deobf("appeng:appliedenergistics2:${ae2_version}")
 
 //    compile fg.deobf("curse.maven:ae2:${ae2_curse_id}")
 //    compileOnly fg.deobf("mcp.mobius.waila:Hwyla:${hwyla_version}:api")
