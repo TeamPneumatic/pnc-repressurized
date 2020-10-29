@@ -15,7 +15,7 @@ public class LakeOil extends Placement<ChanceConfig> {
     }
 
     @Override
-    public Stream<BlockPos> func_241857_a(WorldDecoratingHelper helper, Random rand, ChanceConfig chanceConfig, BlockPos pos) {
+    public Stream<BlockPos> getPositions(WorldDecoratingHelper helper, Random rand, ChanceConfig chanceConfig, BlockPos pos) {
         if (rand.nextInt(100) < chanceConfig.chance) {
             int i = rand.nextInt(16) + pos.getX();
             int j = rand.nextInt(16) + pos.getZ();

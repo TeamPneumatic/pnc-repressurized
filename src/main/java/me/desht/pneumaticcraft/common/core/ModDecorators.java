@@ -13,7 +13,7 @@ import java.util.function.Supplier;
 public class ModDecorators {
     public static final DeferredRegister<Placement<?>> DECORATORS = DeferredRegister.create(ForgeRegistries.DECORATORS, Names.MOD_ID);
 
-    public static final RegistryObject<LakeOil> OIL_LAKE = register("oil_lake", () -> new LakeOil(ChanceConfig.field_236950_a_));
+    public static final RegistryObject<LakeOil> OIL_LAKE = register("oil_lake", () -> new LakeOil(ChanceConfig.CODEC));
 
     private static <T extends Placement<?>> RegistryObject<T> register(final String name, final Supplier<T> sup) {
         return DECORATORS.register(name, sup);
