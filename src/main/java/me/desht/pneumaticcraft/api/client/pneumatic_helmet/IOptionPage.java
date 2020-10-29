@@ -85,6 +85,17 @@ public interface IOptionPage {
     boolean mouseScrolled(double x, double y, double dir);
 
     /**
+     * Called when the mouse is dragged across the GUI
+     * @param mouseX mouse X
+     * @param mouseY mouse Y
+     * @param button mouse button
+     * @param dragX drag X
+     * @param dragY drag Y
+     * @return true if the event has been handled, false otherwise
+     */
+    boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY);
+
+    /**
      * Can this upgrade be toggled off & on?
      *
      * @return true if the upgrade is toggleable, false otherwise
@@ -158,6 +169,11 @@ public interface IOptionPage {
 
         @Override
         public boolean mouseClicked(double x, double y, int button) {
+            return false;
+        }
+
+        @Override
+        public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
             return false;
         }
 
