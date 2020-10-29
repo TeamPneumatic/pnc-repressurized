@@ -20,6 +20,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
@@ -125,7 +126,7 @@ public class AssemblyRecipeImpl extends AssemblyRecipe {
         public T read(ResourceLocation recipeId, JsonObject json) {
             Ingredient input = Ingredient.deserialize(json.get("input"));
             ItemStack result = ShapedRecipe.deserializeItem(JSONUtils.getJsonObject(json, "result"));
-            String program = JSONUtils.getString(json, "program").toUpperCase();
+            String program = JSONUtils.getString(json, "program").toUpperCase(Locale.ROOT);
             try {
                 AssemblyProgramType programType = AssemblyProgramType.valueOf(program);
                 Validate.isTrue(programType != AssemblyProgramType.DRILL_LASER, "'drill_laser' may not be used in recipe JSON!");
