@@ -60,6 +60,21 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
     }
 
     @Override
+    public void addWarnings(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
+        super.addWarnings(curInfo, widgets);
+        IProgWidget p = getParent();
+        int n = 1;
+        while (p != null) {
+            // Item Assign widget only pays attention to the first connected item filter
+            if (p instanceof ProgWidgetItemAssign && n > 1) {
+                curInfo.add(xlate("pneumaticcraft.gui.progWidget.itemFilter.warning.ignoredItemAssign"));
+                break;
+            }
+            n++;
+            p = p.getParent();
+        }
+    }
+
     public String getExtraStringInfo() {
         return variable.isEmpty() ? "" : "\"" + variable + "\"";
     }
