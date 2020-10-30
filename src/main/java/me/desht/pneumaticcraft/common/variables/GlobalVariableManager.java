@@ -67,15 +67,11 @@ public class GlobalVariableManager extends WorldSavedData {
 
     public void set(String varName, BlockPos pos) {
         globalVars.put(varName, pos);
-        save();
+        markDirty();
     }
 
     public void set(String varName, ItemStack item) {
         globalItemVars.put(varName, item);
-        save();
-    }
-
-    private void save() {
         markDirty();
     }
 
@@ -87,10 +83,16 @@ public class GlobalVariableManager extends WorldSavedData {
         return getPos(varName).getX();
     }
 
+    public boolean hasPos(String varName) {
+        return globalVars.containsKey(varName);
+    }
+
+    public boolean hasItem(String varName) {
+        return globalItemVars.containsKey(varName);
+    }
+
     public BlockPos getPos(String varName) {
-        BlockPos pos = globalVars.get(varName);
-        //if(pos != null) Log.info("getting var: " + varName + " set to " + pos.chunkPosX + ", " + pos.chunkPosY + ", " + pos.chunkPosZ);
-        return pos != null ? pos : BlockPos.ZERO;
+        return globalVars.getOrDefault(varName, BlockPos.ZERO);
     }
 
     public ItemStack getItem(String varName) {
