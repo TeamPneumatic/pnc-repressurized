@@ -46,16 +46,25 @@ public class TextVariableParser {
         if (x || y || z) variable = variable.substring(0, variable.length() - 2);
 
         relevantVariables.add(variable);
-        BlockPos pos = variableHolder != null ?
-                variableHolder.getCoordinate(variable) :
-                GlobalVariableManager.getInstance().getPos(variable.startsWith("#") ? variable.substring(1) : variable);
 
+        if (variableHolder == null) {
+            String v1 = variable.startsWith("#") ? variable.substring(1) : variable;
+            GlobalVariableManager gvm = GlobalVariableManager.getInstance();
+            return gvm.hasPos(v1) ? posToStr(gvm.getPos(v1), x, y, z) : (gvm.hasItem(v1) ? gvm.getItem(v1).getDisplayName().getString() : "");
+        } else {
+            return variableHolder.hasCoordinate(variable) ?
+                    posToStr(variableHolder.getCoordinate(variable), x, y, z) :
+                    (variableHolder.hasStack(variable) ? variableHolder.getStack(variable).getDisplayName().getString() : "");
+        }
+    }
+
+    private String posToStr(BlockPos pos, boolean x, boolean y, boolean z) {
         if (x)
-            return pos.getX() + "";
+            return Integer.toString(pos.getX());
         else if (y)
-            return pos.getY() + "";
+            return Integer.toString(pos.getY());
         else if (z)
-            return pos.getZ() + "";
+            return Integer.toString(pos.getZ());
         else
             return pos.getX() + ", " + pos.getY() + ", " + pos.getZ();
     }

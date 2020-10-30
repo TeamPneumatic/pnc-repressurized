@@ -138,18 +138,26 @@ public class DroneAIManager implements IVariableProvider {
     }
 
     @Override
+    public boolean hasCoordinate(String varName) {
+        return getCoordinateInternal(varName) != null;
+    }
+
+    @Override
     public BlockPos getCoordinate(String varName) {
-        BlockPos pos;
+        BlockPos pos = getCoordinateInternal(varName);
+        return pos != null ? pos : BlockPos.ZERO;
+    }
+
+    private BlockPos getCoordinateInternal(String varName) {
         if (varName.startsWith("$")) {
             SpecialVariableRetrievalEvent.CoordinateVariable.Drone event = new SpecialVariableRetrievalEvent.CoordinateVariable.Drone(drone, varName.substring(1));
             MinecraftForge.EVENT_BUS.post(event);
-            pos = event.getCoordinate();
+            return event.getCoordinate();
         } else if (varName.startsWith("#")) {
-            pos = GlobalVariableManager.getInstance().getPos(varName.substring(1));
+            return GlobalVariableManager.getInstance().getPos(varName.substring(1));
         } else {
-            pos = coordinateVariables.get(varName);
+            return coordinateVariables.get(varName);
         }
-        return pos != null ? pos : BlockPos.ZERO;
     }
 
     public void setCoordinate(String varName, BlockPos coord) {
@@ -158,7 +166,12 @@ public class DroneAIManager implements IVariableProvider {
         } else if (!varName.startsWith("$")) coordinateVariables.put(varName, coord);
     }
 
-    @Nonnull
+    @Override
+    public boolean hasStack(String varName) {
+        return !getStack(varName).isEmpty();
+    }
+
+    @Override
     public ItemStack getStack(String varName) {
         ItemStack item;
         if (varName.startsWith("$")) {
