@@ -912,6 +912,7 @@
    "pneumaticcraft.gui.progWidget.itemFilter.useItemCount.tooltip" : "When checked, allow only the specified number of items or quantity (mB) of fluid to be transfered.",
    "pneumaticcraft.gui.progWidget.itemFilter.useItemCount" : "Use count",
    "pneumaticcraft.gui.progWidget.itemFilter.variableLabel" : "Variable",
+   "pneumaticcraft.gui.progWidget.itemFilter.warning.ignoredItemAssign" : "This widget will be ignored. Item Assign widget only takes a single Item Filter widget.",
    "pneumaticcraft.gui.progWidget.itemPickup.debug.itemNotValid" : "Item does not pass the item filter.",
    "pneumaticcraft.gui.progWidget.itemPickup.debug.noItems" : "No items in the area to pick up.",
    "pneumaticcraft.gui.progWidget.jump.nowhereToJump" : "Nowhere to jump. Going back to Start.",
