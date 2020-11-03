@@ -13,7 +13,6 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 
 import java.util.List;
 import java.util.Set;
@@ -217,7 +216,9 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
     @Override
     public void getTooltip(List<ITextComponent> curTooltip) {
         super.getTooltip(curTooltip);
-        curTooltip.add(new StringTextComponent("Setting variable: \"" + variable + "\""));
+
+        curTooltip.add(xlate("pneumaticcraft.gui.progWidget.itemAssign.settingVariable").appendString(": \"").appendString(variable).appendString("\""));
+        curTooltip.add(xlate("pneumaticcraft.gui.progWidget.coordinateOperator.operator").appendString(" ").append(xlate(operator.getTranslationKey())));
     }
 
     @Override
