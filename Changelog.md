@@ -8,11 +8,23 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## 2.4.6-?? (unreleased)
 
-### Updates
-* Pressure tube performance improvement (was unnecessarily computing connections every tick when it's only necessary to do so on neighbour block updates)
+Note: although labelled as 1.16.3, this version should also run fine on MC 1.16.4.  Some basic testing has been done, with no problems noticed so far...
+
+### Updates 
+* Thermopneumatic Processing Plant now has "has work" comparator support, like the Refinery
+  * When there are valid ingredients in the TPP, and room for output, an attached Comparator will emit a signal of 15 
+* Pressure tube performance improvement
+  * Was unnecessarily computing connections every tick when it's only necessary to do so on neighbour block updates
+* Programmer GUI now warns if multiple Item Filter widgets are attached to an Item Assign widget
+* Area widgets in Programmer GUI now show their coordinates and/or variables (when "Show Info" is enabled)
+* Drone variable parsing (with `${varname}` syntax): item variables are now supported too
+* "Right Click Block" widget is now called just "Right Click" (since it can be used to click both items and blocks)
+  * Cosmetic change only, no functional changes
 
 ### Fixes
 * Fixed a few locale-related errors in recipe deserialization
+* Fixed positioning of selected fluid in Fluid Filter GUI
+* Fixed drone debugger GUI view not being draggable (like it used to be in 1.12.2)
 
 ## 2.4.5-62 (25 Oct 2020)
 
