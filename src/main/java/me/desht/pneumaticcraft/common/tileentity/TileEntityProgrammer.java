@@ -16,6 +16,7 @@ import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.network.PacketProgrammerUpdate;
 import me.desht.pneumaticcraft.common.progwidgets.*;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.NBTKeys;
 import net.minecraft.block.BlockState;
@@ -358,13 +359,15 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
         }
     }
 
-    private void tryProgramDrone(PlayerEntity player) {
+    public void tryProgramDrone(PlayerEntity player) {
         if (inventory.getStackInSlot(PROGRAM_SLOT).getItem() instanceof IProgrammable) {
             if (player == null || !player.isCreative()) {
                 int required = getRequiredPuzzleCount();
                 if (required > 0) {
                     if (!takePuzzlePieces(player, true)) {
-                        NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.MINIGUN_STOP.get(), SoundCategory.BLOCKS, getPos(), 1.0f, 1.5f, false), (ServerPlayerEntity) player);
+                        if (player instanceof ServerPlayerEntity) {
+                            NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.MINIGUN_STOP.get(), SoundCategory.BLOCKS, getPos(), 1.0f, 1.5f, false), (ServerPlayerEntity) player);
+                        }
                         return;
                     }
                     takePuzzlePieces(player, false);
@@ -381,7 +384,14 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
         }
     }
 
-    private void returnPuzzlePieces(PlayerEntity player, int count) {
+    /**
+     * Return excess puzzle pieces to adjacent inventories, or the player if non-null. If a null player is passed, any
+     * pieces which can't be inserted will be dropped on the ground.
+     *
+     * @param player the player, may be null
+     * @param count the number of puzzle pieces to return
+     */
+    private void returnPuzzlePieces(@Nullable PlayerEntity player, int count) {
         ItemStack stack = new ItemStack(ModItems.PROGRAMMING_PUZZLE.get());
 
         // try to insert puzzle pieces into adjacent inventory(s)
@@ -400,10 +410,14 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
             }
             if (count <= 0) return;
         }
-        // give any remaining to player directly (excess dropped on ground)
+        // give any remaining to player directly, or drop on ground
         while (count > 0) {
             int size = Math.min(count, stack.getMaxStackSize());
-            ItemHandlerHelper.giveItemToPlayer(player, ItemHandlerHelper.copyStackWithSize(stack, size));
+            if (player != null) {
+                ItemHandlerHelper.giveItemToPlayer(player, ItemHandlerHelper.copyStackWithSize(stack, size));
+            } else {
+                PneumaticCraftUtils.dropItemOnGround(ItemHandlerHelper.copyStackWithSize(stack, size), getWorld(), getPos());
+            }
             count -= size;
         }
     }
@@ -596,7 +610,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
         @Override
         protected void onContentsChanged(int slot) {
             super.onContentsChanged(slot);
-            if (redstoneMode == 1 && slot == PROGRAM_SLOT && !getStackInSlot(slot).isEmpty()) {
+            if (redstoneMode == 1 && slot == PROGRAM_SLOT && !getStackInSlot(slot).isEmpty() && !te.getWorld().isRemote) {
                 tryProgramDrone(null);
             }
         }
