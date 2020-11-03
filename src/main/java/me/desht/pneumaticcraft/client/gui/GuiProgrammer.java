@@ -765,6 +765,8 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
     public void tick() {
         super.tick();
 
+        programmerUnit.tick();
+
         if (te.recentreStartPiece) {
             programmerUnit.gotoPiece(findWidget(te.progWidgets, ProgWidgetStart.class));
             te.recentreStartPiece = false;
@@ -798,18 +800,11 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
             if (showingWidgetProgress < 0) showingWidgetProgress = 0;
         }
 
-        List<ITextComponent> errors = new ArrayList<>();
-        List<ITextComponent> warnings = new ArrayList<>();
-        for (IProgWidget w : te.progWidgets) {
-            w.addErrors(errors, te.progWidgets);
-            w.addWarnings(warnings, te.progWidgets);
-        }
-
         boolean isDeviceInserted = !programmedItem.isEmpty();
         importButton.active = isDeviceInserted;
-        exportButton.active = isDeviceInserted && errors.size() == 0;
+        exportButton.active = isDeviceInserted && programmerUnit.getTotalErrors() == 0;
 
-        updateExportButtonTooltip(programmedItem, errors, warnings);
+        updateExportButtonTooltip(programmedItem);
 
         if (!programmedItem.isEmpty()) {
             nameField.setEnabled(true);
@@ -822,7 +817,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         }
     }
 
-    private void updateExportButtonTooltip(ItemStack programmedItem, List<ITextComponent> errors, List<ITextComponent> warnings) {
+    private void updateExportButtonTooltip(ItemStack programmedItem) {
         List<ITextComponent> exportButtonTooltip = new ArrayList<>();
         exportButtonTooltip.add(xlate("pneumaticcraft.gui.programmer.button.export"));
         exportButtonTooltip.add(xlate("pneumaticcraft.gui.programmer.button.export.programmingWhen", xlate("pneumaticcraft.gui.programmer.button.export." + (te.redstoneMode == 0 ? "pressingButton" : "onItemInsert"))));
@@ -841,10 +836,11 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
             exportButtonTooltip.add(xlate("pneumaticcraft.gui.programmer.button.export.noProgrammableItem").mergeStyle(TextFormatting.GOLD));
         }
 
-        if (errors.size() > 0)
-            exportButtonTooltip.add(xlate("pneumaticcraft.gui.programmer.errorCount", errors.size()).mergeStyle(TextFormatting.RED));
-        if (warnings.size() > 0)
-            exportButtonTooltip.add(xlate("pneumaticcraft.gui.programmer.warningCount", warnings.size()).mergeStyle(TextFormatting.YELLOW));
+        if (programmerUnit.getTotalErrors() > 0) {
+            exportButtonTooltip.add(xlate("pneumaticcraft.gui.programmer.errorCount", programmerUnit.getTotalErrors()).mergeStyle(TextFormatting.RED));
+        }
+        if (programmerUnit.getTotalWarnings() > 0)
+            exportButtonTooltip.add(xlate("pneumaticcraft.gui.programmer.warningCount", programmerUnit.getTotalWarnings()).mergeStyle(TextFormatting.YELLOW));
 
         exportButton.setTooltipText(exportButtonTooltip);
     }

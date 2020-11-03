@@ -150,6 +150,8 @@ public class DroneDebuggerOptions extends IOptionPage.SimpleToggleableOptions<Dr
 
     @Override
     public void tick() {
+        programmerUnit.tick();
+
         showStart.active = selectedDrone != null && !selectedDrone.getProgWidgets().isEmpty();
         showActive.active = selectedDrone != null && selectedDrone.getActiveWidget() != null;
         if (followCheckbox.checked && selectedDrone != null && selectedDrone.getActiveWidget() != null) {

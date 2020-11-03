@@ -5,12 +5,12 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.client.gui.programmer.ProgWidgetGuiManager;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetVerticalScrollbar;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.ProgWidgetRenderer;
 import me.desht.pneumaticcraft.common.progwidgets.IJump;
 import me.desht.pneumaticcraft.common.progwidgets.ILabel;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.GuiConstants;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
@@ -28,8 +28,8 @@ import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -42,6 +42,10 @@ public class GuiUnitProgrammer extends Screen {
     private final WidgetVerticalScrollbar scaleScroll;
     private double translatedX, translatedY;
     private int lastZoom;
+    private final List<List<ITextComponent>> widgetErrors = new ArrayList<>();
+    private final List<List<ITextComponent>> widgetWarnings = new ArrayList<>();
+    private int totalErrors = 0;
+    private int totalWarnings = 0;
 
     public GuiUnitProgrammer(List<IProgWidget> progWidgets, int guiLeft, int guiTop,
                              int width, int height, Rectangle2d bounds, double translatedX,
@@ -81,51 +85,52 @@ public class GuiUnitProgrammer extends Screen {
         return translatedY;
     }
 
-    public void renderForeground(MatrixStack matrixStack, int x, int y, IProgWidget tooltipExcludingWidget) {
-        IProgWidget progWidget = getHoveredWidget(x, y);
-        if (progWidget != null && progWidget != tooltipExcludingWidget) {
-            List<ITextComponent> tooltip = new ArrayList<>();
-            progWidget.getTooltip(tooltip);
-
-            List<ITextComponent> errors = new ArrayList<>();
-            progWidget.addErrors(errors, progWidgets);
-            if (errors.size() > 0) {
-                tooltip.add(xlate("pneumaticcraft.gui.programmer.errors").mergeStyle(TextFormatting.RED, TextFormatting.UNDERLINE));
-                for (ITextComponent error : errors) {
-                    PneumaticCraftUtils.splitString(GuiConstants.TRIANGLE_RIGHT + " " + error.getString(), 40)
-                            .forEach(str -> tooltip.add(new StringTextComponent(str).mergeStyle(TextFormatting.RED)));
-                }
-            }
-
-            List<ITextComponent> warnings = new ArrayList<>();
-            progWidget.addWarnings(warnings, progWidgets);
-            if (warnings.size() > 0) {
-                tooltip.add(xlate("pneumaticcraft.gui.programmer.warnings").mergeStyle(TextFormatting.YELLOW, TextFormatting.UNDERLINE));
-                for (ITextComponent warning : warnings) {
-                    PneumaticCraftUtils.splitString(GuiConstants.TRIANGLE_RIGHT + " " + warning.getString(), 40)
-                            .forEach(str -> tooltip.add(new StringTextComponent(str).mergeStyle(TextFormatting.YELLOW)));
-                }
-            }
-            addAdditionalInfoToTooltip(progWidget, tooltip);
-
-            if (!tooltip.isEmpty()) {
-                renderTooltip(matrixStack, tooltip.stream().map(ITextComponent::func_241878_f).collect(Collectors.toList()), x - guiLeft, y - guiTop);
+    private void addMessages(List<ITextComponent> tooltip, List<ITextComponent> msgList, String key, TextFormatting color) {
+        if (!msgList.isEmpty()) {
+            tooltip.add(xlate(key).mergeStyle(color, TextFormatting.UNDERLINE));
+            for (ITextComponent msg : msgList) {
+                tooltip.add(new StringTextComponent(GuiConstants.TRIANGLE_RIGHT + " ").append(msg).mergeStyle(color));
             }
         }
     }
 
-    public IProgWidget getHoveredWidget(int mouseX, int mouseY) {
+    public void renderForeground(MatrixStack matrixStack, int x, int y, IProgWidget tooltipExcludingWidget) {
+        int idx = getHoveredWidgetIndex(x, y);
+        if (idx >= 0) {
+            IProgWidget progWidget = progWidgets.get(idx);
+            if (progWidget != null && progWidget != tooltipExcludingWidget) {
+                List<ITextComponent> tooltip = new ArrayList<>();
+                progWidget.getTooltip(tooltip);
+                if (widgetErrors.size() == progWidgets.size())
+                    addMessages(tooltip, widgetErrors.get(idx), "pneumaticcraft.gui.programmer.errors", TextFormatting.RED);
+                if (widgetWarnings.size() == progWidgets.size())
+                    addMessages(tooltip, widgetWarnings.get(idx), "pneumaticcraft.gui.programmer.warnings", TextFormatting.YELLOW);
+                addAdditionalInfoToTooltip(progWidget, tooltip);
+                if (!tooltip.isEmpty()) {
+                    renderTooltip(matrixStack, GuiUtils.wrapTextComponentList(tooltip, areaWidth / 3, font), x - guiLeft, y - guiTop);
+                }
+            }
+        }
+    }
+
+    private int getHoveredWidgetIndex(int mouseX, int mouseY) {
         float scale = getScale();
-        for (IProgWidget widget : progWidgets) {
+        for (int i = 0; i < progWidgets.size(); i++) {
+            IProgWidget widget = progWidgets.get(i);
             if (!isOutsideProgrammingArea(widget)
                     && (mouseX - translatedX) / scale - guiLeft >= widget.getX()
                     && (mouseY - translatedY) / scale - guiTop >= widget.getY()
                     && (mouseX - translatedX) / scale - guiLeft <= widget.getX() + widget.getWidth() / 2f
                     && (mouseY - translatedY) / scale - guiTop <= widget.getY() + widget.getHeight() / 2f) {
-                return widget;
+                return i;
             }
         }
-        return null;
+        return -1;
+    }
+
+    public IProgWidget getHoveredWidget(int mouseX, int mouseY) {
+        int i = getHoveredWidgetIndex(mouseX, mouseY);
+        return i >= 0 ? progWidgets.get(i) : null;
     }
 
     protected void addAdditionalInfoToTooltip(IProgWidget widget, List<ITextComponent> tooltip) {
@@ -133,6 +138,25 @@ public class GuiUnitProgrammer extends Screen {
             tooltip.add(new StringTextComponent("Right-click for options").mergeStyle(TextFormatting.GOLD));
         }
         ThirdPartyManager.instance().getDocsProvider().addTooltip(tooltip, false);
+    }
+
+    @Override
+    public void tick() {
+        if ((getMinecraft().world.getGameTime() & 0xf) == 0 || widgetErrors.size() != progWidgets.size() || widgetWarnings.size() != progWidgets.size()) {
+            widgetErrors.clear();
+            widgetWarnings.clear();
+            totalErrors = totalWarnings = 0;
+            for (IProgWidget widget : progWidgets) {
+                List<ITextComponent> e = new ArrayList<>();
+                widget.addErrors(e, progWidgets);
+                widgetErrors.add(e.isEmpty() ? Collections.emptyList() : e);
+                totalErrors += e.size();
+                List<ITextComponent> w = new ArrayList<>();
+                widget.addWarnings(w, progWidgets);
+                widgetWarnings.add(w.isEmpty() ? Collections.emptyList() : w);
+                totalWarnings += w.size();
+            }
+        }
     }
 
     public void render(MatrixStack matrixStack, int x, int y, boolean showFlow, boolean showInfo) {
@@ -145,10 +169,6 @@ public class GuiUnitProgrammer extends Screen {
         lastZoom = scaleScroll.getState();
 
         MainWindow mw = minecraft.getMainWindow();
-//        float sfX = (float) mw.getWidth() / mw.getScaledWidth();
-//        float sfY = (float) mw.getHeight() / mw.getScaledHeight();
-//        GL11.glScissor((int)((guiLeft + startX) * sfX), (int)((mw.getScaledHeight() - areaHeight - (guiTop + startY)) * sfY) + 1,
-//                (int)(areaWidth * sfX), (int)(areaHeight * sfY));
         double sf = mw.getGuiScaleFactor();
         GL11.glScissor((int)((guiLeft + startX) * mw.getGuiScaleFactor()), (int)(mw.getScaledHeight() * sf - areaHeight * sf - (guiTop + startY) * sf), (int)(areaWidth * sf), (int)(areaHeight * sf));
         GL11.glEnable(GL11.GL_SCISSOR_TEST);
@@ -172,16 +192,12 @@ public class GuiUnitProgrammer extends Screen {
             matrixStack.pop();
         }
 
-        for (IProgWidget widget : progWidgets) {
-            List<ITextComponent> errors = new ArrayList<>();
-            widget.addErrors(errors, progWidgets);
-            if (errors.size() > 0) {
-                drawBorder(matrixStack, widget, 0xFFFF0000);
-            } else {
-                List<ITextComponent> warnings = new ArrayList<>();
-                widget.addWarnings(warnings, progWidgets);
-                if (warnings.size() > 0) {
-                    drawBorder(matrixStack, widget, 0xFFFFFF00);
+        if (widgetErrors.size() == progWidgets.size() && widgetWarnings.size() == progWidgets.size()) {
+            for (int i = 0; i < progWidgets.size(); i++) {
+                if (!widgetErrors.get(i).isEmpty()) {
+                    drawBorder(matrixStack, progWidgets.get(i), 0xFFFF0000);
+                } else if (!widgetWarnings.get(i).isEmpty()) {
+                    drawBorder(matrixStack, progWidgets.get(i), 0xFFFFFF00);
                 }
             }
         }
@@ -306,5 +322,13 @@ public class GuiUnitProgrammer extends Screen {
             translatedX = -widget.getX() * 2d + areaWidth / 2d - guiLeft;
             translatedY = -widget.getY() * 2d + areaHeight / 2d - guiTop;
         }
+    }
+
+    public int getTotalErrors() {
+        return totalErrors;
+    }
+
+    public int getTotalWarnings() {
+        return totalWarnings;
     }
 }
