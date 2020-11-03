@@ -9,6 +9,7 @@ import me.desht.pneumaticcraft.common.network.PacketSyncSemiblock;
 import me.desht.pneumaticcraft.common.semiblock.ISpecificRequester;
 import me.desht.pneumaticcraft.common.semiblock.ItemSemiBlock;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.NBTKeys;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -93,7 +94,7 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase {
                     // see EntityType#applyItemNBT()
                     CompoundNBT compoundnbt = logistics.writeWithoutTypeId(new CompoundNBT());
                     UUID uuid = logistics.getUniqueID();
-                    compoundnbt.merge(stack.getTag().getCompound("EntityTag"));
+                    compoundnbt.merge(stack.getTag().getCompound(NBTKeys.ENTITY_TAG));
                     logistics.setUniqueId(uuid);
                     logistics.read(compoundnbt);
                 }

@@ -15,4 +15,6 @@ public class NBTKeys {
 
     // this is the tag vanilla uses to serialize TE data onto dropped items
     public static final String BLOCK_ENTITY_TAG = "BlockEntityTag";
+    // this is the tag vanilla uses to serialize entity data onto items
+    public static final String ENTITY_TAG = "EntityTag";
 }

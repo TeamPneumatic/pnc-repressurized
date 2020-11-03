@@ -9,6 +9,7 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import me.desht.pneumaticcraft.common.tileentity.IGUIButtonSensitive;
 import me.desht.pneumaticcraft.lib.Log;
+import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -205,7 +206,7 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
             ItemStack stack = new ItemStack(getDroppedItem());
             CompoundNBT tag = new CompoundNBT();
             serializeNBT(tag);
-            if (!tag.isEmpty()) stack.getOrCreateTag().put("EntityTag", tag); // see EntityType#applyItemNBT()
+            if (!tag.isEmpty()) stack.getOrCreateTag().put(NBTKeys.ENTITY_TAG, tag); // see EntityType#applyItemNBT()
             drops.add(stack);
         }
         return drops;

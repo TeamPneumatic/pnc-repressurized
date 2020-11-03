@@ -3,8 +3,10 @@ package me.desht.pneumaticcraft.common.inventory;
 import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsFrame;
 import me.desht.pneumaticcraft.common.item.ItemLogisticsFrame;
+import me.desht.pneumaticcraft.common.semiblock.ISyncableSemiblockItem;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import me.desht.pneumaticcraft.lib.Log;
+import me.desht.pneumaticcraft.lib.NBTKeys;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -20,7 +22,7 @@ import net.minecraftforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nonnull;
 
-public class ContainerLogistics extends ContainerPneumaticBase<TileEntityBase> {
+public class ContainerLogistics extends ContainerPneumaticBase<TileEntityBase> implements ISyncableSemiblockItem {
     public final EntityLogisticsFrame logistics;
     private final boolean itemContainer;  // true if GUI opened from held item, false if from in-world entity
 
@@ -93,7 +95,7 @@ public class ContainerLogistics extends ContainerPneumaticBase<TileEntityBase> {
     @Override
     public void onContainerClosed(PlayerEntity player) {
         if (itemContainer && logistics != null && !player.getEntityWorld().isRemote) {
-            updateHeldItem(player, null);
+            syncSemiblockItemFromClient(player, null);
         }
     }
 
@@ -131,17 +133,14 @@ public class ContainerLogistics extends ContainerPneumaticBase<TileEntityBase> {
         return new ContainerLogistics(ModContainers.LOGISTICS_FRAME_STORAGE.get(), i, playerInventory, buffer);
     }
 
-//    public static ContainerLogistics createDefaultStorageContainer(int i, PlayerInventory playerInventory, PacketBuffer buffer) {
-//        return new ContainerLogistics(ModContainers.LOGISTICS_FRAME_DEFAULT_STORAGE.get(), i, playerInventory, buffer);
-//    }
-
-    public void updateHeldItem(PlayerEntity player, PacketBuffer payload) {
+    @Override
+    public void syncSemiblockItemFromClient(PlayerEntity player, PacketBuffer payload) {
         if (logistics != null) {
             if (payload != null) logistics.readFromBuf(payload);
             ItemStack stack = getHeldLogisticsFrame(player);
             if (!stack.isEmpty()) {
                 CompoundNBT subtag = logistics.serializeNBT(new CompoundNBT());
-                stack.getOrCreateTag().put("EntityTag", subtag);
+                stack.getOrCreateTag().put(NBTKeys.ENTITY_TAG, subtag);
             }
         }
     }

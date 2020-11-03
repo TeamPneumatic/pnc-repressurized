@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.network;
 import io.netty.buffer.Unpooled;
 import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.inventory.ContainerLogistics;
+import me.desht.pneumaticcraft.common.semiblock.ISyncableSemiblockItem;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
@@ -58,9 +58,8 @@ public class PacketSyncSemiblock {
 
     private void handleServer(ServerPlayerEntity sender) {
         if (entityID == -1) {
-            // TODO make this more general.  Right now we only have a container for logistics frames but maybe not forever...
-            if (sender.openContainer instanceof ContainerLogistics) {
-                ((ContainerLogistics) sender.openContainer).updateHeldItem(sender, payload);
+            if (sender.openContainer instanceof ISyncableSemiblockItem) {
+                ((ISyncableSemiblockItem) sender.openContainer).syncSemiblockItemFromClient(sender, payload);
             }
         } else {
             processEntity(sender.getServerWorld());

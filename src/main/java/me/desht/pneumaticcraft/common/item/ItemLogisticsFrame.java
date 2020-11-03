@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.common.inventory.ContainerLogistics;
 import me.desht.pneumaticcraft.common.semiblock.ItemSemiBlock;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.GuiConstants;
+import me.desht.pneumaticcraft.lib.NBTKeys;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -62,9 +63,9 @@ public abstract class ItemLogisticsFrame extends ItemSemiBlock implements ColorH
     }
 
     public static void addLogisticsTooltip(ItemStack stack, World world, List<ITextComponent> curInfo, boolean sneaking) {
-        if (stack.getTag() != null && stack.getTag().contains("EntityTag") && stack.getItem() instanceof ItemSemiBlock) {
+        if (stack.getTag() != null && stack.getTag().contains(NBTKeys.ENTITY_TAG) && stack.getItem() instanceof ItemSemiBlock) {
             if (sneaking) {
-                CompoundNBT tag = stack.getTag().getCompound("EntityTag");
+                CompoundNBT tag = stack.getTag().getCompound(NBTKeys.ENTITY_TAG);
                 if (tag.getBoolean(EntityLogisticsFrame.NBT_INVISIBLE)) {
                     curInfo.add(bullet().append(xlate("pneumaticcraft.gui.logistics_frame.invisible")).mergeStyle(TextFormatting.YELLOW));
                 }
