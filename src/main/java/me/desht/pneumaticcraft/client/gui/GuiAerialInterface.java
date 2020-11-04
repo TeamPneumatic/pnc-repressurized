@@ -77,12 +77,12 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<ContainerAeria
             for (int i = 0; i < FeedMode.values().length; i++) {
                 FeedMode mode = FeedMode.values()[i];
                 WidgetButtonExtended button = new WidgetButtonExtended(5 + 25 * i, 20, 20, 20)
-                        .withTag(mode.toString());
-                button.setRenderStacks(mode.getIconStack());
-                List<ITextComponent> tooltip = new ArrayList<>();
-                tooltip.add(xlate(mode.getTranslationKey()).mergeStyle(TextFormatting.YELLOW));
-                tooltip.addAll(PneumaticCraftUtils.splitStringComponent(I18n.format(mode.getDescTranslationKey())));
-                button.setTooltipText(tooltip);
+                        .withTag(mode.toString())
+                        .setRenderStacks(mode.getIconStack())
+                        .setTooltipText(ImmutableList.of(
+                                xlate(mode.getTranslationKey()).mergeStyle(TextFormatting.YELLOW),
+                                xlate(mode.getDescTranslationKey())
+                        ));
                 feedModeTab.addSubWidget(button);
                 modeButtons[i] = button;
             }

@@ -70,18 +70,6 @@ public class WidgetLabel extends Widget implements ITooltipProvider {
         return tooltip;
     }
 
-//    public <T extends WidgetLabel> T setTooltipText(String text) {
-//        tooltip.clear();
-//        if (!text.isEmpty()) {
-//            tooltip.addAll(PneumaticCraftUtils.splitStringComponent(I18n.format(text)));
-//        }
-//        return (T) this;
-//    }
-
-//    public String getTooltip() {
-//        return tooltip.isEmpty() ? "" : tooltip.get(0);
-//    }
-
     public WidgetLabel setColor(int color) {
         this.color = color;
         return this;

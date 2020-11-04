@@ -708,11 +708,6 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
         this.y = y;
     }
 
-//    @Override
-//    public void setTitle(String title) {
-//        this.title = I18n.format(title);
-//    }
-
     @Override
     public boolean isDoneExpanding() {
         return doneExpanding;
@@ -722,11 +717,6 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
     public void setBaseX(int x) {
         this.x = x;
     }
-
-//    @Override
-//    public String getTitle() {
-//        return title;
-//    }
 
     @Override
     public Rectangle2d getBounds() {

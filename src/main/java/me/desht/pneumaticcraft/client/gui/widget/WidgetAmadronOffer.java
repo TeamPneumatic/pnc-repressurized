@@ -3,16 +3,15 @@ package me.desht.pneumaticcraft.client.gui.widget;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.renderer.Rectangle2d;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -96,9 +95,8 @@ public class WidgetAmadronOffer extends Widget implements ITooltipProvider {
             curTip.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.buying", offer.getInput().toString()));
             curTip.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.inBasket", shoppingAmount));
             if (offer.getStock() >= 0) curTip.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.stock", offer.getStock()));
-            // todo we should be using UUID here
-            if (offer.getVendor().equals(Minecraft.getInstance().player.getGameProfile().getName())) {
-                curTip.addAll(PneumaticCraftUtils.asStringComponent(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.amadron.amadronWidget.sneakRightClickToRemove"), 40)));
+            if (AmadronPlayerOffer.isPlayerOffer(offer, Minecraft.getInstance().player)) {
+                curTip.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.amadron.amadronWidget.sneakRightClickToRemove"));
             }
             if (Minecraft.getInstance().gameSettings.advancedItemTooltips) {
                 curTip.add(new StringTextComponent(offer.getId().toString()).mergeStyle(TextFormatting.DARK_GRAY));

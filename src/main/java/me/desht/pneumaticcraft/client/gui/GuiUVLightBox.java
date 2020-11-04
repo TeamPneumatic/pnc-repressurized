@@ -58,7 +58,7 @@ public class GuiUVLightBox extends GuiPneumaticContainerBase<ContainerUVLightBox
     protected PointXY getGaugeLocation() {
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
-        return new PointXY(xStart + xSize * 3 / 4 + 10, yStart + ySize / 4);
+        return new PointXY(xStart + xSize * 3 / 4 + 10, yStart + ySize / 4 - 5);
     }
 
     @Override

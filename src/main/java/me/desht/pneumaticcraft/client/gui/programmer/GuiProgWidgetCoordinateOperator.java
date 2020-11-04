@@ -5,8 +5,6 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetComboBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetRadioButton;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetCoordinateOperator;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetCoordinateOperator.EnumOperator;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.client.resources.I18n;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,8 +34,7 @@ public class GuiProgWidgetCoordinateOperator extends GuiProgWidgetAreaShow<ProgW
             radioButtons.add(radioButton);
             radioButton.checked = progWidget.getOperator() == op;
             radioButton.otherChoices = radioButtons;
-//            radioButton.setTooltip(RenderComponentsUtil.func_238505_a_(xlate(key + ".hint"), 100, font));
-            radioButton.setTooltip(PneumaticCraftUtils.splitStringComponent(I18n.format(key + ".hint")));
+            radioButton.setTooltip(xlate(key + ".hint"));
             addButton(radioButton);
         }
 

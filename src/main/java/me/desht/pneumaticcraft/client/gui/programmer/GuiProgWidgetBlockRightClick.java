@@ -5,10 +5,9 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetComboBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.progwidgets.IBlockRightClicker.RightClickType;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetBlockRightClick;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.util.Direction;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -39,9 +38,7 @@ public class GuiProgWidgetBlockRightClick extends GuiProgWidgetDigAndPlace<ProgW
 
         clickTypeSelector = new WidgetComboBox(font, guiLeft + 8 + opLabel.getWidth() + 5, guiTop + 63, 80, 12)
                 .initFromEnum(progWidget.getClickType());
-        clickTypeSelector.setTooltip(PneumaticCraftUtils.splitStringComponent(
-                I18n.format("pneumaticcraft.gui.progWidget.blockRightClick.clickType.tooltip")
-        ));
+        clickTypeSelector.setTooltip(GuiUtils.xlateAndSplit("pneumaticcraft.gui.progWidget.blockRightClick.clickType.tooltip"));
         addButton(clickTypeSelector);
 
         checkboxSneaking = new WidgetCheckBox(guiLeft + 8, guiTop + 83, 0xFF404040,

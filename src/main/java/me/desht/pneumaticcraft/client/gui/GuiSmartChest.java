@@ -18,7 +18,6 @@ import me.desht.pneumaticcraft.common.network.PacketSyncSmartChest;
 import me.desht.pneumaticcraft.common.tileentity.SideConfigurator.RelativeFace;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySmartChest;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySmartChest.PushPullMode;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.gui.screen.Screen;
@@ -28,6 +27,7 @@ import net.minecraft.inventory.container.ClickType;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
+import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -42,7 +42,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.inventory.ContainerSmartChest.N_COLS;
 import static me.desht.pneumaticcraft.common.tileentity.TileEntitySmartChest.CHEST_SIZE;
@@ -196,9 +195,10 @@ public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest
                 && !te.getFilter(hoveredSlot.slotNumber).isEmpty())
         {
             ItemStack stack = te.getFilter(hoveredSlot.slotNumber);
-            List<ITextComponent> l = PneumaticCraftUtils.splitStringComponent(I18n.format("pneumaticcraft.gui.smart_chest.filter",
-                    stack.getDisplayName().getString(), stack.getCount()), 40);
-            renderTooltip(matrixStack, l.stream().map(ITextComponent::func_241878_f).collect(Collectors.toList()), x, y);
+            List<IReorderingProcessor> l = GuiUtils.wrapTextComponentList(
+                    GuiUtils.xlateAndSplit("pneumaticcraft.gui.smart_chest.filter", stack.getDisplayName().getString(), stack.getCount()),
+                    xSize, font);
+            renderTooltip(matrixStack, l, x, y);
         }
     }
 
@@ -309,7 +309,7 @@ public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest
             }
             return true;
         }
-        return false;
+        return super.mouseScrolled(mouseX, mouseY, dir);
     }
 
     @Override

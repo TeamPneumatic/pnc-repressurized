@@ -44,7 +44,6 @@ import net.minecraftforge.fml.common.Mod;
 import org.lwjgl.opengl.GL11;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -88,7 +87,7 @@ public class TooltipEventHandler {
         if (I18n.hasKey(key)) {
             if (ClientUtils.hasShiftDown()) {
                 String translatedInfo = TextFormatting.AQUA + I18n.format(key);
-                curInfo.addAll(PneumaticCraftUtils.asStringComponent(PneumaticCraftUtils.splitString(translatedInfo, 50)));
+                curInfo.addAll(PneumaticCraftUtils.asStringComponent(PneumaticCraftUtils.splitString(translatedInfo)));
                 if (!ThirdPartyManager.instance().getDocsProvider().isInstalled()) {
                     curInfo.add(xlate("pneumaticcraft.gui.tab.info.installDocsProvider"));
                 }
@@ -160,7 +159,7 @@ public class TooltipEventHandler {
                 }
                 if (Screen.hasShiftDown()) {
                     String translatedInfo = TextFormatting.AQUA + I18n.format(key);
-                    event.getToolTip().addAll(PneumaticCraftUtils.splitString(prefix + translatedInfo, 40).stream().map(StringTextComponent::new).collect(Collectors.toList()));
+                    event.getToolTip().addAll(PneumaticCraftUtils.asStringComponent(PneumaticCraftUtils.splitString(prefix + translatedInfo)));
                 } else {
                     event.getToolTip().add(xlate("pneumaticcraft.gui.tooltip.sneakForInfo").mergeStyle(TextFormatting.AQUA));
                 }

@@ -136,11 +136,13 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         int xRight = getProgrammerBounds().getX() + getProgrammerBounds().getWidth(); // 299 or 649
         int yBottom = getProgrammerBounds().getY() + getProgrammerBounds().getHeight() + 3; // 171 or 427
 
-        importButton = new WidgetButtonExtended(xStart + xRight + 2, yStart + 3, 20, 15, GuiConstants.ARROW_LEFT).withTag("import");
-        importButton.setTooltipText(PneumaticCraftUtils.splitStringComponent(I18n.format("pneumaticcraft.gui.programmer.button.import"), 40));
+        importButton = new WidgetButtonExtended(xStart + xRight + 2, yStart + 3, 20, 15, GuiConstants.ARROW_LEFT)
+                .withTag("import")
+                .setTooltipKey("pneumaticcraft.gui.programmer.button.import");
         addButton(importButton);
 
-        exportButton = new WidgetButtonExtended(xStart + xRight + 2, yStart + 20, 20, 15, GuiConstants.ARROW_RIGHT).withTag("export");
+        exportButton = new WidgetButtonExtended(xStart + xRight + 2, yStart + 20, 20, 15, GuiConstants.ARROW_RIGHT)
+                .withTag("export");
         addButton(exportButton);
 
         addButton(new WidgetButtonExtended(xStart + xRight - 3, yStart + yBottom, 13, 10, GuiConstants.TRIANGLE_LEFT, b -> adjustPage(-1)));
@@ -847,8 +849,8 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
 
     private void updateConvertRelativeState() {
         convertToRelativeButton.active = false;
-        List<String> tooltip = new ArrayList<>();
-        tooltip.add("pneumaticcraft.gui.programmer.button.convertToRelative.desc");
+        List<ITextComponent> tooltip = new ArrayList<>();
+        tooltip.add(xlate("pneumaticcraft.gui.programmer.button.convertToRelative.desc"));
 
         boolean startFound = false;
         for (IProgWidget startWidget : te.progWidgets) {
@@ -857,34 +859,29 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
                 IProgWidget widget = startWidget.getOutputWidget();
                 if (widget instanceof ProgWidgetCoordinateOperator) {
                     ProgWidgetCoordinateOperator operatorWidget = (ProgWidgetCoordinateOperator) widget;
-                    if (!operatorWidget.getVariable().equals("")) {
+                    if (!operatorWidget.getVariable().isEmpty()) {
                         try {
                             if (generateRelativeOperators(operatorWidget, tooltip, true)) {
                                 convertToRelativeButton.active = true;
                             } else {
-                                tooltip.add("pneumaticcraft.gui.programmer.button.convertToRelative.notEnoughRoom");
+                                tooltip.add(xlate("pneumaticcraft.gui.programmer.button.convertToRelative.notEnoughRoom"));
                             }
                         } catch (NullPointerException e) {
-                            tooltip.add("pneumaticcraft.gui.programmer.button.convertToRelative.cantHaveVariables");
+                            tooltip.add(xlate("pneumaticcraft.gui.programmer.button.convertToRelative.cantHaveVariables"));
                         }
                     } else {
-                        tooltip.add("pneumaticcraft.gui.programmer.button.convertToRelative.noVariableName");
+                        tooltip.add(xlate("pneumaticcraft.gui.programmer.button.convertToRelative.noVariableName"));
                     }
                 } else {
-                    tooltip.add("pneumaticcraft.gui.programmer.button.convertToRelative.noBaseCoordinate");
+                    tooltip.add(xlate("pneumaticcraft.gui.programmer.button.convertToRelative.noBaseCoordinate"));
                 }
             }
         }
-        if (!startFound) tooltip.add("pneumaticcraft.gui.programmer.button.convertToRelative.noStartPiece");
-
-        List<ITextComponent> localizedTooltip = new ArrayList<>();
-        for (String s : tooltip) {
-            localizedTooltip.addAll(PneumaticCraftUtils.splitStringComponent(I18n.format(s)));
-        }
-        convertToRelativeButton.setTooltipText(localizedTooltip);
+        if (!startFound) tooltip.add(xlate("pneumaticcraft.gui.programmer.button.convertToRelative.noStartPiece"));
+        convertToRelativeButton.setTooltipText(tooltip);
     }
 
-    private boolean generateRelativeOperators(ProgWidgetCoordinateOperator baseWidget, List<String> tooltip, boolean simulate) {
+    private boolean generateRelativeOperators(ProgWidgetCoordinateOperator baseWidget, List<ITextComponent> tooltip, boolean simulate) {
         BlockPos baseCoord = ProgWidgetCoordinateOperator.calculateCoordinate(baseWidget, 0, baseWidget.getOperator());
         Map<BlockPos, String> offsetToVariableNames = new HashMap<>();
 
@@ -909,10 +906,10 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
                     if (PneumaticCraftUtils.distBetweenSq(coord, 0, 0, 0) < 4096) {
                         // When the coordinate value is close to 0, there's a low chance it means a position, and rather an offset.
                         if (tooltip != null)
-                            tooltip.add(I18n.format("pneumaticcraft.gui.programmer.button.convertToRelative.coordIsNotChangedWarning", coordStr));
+                            tooltip.add(xlate("pneumaticcraft.gui.programmer.button.convertToRelative.coordIsNotChangedWarning", coordStr));
                     } else {
                         if (tooltip != null)
-                            tooltip.add(I18n.format("pneumaticcraft.gui.programmer.button.convertToRelative.coordIsChangedWarning", coordStr));
+                            tooltip.add(xlate("pneumaticcraft.gui.programmer.button.convertToRelative.coordIsChangedWarning", coordStr));
                         if (!simulate) {
                             BlockPos offset = coord.subtract(baseCoord);
                             String var = getOffsetVariable(offsetToVariableNames, baseWidget.getVariable(), offset);

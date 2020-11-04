@@ -19,6 +19,7 @@ import net.minecraftforge.fml.client.gui.widget.ExtendedButton;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -118,17 +119,17 @@ public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidge
         return this;
     }
 
-    public WidgetButtonExtended setTooltipText(List<ITextComponent> tooltip) {
-        tooltipText.clear();
-        tooltipText.addAll(tooltip);
-        return this;
+    public WidgetButtonExtended setTooltipKey(String key, Object... params) {
+        return setTooltipText(GuiUtils.xlateAndSplit(key, params));
     }
 
     public WidgetButtonExtended setTooltipText(ITextComponent tooltip) {
+        return setTooltipText(Collections.singletonList(tooltip));
+    }
+
+    public WidgetButtonExtended setTooltipText(List<ITextComponent> tooltip) {
         tooltipText.clear();
-        if (tooltip != null && !tooltip.getString().isEmpty()) {
-            tooltipText.add(tooltip);
-        }
+        tooltipText.addAll(tooltip);
         return this;
     }
 

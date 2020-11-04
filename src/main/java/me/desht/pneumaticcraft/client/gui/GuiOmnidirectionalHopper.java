@@ -72,9 +72,7 @@ public class GuiOmnidirectionalHopper extends GuiPneumaticContainerBase<Containe
         modeButtons[0].active = te.doesLeaveMaterial();
         modeButtons[1].active = !te.doesLeaveMaterial();
         rrButton.setMessage(te.roundRobin ? ARROW_RR : ARROW_NO_RR);
-        rrButton.setTooltipText(PneumaticCraftUtils.splitStringComponent(
-                I18n.format("pneumaticcraft.gui.tooltip.omnidirectional_hopper.roundRobin." + (te.roundRobin ? "on" : "off")))
-        );
+        rrButton.setTooltipKey("pneumaticcraft.gui.tooltip.omnidirectional_hopper.roundRobin." + (te.roundRobin ? "on" : "off"));
     }
 
     private List<String> getStatus() {

@@ -9,7 +9,6 @@ import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.ContainerPressureChamberInterface;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberInterface;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
@@ -77,7 +76,7 @@ public class GuiPressureChamberInterface extends GuiPneumaticContainerBase<Conta
         if (exportAnyButton.visible) {
             String textKey = "pneumaticcraft.gui.pressureChamberInterface.export." + (te.exportAny ? "any" : "valid");
             exportAnyButton.setMessage(xlate(textKey));
-            exportAnyButton.setTooltipText(PneumaticCraftUtils.splitStringComponent(I18n.format(textKey + ".tooltip"), 35));
+            exportAnyButton.setTooltipKey(textKey + ".tooltip");
         }
 
         statusStat.setText(ImmutableList.of(

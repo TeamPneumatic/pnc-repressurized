@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.client.gui.widget.ITickableWidget;
 import me.desht.pneumaticcraft.client.gui.widget.ITooltipProvider;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.util.ResourceLocation;
@@ -12,7 +13,6 @@ import net.minecraft.util.text.ITextComponent;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public abstract class GuiPneumaticScreenBase extends Screen {
     public int guiLeft, guiTop, xSize, ySize;
@@ -61,8 +61,6 @@ public abstract class GuiPneumaticScreenBase extends Screen {
 
         super.render(matrixStack, x, y, partialTicks);
 
-//        RenderSystem.enableTexture();
-
         List<ITextComponent> tooltip = new ArrayList<>();
         boolean shift = Screen.hasShiftDown();
         buttons.stream()
@@ -70,7 +68,8 @@ public abstract class GuiPneumaticScreenBase extends Screen {
                 .forEach(widget -> ((ITooltipProvider) widget).addTooltip(x, y, tooltip, shift));
 
         if (!tooltip.isEmpty()) {
-            renderTooltip(matrixStack, tooltip.stream().map(ITextComponent::func_241878_f).collect(Collectors.toList()), x, y);
+            int max = Math.min(xSize * 4 / 3, width / 3);
+            renderTooltip(matrixStack, GuiUtils.wrapTextComponentList(tooltip, max, font), x, y);
         }
     }
 }

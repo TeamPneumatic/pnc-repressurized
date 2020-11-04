@@ -121,12 +121,14 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
             }
         }
 
-        if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {
-            GuiUtils.showPopupHelpScreen(matrixStack, this, font,
-                    GuiUtils.xlateAndSplit("pneumaticcraft.gui.entityFilter.helpText"));
-        } else {
-            String str = I18n.format("pneumaticcraft.gui.entityFilter.holdF1");
-            font.drawString(matrixStack, str, (xSize - font.getStringWidth(str)) / 2f, ySize + 5, 0x808080);
+        if (nameFilterField.visible) {
+            if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {
+                GuiUtils.showPopupHelpScreen(matrixStack, this, font,
+                        GuiUtils.xlateAndSplit("pneumaticcraft.gui.entityFilter.helpText"));
+            } else {
+                String str = I18n.format("pneumaticcraft.gui.entityFilter.holdF1");
+                font.drawString(matrixStack, str, (xSize - font.getStringWidth(str)) / 2f, ySize + 5, 0x808080);
+            }
         }
     }
 
@@ -144,12 +146,6 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
     @Override
     protected PointXY getInvTextOffset() {
         return new PointXY(0, 2);
-    }
-
-    @Override
-    protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float opacity, int x, int y) {
-        super.drawGuiContainerBackgroundLayer(matrixStack, opacity, x, y);
-
     }
 
     @Override

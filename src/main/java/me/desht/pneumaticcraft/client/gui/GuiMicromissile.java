@@ -16,7 +16,6 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateMicromissileSettings;
 import me.desht.pneumaticcraft.common.util.EntityFilter;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -117,8 +116,8 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
         int buttonX = guiLeft + (xSize - buttonWidth) / 2;
         addButton(new WidgetButtonExtended(buttonX, guiTop + 160, buttonWidth, 20, saveLabel, b -> sendSettingsToServer(true)));
 
-        modeButton = new WidgetButtonExtended(guiLeft + 123, guiTop + 20, 52, 20, StringTextComponent.EMPTY, b -> modeSwitch());
-        modeButton.setTooltipText(PneumaticCraftUtils.splitStringComponent(I18n.format("pneumaticcraft.gui.micromissile.modeTooltip"), 40));
+        modeButton = new WidgetButtonExtended(guiLeft + 123, guiTop + 20, 52, 20, StringTextComponent.EMPTY, b -> modeSwitch())
+                .setTooltipKey("pneumaticcraft.gui.micromissile.modeTooltip");
         addButton(modeButton);
 
         warningButton = new WidgetButtonExtended(guiLeft + 162, guiTop + 123, 20, 20);

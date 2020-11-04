@@ -351,8 +351,9 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
             }
         }
 
-        if (tooltip.size() > 0) {
-            drawHoveringString(matrixStack, tooltip, x, y, font);
+        if (!tooltip.isEmpty()) {
+            int max = Math.min(xSize * 4 / 3, width / 3);
+            renderTooltip(matrixStack, GuiUtils.wrapTextComponentList(tooltip, max, font), x, y);
         }
     }
 

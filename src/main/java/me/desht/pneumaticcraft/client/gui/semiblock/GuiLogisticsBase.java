@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.client.gui.GuiItemSearcher;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticContainerBase;
 import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.client.util.TintColor;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
@@ -15,7 +16,6 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncSemiblock;
 import me.desht.pneumaticcraft.common.semiblock.ISpecificRequester;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.resources.I18n;
@@ -92,7 +92,7 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
         });
         fluidWidgets.forEach(this::addButton);
 
-        addInfoTab(I18n.format("pneumaticcraft.gui.tooltip.item.pneumaticcraft." + logistics.getId().getPath()));
+        addInfoTab(I18n.format("gui.tooltip.item.pneumaticcraft." + logistics.getId().getPath()));
         addFilterTab();
         if (!container.isItemContainer()) {
             addFacingTab();
@@ -225,8 +225,8 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
         addDirButton(5, 57, 41);
 
         facingTab.addSubWidget(new WidgetButtonExtended(36, 41, 20, 20, StringTextComponent.EMPTY)
-                .setTooltipText(PneumaticCraftUtils.splitStringComponent(I18n.format("pneumaticcraft.gui.logistics_frame.facing.tooltip")))
                 .setRenderedIcon(Textures.GUI_INFO_LOCATION)
+                .setTooltipText(GuiUtils.xlateAndSplit("pneumaticcraft.gui.logistics_frame.facing.tooltip"))
                 .setVisible(false)
         );
         updateFacing();

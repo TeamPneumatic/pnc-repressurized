@@ -19,7 +19,7 @@ import net.minecraft.util.text.TextFormatting;
 import java.util.List;
 
 public class GuiFluidMixer extends GuiPneumaticContainerBase<ContainerFluidMixer, TileEntityFluidMixer> {
-    private WidgetButtonExtended[] dumpButtons = new WidgetButtonExtended[2];
+    private final WidgetButtonExtended[] dumpButtons = new WidgetButtonExtended[2];
 
     public GuiFluidMixer(ContainerFluidMixer container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
@@ -37,7 +37,6 @@ public class GuiFluidMixer extends GuiPneumaticContainerBase<ContainerFluidMixer
         for (int i = 0; i < 2; i++) {
             dumpButtons[i] = new WidgetButtonExtended(guiLeft + 14 + i * 20, guiTop + 86, 14, 14, "")
                     .withTag("dump" + (i + 1));
-            dumpButtons[i].setTooltipText(PneumaticCraftUtils.splitStringComponent(I18n.format("pneumaticcraft.gui.thermopneumatic.moveInput")));
             addButton(dumpButtons[i]);
         }
     }
@@ -71,8 +70,7 @@ public class GuiFluidMixer extends GuiPneumaticContainerBase<ContainerFluidMixer
         for (int i = 0; i < 2; i++) {
             String k = hasShiftDown() ? "dumpInput" : "moveInput";
             dumpButtons[i].setMessage(hasShiftDown() ? new StringTextComponent("X").mergeStyle(TextFormatting.RED) : new StringTextComponent(GuiConstants.TRIANGLE_RIGHT).mergeStyle(TextFormatting.DARK_AQUA));
-//            dumpButtons[i].setRenderedIcon(hasShiftDown() ? Textures.GUI_X_BUTTON : Textures.GUI_RIGHT_ARROW);
-            dumpButtons[i].setTooltipText(PneumaticCraftUtils.splitStringComponent(I18n.format("pneumaticcraft.gui.thermopneumatic." + k)));
+            dumpButtons[i].setTooltipKey("pneumaticcraft.gui.thermopneumatic." + k);
         }
     }
 

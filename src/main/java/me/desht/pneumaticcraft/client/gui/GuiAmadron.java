@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.inventory.ContainerAmadron;
@@ -10,7 +11,6 @@ import me.desht.pneumaticcraft.common.network.PacketAmadronInvSync;
 import me.desht.pneumaticcraft.common.network.PacketAmadronOrderUpdate;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.gui.screen.Screen;
@@ -70,17 +70,18 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
 
         addButton(scrollbar = new WidgetVerticalScrollbar(guiLeft + 156, guiTop + 54, 142).setStates(1).setListening(true));
 
-        List<ITextComponent> tooltip = PneumaticCraftUtils.splitStringComponent(I18n.format("pneumaticcraft.gui.amadron.button.order.tooltip"));
         orderButton = new WidgetButtonExtended(guiLeft + 52, guiTop + 16, 72, 20, xlate("pneumaticcraft.gui.amadron.button.order"))
-                .setTooltipText(tooltip).withTag("order");
+                .withTag("order")
+                .setTooltipText(xlate("pneumaticcraft.gui.amadron.button.order.tooltip"));
         addButton(orderButton);
 
         addTradeButton = new WidgetButtonExtended(16, 26, 20, 20)
-                .setRenderStacks(new ItemStack(Items.EMERALD)).withTag("addPlayerTrade");
-        tooltip = new ArrayList<>();
-        tooltip.add(xlate("pneumaticcraft.gui.amadron.button.addTrade"));
-        tooltip.addAll(PneumaticCraftUtils.splitStringComponent(I18n.format("pneumaticcraft.gui.amadron.button.addTrade.tooltip")));
-        addTradeButton.setTooltipText(tooltip);
+                .withTag("addPlayerTrade")
+                .setRenderStacks(new ItemStack(Items.EMERALD))
+                .setTooltipText(ImmutableList.of(
+                        xlate("pneumaticcraft.gui.amadron.button.addTrade"),
+                        xlate("pneumaticcraft.gui.amadron.button.addTrade.tooltip")
+                ));
         customTradesTab.addSubWidget(addTradeButton);
 
         needsRefreshing = true;

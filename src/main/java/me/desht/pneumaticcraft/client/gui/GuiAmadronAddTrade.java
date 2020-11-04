@@ -21,7 +21,6 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
@@ -119,10 +118,9 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadr
         addButton(fluidFilters[slot] = new WidgetFluidFilter(guiLeft + 37 + xOffset, guiTop + 90, prev));
 
         String tip = slot == INPUT_SLOT ? "pneumaticcraft.gui.amadron.button.selectSellingBlock.tooltip" : "pneumaticcraft.gui.amadron.button.selectPaymentBlock.tooltip";
-        addButton(new WidgetButtonExtended(guiLeft + 10 + xOffset, guiTop + 115, 20, 20, "",
-                b -> openGPSGui(slot))
-                .setTooltipText(PneumaticCraftUtils.splitStringComponent(I18n.format(tip)))
+        addButton(new WidgetButtonExtended(guiLeft + 10 + xOffset, guiTop + 115, 20, 20, "", b -> openGPSGui(slot))
                 .setRenderStacks(new ItemStack(ModItems.GPS_TOOL.get()))
+                .setTooltipKey(tip)
         );
 
         amountFields[slot] = new WidgetTextFieldNumber(font, guiLeft + 22 + xOffset, guiTop + 145, 40, font.FONT_HEIGHT)
