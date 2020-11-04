@@ -47,7 +47,7 @@
     },
     {
       "type": "crafting",
-      "recipe": "pneumaticcraft:elevator_base",
+      "recipe": "pneumaticcraft:elevator_base_1",
       "recipe2": "pneumaticcraft:elevator_frame"
     },
     {
