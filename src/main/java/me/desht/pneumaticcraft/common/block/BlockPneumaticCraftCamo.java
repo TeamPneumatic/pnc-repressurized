@@ -83,6 +83,7 @@ public abstract class BlockPneumaticCraftCamo extends BlockPneumaticCraft /*impl
     }
 
     private ICamouflageableTE getCamoState(IBlockReader blockAccess, BlockPos pos) {
+        if (blockAccess == null || pos == null) return null;
         TileEntity te = blockAccess.getTileEntity(pos);
         return te instanceof ICamouflageableTE && ((ICamouflageableTE) te).getCamouflage() != null ? (ICamouflageableTE) te : null;
     }
