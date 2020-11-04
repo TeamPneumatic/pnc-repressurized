@@ -10,10 +10,8 @@ import me.desht.pneumaticcraft.common.block.tubes.ModuleAirGrate;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateAirGrateModule;
 import me.desht.pneumaticcraft.common.util.EntityFilter;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.StringTextComponent;
@@ -78,7 +76,7 @@ public class GuiAirGrateModule extends GuiTubeModule<ModuleAirGrate> {
 
         if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {
             GuiUtils.showPopupHelpScreen(matrixStack, this, font,
-                    PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.entityFilter.helpText"), 60));
+                    GuiUtils.xlateAndSplit("pneumaticcraft.gui.entityFilter.helpText"));
         }
     }
 

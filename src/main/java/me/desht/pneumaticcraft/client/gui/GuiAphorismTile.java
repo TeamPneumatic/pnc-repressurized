@@ -12,7 +12,6 @@ import me.desht.pneumaticcraft.common.util.DramaSplash;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.SharedConstants;
 import org.apache.commons.lang3.ArrayUtils;
@@ -56,7 +55,7 @@ public class GuiAphorismTile extends Screen {
 
         if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {
             GuiUtils.showPopupHelpScreen(matrixStack, this, font,
-                    PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.aphorismTile.helpText"), 40));
+                    GuiUtils.xlateAndSplit("pneumaticcraft.gui.aphorismTile.helpText"));
         }
     }
 

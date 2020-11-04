@@ -18,6 +18,7 @@ import net.minecraft.client.renderer.texture.MissingTextureSprite;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IReorderingProcessor;
@@ -25,14 +26,19 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
+import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class GuiUtils {
     private static final ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
@@ -193,12 +199,12 @@ public class GuiUtils {
         tessellator.draw();
     }
 
-    public static void showPopupHelpScreen(MatrixStack matrixStack, Screen screen, FontRenderer fontRenderer, List<String> helpText) {
-        int boxWidth = 0;
-        int boxHeight = helpText.size() * fontRenderer.FONT_HEIGHT;
-        for (String s : helpText) {
-            boxWidth = Math.max(boxWidth, fontRenderer.getStringWidth(s));
-        }
+    public static void showPopupHelpScreen(MatrixStack matrixStack, Screen screen, FontRenderer fontRenderer, List<ITextComponent> helpText) {
+        List<IReorderingProcessor> l = GuiUtils.wrapTextComponentList(helpText, screen.width / 2, fontRenderer);
+        int lineSpacing = fontRenderer.FONT_HEIGHT + 1;
+        int boxHeight = Math.min(screen.height, l.size() * lineSpacing);
+        int maxLines = boxHeight / lineSpacing;
+        int boxWidth = l.stream().max(Comparator.comparingInt(fontRenderer::func_243245_a)).map(fontRenderer::func_243245_a).orElse(0);
 
         int x, y;
         if (screen instanceof ContainerScreen) {
@@ -216,9 +222,10 @@ public class GuiUtils {
         AbstractGui.fill(matrixStack,x - 4, y - 4, x - 3, y + boxHeight + 8, 0xFF808080);
         AbstractGui.fill(matrixStack,x + boxWidth + 8, y - 4, x + boxWidth + 9, y + boxHeight + 8, 0xFF808080);
 
-        for (String s : helpText) {
-            fontRenderer.drawString(matrixStack, s, x, y, 0xFFE0E0E0);
-            y += fontRenderer.FONT_HEIGHT;
+        for (IReorderingProcessor line : l) {
+            fontRenderer.func_238422_b_(matrixStack, line, x, y, 0xFFE0E0E0);  // draw reordering processor w/o drop shadow
+            y += lineSpacing;
+            if (maxLines-- == 0) break;
         }
         matrixStack.pop();
     }
@@ -286,5 +293,11 @@ public class GuiUtils {
             res.addAll(RenderComponentsUtil.func_238505_a_(line, maxWidth, font));
         }
         return res;
+    }
+
+    public static List<ITextComponent> xlateAndSplit(String key, Object... params) {
+        return Arrays.stream(StringUtils.splitByWholeSeparator(I18n.format(key, params), "${br}"))
+                .map(StringTextComponent::new)
+                .collect(Collectors.toList());
     }
 }

@@ -14,9 +14,9 @@ import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import net.minecraft.client.MainWindow;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.gui.widget.Slider;
@@ -32,7 +32,7 @@ public class GuiMoveStat extends GuiPneumaticScreenBase {
     private final IArmorUpgradeClientHandler renderHandler;
     private boolean clicked = false;
     private final List<IGuiAnimatedStat> otherStats = new ArrayList<>();
-    private final List<String> helpText = new ArrayList<>();
+    private final List<ITextComponent> helpText = new ArrayList<>();
     private final ArmorHUDLayout.LayoutTypes layoutItem;
 
     private WidgetCheckBox snapToGrid;
@@ -177,13 +177,12 @@ public class GuiMoveStat extends GuiPneumaticScreenBase {
         otherStats.forEach(IGuiAnimatedStat::tickWidget);
 
         if (helpText.isEmpty()) {
-            helpText.add(TextFormatting.GREEN + "" + TextFormatting.UNDERLINE + "Moving: "
-                    + I18n.format(ArmorUpgradeRegistry.getStringKey(renderHandler.getCommonHandler().getID())));
-            helpText.add("");
-            helpText.add("Left- or Right-Click: move the highlighted stat");
-            helpText.add("...");
+            helpText.add(xlate(ArmorUpgradeRegistry.getStringKey(renderHandler.getCommonHandler().getID())).mergeStyle(TextFormatting.GREEN, TextFormatting.UNDERLINE));
+            helpText.add(StringTextComponent.EMPTY);
+            helpText.add(xlate("pneumaticcraft.armor.moveStat.move"));
+            helpText.add(new StringTextComponent("<REPLACEME>"));
         }
-        helpText.set(3, "Stat expands " + getDir(movedStat.isLeftSided()) + ". Middle-click: expand " + getDir(!movedStat.isLeftSided()));
+        helpText.set(3, xlate("pneumaticcraft.armor.moveStat.expand" + (movedStat.isLeftSided() ? "Left" : "Right")));
     }
 
     private String getDir(boolean left) {

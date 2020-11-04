@@ -10,7 +10,6 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateTextfield;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySentryTurret;
 import me.desht.pneumaticcraft.common.util.EntityFilter;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
@@ -84,10 +83,10 @@ public class GuiSentryTurret extends GuiPneumaticContainerBase<ContainerSentryTu
         font.drawString(matrixStack, I18n.format("pneumaticcraft.gui.sentryTurret.targetFilter"), 80, 53, 0x404040);
         if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {
             GuiUtils.showPopupHelpScreen(matrixStack, this, font,
-                    PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.entityFilter.helpText"), 60));
+                    GuiUtils.xlateAndSplit("pneumaticcraft.gui.entityFilter.helpText"));
         } else if (x >= guiLeft + 76 && y >= guiTop + 51 && x <= guiLeft + 153 && y <= guiTop + 74) {
             // cursor inside the entity filter area
-            String str = I18n.format("pneumaticcraft.gui.entityFilter");
+            String str = I18n.format("pneumaticcraft.gui.entityFilter.holdF1");
             font.drawString(matrixStack, str, (xSize - font.getStringWidth(str)) / 2f, ySize + 5, 0x808080);
         }
     }

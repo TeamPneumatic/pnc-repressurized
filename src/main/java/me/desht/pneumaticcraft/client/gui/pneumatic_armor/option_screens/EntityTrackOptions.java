@@ -13,7 +13,6 @@ import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateArmorExtraData;
 import me.desht.pneumaticcraft.common.util.EntityFilter;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -72,7 +71,7 @@ public class EntityTrackOptions extends IOptionPage.SimpleToggleableOptions<Enti
         fontRenderer.drawString(matrixStack, I18n.format("pneumaticcraft.gui.entityFilter"), 35, 50, 0xFFFFFFFF);
         if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {
             GuiUtils.showPopupHelpScreen(matrixStack, Minecraft.getInstance().currentScreen, fontRenderer,
-                    PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.entityFilter.helpText"), 60));
+                    GuiUtils.xlateAndSplit("pneumaticcraft.gui.entityFilter.helpText"));
         }
     }
 

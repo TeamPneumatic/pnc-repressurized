@@ -123,7 +123,10 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
 
         if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {
             GuiUtils.showPopupHelpScreen(matrixStack, this, font,
-                    PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.entityFilter.helpText"), 60));
+                    GuiUtils.xlateAndSplit("pneumaticcraft.gui.entityFilter.helpText"));
+        } else {
+            String str = I18n.format("pneumaticcraft.gui.entityFilter.holdF1");
+            font.drawString(matrixStack, str, (xSize - font.getStringWidth(str)) / 2f, ySize + 5, 0x808080);
         }
     }
 
