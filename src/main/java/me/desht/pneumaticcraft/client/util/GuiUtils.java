@@ -45,6 +45,7 @@ public class GuiUtils {
 
     private static final int TEX_WIDTH = 16;
     private static final int TEX_HEIGHT = 16;
+    public static final String TRANSLATION_LINE_BREAK = "${br}";
 
     /**
      * Like {@link ItemRenderer#renderItemAndEffectIntoGUI(ItemStack, int, int)} but takes a MatrixStack
@@ -296,7 +297,7 @@ public class GuiUtils {
     }
 
     public static List<ITextComponent> xlateAndSplit(String key, Object... params) {
-        return Arrays.stream(StringUtils.splitByWholeSeparator(I18n.format(key, params), "${br}"))
+        return Arrays.stream(StringUtils.splitByWholeSeparator(I18n.format(key, params), TRANSLATION_LINE_BREAK))
                 .map(StringTextComponent::new)
                 .collect(Collectors.toList());
     }

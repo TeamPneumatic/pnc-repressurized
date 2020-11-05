@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.client.gui.*;
 import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetItemFilter;
 import me.desht.pneumaticcraft.client.gui.semiblock.GuiLogisticsBase;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
@@ -28,8 +29,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.RegistryObject;
-
-import java.util.regex.Pattern;
+import org.apache.commons.lang3.StringUtils;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
@@ -105,7 +105,9 @@ public class JEIPlugin implements IModPlugin {
         String k = ICustomTooltipName.getTranslationKey(stack, false);
         if (I18n.hasKey(k)) {
             String raw = TextFormatting.getTextWithoutFormattingCodes(I18n.format(k));
-            registry.addIngredientInfo(stack, VanillaTypes.ITEM, raw.split(Pattern.quote("${br}")));
+            if (raw != null) {
+                registry.addIngredientInfo(stack, VanillaTypes.ITEM, StringUtils.splitByWholeSeparator(raw, GuiUtils.TRANSLATION_LINE_BREAK));
+            }
         }
     }
 
