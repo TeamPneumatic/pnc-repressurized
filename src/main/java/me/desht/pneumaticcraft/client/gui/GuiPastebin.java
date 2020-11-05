@@ -28,11 +28,9 @@ import net.minecraftforge.common.util.Constants;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiPastebin extends GuiPneumaticScreenBase {
-
     private WidgetTextField usernameBox, passwordBox;
     private WidgetTextField pastebinBox;
     private WidgetCheckBox prettyCB;
-//    private final String pastingString;
     private final CompoundNBT pastingNBT;
     private final Screen parentScreen;
     private ITextComponent statusMessage = StringTextComponent.EMPTY;
@@ -45,17 +43,6 @@ public class GuiPastebin extends GuiPneumaticScreenBase {
     private enum EnumState {
         NONE, GETTING, PUTTING, LOGIN, LOGOUT
     }
-
-//    private GuiPastebin(Screen parentScreen, Comnp pastingString) {
-//        super(new StringTextComponent("Pastebin"));
-//
-//        xSize = 183;
-//        ySize = 202;
-////        this.pastingString = pastingString;
-//        this.pastingNBT =
-//        this.parentScreen = parentScreen;
-//        Minecraft.getInstance().keyboardListener.enableRepeatEvents(true);
-//    }
 
     GuiPastebin(Screen parentScreen, CompoundNBT tag) {
         super(new StringTextComponent("Pastebin"));
@@ -120,11 +107,13 @@ public class GuiPastebin extends GuiPneumaticScreenBase {
         prettyCB.setTooltipKey("pneumaticcraft.gui.pastebin.pretty.tooltip");
         addButton(prettyCB);
 
-        WidgetCheckBox mergeCB = new WidgetCheckBox(0, guiTop + 155, 0xFF404040, xlate("pneumaticcraft.gui.pastebin.merge"),
-                b -> shouldMerge = b.checked);
-        mergeCB.x = guiLeft + (170 - mergeCB.getWidth());
-        mergeCB.setTooltipKey("pneumaticcraft.gui.pastebin.merge.tooltip");
-        addButton(mergeCB);
+        if (parentScreen instanceof GuiProgrammer) {
+            WidgetCheckBox mergeCB = new WidgetCheckBox(0, guiTop + 155, 0xFF404040, xlate("pneumaticcraft.gui.pastebin.merge"),
+                    b -> shouldMerge = b.checked);
+            mergeCB.x = guiLeft + (170 - mergeCB.getWidth());
+            mergeCB.setTooltipKey("pneumaticcraft.gui.pastebin.merge.tooltip");
+            addButton(mergeCB);
+        }
 
         addLabel(xlate("pneumaticcraft.gui.pastebin.pastebinLink"), guiLeft + 10, guiTop + 120);
     }
