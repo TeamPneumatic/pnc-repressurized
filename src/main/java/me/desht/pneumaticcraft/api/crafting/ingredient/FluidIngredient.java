@@ -84,7 +84,7 @@ public class FluidIngredient extends Ingredient {
 
     @Override
     public boolean test(@Nullable ItemStack stack) {
-        return FluidUtil.getFluidContained(stack).map(this::testFluid).orElse(false);
+        return stack == null ? false : FluidUtil.getFluidContained(stack).map(this::testFluid).orElse(false);
     }
 
     @Override
@@ -108,7 +108,7 @@ public class FluidIngredient extends Ingredient {
         ItemStack tank = new ItemStack(tankBlock);
         tank.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).ifPresent(h -> {
             h.fill(stack, IFluidHandler.FluidAction.EXECUTE);
-            l.add(tank);
+            l.add(h.getContainer());
         });
     }
 
@@ -167,7 +167,6 @@ public class FluidIngredient extends Ingredient {
             if (json.has("tag")) {
                 ResourceLocation rl = new ResourceLocation(JSONUtils.getString(json, "tag"));
                 if (TagCollectionManager.getManager().getFluidTags().get(rl) == null) throw new JsonSyntaxException("Unknown fluid tag '" + rl + "'");
-//                if (FluidTags.getCollection().get(rl) == null) throw new JsonSyntaxException("Unknown fluid tag '" + rl + "'");
                 return new FluidIngredient(rl, amount);
             } else if (json.has("fluid")) {
                 ResourceLocation fluidName = new ResourceLocation(JSONUtils.getString(json, "fluid"));
