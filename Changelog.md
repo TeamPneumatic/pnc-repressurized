@@ -4,17 +4,17 @@ This is an overview of significant new features and fixes by release.  See https
 
 Changes are in reverse chronological order; newest changes at the top.
 
-## Minecraft 1.16.3
+## Minecraft 1.16.3 / 1.16.4
 
-## 2.4.6-?? (unreleased)
-
-Note: although labelled as 1.16.3, this version should also run fine on MC 1.16.4.  Some basic testing has been done, with no problems noticed so far...
+## 2.5.0-66 (5 Nov 2020)
 
 ### Updates 
+* Support for MC 1.16.4, which is very much compatible with MC 1.16.3
+  * This release runs on both MC 1.16.3 and 1.16.4
 * Thermopneumatic Processing Plant now has "has work" comparator support, like the Refinery
   * When there are valid ingredients in the TPP, and room for output, an attached Comparator will emit a signal of 15 
 * Pressure tube performance improvement
-  * Was unnecessarily computing connections every tick when it's only necessary to do so on neighbour block updates
+  * Was unnecessarily computing connections every tick (for leak detection) when it's only necessary to do so on neighbour block updates
 * Programmer GUI now warns if multiple Item Filter widgets are attached to an Item Assign widget
 * Area widgets in Programmer GUI now show their coordinates and/or variables (when "Show Info" is enabled)
 * Drone variable parsing (with `${varname}` syntax): item variables are now supported too
@@ -25,6 +25,12 @@ Note: although labelled as 1.16.3, this version should also run fine on MC 1.16.
 * Fixed a few locale-related errors in recipe deserialization
 * Fixed positioning of selected fluid in Fluid Filter GUI
 * Fixed drone debugger GUI view not being draggable (like it used to be in 1.12.2)
+* Fixed fluid tank displays in JEI recipe pages (e.g. for Speed Upgrades) not showing their contained fluid in the tooltip
+* Fixed client crash when trying to open Condition: RF & Drone Condition: RF patchouli pages from the Programmer GUI
+* Fixed client crash caused by certain mods trying to pass null world or blockpos data when querying blocks shapes for camouflageable blocks
+  * Not a PNC bug as such, but pays to be defensive
+
+## Minecraft 1.16.3
 
 ## 2.4.5-62 (25 Oct 2020)
 
