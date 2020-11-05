@@ -17,6 +17,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,13 +41,13 @@ public class GuiLiquidHopper extends GuiPneumaticContainerBase<ContainerLiquidHo
         WidgetAnimatedStat optionStat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.gasLift.mode"), new ItemStack(Blocks.LEVER), 0xFFFFCC00, false);
         optionStat.addPadding(4, 14);
 
-        WidgetButtonExtended button = new WidgetButtonExtended(5, 20, 20, 20, "").withTag("empty");
+        WidgetButtonExtended button = new WidgetButtonExtended(5, 20, 20, 20, StringTextComponent.EMPTY).withTag("empty");
         button.setRenderStacks(new ItemStack(Items.BUCKET));
         button.setTooltipText(xlate("pneumaticcraft.gui.tab.liquidHopper.mode.empty"));
         optionStat.addSubWidget(button);
         modeButtons[0] = button;
 
-        button = new WidgetButtonExtended(30, 20, 20, 20, "").withTag("leave");
+        button = new WidgetButtonExtended(30, 20, 20, 20, StringTextComponent.EMPTY).withTag("leave");
         button.setRenderStacks(new ItemStack(Items.WATER_BUCKET));
         button.setTooltipText(xlate("pneumaticcraft.gui.tab.liquidHopper.mode.leaveLiquid"));
         optionStat.addSubWidget(button);

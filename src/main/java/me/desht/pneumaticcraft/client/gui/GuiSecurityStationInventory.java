@@ -16,7 +16,6 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.renderer.Rectangle2d;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -27,6 +26,8 @@ import net.minecraft.util.text.TextFormatting;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiSecurityStationInventory extends GuiSecurityStationBase<ContainerSecurityStationMain> {
     private WidgetAnimatedStat statusStat;
@@ -69,9 +70,10 @@ public class GuiSecurityStationInventory extends GuiSecurityStationBase<Containe
         accessStat.addSubWidget(sharedUserTextField);
         accessStat.addSubWidget(addUserButton);
 
-        addButton(new WidgetButtonExtended(guiLeft + 108, guiTop + 103, 64, 20, I18n.format("pneumaticcraft.gui.securityStation.test"))).withTag("test");
+        addButton(new WidgetButtonExtended(guiLeft + 108, guiTop + 103, 64, 20, xlate("pneumaticcraft.gui.securityStation.test")))
+                .withTag("test");
         addButton(rebootButton);
-        addButton(new WidgetButtonExtended(guiLeft + 108, guiTop + 125, 64, 20, I18n.format("pneumaticcraft.gui.button.showRange"), b -> te.showRangeLines()));
+        addButton(new WidgetButtonExtended(guiLeft + 108, guiTop + 125, 64, 20, xlate("pneumaticcraft.gui.button.showRange"), b -> te.showRangeLines()));
 
         updateUserRemoveButtons();
 

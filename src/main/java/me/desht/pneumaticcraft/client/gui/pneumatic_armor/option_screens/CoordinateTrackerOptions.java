@@ -9,6 +9,7 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.Coo
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
 import java.util.ArrayList;
@@ -34,25 +35,25 @@ public class CoordinateTrackerOptions extends IOptionPage.SimpleToggleableOption
                 xlate("pneumaticcraft.armor.gui.coordinateTracker.selectTarget"), b -> selectTarget()));
         gui.addWidget(new WidgetButtonExtended(30, 62, 150, 20,
                 xlate("pneumaticcraft.armor.gui.coordinateTracker.navigateToSurface"), b -> navigateToSurface()));
-        pathEnabled = new WidgetButtonExtended(30, 128, 150, 20, "",
+        pathEnabled = new WidgetButtonExtended(30, 128, 150, 20, StringTextComponent.EMPTY,
                 b -> {
                     coordHandler.pathEnabled = !coordHandler.pathEnabled;
                     updateButtonTexts();
                     coordHandler.saveToConfig();
                 });
-        wirePath = new WidgetButtonExtended(30, 150, 150, 20, "",
+        wirePath = new WidgetButtonExtended(30, 150, 150, 20, StringTextComponent.EMPTY,
                 b -> {
                     coordHandler.wirePath = !coordHandler.wirePath;
                     updateButtonTexts();
                     coordHandler.saveToConfig();
                 });
-        xRayEnabled = new WidgetButtonExtended(30, 172, 150, 20, "",
+        xRayEnabled = new WidgetButtonExtended(30, 172, 150, 20, StringTextComponent.EMPTY,
                 b -> {
                     coordHandler.xRayEnabled = !coordHandler.xRayEnabled;
                     updateButtonTexts();
                     coordHandler.saveToConfig();
                 });
-        pathUpdateRate = new WidgetButtonExtended(30, 194, 150, 20, "",
+        pathUpdateRate = new WidgetButtonExtended(30, 194, 150, 20, StringTextComponent.EMPTY,
                 b -> {
                     coordHandler.pathUpdateSetting = coordHandler.pathUpdateSetting.cycle();
                     updateButtonTexts();

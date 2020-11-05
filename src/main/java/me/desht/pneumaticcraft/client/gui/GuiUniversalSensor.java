@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 import static me.desht.pneumaticcraft.lib.GuiConstants.*;
 
 public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUniversalSensor,TileEntityUniversalSensor> {
@@ -168,7 +169,7 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
             addButtonLocal(new WidgetButtonExtended(guiLeft + 70, guiTop + 20, 16, 16, ARROW_LEFT).withTag("back"));
         }
         if (directories.length == 0 || te.getSensorSetting().isEmpty()) {
-            addButtonLocal(new WidgetButtonExtended(guiLeft + 70, guiTop + 125, 98, 20, I18n.format("pneumaticcraft.gui.button.showRange"), b -> { onClose(); te.showRangeLines(); }));
+            addButtonLocal(new WidgetButtonExtended(guiLeft + 70, guiTop + 125, 98, 20, xlate("pneumaticcraft.gui.button.showRange"), b -> { onClose(); te.showRangeLines(); }));
         }
 
         maxPage = (directories.length - 1) / MAX_SENSORS_PER_PAGE + 1;

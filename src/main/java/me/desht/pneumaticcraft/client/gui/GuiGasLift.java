@@ -15,6 +15,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,19 +39,19 @@ public class GuiGasLift extends GuiPneumaticContainerBase<ContainerGasLift,TileE
         WidgetAnimatedStat optionStat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.gasLift.mode"), new ItemStack(ModBlocks.PRESSURE_TUBE.get()), 0xFFFFCC00, false);
         optionStat.addPadding(4, 17);
 
-        WidgetButtonExtended button = new WidgetButtonExtended(5, 20, 20, 20, "").withTag(PumpMode.PUMP_EMPTY.toString());
+        WidgetButtonExtended button = new WidgetButtonExtended(5, 20, 20, 20, StringTextComponent.EMPTY).withTag(PumpMode.PUMP_EMPTY.toString());
         button.setRenderStacks(new ItemStack(Items.BUCKET));
         button.setTooltipText(xlate("pneumaticcraft.gui.tab.gasLift.mode.pumpEmpty"));
         optionStat.addSubWidget(button);
         modeButtons[0] = button;
 
-        button = new WidgetButtonExtended(30, 20, 20, 20, "").withTag(PumpMode.PUMP_LEAVE_FLUID.toString());
+        button = new WidgetButtonExtended(30, 20, 20, 20, StringTextComponent.EMPTY).withTag(PumpMode.PUMP_LEAVE_FLUID.toString());
         button.setRenderStacks(new ItemStack(Items.WATER_BUCKET));
         button.setTooltipText(xlate("pneumaticcraft.gui.tab.gasLift.mode.pumpLeave"));
         optionStat.addSubWidget(button);
         modeButtons[1] = button;
 
-        button = new WidgetButtonExtended(55, 20, 20, 20, "").withTag(PumpMode.RETRACT.toString());
+        button = new WidgetButtonExtended(55, 20, 20, 20, StringTextComponent.EMPTY).withTag(PumpMode.RETRACT.toString());
         button.setRenderStacks(new ItemStack(ModBlocks.PRESSURE_TUBE.get()));
         button.setTooltipText(xlate("pneumaticcraft.gui.tab.gasLift.mode.drawIn"));
         optionStat.addSubWidget(button);

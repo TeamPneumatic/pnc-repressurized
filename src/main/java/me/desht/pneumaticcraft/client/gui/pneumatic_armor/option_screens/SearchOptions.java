@@ -34,7 +34,7 @@ public class SearchOptions extends IOptionPage.SimpleToggleableOptions<SearchCli
     @Override
     public void populateGui(IGuiScreen gui) {
         gui.addWidget(new WidgetButtonExtended(30, 40, 150, 20,
-                xlate("pneumaticcraft.armor.gui.misc.searchItem"), b -> openSearchGui()));
+                xlate("pneumaticcraft.gui.misc.searchItem"), b -> openSearchGui()));
 
         gui.addWidget(new Button(30, 128, 150, 20, xlate("pneumaticcraft.armor.gui.misc.moveStatScreen"),
                 b -> Minecraft.getInstance().displayGuiScreen(new GuiMoveStat(getClientUpgradeHandler(), ArmorHUDLayout.LayoutTypes.ITEM_SEARCH))));

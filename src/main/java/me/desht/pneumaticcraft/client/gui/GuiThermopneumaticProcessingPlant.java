@@ -50,7 +50,7 @@ public class GuiThermopneumaticProcessingPlant extends
         tempWidget = new WidgetTemperature(guiLeft + 105, guiTop + 25, TemperatureRange.of(273, 673), 273, 50);
         addButton(tempWidget);
 
-        dumpButton = new WidgetButtonExtended(guiLeft + 14, guiTop + 86, 14, 14, "")
+        dumpButton = new WidgetButtonExtended(guiLeft + 14, guiTop + 86, 14, 14, StringTextComponent.EMPTY)
                 .withTag("dump");
         addButton(dumpButton);
 

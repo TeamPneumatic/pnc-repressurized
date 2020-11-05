@@ -42,7 +42,7 @@ public class GuiSentryTurret extends GuiPneumaticContainerBase<ContainerSentryTu
         entityFilter.setFocused2(true);
         setListener(entityFilter);
 
-        addButton(errorButton = new WidgetButtonExtended(guiLeft + 155, guiTop + 52, 16, 16, ""));
+        addButton(errorButton = new WidgetButtonExtended(guiLeft + 155, guiTop + 52, 16, 16, StringTextComponent.EMPTY));
         errorButton.setRenderedIcon(Textures.GUI_PROBLEMS_TEXTURE).setVisible(false);
     }
 

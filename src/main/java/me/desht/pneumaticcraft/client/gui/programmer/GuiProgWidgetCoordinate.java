@@ -56,7 +56,7 @@ public class GuiProgWidgetCoordinate extends GuiProgWidgetAreaShow<ProgWidgetCoo
         radioButton.otherChoices = radioButtons;
         addButton(radioButton);
 
-        gpsButton = new WidgetButtonExtended(guiLeft + 100, guiTop + 20, 20, 20, "", b -> openGPSSearcher());
+        gpsButton = new WidgetButtonExtended(guiLeft + 100, guiTop + 20, 20, 20, StringTextComponent.EMPTY, b -> openGPSSearcher());
         gpsButton.setRenderStacks(new ItemStack(ModItems.GPS_TOOL.get()));
         gpsButton.setTooltipText(xlate("pneumaticcraft.gui.progWidget.coordinate.selectFromGPS"));
         gpsButton.active = !progWidget.isUsingVariable();

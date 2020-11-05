@@ -152,7 +152,8 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         int width = getWidestRedstoneLabel();
         redstoneTab.addPadding(curInfo,4, width / font.getStringWidth(" "));
         Rectangle2d buttonRect = redstoneTab.getButtonScaledRectangle(-width - 12, 24, width + 10, 20);
-        redstoneButton = new WidgetButtonExtended(buttonRect.getX(), buttonRect.getY(), buttonRect.getWidth(), buttonRect.getHeight(), "-", button -> { }).withTag(IGUIButtonSensitive.REDSTONE_TAG);
+        redstoneButton = new WidgetButtonExtended(buttonRect.getX(), buttonRect.getY(), buttonRect.getWidth(), buttonRect.getHeight(), "-", button -> { })
+                .withTag(IGUIButtonSensitive.REDSTONE_TAG);
         redstoneTab.addSubWidget(redstoneButton);
     }
 
@@ -181,7 +182,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
                     text.add("");
                 });
         if (!text.isEmpty()) {
-            addAnimatedStat(xlate("pneumaticcraft.gui.tab.upgrades"), Textures.GUI_UPGRADES_LOCATION, 0xFF6060FF, true).setText(text);
+            addAnimatedStat(xlate("pneumaticcraft.gui.tab.upgrades"), Textures.GUI_UPGRADES_LOCATION, 0xFF244BB3, true).setText(text);
         }
     }
 
@@ -213,7 +214,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
     }
 
     private WidgetButtonExtended makeSideConfButton(final SideConfigurator<?> sideConfigurator, RelativeFace relativeFace, int x, int y) {
-        WidgetButtonExtended button = new WidgetButtonExtended(x, y, 20, 20, "", b -> {
+        WidgetButtonExtended button = new WidgetButtonExtended(x, y, 20, 20, StringTextComponent.EMPTY, b -> {
             WidgetButtonExtended gbs = (WidgetButtonExtended) b;
             ((ISideConfigurable) te).getSideConfigurators().stream()
                     .filter(sc -> sc.handleButtonPress(gbs.getTag()))
@@ -421,7 +422,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         } else {
             problemTab.setTexture(Textures.GUI_NO_PROBLEMS_TEXTURE);
             problemTab.setMessage(xlate("pneumaticcraft.gui.tab.problems.noProblems"));
-            problemTab.setBackgroundColor(0xFFA0FFA0);
+            problemTab.setBackgroundColor(0xFF80E080);
         }
         if (problemText.isEmpty()) problemText.add("");
         problemTab.setText(problemText);
@@ -499,7 +500,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
     }
 
     WidgetButtonExtended getInvisibleButtonFromRectangle(String tag, Rectangle2d buttonSize, Button.IPressable pressable) {
-        return new WidgetButtonExtended(buttonSize.getX(), buttonSize.getY(), buttonSize.getWidth(), buttonSize.getHeight(), "", pressable).withTag(tag);
+        return new WidgetButtonExtended(buttonSize.getX(), buttonSize.getY(), buttonSize.getWidth(), buttonSize.getHeight(), StringTextComponent.EMPTY, pressable).withTag(tag);
     }
 
     WidgetTextField getTextFieldFromRectangle(Rectangle2d textFieldSize) {

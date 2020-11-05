@@ -106,7 +106,7 @@ public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.Abst
             powerStat.setLineSpacing(15);
             powerStat.setWidgetOffsets(-18, 0);  // ensure armor icons are rendered in the right place
             for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
-                WidgetButtonExtended pressureButton = new WidgetButtonExtended(0, 5 + (3 - slot.getIndex()) * 15, 18, 18, "") ;
+                WidgetButtonExtended pressureButton = new WidgetButtonExtended(0, 5 + (3 - slot.getIndex()) * 15, 18, 18, StringTextComponent.EMPTY) ;
                 ItemStack stack = GuiArmorMainScreen.ARMOR_STACKS[slot.getIndex()];
                 pressureButton.setVisible(false);
                 pressureButton.setRenderStacks(stack);

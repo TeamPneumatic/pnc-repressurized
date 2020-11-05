@@ -164,10 +164,10 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         }
 
         addButton(new WidgetButtonExtended(xStart + 5, yStart + yBottom + 4, 87, 20,
-                I18n.format("pneumaticcraft.gui.programmer.button.showStart"), b -> gotoStart())
+                xlate("pneumaticcraft.gui.programmer.button.showStart"), b -> gotoStart())
                 .setTooltipText(xlate("pneumaticcraft.gui.programmer.button.showStart.tooltip")));
         addButton(new WidgetButtonExtended(xStart + 5, yStart + yBottom + 26, 87, 20,
-                I18n.format("pneumaticcraft.gui.programmer.button.showLatest"), b -> gotoLatest())
+                xlate("pneumaticcraft.gui.programmer.button.showLatest"), b -> gotoLatest())
                 .setTooltipText(xlate("pneumaticcraft.gui.programmer.button.showLatest.tooltip")));
         addButton(showInfo = new WidgetCheckBox(xStart + 5, yStart + yBottom + 49, 0xFF404040,
                 xlate("pneumaticcraft.gui.programmer.checkbox.showInfo")).setChecked(te.showInfo));
@@ -182,8 +182,8 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
 
         undoButton = new WidgetButtonExtended(guiLeft - 24, guiTop + 2, 20, 20, "").withTag("undo");
         redoButton = new WidgetButtonExtended(guiLeft - 24, guiTop + 23, 20, 20, "").withTag("redo");
-        WidgetButtonExtended clearAllButton = new WidgetButtonExtended(guiLeft - 24, guiTop + 65, 20, 20, "", b -> clear());
-        convertToRelativeButton = new WidgetButtonExtended(guiLeft - 24, guiTop + 86, 20, 20, "Rel", b -> convertToRelative());
+        WidgetButtonExtended clearAllButton = new WidgetButtonExtended(guiLeft - 24, guiTop + 65, 20, 20, StringTextComponent.EMPTY, b -> clear());
+        convertToRelativeButton = new WidgetButtonExtended(guiLeft - 24, guiTop + 86, 20, 20, "R", b -> convertToRelative());
 
         undoButton.setRenderedIcon(Textures.GUI_UNDO_ICON_LOCATION);
         redoButton.setRenderedIcon(Textures.GUI_REDO_ICON_LOCATION);

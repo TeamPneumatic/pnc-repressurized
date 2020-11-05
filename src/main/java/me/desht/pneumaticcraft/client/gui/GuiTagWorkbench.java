@@ -17,6 +17,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 
 import java.util.List;
 import java.util.Set;
@@ -51,7 +52,7 @@ public class GuiTagWorkbench extends GuiPneumaticContainerBase<ContainerTagWorkb
     public void init() {
         super.init();
 
-        addButton(writeButton = new WidgetButtonExtended(guiLeft + 162, guiTop + 16, 20, 20, "", b -> writeTags())
+        addButton(writeButton = new WidgetButtonExtended(guiLeft + 162, guiTop + 16, 20, 20, StringTextComponent.EMPTY, b -> writeTags())
                 .setRenderStacks(new ItemStack(Items.WRITABLE_BOOK))
                 .setTooltipText(xlate("pneumaticcraft.gui.tooltip.tag_workbench.write_button")));
         addButton(addButton = new WidgetButtonExtended(guiLeft + 108, guiTop + 90, 13, 13, GuiConstants.TRIANGLE_RIGHT,

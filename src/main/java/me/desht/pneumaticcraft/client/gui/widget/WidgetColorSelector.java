@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.client.gui.widget;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.item.DyeColor;
+import net.minecraft.util.text.StringTextComponent;
 
 import java.util.function.Consumer;
 
@@ -18,7 +19,7 @@ public class WidgetColorSelector extends WidgetButtonExtended implements IDrawAf
     }
 
     public WidgetColorSelector(int xIn, int yIn, Consumer<WidgetColorSelector> callback) {
-        super(xIn, yIn, 16, 16, "");
+        super(xIn, yIn, 16, 16, StringTextComponent.EMPTY);
 
         mainArea = new Rectangle2d(xIn, yIn, width, height);
         expandedArea = new Rectangle2d(xIn, yIn + height, width * 4, height * 4);

@@ -17,7 +17,6 @@ import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.ResourceLocation;
@@ -78,7 +77,7 @@ public class GuiPastebin extends GuiPneumaticScreenBase {
             passwordBox = new WidgetTextField(font, guiLeft + 10, guiTop + 56, 80, 10).setAsPasswordBox();
             addButton(passwordBox);
 
-            WidgetButtonExtended loginButton = new WidgetButtonExtended(guiLeft + 100, guiTop + 30, 60, 20, I18n.format("pneumaticcraft.gui.pastebin.button.login"), b -> login());
+            WidgetButtonExtended loginButton = new WidgetButtonExtended(guiLeft + 100, guiTop + 30, 60, 20, xlate("pneumaticcraft.gui.pastebin.button.login"), b -> login());
             loginButton.setTooltipText(xlate("pneumaticcraft.gui.pastebin.loginOptional"));
             addButton(loginButton);
 
@@ -106,11 +105,11 @@ public class GuiPastebin extends GuiPneumaticScreenBase {
         WidgetButtonExtended getButton = new WidgetButtonExtended(guiLeft + 31, guiTop + 167, 120, 20, xlate("pneumaticcraft.gui.pastebin.button.get"), b -> getFromPastebin());
         addButton(getButton);
 
-        WidgetButtonExtended putInClipBoard = new WidgetButtonExtended(guiLeft + 8, guiTop + 78, 20, 20, "", b -> putToClipboard());
+        WidgetButtonExtended putInClipBoard = new WidgetButtonExtended(guiLeft + 8, guiTop + 78, 20, 20, StringTextComponent.EMPTY, b -> putToClipboard());
         putInClipBoard.setRenderedIcon(Textures.GUI_COPY_ICON_LOCATION);
         putInClipBoard.setTooltipText(xlate("pneumaticcraft.gui.pastebin.button.copyToClipboard"));
         addButton(putInClipBoard);
-        WidgetButtonExtended retrieveFromClipboard = new WidgetButtonExtended(guiLeft + 8, guiTop + 167, 20, 20, "", b -> getFromClipboard());
+        WidgetButtonExtended retrieveFromClipboard = new WidgetButtonExtended(guiLeft + 8, guiTop + 167, 20, 20, StringTextComponent.EMPTY, b -> getFromClipboard());
         retrieveFromClipboard.setRenderedIcon(Textures.GUI_PASTE_ICON_LOCATION);
         retrieveFromClipboard.setTooltipText(xlate("pneumaticcraft.gui.pastebin.button.loadFromClipboard"));
         addButton(retrieveFromClipboard);

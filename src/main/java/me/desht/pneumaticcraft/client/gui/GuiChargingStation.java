@@ -20,6 +20,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.opengl.GL11;
 
@@ -43,7 +44,7 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<ContainerCharg
 
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
-        guiSelectButton = new WidgetButtonExtended(xStart + 90, yStart + 22, 18, 19, "").withTag("open_upgrades");
+        guiSelectButton = new WidgetButtonExtended(xStart + 90, yStart + 22, 18, 19, StringTextComponent.EMPTY).withTag("open_upgrades");
         guiSelectButton.setRenderedIcon(Textures.GUI_UPGRADES_LOCATION);
         guiSelectButton.visible = false;
         addButton(guiSelectButton);

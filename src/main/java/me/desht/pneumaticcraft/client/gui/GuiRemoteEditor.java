@@ -88,12 +88,12 @@ public class GuiRemoteEditor extends GuiRemote {
             addButton(actionWidget.getWidget());
         }
 
-        addButton(new WidgetButtonExtended(guiLeft - 24, guiTop, 20, 20, "", b -> doImport())
+        addButton(new WidgetButtonExtended(guiLeft - 24, guiTop, 20, 20, StringTextComponent.EMPTY, b -> doImport())
                 .setTooltipText(xlate("pneumaticcraft.gui.remote.button.importRemoteButton"))
                 .setRenderStacks(new ItemStack(ModItems.REMOTE.get()))
         );
 
-        addButton(new WidgetButtonExtended(guiLeft - 24, guiTop + 22, 20, 20, "", b -> doPastebin())
+        addButton(new WidgetButtonExtended(guiLeft - 24, guiTop + 22, 20, 20, StringTextComponent.EMPTY, b -> doPastebin())
                 .setTooltipText(xlate("pneumaticcraft.gui.remote.button.pastebinButton"))
                 .setRenderedIcon(Textures.GUI_PASTEBIN_ICON_LOCATION)
         );

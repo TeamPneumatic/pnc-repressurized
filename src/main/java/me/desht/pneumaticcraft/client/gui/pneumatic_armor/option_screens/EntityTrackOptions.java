@@ -56,7 +56,7 @@ public class EntityTrackOptions extends IOptionPage.SimpleToggleableOptions<Enti
         gui.addWidget(textField);
         gui.setFocusedWidget(textField);
 
-        warningButton = new WidgetButtonExtended(175, 57, 20, 20, "");
+        warningButton = new WidgetButtonExtended(175, 57, 20, 20, StringTextComponent.EMPTY);
         warningButton.setVisible(false);
         warningButton.visible = false;
         warningButton.setRenderedIcon(Textures.GUI_PROBLEMS_TEXTURE);

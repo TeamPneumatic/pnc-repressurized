@@ -108,11 +108,11 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadr
                 xlate("pneumaticcraft.gui.amadron.addTrade." + s), 0xFFFFFFFF).setAlignment(WidgetLabel.Alignment.CENTRE));
 
         addButton(new WidgetButtonExtended(guiLeft + 4 + xOffset, guiTop + 20, 85, 20,
-                "Search item...", b -> openItemSearchGui(slot)));
+                xlate("pneumaticcraft.gui.misc.searchItem"), b -> openItemSearchGui(slot)));
         addButton(new WidgetButtonExtended(guiLeft + 4 + xOffset, guiTop + 42, 85, 20,
-                "Search inv...", b -> openInventorySearchGui(slot)));
+                xlate("pneumaticcraft.gui.misc.searchInventory"), b -> openInventorySearchGui(slot)));
         addButton(new WidgetButtonExtended(guiLeft + 4 + xOffset, guiTop + 64, 85, 20,
-                "Search fluid...", b -> openFluidSearchGui(slot)));
+                xlate("pneumaticcraft.gui.misc.searchFluid"), b -> openFluidSearchGui(slot)));
 
         Fluid prev = fluidFilters[slot] != null ? fluidFilters[slot].getFluid() : Fluids.EMPTY;
         addButton(fluidFilters[slot] = new WidgetFluidFilter(guiLeft + 37 + xOffset, guiTop + 90, prev));

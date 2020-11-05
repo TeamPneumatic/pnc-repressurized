@@ -35,7 +35,7 @@ public class GuiFluidMixer extends GuiPneumaticContainerBase<ContainerFluidMixer
         addButton(new WidgetTank(guiLeft + 99, guiTop + 19, te.getOutputTank()));
 
         for (int i = 0; i < 2; i++) {
-            dumpButtons[i] = new WidgetButtonExtended(guiLeft + 14 + i * 20, guiTop + 86, 14, 14, "")
+            dumpButtons[i] = new WidgetButtonExtended(guiLeft + 14 + i * 20, guiTop + 86, 14, 14, StringTextComponent.EMPTY)
                     .withTag("dump" + (i + 1));
             addButton(dumpButtons[i]);
         }

@@ -49,7 +49,7 @@ public class GuiAirGrateModule extends GuiTubeModule<ModuleAirGrate> {
         setListener(textfield);
         addButton(textfield);
 
-        warningButton = new WidgetButtonExtended(guiLeft + 152, guiTop + 20, 20, 20, "");
+        warningButton = new WidgetButtonExtended(guiLeft + 152, guiTop + 20, 20, 20, StringTextComponent.EMPTY);
         warningButton.setVisible(false);
         warningButton.setRenderedIcon(Textures.GUI_PROBLEMS_TEXTURE);
         addButton(warningButton);

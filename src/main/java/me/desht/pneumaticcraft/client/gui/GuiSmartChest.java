@@ -142,7 +142,7 @@ public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest
     }
 
     private WidgetButtonExtended makePushPullButton(RelativeFace face, int x, int y) {
-        WidgetButtonExtended button = new WidgetButtonExtended(x, y, 20, 20, "", b -> {
+        WidgetButtonExtended button = new WidgetButtonExtended(x, y, 20, 20, StringTextComponent.EMPTY, b -> {
             te.cycleMode(face);
             setupPushPullButton((WidgetButtonExtended) b, face);
         }).withTag("push_pull:" + face.toString());

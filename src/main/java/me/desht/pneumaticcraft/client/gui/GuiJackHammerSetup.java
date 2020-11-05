@@ -16,6 +16,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 
 import java.util.Arrays;
 import java.util.List;
@@ -42,13 +43,13 @@ public class GuiJackHammerSetup extends GuiPneumaticContainerBase<ContainerJackh
 
         if (digMode != null) {
             addButton(selectorButton = new WidgetButtonExtended(guiLeft + 127, guiTop + 67, 20, 20,
-                    "", b -> toggleShowChoices()))
+                    StringTextComponent.EMPTY, b -> toggleShowChoices()))
                     .setRenderedIcon(digMode.getGuiIcon());
 
             int xBase = 147 - 20 * typeButtons.length;
             for (DigMode dm : DigMode.values()) {
                 typeButtons[dm.ordinal()] = new WidgetButtonExtended(guiLeft + xBase + 20 * dm.ordinal(), guiTop + 47, 20, 20,
-                        "", b -> selectDigMode(dm))
+                        StringTextComponent.EMPTY, b -> selectDigMode(dm))
                         .setRenderedIcon(dm.getGuiIcon())
                         .withTag("digmode:" + dm.toString());
                 typeButtons[dm.ordinal()].visible = false;

@@ -15,6 +15,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 
 import java.util.List;
@@ -39,7 +40,7 @@ public class GuiPressureChamberInterface extends GuiPneumaticContainerBase<Conta
 
         statusStat = addAnimatedStat(xlate("pneumaticcraft.gui.pressureChamberInterface.status"), new ItemStack(ModBlocks.PRESSURE_CHAMBER_INTERFACE.get()), 0xFFFFAA00, false);
 
-        exportAnyButton = addButton(new WidgetButtonExtended(guiLeft + 111, guiTop + 32, 60, 20, "")
+        exportAnyButton = addButton(new WidgetButtonExtended(guiLeft + 111, guiTop + 32, 60, 20, StringTextComponent.EMPTY)
                 .withTag("export_mode"));
         exportTypeLabel = addButton(new WidgetLabel(guiLeft + 111, guiTop + 20, xlate("pneumaticcraft.gui.pressureChamberInterface.exportLabel")));
     }

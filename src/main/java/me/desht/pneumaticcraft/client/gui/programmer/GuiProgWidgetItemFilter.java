@@ -42,8 +42,8 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase<ProgWidgetI
     public void init() {
         super.init();
 
-        addButton(new WidgetButtonExtended(guiLeft + 4, guiTop + 24, 70, 20, "Search item...", b -> openSearcher()));
-        addButton(new WidgetButtonExtended(guiLeft + 78, guiTop + 24, 100, 20, "Search inventory...", b -> openInventorySearcher()));
+        addButton(new WidgetButtonExtended(guiLeft + 4, guiTop + 24, 70, 20, xlate("pneumaticcraft.gui.misc.searchItem"), b -> openSearcher()));
+        addButton(new WidgetButtonExtended(guiLeft + 78, guiTop + 24, 100, 20, xlate("pneumaticcraft.gui.misc.searchInventory"), b -> openInventorySearcher()));
 
         addButton(checkBoxUseDurability = new WidgetCheckBox(guiLeft + 8, guiTop + 96, 0xFF404040,
                 xlate("pneumaticcraft.gui.logistics_frame.matchDurability"), b -> progWidget.useItemDurability = b.checked)

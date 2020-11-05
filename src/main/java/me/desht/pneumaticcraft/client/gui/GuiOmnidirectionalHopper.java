@@ -44,19 +44,19 @@ public class GuiOmnidirectionalHopper extends GuiPneumaticContainerBase<Containe
         WidgetAnimatedStat optionStat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.gasLift.mode"), new ItemStack(Blocks.LEVER), 0xFFFFCC00, false);
         optionStat.addPadding(4, 14);
 
-        WidgetButtonExtended button = new WidgetButtonExtended(5, 20, 20, 20, "").withTag("empty");
+        WidgetButtonExtended button = new WidgetButtonExtended(5, 20, 20, 20, StringTextComponent.EMPTY).withTag("empty");
         button.setRenderStacks(new ItemStack(Items.BUCKET));
         button.setTooltipText(xlate("pneumaticcraft.gui.tab.omnidirectionalHopper.mode.empty"));
         optionStat.addSubWidget(button);
         modeButtons[0] = button;
 
-        button = new WidgetButtonExtended(30, 20, 20, 20, "").withTag("leave");
+        button = new WidgetButtonExtended(30, 20, 20, 20, StringTextComponent.EMPTY).withTag("leave");
         button.setRenderStacks(new ItemStack(Items.WATER_BUCKET));
         button.setTooltipText(xlate("pneumaticcraft.gui.tab.omnidirectionalHopper.mode.leaveItem"));
         optionStat.addSubWidget(button);
         modeButtons[1] = button;
 
-        addButton(rrButton = new WidgetButtonExtended(guiLeft + 143, guiTop + 55, 14, 14, "").withTag("rr"));
+        addButton(rrButton = new WidgetButtonExtended(guiLeft + 143, guiTop + 55, 14, 14, StringTextComponent.EMPTY).withTag("rr"));
     }
 
     @Override
