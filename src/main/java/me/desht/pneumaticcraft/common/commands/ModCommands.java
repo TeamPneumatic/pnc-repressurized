@@ -30,6 +30,7 @@ import static net.minecraft.command.arguments.EntityArgument.getPlayer;
 public class ModCommands {
     public static void register(CommandDispatcher<CommandSource> dispatcher) {
         dispatcher.register(Commands.literal("dumpNBT")
+                .requires(cs -> cs.hasPermissionLevel(2))
                 .executes(ModCommands::dumpNBT)
         );
 
