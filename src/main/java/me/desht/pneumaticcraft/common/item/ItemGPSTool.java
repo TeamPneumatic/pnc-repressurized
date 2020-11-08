@@ -94,14 +94,6 @@ public class ItemGPSTool extends Item implements IPositionProvider {
             }
             BlockPos pos = net.minecraft.nbt.NBTUtil.readBlockPos(compound.getCompound("Pos"));
             return pos.equals(BlockPos.ZERO) ? null : pos;
-//            int x = compound.getInt("x");
-//            int y = compound.getInt("y");
-//            int z = compound.getInt("z");
-//            if (x != 0 || y != 0 || z != 0) {
-//                return new BlockPos(x, y, z);
-//            } else {
-//                return null;
-//            }
         } else {
             return null;
         }
@@ -109,7 +101,6 @@ public class ItemGPSTool extends Item implements IPositionProvider {
 
     public static void setGPSLocation(ItemStack gpsTool, BlockPos pos) {
         gpsTool.getOrCreateTag().put("Pos", net.minecraft.nbt.NBTUtil.writeBlockPos(pos));
-//        NBTUtil.setPos(gpsTool, pos);
         String var = getVariable(gpsTool);
         if (!var.equals("")) GlobalVariableManager.getInstance().set(var, pos);
     }

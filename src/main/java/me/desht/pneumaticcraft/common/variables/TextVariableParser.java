@@ -50,7 +50,7 @@ public class TextVariableParser {
         if (variableHolder == null) {
             String v1 = variable.startsWith("#") ? variable.substring(1) : variable;
             GlobalVariableManager gvm = GlobalVariableManager.getInstance();
-            return gvm.hasPos(v1) ? posToStr(gvm.getPos(v1), x, y, z) : (gvm.hasItem(v1) ? gvm.getItem(v1).getDisplayName().getString() : "");
+            return gvm.hasItem(v1) ? gvm.getItem(v1).getDisplayName().getString() : posToStr(gvm.getPos(v1), x, y, z);
         } else {
             return variableHolder.hasCoordinate(variable) ?
                     posToStr(variableHolder.getCoordinate(variable), x, y, z) :

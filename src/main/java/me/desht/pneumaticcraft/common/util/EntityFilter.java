@@ -31,6 +31,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -137,7 +138,7 @@ public class EntityFilter implements Predicate<Entity>, com.google.common.base.P
         }
     }
 
-    private enum Modifier {
+    private enum Modifier implements BiPredicate<Entity,String> {
         AGE(ImmutableSet.of("adult", "baby")),
         BREEDABLE(ImmutableSet.of("yes", "no")),
         SHEARABLE(ImmutableSet.of("yes", "no")),
@@ -153,7 +154,8 @@ public class EntityFilter implements Predicate<Entity>, com.google.common.base.P
             return vals.contains(s);
         }
 
-        boolean match(Entity entity, String val) {
+        @Override
+        public boolean test(Entity entity, String val) {
             switch (this) {
                 case AGE:
                     if (entity instanceof AgeableEntity) {
@@ -185,6 +187,7 @@ public class EntityFilter implements Predicate<Entity>, com.google.common.base.P
             }
             return false;
         }
+
     }
 
     private static class EntityMatcher implements Predicate<Entity> {
@@ -199,6 +202,7 @@ public class EntityFilter implements Predicate<Entity>, com.google.common.base.P
             }
 
             if (splits[0].startsWith("@")) {
+                // match by entity type
                 String sub = splits[0].substring(1);
                 if (StringUtils.countMatches(element, "(") != StringUtils.countMatches(element, ")")) {
                     throw new IllegalArgumentException("Mismatched opening/closing braces");
@@ -207,6 +211,7 @@ public class EntityFilter implements Predicate<Entity>, com.google.common.base.P
                 Validate.isTrue(typeClass != null, "Unknown entity type specifier: @" + sub);
                 regex = null;
             } else {
+                // wildcard match on entity name
                 typeClass = null;
                 regex = Pattern.compile(wildcardToRegex(splits[0]), Pattern.CASE_INSENSITIVE);
             }
@@ -234,19 +239,8 @@ public class EntityFilter implements Predicate<Entity>, com.google.common.base.P
                 Matcher m = regex.matcher(entity.getName().getString());
                 ok = m.matches();
             }
-            return ok && matchModifiers(entity);
-        }
-
-        private boolean matchModifiers(Entity entity) {
-            // this is a match-all (e.g. "sheep(sheared=false,color=black)" matches sheep which are unsheared AND black
-            for (Pair<Modifier,String> pair : modifiers) {
-                Modifier modifier = pair.getLeft();
-                String val = pair.getRight();
-                if (!modifier.match(entity, val)) {
-                    return false;
-                }
-            }
-            return true;
+            // modifiers test is a match-all (e.g. "sheep(sheared=false,color=black)" matches sheep which are unsheared AND black)
+            return ok && modifiers.stream().allMatch(pair -> pair.getLeft().test(entity, pair.getRight()));
         }
     }
 
