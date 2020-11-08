@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetEnergy;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.XPFluidManager;
 import me.desht.pneumaticcraft.common.inventory.ContainerAerialInterface;
 import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
@@ -76,13 +77,13 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<ContainerAeria
 
             for (int i = 0; i < FeedMode.values().length; i++) {
                 FeedMode mode = FeedMode.values()[i];
+                List<ITextComponent> l = new ArrayList<>();
+                l.add(xlate(mode.getTranslationKey()).mergeStyle(TextFormatting.YELLOW));
+                l.addAll(GuiUtils.xlateAndSplit(mode.getDescTranslationKey()));
                 WidgetButtonExtended button = new WidgetButtonExtended(5 + 25 * i, 20, 20, 20)
                         .withTag(mode.toString())
                         .setRenderStacks(mode.getIconStack())
-                        .setTooltipText(ImmutableList.of(
-                                xlate(mode.getTranslationKey()).mergeStyle(TextFormatting.YELLOW),
-                                xlate(mode.getDescTranslationKey())
-                        ));
+                        .setTooltipText(l);
                 feedModeTab.addSubWidget(button);
                 modeButtons[i] = button;
             }
