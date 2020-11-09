@@ -5,12 +5,12 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.ContainerPressureChamberInterface;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberInterface;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -81,8 +81,8 @@ public class GuiPressureChamberInterface extends GuiPneumaticContainerBase<Conta
         }
 
         statusStat.setText(ImmutableList.of(
-                TextFormatting.WHITE + I18n.format("pneumaticcraft.gui.pressureChamberInterface.mode"),
-                TextFormatting.BLACK + I18n.format(te.interfaceMode.getTranslationKey())
+                xlate("pneumaticcraft.gui.pressureChamberInterface.mode").mergeStyle(TextFormatting.WHITE),
+                xlate(te.interfaceMode.getTranslationKey()).mergeStyle(TextFormatting.BLACK)
         ));
 
         if (hasEnoughPressure && !te.hasEnoughPressure()) {
@@ -94,9 +94,13 @@ public class GuiPressureChamberInterface extends GuiPneumaticContainerBase<Conta
     }
 
     @Override
-    protected void addProblems(List<String> curInfo) {
+    protected void addProblems(List<ITextComponent> curInfo) {
         super.addProblems(curInfo);
 
-        curInfo.addAll(te.getProblemStat());
+        if (te.interfaceMode == TileEntityPressureChamberInterface.InterfaceDirection.NONE) {
+            curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.pressure_chamber_interface.not_formed"));
+        } else if (!te.hasEnoughPressure()) {
+            curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.pressure_chamber_interface.not_enough_pressure"));
+        }
     }
 }

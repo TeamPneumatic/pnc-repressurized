@@ -21,7 +21,6 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntitySmartChest.PushPullMo
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.ClickType;
 import net.minecraft.inventory.container.Slot;
@@ -65,7 +64,7 @@ public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest
         super.init();
 
         addAnimatedStat(xlate("pneumaticcraft.gui.tab.info.smart_chest.slots.title"), Textures.GUI_MOUSE_LOCATION, 0xFF0090D0, true)
-                .setText("pneumaticcraft.gui.tab.info.smart_chest.slots");
+                .setText(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.info.smart_chest.slots"));
 
         statusStat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.status"), new ItemStack(ModBlocks.SMART_CHEST.get()), 0xFFFFAA00, false);
 
@@ -104,7 +103,11 @@ public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest
     public void tick() {
         super.tick();
 
-        statusStat.setText(getStatus());
+        List<ITextComponent> text = new ArrayList<>();
+        text.add(xlate("pneumaticcraft.gui.tab.smartChestStatus.header"));
+        text.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.smartChestStatus.itemsPerOperation", te.getMaxItems()));
+        text.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.smartChestStatus.tickInterval", te.getTickRate()));
+        statusStat.setText(text);
 
         if (te.getUpgrades(EnumUpgrade.MAGNET) > 0) {
             showRangeButton.setVisible(true);
@@ -120,17 +123,9 @@ public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest
         }
     }
 
-    private List<String> getStatus() {
-        List<String> textList = new ArrayList<>();
-        textList.add(I18n.format("pneumaticcraft.gui.tab.smartChestStatus.header"));
-        textList.add(I18n.format("pneumaticcraft.gui.tab.smartChestStatus.itemsPerOperation", te.getMaxItems()));
-        textList.add(I18n.format("pneumaticcraft.gui.tab.smartChestStatus.tickInterval", te.getTickRate()));
-        return textList;
-    }
-
     private void addPushPullTab() {
         WidgetAnimatedStat stat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.info.smart_chest.push_pull.title"), new ItemStack(ModBlocks.OMNIDIRECTIONAL_HOPPER.get()), 0xFF90C0E0, false);
-        stat.addPadding(7, 16);
+        stat.setMinimumExpandedDimensions(80, 80);
 
         int yTop = 15, xLeft = 25;
         stat.addSubWidget(makePushPullButton(RelativeFace.TOP, xLeft + 22, yTop));

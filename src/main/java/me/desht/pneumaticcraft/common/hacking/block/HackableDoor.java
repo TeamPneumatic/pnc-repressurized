@@ -8,12 +8,14 @@ import net.minecraft.state.BooleanProperty;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
 import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class HackableDoor implements IHackableBlock {
     @Override
@@ -27,20 +29,20 @@ public class HackableDoor implements IHackableBlock {
     }
 
     @Override
-    public void addInfo(IBlockReader world, BlockPos pos, List<String> curInfo, PlayerEntity player) {
+    public void addInfo(IBlockReader world, BlockPos pos, List<ITextComponent> curInfo, PlayerEntity player) {
         if (world.getBlockState(pos).get(getOpenProperty())) {
-            curInfo.add("pneumaticcraft.armor.hacking.result.close");
+            curInfo.add(xlate("pneumaticcraft.armor.hacking.result.close"));
         } else {
-            curInfo.add("pneumaticcraft.armor.hacking.result.open");
+            curInfo.add(xlate("pneumaticcraft.armor.hacking.result.open"));
         }
     }
 
     @Override
-    public void addPostHackInfo(IBlockReader world, BlockPos pos, List<String> curInfo, PlayerEntity player) {
+    public void addPostHackInfo(IBlockReader world, BlockPos pos, List<ITextComponent> curInfo, PlayerEntity player) {
         if (world.getBlockState(pos).get(getOpenProperty())) {
-            curInfo.add("pneumaticcraft.armor.hacking.finished.opened");
+            curInfo.add(xlate("pneumaticcraft.armor.hacking.finished.opened"));
         } else {
-            curInfo.add("pneumaticcraft.armor.hacking.finished.closed");
+            curInfo.add(xlate("pneumaticcraft.armor.hacking.finished.closed"));
         }
     }
 

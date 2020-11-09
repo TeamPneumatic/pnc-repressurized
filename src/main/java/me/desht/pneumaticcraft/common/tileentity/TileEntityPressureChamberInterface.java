@@ -17,7 +17,6 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
@@ -37,7 +36,9 @@ import net.minecraftforge.items.IItemHandlerModifiable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
 
 public class TileEntityPressureChamberInterface extends TileEntityPressureChamberWall
         implements ITickableTileEntity, IRedstoneControlled, INamedContainerProvider {
@@ -265,16 +266,6 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
             }
         }
         return InterfaceDirection.NONE;
-    }
-
-    public List<String> getProblemStat() {
-        List<String> textList = new ArrayList<>();
-        if (interfaceMode == InterfaceDirection.NONE) {
-            textList.addAll(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.tab.problems.pressure_chamber_interface.not_formed")));
-        } else if (!enoughAir) {
-            textList.addAll(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.tab.problems.pressure_chamber_interface.not_enough_pressure")));
-        }
-        return textList;
     }
 
     public boolean hasEnoughPressure() {

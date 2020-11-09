@@ -114,9 +114,9 @@ public class ProgWidgetCoordinateCondition extends ProgWidgetConditionBase {
     }
 
     @Override
-    public String getExtraStringInfo() {
+    public ITextComponent getExtraStringInfo() {
         String condition = getCondition();
-        return condition.length() > 0 ? condition : null;
+        return condition.length() > 0 ? new StringTextComponent(condition) : null;
     }
 
     public String getCondition() {

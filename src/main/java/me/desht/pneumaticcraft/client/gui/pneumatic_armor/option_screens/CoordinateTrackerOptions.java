@@ -8,7 +8,6 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.CoordTrackClientHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
@@ -67,14 +66,14 @@ public class CoordinateTrackerOptions extends IOptionPage.SimpleToggleableOption
     }
 
     /**
-     * See also: {@link CoordTrackClientHandler#onPlayerInteract(PlayerInteractEvent.RightClickBlock)}
+     * See also: {@link CoordTrackClientHandler.Listener#onPlayerInteract(PlayerInteractEvent.RightClickBlock)}
      */
     private void selectTarget() {
         mc.player.closeScreen();
         mc.setGameFocused(true);
         coordHandler.isListeningToCoordTrackerSetting = true;
         HUDHandler.getInstance().addMessage(xlate("pneumaticcraft.armor.message.coordinateTracker.settingCoord"),
-                Collections.singletonList(I18n.format("pneumaticcraft.armor.message.coordinateTracker.rightClickToSet")),
+                Collections.singletonList(xlate("pneumaticcraft.armor.message.coordinateTracker.rightClickToSet")),
                 90, 0x7000AA00);
     }
 

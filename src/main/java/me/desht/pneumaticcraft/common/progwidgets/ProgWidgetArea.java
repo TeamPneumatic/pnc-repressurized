@@ -93,7 +93,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     }
 
     @Override
-    public String getExtraStringInfo() {
+    public ITextComponent getExtraStringInfo() {
         StringBuilder res = new StringBuilder();
         if (!coord1Variable.isEmpty()) {
             res.append("\"").append(coord1Variable).append("\"");
@@ -106,7 +106,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         } else if (x2 != 0 && y2 != 0 && z2 != 0) {
             res.append(String.format("%d, %d, %d", x2, y2, z2));
         }
-        return res.toString();
+        return new StringTextComponent(res.toString());
     }
 
     @Override
@@ -128,22 +128,6 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
 
         if (c1 != null) curTooltip.add(new StringTextComponent(c1));
         if (c2 != null) curTooltip.add(new StringTextComponent(c2));
-
-//        if (c1 == null) {
-//            c1 = c2;
-//            c2 = null;
-//        }
-//
-//        if (c1 != null) {
-//            if (c2 != null) {
-//                curTooltip.add(new StringTextComponent("Contains the points:"));
-//                curTooltip.add(new StringTextComponent(c1.replace("%s", "1")));
-//                curTooltip.add(new StringTextComponent(c2.replace("%s", "2")));
-//            } else {
-//                curTooltip.add(new StringTextComponent("Contains the point:"));
-//                curTooltip.add(new StringTextComponent(c1.replace("%s", "1")));
-//            }
-//        }
 
         addAreaTypeTooltip(curTooltip);
     }

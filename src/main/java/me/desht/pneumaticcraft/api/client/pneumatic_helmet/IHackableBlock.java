@@ -10,6 +10,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
@@ -39,7 +40,8 @@ public interface IHackableBlock {
     ResourceLocation getHackableId();
 
     /**
-     * Returning true will allow the player to hack this block. This can be used to only allow hacking on certain conditions.
+     * Returning true will allow the player to hack this block. This can be used to only allow hacking under certain
+     * conditions.
      *
      * @param world the world
      * @param pos the block pos
@@ -52,26 +54,24 @@ public interface IHackableBlock {
     /**
      * Add info that is displayed on the tracker tooltip here. Text like "Hack to explode" can be added.
      * This method is only called when {@link #canHack(IBlockReader, BlockPos, PlayerEntity)} has returned true.
-     * Added lines are automatically localised where possible.
-     *
+     * Keep this message short; one short sentence is enough.
      * @param world the world
-     * @param pos the block pos
-     * @param curInfo string list to add info to
+     * @param pos the block pos of the to-be-hacked block
+     * @param curInfo text component list to add info to
      * @param player the player observing the hackable block
      */
-    void addInfo(IBlockReader world, BlockPos pos, List<String> curInfo, PlayerEntity player);
+    void addInfo(IBlockReader world, BlockPos pos, List<ITextComponent> curInfo, PlayerEntity player);
 
     /**
-     * Add info that is being displayed after hacking, as long as 'afterHackTick' is returning true.
-     * Things like "Neutralized".
-     * Added lines are automatically localised where possible.
-     *
+     * Add info to be displayed on the HUD after hacking is complete, as long as
+     * {@link #afterHackTick(IBlockReader, BlockPos)} continues to returning true, e.g. "Spawner Disabled".
+     * Keep this message short; one short sentence or even a couple of words is enough.
      * @param world the world
-     * @param pos the block pos
-     * @param curInfo string list to add info to
+     * @param pos the block pos of the hacked block
+     * @param curInfo text component list to add info to
      * @param player the player observing the hacked block
      */
-    void addPostHackInfo(IBlockReader world, BlockPos pos, List<String> curInfo, PlayerEntity player);
+    void addPostHackInfo(IBlockReader world, BlockPos pos, List<ITextComponent> curInfo, PlayerEntity player);
 
     /**
      * Get the time it takes to hack this block in ticks. For more powerful hacks, a longer hacking time

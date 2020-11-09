@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.item.DyeColor;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 
 import java.util.Collections;
 import java.util.List;
@@ -56,8 +57,8 @@ public class ProgWidgetComment extends ProgWidgetText {
     }
 
     @Override
-    public String getExtraStringInfo() {
-        return string;
+    public ITextComponent getExtraStringInfo() {
+        return new StringTextComponent(string);
     }
 
     @Override

@@ -6,10 +6,12 @@ import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 
 import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class HackableTameable implements IHackableEntity {
 
@@ -24,13 +26,13 @@ public class HackableTameable implements IHackableEntity {
     }
 
     @Override
-    public void addHackInfo(Entity entity, List<String> curInfo, PlayerEntity player) {
-        curInfo.add("pneumaticcraft.armor.hacking.result.tame");
+    public void addHackInfo(Entity entity, List<ITextComponent> curInfo, PlayerEntity player) {
+        curInfo.add(xlate("pneumaticcraft.armor.hacking.result.tame"));
     }
 
     @Override
-    public void addPostHackInfo(Entity entity, List<String> curInfo, PlayerEntity player) {
-        curInfo.add("pneumaticcraft.armor.hacking.finished.tamed");
+    public void addPostHackInfo(Entity entity, List<ITextComponent> curInfo, PlayerEntity player) {
+        curInfo.add(xlate("pneumaticcraft.armor.hacking.finished.tamed"));
     }
 
     @Override

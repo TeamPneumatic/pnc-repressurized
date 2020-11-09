@@ -10,7 +10,6 @@ import me.desht.pneumaticcraft.common.progwidgets.ICondition;
 import me.desht.pneumaticcraft.common.progwidgets.ISidedWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetCondition;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetEntityCondition;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.util.Direction;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -100,10 +99,10 @@ public class GuiProgWidgetCondition<T extends ProgWidgetCondition> extends GuiPr
         super.render(matrixStack, mouseX, mouseY, partialTicks);
 
         if (isSidedWidget()) {
-            font.drawString(matrixStack, I18n.format("pneumaticcraft.gui.progWidget.inventory.accessingSides"), guiLeft + 4, guiTop + 20, 0xFF404060);
+            font.func_243248_b(matrixStack, xlate("pneumaticcraft.gui.progWidget.inventory.accessingSides"), guiLeft + 4, guiTop + 20, 0xFF404060);
         }
-        String s = progWidget.getExtraStringInfo();
-        font.drawString(matrixStack, s, guiLeft + xSize / 2f - font.getStringWidth(s) / 2f, guiTop + 120, 0xFF404060);
+        ITextComponent s = progWidget.getExtraStringInfo();
+        font.func_243248_b(matrixStack, s, guiLeft + xSize / 2f - font.getStringPropertyWidth(s) / 2f, guiTop + 120, 0xFF404060);
     }
 
     public static class Entity extends GuiProgWidgetCondition<ProgWidgetEntityCondition> {

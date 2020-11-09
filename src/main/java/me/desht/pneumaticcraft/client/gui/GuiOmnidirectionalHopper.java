@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.client.gui;
 
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.ContainerOmnidirectionalHopper;
@@ -10,7 +11,6 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -42,7 +42,7 @@ public class GuiOmnidirectionalHopper extends GuiPneumaticContainerBase<Containe
         statusStat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.hopperStatus"), new ItemStack(ModBlocks.OMNIDIRECTIONAL_HOPPER.get()), 0xFFFFAA00, false);
 
         WidgetAnimatedStat optionStat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.gasLift.mode"), new ItemStack(Blocks.LEVER), 0xFFFFCC00, false);
-        optionStat.addPadding(4, 14);
+        optionStat.setMinimumExpandedDimensions(50, 43);
 
         WidgetButtonExtended button = new WidgetButtonExtended(5, 20, 20, 20, StringTextComponent.EMPTY).withTag("empty");
         button.setRenderStacks(new ItemStack(Items.BUCKET));
@@ -75,23 +75,24 @@ public class GuiOmnidirectionalHopper extends GuiPneumaticContainerBase<Containe
         rrButton.setTooltipKey("pneumaticcraft.gui.tooltip.omnidirectional_hopper.roundRobin." + (te.roundRobin ? "on" : "off"));
     }
 
-    private List<String> getStatus() {
-        List<String> textList = new ArrayList<>();
+    private List<ITextComponent> getStatus() {
+        List<ITextComponent> textList = new ArrayList<>();
         int itemsPer = te.getMaxItems();
         if (itemsPer > 1) {
-            textList.add(I18n.format("pneumaticcraft.gui.tab.hopperStatus.itemTransferPerTick", itemsPer));
+            textList.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.hopperStatus.itemTransferPerTick", itemsPer));
         } else {
             int transferInterval = te.getItemTransferInterval();
-            textList.add(I18n.format("pneumaticcraft.gui.tab.hopperStatus.itemTransferPerSecond", transferInterval == 0 ? "20" : PneumaticCraftUtils.roundNumberTo(20F / transferInterval, 1)));
+            String s = transferInterval == 0 ? "20" : PneumaticCraftUtils.roundNumberTo(20F / transferInterval, 1);
+            textList.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.hopperStatus.itemTransferPerSecond", s));
         }
         return textList;
     }
 
     @Override
-    protected void addExtraUpgradeText(List<String> text) {
+    protected void addExtraUpgradeText(List<ITextComponent> text) {
         if (PNCConfig.Common.Machines.omniHopperDispenser) {
-            text.add("pneumaticcraft.gui.tab.upgrades.tile.omnidirectional_hopper.dispenser");
+            text.add(xlate("pneumaticcraft.gui.tab.upgrades.tile.omnidirectional_hopper.dispenser"));
         }
-        text.add("pneumaticcraft.gui.tab.upgrades.creative");
+        text.add(xlate("pneumaticcraft.gui.tab.upgrades.creative"));
     }
 }

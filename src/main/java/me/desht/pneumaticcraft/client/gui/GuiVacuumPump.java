@@ -12,13 +12,15 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 
 import java.util.List;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiVacuumPump extends GuiPneumaticContainerBase<ContainerVacuumPump,TileEntityVacuumPump> {
 
@@ -57,49 +59,48 @@ public class GuiVacuumPump extends GuiPneumaticContainerBase<ContainerVacuumPump
     }
 
     @Override
-    protected void addPressureStatInfo(List<String> pressureStatText) {
+    protected void addPressureStatInfo(List<ITextComponent> pressureStatText) {
         IAirHandlerMachine inputAirHandler = te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, te.getInputSide())
                 .orElseThrow(RuntimeException::new);
         IAirHandlerMachine vacuumHandler = te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, te.getVacuumSide())
                 .orElseThrow(RuntimeException::new);
 
-        String col = TextFormatting.BLACK.toString();
-
-        pressureStatText.add(col + I18n.format("pneumaticcraft.gui.tab.status.vacuumPump.inputPressure",
+        pressureStatText.add(xlate("pneumaticcraft.gui.tab.status.vacuumPump.inputPressure",
                 PneumaticCraftUtils.roundNumberTo(inputAirHandler.getPressure(), 2)));
-        pressureStatText.add(col + I18n.format("pneumaticcraft.gui.tab.status.vacuumPump.vacuumPressure",
+        pressureStatText.add(xlate("pneumaticcraft.gui.tab.status.vacuumPump.vacuumPressure",
                 PneumaticCraftUtils.roundNumberTo(vacuumHandler.getPressure(), 2)));
-        pressureStatText.add(col + I18n.format("pneumaticcraft.gui.tab.status.vacuumPump.inputAir",
+        pressureStatText.add(xlate("pneumaticcraft.gui.tab.status.vacuumPump.inputAir",
                 String.format("%,d", inputAirHandler.getAir())));
-        pressureStatText.add(col + I18n.format("pneumaticcraft.gui.tab.status.vacuumPump.vacuumAir",
+        pressureStatText.add(xlate("pneumaticcraft.gui.tab.status.vacuumPump.vacuumAir",
                 String.format("%,d", vacuumHandler.getAir())));
 
         int volume = inputAirHandler.getVolume();
         int upgrades = te.getUpgrades(EnumUpgrade.VOLUME);
-        pressureStatText.add(col + I18n.format("pneumaticcraft.gui.tooltip.baseVolume",
+        pressureStatText.add(xlate("pneumaticcraft.gui.tooltip.baseVolume",
                 String.format("%,d", PneumaticValues.VOLUME_VACUUM_PUMP)));
-        pressureStatText.add(col + I18n.format("pneumaticcraft.gui.tooltip.effectiveVolume",
+        pressureStatText.add(xlate("pneumaticcraft.gui.tooltip.effectiveVolume",
                 String.format("%,d", volume)));
         if (volume > inputAirHandler.getBaseVolume()) {
-            pressureStatText.add(col + GuiConstants.TRIANGLE_RIGHT + " "
-                    + upgrades + " x " + EnumUpgrade.VOLUME.getItemStack().getDisplayName().getString());
-            pressureStatText.add(col + I18n.format("pneumaticcraft.gui.tooltip.effectiveVolume", String.format("%,d",volume)));
+            pressureStatText.add(new StringTextComponent(GuiConstants.TRIANGLE_RIGHT + " " + upgrades + " x ")
+                    .append(EnumUpgrade.VOLUME.getItemStack().getDisplayName())
+            );
+            pressureStatText.add(xlate("pneumaticcraft.gui.tooltip.effectiveVolume", String.format("%,d",volume)));
         }
 
         if (te.turning) {
             int suction = Math.round(PneumaticValues.PRODUCTION_VACUUM_PUMP * te.getSpeedMultiplierFromUpgrades());
-            pressureStatText.add(col + I18n.format("pneumaticcraft.gui.tooltip.suction", String.format("%,d", suction)));
+            pressureStatText.add(xlate("pneumaticcraft.gui.tooltip.suction", String.format("%,d", suction)));
         }
     }
 
     @Override
-    protected void addProblems(List<String> textList) {
+    protected void addProblems(List<ITextComponent> textList) {
         super.addProblems(textList);
         float pressure = te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, te.getInputSide())
                 .map(IAirHandlerMachine::getPressure).orElseThrow(RuntimeException::new);
         if (pressure < PneumaticValues.MIN_PRESSURE_VACUUM_PUMP) {
-            textList.add("pneumaticcraft.gui.tab.problems.notEnoughPressure");
-            textList.add(I18n.format("pneumaticcraft.gui.tab.problems.applyPressure", PneumaticValues.MIN_PRESSURE_VACUUM_PUMP));
+            textList.add(xlate("pneumaticcraft.gui.tab.problems.notEnoughPressure"));
+            textList.add(xlate("pneumaticcraft.gui.tab.problems.applyPressure", PneumaticValues.MIN_PRESSURE_VACUUM_PUMP).mergeStyle(TextFormatting.BLACK));
         }
     }
 

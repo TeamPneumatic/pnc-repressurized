@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.client.gui.semiblock.GuiLogisticsLiquidFilter;
 import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.core.ModItems;
@@ -293,9 +294,9 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadr
     }
 
     @Override
-    protected void addProblems(List<String> curInfo) {
+    protected void addProblems(List<ITextComponent> curInfo) {
         if (getPosition(INPUT_SLOT) == null || getPosition(OUTPUT_SLOT) == null) {
-            curInfo.add("pneumaticcraft.gui.amadron.addTrade.problems.noSellingOrPayingBlock");
+            curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.amadron.addTrade.problems.noSellingOrPayingBlock"));
         }
         super.addProblems(curInfo);
     }

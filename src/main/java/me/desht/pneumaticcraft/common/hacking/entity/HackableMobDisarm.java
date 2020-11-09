@@ -8,12 +8,14 @@ import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.ITextComponent;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class HackableMobDisarm implements IHackableEntity {
     @Override
@@ -28,13 +30,13 @@ public class HackableMobDisarm implements IHackableEntity {
     }
 
     @Override
-    public void addHackInfo(Entity entity, List<String> curInfo, PlayerEntity player) {
-        curInfo.add("pneumaticcraft.armor.hacking.result.disarm");
+    public void addHackInfo(Entity entity, List<ITextComponent> curInfo, PlayerEntity player) {
+        curInfo.add(xlate("pneumaticcraft.armor.hacking.result.disarm"));
     }
 
     @Override
-    public void addPostHackInfo(Entity entity, List<String> curInfo, PlayerEntity player) {
-        curInfo.add("pneumaticcraft.armor.hacking.finished.disarmed");
+    public void addPostHackInfo(Entity entity, List<ITextComponent> curInfo, PlayerEntity player) {
+        curInfo.add(xlate("pneumaticcraft.armor.hacking.finished.disarmed"));
     }
 
     @Override

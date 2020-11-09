@@ -6,7 +6,6 @@ import me.desht.pneumaticcraft.client.render.ModRenderTypes;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetCrafting;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetItemFilter;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
@@ -15,11 +14,15 @@ import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Matrix4f;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.opengl.GL11;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -89,23 +92,23 @@ public class ProgWidgetRenderer {
     }
 
     public static void renderGenericExtras(MatrixStack matrixStack, IProgWidget progWidget) {
-        String info = progWidget.getExtraStringInfo();
-        if (info != null && !info.isEmpty()) {
+        ITextComponent info = progWidget.getExtraStringInfo();
+        if (!info.equals(StringTextComponent.EMPTY)) {
             matrixStack.push();
             matrixStack.scale(0.5f, 0.5f, 0.5f);
             FontRenderer fr = Minecraft.getInstance().fontRenderer;
-            List<String> splittedInfo = PneumaticCraftUtils.splitString(info, 20);
+            List<IReorderingProcessor> splittedInfo = GuiUtils.wrapTextComponentList(Collections.singletonList(info), 150, fr);
             for (int i = 0; i < splittedInfo.size(); i++) {
-                int stringLength = fr.getStringWidth(splittedInfo.get(i));
-                int startX = progWidget.getWidth() / 2 - stringLength / 4;
+                int stringWidth = fr.func_243245_a(splittedInfo.get(i));
+                int startX = progWidget.getWidth() / 2 - stringWidth / 4;
                 int startY = progWidget.getHeight() / 2 - (fr.FONT_HEIGHT + 1) * (splittedInfo.size() - 1) / 4 + (fr.FONT_HEIGHT + 1) * i / 2 - fr.FONT_HEIGHT / 4;
-                AbstractGui.fill(matrixStack, startX * 2 - 1, startY * 2 - 1, startX * 2 + stringLength + 1, startY * 2 + fr.FONT_HEIGHT + 1, 0xFFFFFFFF);
-                fr.drawString(matrixStack, splittedInfo.get(i), startX * 2, startY * 2, 0xFF000000);
+                AbstractGui.fill(matrixStack, startX * 2 - 1, startY * 2 - 1, startX * 2 + stringWidth + 1, startY * 2 + fr.FONT_HEIGHT + 1, 0xFFFFFFFF);
+                GuiUtils.drawOutline(matrixStack, Tessellator.getInstance().getBuffer(), startX * 2 - 1, startY * 2 - 1, 0, stringWidth + 2, fr.FONT_HEIGHT + 2, 192, 192, 192, 255);
+                fr.func_238422_b_(matrixStack, splittedInfo.get(i),startX * 2, startY * 2, 0xFF000000); // draw reordering processor w/o drop shadow
             }
             matrixStack.pop();
         }
     }
-
 
     public static void renderCraftingExtras(MatrixStack matrixStack, ProgWidgetCrafting progWidget) {
         ItemStack recipe = progWidget.getRecipeResult(ClientUtils.getClientWorld());

@@ -74,6 +74,9 @@ public class GuiArmorMainScreen extends GuiPneumaticScreenBase implements IGuiSc
     public void init() {
         super.init();
 
+        xSize = width;
+        ySize = height;
+
         buttons.clear();
         children.clear();
         upgradeOptions.clear();

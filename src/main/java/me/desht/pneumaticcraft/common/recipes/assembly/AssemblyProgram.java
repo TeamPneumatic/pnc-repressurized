@@ -5,11 +5,11 @@ import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.item.ItemAssemblyProgram;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyController;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.lib.GuiConstants;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.RegistryObject;
@@ -81,15 +81,15 @@ public abstract class AssemblyProgram {
      * @param problemList list to add to
      */
     @SuppressWarnings("incomplete-switch")
-    public void addProgramProblem(List<String> problemList) {
+    public void addProgramProblem(List<ITextComponent> problemList) {
         switch (curProblem) {
             case NO_INPUT:
-                problemList.addAll(PneumaticCraftUtils.splitString(TextFormatting.GRAY + "The input IO Unit can't find an inventory with a Block of Compressed Iron.", GuiConstants.MAX_CHAR_PER_LINE));
-                problemList.addAll(PneumaticCraftUtils.splitString(TextFormatting.BLACK + "Place an inventory with a Block of Compressed Iron surrounding the IO Unit.", GuiConstants.MAX_CHAR_PER_LINE));
+                problemList.add(new StringTextComponent(TextFormatting.GRAY + "The input IO Unit can't find an inventory with a Block of Compressed Iron."));
+                problemList.add(new StringTextComponent(TextFormatting.BLACK + "Place an inventory with a Block of Compressed Iron surrounding the IO Unit."));
                 break;
             case NO_OUTPUT:
-                problemList.addAll(PneumaticCraftUtils.splitString(TextFormatting.GRAY + "The output IO Unit can't find an inventory to place the output in.", GuiConstants.MAX_CHAR_PER_LINE));
-                problemList.addAll(PneumaticCraftUtils.splitString(TextFormatting.BLACK + "Place an inventory / make space in a connected inventory.", GuiConstants.MAX_CHAR_PER_LINE));
+                problemList.add(new StringTextComponent(TextFormatting.GRAY + "The output IO Unit can't find an inventory to place the output in."));
+                problemList.add(new StringTextComponent(TextFormatting.BLACK + "Place an inventory / make space in a connected inventory."));
                 break;
         }
     }

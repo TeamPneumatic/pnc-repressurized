@@ -4,7 +4,6 @@ import me.desht.pneumaticcraft.common.ai.DroneAIDropItem;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.item.DyeColor;
 import net.minecraft.nbt.CompoundNBT;
@@ -14,6 +13,8 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.List;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetDropItem extends ProgWidgetInventoryBase implements IItemDropper {
     private boolean dropStraight;
@@ -102,7 +103,7 @@ public class ProgWidgetDropItem extends ProgWidgetInventoryBase implements IItem
     }
 
     @Override
-    public String getExtraStringInfo() {
-        return I18n.format("pneumaticcraft.gui.progWidget.drop.dropMethod." + (dropStraight() ? "straight" : "random"));
+    public ITextComponent getExtraStringInfo() {
+        return xlate("pneumaticcraft.gui.progWidget.drop.dropMethod." + (dropStraight() ? "straight" : "random"));
     }
 }

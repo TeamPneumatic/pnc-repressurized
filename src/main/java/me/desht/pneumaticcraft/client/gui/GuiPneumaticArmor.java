@@ -14,6 +14,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 
 import java.util.ArrayList;
@@ -39,7 +40,7 @@ public class GuiPneumaticArmor extends GuiChargingUpgradeManager {
     public void init() {
         super.init();
         addAnimatedStat(xlate("pneumaticcraft.gui.tab.info"), Textures.GUI_INFO_LOCATION, 0xFF8888FF, true)
-                .setText("gui.tab.info.item." + registryName);
+                .setText(xlate("gui.tab.info.item." + registryName));
         statusStat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.status"), itemStack, 0xFFFFAA00, false);
 
         addUpgradeTabs(itemStack.getItem(), "armor." + equipmentSlot.toString().toLowerCase(Locale.ROOT), "armor.generic");
@@ -52,11 +53,11 @@ public class GuiPneumaticArmor extends GuiChargingUpgradeManager {
         statusStat.setText(getStatusText());
     }
 
-    private List<String> getStatusText() {
-        List<String> text = new ArrayList<>();
+    private List<ITextComponent> getStatusText() {
+        List<ITextComponent> text = new ArrayList<>();
 
-        String black = TextFormatting.BLACK.toString();
-        text.add(TextFormatting.WHITE + "Air Usage:");
+        TextFormatting black = TextFormatting.BLACK;
+        text.add(xlate("pneumaticcraft.gui.tab.info.pneumatic_armor.usage").mergeStyle(TextFormatting.WHITE));
         CommonArmorHandler commonArmorHandler = CommonArmorHandler.getHandlerForPlayer();
         float totalUsage = commonArmorHandler.getIdleAirUsage(equipmentSlot, true);
         if (totalUsage > 0F) {
@@ -66,24 +67,24 @@ public class GuiPneumaticArmor extends GuiChargingUpgradeManager {
                     IArmorUpgradeHandler handler = handlers.get(i);
                     float upgradeUsage = handler.getIdleAirUsage(commonArmorHandler);
                     if (upgradeUsage > 0F) {
-                        text.add(black + PneumaticCraftUtils.roundNumberTo(upgradeUsage, 1) + " mL/tick (" + handler.getID() + ")");
+                        text.add(new StringTextComponent(PneumaticCraftUtils.roundNumberTo(upgradeUsage, 1) + " mL/t (" + handler.getID() + ")").mergeStyle(black));
                     }
                 }
             }
-            text.add(black + "--------+");
-            text.add(black + "" + PneumaticCraftUtils.roundNumberTo(totalUsage, 1) + " mL/tick");
+            text.add(new StringTextComponent("--------+").mergeStyle(black));
+            text.add(new StringTextComponent(PneumaticCraftUtils.roundNumberTo(totalUsage, 1) + " mL/t").mergeStyle(black));
         } else {
-            text.add(black + "0.0 mL/tick");
+            text.add(new StringTextComponent("0.0 mL/t").mergeStyle(black));
         }
-        text.add(TextFormatting.WHITE + "Estimated time remaining:");
+        text.add(xlate("pneumaticcraft.gui.tab.info.pneumatic_armor.timeRemaining").mergeStyle(TextFormatting.WHITE));
         int airLeft = itemStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
                 .map(IAirHandler::getAir)
                 .orElseThrow(RuntimeException::new);
         if (totalUsage == 0) {
-            if (airLeft > 0) text.add(black + "infinite");
-            else text.add(black + "0s");
+            if (airLeft > 0) text.add(new StringTextComponent("∞").mergeStyle(black));
+            else text.add(new StringTextComponent("0s").mergeStyle(black));
         } else {
-            text.add(black + "" + PneumaticCraftUtils.convertTicksToMinutesAndSeconds((int) (airLeft / totalUsage), false));
+            text.add(new StringTextComponent(PneumaticCraftUtils.convertTicksToMinutesAndSeconds((int) (airLeft / totalUsage), false)).mergeStyle(black));
         }
         return text;
     }

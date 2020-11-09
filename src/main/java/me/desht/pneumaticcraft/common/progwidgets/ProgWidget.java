@@ -9,6 +9,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -22,6 +23,9 @@ import java.util.Set;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public abstract class ProgWidget implements IProgWidget {
+    static final StringTextComponent ALL_SIDES = new StringTextComponent("*");
+    static final StringTextComponent NO_SIDES = new StringTextComponent("-");
+
     private final ProgWidgetType<?> type;
     private int x, y;
     private IProgWidget[] connectedParameters;
@@ -52,8 +56,8 @@ public abstract class ProgWidget implements IProgWidget {
     }
 
     @Override
-    public String getExtraStringInfo() {
-        return null;
+    public ITextComponent getExtraStringInfo() {
+        return StringTextComponent.EMPTY;
     }
 
     @Override
@@ -293,4 +297,7 @@ public abstract class ProgWidget implements IProgWidget {
         return getWidgetAI(drone, widget) != null;
     }
 
+    ITextComponent varAsTextComponent(String var) {
+        return var.isEmpty() ? StringTextComponent.EMPTY : new StringTextComponent("\"" + var + "\"");
+    }
 }

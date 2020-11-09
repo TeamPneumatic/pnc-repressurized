@@ -1,19 +1,18 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.ContainerElectrostaticCompressor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElectrostaticCompressor;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -35,6 +34,7 @@ public class GuiElectrostaticCompressor extends GuiPneumaticContainerBase<Contai
     public void init() {
         super.init();
         electrostaticStat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.info.electrostaticCompressor.title"), new ItemStack(ModBlocks.ELECTROSTATIC_COMPRESSOR.get()), 0xFF20A0FF, false);
+        electrostaticStat.setForegroundColor(0xFF000000);
     }
 
     @Override
@@ -43,12 +43,12 @@ public class GuiElectrostaticCompressor extends GuiPneumaticContainerBase<Contai
     }
 
     @Override
-    protected void addWarnings(List<String> textList) {
+    protected void addWarnings(List<ITextComponent> textList) {
         super.addWarnings(textList);
         int grounding = PneumaticValues.MAX_REDIRECTION_PER_IRON_BAR * te.ironBarsBeneath;
         int generated = PneumaticValues.PRODUCTION_ELECTROSTATIC_COMPRESSOR / connectedCompressors;
         if (grounding < generated) {
-            textList.add(I18n.format("pneumaticcraft.gui.tab.problems.electrostatic.notEnoughGrounding", grounding, generated));
+            textList.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.electrostatic.notEnoughGrounding", grounding, generated));
         }
     }
 
@@ -69,17 +69,15 @@ public class GuiElectrostaticCompressor extends GuiPneumaticContainerBase<Contai
 
         ticksExisted++;
 
-        String col = TextFormatting.BLACK.toString();
-        List<String> info = new ArrayList<>();
-        info.add(col + I18n.format("pneumaticcraft.gui.tab.info.electrostatic.generating",
+        List<ITextComponent> info = new ArrayList<>();
+        info.add(xlate("pneumaticcraft.gui.tab.info.electrostatic.generating",
                 PneumaticCraftUtils.roundNumberTo(PneumaticValues.PRODUCTION_ELECTROSTATIC_COMPRESSOR / (float) connectedCompressors, 1)));
-        info.add(col + I18n.format("pneumaticcraft.gui.tab.info.electrostatic.connected", connectedCompressors));
-        info.add(col + I18n.format("pneumaticcraft.gui.tab.info.electrostatic.maxRedirection",
+        info.add(xlate("pneumaticcraft.gui.tab.info.electrostatic.connected", connectedCompressors));
+        info.add(xlate("pneumaticcraft.gui.tab.info.electrostatic.maxRedirection",
                 PneumaticCraftUtils.roundNumberTo(PneumaticValues.MAX_REDIRECTION_PER_IRON_BAR * te.ironBarsBeneath, 1)));
-        info.add(col + I18n.format("pneumaticcraft.gui.tab.info.electrostatic.lightningRod", te.ironBarsAbove));
-        info.add(col + I18n.format("pneumaticcraft.gui.tab.info.electrostatic.strikeTime",
+        info.add(xlate("pneumaticcraft.gui.tab.info.electrostatic.lightningRod", te.ironBarsAbove));
+        info.add(xlate("pneumaticcraft.gui.tab.info.electrostatic.strikeTime",
                 PneumaticCraftUtils.convertTicksToMinutesAndSeconds(te.getStrikeChance(), false)));
-        info.add(col + I18n.format("pneumaticcraft.gui.tab.info.electrostatic.strikeTime.optimal"));
 
         electrostaticStat.setText(info);
     }

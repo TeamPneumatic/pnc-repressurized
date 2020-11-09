@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.inventory.ContainerChargingStationUpgradeManager;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -18,7 +19,7 @@ public class GuiMinigun extends GuiChargingUpgradeManager {
         super.init();
 
         addAnimatedStat(xlate("pneumaticcraft.gui.tab.info"), Textures.GUI_INFO_LOCATION, 0xFF8888FF, true)
-                .setText("gui.tooltip.item.pneumaticcraft.minigun");
+                .setText(GuiUtils.xlateAndSplit("gui.tooltip.item.pneumaticcraft.minigun"));
         addUpgradeTabs(itemStack.getItem(), "minigun");
     }
 

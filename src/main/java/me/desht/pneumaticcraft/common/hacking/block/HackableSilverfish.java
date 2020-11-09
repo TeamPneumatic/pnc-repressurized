@@ -7,12 +7,14 @@ import net.minecraft.block.SilverfishBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
 import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class HackableSilverfish implements IHackableBlock {
 
@@ -22,13 +24,13 @@ public class HackableSilverfish implements IHackableBlock {
     }
 
     @Override
-    public void addInfo(IBlockReader world, BlockPos pos, List<String> curInfo, PlayerEntity player) {
-        curInfo.add("pneumaticcraft.armor.hacking.result.neutralize");
+    public void addInfo(IBlockReader world, BlockPos pos, List<ITextComponent> curInfo, PlayerEntity player) {
+        curInfo.add(xlate("pneumaticcraft.armor.hacking.result.neutralize"));
     }
 
     @Override
-    public void addPostHackInfo(IBlockReader world, BlockPos pos, List<String> curInfo, PlayerEntity player) {
-        curInfo.add("pneumaticcraft.armor.hacking.finished.neutralized");
+    public void addPostHackInfo(IBlockReader world, BlockPos pos, List<ITextComponent> curInfo, PlayerEntity player) {
+        curInfo.add(xlate("pneumaticcraft.armor.hacking.finished.neutralized"));
     }
 
     @Override

@@ -2,7 +2,6 @@ package me.desht.pneumaticcraft.common.progwidgets;
 
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.DroneAIBlockInteraction;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.text.ITextComponent;
@@ -10,6 +9,8 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.List;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public abstract class ProgWidgetDigAndPlace extends ProgWidgetAreaItemBase implements IBlockOrdered, IMaxActions {
     private Ordering order;
@@ -70,8 +71,8 @@ public abstract class ProgWidgetDigAndPlace extends ProgWidgetAreaItemBase imple
     }
 
     @Override
-    public String getExtraStringInfo() {
-        return I18n.format(order.getTranslationKey());
+    public ITextComponent getExtraStringInfo() {
+        return xlate(order.getTranslationKey());
     }
 
     @Override

@@ -114,8 +114,8 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
             jbStat = new WidgetAnimatedStat(null, xlate(ArmorUpgradeRegistry.getStringKey(getCommonHandler().getID())),
                     WidgetAnimatedStat.StatIcon.of(stack),
                     0x3000AA00, null, ArmorHUDLayout.INSTANCE.jetBootsStat);
-            jbStat.setMinDimensionsAndReset(0, 0);
-            jbStat.addPadding(3, 32);
+            jbStat.setMinimumContractedDimensions(0, 0);
+            jbStat.setMinimumExpandedDimensions(120, 42);
         }
         return jbStat;
     }

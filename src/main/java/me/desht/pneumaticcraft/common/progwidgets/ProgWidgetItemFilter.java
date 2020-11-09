@@ -75,8 +75,8 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
         }
     }
 
-    public String getExtraStringInfo() {
-        return variable.isEmpty() ? "" : "\"" + variable + "\"";
+    public ITextComponent getExtraStringInfo() {
+        return varAsTextComponent(variable);
     }
 
     @Nonnull

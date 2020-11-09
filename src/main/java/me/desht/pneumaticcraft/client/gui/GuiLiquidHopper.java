@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.client.gui;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
@@ -11,7 +12,6 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityLiquidHopper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -39,15 +39,15 @@ public class GuiLiquidHopper extends GuiPneumaticContainerBase<ContainerLiquidHo
         statusStat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.hopperStatus"), new ItemStack(ModBlocks.LIQUID_HOPPER.get()), 0xFFFFAA00, false);
 
         WidgetAnimatedStat optionStat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.gasLift.mode"), new ItemStack(Blocks.LEVER), 0xFFFFCC00, false);
-        optionStat.addPadding(4, 14);
+        optionStat.setMinimumExpandedDimensions(50, 43);
 
-        WidgetButtonExtended button = new WidgetButtonExtended(5, 20, 20, 20, StringTextComponent.EMPTY).withTag("empty");
+        WidgetButtonExtended button = new WidgetButtonExtended(20, 20, 20, 20, StringTextComponent.EMPTY).withTag("empty");
         button.setRenderStacks(new ItemStack(Items.BUCKET));
         button.setTooltipText(xlate("pneumaticcraft.gui.tab.liquidHopper.mode.empty"));
         optionStat.addSubWidget(button);
         modeButtons[0] = button;
 
-        button = new WidgetButtonExtended(30, 20, 20, 20, StringTextComponent.EMPTY).withTag("leave");
+        button = new WidgetButtonExtended(45, 20, 20, 20, StringTextComponent.EMPTY).withTag("leave");
         button.setRenderStacks(new ItemStack(Items.WATER_BUCKET));
         button.setTooltipText(xlate("pneumaticcraft.gui.tab.liquidHopper.mode.leaveLiquid"));
         optionStat.addSubWidget(button);
@@ -72,22 +72,22 @@ public class GuiLiquidHopper extends GuiPneumaticContainerBase<ContainerLiquidHo
         return Textures.GUI_LIQUID_HOPPER;
     }
 
-    private List<String> getStatus() {
-        List<String> textList = new ArrayList<>();
+    private List<ITextComponent> getStatus() {
+        List<ITextComponent> textList = new ArrayList<>();
         int itemsPer = te.getMaxItems();
         if (itemsPer > 1) {
-            textList.add(I18n.format("pneumaticcraft.gui.tab.hopperStatus.liquidTransferPerTick", itemsPer * 100));
+            textList.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.hopperStatus.liquidTransferPerTick", itemsPer * 100));
         } else {
             int transferInterval = te.getItemTransferInterval();
-            textList.add(I18n.format("pneumaticcraft.gui.tab.hopperStatus.liquidTransferPerSecond", transferInterval == 0 ? "2000" : PneumaticCraftUtils.roundNumberTo(2000F / transferInterval, 1)));
+            textList.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.hopperStatus.liquidTransferPerSecond", transferInterval == 0 ? "2000" : PneumaticCraftUtils.roundNumberTo(2000F / transferInterval, 1)));
         }
         return textList;
     }
 
     @Override
-    protected void addExtraUpgradeText(List<String> text) {
+    protected void addExtraUpgradeText(List<ITextComponent> text) {
         if (PNCConfig.Common.Machines.liquidHopperDispenser) {
-            text.add("pneumaticcraft.gui.tab.upgrades.tile.liquid_hopper.dispenser");
+            text.add(xlate("pneumaticcraft.gui.tab.upgrades.tile.liquid_hopper.dispenser"));
         }
     }
 }

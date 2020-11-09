@@ -5,10 +5,12 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.monster.CreeperEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 
 import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class HackableCreeper implements IHackableEntity {
     @Override
@@ -22,13 +24,13 @@ public class HackableCreeper implements IHackableEntity {
     }
 
     @Override
-    public void addHackInfo(Entity entity, List<String> curInfo, PlayerEntity player) {
-        curInfo.add("pneumaticcraft.armor.hacking.result.explode");
+    public void addHackInfo(Entity entity, List<ITextComponent> curInfo, PlayerEntity player) {
+        curInfo.add(xlate("pneumaticcraft.armor.hacking.result.explode"));
     }
 
     @Override
-    public void addPostHackInfo(Entity entity, List<String> curInfo, PlayerEntity player) {
-        curInfo.add("pneumaticcraft.armor.hacking.finished.exploded");
+    public void addPostHackInfo(Entity entity, List<ITextComponent> curInfo, PlayerEntity player) {
+        curInfo.add(xlate("pneumaticcraft.armor.hacking.finished.exploded"));
     }
 
     @Override

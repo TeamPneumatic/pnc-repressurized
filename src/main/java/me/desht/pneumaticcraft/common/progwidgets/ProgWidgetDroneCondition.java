@@ -2,10 +2,13 @@ package me.desht.pneumaticcraft.common.progwidgets;
 
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public abstract class ProgWidgetDroneCondition extends ProgWidgetConditionBase implements ICondition {
 
@@ -101,9 +104,9 @@ public abstract class ProgWidgetDroneCondition extends ProgWidgetConditionBase i
     }
 
     @Override
-    public String getExtraStringInfo() {
-        String anyAll = I18n.format(isAndFunction() ? "pneumaticcraft.gui.progWidget.condition.all" : "pneumaticcraft.gui.progWidget.condition.any");
-        return anyAll + " " + getOperator().toString() + " " + getRequiredCount();
+    public ITextComponent getExtraStringInfo() {
+        TranslationTextComponent anyAll = xlate(isAndFunction() ? "pneumaticcraft.gui.progWidget.condition.all" : "pneumaticcraft.gui.progWidget.condition.any");
+        return anyAll.appendString(" " + getOperator().toString() + " " + getRequiredCount());
     }
 
 }

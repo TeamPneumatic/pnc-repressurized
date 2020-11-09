@@ -24,7 +24,7 @@ public class GuiDrone extends GuiChargingUpgradeManager {
         }
 
         addAnimatedStat(xlate("pneumaticcraft.gui.tab.info"), Textures.GUI_INFO_LOCATION, 0xFF8888FF, true)
-                .setText("pneumaticcraft.gui.tab.info.item.drone");
+                .setText(xlate("pneumaticcraft.gui.tab.info.item.drone"));
         addUpgradeTabs(itemStack.getItem(), itemStack.getItem().getRegistryName().getPath(), "drone");
     }
 

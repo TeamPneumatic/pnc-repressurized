@@ -20,6 +20,7 @@ import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 
@@ -30,7 +31,9 @@ import java.util.stream.Collectors;
 public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.AbstractHandler {
     private static final int MAX_BARS = 40;
     private static final String[] BAR_STR_CACHE = new String[MAX_BARS + 1];
+    private static final ITextComponent NO_ARMOR = new StringTextComponent("-").mergeStyle(TextFormatting.DARK_GRAY);
 
+    private final float[] lastPressure = new float[] { -1, -1, -1, -1 };
     private WidgetAnimatedStat powerStat;
     public WidgetAnimatedStat testMessageStat;
     public boolean showPressureNumerically;  // false for numeric readout, true for horizontal bars
@@ -41,10 +44,19 @@ public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.Abst
 
     @Override
     public void tickClient(ICommonArmorHandler armorHandler) {
-        List<String> l = Arrays.stream(ArmorUpgradeRegistry.ARMOR_SLOTS)
-                .map(slot -> getPressureStr(armorHandler, slot))
-                .collect(Collectors.toList());
-        powerStat.setTextWithoutCuttingString(l);
+        boolean needUpdate = false;
+        for (int i = 0; i < 4; i++) {
+            if (lastPressure[i] != armorHandler.getArmorPressure(ArmorUpgradeRegistry.ARMOR_SLOTS[i])) {
+                lastPressure[i] = armorHandler.getArmorPressure(ArmorUpgradeRegistry.ARMOR_SLOTS[i]);
+                needUpdate = true;
+            }
+        }
+        if (needUpdate) {
+            List<ITextComponent> l = Arrays.stream(ArmorUpgradeRegistry.ARMOR_SLOTS)
+                    .map(slot -> getPressureStr(armorHandler, slot))
+                    .collect(Collectors.toList());
+            powerStat.setText(l);
+        }
     }
 
     @Override
@@ -57,14 +69,14 @@ public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.Abst
         ConfigHelper.setShowPressureNumerically(showPressureNumerically);
     }
 
-    private String getPressureStr(ICommonArmorHandler handler, EquipmentSlotType slot) {
+    private ITextComponent getPressureStr(ICommonArmorHandler handler, EquipmentSlotType slot) {
         if (!ItemPneumaticArmor.isPneumaticArmorPiece(handler.getPlayer(), slot))
-            return TextFormatting.DARK_GRAY + "-";
+            return NO_ARMOR;
         float pressure = handler.getArmorPressure(slot);
         if (showPressureNumerically) {
-            return getColourForPressure(pressure) + String.format("%4.1f", pressure);
+            return new StringTextComponent(String.format("%4.1f", pressure)).mergeStyle(getColourForPressure(pressure));
         } else {
-            return getBarStr(pressure);
+            return new StringTextComponent(getBarStr(pressure));
         }
     }
 
@@ -104,7 +116,7 @@ public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.Abst
         if (powerStat == null) {
             powerStat = new WidgetAnimatedStat(null, StringTextComponent.EMPTY, WidgetAnimatedStat.StatIcon.NONE,0x3000AA00, null, ArmorHUDLayout.INSTANCE.powerStat);
             powerStat.setLineSpacing(15);
-            powerStat.setWidgetOffsets(-18, 0);  // ensure armor icons are rendered in the right place
+            powerStat.setSubwidgetRenderOffsets(-18, 0);  // ensure armor icons are rendered in the right place
             for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
                 WidgetButtonExtended pressureButton = new WidgetButtonExtended(0, 5 + (3 - slot.getIndex()) * 15, 18, 18, StringTextComponent.EMPTY) ;
                 ItemStack stack = GuiArmorMainScreen.ARMOR_STACKS[slot.getIndex()];
@@ -112,7 +124,7 @@ public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.Abst
                 pressureButton.setRenderStacks(stack);
                 powerStat.addSubWidget(pressureButton);
             }
-            powerStat.setMinDimensionsAndReset(0, 0);
+            powerStat.setMinimumContractedDimensions(0, 0);
             powerStat.openStat();
         }
         return powerStat;
@@ -131,5 +143,6 @@ public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.Abst
     @Override
     public void onResolutionChanged() {
         powerStat = null;
+        Arrays.fill(lastPressure, -1);
     }
 }

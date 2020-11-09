@@ -12,6 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -116,8 +117,8 @@ public class ProgWidgetForEachItem extends ProgWidget implements IJumpBackWidget
     }
 
     @Override
-    public String getExtraStringInfo() {
-        return "\"" + elementVariable + "\"";
+    public ITextComponent getExtraStringInfo() {
+        return varAsTextComponent(elementVariable);
     }
 
     @Override

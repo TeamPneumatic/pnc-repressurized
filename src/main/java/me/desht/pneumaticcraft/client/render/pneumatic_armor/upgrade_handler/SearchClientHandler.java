@@ -31,6 +31,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
@@ -87,12 +88,12 @@ public class SearchClientHandler extends IArmorUpgradeClientHandler.AbstractHand
     @Override
     public void render2D(MatrixStack matrixStack, float partialTicks, boolean helmetEnabled) {
         Item item = ItemPneumaticArmor.getSearchedItem(ClientUtils.getWornArmor(EquipmentSlotType.HEAD));
-        List<String> textList = new ArrayList<>();
+        List<ITextComponent> textList = new ArrayList<>();
         if (item == null) {
-            textList.add("press '" + I18n.format(KeyHandler.getInstance().keybindOpenOptions.getTranslationKey()) + "' to configure");
+            textList.add(new StringTextComponent("press '" + I18n.format(KeyHandler.getInstance().keybindOpenOptions.getTranslationKey()) + "' to configure"));
         } else {
             if (searchedStack.getItem() != item) searchedStack = new ItemStack(item);
-            textList.add(searchedStack.getDisplayName().getString() + " (" + totalSearchedItemCount + " found)");
+            textList.add(searchedStack.getDisplayName().deepCopy().appendString(" (" + totalSearchedItemCount + " found)"));
         }
         searchInfo.setText(textList);
     }
@@ -209,7 +210,7 @@ public class SearchClientHandler extends IArmorUpgradeClientHandler.AbstractHand
             WidgetAnimatedStat.StatIcon icon = WidgetAnimatedStat.StatIcon.of(EnumUpgrade.SEARCH.getItemStack());
             searchInfo = new WidgetAnimatedStat(null, new StringTextComponent("Currently searching for:"), icon,
                     0x3000AA00, null, ArmorHUDLayout.INSTANCE.itemSearchStat);
-            searchInfo.setMinDimensionsAndReset(0, 0);
+            searchInfo.setMinimumContractedDimensions(0, 0);
         }
         return searchInfo;
     }

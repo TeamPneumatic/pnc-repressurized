@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.client.gui;
 
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.inventory.ContainerKeroseneLamp;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityKeroseneLamp;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -66,20 +67,20 @@ public class GuiKeroseneLamp extends GuiPneumaticContainerBase<ContainerKerosene
     }
 
     @Override
-    protected void addProblems(List<String> curInfo) {
+    protected void addProblems(List<ITextComponent> curInfo) {
         super.addProblems(curInfo);
         if (te.getTank().getFluidAmount() == 0) {
-            curInfo.add("pneumaticcraft.gui.tab.problems.keroseneLamp.noFuel");
+            curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.keroseneLamp.noFuel"));
         } else if (te.getFuelQuality() == 0) {
-            curInfo.add("pneumaticcraft.gui.tab.problems.keroseneLamp.badFuel");
+            curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.keroseneLamp.badFuel"));
         }
     }
 
     @Override
-    protected void addWarnings(List<String> curInfo) {
+    protected void addWarnings(List<ITextComponent> curInfo) {
         super.addWarnings(curInfo);
         if (te.getTank().getFluidAmount() < 30 && te.getTank().getFluidAmount() > 0) {
-            curInfo.add("pneumaticcraft.gui.tab.problems.keroseneLamp.lowFuel");
+            curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.keroseneLamp.lowFuel"));
         }
     }
 }

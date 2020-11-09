@@ -82,7 +82,7 @@ public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase imp
     }
 
     @Override
-    public String getExtraStringInfo() {
+    public ITextComponent getExtraStringInfo() {
         boolean allSides = true;
         boolean noSides = true;
         for (boolean bool : accessingSides) {
@@ -93,15 +93,15 @@ public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase imp
             }
         }
         if (allSides) {
-            return "ALL";
+            return ALL_SIDES;
         } else if (noSides) {
-            return "NONE";
+            return NO_SIDES;
         } else {
             List<String> l = Arrays.stream(Direction.VALUES)
                     .filter(side -> accessingSides[side.getIndex()])
                     .map(ClientUtils::translateDirection)
                     .collect(Collectors.toList());
-            return Strings.join(l, ", ");
+            return new StringTextComponent(Strings.join(l, ", "));
         }
     }
 

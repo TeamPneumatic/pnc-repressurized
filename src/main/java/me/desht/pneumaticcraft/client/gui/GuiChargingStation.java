@@ -4,18 +4,17 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.inventory.ContainerChargingStation;
 import me.desht.pneumaticcraft.common.item.IChargeableContainerProvider;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -95,42 +94,42 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<ContainerCharg
     }
 
     @Override
-    protected void addPressureStatInfo(List<String> pressureStatText) {
+    protected void addPressureStatInfo(List<ITextComponent> pressureStatText) {
         super.addPressureStatInfo(pressureStatText);
         if (te.charging || te.discharging) {
             String key = te.charging ? "pneumaticcraft.gui.tooltip.charging" : "pneumaticcraft.gui.tooltip.discharging";
             String amount = PneumaticCraftUtils.roundNumberTo(PneumaticValues.CHARGING_STATION_CHARGE_RATE * te.getSpeedMultiplierFromUpgrades(), 1);
-            pressureStatText.add(TextFormatting.BLACK + I18n.format(key, amount));
+            pressureStatText.add(xlate(key, amount).mergeStyle(TextFormatting.BLACK));
         } else {
-            pressureStatText.add(TextFormatting.BLACK + I18n.format("pneumaticcraft.gui.tooltip.charging", 0));
+            pressureStatText.add(xlate("pneumaticcraft.gui.tooltip.charging", 0).mergeStyle(TextFormatting.BLACK));
         }
     }
 
     @Override
-    protected void addProblems(List<String> textList) {
+    protected void addProblems(List<ITextComponent> textList) {
         super.addProblems(textList);
         ItemStack chargeStack  = te.getPrimaryInventory().getStackInSlot(TileEntityChargingStation.CHARGE_INVENTORY_INDEX);
         if (!chargeStack.isEmpty() && !chargeStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).isPresent()) {
             // shouldn't ever happen - I can't be bothered to add a translation
-            textList.addAll(PneumaticCraftUtils.splitString("\u00a70Non-pneumatic item in the charge slot!?", GuiConstants.MAX_CHAR_PER_LINE));
+            textList.add(new StringTextComponent(TextFormatting.RED + "Non-pneumatic item in the charge slot!?"));
         }
     }
 
     @Override
-    protected void addWarnings(List<String> curInfo) {
+    protected void addWarnings(List<ITextComponent> curInfo) {
         super.addWarnings(curInfo);
         ItemStack chargeStack  = te.getPrimaryInventory().getStackInSlot(TileEntityChargingStation.CHARGE_INVENTORY_INDEX);
         if (chargeStack.isEmpty()) {
-            curInfo.add(I18n.format("pneumaticcraft.gui.tab.problems.charging_station.no_item"));
+            curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.charging_station.no_item"));
         } else {
             chargeStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(h -> {
                 String name = chargeStack.getDisplayName().getString();
                 if (h.getPressure() > te.getPressure() + 0.01F && h.getPressure() <= 0) {
-                    curInfo.addAll(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.tab.problems.charging_station.item_empty", name)));
+                    curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.charging_station.item_empty", name));
                 } else if (h.getPressure() < te.getPressure() - 0.01F && h.getPressure() >= h.maxPressure()) {
-                    curInfo.addAll(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.tab.problems.charging_station.item_full", name)));
+                    curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.charging_station.item_full", name));
                 } else if (!te.charging && !te.discharging) {
-                    curInfo.addAll(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.tab.problems.charging_station.pressure_equal", name)));
+                    curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.charging_station.pressure_equal", name));
                 }
             });
         }

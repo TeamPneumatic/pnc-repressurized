@@ -7,10 +7,12 @@ import net.minecraft.entity.ai.goal.GoalSelector;
 import net.minecraft.entity.monster.BlazeEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 
 import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class HackableBlaze implements IHackableEntity {
 
@@ -25,13 +27,13 @@ public class HackableBlaze implements IHackableEntity {
     }
 
     @Override
-    public void addHackInfo(Entity entity, List<String> curInfo, PlayerEntity player) {
-        curInfo.add("pneumaticcraft.armor.hacking.result.disarm");
+    public void addHackInfo(Entity entity, List<ITextComponent> curInfo, PlayerEntity player) {
+        curInfo.add(xlate("pneumaticcraft.armor.hacking.result.disarm"));
     }
 
     @Override
-    public void addPostHackInfo(Entity entity, List<String> curInfo, PlayerEntity player) {
-        curInfo.add("pneumaticcraft.armor.hacking.finished.disarmed");
+    public void addPostHackInfo(Entity entity, List<ITextComponent> curInfo, PlayerEntity player) {
+        curInfo.add(xlate("pneumaticcraft.armor.hacking.finished.disarmed"));
     }
 
     @Override

@@ -13,6 +13,7 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSecurityStationAddUser;
 import me.desht.pneumaticcraft.common.network.PacketUpdateTextfield;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.renderer.Rectangle2d;
@@ -55,14 +56,14 @@ public class GuiSecurityStationInventory extends GuiSecurityStationBase<Containe
         statusStat = addAnimatedStat(new StringTextComponent("Security Status"), new ItemStack(ModBlocks.SECURITY_STATION.get()), 0xFFFFAA00, false);
         accessStat = addAnimatedStat(new StringTextComponent("Shared Users"), new ItemStack(Items.PLAYER_HEAD), 0xFF005500, false);
 
-        Rectangle2d accessButtonRectangle = accessStat.getButtonScaledRectangle(145, 10, 20, 20);
+        Rectangle2d accessButtonRectangle = new Rectangle2d(145, 10, 20, 20);
         addUserButton = getButtonFromRectangle(null, accessButtonRectangle, "+", b -> {
             if (!sharedUserTextField.getText().equals(""))
                 NetworkHandler.sendToServer(new PacketSecurityStationAddUser(te, sharedUserTextField.getText()));
         });
 
         rebootButton = new WidgetButtonExtended(xStart + 110, yStart + 20, 60, 20, "Reboot").withTag("reboot");
-        sharedUserTextField = getTextFieldFromRectangle(accessStat.getButtonScaledRectangle(20, 15, 120, 10));
+        sharedUserTextField = getTextFieldFromRectangle(new Rectangle2d(20, 15, 120, 10));
         sharedUserTextField.setResponder(s -> {
             te.setText(0, sharedUserTextField.getText());
             NetworkHandler.sendToServer(new PacketUpdateTextfield(te, 0));
@@ -112,7 +113,7 @@ public class GuiSecurityStationInventory extends GuiSecurityStationBase<Containe
     public void tick() {
         super.tick();
         statusStat.setText(getStatusText());
-        accessStat.setTextWithoutCuttingString(getAccessText());
+        accessStat.setText(getAccessText());
         String rebootButtonString;
         if (te.getRebootTime() > 0) {
             rebootButtonString = te.getRebootTime() % 100 < 50 ? "Rebooting.." : PneumaticCraftUtils.convertTicksToMinutesAndSeconds(te.getRebootTime(), false);
@@ -132,74 +133,74 @@ public class GuiSecurityStationInventory extends GuiSecurityStationBase<Containe
     }
 
     @Override
-    protected void addProblems(List<String> text) {
+    protected void addProblems(List<ITextComponent> text) {
         super.addProblems(text);
         if (te.getRebootTime() > 0) {
-            text.add(TextFormatting.GRAY + "The Security Station doesn't provide security!");
-            text.add(TextFormatting.BLACK + "The station is rebooting (" + PneumaticCraftUtils.convertTicksToMinutesAndSeconds(te.getRebootTime(), false) + ").");
+            text.add(new StringTextComponent("The Security Station doesn't provide security!").mergeStyle(TextFormatting.GRAY));
+            text.add(new StringTextComponent("The station is rebooting (" + PneumaticCraftUtils.convertTicksToMinutesAndSeconds(te.getRebootTime(), false) + ").").mergeStyle(TextFormatting.BLACK));
         } else if (te.isHacked()) {
-            text.add(TextFormatting.GRAY + "This Station has been hacked!");
-            text.add(TextFormatting.BLACK + "Reboot the station.");
+            text.add(new StringTextComponent("This Station has been hacked!").mergeStyle(TextFormatting.GRAY));
+            text.add(new StringTextComponent("Reboot the station.").mergeStyle(TextFormatting.BLACK));
         }
         if (!te.hasValidNetwork()) {
-            text.add(TextFormatting.GRAY + "Invalid network configuration!");
+            text.add(new StringTextComponent("Invalid network configuration!").mergeStyle(TextFormatting.GRAY));
             switch (te.checkForNetworkValidity()) {
                 case NO_SUBROUTINE:
-                    text.add(TextFormatting.BLACK + "Add a Diagnostic Subroutine.");
+                    text.add(new StringTextComponent("Add a Diagnostic Subroutine.").mergeStyle(TextFormatting.BLACK));
                     break;
                 case NO_IO_PORT:
-                    text.add(TextFormatting.BLACK + "Add a Network IO Port.");
+                    text.add(new StringTextComponent("Add a Network IO Port.").mergeStyle(TextFormatting.BLACK));
                     break;
                 case NO_REGISTRY:
-                    text.add(TextFormatting.BLACK + "Add a Network Registry.");
+                    text.add(new StringTextComponent("Add a Network Registry.").mergeStyle(TextFormatting.BLACK));
                     break;
                 case TOO_MANY_SUBROUTINES:
-                    text.add(TextFormatting.BLACK + "There can only be one Diagnostic Subroutine.");
+                    text.add(new StringTextComponent("There can only be one Diagnostic Subroutine.").mergeStyle(TextFormatting.BLACK));
                     break;
                 case TOO_MANY_IO_PORTS:
-                    text.add(TextFormatting.BLACK + "There can only be one Network IO Port.");
+                    text.add(new StringTextComponent("There can only be one Network IO Port.").mergeStyle(TextFormatting.BLACK));
                     break;
                 case TOO_MANY_REGISTRIES:
-                    text.add(TextFormatting.BLACK + "There can only be one Network Registry.");
+                    text.add(new StringTextComponent("There can only be one Network Registry.").mergeStyle(TextFormatting.BLACK));
                     break;
                 case NO_CONNECTION_SUB_AND_IO_PORT:
-                    text.add(TextFormatting.BLACK + "The Diagnostic Subroutine and the Network IO Port need to be connected in the network.");
+                    text.add(new StringTextComponent("The Diagnostic Subroutine and the Network IO Port need to be connected in the network.").mergeStyle(TextFormatting.BLACK));
                     break;
                 case NO_CONNECTION_IO_PORT_AND_REGISTRY:
-                    text.add(TextFormatting.BLACK + "The Network Registry and the Network IO Port need to be connected in the network.");
+                    text.add(new StringTextComponent("The Network Registry and the Network IO Port need to be connected in the network.").mergeStyle(TextFormatting.BLACK));
                     break;
             }
         }
     }
 
-    private List<String> getStatusText() {
-        List<String> text = new ArrayList<>();
-        text.add(TextFormatting.GRAY + "Protection");
+    private List<ITextComponent> getStatusText() {
+        List<ITextComponent> text = new ArrayList<>();
+        text.add(new StringTextComponent("Protection").mergeStyle(TextFormatting.GRAY));
         if (te.getRebootTime() > 0) {
-            text.add(TextFormatting.DARK_RED + "No protection because of rebooting!");
+            text.add(new StringTextComponent("No protection because of rebooting!").mergeStyle(TextFormatting.DARK_RED));
         } else if (te.isHacked()) {
-            text.add(TextFormatting.DARK_RED + "Hacked by:");
+            text.add(new StringTextComponent("Hacked by:").mergeStyle(TextFormatting.DARK_RED));
             for (GameProfile hacker : te.hackedUsers) {
-                text.add(TextFormatting.DARK_RED + "\u2022 " + hacker.getName());
+                text.add(GuiConstants.bullet().appendString(hacker.getName()));
             }
         } else {
-            text.add(TextFormatting.BLACK + "System secure");
+            text.add(new StringTextComponent("System secure").mergeStyle(TextFormatting.BLACK));
         }
-        text.add(TextFormatting.GRAY + "Security Level");
-        text.add(TextFormatting.BLACK + "Level " + te.getSecurityLevel());
-        text.add(TextFormatting.GRAY + "Intruder Detection Chance");
-        text.add(TextFormatting.BLACK.toString() + te.getDetectionChance() + "%%");
-        text.add(TextFormatting.GRAY + "Security Range");
-        text.add(TextFormatting.BLACK.toString() + te.getSecurityRange() + "m (square)");
+        text.add(new StringTextComponent("Security Level").mergeStyle(TextFormatting.GRAY));
+        text.add(new StringTextComponent("Level " + te.getSecurityLevel()).mergeStyle(TextFormatting.BLACK));
+        text.add(new StringTextComponent("Intruder Detection Chance").mergeStyle(TextFormatting.BLACK));
+        text.add(new StringTextComponent(te.getDetectionChance() + "%%").mergeStyle(TextFormatting.BLACK));
+        text.add(new StringTextComponent("Security Range").mergeStyle(TextFormatting.BLACK));
+        text.add(new StringTextComponent(te.getSecurityRange() + "m (square)").mergeStyle(TextFormatting.BLACK));
         return text;
     }
 
-    private List<String> getAccessText() {
-        List<String> textList = new ArrayList<>();
-        textList.add("                                      ");
-        textList.add("");
+    private List<ITextComponent> getAccessText() {
+        List<ITextComponent> textList = new ArrayList<>();
+        textList.add(StringTextComponent.EMPTY);
+        textList.add(StringTextComponent.EMPTY);
         for (GameProfile user : te.sharedUsers) {
-            textList.add(TextFormatting.WHITE + "\u2022 " + user.getName());
+            textList.add(GuiConstants.bullet().appendString(user.getName()));
         }
         return textList;
     }
@@ -212,7 +213,7 @@ public class GuiSecurityStationInventory extends GuiSecurityStationBase<Containe
         }
         removeUserButtons = new ArrayList<>();
         for (int i = 0; i < te.sharedUsers.size(); i++) {
-            Rectangle2d rect = accessStat.getButtonScaledRectangle(24, 30 + i * 10, font.getStringWidth(te.sharedUsers.get(i).getName()), 8);
+            Rectangle2d rect = new Rectangle2d(24, 30 + i * 10, font.getStringWidth(te.sharedUsers.get(i).getName()), 8);
             WidgetButtonExtended button = getInvisibleButtonFromRectangle("remove:" + i, rect, b -> {});
             button.setInvisibleHoverColor(0x44FF0000);
             button.setVisible(false);

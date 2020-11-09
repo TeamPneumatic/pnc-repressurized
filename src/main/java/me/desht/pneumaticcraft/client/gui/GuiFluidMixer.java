@@ -3,13 +3,13 @@ package me.desht.pneumaticcraft.client.gui;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.inventory.ContainerFluidMixer;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityFluidMixer;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
@@ -17,6 +17,8 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 
 import java.util.List;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiFluidMixer extends GuiPneumaticContainerBase<ContainerFluidMixer, TileEntityFluidMixer> {
     private final WidgetButtonExtended[] dumpButtons = new WidgetButtonExtended[2];
@@ -75,20 +77,20 @@ public class GuiFluidMixer extends GuiPneumaticContainerBase<ContainerFluidMixer
     }
 
     @Override
-    protected void addPressureStatInfo(List<String> pressureStatText) {
+    protected void addPressureStatInfo(List<ITextComponent> pressureStatText) {
         super.addPressureStatInfo(pressureStatText);
 
         if (te.didWork) {
-            pressureStatText.add(TextFormatting.BLACK + I18n.format("pneumaticcraft.gui.tooltip.airUsage", PneumaticCraftUtils.roundNumberTo(2.5f * te.getPressure(), 2)));
+            pressureStatText.add(xlate("pneumaticcraft.gui.tooltip.airUsage", PneumaticCraftUtils.roundNumberTo(2.5f * te.getPressure(), 2)));
         }
     }
 
     @Override
-    protected void addProblems(List<String> curInfo) {
+    protected void addProblems(List<ITextComponent> curInfo) {
         super.addProblems(curInfo);
 
         if (te.maxProgress == 0) {
-            curInfo.add("pneumaticcraft.gui.tab.problems.missingIngredients");
+            curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.missingIngredients"));
         }
     }
 }

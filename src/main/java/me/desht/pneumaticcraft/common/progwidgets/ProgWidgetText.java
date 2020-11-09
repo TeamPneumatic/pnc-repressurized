@@ -43,8 +43,8 @@ public class ProgWidgetText extends ProgWidget {
     }
 
     @Override
-    public String getExtraStringInfo() {
-        return "\"" + string + "\"";
+    public ITextComponent getExtraStringInfo() {
+        return varAsTextComponent(string);
     }
 
     @Override

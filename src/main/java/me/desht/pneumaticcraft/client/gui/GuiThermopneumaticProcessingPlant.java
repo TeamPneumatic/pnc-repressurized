@@ -7,13 +7,13 @@ import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.inventory.ContainerThermopneumaticProcessingPlant;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityThermopneumaticProcessingPlant;
 import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
@@ -112,28 +112,28 @@ public class GuiThermopneumaticProcessingPlant extends
     }
 
     @Override
-    public void addProblems(List<String> curInfo) {
+    public void addProblems(List<ITextComponent> curInfo) {
         super.addProblems(curInfo);
 
         if (!te.hasRecipe) {
-            curInfo.add("pneumaticcraft.gui.tab.problems.thermopneumaticProcessingPlant.noSufficientIngredients");
+            curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.thermopneumaticProcessingPlant.noSufficientIngredients"));
         } else {
             int temp = te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY)
                     .map(IHeatExchangerLogic::getTemperatureAsInt).orElseThrow(RuntimeException::new);
             if (temp < te.minTemperature) {
-                curInfo.add("pneumaticcraft.gui.tab.problems.notEnoughHeat");
+                curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.notEnoughHeat"));
             } else if (temp > te.maxTemperature) {
-                curInfo.add("pneumaticcraft.gui.tab.problems.tooMuchHeat");
+                curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.tooMuchHeat"));
             }
         }
     }
 
     @Override
-    protected void addWarnings(List<String> curInfo) {
+    protected void addWarnings(List<ITextComponent> curInfo) {
         super.addWarnings(curInfo);
 
         if (nExposedFaces > 0) {
-            curInfo.add(I18n.format("pneumaticcraft.gui.tab.problems.exposedFaces", nExposedFaces, 6));
+            curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.exposedFaces", nExposedFaces, 6));
         }
     }
 }

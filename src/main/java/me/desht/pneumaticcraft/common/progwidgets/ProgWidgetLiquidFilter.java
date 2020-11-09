@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.DyeColor;
@@ -92,7 +91,7 @@ public class ProgWidgetLiquidFilter extends ProgWidget {
         if (fluid != null) {
             curTooltip.add(new StringTextComponent("Fluid: " )
                     .mergeStyle(TextFormatting.AQUA)
-                    .appendString(getExtraStringInfo()));
+                    .append(getExtraStringInfo()));
         }
     }
 
@@ -132,10 +131,10 @@ public class ProgWidgetLiquidFilter extends ProgWidget {
     }
 
     @Override
-    public String getExtraStringInfo() {
+    public ITextComponent getExtraStringInfo() {
         return fluid != Fluids.EMPTY ?
-                new FluidStack(fluid, 1).getDisplayName().getString() :
-                I18n.format("pneumaticcraft.gui.progWidget.liquidFilter.noFluid");
+                new FluidStack(fluid, 1).getDisplayName() :
+                xlate("pneumaticcraft.gui.progWidget.liquidFilter.noFluid");
     }
 
     public void setFluid(Fluid fluid) {

@@ -7,7 +7,6 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetRadioButton;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextFieldNumber;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.progwidgets.*;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.util.Direction;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -96,10 +95,10 @@ public abstract class GuiProgWidgetDroneCondition<T extends ProgWidgetDroneCondi
         super.render(matrixStack, mouseX, mouseY, partialTicks);
 
         if (isSidedWidget()) {
-            font.drawString(matrixStack, I18n.format("pneumaticcraft.gui.progWidget.inventory.accessingSides"), guiLeft + 4, guiTop + 20, 0xFF404060);
+            font.func_243248_b(matrixStack, xlate("pneumaticcraft.gui.progWidget.inventory.accessingSides"), guiLeft + 4, guiTop + 20, 0xFF404060);
         }
-        String s = progWidget.getExtraStringInfo();
-        font.drawString(matrixStack, s, guiLeft + xSize / 2f - font.getStringWidth(s) / 2f, guiTop + 120, 0xFF404060);
+        ITextComponent s = progWidget.getExtraStringInfo();
+        font.func_243248_b(matrixStack, s, guiLeft + xSize / 2f - font.getStringPropertyWidth(s) / 2f, guiTop + 120, 0xFF404060);
     }
 
     public static class Item extends GuiProgWidgetDroneCondition<ProgWidgetDroneConditionItem> {

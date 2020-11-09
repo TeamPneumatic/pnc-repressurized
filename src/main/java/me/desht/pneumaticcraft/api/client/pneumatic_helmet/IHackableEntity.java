@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.api.client.pneumatic_helmet;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -36,24 +37,20 @@ public interface IHackableEntity {
     /**
      * Add info that is displayed on the tracker tooltip here. Text like "Hack to explode" can be added.
      * This method is only called when canHack(Entity) returned true.
-     * Any added text will be localized where applicable.
-     *
      * @param entity the potential hack target
-     * @param curInfo a string list to append info to
+     * @param curInfo a text component list to append info to
      * @param player the player who is looking at the entity
      */
-    void addHackInfo(Entity entity, List<String> curInfo, PlayerEntity player);
+    void addHackInfo(Entity entity, List<ITextComponent> curInfo, PlayerEntity player);
 
     /**
      * Add info that is being displayed after hacking, as long as 'afterHackTick' is returning true.
      * Things like "Neutralized".
-     * Any added text will be localized where applicable.
-     *
      * @param entity the hacked entity
-     * @param curInfo a string list to append info to
+     * @param curInfo a text component list to append info to
      * @param player the player who has hacked the entity
      */
-    void addPostHackInfo(Entity entity, List<String> curInfo, PlayerEntity player);
+    void addPostHackInfo(Entity entity, List<ITextComponent> curInfo, PlayerEntity player);
 
     /**
      * Return the time it takes to hack this entity in ticks. For more powerful hacks, a longer required hacking time

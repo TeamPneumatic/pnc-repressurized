@@ -20,10 +20,10 @@ public class ArmorMessage {
         this(title, Collections.emptyList(), duration, backColor);
     }
 
-    public ArmorMessage(ITextComponent title, List<String> message, int duration, int backColor) {
+    public ArmorMessage(ITextComponent title, List<ITextComponent> message, int duration, int backColor) {
         lifeSpan = duration;
         stat = new WidgetAnimatedStat(null, title, WidgetAnimatedStat.StatIcon.NONE, backColor, null, ArmorHUDLayout.INSTANCE.messageStat);
-        stat.setMinDimensionsAndReset(0, 0);
+        stat.setMinimumContractedDimensions(0, 0);
         stat.setText(message);
         PlayerEntity player = ClientUtils.getClientPlayer();
         player.world.playSound(player.getPosX(), player.getPosY(), player.getPosZ(), ModSounds.SCI_FI.get(), SoundCategory.PLAYERS, 0.1F, 1.0F, true);

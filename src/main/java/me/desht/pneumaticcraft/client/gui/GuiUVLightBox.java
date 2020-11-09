@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.block.BlockUVLightBox;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
@@ -7,12 +8,10 @@ import me.desht.pneumaticcraft.common.inventory.ContainerUVLightBox;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUVLightBox;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.client.gui.widget.Slider;
 
 import java.util.List;
@@ -62,11 +61,11 @@ public class GuiUVLightBox extends GuiPneumaticContainerBase<ContainerUVLightBox
     }
 
     @Override
-    protected void addProblems(List<String> textList) {
+    protected void addProblems(List<ITextComponent> textList) {
         super.addProblems(textList);
 
         if (te.getPrimaryInventory().getStackInSlot(TileEntityUVLightBox.PCB_SLOT).isEmpty()) {
-            textList.add(TextFormatting.BLACK + I18n.format("pneumaticcraft.gui.tab.problems.uv_light_box.no_item"));
+            textList.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.uv_light_box.no_item"));
         }
     }
 

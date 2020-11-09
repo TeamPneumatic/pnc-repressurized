@@ -29,4 +29,9 @@ public class GuiFluidTank extends GuiPneumaticContainerBase<ContainerFluidTank, 
     protected ResourceLocation getGuiTexture() {
         return Textures.GUI_FLUID_TANK;
     }
+
+    @Override
+    protected boolean shouldAddProblemTab() {
+        return false;
+    }
 }

@@ -67,10 +67,14 @@ public class GuiSecurityStationHacking extends GuiSecurityStationBase<ContainerS
         int yStart = (height - ySize) / 2;
 
         statusStat = addAnimatedStat(new StringTextComponent("Security Status"), new ItemStack(ModBlocks.SECURITY_STATION.get()), 0xFFFFAA00, false);
-        addAnimatedStat(new StringTextComponent("pneumaticcraft.gui.tab.info"), Textures.GUI_INFO_LOCATION, 0xFF8888FF, true).setText("pneumaticcraft.gui.tab.info.tile.security_station.hacking");
-        addAnimatedStat(new StringTextComponent("pneumaticcraft.gui.tab.upgrades"), Textures.GUI_UPGRADES_LOCATION, 0xFF0000FF, true).setText("pneumaticcraft.gui.tab.upgrades.tile.security_station.hacking");
-        addAnimatedStat(xlate(ModItems.NUKE_VIRUS.get().getTranslationKey() + ".name"), new ItemStack(ModItems.NUKE_VIRUS.get()), 0xFF18c9e8, false).setText("gui.tab.info.tile.security_station.nukeVirus");
-        addAnimatedStat(xlate(ModItems.STOP_WORM.get().getTranslationKey() + ".name"), new ItemStack(ModItems.STOP_WORM.get()), 0xFFc13232, false).setText("gui.tab.info.tile.security_station.stopWorm");
+        addAnimatedStat(new StringTextComponent("pneumaticcraft.gui.tab.info"), Textures.GUI_INFO_LOCATION, 0xFF8888FF, true)
+                .setText(xlate("pneumaticcraft.gui.tab.info.tile.security_station.hacking"));
+        addAnimatedStat(new StringTextComponent("pneumaticcraft.gui.tab.upgrades"), Textures.GUI_UPGRADES_LOCATION, 0xFF0000FF, true)
+                .setText(xlate("pneumaticcraft.gui.tab.upgrades.tile.security_station.hacking"));
+        addAnimatedStat(xlate(ModItems.NUKE_VIRUS.get().getTranslationKey() + ".name"), new ItemStack(ModItems.NUKE_VIRUS.get()), 0xFF18c9e8, false)
+                .setText(xlate("gui.tab.info.tile.security_station.nukeVirus"));
+        addAnimatedStat(xlate(ModItems.STOP_WORM.get().getTranslationKey() + ".name"), new ItemStack(ModItems.STOP_WORM.get()), 0xFFc13232, false)
+                .setText(xlate("gui.tab.info.tile.security_station.stopWorm"));
 
         if (playerBackgroundBridges == null) {
             playerBackgroundBridges = new NetworkConnectionBackground(this, te, xStart + 21, yStart + 26, 31, 0xAA4444FF);
@@ -175,20 +179,20 @@ public class GuiSecurityStationHacking extends GuiSecurityStationBase<ContainerS
     }
 
     @Override
-    protected void addProblems(List<String> text) {
+    protected void addProblems(List<ITextComponent> text) {
         super.addProblems(text);
         if (aiBridges.isTracing()) {
-            text.add(TextFormatting.GRAY + "Intrusion detected!");
-            text.add(TextFormatting.BLACK + "Time till trace: " + PneumaticCraftUtils.convertTicksToMinutesAndSeconds(aiBridges.getRemainingTraceTime(), false));
+            text.add(new StringTextComponent("Intrusion detected!").mergeStyle(TextFormatting.GRAY));
+            text.add(new StringTextComponent("Time till trace: " + PneumaticCraftUtils.convertTicksToMinutesAndSeconds(aiBridges.getRemainingTraceTime(), false)).mergeStyle(TextFormatting.BLACK));
         }
     }
 
-    private List<String> getStatusText() {
-        List<String> text = new ArrayList<>();
-        text.add(TextFormatting.GRAY + "Security Level");
-        text.add(TextFormatting.BLACK + "Level " + te.getSecurityLevel());
-        text.add(TextFormatting.GRAY + "Security Range");
-        text.add(TextFormatting.BLACK.toString() + te.getSecurityRange() + "m (square)");
+    private List<ITextComponent> getStatusText() {
+        List<ITextComponent> text = new ArrayList<>();
+        text.add(new StringTextComponent("Security Level").mergeStyle(TextFormatting.GRAY));
+        text.add(new StringTextComponent("Level " + te.getSecurityLevel()).mergeStyle(TextFormatting.BLACK));
+        text.add(new StringTextComponent("Security Range").mergeStyle(TextFormatting.GRAY));
+        text.add(new StringTextComponent(te.getSecurityRange() + "m (square)").mergeStyle(TextFormatting.BLACK));
         return text;
     }
 

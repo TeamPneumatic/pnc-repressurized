@@ -3,19 +3,20 @@ package me.desht.pneumaticcraft.client.gui;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.ContainerGasLift;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityGasLift;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityGasLift.PumpMode;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +38,7 @@ public class GuiGasLift extends GuiPneumaticContainerBase<ContainerGasLift,TileE
         statusStat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.status"), new ItemStack(ModBlocks.GAS_LIFT.get()), 0xFFFFAA00, false);
 
         WidgetAnimatedStat optionStat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.gasLift.mode"), new ItemStack(ModBlocks.PRESSURE_TUBE.get()), 0xFFFFCC00, false);
-        optionStat.addPadding(4, 17);
+        optionStat.setMinimumExpandedDimensions(60, 45);
 
         WidgetButtonExtended button = new WidgetButtonExtended(5, 20, 20, 20, StringTextComponent.EMPTY).withTag(PumpMode.PUMP_EMPTY.toString());
         button.setRenderStacks(new ItemStack(Items.BUCKET));
@@ -52,7 +53,7 @@ public class GuiGasLift extends GuiPneumaticContainerBase<ContainerGasLift,TileE
         modeButtons[1] = button;
 
         button = new WidgetButtonExtended(55, 20, 20, 20, StringTextComponent.EMPTY).withTag(PumpMode.RETRACT.toString());
-        button.setRenderStacks(new ItemStack(ModBlocks.PRESSURE_TUBE.get()));
+        button.setRenderStacks(new ItemStack(ModBlocks.DRILL_PIPE.get()));
         button.setTooltipText(xlate("pneumaticcraft.gui.tab.gasLift.mode.drawIn"));
         optionStat.addSubWidget(button);
         modeButtons[2] = button;
@@ -77,30 +78,31 @@ public class GuiGasLift extends GuiPneumaticContainerBase<ContainerGasLift,TileE
         }
     }
 
-    private List<String> getStatus() {
-        List<String> textList = new ArrayList<>();
-        textList.add(I18n.format("pneumaticcraft.gui.tab.status.gasLift.action"));
-        textList.add(I18n.format(te.status.getTranslationKey(), te.getTank().getFluid().getDisplayName().getString()));
-        textList.add(I18n.format("pneumaticcraft.gui.tab.status.gasLift.currentDepth", te.currentDepth));
+    private List<ITextComponent> getStatus() {
+        List<ITextComponent> textList = new ArrayList<>();
+        textList.add(xlate("pneumaticcraft.gui.tab.status.gasLift.action"));
+        textList.add(xlate(te.status.getTranslationKey(), te.getTank().getFluid().getDisplayName().getString()).mergeStyle(TextFormatting.BLACK));
+        textList.add(xlate("pneumaticcraft.gui.tab.status.gasLift.currentDepth"));
+        textList.add(new StringTextComponent(te.currentDepth + " meter(s)").mergeStyle(TextFormatting.BLACK));
         return textList;
     }
 
     @Override
-    public void addProblems(List<String> curInfo) {
+    public void addProblems(List<ITextComponent> curInfo) {
         super.addProblems(curInfo);
         if (te.pumpMode == PumpMode.PUMP_EMPTY || te.pumpMode == PumpMode.PUMP_LEAVE_FLUID) {
             if (te.getTank().getCapacity() - te.getTank().getFluidAmount() < 1000) {
-                curInfo.add(I18n.format("pneumaticcraft.gui.tab.problems.gasLift.noLiquidSpace"));
+                curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.gasLift.noLiquidSpace"));
             }
             if (te.getPrimaryInventory().getStackInSlot(0).isEmpty()) {
-                curInfo.add(I18n.format("pneumaticcraft.gui.tab.problems.gasLift.noTubes"));
+                curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.gasLift.noTubes"));
             }
             if (te.status == TileEntityGasLift.Status.STUCK) {
-                curInfo.add(I18n.format("pneumaticcraft.gui.tab.problems.gasLift.stuck"));
+                curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.gasLift.stuck"));
             }
         } else {
             if (te.getPrimaryInventory().getStackInSlot(0).getCount() == 64) {
-                curInfo.add(I18n.format("pneumaticcraft.gui.tab.problems.gasLift.noTubeSpace"));
+                curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.gasLift.noTubeSpace"));
             }
         }
     }

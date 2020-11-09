@@ -82,7 +82,7 @@ public class GuiPressureModule extends GuiTubeModule<TubeModule> {
                 xlate("pneumaticcraft.gui.threshold")));
 
         WidgetAnimatedStat stat = new WidgetAnimatedStat(this, xlate("pneumaticcraft.gui.tab.info"), WidgetAnimatedStat.StatIcon.of(Textures.GUI_INFO_LOCATION), xStart, yStart + 5, 0xFF8888FF, null, true);
-        stat.setText("pneumaticcraft.gui.tab.info.tubeModule");
+        stat.setText(xlate("pneumaticcraft.gui.tab.info.tubeModule"));
         stat.setBeveled(true);
         addButton(stat);
 

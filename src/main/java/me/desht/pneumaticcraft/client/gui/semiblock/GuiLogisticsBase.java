@@ -18,7 +18,6 @@ import me.desht.pneumaticcraft.common.semiblock.ISpecificRequester;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.ClickType;
 import net.minecraft.inventory.container.Slot;
@@ -92,7 +91,7 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
         });
         fluidWidgets.forEach(this::addButton);
 
-        addInfoTab(I18n.format("gui.tooltip.item.pneumaticcraft." + logistics.getId().getPath()));
+        addInfoTab(GuiUtils.xlateAndSplit("gui.tooltip.item.pneumaticcraft." + logistics.getId().getPath()));
         addFilterTab();
         if (!container.isItemContainer()) {
             addFacingTab();
@@ -106,7 +105,6 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
 
     private void addMinOrderSizeTab() {
         WidgetAnimatedStat minAmountStat = addAnimatedStat(xlate("pneumaticcraft.gui.logistics_frame.min_amount"), new ItemStack(Blocks.CHEST), 0xFFC0C080, false);
-        minAmountStat.addPadding(7, 21);
 
         WidgetLabel minItemsLabel = new WidgetLabel(5, 20, xlate("pneumaticcraft.gui.logistics_frame.min_items"));
         minItemsLabel.setTooltip(xlate("pneumaticcraft.gui.logistics_frame.min_items.tooltip"));
@@ -125,6 +123,9 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
                 .setValue(((ISpecificRequester) logistics).getMinFluidOrderSize());
         minFluidField.setResponder(s -> sendDelayed(8));
         minAmountStat.addSubWidget(minFluidField);
+
+        int w = Math.max(minItemsLabel.getWidth(), minFluidLabel.getWidth());
+        minAmountStat.setMinimumExpandedDimensions(w, 75);
     }
 
     @Override
@@ -177,7 +178,7 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
     private void addFilterTab() {
         WidgetAnimatedStat filterTab = addAnimatedStat(xlate("pneumaticcraft.gui.logistics_frame.filter_settings"),
                 new ItemStack(Blocks.COBWEB), 0xFF106010, false);
-        filterTab.addPadding(logistics.supportsBlacklisting() ? 8 : 6, 28);
+        filterTab.setMinimumExpandedDimensions(80, logistics.supportsBlacklisting() ? 85 : 65);
 
         WidgetCheckBox matchDurability = new WidgetCheckBox(5, 20, 0xFFFFFFFF, xlate("pneumaticcraft.gui.logistics_frame.matchDurability"), b -> {
             logistics.setMatchDurability(b.checked);
@@ -215,7 +216,7 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
 
     private void addFacingTab() {
         facingTab = addAnimatedStat(StringTextComponent.EMPTY, new ItemStack(Items.MAP), 0xFFC0C0C0, false);
-        facingTab.addPadding(8, 18);
+        facingTab.setMinimumExpandedDimensions(75, 85);
 
         addDirButton(0, 15, 62);
         addDirButton(1, 15, 20);

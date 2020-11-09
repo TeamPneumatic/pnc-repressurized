@@ -3,24 +3,24 @@ package me.desht.pneumaticcraft.client.gui.tubemodule;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.client.gui.widget.*;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleRedstone;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleRedstone.EnumRedstoneDirection;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleRedstone.Operation;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncRedstoneModuleToServer;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.item.DyeColor;
+import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.dyeColorDesc;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -36,7 +36,7 @@ public class GuiRedstoneModule extends GuiTubeModule<ModuleRedstone> {
     private WidgetCheckBox invertCheckBox;
     private boolean upgraded;
     private boolean output;
-    private final List<String> lowerText = new ArrayList<>();
+    private final List<IReorderingProcessor> lowerText = new ArrayList<>();
 
     public GuiRedstoneModule(BlockPos modulePos) {
         super(modulePos);
@@ -151,21 +151,18 @@ public class GuiRedstoneModule extends GuiTubeModule<ModuleRedstone> {
 
         Operation op = getSelectedOp();
         String key = op.getTranslationKey() + ".tooltip";
-        String s;
+        List<ITextComponent> l = new ArrayList<>();
         if (op.useConst()) {
-            s = I18n.format(key, dyeColorDesc(ourColor), textField.getValue());
+            l.add(xlate(key, dyeColorDesc(ourColor), textField.getValue()));
         } else if (op.useOtherColor()) {
-            s = I18n.format(key, dyeColorDesc(ourColor), dyeColorDesc(otherColor));
+            l.add(xlate(key, dyeColorDesc(ourColor), dyeColorDesc(otherColor)));
         } else {
-            s = I18n.format(key, dyeColorDesc(ourColor));
+            l.add(xlate(key, dyeColorDesc(ourColor)));
         }
-        lowerText.addAll(PneumaticCraftUtils.splitString(s, 30));
         if (!upgraded) {
-            List<String> extra = PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.redstoneModule.addAdvancedPCB"), 30).stream()
-                    .map(str -> TextFormatting.DARK_BLUE + str)
-                    .collect(Collectors.toList());
-            lowerText.addAll(extra);
+            l.add(xlate("pneumaticcraft.gui.redstoneModule.addAdvancedPCB").mergeStyle(TextFormatting.DARK_BLUE));
         }
+        lowerText.addAll(GuiUtils.wrapTextComponentList(l, xSize - 20, font));
     }
 
     @Override
@@ -174,7 +171,7 @@ public class GuiRedstoneModule extends GuiTubeModule<ModuleRedstone> {
 
         int yBase = guiTop + ySize - lowerText.size() * font.FONT_HEIGHT - 10;
         for (int i = 0; i < lowerText.size(); i++) {
-            font.drawString(matrixStack, lowerText.get(i), guiLeft + 10, yBase + i * font.FONT_HEIGHT, 0xFF404040);
+            font.func_238422_b_(matrixStack, lowerText.get(i), guiLeft + 10, yBase + i * font.FONT_HEIGHT, 0xFF404040);
         }
     }
 

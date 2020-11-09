@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.client.gui;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.client.gui.widget.*;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.inventory.ContainerAmadron;
 import me.desht.pneumaticcraft.common.inventory.ContainerAmadron.EnumProblemState;
@@ -26,7 +27,6 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -55,13 +55,13 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
         addLabel(amadron, guiLeft + xSize / 2 - font.getStringPropertyWidth(amadron) / 2, guiTop + 5, 0xFFFFFF);
         addLabel(xlate("pneumaticcraft.gui.search"), guiLeft + 76 - font.getStringWidth(I18n.format("pneumaticcraft.gui.search")), guiTop + 41, 0xFFFFFF);
 
-        addInfoTab(I18n.format("gui.tooltip.item.pneumaticcraft.amadron_tablet"));
+        addInfoTab(xlate("gui.tooltip.item.pneumaticcraft.amadron_tablet"));
         addAnimatedStat(xlate("pneumaticcraft.gui.tab.info.ghostSlotInteraction.title"), Textures.GUI_MOUSE_LOCATION, 0xFF00AAFF, true)
-                .setText("pneumaticcraft.gui.tab.info.ghostSlotInteraction");
+                .setText(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.info.ghostSlotInteraction"));
         addAnimatedStat(xlate("pneumaticcraft.gui.tab.amadron.disclaimer.title"), new ItemStack(Items.WRITABLE_BOOK), 0xFF0000FF, true)
-                .setText("pneumaticcraft.gui.tab.amadron.disclaimer");
+                .setText(xlate("pneumaticcraft.gui.tab.amadron.disclaimer"));
         customTradesTab = addAnimatedStat(xlate("pneumaticcraft.gui.tab.amadron.customTrades"), new ItemStack(Items.DIAMOND), 0xFFD07000, false);
-        customTradesTab.addPadding(6, 10);
+        customTradesTab.setMinimumExpandedDimensions(80, 50);
         searchBar = new WidgetTextField(font, guiLeft + 79, guiTop + 40, 73, font.FONT_HEIGHT);
         searchBar.setFocused2(true);
         searchBar.setResponder(s -> sendDelayed(8));
@@ -125,11 +125,9 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
         hadProblem = container.problemState != EnumProblemState.NO_PROBLEMS;
         orderButton.active = !container.isBasketEmpty();
         addTradeButton.active = container.currentOffers < container.maxOffers;
-        List<String> text = new ArrayList<>();
-        text.add(I18n.format("pneumaticcraft.gui.amadron.button.addTrade.tooltip.offerCount",
+        ITextComponent text = xlate("pneumaticcraft.gui.amadron.button.addTrade.tooltip.offerCount",
                 container.currentOffers,
-                container.maxOffers == Integer.MAX_VALUE ? GuiConstants.INFINITY : container.maxOffers));
-        IntStream.range(0, 3).forEach(i -> text.add(" "));
+                container.maxOffers == Integer.MAX_VALUE ? GuiConstants.INFINITY : container.maxOffers);
         customTradesTab.setText(text);
     }
 
@@ -206,10 +204,10 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
     }
 
     @Override
-    protected void addProblems(List<String> curInfo) {
+    protected void addProblems(List<ITextComponent> curInfo) {
         super.addProblems(curInfo);
         if (container.problemState != EnumProblemState.NO_PROBLEMS) {
-            curInfo.add(container.problemState.getTranslationKey());
+            curInfo.add(xlate(container.problemState.getTranslationKey()));
         }
     }
 

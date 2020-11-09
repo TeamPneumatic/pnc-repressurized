@@ -1,7 +1,9 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
 import com.google.common.collect.ImmutableList;
+import joptsimple.internal.Strings;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -15,7 +17,9 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import org.apache.commons.lang3.math.NumberUtils;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -60,11 +64,11 @@ public class ProgWidgetEmitRedstone extends ProgWidget implements IRedstoneEmiss
     public void getTooltip(List<ITextComponent> curTooltip) {
         super.getTooltip(curTooltip);
         curTooltip.add(xlate("pneumaticcraft.gui.progWidget.general.affectingSides"));
-        curTooltip.add(new StringTextComponent(getExtraStringInfo()));
+        curTooltip.add(getExtraStringInfo());
     }
 
     @Override
-    public String getExtraStringInfo() {
+    public ITextComponent getExtraStringInfo() {
         boolean allSides = true;
         boolean noSides = true;
         for (boolean bool : accessingSides) {
@@ -75,37 +79,15 @@ public class ProgWidgetEmitRedstone extends ProgWidget implements IRedstoneEmiss
             }
         }
         if (allSides) {
-            return "All sides";
+            return ALL_SIDES;
         } else if (noSides) {
-            return "No Sides";
+            return NO_SIDES;
         } else {
-            StringBuilder tipBuilder = new StringBuilder();
-            for (int i = 0; i < 6; i++) {
-                if (accessingSides[i]) {
-                    switch (Direction.byIndex(i)) {
-                        case UP:
-                            tipBuilder.append("top, ");
-                            break;
-                        case DOWN:
-                            tipBuilder.append("bottom, ");
-                            break;
-                        case NORTH:
-                            tipBuilder.append("north, ");
-                            break;
-                        case SOUTH:
-                            tipBuilder.append("south, ");
-                            break;
-                        case EAST:
-                            tipBuilder.append("east, ");
-                            break;
-                        case WEST:
-                            tipBuilder.append("west, ");
-                            break;
-                    }
-                }
-            }
-            String tip = tipBuilder.toString();
-            return tip.substring(0, tip.length() - 2);
+            List<String> l = Arrays.stream(Direction.VALUES)
+                    .filter(side -> accessingSides[side.getIndex()])
+                    .map(ClientUtils::translateDirection)
+                    .collect(Collectors.toList());
+            return new StringTextComponent(Strings.join(l, ", "));
         }
     }
 

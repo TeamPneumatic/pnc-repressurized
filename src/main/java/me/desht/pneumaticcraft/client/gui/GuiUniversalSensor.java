@@ -15,7 +15,6 @@ import me.desht.pneumaticcraft.common.network.PacketUpdateTextfield;
 import me.desht.pneumaticcraft.common.sensor.SensorHandler;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUniversalSensor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUniversalSensor.SensorStatus;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
@@ -248,46 +247,46 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
         }
     }
 
-    private List<String> getSensorInfo() {
-        List<String> text = new ArrayList<>();
+    private List<ITextComponent> getSensorInfo() {
+        List<ITextComponent> text = new ArrayList<>();
         ISensorSetting sensor = SensorHandler.getInstance().getSensorFromPath(te.getSensorSetting());
         if (sensor != null) {
             String[] folders = te.getSensorSetting().split("/");
-            text.add(TextFormatting.WHITE + folders[folders.length - 1]);
-            text.addAll(sensor.getDescription().stream().map(s -> TextFormatting.BLACK + I18n.format(s)).collect(Collectors.toList()));
+            text.add(new StringTextComponent(folders[folders.length - 1]).mergeStyle(TextFormatting.WHITE));
+            text.addAll(sensor.getDescription().stream().map(s -> xlate(s).mergeStyle(TextFormatting.BLACK)).collect(Collectors.toList()));
         } else {
-            text.add(TextFormatting.BLACK + "No sensor selected.");
+            text.add(xlate("pneumaticcraft.gui.misc.none").mergeStyle(TextFormatting.BLACK));
         }
         return text;
     }
 
     @Override
-    protected void addPressureStatInfo(List<String> pressureStatText) {
+    protected void addPressureStatInfo(List<ITextComponent> pressureStatText) {
         super.addPressureStatInfo(pressureStatText);
 
         if (te.isSensorActive) {
-            pressureStatText.add(TextFormatting.BLACK + I18n.format("pneumaticcraft.gui.tooltip.airUsage", PneumaticValues.USAGE_UNIVERSAL_SENSOR));
+            pressureStatText.add(xlate("pneumaticcraft.gui.tooltip.airUsage", PneumaticValues.USAGE_UNIVERSAL_SENSOR).mergeStyle(TextFormatting.BLACK));
         }
     }
 
     @Override
-    protected void addWarnings(List<String> curInfo) {
+    protected void addWarnings(List<ITextComponent> curInfo) {
         super.addWarnings(curInfo);
 
         if (!te.getPrimaryInventory().getStackInSlot(0).isEmpty() && te.outOfRange > 0) {
-            curInfo.addAll(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.universalSensor.outOfRange", te.outOfRange)));
+            curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.universalSensor.outOfRange", te.outOfRange));
         }
     }
 
     @Override
-    protected void addProblems(List<String> curInfo) {
+    protected void addProblems(List<ITextComponent> curInfo) {
         super.addProblems(curInfo);
 
         if (!te.lastSensorExceptionText.isEmpty()) {
-            curInfo.addAll(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.universalSensor.sensorException", te.lastSensorExceptionText)));
+            curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.universalSensor.sensorException", te.lastSensorExceptionText));
         }
         if (te.sensorStatus != SensorStatus.OK) {
-            curInfo.addAll(PneumaticCraftUtils.splitString(I18n.format(te.sensorStatus.getTranslationKey())));
+            curInfo.addAll(GuiUtils.xlateAndSplit(te.sensorStatus.getTranslationKey()));
         }
     }
 }

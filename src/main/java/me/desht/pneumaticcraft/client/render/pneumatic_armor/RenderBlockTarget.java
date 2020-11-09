@@ -43,7 +43,7 @@ public class RenderBlockTarget {
     public int ticksExisted = 0;
     public final WidgetAnimatedStat stat;
     private final PlayerEntity player;
-    public List<String> textList = new ArrayList<>();
+    public List<ITextComponent> textList = new ArrayList<>();
     private int hackTime;
     private final BlockTrackerClientHandler blockTracker;
     private TileEntity te;
@@ -63,7 +63,7 @@ public class RenderBlockTarget {
             title = stack.getDisplayName();
         }
         stat = new WidgetAnimatedStat(null, title, WidgetAnimatedStat.StatIcon.of(stack), 20, -20, 0x4000AA00, null, false);
-        stat.setMinDimensionsAndReset(0, 0);
+        stat.setMinimumContractedDimensions(0, 0);
     }
 
     public void setTileEntity(TileEntity te) {
@@ -223,7 +223,7 @@ public class RenderBlockTarget {
         return ticksExisted >= 120;
     }
 
-    private void addBlockTrackInfo(List<String> textList, List<IBlockTrackEntry> entries) {
+    private void addBlockTrackInfo(List<ITextComponent> textList, List<IBlockTrackEntry> entries) {
         entries.forEach(e -> e.addInformation(world, pos, te, isPlayerLookingAtTarget() ? blockTracker.getFocusedFace() : null, textList));
     }
 

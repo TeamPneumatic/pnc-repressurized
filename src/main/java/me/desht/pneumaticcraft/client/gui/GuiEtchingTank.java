@@ -3,11 +3,11 @@ package me.desht.pneumaticcraft.client.gui;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.inventory.ContainerEtchingTank;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityEtchingTank;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
@@ -62,17 +62,17 @@ public class GuiEtchingTank extends GuiPneumaticContainerBase<ContainerEtchingTa
     }
 
     @Override
-    protected void addProblems(List<String> curInfo) {
+    protected void addProblems(List<ITextComponent> curInfo) {
         super.addProblems(curInfo);
 
         if (te.isOutputFull()) {
-            curInfo.add(I18n.format("pneumaticcraft.gui.tab.problems.etching_tank.output_full"));
+            curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.etching_tank.output_full"));
         }
         if (te.isFailedOutputFull()) {
-            curInfo.add(I18n.format("pneumaticcraft.gui.tab.problems.etching_tank.failed_full"));
+            curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.etching_tank.failed_full"));
         }
         if (te.getAcidTank().getFluid().isEmpty()) {
-            curInfo.add(I18n.format("pneumaticcraft.gui.tab.problems.etching_tank.no_acid"));
+            curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.etching_tank.no_acid"));
         }
     }
 }

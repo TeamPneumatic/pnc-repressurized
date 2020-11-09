@@ -11,7 +11,6 @@ import me.desht.pneumaticcraft.common.inventory.ContainerThermalCompressor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityThermalCompressor;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
@@ -19,6 +18,8 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 
 import java.util.List;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiThermalCompressor extends GuiPneumaticContainerBase<ContainerThermalCompressor,TileEntityThermalCompressor> {
     private final WidgetTemperatureSided[] tempWidgets = new WidgetTemperatureSided[4];
@@ -59,33 +60,33 @@ public class GuiThermalCompressor extends GuiPneumaticContainerBase<ContainerThe
     }
 
     @Override
-    protected void addPressureStatInfo(List<String> pressureStatText) {
+    protected void addPressureStatInfo(List<ITextComponent> pressureStatText) {
         super.addPressureStatInfo(pressureStatText);
 
         double prod = te.airProduced(Direction.NORTH) + te.airProduced(Direction.EAST);
         if (prod > 0 && redstoneAllows) {
-            pressureStatText.add(TextFormatting.BLACK + I18n.format("pneumaticcraft.gui.tooltip.producingAir",
-                    PneumaticCraftUtils.roundNumberTo(prod, 1)));
+            pressureStatText.add(xlate("pneumaticcraft.gui.tooltip.producingAir",
+                    PneumaticCraftUtils.roundNumberTo(prod, 1)).mergeStyle(TextFormatting.BLACK));
         }
     }
 
     @Override
-    protected void addProblems(List<String> curInfo) {
+    protected void addProblems(List<ITextComponent> curInfo) {
         super.addProblems(curInfo);
 
         if (getTemperatureDifferential(Direction.NORTH) < 10 && getTemperatureDifferential(Direction.EAST) < 10) {
-            curInfo.add(I18n.format("pneumaticcraft.gui.tab.problems.thermal_compressor.no_temp_diff"));
+            curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.thermal_compressor.no_temp_diff"));
         }
     }
 
     @Override
-    protected void addWarnings(List<String> curInfo) {
+    protected void addWarnings(List<ITextComponent> curInfo) {
         super.addWarnings(curInfo);
 
         int dns = getTemperatureDifferential(Direction.NORTH);
         int dew = getTemperatureDifferential(Direction.EAST);
         if ((dns < 20 && (dew >= 10 && dew < 20)) || (dew < 20 && (dns >= 10 && dns < 20))) {
-            curInfo.add(I18n.format("pneumaticcraft.gui.tab.problems.thermal_compressor.poor_temp_diff"));
+            curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.thermal_compressor.poor_temp_diff"));
         }
     }
 

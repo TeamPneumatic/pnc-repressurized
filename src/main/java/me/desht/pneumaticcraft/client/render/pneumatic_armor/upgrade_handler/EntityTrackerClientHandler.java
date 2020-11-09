@@ -111,7 +111,7 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
         } else {
             shouldStopSpamOnEntityTracking = false;
         }
-        List<String> text = new ArrayList<>();
+        List<ITextComponent> text = new ArrayList<>();
         for (RenderEntityTarget target : targets.values()) {
             boolean wasNegative = target.ticksExisted < 0;
             target.ticksExisted += armorHandler.getSpeedFromUpgrades(EquipmentSlotType.HEAD);
@@ -119,16 +119,16 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
             target.update();
             if (target.isLookingAtTarget) {
                 if (target.isInitialized()) {
-                    text.add(TextFormatting.GRAY + target.entity.getDisplayName().getString());
+                    text.add(target.entity.getDisplayName().deepCopy().mergeStyle(TextFormatting.GRAY));
                     text.addAll(target.getEntityText());
                 } else {
-                    text.add(TextFormatting.GRAY + I18n.format("pneumaticcraft.entityTracker.info.acquiring"));
+                    text.add(xlate("pneumaticcraft.entityTracker.info.acquiring").mergeStyle(TextFormatting.GRAY));
                 }
             }
         }
         if (text.isEmpty()) {
             String f = entityFilter.toString();
-            text.add(I18n.format("pneumaticcraft.gui.entityFilter") + ": " + (f.isEmpty() ? "-" : f));
+            text.add(xlate("pneumaticcraft.gui.entityFilter").appendString(": " + (f.isEmpty() ? "-" : f)));
         }
         entityTrackInfo.setText(text);
     }
@@ -164,7 +164,7 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
             WidgetAnimatedStat.StatIcon icon = WidgetAnimatedStat.StatIcon.of(EnumUpgrade.ENTITY_TRACKER.getItemStack());
             entityTrackInfo = new WidgetAnimatedStat(null, xlate("pneumaticcraft.entityTracker.info.trackedEntities"), icon,
                      0x3000AA00, null, ArmorHUDLayout.INSTANCE.entityTrackerStat);
-            entityTrackInfo.setMinDimensionsAndReset(0, 0);
+            entityTrackInfo.setMinimumContractedDimensions(0, 0);
         }
         return entityTrackInfo;
 

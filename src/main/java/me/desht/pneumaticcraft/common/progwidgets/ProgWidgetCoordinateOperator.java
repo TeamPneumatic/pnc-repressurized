@@ -222,8 +222,8 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
     }
 
     @Override
-    public String getExtraStringInfo() {
-        return "\"" + variable + "\"";
+    public ITextComponent getExtraStringInfo() {
+        return varAsTextComponent(variable);
     }
 
     @Override

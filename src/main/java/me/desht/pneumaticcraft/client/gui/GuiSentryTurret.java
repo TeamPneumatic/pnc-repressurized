@@ -103,7 +103,7 @@ public class GuiSentryTurret extends GuiPneumaticContainerBase<ContainerSentryTu
     }
 
     @Override
-    protected void addProblems(List<String> curInfo) {
+    protected void addProblems(List<ITextComponent> curInfo) {
         super.addProblems(curInfo);
 
         boolean hasAmmo = false;
@@ -113,6 +113,6 @@ public class GuiSentryTurret extends GuiPneumaticContainerBase<ContainerSentryTu
                 break;
             }
         }
-        if (!hasAmmo) curInfo.add("pneumaticcraft.gui.tab.problems.sentryTurret.noAmmo");
+        if (!hasAmmo) curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.sentryTurret.noAmmo"));
     }
 }

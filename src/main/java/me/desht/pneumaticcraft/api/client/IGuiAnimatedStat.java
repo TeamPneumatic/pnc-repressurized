@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.api.client;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.client.gui.widget.ITickableWidget;
 import net.minecraft.client.renderer.Rectangle2d;
+import net.minecraft.util.text.ITextComponent;
 
 import java.util.List;
 
@@ -14,33 +15,14 @@ import java.util.List;
  */
 public interface IGuiAnimatedStat extends ITickableWidget {
     /**
-     * When you call this method with a set of coordinates representing the button location and dimensions, you'll get
-     * these parameters back scaled to the GuiAnimatedStat's scale.
-     *
-     * @param origX  Button start X.
-     * @param origY  Button start Y.
-     * @param width  Button width.
-     * @param height Button height.
-     * @return rectangle containing the new location and dimensions.
-     */
-    Rectangle2d getButtonScaledRectangle(int origX, int origY, int width, int height);
-
-    /**
-     * When passed 0.5F for example, the text of the stat will be half as big (so more text can fit into a certain area).
-     *
-     * @param scale
-     */
-    void scaleTextSize(float scale);
-
-    /**
-     * Returns true if the statistic expands to the left.
+     * Returns true if the stat expands to the left.
      *
      * @return
      */
     boolean isLeftSided();
 
     /**
-     * Returns true if the statistic is done with expanding (when text will be displayed).
+     * Returns true if the stat is done with expanding (when text will be displayed).
      *
      * @return
      */
@@ -54,88 +36,65 @@ public interface IGuiAnimatedStat extends ITickableWidget {
     void setLeftSided(boolean leftSided);
 
     /**
-     * Sets the main text of this stat. Every line should be stored in a separate list element. Upon rendering,
-     * TextFormattings will be respected. When you call this method, Overlong lines will be divided into multiple
-     * shorter ones to fit in the GUI.
+     * Sets the main text of this stat. Every line should be stored in a separate list element, but lines do not need
+     * to be split manually; overlong lines will be automatically by wrapped to fit horizontally, and a scrollbar will
+     * be added if necessary.
      *
-     * @param text
+     * @param text a list of text components
      * @return this, so you can chain calls.
      */
-    IGuiAnimatedStat setText(List<String> text);
+    IGuiAnimatedStat setText(List<ITextComponent> text);
 
     /**
-     * Sets the line to a single line. Upon rendering,
-     * TextFormattings will be respected. When you call this method, Too-long lines will be divided into multiple
-     * shorter ones to fit in the GUI.
+     * Sets the main text of this stat. Every line should be stored in a separate list element, but lines do not need
+     * to be split manually; overlong lines will be automatically by wrapped to fit horizontally, and a scrollbar will
+     * be added if necessary.
      *
-     * @param text
+     * @param text a text component
      * @return this, so you can chain calls.
      */
-    IGuiAnimatedStat setText(String text);
+    IGuiAnimatedStat setText(ITextComponent text);
 
     /**
-     * Sets the main text of this stat. Every line should be stored in a separate list element. Upon rendering,
-     * TextFormattings will be respected. This method doesn't split overlong lines.
+     * Appends some more text to the existing text in this stat.  This method will split overlong lines, same as
+     * {@link #setText(ITextComponent)}
      *
-     * @param text
+     * @param text a list of text components
      */
-    void setTextWithoutCuttingString(List<String> text);
+    void appendText(List<ITextComponent> text);
 
     /**
-     * Appends some more text to the existing text in this stat.  This method will split overlong lines.
+     * Defines what dimensions the stat should have when it is not expanded (default 17x17) and resets the stat to these
+     * dimensions. Used in PneumaticCraft by the block/entity tracker stats, they are 0x0 when not expanded so it looks
+     * like they expand (and appear) from nothing.
      *
-     * @param text
+     * @param minWidth the minimum width
+     * @param minHeight the minimum height
      */
-    void appendText(List<String> text);
-
-//    /**
-//     * Sets the title of this stat. It will automatically get the yellow color assigned.
-//     *
-//     * @param title
-//     */
-//    void setTitle(String title);
-//
-//    /**
-//     * Returns the title of this stat (obviously without color prefix).
-//     *
-//     * @return
-//     */
-//    String getTitle();
+    void setMinimumContractedDimensions(int minWidth, int minHeight);
 
     /**
-     * Defines what dimensions the stat should have when it is not expanded (default 17x17) and resets the stat to these dimensions.
-     * Used in PneumaticCraft by the block/entity tracker stats, they are 0x0 when not expanded so it looks like they expand
-     * (and appear) from nothing.
+     * Set the minimum width that this stat should expand to, even if the stat's text isn't that wide or tall. Use this
+     * if you need to ensure sufficient space for subwidgets.  You don't need to call this if you're not adding any
+     * subwidgets, since the stat's expanded size will be automatically calculated from its text in that case.
+     * <p>
+     * Requesting a width wider than is available (given current screen resolution), or taller than 12 lines of text,
+     * will be silently ignored, and clamped to those dimensions. The requested width does not include a 20-pixel
+     * margin for drawing a possible scrollbar, and the requested height does not include a 20 pixel margin for drawing
+     * the stat's title at the top.
      *
-     * @param minWidth
-     * @param minHeight
+     * @param minWidth the desired width, may be 0
+     * @param minHeight the desired height, may be 0
      */
-    void setMinDimensionsAndReset(int minWidth, int minHeight);
+    void setMinimumExpandedDimensions(int minWidth, int minHeight);
 
     /**
-     * When this stat gets a parent stat assigned, the y of this stat will be the same as the parent's plus this stat's
-     * baseY. This will cause this stat to move up and down when the parent's stat expands/moves.
+     * When this stat gets a parent stat assigned, the Y position of this stat will be auto-adjusted to be directly
+     * beneath the parent stat. This will cause this stat to move up and down when the parent stat expands/moves.
      *
-     * @param stat
+     * @param stat the parent stat
      */
     void setParentStat(IGuiAnimatedStat stat);
-
-    /**
-     * Pad the stat tab with some spacing to allow for widget placement.
-     *
-     * @param nRows rows of spacing
-     * @param nCols columns of spacing
-     */
-    void addPadding(int nRows, int nCols);
-
-    /**
-     * Pad the stat tab with some spacing to allow for widget placement.
-     *
-     * @param text existing text to insert into the padding
-     * @param nRows rows of spacing
-     * @param nCols columns of spacing
-     */
-    void addPadding(List<String> text, int nRows, int nCols);
 
     /**
      * Change the background color of this stat.
@@ -143,6 +102,22 @@ public interface IGuiAnimatedStat extends ITickableWidget {
      * @param backgroundColor color, in ARGB format
      */
     void setBackgroundColor(int backgroundColor);
+
+    /**
+     * Set the foreground color of this stat, which is the color used to render any text which doesn't have explicit
+     * formatting styles. The default foreground color is 0xFFFFFFFF, or white.
+     *
+     * @param foregroundColor the foreground color, in ARGB format
+     */
+    void setForegroundColor(int foregroundColor);
+
+    /**
+     * Set the title color of this stat, which is the color used to render the top title line of the stat. The default
+     * title color is 0xFFFFFF00, or yellow.
+     *
+     * @param titleColor the title color, in ARGB format
+     */
+    void setTitleColor(int titleColor);
 
     /**
      * Get the background color of this stat.
@@ -156,31 +131,32 @@ public interface IGuiAnimatedStat extends ITickableWidget {
      * for GUI side tabs, plain edge for HUD stats.  The color of the plain edge is a darkened version of the stat's
      * background color.
      *
-     * @param bevel
+     * @param bevel true if a beveled edge should be drawn, false otherwise
      */
     void setBeveled(boolean bevel);
 
     /**
      * Sets the x location of this stat.
      *
-     * @param x
+     * @param x the X position
      */
     void setBaseX(int x);
 
     /**
      * Sets the base Y of this stat.
      *
-     * @param y
+     * @param y the Y position
      */
     void setBaseY(int y);
 
     /**
      * Returns the actual Y position of this stat. This is the same as getBaseY when there is no parent stat, but if
-     * there is, this method returns the value described in {@link #setParentStat(IGuiAnimatedStat)}.
+     * there is one, this method returns the value described in {@link #setParentStat(IGuiAnimatedStat)}.  This is the
+     * position used to render the stat, and to define the area where keyboard and mouse input is checked for.
      *
-     * @return
+     * @return the effective Y position
      */
-    int getAffectedY();
+    int getEffectiveY();
 
     int getBaseX();
 
@@ -208,7 +184,7 @@ public interface IGuiAnimatedStat extends ITickableWidget {
     Rectangle2d getBounds();
 
     /**
-     * Should be called every render tick when and where you want to render the stat.
+     * Should be called every render tick to render the stat.
      *
      * @param mouseX
      * @param mouseY
@@ -222,14 +198,14 @@ public interface IGuiAnimatedStat extends ITickableWidget {
     void closeStat();
 
     /**
-     * Forces the stat to expand.
+     * Forces the stat to open.
      */
     void openStat();
 
     /**
-     * Returns true if the stat is expanding.
+     * Check if the stat is currently toggled open.
      *
-     * @return
+     * @return true if the stat is open
      */
     boolean isStatOpen();
 

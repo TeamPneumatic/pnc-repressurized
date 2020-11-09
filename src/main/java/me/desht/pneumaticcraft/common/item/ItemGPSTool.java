@@ -56,18 +56,14 @@ public class ItemGPSTool extends Item implements IPositionProvider {
     @Override
     public void addInformation(ItemStack stack, World worldIn, List<ITextComponent> infoList, ITooltipFlag par4) {
         super.addInformation(stack, worldIn, infoList, par4);
-        CompoundNBT compound = stack.getTag();
-        if (compound != null) {
-            int x = compound.getInt("x");
-            int y = compound.getInt("y");
-            int z = compound.getInt("z");
-            if (x != 0 || y != 0 || z != 0) {
-                infoList.add(new StringTextComponent("Set to " + x + ", " + y + ", " + z).mergeStyle(TextFormatting.GREEN));
-            }
-            String varName = getVariable(stack);
-            if (!varName.equals("")) {
-                infoList.add(xlate("pneumaticcraft.gui.tooltip.gpsTool.variable", varName));
-            }
+        BlockPos pos = getGPSLocation(stack);
+        if (pos != null) {
+            String str = String.format("[%d, %d, %d]", pos.getX(), pos.getY(), pos.getZ());
+            infoList.add(new StringTextComponent(str).mergeStyle(TextFormatting.GREEN));
+        }
+        String varName = getVariable(stack);
+        if (!varName.isEmpty()) {
+            infoList.add(xlate("pneumaticcraft.gui.tooltip.gpsTool.variable", varName));
         }
     }
 

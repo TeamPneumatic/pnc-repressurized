@@ -20,6 +20,8 @@ public class GuiConstants {
     public static final String TRIANGLE_UP_LEFT = "\u25e4";
     public static final String TRIANGLE_DOWN_RIGHT = "\u25e2";
     public static final String CIRCULAR_ARROW = "\u293e";
+    public static final String TICK_MARK = "\u2714";
+    public static final String X_MARK = "\u2717";
 
     public static IFormattableTextComponent bullet() {
         return new StringTextComponent(BULLET + " ");

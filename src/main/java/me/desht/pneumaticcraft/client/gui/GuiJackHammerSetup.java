@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.client.gui;
 
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTooltipArea;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.inventory.ContainerJackhammerSetup;
 import me.desht.pneumaticcraft.common.item.ItemDrillBit;
 import me.desht.pneumaticcraft.common.item.ItemDrillBit.DrillBitType;
@@ -11,7 +12,6 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketGuiButton;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -108,11 +108,11 @@ public class GuiJackHammerSetup extends GuiPneumaticContainerBase<ContainerJackh
     }
 
     @Override
-    protected void addProblems(List<String> curInfo) {
+    protected void addProblems(List<ITextComponent> curInfo) {
         super.addProblems(curInfo);
 
         if (!container.inventorySlots.get(0).getHasStack()) {
-            curInfo.add(I18n.format("pneumaticcraft.gui.tab.problems.jackhammer.noBit"));
+            curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.jackhammer.noBit"));
         }
     }
 

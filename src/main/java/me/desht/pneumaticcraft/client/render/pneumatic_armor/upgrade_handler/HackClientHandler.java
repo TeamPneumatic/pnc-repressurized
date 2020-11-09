@@ -15,6 +15,8 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 
 import java.util.List;
@@ -50,10 +52,10 @@ public class HackClientHandler extends IArmorUpgradeClientHandler.AbstractHandle
                 && CommonArmorHandler.getHandlerForPlayer(player).getUpgradeCount(EquipmentSlotType.HEAD, EnumUpgrade.SECURITY) > 0;
     }
 
-    public static void addKeybindTooltip(List<String> curInfo) {
+    public static void addKeybindTooltip(List<ITextComponent> curInfo) {
         if (KeyHandler.getInstance().keybindHack.getKey().getKeyCode() != 0) {
             String s = ClientUtils.translateKeyBind(KeyHandler.getInstance().keybindHack);
-            curInfo.add(TextFormatting.GOLD + "Press [" + s + "] to hack");
+            curInfo.add(new StringTextComponent("Press [" + s + "] to hack").mergeStyle(TextFormatting.GOLD));
         }
     }
 }

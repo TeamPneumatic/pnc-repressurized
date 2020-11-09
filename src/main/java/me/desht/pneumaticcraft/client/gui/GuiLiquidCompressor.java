@@ -4,18 +4,19 @@ import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.fuel.IFuelRegistry;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.ContainerLiquidCompressor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityLiquidCompressor;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
@@ -36,15 +37,15 @@ public class GuiLiquidCompressor extends GuiPneumaticContainerBase<ContainerLiqu
         super.init();
         addButton(new WidgetTank(guiLeft + getFluidOffset(), guiTop + 15, te.getTank()));
         WidgetAnimatedStat stat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.liquidCompressor.fuel"), new ItemStack(ModItems.LPG_BUCKET.get()), 0xFFC04400, true);
-        stat.setTextWithoutCuttingString(getAllFuels());
+        stat.setText(getAllFuels());
     }
 
     @Override
-    protected void addPressureStatInfo(List<String> pressureStatText) {
+    protected void addPressureStatInfo(List<ITextComponent> pressureStatText) {
         super.addPressureStatInfo(pressureStatText);
 
-        pressureStatText.add(TextFormatting.BLACK + I18n.format("pneumaticcraft.gui.tooltip.maxProduction",
-                PneumaticCraftUtils.roundNumberTo(te.airPerTick, 2)));
+        pressureStatText.add(xlate("pneumaticcraft.gui.tooltip.maxProduction",
+                PneumaticCraftUtils.roundNumberTo(te.airPerTick, 2)).mergeStyle(TextFormatting.BLACK));
     }
 
     protected int getFluidOffset() {
@@ -68,9 +69,9 @@ public class GuiLiquidCompressor extends GuiPneumaticContainerBase<ContainerLiqu
         return "liquid_compressor";
     }
 
-    private List<String> getAllFuels() {
-        List<String> text = new ArrayList<>();
-        text.add(TextFormatting.UNDERLINE + "mL/mB | Fluid (x burn rate)");
+    private List<ITextComponent> getAllFuels() {
+        List<ITextComponent> text = new ArrayList<>();
+        text.add(xlate("pneumaticcraft.gui.liquidCompressor.fuelsHeader").mergeStyle(TextFormatting.UNDERLINE));
 
         IFuelRegistry api = PneumaticRegistry.getInstance().getFuelRegistry();
         List<Fluid> fluids = new ArrayList<>(api.registeredFuels());
@@ -83,9 +84,9 @@ public class GuiLiquidCompressor extends GuiPneumaticContainerBase<ContainerLiqu
             FluidStack stack = new FluidStack(fluid, 1);
             float mul = api.getBurnRateMultiplier(fluid);
             if (mul == 1) {
-                text.add(value + "| " + StringUtils.abbreviate(stack.getDisplayName().getString(), 25));
+                text.add(new StringTextComponent(value + "| " + StringUtils.abbreviate(stack.getDisplayName().getString(), 25)));
             } else {
-                text.add(value + "| " + StringUtils.abbreviate(stack.getDisplayName().getString(), 20) + " (x" + PneumaticCraftUtils.roundNumberTo(mul, 2) + ")");
+                text.add(new StringTextComponent(value + "| " + StringUtils.abbreviate(stack.getDisplayName().getString(), 20) + " (x" + PneumaticCraftUtils.roundNumberTo(mul, 2) + ")"));
             }
         }
 
@@ -98,17 +99,17 @@ public class GuiLiquidCompressor extends GuiPneumaticContainerBase<ContainerLiqu
     }
 
     @Override
-    public void addProblems(List<String> curInfo) {
+    public void addProblems(List<ITextComponent> curInfo) {
         super.addProblems(curInfo);
 
         if (te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).isPresent()) {
             te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).ifPresent(fluidHandler -> {
                 if (!te.isProducing && fluidHandler.getFluidInTank(0).isEmpty()) {
-                    curInfo.add("pneumaticcraft.gui.tab.problems.liquidCompressor.noFuel");
+                    curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.liquidCompressor.noFuel"));
                 }
             });
         } else {
-            curInfo.add("pneumaticcraft.gui.tab.problems.liquidCompressor.noFuel");
+            curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.liquidCompressor.noFuel"));
         }
     }
 }

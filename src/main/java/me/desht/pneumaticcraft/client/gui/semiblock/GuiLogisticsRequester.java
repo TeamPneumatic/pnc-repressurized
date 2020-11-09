@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.client.gui.semiblock;
 
-import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsRequester;
 import me.desht.pneumaticcraft.common.inventory.ContainerLogistics;
@@ -28,7 +28,7 @@ public class GuiLogisticsRequester extends GuiLogisticsBase<EntityLogisticsReque
         super.init();
 
         addAnimatedStat(xlate("pneumaticcraft.gui.tab.info.ghostSlotInteraction.title"), Textures.GUI_MOUSE_LOCATION, 0xFF00AAFF, true)
-                .setText("pneumaticcraft.gui.tab.info.ghostSlotInteraction");
+                .setText(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.info.ghostSlotInteraction"));
 
         if (AE2Integration.isAvailable() && logistics.getAE2integration().isPlacedOnInterface()) {
             addAE2Tab();
@@ -44,11 +44,12 @@ public class GuiLogisticsRequester extends GuiLogisticsBase<EntityLogisticsReque
         }
         WidgetAnimatedStat stat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.info.logisticsRequester.aeIntegration.title"),
                 new ItemStack(item), 0xFF00AAFF, false);
-        stat.setText(ImmutableList.of("", "", "pneumaticcraft.gui.tab.info.logisticsRequester.aeIntegration"));
+        stat.setText(xlate("pneumaticcraft.gui.tab.info.logisticsRequester.aeIntegration"));
         stat.addSubWidget(aeIntegration = new WidgetCheckBox(16, 13, 0xFF000000,
                 xlate("pneumaticcraft.gui.tab.info.logisticsRequester.aeIntegration.enable"))
                 .withTag("ae2")
         );
+        stat.setReservedLines(2);
     }
 
     @Override

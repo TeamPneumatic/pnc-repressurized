@@ -18,7 +18,6 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.tileentity.TileEntity;
@@ -29,6 +28,8 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -262,7 +263,7 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
     }
 
     private void updateTrackerText() {
-        List<String> textList = new ArrayList<>();
+        List<ITextComponent> textList = new ArrayList<>();
 
         if (focusedTarget != null) {
             blockTrackInfo.setMessage(focusedTarget.stat.getMessage());
@@ -272,11 +273,11 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
 
             blockTypeCount.forEach((k, v) -> {
                 if (v > 0 && WidgetKeybindCheckBox.get(k).checked) {
-                    textList.add(v + " " + I18n.format(ArmorUpgradeRegistry.getStringKey(k)));
+                    textList.add(new StringTextComponent(v + " ").append(xlate(ArmorUpgradeRegistry.getStringKey(k))));
                 }
             });
 
-            if (textList.size() == 0) textList.add(I18n.format("pneumaticcraft.blockTracker.info.noTrackedBlocks"));
+            if (textList.size() == 0) textList.add(xlate("pneumaticcraft.blockTracker.info.noTrackedBlocks"));
         }
 
         blockTrackInfo.setText(textList);
@@ -323,7 +324,7 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
             WidgetAnimatedStat.StatIcon icon = WidgetAnimatedStat.StatIcon.of(EnumUpgrade.BLOCK_TRACKER.getItemStack());
             blockTrackInfo = new WidgetAnimatedStat(null, xlate("pneumaticcraft.blockTracker.info.trackedBlocks"),
                     icon, 0x3000AA00, null, ArmorHUDLayout.INSTANCE.blockTrackerStat);
-            blockTrackInfo.setMinDimensionsAndReset(0, 0);
+            blockTrackInfo.setMinimumContractedDimensions(0, 0);
         }
         return blockTrackInfo;
 

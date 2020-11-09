@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import net.minecraft.tileentity.TileEntity;
@@ -32,7 +32,7 @@ public class TrackerBlacklistManager {
             String title = te.getWorld().getBlockState(te.getPos()).getBlock().getRegistryName().toString();
             HUDHandler.getInstance().addMessage(
                     new StringTextComponent("Block tracking failed for " + title + "!"),
-                    Lists.newArrayList("A stacktrace can be found in the log."),
+                    ImmutableList.of(new StringTextComponent("A stacktrace can be found in the log.")),
                     80, 0xFFFF0000);
             blacklist.add(keyFor(te));
         }

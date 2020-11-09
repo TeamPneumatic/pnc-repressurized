@@ -1105,28 +1105,28 @@ public class EntityDrone extends EntityDroneBase implements
     }
 
     @Override
-    public void addHackInfo(Entity entity, List<String> curInfo, PlayerEntity player) {
+    public void addHackInfo(Entity entity, List<ITextComponent> curInfo, PlayerEntity player) {
         if (ownerUUID.equals(player.getUniqueID())) {
             if (isGoingToOwner()) {
-                curInfo.add("pneumaticcraft.armor.hacking.result.resumeTasks");
+                curInfo.add(xlate("pneumaticcraft.armor.hacking.result.resumeTasks"));
             } else {
-                curInfo.add("pneumaticcraft.armor.hacking.result.callBack");
+                curInfo.add(xlate("pneumaticcraft.armor.hacking.result.callBack"));
             }
         } else {
-            curInfo.add("pneumaticcraft.armor.hacking.result.disable");
+            curInfo.add(xlate("pneumaticcraft.armor.hacking.result.disable"));
         }
     }
 
     @Override
-    public void addPostHackInfo(Entity entity, List<String> curInfo, PlayerEntity player) {
+    public void addPostHackInfo(Entity entity, List<ITextComponent> curInfo, PlayerEntity player) {
         if (ownerUUID.equals(player.getUniqueID())) {
             if (isGoingToOwner()) {
-                curInfo.add("pneumaticcraft.armor.hacking.finished.calledBack");
+                curInfo.add(xlate("pneumaticcraft.armor.hacking.finished.calledBack"));
             } else {
-                curInfo.add("pneumaticcraft.armor.hacking.finished.resumedTasks");
+                curInfo.add(xlate("pneumaticcraft.armor.hacking.finished.resumedTasks"));
             }
         } else {
-            curInfo.add("pneumaticcraft.armor.hacking.finished.disabled");
+            curInfo.add(xlate("pneumaticcraft.armor.hacking.finished.disabled"));
         }
     }
 

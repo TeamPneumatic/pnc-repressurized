@@ -2,16 +2,18 @@ package me.desht.pneumaticcraft.client.gui;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.ContainerPressureChamberValve;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberValve;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 
 import java.util.List;
 
@@ -26,11 +28,13 @@ public class GuiPressureChamber extends GuiPneumaticContainerBase<ContainerPress
     public void init() {
         super.init();
 
+        int sOut = te.multiBlockSize;
+        int sIn = te.multiBlockSize - 2;
         addAnimatedStat(xlate("pneumaticcraft.gui.tab.status"), new ItemStack(ModBlocks.PRESSURE_CHAMBER_WALL.get()), 0xFFFFAA00, false)
                 .setText(ImmutableList.of(
-                        "\u00a7fChamber Size:",
-                        "\u00a70" + te.multiBlockSize + "x" + te.multiBlockSize + "x" + te.multiBlockSize + " (outside)",
-                        "\u00a70" + (te.multiBlockSize - 2) + "x" + (te.multiBlockSize - 2) + "x" + (te.multiBlockSize - 2) + " (inside)"
+                        xlate("pneumaticcraft.gui.tab.pressureChamber.chamberSize").mergeStyle(TextFormatting.WHITE),
+                        new StringTextComponent( sOut + "x" + sOut + "x" + sOut + " (outside)").mergeStyle(TextFormatting.BLACK),
+                        new StringTextComponent( sIn + "x" + sIn + "x" + sIn + " (inside)").mergeStyle(TextFormatting.BLACK)
                 ));
     }
 
@@ -53,22 +57,22 @@ public class GuiPressureChamber extends GuiPneumaticContainerBase<ContainerPress
     }
 
     @Override
-    protected void addWarnings(List<String> curInfo) {
+    protected void addWarnings(List<ITextComponent> curInfo) {
         super.addWarnings(curInfo);
         if (!te.isValidRecipeInChamber) {
-            curInfo.add(I18n.format("pneumaticcraft.gui.tab.problems.pressure_chamber.no_recipe"));
+            curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.pressure_chamber.no_recipe"));
         }
     }
 
     @Override
-    protected void addProblems(List<String> curInfo) {
+    protected void addProblems(List<ITextComponent> curInfo) {
         if (te.isValidRecipeInChamber && !te.isSufficientPressureInChamber) {
             if (te.recipePressure > 0F) {
-                curInfo.add(I18n.format("pneumaticcraft.gui.tab.problems.pressure_chamber.not_enough_pressure"));
+                curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.pressure_chamber.not_enough_pressure"));
             } else {
-                curInfo.add(I18n.format("pneumaticcraft.gui.tab.problems.pressure_chamber.too_much_pressure"));
+                curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.pressure_chamber.too_much_pressure"));
             }
-            curInfo.add(I18n.format("pneumaticcraft.gui.tab.problems.pressure_chamber.required_pressure", te.recipePressure));
+            curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.pressure_chamber.required_pressure", te.recipePressure));
         }
     }
 }

@@ -14,6 +14,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
@@ -42,17 +44,18 @@ public class BlockTrackEntryMobSpawner implements IBlockTrackEntry {
     }
 
     @Override
-    public void addInformation(World world, BlockPos pos, TileEntity te, Direction face, List<String> infoList) {
+    public void addInformation(World world, BlockPos pos, TileEntity te, Direction face, List<ITextComponent> infoList) {
+        // FIXME translations
         if (te instanceof MobSpawnerTileEntity) {
             AbstractSpawner spawner = ((MobSpawnerTileEntity) te).getSpawnerBaseLogic();
             Entity e = spawner.getCachedEntity();
-            infoList.add("Spawner Type: " + TextFormatting.AQUA + e.getName());
+            infoList.add(new StringTextComponent("Spawner Type: " + TextFormatting.AQUA + e.getName()));
             if (Reflections.isActivated(spawner) || hasAgitator(world, pos)) {
-                infoList.add("Time until next spawn: " + PneumaticCraftUtils.convertTicksToMinutesAndSeconds(spawner.spawnDelay, false));
+                infoList.add(new StringTextComponent("Time until next spawn: " + PneumaticCraftUtils.convertTicksToMinutesAndSeconds(spawner.spawnDelay, false)));
             } else if (HackableMobSpawner.isHacked(world, pos)) {
-                infoList.add("Spawner is hacked");
+                infoList.add(new StringTextComponent("Spawner is hacked"));
             } else {
-                infoList.add("Spawner is standing by");
+                infoList.add(new StringTextComponent("Spawner is standing by"));
             }
         }
     }

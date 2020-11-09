@@ -58,7 +58,7 @@ public class AirConClientHandler extends IArmorUpgradeClientHandler.SimpleToggle
         if (acStat == null) {
             acStat = new WidgetAnimatedStat(null, StringTextComponent.EMPTY, WidgetAnimatedStat.StatIcon.NONE,
                     0x3000AA00, null, ArmorHUDLayout.INSTANCE.airConStat);
-            acStat.setMinDimensionsAndReset(0, 0);
+            acStat.setMinimumContractedDimensions(0, 0);
         }
         return acStat;
     }

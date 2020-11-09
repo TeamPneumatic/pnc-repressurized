@@ -7,12 +7,12 @@ import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.inventory.ContainerRefinery;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefineryController;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefineryOutput;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
@@ -106,33 +106,33 @@ public class GuiRefineryController extends GuiPneumaticContainerBase<ContainerRe
     }
 
     @Override
-    public void addProblems(List<String> curInfo) {
+    public void addProblems(List<ITextComponent> curInfo) {
         super.addProblems(curInfo);
 
         int temp = te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY)
                 .map(IHeatExchangerLogic::getTemperatureAsInt).orElseThrow(RuntimeException::new);
         if (temp < te.minTemp) {
-            curInfo.add("pneumaticcraft.gui.tab.problems.notEnoughHeat");
+            curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.notEnoughHeat"));
         }
         if (te.getInputTank().getFluidAmount() < 10) {
-            curInfo.add("pneumaticcraft.gui.tab.problems.refinery.noOil");
+            curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.refinery.noOil"));
         }
         if (outputs.size() < 2) {
-            curInfo.add("pneumaticcraft.gui.tab.problems.refinery.notEnoughRefineries");
+            curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.refinery.notEnoughRefineries"));
         } else if (outputs.size() > 4) {
-            curInfo.add("pneumaticcraft.gui.tab.problems.refinery.tooManyRefineries");
+            curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.refinery.tooManyRefineries"));
         }
     }
 
     @Override
-    protected void addWarnings(List<String> curInfo) {
+    protected void addWarnings(List<ITextComponent> curInfo) {
         super.addWarnings(curInfo);
 
         if (te.isBlocked()) {
-            curInfo.add("pneumaticcraft.gui.tab.problems.refinery.outputBlocked");
+            curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.refinery.outputBlocked"));
         }
         if (nExposedFaces > 0) {
-            curInfo.add(I18n.format("pneumaticcraft.gui.tab.problems.exposedFaces", nExposedFaces, outputs.size() * 6));
+            curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.exposedFaces", nExposedFaces, outputs.size() * 6));
         }
     }
 

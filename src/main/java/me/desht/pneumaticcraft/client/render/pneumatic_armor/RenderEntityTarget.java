@@ -24,6 +24,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.client.event.InputEvent;
 
 import java.util.ArrayList;
@@ -40,7 +42,7 @@ public class RenderEntityTarget {
     private final WidgetAnimatedStat stat;
     private boolean didMakeLockSound;
     public boolean isLookingAtTarget;
-    private List<String> textList = new ArrayList<>();
+    private List<ITextComponent> textList = new ArrayList<>();
     private final List<IEntityTrackEntry> trackEntries;
     private int hackTime;
     private double distToEntity;
@@ -53,7 +55,7 @@ public class RenderEntityTarget {
 
         stat = new WidgetAnimatedStat(null, entity.getDisplayName(), StatIcon.NONE,
                 20, -20, 0x3000AA00, null, false);
-        stat.setMinDimensionsAndReset(0, 0);
+        stat.setMinimumContractedDimensions(0, 0);
     }
 
     public RenderDroneAI getDroneAIRenderer() {
@@ -144,7 +146,7 @@ public class RenderEntityTarget {
             for (IEntityTrackEntry tracker : trackEntries) {
                 tracker.addInfo(entity, textList, isLookingAtTarget);
             }
-            textList.add(String.format("Dist: %5.1fm", distToEntity));
+            textList.add(new StringTextComponent(String.format("Dist: %.1fm", distToEntity)));
             stat.setText(textList);
             // a bit of growing or shrinking to keep the stat on screen and/or of legible size
             float mul = getStatSizeMultiplier(distToEntity);
@@ -174,7 +176,7 @@ public class RenderEntityTarget {
         }
     }
 
-    public List<String> getEntityText() {
+    public List<ITextComponent> getEntityText() {
         return textList;
     }
 

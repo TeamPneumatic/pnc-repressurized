@@ -184,9 +184,9 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
     }
 
     @Override
-    public String getExtraStringInfo() {
-        if (useVariable) return "\"" + variable + "\"";
-        else return x != 0 || y != 0 || z != 0 ? x + ", " + y + ", " + z : null;
+    public ITextComponent getExtraStringInfo() {
+        if (useVariable) return varAsTextComponent(variable);
+        else return x != 0 || y != 0 || z != 0 ? new StringTextComponent(x + ", " + y + ", " + z) : null;
     }
 
     @Override

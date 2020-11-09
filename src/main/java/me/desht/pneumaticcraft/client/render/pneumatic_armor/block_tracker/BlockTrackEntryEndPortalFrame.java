@@ -8,6 +8,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
@@ -34,11 +36,11 @@ public class BlockTrackEntryEndPortalFrame implements IBlockTrackEntry {
     }
 
     @Override
-    public void addInformation(World world, BlockPos pos, TileEntity te, Direction face, List<String> infoList) {
+    public void addInformation(World world, BlockPos pos, TileEntity te, Direction face, List<ITextComponent> infoList) {
         if (world.getBlockState(pos).get(EndPortalFrameBlock.EYE)) {
-            infoList.add("Eye inserted");
+            infoList.add(new StringTextComponent("Eye inserted"));
         } else {
-            infoList.add("Eye not inserted");
+            infoList.add(new StringTextComponent("Eye not inserted"));
         }
     }
 

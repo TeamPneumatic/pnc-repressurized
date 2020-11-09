@@ -3,12 +3,12 @@ package me.desht.pneumaticcraft.client.gui;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.ContainerAirCannon;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAirCannon;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -45,7 +45,7 @@ public class GuiAirCannon extends GuiPneumaticContainerBase<ContainerAirCannon,T
 
         strengthTab = this.addAnimatedStat(xlate("pneumaticcraft.gui.tab.info.airCannon.force", te.forceMult),
                 new ItemStack(ModItems.AIR_CANISTER.get()), 0xFF2080FF, false);
-        strengthTab.addPadding(3, 22);
+        strengthTab.setMinimumExpandedDimensions(85, 40);
         strengthTab.addSubWidget(new WidgetButtonExtended(16, 16, 20, 20, "--").withTag("--"));
         strengthTab.addSubWidget(new WidgetButtonExtended(38, 16, 20, 20, "-").withTag("-"));
         strengthTab.addSubWidget(new WidgetButtonExtended(60, 16, 20, 20, "+").withTag("+"));
@@ -74,45 +74,45 @@ public class GuiAirCannon extends GuiPneumaticContainerBase<ContainerAirCannon,T
         }
     }
 
-    private List<String> getStatusText() {
-        List<String> text = new ArrayList<>();
+    private List<ITextComponent> getStatusText() {
+        List<ITextComponent> text = new ArrayList<>();
         if (te.gpsX != 0 || te.gpsY != 0 || te.gpsZ != 0) {
-            text.add(TextFormatting.BLACK + I18n.format("pneumaticcraft.gui.tab.info.airCannon.coord", te.gpsX, te.gpsY, te.gpsZ));
+            text.add(xlate("pneumaticcraft.gui.tab.info.airCannon.coord", te.gpsX, te.gpsY, te.gpsZ).mergeStyle(TextFormatting.BLACK));
         } else {
-            text.add(TextFormatting.BLACK + I18n.format("pneumaticcraft.gui.tab.info.airCannon.no_coord"));
+            text.add(xlate("pneumaticcraft.gui.tab.info.airCannon.no_coord").mergeStyle(TextFormatting.BLACK));
         }
-        text.add(TextFormatting.BLACK + I18n.format("pneumaticcraft.gui.tab.info.airCannon.heading", Math.round(te.rotationAngle)));
-        text.add(TextFormatting.BLACK + I18n.format("pneumaticcraft.gui.tab.info.airCannon.height", Math.round(te.heightAngle)));
-        text.add(TextFormatting.BLACK + I18n.format("pneumaticcraft.gui.tab.info.airCannon.range", Math.round(te.getForce() * 25F)));
+        text.add(xlate("pneumaticcraft.gui.tab.info.airCannon.heading", Math.round(te.rotationAngle)).mergeStyle(TextFormatting.BLACK));
+        text.add(xlate("pneumaticcraft.gui.tab.info.airCannon.height", Math.round(te.heightAngle)).mergeStyle(TextFormatting.BLACK));
+        text.add(xlate("pneumaticcraft.gui.tab.info.airCannon.range", Math.round(te.getForce() * 25F)).mergeStyle(TextFormatting.BLACK));
         return text;
     }
 
     @Override
-    protected void addProblems(List<String> textList) {
+    protected void addProblems(List<ITextComponent> textList) {
         super.addProblems(textList);
 
         if (te.hasNoConnectedAirHandlers()) {
-            textList.add(I18n.format("pneumaticcraft.gui.tab.problems.airLeak"));
+            textList.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.airLeak"));
         }
         if (container.inventorySlots.get(5).getStack().isEmpty() && te.getUpgrades(EnumUpgrade.ENTITY_TRACKER) == 0) {
-            textList.add(I18n.format("pneumaticcraft.gui.tab.problems.air_cannon.no_items"));
+            textList.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.air_cannon.no_items"));
         }
         if (!te.hasCoordinate()) {
-            textList.add(I18n.format("pneumaticcraft.gui.tab.problems.air_cannon.no_coordinate"));
+            textList.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.air_cannon.no_coordinate"));
         } else if (!te.coordWithinReach) {
-            textList.add(I18n.format("pneumaticcraft.gui.tab.problems.air_cannon.out_of_range"));
+            textList.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.air_cannon.out_of_range"));
         } else if (te.getRedstoneMode() == 0 && !te.doneTurning) {
-            textList.add(I18n.format("pneumaticcraft.gui.tab.problems.air_cannon.still_turning"));
+            textList.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.air_cannon.still_turning"));
         } else if (te.getRedstoneMode() == 2 && !te.insertingInventoryHasSpace) {
-            textList.add(I18n.format("pneumaticcraft.gui.tab.problems.air_cannon.inv_space"));
+            textList.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.air_cannon.inv_space"));
         }
     }
 
     @Override
-    protected void addInformation(List<String> curInfo) {
+    protected void addInformation(List<ITextComponent> curInfo) {
         super.addInformation(curInfo);
         if (curInfo.isEmpty()) {
-            curInfo.add(I18n.format("pneumaticcraft.gui.tooltip.apply_redstone"));
+            curInfo.add(xlate("pneumaticcraft.gui.tooltip.apply_redstone"));
         }
     }
 }

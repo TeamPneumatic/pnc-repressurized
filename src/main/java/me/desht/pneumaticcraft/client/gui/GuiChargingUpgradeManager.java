@@ -9,7 +9,6 @@ import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.inventory.ContainerChargingStationUpgradeManager;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.lib.GuiConstants;
@@ -26,6 +25,8 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public abstract class GuiChargingUpgradeManager extends GuiPneumaticContainerBase<ContainerChargingStationUpgradeManager,TileEntityChargingStation> {
 
@@ -55,20 +56,11 @@ public abstract class GuiChargingUpgradeManager extends GuiPneumaticContainerBas
     }
 
     @Override
-    protected void addPressureStatInfo(List<String> pressureStatText) {
+    protected void addPressureStatInfo(List<ITextComponent> pressureStatText) {
         int upgrades = UpgradableItemUtils.getUpgrades(itemStack, EnumUpgrade.VOLUME);
         int volume = ApplicableUpgradesDB.getInstance().getUpgradedVolume(getDefaultVolume(), upgrades);
         float curPressure = te.chargingItemPressure;
-        String col = TextFormatting.BLACK.toString();
-
-        pressureStatText.add(col + I18n.format("pneumaticcraft.gui.tooltip.pressure",
-                PneumaticCraftUtils.roundNumberTo(te.chargingItemPressure, 2)));
-        pressureStatText.add(col + I18n.format("pneumaticcraft.gui.tooltip.air", String.format("%,d", Math.round(curPressure * volume))));
-        pressureStatText.add(col + I18n.format("pneumaticcraft.gui.tooltip.baseVolume", String.format("%,d", getDefaultVolume())));
-        if (volume > getDefaultVolume()) {
-            pressureStatText.add(col + GuiConstants.TRIANGLE_RIGHT + " " + upgrades + " x " + EnumUpgrade.VOLUME.getItemStack().getDisplayName().getString());
-            pressureStatText.add(col + I18n.format("pneumaticcraft.gui.tooltip.effectiveVolume", String.format("%,d",volume)));
-        }
+        addPressureInfo(pressureStatText, curPressure, volume, getDefaultVolume(), upgrades);
     }
 
     @Override
@@ -131,17 +123,16 @@ public abstract class GuiChargingUpgradeManager extends GuiPneumaticContainerBas
                 int max = ApplicableUpgradesDB.getInstance().getMaxUpgrades(item, upgrade);
                 if (max > 0) {
                     ItemStack upgradeStack = upgrade.getItemStack();
-                    List<String> text = new ArrayList<>();
-                    text.add(TextFormatting.GRAY + I18n.format("pneumaticcraft.gui.tab.upgrades.max", max));
+                    List<ITextComponent> text = new ArrayList<>();
+                    text.add(xlate("pneumaticcraft.gui.tab.upgrades.max", max).mergeStyle(TextFormatting.GRAY));
                     for (String w : what) {
                         String key = "pneumaticcraft.gui.tab.info.item." + w + "." + upgrade.getName() + "Upgrade";
                         if (I18n.hasKey(key)) {
-                            text.addAll(PneumaticCraftUtils.splitString(I18n.format(key), 30));
+                            text.addAll(GuiUtils.xlateAndSplit(key));
                             break;
                         }
                     }
-                    addAnimatedStat(upgradeStack.getDisplayName(), upgradeStack, 0xFF6060FF, leftSided)
-                            .setTextWithoutCuttingString(text);
+                    addAnimatedStat(upgradeStack.getDisplayName(), upgradeStack, 0xFF6060FF, leftSided).setText(text);
                     leftSided = !leftSided;
                 }
             }

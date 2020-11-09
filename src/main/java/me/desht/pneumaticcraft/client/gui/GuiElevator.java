@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.ContainerElevator;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -12,7 +13,6 @@ import me.desht.pneumaticcraft.common.network.PacketUpdateTextfield;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorBase;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -46,18 +46,18 @@ public class GuiElevator extends GuiPneumaticContainerBase<ContainerElevator, Ti
 
         WidgetAnimatedStat floorNameStat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.info.elevator.floorNames"),
                 new ItemStack(ModBlocks.ELEVATOR_CALLER.get()), 0xFF005500, false);
-        floorNameStat.addPadding(7, 40);
+        floorNameStat.setMinimumExpandedDimensions(120, 85);
 
-        floorNameField = new WidgetTextField(font,6, 60, 160, 20);
+        floorNameField = new WidgetTextField(font,6, 60, 120, 20);
         floorNameField.setText(te.getFloorName(currentEditedFloor));
         floorNameField.setResponder(this::updateFloor);  // gui responder
 
         floorNameStat.addSubWidget(floorNameField);
         floorNameStat.addSubWidget(noFloorsLabel = new WidgetLabel(5, 20, xlate("pneumaticcraft.gui.tab.info.elevator.noCallers")).setColor(0xFFFFFFFF));
-        floorNameStat.addSubWidget(floorNumberLabel = new WidgetLabel(85, 40, StringTextComponent.EMPTY)
+        floorNameStat.addSubWidget(floorNumberLabel = new WidgetLabel(65, 40, StringTextComponent.EMPTY)
                 .setAlignment(WidgetLabel.Alignment.CENTRE).setColor(0xFFFFFFFF));
         floorNameStat.addSubWidget(cycleDown = new WidgetButtonExtended(5, 35, 20, 20, ARROW_LEFT, button -> cycleFloor(-1)));
-        floorNameStat.addSubWidget(cycleUp = new WidgetButtonExtended(145, 35, 20, 20, ARROW_RIGHT, button -> cycleFloor(1)));
+        floorNameStat.addSubWidget(cycleUp = new WidgetButtonExtended(105, 35, 20, 20, ARROW_RIGHT, button -> cycleFloor(1)));
     }
 
     private void cycleFloor(int dir) {
@@ -103,22 +103,22 @@ public class GuiElevator extends GuiPneumaticContainerBase<ContainerElevator, Ti
         floorNumberLabel.setMessage(xlate("pneumaticcraft.gui.tab.info.elevator.floorNumber", currentEditedFloor + 1, te.floorHeights.length));
     }
 
-    private List<String> getStatusText() {
-        List<String> text = new ArrayList<>();
+    private List<ITextComponent> getStatusText() {
+        List<ITextComponent> text = new ArrayList<>();
 
-        text.add(TextFormatting.BLACK + I18n.format("pneumaticcraft.gui.tab.info.elevator.extension",
-                PneumaticCraftUtils.roundNumberTo(te.extension, 1)));
-        text.add(TextFormatting.BLACK + I18n.format("pneumaticcraft.gui.tab.info.elevator.maxExtension",
-                PneumaticCraftUtils.roundNumberTo(te.getMaxElevatorHeight(), 1)));
+        text.add(xlate("pneumaticcraft.gui.tab.info.elevator.extension",
+                PneumaticCraftUtils.roundNumberTo(te.extension, 1)).mergeStyle(TextFormatting.BLACK));
+        text.add(xlate("pneumaticcraft.gui.tab.info.elevator.maxExtension",
+                PneumaticCraftUtils.roundNumberTo(te.getMaxElevatorHeight(), 1)).mergeStyle(TextFormatting.BLACK));
 
         return text;
     }
 
     @Override
-    protected void addWarnings(List<String> textList) {
+    protected void addWarnings(List<ITextComponent> textList) {
         super.addWarnings(textList);
         if (te.getMaxElevatorHeight() == te.extension) {
-            textList.add(I18n.format("pneumaticcraft.gui.tab.problems.elevator.fully_extended"));
+            textList.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.elevator.fully_extended"));
         }
     }
 }

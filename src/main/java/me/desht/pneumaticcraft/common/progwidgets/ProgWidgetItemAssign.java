@@ -125,8 +125,8 @@ public class ProgWidgetItemAssign extends ProgWidget implements IVariableSetWidg
     }
 
     @Override
-    public String getExtraStringInfo() {
-        return "\"" + variable + "\"";
+    public ITextComponent getExtraStringInfo() {
+        return varAsTextComponent(variable);
     }
 
     @Override

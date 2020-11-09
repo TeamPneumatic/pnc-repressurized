@@ -190,7 +190,7 @@ public enum HUDHandler implements IKeyListener {
                 }
 
                 // all enabled upgrades do their 2D rendering here
-                if (WidgetKeybindCheckBox.getCoreComponents().checked) {
+                if (WidgetKeybindCheckBox.getCoreComponents().checked || Minecraft.getInstance().currentScreen == null) {
                     List<IArmorUpgradeClientHandler> renderHandlers = ArmorUpgradeClientRegistry.getInstance().getHandlersForSlot(slot);
                     for (int i = 0; i < renderHandlers.size(); i++) {
                         IArmorUpgradeClientHandler clientHandler = renderHandlers.get(i);
@@ -360,7 +360,7 @@ public enum HUDHandler implements IKeyListener {
                 Collections.emptyList(), 60, 0x7000AA00);
     }
 
-    public void addMessage(ITextComponent title, List<String> message, int duration, int backColor) {
+    public void addMessage(ITextComponent title, List<ITextComponent> message, int duration, int backColor) {
         addMessage(new ArmorMessage(title, message, duration, backColor));
     }
 

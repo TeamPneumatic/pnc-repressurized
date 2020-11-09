@@ -30,8 +30,9 @@ public class GuiMinigunMagazine extends GuiPneumaticContainerBase<ContainerMinig
     public void init() {
         super.init();
 
-        addInfoTab("gui.tooltip.item.pneumaticcraft.minigun");
-        addAnimatedStat(xlate("pneumaticcraft.gui.tab.minigun.slotInfo.title"), new ItemStack(ModItems.GUN_AMMO.get()), 0xFF0080C0, true).setText("pneumaticcraft.gui.tab.minigun.slotInfo");
+        addInfoTab(GuiUtils.xlateAndSplit("gui.tooltip.item.pneumaticcraft.minigun"));
+        addAnimatedStat(xlate("pneumaticcraft.gui.tab.minigun.slotInfo.title"), new ItemStack(ModItems.GUN_AMMO.get()), 0xFF0080C0, true)
+                .setText(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.minigun.slotInfo"));
     }
 
     @Override

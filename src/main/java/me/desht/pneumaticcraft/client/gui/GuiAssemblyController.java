@@ -2,18 +2,21 @@ package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.ContainerAssemblyController;
 import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram.EnumMachine;
 import me.desht.pneumaticcraft.common.tileentity.IAssemblyMachine;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAssemblyController;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 
 import java.util.ArrayList;
@@ -53,8 +56,8 @@ public class GuiAssemblyController extends GuiPneumaticContainerBase<ContainerAs
         statusStat.setText(getStatusText());
     }
 
-    private List<String> getStatusText() {
-        List<String> text = new ArrayList<>();
+    private List<ITextComponent> getStatusText() {
+        List<ITextComponent> text = new ArrayList<>();
 
         EnumSet<EnumMachine> foundMachines = EnumSet.of(EnumMachine.CONTROLLER);
         for (IAssemblyMachine machine : te.findMachines(EnumMachine.values().length)) {
@@ -62,25 +65,27 @@ public class GuiAssemblyController extends GuiPneumaticContainerBase<ContainerAs
         }
         for (EnumMachine m : EnumMachine.values()) {
             if (m == EnumMachine.CONTROLLER) continue; // we *are* the controller!
-            String s = foundMachines.contains(m) ? TextFormatting.DARK_GREEN + "\u2714 " : TextFormatting.RED + "\u2717 ";
-            text.add(s + TextFormatting.BLACK + " " + I18n.format(m.getTranslationKey()));
+            IFormattableTextComponent s = foundMachines.contains(m) ?
+                    new StringTextComponent(GuiConstants.TICK_MARK).mergeStyle(TextFormatting.DARK_GREEN) :
+                    new StringTextComponent(GuiConstants.X_MARK).mergeStyle(TextFormatting.RED);
+            text.add(s.appendString(" ").append(xlate(m.getTranslationKey()).mergeStyle(TextFormatting.WHITE)));
         }
         return text;
     }
 
     @Override
-    protected void addProblems(List<String> textList) {
+    protected void addProblems(List<ITextComponent> textList) {
         super.addProblems(textList);
 
         if (te.curProgram == null) {
-            textList.addAll(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.tab.problems.assembly_controller.no_program")));
+            textList.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.assembly_controller.no_program"));
         } else {
             if (te.isMachineDuplicate) {
                 String s = te.duplicateMachine == null ? "<???>" : I18n.format(te.duplicateMachine.getTranslationKey());
-                textList.addAll(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.tab.problems.assembly_controller.duplicateMachine", s)));
+                textList.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.assembly_controller.duplicateMachine", s));
             } else if (te.isMachineMissing) {
                 String s = te.missingMachine == null ? "<???>" : I18n.format(te.missingMachine.getTranslationKey());
-                textList.addAll(PneumaticCraftUtils.splitString(I18n.format("pneumaticcraft.gui.tab.problems.assembly_controller.missingMachine", s)));
+                textList.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.assembly_controller.missingMachine", s));
             } else {
                 te.curProgram.addProgramProblem(textList);
             }

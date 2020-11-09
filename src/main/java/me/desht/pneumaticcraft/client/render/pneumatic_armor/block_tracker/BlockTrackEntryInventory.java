@@ -16,6 +16,7 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -23,7 +24,6 @@ import net.minecraftforge.items.CapabilityItemHandler;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
@@ -59,7 +59,7 @@ public class BlockTrackEntryInventory implements IBlockTrackEntry {
     }
 
     @Override
-    public void addInformation(World world, BlockPos pos, TileEntity te, Direction face, List<String> infoList) {
+    public void addInformation(World world, BlockPos pos, TileEntity te, Direction face, List<ITextComponent> infoList) {
         try {
             IOHelper.getInventoryForTE(te, face).ifPresent(inventory -> {
                 boolean empty = true;
@@ -72,12 +72,12 @@ public class BlockTrackEntryInventory implements IBlockTrackEntry {
                     inventoryStacks[i] = iStack;
                 }
                 if (empty) {
-                    infoList.add("Contents: Empty");
+                    infoList.add(new StringTextComponent("Contents: Empty"));
                 } else {
-                    infoList.add("Contents:");
+                    infoList.add(new StringTextComponent("Contents:"));
                     List<ITextComponent> l = new ArrayList<>();
                     PneumaticCraftUtils.sortCombineItemStacksAndToString(l, inventoryStacks);
-                    infoList.addAll(l.stream().map(ITextComponent::getString).collect(Collectors.toList()));
+                    infoList.addAll(l);
                 }
             });
         } catch (Throwable e) {

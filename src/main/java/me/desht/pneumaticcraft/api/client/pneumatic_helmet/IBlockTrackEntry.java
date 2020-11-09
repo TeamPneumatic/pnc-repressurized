@@ -5,6 +5,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
@@ -66,7 +67,7 @@ public interface IBlockTrackEntry {
      * @param face     The blockface the player is looking at (null if player is not looking directly at the block)
      * @param infoList The list of lines to display.
      */
-    void addInformation(World world, BlockPos pos, TileEntity te, Direction face, List<String> infoList);
+    void addInformation(World world, BlockPos pos, TileEntity te, Direction face, List<ITextComponent> infoList);
     /**
      * This method is called when displaying the currently tracked blocks.
      * Will be tried to be mapped to the localization file first.

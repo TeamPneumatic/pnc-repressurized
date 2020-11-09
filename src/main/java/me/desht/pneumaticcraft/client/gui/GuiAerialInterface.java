@@ -15,7 +15,6 @@ import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
@@ -49,7 +48,8 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<ContainerAeria
         super.init();
 
         addAnimatedStat(xlate("pneumaticcraft.gui.tab.info.aerialInterface.interfacingRF.info.title"),
-                Textures.GUI_BUILDCRAFT_ENERGY, 0xFFA02222, false).setText("pneumaticcraft.gui.tab.info.aerialInterface.interfacingRF.info");
+                Textures.GUI_BUILDCRAFT_ENERGY, 0xFFA02222, false)
+                .setText(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.info.aerialInterface.interfacingRF.info"));
 
         te.getCapability(CapabilityEnergy.ENERGY).ifPresent(storage -> addButton(new WidgetEnergy(guiLeft + 20, guiTop + 20, storage)));
 
@@ -59,7 +59,7 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<ContainerAeria
             if (availableXp.size() > 0) {
                 WidgetAnimatedStat xpStat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.info.aerialInterface.liquidXp.info.title"),
                         new ItemStack(Items.EXPERIENCE_BOTTLE), 0xFF55FF55, false);
-                xpStat.setText(getLiquidXPText());
+                xpStat.setText(getLiquidXPText()).setForegroundColor(0xFF000000);
                 xpButton = new WidgetButtonExtended(20, 15, 20, 20, StringTextComponent.EMPTY, b -> {
                     te.curXPFluidIndex++;
                     if (te.curXPFluidIndex >= availableXp.size()) {
@@ -69,11 +69,12 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<ContainerAeria
                 }).withTag("xpType");
                 setupXPButton();
                 xpStat.addSubWidget(xpButton);
+                xpStat.setReservedLines(3);
             }
 
             // Feeding Tab
             feedModeTab = addAnimatedStat(xlate(te.feedMode.getTranslationKey()), te.feedMode.getIconStack(), 0xFFFFA000, false);
-            feedModeTab.addPadding(4, 16);
+            feedModeTab.setMinimumExpandedDimensions(80, 42);
 
             for (int i = 0; i < FeedMode.values().length; i++) {
                 FeedMode mode = FeedMode.values()[i];
@@ -89,11 +90,11 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<ContainerAeria
             }
 
             addAnimatedStat(xlate("pneumaticcraft.gui.tab.info.aerialInterface.interfacingFood"), new ItemStack(Items.BREAD), 0xFFA0A0A0, false)
-                    .setText("pneumaticcraft.gui.tab.info.aerialInterface.removeDispenser");
+                    .setText(xlate("pneumaticcraft.gui.tab.info.aerialInterface.removeDispenser")).setForegroundColor(0xFF000000);
 
         } else {
             addAnimatedStat(xlate("pneumaticcraft.gui.tab.info.aerialInterface.interfacingItems"), new ItemStack(Blocks.CHEST), 0xFFA0A0A0, false)
-                    .setText("pneumaticcraft.gui.tab.info.aerialInterface.insertDispenser");
+                    .setText(xlate("pneumaticcraft.gui.tab.info.aerialInterface.insertDispenser")).setForegroundColor(0xFF000000);
             Arrays.fill(modeButtons, null);
         }
     }
@@ -138,23 +139,21 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<ContainerAeria
         }
     }
 
-    private List<String> getLiquidXPText() {
-        List<String> liquidXpText = new ArrayList<>();
-        liquidXpText.add("");
-        liquidXpText.add("");
-        liquidXpText.add("");
-        liquidXpText.add("pneumaticcraft.gui.tab.info.aerialInterface.liquidXp.info");
-        liquidXpText.add("");
+    private List<ITextComponent> getLiquidXPText() {
+        List<ITextComponent> liquidXpText = new ArrayList<>(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.info.aerialInterface.liquidXp.info"));
+        liquidXpText.add(StringTextComponent.EMPTY);
         List<Fluid> availableXp = XPFluidManager.getInstance().getAvailableLiquidXPs();
         if (availableXp.isEmpty()) {
-            liquidXpText.add(TextFormatting.ITALIC + "None");
+            liquidXpText.add(xlate("pneumaticcraft.gui.misc.none").mergeStyle(TextFormatting.BLACK, TextFormatting.ITALIC));
         } else {
             for (Fluid f : availableXp) {
                 FluidStack stack = new FluidStack(f, 1000);
                 String modName = ModNameCache.getModName(f.getRegistryName().getNamespace());
-                liquidXpText.add(TextFormatting.BLACK.toString() + GuiConstants.BULLET + " "
-                        + stack.getDisplayName().getString()
-                        + TextFormatting.DARK_BLUE + " (" + modName + ")");
+                StringTextComponent modNameText = new StringTextComponent(" (" + modName + ")");
+                liquidXpText.add(GuiConstants.bullet().mergeStyle(TextFormatting.BLACK)
+                        .append(stack.getDisplayName().deepCopy().mergeStyle(TextFormatting.BLACK))
+                        .append(modNameText.mergeStyle(TextFormatting.DARK_BLUE))
+                );
             }
         }
         return liquidXpText;
@@ -166,30 +165,30 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<ContainerAeria
     }
 
     @Override
-    protected void addPressureStatInfo(List<String> pressureStatText) {
+    protected void addPressureStatInfo(List<ITextComponent> pressureStatText) {
         super.addPressureStatInfo(pressureStatText);
 
         if (te.getPressure() >= te.getMinWorkingPressure() && te.isConnectedToPlayer) {
-            pressureStatText.add(TextFormatting.BLACK + I18n.format("pneumaticcraft.gui.tooltip.airUsage",
-                    PneumaticCraftUtils.roundNumberTo(PneumaticValues.USAGE_AERIAL_INTERFACE, 1)));
+            pressureStatText.add(xlate("pneumaticcraft.gui.tooltip.airUsage",
+                    PneumaticCraftUtils.roundNumberTo(PneumaticValues.USAGE_AERIAL_INTERFACE, 1)).mergeStyle(TextFormatting.BLACK));
         }
     }
 
     @Override
-    protected void addProblems(List<String> textList) {
+    protected void addProblems(List<ITextComponent> textList) {
         super.addProblems(textList);
 
         if (te.playerName.equals("")) {
-            textList.add(I18n.format("pneumaticcraft.gui.tab.problems.aerialInterface.noPlayer"));
+            textList.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.aerialInterface.noPlayer"));
         } else if (!te.isConnectedToPlayer) {
-            textList.add(I18n.format("pneumaticcraft.gui.tab.problems.aerialInterface.playerOffline", te.playerName));
+            textList.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.aerialInterface.playerOffline", te.playerName));
         }
     }
 
     @Override
-    protected void addInformation(List<String> curInfo) {
+    protected void addInformation(List<ITextComponent> curInfo) {
         if (te.playerName != null && !te.playerName.isEmpty()) {
-            curInfo.add(I18n.format("pneumaticcraft.gui.tab.info.aerialInterface.linked", te.playerName));
+            curInfo.add(xlate("pneumaticcraft.gui.tab.info.aerialInterface.linked", te.playerName));
         }
     }
 }
