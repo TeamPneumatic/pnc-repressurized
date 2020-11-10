@@ -3,13 +3,13 @@ package me.desht.pneumaticcraft.client.gui;
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.ContainerPressurizedSpawner;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressurizedSpawner;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityVacuumTrap;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -40,8 +40,8 @@ public class GuiPressurizedSpawner extends GuiPneumaticContainerBase<ContainerPr
         super.tick();
 
         infoStat.setText(ImmutableList.of(
-            I18n.format("pneumaticcraft.gui.tab.status.pressurizedSpawner.spawnRate", te.getSpawnInterval()),
-            I18n.format("pneumaticcraft.gui.tab.status.pressurizedSpawner.airUsage", te.getAirUsage())
+            xlate("pneumaticcraft.gui.tab.status.pressurizedSpawner.spawnRate", te.getSpawnInterval()),
+            xlate("pneumaticcraft.gui.tab.status.pressurizedSpawner.airUsage", te.getAirUsage())
         ));
     }
 
@@ -58,10 +58,10 @@ public class GuiPressurizedSpawner extends GuiPneumaticContainerBase<ContainerPr
     }
 
     @Override
-    protected void addProblems(List<String> curInfo) {
+    protected void addProblems(List<ITextComponent> curInfo) {
         super.addProblems(curInfo);
         if (te.problem == TileEntityVacuumTrap.Problems.NO_CORE) {
-            curInfo.add(I18n.format(te.problem.getTranslationKey()));
+            curInfo.addAll(GuiUtils.xlateAndSplit(te.problem.getTranslationKey()));
         }
     }
 }
