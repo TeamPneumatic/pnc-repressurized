@@ -20,6 +20,12 @@ Changes are in reverse chronological order; newest changes at the top.
 * Drone variable parsing (with `${varname}` syntax): item variables are now supported too
 * "Right Click Block" widget is now called just "Right Click" (since it can be used to click both items and blocks)
   * Cosmetic change only, no functional changes
+* Animated stats (i.e. GUI side tabs and the popup HUD boxes for pneumatic armor) have been heavily reworked internally
+  * Player-visible changes are fairly limited, but side tabs do wrap their text better now (taking advantage of some vanilla `ITextComponent`/`IReorderingProcessor` code to mange text)
+  * Side tabs never scale their text now when short of space, since that never looked good. Instead, text is always wrapped to fit the available width and a scrollbar added where necessary.
+  * Dropped the remaining use of raw `String` in many places, in favour of `ITextComponent`
+  * There are API breaks for `IGuiAnimatedStat`, `IHackableBlock` and `IHackableEntity` - sorry!
+* The `/dumpNBT` command now requires player permission level 2 (it could be used to inspect item data which should remain secret from regular players)
 
 ### Fixes
 * Fixed a few locale-related errors in recipe deserialization
