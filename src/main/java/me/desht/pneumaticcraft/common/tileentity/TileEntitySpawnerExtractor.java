@@ -8,7 +8,6 @@ import me.desht.pneumaticcraft.common.item.ItemSpawnerCore.SpawnerCoreStats;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -48,7 +47,7 @@ import java.util.Optional;
 import java.util.Random;
 
 public class TileEntitySpawnerExtractor extends TileEntityPneumaticBase implements IMinWorkingPressure, INamedContainerProvider {
-    static final String DEFENDER_TAG = Names.MOD_ID + ":defender";
+
     private static final int MAX_ENTITY_RANGE = 6;
 
     public enum Mode { INIT, RUNNING, FINISHED }
@@ -67,7 +66,7 @@ public class TileEntitySpawnerExtractor extends TileEntityPneumaticBase implemen
     private int spawnFailures;
 
     public TileEntitySpawnerExtractor() {
-        super(ModTileEntities.SPAWNER_EXTRACTOR.get(), PneumaticValues.DANGER_PRESSURE_TIER_TWO, PneumaticValues.MAX_PRESSURE_TIER_TWO, PneumaticValues.VOLUME_SPAWNER_MANIPULATOR, 4);
+        super(ModTileEntities.SPAWNER_EXTRACTOR.get(), PneumaticValues.DANGER_PRESSURE_TIER_ONE, PneumaticValues.MAX_PRESSURE_TIER_ONE, PneumaticValues.VOLUME_SPAWNER_EXTRACTOR, 4);
     }
 
     @Override
@@ -82,21 +81,21 @@ public class TileEntitySpawnerExtractor extends TileEntityPneumaticBase implemen
             currentSpeed -= Math.max(0.01f, (targetSpeed - currentSpeed) / 10f);
         }
 
-        float incr = 0f;
         if (mode == Mode.INIT) {
             updateMode();
         }
         switch (mode) {
             case RUNNING:
-                incr = currentSpeed / 1200f;   // at max speed, 1200 ticks to completion
+                float incr = currentSpeed / 1200f;   // at max speed, 1200 ticks to completion
+                progress = Math.min(1f, progress + incr);
                 break;
             case FINISHED:
+                progress = 1f;
                 targetSpeed = 0f;
                 rotationDegrees = prevRotationDegrees;
                 break;
         }
 
-        progress = Math.min(1f, progress + incr);
 
         if (!world.isRemote) {
             int defenderChance = world.getDifficulty() == Difficulty.EASY ? 40 : 20;
@@ -166,9 +165,9 @@ public class TileEntitySpawnerExtractor extends TileEntityPneumaticBase implemen
                 if (spawner.spawnData.getNbt().size() == 1 && spawner.spawnData.getNbt().contains("id", Constants.NBT.TAG_STRING)) {
                     if (!ForgeEventFactory.doSpecialSpawn(mobentity, world, (float)entity.getPosX(), (float)entity.getPosY(), (float)entity.getPosZ(), spawner, SpawnReason.SPAWNER)) {
                         mobentity.onInitialSpawn(serverworld, world.getDifficultyForLocation(entity.getPosition()), SpawnReason.SPAWNER, null, null);
-                        entity.addTag(DEFENDER_TAG);
+                        // note: "pneumaticcraft:defender" tag is added in TileEntityVacuumTrap.Listener.onMobSpawn()
                         if (world.getDifficulty() == Difficulty.HARD) {
-                            getRandomEffects(world.rand).forEach(effect -> mobentity.addPotionEffect(new EffectInstance(effect, Integer.MAX_VALUE)));
+                            getRandomEffects(world.rand).forEach(effect -> mobentity.addPotionEffect(new EffectInstance(effect, Integer.MAX_VALUE, 2)));
                         }
                     }
                 }

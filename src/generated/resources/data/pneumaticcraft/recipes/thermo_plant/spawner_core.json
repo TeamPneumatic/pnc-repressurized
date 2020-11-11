@@ -1,0 +1,17 @@
+{
+  "type": "pneumaticcraft:thermo_plant",
+  "item_input": {
+    "item": "pneumaticcraft:spawner_core_shell"
+  },
+  "fluid_input": {
+    "type": "pneumaticcraft:fluid",
+    "fluid": "pneumaticcraft:memory_essence",
+    "amount": 4000
+  },
+  "item_output": {
+    "item": "pneumaticcraft:spawner_core"
+  },
+  "pressure": 3.0,
+  "speed": 0.5,
+  "exothermic": false
+}

@@ -79,6 +79,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         }
         if (shouldAddProblemTab()) {
             problemTab = addAnimatedStat(xlate("pneumaticcraft.gui.tab.problems"), 0xFFA0A0A0, false);
+            problemTab.setForegroundColor(0xFF000000);
             problemTab.setMinimumExpandedDimensions(0, 16);
         }
         if (te != null) {

@@ -596,6 +596,13 @@ public class ModRecipeProvider extends RecipeProvider {
                 'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON
         ).build(consumer);
 
+        shaped(ModBlocks.PRESSURIZED_SPAWNER.get(), ModBlocks.EMPTY_SPAWNER.get(),
+                "ITI/TET/ITI",
+                'T', ModBlocks.ADVANCED_PRESSURE_TUBE.get(),
+                'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
+                'E', ModBlocks.EMPTY_SPAWNER.get()
+        ).build(consumer);
+
         shaped(ModItems.PRINTED_CIRCUIT_BOARD.get(), ModItems.PLASTIC.get(),
                 " T /CUC/ T ",
                 'T', ModItems.TRANSISTOR.get(),
@@ -730,6 +737,23 @@ public class ModRecipeProvider extends RecipeProvider {
                 'G', Items.GHAST_TEAR
         ).build(consumer);
 
+        shaped(ModItems.SPAWNER_CORE_SHELL.get(), ModBlocks.PRESSURE_CHAMBER_GLASS.get(),
+                "IGI/GEG/IGI",
+                'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
+                'G', ModBlocks.PRESSURE_CHAMBER_GLASS.get(),
+                'E', Tags.Items.GEMS_EMERALD
+        ).build(consumer);
+
+        shaped(ModBlocks.SPAWNER_EXTRACTOR.get(), ModItems.SPAWNER_AGITATOR.get(),
+                "ITI/WAW/OPO",
+                'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
+                'T', ModBlocks.PRESSURE_TUBE.get(),
+                'W', ModBlocks.PRESSURE_CHAMBER_WALL.get(),
+                'A', ModItems.SPAWNER_AGITATOR.get(),
+                'O', Tags.Blocks.OBSIDIAN,
+                'P', ModBlocks.DRILL_PIPE.get()
+        ).build(consumer);
+
         shaped(ModItems.STONE_BASE.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
                 "S S/STS",
                 'S', Tags.Items.STONE,
@@ -817,6 +841,16 @@ public class ModRecipeProvider extends RecipeProvider {
                 'G', ModItems.PRESSURE_GAUGE.get(),
                 'R', ModItems.TURBINE_ROTOR.get(),
                 'T', ModBlocks.PRESSURE_TUBE.get(),
+                'S', ModBlocks.REINFORCED_STONE_SLAB.get()
+        ).build(consumer);
+
+        shaped(ModBlocks.VACUUM_TRAP.get(), ModItems.TURBINE_ROTOR.get(),
+                "ITI/WEP/SSS",
+                'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
+                'T', Blocks.IRON_TRAPDOOR,
+                'W', ModBlocks.REINFORCED_BRICK_WALL.get(),
+                'P', ModBlocks.PRESSURE_TUBE.get(),
+                'E', Items.ENDER_EYE,
                 'S', ModBlocks.REINFORCED_STONE_SLAB.get()
         ).build(consumer);
 
@@ -1209,6 +1243,10 @@ public class ModRecipeProvider extends RecipeProvider {
                 FluidStack.EMPTY, new ItemStack(ModItems.CHIPS.get(), 4),
                 TemperatureRange.min(423), 0f, 1.0f, false
         ).build(consumer, RL("thermo_plant/chips"));
+        thermoPlant(FluidIngredient.of(4000, ModFluids.MEMORY_ESSENCE.get()), Ingredient.fromItems(ModItems.SPAWNER_CORE_SHELL.get()),
+                FluidStack.EMPTY, new ItemStack(ModItems.SPAWNER_CORE.get()),
+                TemperatureRange.any(), 3f, 0.5f, false
+        ).build(consumer, RL("thermo_plant/spawner_core"));
 
         // assembly system
         assembly(Ingredient.fromItems(ModItems.EMPTY_PCB.get()), new ItemStack(ModItems.UNASSEMBLED_PCB.get()),

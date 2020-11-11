@@ -88,7 +88,7 @@ public class PneumaticValues {
 
     public static final int PRODUCTION_COMPRESSOR = 10; // mL per tick
     public static final int PRODUCTION_ADVANCED_COMPRESSOR = 50; // mL per tick
-    public static final int PRODUCTION_VACUUM_PUMP = 2;// mL vacuum per tick
+    public static final int PRODUCTION_VACUUM_PUMP = 4;// mL vacuum per tick
     public static final int PRODUCTION_PNEUMATIC_ENGINE = 100; //MJ/pump move.
     public static final int PRODUCTION_ELECTROSTATIC_COMPRESSOR = 200000; //per lightning strike
 
@@ -118,7 +118,7 @@ public class PneumaticValues {
     public static final int VOLUME_FLUID_MIXER = 3000;
     public static final int VOLUME_JACKHAMMER = 12000;
     public static final int VOLUME_VACUUM_TRAP = 10000;
-    public static final int VOLUME_SPAWNER_MANIPULATOR = 4000;
+    public static final int VOLUME_SPAWNER_EXTRACTOR = 4000;
     public static final int VOLUME_PRESSURIZED_SPAWNER = 5000;
 
     public static final int VOLUME_PRESSURE_CHAMBER_PER_EMPTY = 16000;

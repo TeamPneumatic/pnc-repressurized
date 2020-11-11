@@ -239,6 +239,8 @@ public class UpgradesDBSetup {
                 .with(EnumUpgrade.VOLUME, MAX_VOLUME)
                 .with(EnumUpgrade.RANGE, 6)
                 .with(EnumUpgrade.SECURITY, 1));
+        db.addApplicableUpgrades(ModTileEntities.SPAWNER_EXTRACTOR.get(), new Builder()
+                .with(EnumUpgrade.VOLUME, MAX_VOLUME));
         db.addApplicableUpgrades(ModTileEntities.PRESSURIZED_SPAWNER.get(), new Builder()
                 .with(EnumUpgrade.VOLUME, MAX_VOLUME)
                 .with(EnumUpgrade.RANGE, 6)

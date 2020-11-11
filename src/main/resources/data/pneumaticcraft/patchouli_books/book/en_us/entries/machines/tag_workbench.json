@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "The $(item)Tag Workbench/$ is used to produce $(item)Tag Filters/$, which are used to filter items by their item tags. E.g. treat all logs as the same item when filtering. Tag Filters can be placed in $(l:logistics/frames)Logistic Frame/$ filters, as well as $(l:programming/item_filter)Item Filter/$ programming widgets as used by Drones, and will match any item that has an item tag from the Tag Filter's list."
+      "text": "The $(item)Tag Workbench/$ is used to produce $(item)Tag Filters/$, which are used to filter items by their $(l:https://minecraft.gamepedia.com/Tag)item tags/$. E.g. treat all logs as the same item when filtering. Tag Filters can be placed in $(l:logistics/frames)Logistic Frame/$ filters, as well as $(l:programming/item_filter)Item Filter/$ programming widgets as used by Drones, and will match any item that has an item tag from the Tag Filter's list."
     },
     {
       "type": "text",

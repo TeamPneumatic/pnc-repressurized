@@ -170,6 +170,7 @@ public class Textures {
     public static final ResourceLocation GUI_JEI_THERMOPNEUMATIC_PROCESSING_PLANT = guiTexture("jei/gui_jei_thermopneumatic_processing_plant.png");
     public static final ResourceLocation GUI_JEI_YEAST_CRAFTING = guiTexture("jei/gui_jei_yeast_crafting.png");
     public static final ResourceLocation GUI_JEI_BONUS = guiTexture("jei/gui_jei_bonus.png");
+    public static final ResourceLocation GUI_JEI_SPAWNER_EXTRACTION = guiTexture("jei/gui_jei_spawner_extraction.png");
 
     // misc GUI Icons
     public static final ResourceLocation GUI_COPY_ICON_LOCATION = guiIconTexture("gui_copy.png");

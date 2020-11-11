@@ -45,6 +45,7 @@ public class ModItems {
     public static final RegistryObject<Item> UPGRADE_MATRIX = register("upgrade_matrix");
     public static final RegistryObject<Item> WHEAT_FLOUR = register("wheat_flour");
     public static final RegistryObject<Item> SOURDOUGH = register("sourdough");
+    public static final RegistryObject<Item> SPAWNER_CORE_SHELL = register("spawner_core_shell");
 
     public static final RegistryObject<Item> SOURDOUGH_BREAD = registerFood("sourdough_bread", ModFoods.SOURDOUGH);
     public static final RegistryObject<Item> CHIPS = registerFood("chips", ModFoods.CHIPS);

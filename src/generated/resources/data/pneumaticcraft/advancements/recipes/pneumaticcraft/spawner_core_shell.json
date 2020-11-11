@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "pneumaticcraft:spawner_core_shell"
+    ]
+  },
+  "criteria": {
+    "has_pressure_chamber_glass": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:pressure_chamber_glass"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "pneumaticcraft:spawner_core_shell"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_pressure_chamber_glass",
+      "has_the_recipe"
+    ]
+  ]
+}

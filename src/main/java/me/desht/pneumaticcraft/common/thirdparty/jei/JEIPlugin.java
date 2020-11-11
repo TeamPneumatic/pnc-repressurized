@@ -65,7 +65,8 @@ public class JEIPlugin implements IModPlugin {
                 new JEIHeatFrameCoolingCategory(),
                 new JEIPlasticSolidifyingCategory(),
                 new JEIEtchingTankCategory(),
-                new JEIYeastCraftingCategory()
+                new JEIYeastCraftingCategory(),
+                new JEISpawnerExtractionCategory()
         );
         if (PNCConfig.Common.Recipes.explosionCrafting) {
             registry.addRecipeCategories(new JEIExplosionCraftingCategory());
@@ -91,6 +92,7 @@ public class JEIPlugin implements IModPlugin {
         registration.addRecipes(JEIPlasticSolidifyingCategory.getAllRecipes(), ModCategoryUid.PLASTIC_SOLIDIFYING);
         registration.addRecipes(JEIEtchingTankCategory.getAllRecipes(), ModCategoryUid.ETCHING_TANK);
         registration.addRecipes(JEIYeastCraftingCategory.getAllRecipes(), ModCategoryUid.YEAST_CRAFTING);
+        registration.addRecipes(JEISpawnerExtractionCategory.getAllRecipes(), ModCategoryUid.SPAWNER_EXTRACTION);
 
         for (RegistryObject<Item> item: ModItems.ITEMS.getEntries()) {
             addStackInfo(registration, new ItemStack(item.get()));
@@ -126,6 +128,7 @@ public class JEIPlugin implements IModPlugin {
         registration.addRecipeCatalyst(new ItemStack(ModItems.HEAT_FRAME.get()), ModCategoryUid.HEAT_FRAME_COOLING);
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.ETCHING_TANK.get()), ModCategoryUid.ETCHING_TANK);
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.FLUID_MIXER.get()), ModCategoryUid.FLUID_MIXER);
+        registration.addRecipeCatalyst(new ItemStack(ModBlocks.SPAWNER_EXTRACTOR.get()), ModCategoryUid.SPAWNER_EXTRACTION);
     }
 
     @Override

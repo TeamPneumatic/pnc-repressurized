@@ -10,7 +10,7 @@
     },
     {
       "type": "text",
-      "text": "By default the Crafting widget will try to craft as many items as possible; you can limit this in the widget GUI with the $(thing)Use Count/$ setting.$(p)You will probably want to install some $(l:base_concepts/upgrades#dispenser)Dispenser Upgrades/$ in the $(item)Drone/$ to give it a larger inventory."
+      "text": "By default the Crafting widget will try to craft as many items as possible; you can limit this in the widget GUI with the $(thing)Use Count/$ setting.$(p)You will probably want to install some $(l:base_concepts/upgrades#dispenser)Inventory Upgrades/$ in the $(item)Drone/$ to give it a larger inventory."
     },
     {
       "type": "image",

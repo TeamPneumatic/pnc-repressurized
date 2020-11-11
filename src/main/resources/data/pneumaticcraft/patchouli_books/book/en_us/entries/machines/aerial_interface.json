@@ -30,12 +30,12 @@
     {
       "type": "text",
       "title": "Experience Handling",
-      "text": "The $(l:base_concepts/upgrades#dispenser)Dispenser Upgrade/$ also allows you to pump $(thing)XP fluids/$ from several other mods into or out of the Interface. When multiple types of liquid XP exist, you can choose which one to use via the $(bold)Experience/$ tab in the GUI.  This tab also shows which mods' experience fluids have been detected and are available for use."
+      "text": "The $(l:base_concepts/upgrades#dispenser)Dispenser Upgrade/$ also allows you to pump $(thing)XP fluids/$ into or out of the Interface. When multiple types of XP fluid exist, you can choose which one to use via the $(bold)Experience/$ tab in the GUI.  This tab also shows which mods' experience fluids have been detected and are available for use. $(l:base_concepts/memory_essence)Memory Essence/$ is always available to use."
     },
     {
       "type": "text",
       "title": "Experience Handling (cont.)",
-      "text": "Note that the Interface doesn't have an internal liquid buffer; it uses your experience directly as a 'tank'. This means that when pumping XP in or out, you need a device that can transport liquids at a rate higher than the amount of liquid XP per XP point. This rate is 20mB/tick for all known fluids at the time of writing."
+      "text": "Note that the Interface doesn't have an internal liquid buffer; it uses your experience directly as a 'tank'. This means that when pumping XP in or out, you need a device that can transport liquids at a rate higher than the amount of liquid XP per XP point. This rate is 20mB/tick for all known XP fluids at the time of writing."
     },
     {
       "type": "text",

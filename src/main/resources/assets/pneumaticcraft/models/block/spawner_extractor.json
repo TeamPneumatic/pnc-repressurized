@@ -191,5 +191,12 @@
 			"origin": [23, 7, 22],
 			"children": [8, 9, 10, 11]
 		}
-	]
+	],
+	"display": {
+		"gui": {
+			"rotation": [ 30, 30, 0 ],
+			"scale": [ 0.5, 0.5, 0.5 ],
+			"translation": [ 0, 3, 0 ]
+		}
+	}
 }

@@ -47,7 +47,7 @@
             "type": "crafting",
             "anchor": "speed",
             "recipe": "pneumaticcraft:speed_upgrade_from_glycerol",
-            "text": "Creating a Speed Upgrade$(p)$(bold)Tip:/$ you can also use a $(l:machines/liquid_hopper)Liquid Hopper/$ (or other modded tank) of $(l:components/lubricant)Lubricant/$ to craft multiple upgrades at a time!"
+            "text": "Creating Speed Upgrades from $(l:renewables/glycerol)Glycerol/$"
         },
         {
             "type": "crafting",

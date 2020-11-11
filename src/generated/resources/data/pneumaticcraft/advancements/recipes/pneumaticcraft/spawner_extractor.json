@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "pneumaticcraft:spawner_extractor"
+    ]
+  },
+  "criteria": {
+    "has_spawner_agitator": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:spawner_agitator"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "pneumaticcraft:spawner_extractor"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_spawner_agitator",
+      "has_the_recipe"
+    ]
+  ]
+}
