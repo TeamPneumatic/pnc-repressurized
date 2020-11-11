@@ -21,6 +21,7 @@ import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
@@ -100,9 +101,11 @@ public class TileEntityVacuumTrap extends TileEntityPneumaticBase implements IMi
                     scanForEntities();
                 }
                 Vector3d trapVec = Vector3d.copyCentered(pos);
+                double min = world.getFluidState(pos).getFluid() == Fluids.WATER ? 2.5 : 1.75;
                 for (MobEntity e : targetEntities) {
                     if (!e.isAlive() || e.getTags().contains(DEFENDER_TAG)) continue;
-                    if (e.getDistanceSq(trapVec) < 2) {
+                    // kludge: mobs in water seem a bit flaky about getting close enough so increase the absorb dist a bit
+                    if (e.getDistanceSq(trapVec) <= min) {
                         absorbEntity(e);
                         addAir((int) (PneumaticValues.USAGE_VACUUM_TRAP * e.getHealth()));
                     } else {

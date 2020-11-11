@@ -8,9 +8,13 @@ import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
 import me.desht.pneumaticcraft.lib.NBTKeys;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.IWaterLoggable;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.FluidState;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.BlockItem;
+import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.state.StateContainer;
@@ -24,6 +28,7 @@ import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.items.ItemStackHandler;
@@ -32,10 +37,9 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
-import static net.minecraft.state.properties.BlockStateProperties.OPEN;
-import static net.minecraft.state.properties.BlockStateProperties.POWERED;
+import static net.minecraft.state.properties.BlockStateProperties.*;
 
-public class BlockVacuumTrap extends BlockPneumaticCraft {
+public class BlockVacuumTrap extends BlockPneumaticCraft implements IWaterLoggable {
     private static final VoxelShape FLAP1 = makeCuboidShape(0, 11, 0, 16, 12, 5);
     private static final VoxelShape FLAP2 = makeCuboidShape(0, 11, 11, 16, 12, 16);
     private static final VoxelShape SHAPE_EW_CLOSED = makeCuboidShape(0, 0, 3, 16, 12, 13);
@@ -55,6 +59,7 @@ public class BlockVacuumTrap extends BlockPneumaticCraft {
                 .with(EAST, false)
                 .with(WEST, false)
                 .with(DOWN, false)
+                .with(WATERLOGGED, false)
         );
     }
 
@@ -62,7 +67,27 @@ public class BlockVacuumTrap extends BlockPneumaticCraft {
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
         super.fillStateContainer(builder);
 
-        builder.add(OPEN, POWERED, NORTH, SOUTH, EAST, WEST, DOWN);
+        builder.add(OPEN, POWERED, NORTH, SOUTH, EAST, WEST, DOWN, WATERLOGGED);
+    }
+
+    @Nullable
+    @Override
+    public BlockState getStateForPlacement(BlockItemUseContext ctx) {
+        FluidState fluidState = ctx.getWorld().getFluidState(ctx.getPos());
+        return super.getStateForPlacement(ctx).with(WATERLOGGED, fluidState.getFluid() == Fluids.WATER);
+    }
+
+    @Override
+    public FluidState getFluidState(BlockState state) {
+        return state.get(WATERLOGGED) ? Fluids.WATER.getStillFluidState(false) : super.getFluidState(state);
+    }
+
+    @Override
+    public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
+        if (stateIn.get(WATERLOGGED)) {
+            worldIn.getPendingFluidTicks().scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickRate(worldIn));
+        }
+        return super.updatePostPlacement(stateIn, facing, facingState, worldIn, currentPos, facingPos);
     }
 
     @Override
