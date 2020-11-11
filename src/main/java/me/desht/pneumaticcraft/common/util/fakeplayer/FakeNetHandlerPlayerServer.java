@@ -13,7 +13,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.ITextComponent;
 
 import javax.annotation.Nullable;
-import javax.crypto.SecretKey;
 import java.net.SocketAddress;
 import java.util.Set;
 
@@ -76,10 +75,10 @@ public class FakeNetHandlerPlayerServer extends ServerPlayNetHandler {
             return false;
         }
 
-        @Override
-        public void enableEncryption(SecretKey key) {
-
-        }
+//        @Override
+//        public void enableEncryption(SecretKey key) {
+//
+//        }
 
         @Override
         public boolean isChannelOpen() {
