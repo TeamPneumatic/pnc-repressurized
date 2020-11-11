@@ -6,7 +6,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.16.3 / 1.16.4
 
-## 2.5.0-66 (5 Nov 2020)
+## 2.6.0-67 (5 Nov 2020)
 
 ### New
 * Added a new mob spawning system!
@@ -16,13 +16,27 @@ Changes are in reverse chronological order; newest changes at the top.
   * Or craft an empty Spawner Core and use the new Vacuum Trap to fill it with mob essence
   * Use a partially or completely filled Spawner Core in the new Pressurized Spawner to spawn mobs
   * Pressurized Spawner uses pressure, can be redstone-controlled, accepts Speed Upgrades...
+
+### Updates 
+* The Vacuum Pump is now more efficient at creating a vacuum (more vacuum produced on the "-" side per air consumed on the "+" side) 
+* Animated stats (i.e. GUI side tabs and the popup HUD boxes for pneumatic armor) have been heavily reworked internally
+  * Player-visible changes are fairly limited, but side tabs do wrap their text better now (taking advantage of some vanilla `ITextComponent`/`IReorderingProcessor` code to manage text wrapping & layout)
+  * Side tabs don't scale their text now when short of space, since that never looked good. Instead, text is always wrapped to fit the available width and a scrollbar added where necessary.
+  * Dropped the remaining use of raw `String` in many places, in favour of `ITextComponent`
+  * There are API breaks for `IGuiAnimatedStat`, `IHackableBlock` and `IHackableEntity` - sorry!
+* The `/dumpNBT` command now requires player permission level 2 (it could be used to inspect item data which should remain secret from regular players)
+
+### Fixes
+* Hopefully fixed a problem on SMP where players get kicked when they are near other players wearing or holding pressurizable items (tools & armor)
+  * I couldn't reproduce this one myself and I suspect another mod may be interfering, but I've added some defensive coding to cover it
+
+## 2.5.0-66 (5 Nov 2020)
   
 ### Updates 
 * Support for MC 1.16.4, which is very much compatible with MC 1.16.3
   * This release runs on both MC 1.16.3 and 1.16.4
 * Thermopneumatic Processing Plant now has "has work" comparator support, like the Refinery
   * When there are valid ingredients in the TPP, and room for output, an attached Comparator will emit a signal of 15
-* The Vacuum Pump is now more efficient at creating a vacuum (more vacuum produced on the "-" side per air consumed on the "+" side) 
 * Pressure tube performance improvement
   * Was unnecessarily computing connections every tick (for leak detection) when it's only necessary to do so on neighbour block updates
 * Programmer GUI now warns if multiple Item Filter widgets are attached to an Item Assign widget
@@ -30,12 +44,6 @@ Changes are in reverse chronological order; newest changes at the top.
 * Drone variable parsing (with `${varname}` syntax): item variables are now supported too
 * "Right Click Block" widget is now called just "Right Click" (since it can be used to click both items and blocks)
   * Cosmetic change only, no functional changes
-* Animated stats (i.e. GUI side tabs and the popup HUD boxes for pneumatic armor) have been heavily reworked internally
-  * Player-visible changes are fairly limited, but side tabs do wrap their text better now (taking advantage of some vanilla `ITextComponent`/`IReorderingProcessor` code to manage text wrapping & layout)
-  * Side tabs don't scale their text now when short of space, since that never looked good. Instead, text is always wrapped to fit the available width and a scrollbar added where necessary.
-  * Dropped the remaining use of raw `String` in many places, in favour of `ITextComponent`
-  * There are API breaks for `IGuiAnimatedStat`, `IHackableBlock` and `IHackableEntity` - sorry!
-* The `/dumpNBT` command now requires player permission level 2 (it could be used to inspect item data which should remain secret from regular players)
 
 ### Fixes
 * Fixed a few locale-related errors in recipe deserialization
@@ -45,8 +53,6 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed client crash when trying to open Condition: RF & Drone Condition: RF patchouli pages from the Programmer GUI
 * Fixed client crash caused by certain mods trying to pass null world or blockpos data when querying blocks shapes for camouflageable blocks
   * Not a PNC bug as such, but pays to be defensive
-* Hopefully fixed a problem on SMP where players get kicked when they are near other players wearing or holding pressurizable items (tools & armor)
-  * I couldn't reproduce this one myself and I suspect another mod may be interfering, but I've added some defensive coding to cover it
   
 ## Minecraft 1.16.3
 
