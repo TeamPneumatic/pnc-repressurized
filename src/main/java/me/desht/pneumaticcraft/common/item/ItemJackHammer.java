@@ -481,7 +481,7 @@ public class ItemJackHammer extends ItemPressurizable implements IChargeableCont
         public static void onLeftClickBlock(PlayerInteractEvent.LeftClickBlock event) {
             PlayerEntity player = event.getPlayer();
             ItemStack stack = player.getHeldItem(event.getHand());
-            if (stack.getItem() == ModItems.JACKHAMMER.get() && ItemPressurizable.getAir(stack) > 0f) {
+            if (stack.getItem() == ModItems.JACKHAMMER.get() && ((IPressurizableItem) stack.getItem()).getAir(stack) > 0f) {
                 if (event.getWorld().isRemote) {
                     MovingSounds.playMovingSound(MovingSounds.Sound.JACKHAMMER, event.getPlayer());
                 } else {

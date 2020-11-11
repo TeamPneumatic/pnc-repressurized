@@ -65,7 +65,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 //        @Optional.Interface(iface = "thaumcraft.api.items.IRevealer", modid = ModIds.THAUMCRAFT)
 //})
 public class ItemPneumaticArmor extends ArmorItem
-        implements IChargeableContainerProvider, IUpgradeAcceptor, IFOVModifierItem, ICustomDurabilityBar
+        implements IChargeableContainerProvider, IUpgradeAcceptor, IFOVModifierItem, ICustomDurabilityBar, IPressurizableItem
         /*, IVisDiscountGear, IGoggles, IRevealer,*/
 {
     private static final UUID[] PNEUMATIC_ARMOR_MODIFIERS = new UUID[] {
@@ -125,11 +125,7 @@ public class ItemPneumaticArmor extends ArmorItem
         return player.getItemStackFromSlot(slot).getItem() instanceof ItemPneumaticArmor;
     }
 
-    /**
-     * Get the base item volume before any volume upgrades are added.
-     *
-     * @return the base volume
-     */
+    @Override
     public int getBaseVolume() {
         return ARMOR_VOLUMES[slot.getIndex()];
     }

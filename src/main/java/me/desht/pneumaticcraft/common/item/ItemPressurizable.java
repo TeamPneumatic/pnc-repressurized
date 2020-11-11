@@ -13,7 +13,7 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
 import javax.annotation.Nullable;
 
-public class ItemPressurizable extends Item {
+public class ItemPressurizable extends Item implements IPressurizableItem {
 
     private final int volume;
     private final float maxPressure;
@@ -83,9 +83,10 @@ public class ItemPressurizable extends Item {
         return new AirHandlerItemStack(stack, volume, maxPressure);
     }
 
-    protected float getPressure(ItemStack stack) {
-        return stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).orElseThrow(RuntimeException::new).getPressure();
-    }
+//    @Override
+//    public float getPressure(ItemStack stack) {
+//        return stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).orElseThrow(RuntimeException::new).getPressure();
+//    }
 
     @Nullable
     @Override
@@ -93,12 +94,9 @@ public class ItemPressurizable extends Item {
         return roundedPressure(stack);
     }
 
-    public static int getAir(ItemStack stack) {
-        CompoundNBT tag = stack.getTag();
-        if (tag != null) {
-            return tag.getInt(AirHandlerItemStack.AIR_NBT_KEY);
-        }
-        return 0;
+    @Override
+    public int getBaseVolume() {
+        return volume;
     }
 
     /**
@@ -111,13 +109,23 @@ public class ItemPressurizable extends Item {
     public static CompoundNBT roundedPressure(ItemStack stack) {
         CompoundNBT tag = stack.getTag();
 
-        if (tag != null && tag.contains(AirHandlerItemStack.AIR_NBT_KEY)) {
-            return stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).map(h -> {
-                CompoundNBT tag2 = tag.copy();
-                int air = tag2.getInt(AirHandlerItemStack.AIR_NBT_KEY);
-                tag2.putInt(AirHandlerItemStack.AIR_NBT_KEY, air - air % (h.getVolume() / PNCConfig.Common.Advanced.pressureSyncPrecision));
-                return tag2;
-            }).orElseThrow(RuntimeException::new);
+        if (stack.getItem() instanceof IPressurizableItem && tag != null && tag.contains(AirHandlerItemStack.AIR_NBT_KEY)) {
+            CompoundNBT tag2 = tag.copy();
+            int volume = ((IPressurizableItem) stack.getItem()).getUpgradedVolume(stack);
+            int air = tag2.getInt(AirHandlerItemStack.AIR_NBT_KEY);
+            tag2.putInt(AirHandlerItemStack.AIR_NBT_KEY, air - air % (volume / PNCConfig.Common.Advanced.pressureSyncPrecision));
+            return tag2;
+
+            // Using a capability here *should* work but it seems to fail under some odd circumstances which I haven't been
+            // able to reproduce. Hence the direct-access code above via the internal-use IPressurizableItem interface.
+            // https://github.com/TeamPneumatic/pnc-repressurized/issues/650
+
+//            return stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).map(h -> {
+//                CompoundNBT tag2 = tag.copy();
+//                int air = tag2.getInt(AirHandlerItemStack.AIR_NBT_KEY);
+//                tag2.putInt(AirHandlerItemStack.AIR_NBT_KEY, air - air % (h.getVolume() / PNCConfig.Common.Advanced.pressureSyncPrecision));
+//                return tag2;
+//            }).orElseThrow(RuntimeException::new);
         } else {
             return tag;
         }

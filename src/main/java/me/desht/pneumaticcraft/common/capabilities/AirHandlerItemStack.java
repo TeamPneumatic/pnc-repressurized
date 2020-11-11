@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.capabilities;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerItem;
-import me.desht.pneumaticcraft.common.item.ItemPressurizable;
+import me.desht.pneumaticcraft.common.item.IPressurizableItem;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import net.minecraft.item.ItemStack;
@@ -11,6 +11,7 @@ import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
+import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -25,6 +26,7 @@ public class AirHandlerItemStack implements IAirHandlerItem, ICapabilityProvider
     private final float maxPressure;
 
     public AirHandlerItemStack(ItemStack container, int volume, float maxPressure) {
+        Validate.isTrue(container.getItem() instanceof IPressurizableItem, "itemstack " + container + " must be an IPressurizableItem!");
         this.container = container;
         this.volume = volume;
         this.maxPressure = maxPressure;
@@ -43,7 +45,7 @@ public class AirHandlerItemStack implements IAirHandlerItem, ICapabilityProvider
 
     @Override
     public int getAir() {
-        return ItemPressurizable.getAir(container);
+        return ((IPressurizableItem) container.getItem()).getAir(container);
     }
 
     @Override
