@@ -45,7 +45,7 @@ public class AirHandlerItemStack implements IAirHandlerItem, ICapabilityProvider
 
     @Override
     public int getAir() {
-        return ((IPressurizableItem) container.getItem()).getAir(container);
+        return container.getItem() instanceof IPressurizableItem ? ((IPressurizableItem) container.getItem()).getAir(container) : 0;
     }
 
     @Override

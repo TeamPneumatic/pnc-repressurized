@@ -158,7 +158,9 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
                     PlayerInventory inv = ((PlayerEntity) entity).inventory;
                     for (int i = 0; i < inv.getSizeInventory(); i++) {
                         ItemStack stack = inv.getStackInSlot(i);
-                        stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(res::add);
+                        if (!stack.isEmpty()) {
+                            stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(res::add);
+                        }
                     }
                 } else {
                     entity.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY).ifPresent(res::add);

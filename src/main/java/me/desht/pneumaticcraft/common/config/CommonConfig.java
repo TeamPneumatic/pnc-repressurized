@@ -530,18 +530,18 @@ public class CommonConfig {
                 .translation("pneumaticcraft.config.common.blockHeatDefaults.ambientTemperatureBiomeModifier")
                 .defineInRange("ambientTemperatureBiomeModifier", 25.0, 0.0, 1000.0);
         heat.ambientTemperatureHeightModifier = builder
-                .comment("Ambient temperature modifier by height (in degrees per block above 80 or below 40)")
+                .comment("Ambient temperature increase by altitude, in degrees per block below 48 (or 75% of sea level). Note that temperature decrease per block above 64 is handled by vanilla.")
                 .translation("pneumaticcraft.config.common.blockHeatDefaults.ambientTemperatureHeightModifier")
                 .defineInRange("ambientTemperatureHeightModifier", 0.1, 0.0, 10.0);
         builder.pop();
 
         builder.push("Logistics");
         logistics.itemTransportCost = builder
-                .comment("Air usage per item per block distance")
+                .comment("Logistics Module air usage per item per block distance")
                 .translation("pneumaticcraft.config.common.logistics.itemTransportCost")
                 .defineInRange("item_transport_cost", 1.0, 0.0, Double.MAX_VALUE);
         logistics.fluidTransportCost = builder
-                .comment("Air usage per mB of fluid per block distance")
+                .comment("Logistics Module air usage per mB of fluid per block distance")
                 .translation("pneumaticcraft.config.common.logistics.fluidTransportCost")
                 .defineInRange("fluid_transport_cost", 0.02, 0.0, Double.MAX_VALUE);
         logistics.minPressure = builder
