@@ -15,6 +15,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -117,8 +118,8 @@ public class ProgWidgetForEachItem extends ProgWidget implements IJumpBackWidget
     }
 
     @Override
-    public ITextComponent getExtraStringInfo() {
-        return varAsTextComponent(elementVariable);
+    public List<ITextComponent> getExtraStringInfo() {
+        return Collections.singletonList(varAsTextComponent(elementVariable));
     }
 
     @Override

@@ -18,9 +18,11 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +39,9 @@ public class GuiLiquidCompressor extends GuiPneumaticContainerBase<ContainerLiqu
         super.init();
         addButton(new WidgetTank(guiLeft + getFluidOffset(), guiTop + 15, te.getTank()));
         WidgetAnimatedStat stat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.liquidCompressor.fuel"), new ItemStack(ModItems.LPG_BUCKET.get()), 0xFFC04400, true);
-        stat.setText(getAllFuels());
+        Pair<Integer, List<ITextComponent>> p = getAllFuels();
+        stat.setMinimumExpandedDimensions(p.getLeft(), 17);
+        stat.setText(p.getRight());
     }
 
     @Override
@@ -69,9 +73,11 @@ public class GuiLiquidCompressor extends GuiPneumaticContainerBase<ContainerLiqu
         return "liquid_compressor";
     }
 
-    private List<ITextComponent> getAllFuels() {
+    private Pair<Integer,List<ITextComponent>> getAllFuels() {
         List<ITextComponent> text = new ArrayList<>();
-        text.add(xlate("pneumaticcraft.gui.liquidCompressor.fuelsHeader").mergeStyle(TextFormatting.UNDERLINE));
+        TranslationTextComponent header = xlate("pneumaticcraft.gui.liquidCompressor.fuelsHeader");
+        text.add(header.mergeStyle(TextFormatting.UNDERLINE, TextFormatting.AQUA));
+        int maxWidth = font.getStringPropertyWidth(header);
 
         IFuelRegistry api = PneumaticRegistry.getInstance().getFuelRegistry();
         List<Fluid> fluids = new ArrayList<>(api.registeredFuels());
@@ -83,14 +89,14 @@ public class GuiLiquidCompressor extends GuiPneumaticContainerBase<ContainerLiqu
             value = value + StringUtils.repeat('.', nSpc);
             FluidStack stack = new FluidStack(fluid, 1);
             float mul = api.getBurnRateMultiplier(fluid);
-            if (mul == 1) {
-                text.add(new StringTextComponent(value + "| " + StringUtils.abbreviate(stack.getDisplayName().getString(), 25)));
-            } else {
-                text.add(new StringTextComponent(value + "| " + StringUtils.abbreviate(stack.getDisplayName().getString(), 20) + " (x" + PneumaticCraftUtils.roundNumberTo(mul, 2) + ")"));
-            }
+            StringTextComponent line = mul == 1 ?
+                    new StringTextComponent(value + "| " + StringUtils.abbreviate(stack.getDisplayName().getString(), 25)) :
+                    new StringTextComponent(value + "| " + StringUtils.abbreviate(stack.getDisplayName().getString(), 20) + " (x" + PneumaticCraftUtils.roundNumberTo(mul, 2) + ")");
+            maxWidth = Math.max(maxWidth, font.getStringPropertyWidth(line));
+            text.add(line);
         }
 
-        return text;
+        return Pair.of(Math.min(maxWidth, guiLeft - 10), text);
     }
 
     @Override

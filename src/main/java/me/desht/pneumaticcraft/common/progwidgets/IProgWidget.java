@@ -160,7 +160,7 @@ public interface IProgWidget extends IProgWidgetBase {
 
     void writeToPacket(PacketBuffer buf);
 
-    ITextComponent getExtraStringInfo();
+    List<ITextComponent> getExtraStringInfo();
 
     enum WidgetDifficulty {
         EASY("easy"), MEDIUM("medium"), ADVANCED("advanced");

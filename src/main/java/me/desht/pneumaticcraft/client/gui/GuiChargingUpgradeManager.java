@@ -132,7 +132,7 @@ public abstract class GuiChargingUpgradeManager extends GuiPneumaticContainerBas
                             break;
                         }
                     }
-                    addAnimatedStat(upgradeStack.getDisplayName(), upgradeStack, 0xFF6060FF, leftSided).setText(text);
+                    addAnimatedStat(upgradeStack.getDisplayName(), upgradeStack, 0xFF244BB3, leftSided).setText(text).setForegroundColor(0xFF000000);
                     leftSided = !leftSided;
                 }
             }

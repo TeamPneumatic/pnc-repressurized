@@ -14,6 +14,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 
+import java.util.Collections;
 import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -114,9 +115,9 @@ public class ProgWidgetCoordinateCondition extends ProgWidgetConditionBase {
     }
 
     @Override
-    public ITextComponent getExtraStringInfo() {
+    public List<ITextComponent> getExtraStringInfo() {
         String condition = getCondition();
-        return condition.length() > 0 ? new StringTextComponent(condition) : null;
+        return condition.isEmpty() ? Collections.emptyList() : Collections.singletonList(new StringTextComponent(condition));
     }
 
     public String getCondition() {

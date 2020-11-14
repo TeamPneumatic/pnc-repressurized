@@ -93,20 +93,19 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     }
 
     @Override
-    public ITextComponent getExtraStringInfo() {
-        StringBuilder res = new StringBuilder();
+    public List<ITextComponent> getExtraStringInfo() {
+        List<ITextComponent> res = new ArrayList<>();
         if (!coord1Variable.isEmpty()) {
-            res.append("\"").append(coord1Variable).append("\"");
+            res.add(new StringTextComponent("\"" + coord1Variable + "\""));
         } else if (x1 != 0 && y1 != 0 && z1 != 0) {
-            res.append(String.format("%d, %d, %d", x1, y1, z1));
+            res.add(new StringTextComponent(String.format("%d, %d, %d", x1, y1, z1)));
         }
-        if (res.length() > 0) res.append("${br}");
         if (!coord2Variable.isEmpty()) {
-            res.append("\"").append(coord2Variable).append("\"");
+            res.add(new StringTextComponent("\"" + coord2Variable + "\""));
         } else if (x2 != 0 && y2 != 0 && z2 != 0) {
-            res.append(String.format("%d, %d, %d", x2, y2, z2));
+            res.add(new StringTextComponent(String.format("%d, %d, %d", x2, y2, z2)));
         }
-        return new StringTextComponent(res.toString());
+        return res;
     }
 
     @Override

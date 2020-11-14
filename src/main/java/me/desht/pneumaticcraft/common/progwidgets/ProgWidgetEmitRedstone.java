@@ -18,6 +18,7 @@ import net.minecraft.util.text.StringTextComponent;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -64,11 +65,11 @@ public class ProgWidgetEmitRedstone extends ProgWidget implements IRedstoneEmiss
     public void getTooltip(List<ITextComponent> curTooltip) {
         super.getTooltip(curTooltip);
         curTooltip.add(xlate("pneumaticcraft.gui.progWidget.general.affectingSides"));
-        curTooltip.add(getExtraStringInfo());
+        curTooltip.addAll(getExtraStringInfo());
     }
 
     @Override
-    public ITextComponent getExtraStringInfo() {
+    public List<ITextComponent> getExtraStringInfo() {
         boolean allSides = true;
         boolean noSides = true;
         for (boolean bool : accessingSides) {
@@ -79,15 +80,15 @@ public class ProgWidgetEmitRedstone extends ProgWidget implements IRedstoneEmiss
             }
         }
         if (allSides) {
-            return ALL_SIDES;
+            return Collections.singletonList(ALL_TEXT);
         } else if (noSides) {
-            return NO_SIDES;
+            return Collections.singletonList(NONE_TEXT);
         } else {
             List<String> l = Arrays.stream(Direction.VALUES)
                     .filter(side -> accessingSides[side.getIndex()])
                     .map(ClientUtils::translateDirection)
                     .collect(Collectors.toList());
-            return new StringTextComponent(Strings.join(l, ", "));
+            return Collections.singletonList(new StringTextComponent(Strings.join(l, ", ")));
         }
     }
 

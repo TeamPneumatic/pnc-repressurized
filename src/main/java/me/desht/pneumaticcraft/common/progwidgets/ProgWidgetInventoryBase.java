@@ -11,6 +11,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -73,7 +74,7 @@ public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase imp
     public void getTooltip(List<ITextComponent> curTooltip) {
         super.getTooltip(curTooltip);
         if (isUsingSides()) curTooltip.add(xlate("pneumaticcraft.gui.progWidget.inventory.accessingSides"));
-        curTooltip.add(new StringTextComponent(GuiConstants.TRIANGLE_RIGHT + " " + getExtraStringInfo()));
+        curTooltip.add(new StringTextComponent(GuiConstants.TRIANGLE_RIGHT + " ").append(getExtraStringInfo().get(0)));
         if (useCount) curTooltip.add(xlate("pneumaticcraft.gui.progWidget.inventory.usingCount", count));
     }
 
@@ -82,7 +83,7 @@ public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase imp
     }
 
     @Override
-    public ITextComponent getExtraStringInfo() {
+    public List<ITextComponent> getExtraStringInfo() {
         boolean allSides = true;
         boolean noSides = true;
         for (boolean bool : accessingSides) {
@@ -93,15 +94,15 @@ public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase imp
             }
         }
         if (allSides) {
-            return ALL_SIDES;
+            return Collections.singletonList(ALL_TEXT);
         } else if (noSides) {
-            return NO_SIDES;
+            return Collections.singletonList(NONE_TEXT);
         } else {
             List<String> l = Arrays.stream(Direction.VALUES)
                     .filter(side -> accessingSides[side.getIndex()])
                     .map(ClientUtils::translateDirection)
                     .collect(Collectors.toList());
-            return new StringTextComponent(Strings.join(l, ", "));
+            return Collections.singletonList(new StringTextComponent(Strings.join(l, ", ")));
         }
     }
 

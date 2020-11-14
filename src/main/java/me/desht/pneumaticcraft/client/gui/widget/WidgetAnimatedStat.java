@@ -140,6 +140,12 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
     }
 
     @Override
+    public void setMessage(ITextComponent message) {
+        super.setMessage(message);
+        needTextRecalc = true;
+    }
+
+    @Override
     public void setParentStat(IGuiAnimatedStat stat) {
         statAbove = stat;
     }
@@ -251,10 +257,10 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
         dropShadows.clear();
 
         FontRenderer font = Minecraft.getInstance().fontRenderer;
-        int maxWidth = calculateMaxWidth();
-        int titleWidth = font.getStringPropertyWidth(getMessage());
-        reorderingProcessors.addAll(GuiUtils.wrapTextComponentList(textComponents, maxWidth, font));
-        expandedWidth = Math.max(titleWidth, minExpandedWidth);
+        int availableWidth = calculateAvailableWidth();
+        int titleWidth = Math.min(availableWidth, font.getStringPropertyWidth(getMessage()));
+        reorderingProcessors.addAll(GuiUtils.wrapTextComponentList(textComponents, availableWidth, font));
+        expandedWidth = Math.min(availableWidth, Math.max(titleWidth, minExpandedWidth));
         reorderingProcessors.forEach(processedLine -> {
             expandedWidth = Math.max(expandedWidth, font.func_243245_a(processedLine));
             dropShadows.add(needsDropShadow(processedLine));
@@ -270,21 +276,22 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
 
     /**
      * Calculate the maximum available width that a line of wrapped text can be.  Note that the actual widget might
-     * not end up this wide.
-     * @return the maximum possible width for the animated stat
+     * not necessarily end up this wide, depending on the text contents.
+     *
+     * @return the maximum available width for the animated stat, not including the gutter width for the scrollbar/icon
      */
-    private int calculateMaxWidth() {
+    private int calculateAvailableWidth() {
         int availableWidth;
         if (gui instanceof ContainerScreen) {
             ContainerScreen<?> gc = (ContainerScreen<?>) gui;
-            availableWidth = Math.min(gc.getXSize(), leftSided ? gc.getGuiLeft() : gc.width - (gc.getGuiLeft() + gc.getXSize()));
+            availableWidth = Math.min(Math.max(minExpandedWidth, gc.getXSize()), leftSided ? gc.getGuiLeft() : gc.width - (gc.getGuiLeft() + gc.getXSize()));
         } else if (gui instanceof GuiPneumaticScreenBase) {
             GuiPneumaticScreenBase g = (GuiPneumaticScreenBase) gui;
-            availableWidth = Math.min(g.xSize, leftSided ? g.guiLeft : g.xSize - (g.guiLeft + g.xSize));
+            availableWidth = Math.min(Math.max(minExpandedWidth, g.xSize), leftSided ? g.guiLeft : g.xSize - (g.guiLeft + g.xSize));
         } else {
             availableWidth = leftSided ? x : Minecraft.getInstance().getMainWindow().getScaledWidth() - x;
         }
-        return availableWidth - 10 - SCROLLBAR_MARGIN_WIDTH;  // leave at least 10 pixel margin from edge of screen
+        return availableWidth - 5 - SCROLLBAR_MARGIN_WIDTH;  // leave at least 5 pixel margin from edge of screen
     }
 
     private boolean needsDropShadow(IReorderingProcessor line) {
@@ -325,6 +332,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
 
     @Override
     public void setMinimumExpandedDimensions(int minWidth, int minHeight) {
+        if (minExpandedWidth != minWidth) needTextRecalc = true;
         minExpandedWidth = minWidth;
         minExpandedHeight = minHeight;
     }
@@ -399,8 +407,6 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
     public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         if (!this.visible) return;
 
-        if (needTextRecalc) recalcText();
-
         int baseX = leftSided ? this.x - this.width : this.x;
         this.isHovered = mouseX >= baseX && mouseY >= this.effectiveY && mouseX < baseX + this.width && mouseY < this.effectiveY + this.height;
 
@@ -431,6 +437,8 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
 
         // if done expanding, draw the information
         if (doneExpanding) {
+            if (needTextRecalc) recalcText();
+
             String title = getMessage().getString();
             int titleYoffset = title.isEmpty() ? 3 : 12;
             if (!title.isEmpty()) {
@@ -507,7 +515,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
             // text title
             String title = getMessage().getString();
             if (!title.isEmpty()) {
-                RenderUtils.renderString3d(TextFormatting.BOLD + title, renderBaseX + (leftSided ? -renderWidth + 2 : 18), renderEffectiveY + 2, titleColor, matrixStack, buffer, false, true);
+                RenderUtils.renderString3d(TextFormatting.UNDERLINE + title, renderBaseX + (leftSided ? -renderWidth + 2 : 18), renderEffectiveY + 2, titleColor, matrixStack, buffer, false, true);
             }
             // text lines
             int titleYoffset = title.isEmpty() ? 3 : 12;

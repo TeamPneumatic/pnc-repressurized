@@ -9,8 +9,8 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 
+import java.util.Collections;
 import java.util.List;
 
 public class ProgWidgetText extends ProgWidget {
@@ -34,7 +34,7 @@ public class ProgWidgetText extends ProgWidget {
     public void getTooltip(List<ITextComponent> curTooltip) {
         super.getTooltip(curTooltip);
         if (addToTooltip()) {
-            curTooltip.add(new StringTextComponent("Value: \"" + string + "\""));
+            curTooltip.addAll(getExtraStringInfo());
         }
     }
 
@@ -43,8 +43,8 @@ public class ProgWidgetText extends ProgWidget {
     }
 
     @Override
-    public ITextComponent getExtraStringInfo() {
-        return varAsTextComponent(string);
+    public List<ITextComponent> getExtraStringInfo() {
+        return Collections.singletonList(varAsTextComponent(string));
     }
 
     @Override

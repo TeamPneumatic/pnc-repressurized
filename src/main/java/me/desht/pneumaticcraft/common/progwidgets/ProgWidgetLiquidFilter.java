@@ -16,6 +16,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import java.util.Collections;
 import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -91,7 +92,7 @@ public class ProgWidgetLiquidFilter extends ProgWidget {
         if (fluid != null) {
             curTooltip.add(new StringTextComponent("Fluid: " )
                     .mergeStyle(TextFormatting.AQUA)
-                    .append(getExtraStringInfo()));
+                    .append(asTextComponent()));
         }
     }
 
@@ -131,7 +132,11 @@ public class ProgWidgetLiquidFilter extends ProgWidget {
     }
 
     @Override
-    public ITextComponent getExtraStringInfo() {
+    public List<ITextComponent> getExtraStringInfo() {
+        return Collections.singletonList(asTextComponent());
+    }
+
+    private ITextComponent asTextComponent() {
         return fluid != Fluids.EMPTY ?
                 new FluidStack(fluid, 1).getDisplayName() :
                 xlate("pneumaticcraft.gui.progWidget.liquidFilter.noFluid");

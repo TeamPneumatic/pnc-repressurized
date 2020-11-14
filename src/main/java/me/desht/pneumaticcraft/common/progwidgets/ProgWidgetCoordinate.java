@@ -16,6 +16,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -184,9 +185,9 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
     }
 
     @Override
-    public ITextComponent getExtraStringInfo() {
-        if (useVariable) return varAsTextComponent(variable);
-        else return x != 0 || y != 0 || z != 0 ? new StringTextComponent(x + ", " + y + ", " + z) : null;
+    public List<ITextComponent> getExtraStringInfo() {
+        if (useVariable) return Collections.singletonList(varAsTextComponent(variable));
+        else return x != 0 || y != 0 || z != 0 ? Collections.singletonList(new StringTextComponent(x + ", " + y + ", " + z)) : null;
     }
 
     @Override

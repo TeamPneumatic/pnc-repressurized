@@ -15,10 +15,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class ProgWidgetForEachCoordinate extends ProgWidgetAreaItemBase implements IJumpBackWidget, IJump,
         IVariableSetWidget {
@@ -129,8 +126,8 @@ public class ProgWidgetForEachCoordinate extends ProgWidgetAreaItemBase implemen
     }
 
     @Override
-    public ITextComponent getExtraStringInfo() {
-        return varAsTextComponent(elementVariable);
+    public List<ITextComponent> getExtraStringInfo() {
+        return Collections.singletonList(varAsTextComponent(elementVariable));
     }
 
     @Override

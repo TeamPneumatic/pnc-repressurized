@@ -14,6 +14,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -125,8 +126,8 @@ public class ProgWidgetItemAssign extends ProgWidget implements IVariableSetWidg
     }
 
     @Override
-    public ITextComponent getExtraStringInfo() {
-        return varAsTextComponent(variable);
+    public List<ITextComponent> getExtraStringInfo() {
+        return Collections.singletonList(varAsTextComponent(variable));
     }
 
     @Override

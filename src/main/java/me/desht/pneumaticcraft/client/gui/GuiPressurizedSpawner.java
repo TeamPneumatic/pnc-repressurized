@@ -61,7 +61,7 @@ public class GuiPressurizedSpawner extends GuiPneumaticContainerBase<ContainerPr
     protected void addProblems(List<ITextComponent> curInfo) {
         super.addProblems(curInfo);
         if (te.problem == TileEntityVacuumTrap.Problems.NO_CORE) {
-            curInfo.addAll(GuiUtils.xlateAndSplit(te.problem.getTranslationKey()));
+            curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.pressurized_spawner.no_core"));
         }
     }
 }

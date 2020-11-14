@@ -313,10 +313,10 @@ public class DroneAIManager implements IVariableProvider {
      * removes the indicated task from the entity's AI tasks.
      */
     private void removeGoal(Goal goal) {
-        Iterator iterator = taskEntries.iterator();
+        Iterator<EntityAITaskEntry> iterator = taskEntries.iterator();
 
         while (iterator.hasNext()) {
-            EntityAITaskEntry entityaitaskentry = (EntityAITaskEntry) iterator.next();
+            EntityAITaskEntry entityaitaskentry = iterator.next();
             Goal entityaibase1 = entityaitaskentry.goal;
 
             if (entityaibase1 == goal) {
@@ -469,7 +469,7 @@ public class DroneAIManager implements IVariableProvider {
      * Returns whether two EntityAITaskEntries can be executed concurrently
      */
     private boolean areTasksCompatible(EntityAITaskEntry e1, EntityAITaskEntry e2) {
-        EnumSet flags = e2.goal.getMutexFlags();
+        EnumSet<Goal.Flag> flags = e2.goal.getMutexFlags();
         return e1.goal.getMutexFlags().stream().noneMatch(flags::contains);
     }
 

@@ -12,6 +12,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -147,9 +148,9 @@ public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implem
     }
 
     @Override
-    public ITextComponent getExtraStringInfo() {
+    public List<ITextComponent> getExtraStringInfo() {
         TranslationTextComponent anyAll = xlate(isAndFunction() ? "pneumaticcraft.gui.progWidget.condition.all" : "pneumaticcraft.gui.progWidget.condition.any");
-        return anyAll.appendString(" " + getOperator().toString() + " " + getRequiredCount());
+        return Collections.singletonList(anyAll.appendString(" " + getOperator().toString() + " " + getRequiredCount()));
     }
 
     @Override

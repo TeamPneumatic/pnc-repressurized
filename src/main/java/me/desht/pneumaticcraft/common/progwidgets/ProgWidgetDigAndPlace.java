@@ -8,6 +8,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
+import java.util.Collections;
 import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -71,8 +72,8 @@ public abstract class ProgWidgetDigAndPlace extends ProgWidgetAreaItemBase imple
     }
 
     @Override
-    public ITextComponent getExtraStringInfo() {
-        return xlate(order.getTranslationKey());
+    public List<ITextComponent> getExtraStringInfo() {
+        return Collections.singletonList(xlate(order.getTranslationKey()));
     }
 
     @Override

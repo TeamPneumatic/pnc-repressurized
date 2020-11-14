@@ -57,8 +57,8 @@ public class ProgWidgetComment extends ProgWidgetText {
     }
 
     @Override
-    public ITextComponent getExtraStringInfo() {
-        return new StringTextComponent(string);
+    public List<ITextComponent> getExtraStringInfo() {
+        return Collections.singletonList(new StringTextComponent(string));
     }
 
     @Override

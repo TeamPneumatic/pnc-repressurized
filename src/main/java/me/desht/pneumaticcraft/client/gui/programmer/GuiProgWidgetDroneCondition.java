@@ -97,7 +97,7 @@ public abstract class GuiProgWidgetDroneCondition<T extends ProgWidgetDroneCondi
         if (isSidedWidget()) {
             font.func_243248_b(matrixStack, xlate("pneumaticcraft.gui.progWidget.inventory.accessingSides"), guiLeft + 4, guiTop + 20, 0xFF404060);
         }
-        ITextComponent s = progWidget.getExtraStringInfo();
+        ITextComponent s = progWidget.getExtraStringInfo().get(0);
         font.func_243248_b(matrixStack, s, guiLeft + xSize / 2f - font.getStringPropertyWidth(s) / 2f, guiTop + 120, 0xFF404060);
     }
 

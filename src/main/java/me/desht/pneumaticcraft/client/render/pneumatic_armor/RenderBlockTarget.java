@@ -16,6 +16,7 @@ import me.desht.pneumaticcraft.common.network.PacketHackingBlockStart;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -176,8 +177,8 @@ public class RenderBlockTarget {
                     stat.render3d(matrixStack, buffer, partialTicks);
                 }
             } else if (ticksExisted > 50) {
-                RenderUtils.renderString3d("Acquiring Target...", 0, 0, 0xFF7F7F7F, matrixStack, buffer, false, true);
-                RenderUtils.renderString3d((int)targetAcquireProgress + "%", 37, 24, 0xFF002F00, matrixStack, buffer, false, true);
+                RenderUtils.renderString3d(I18n.format("pneumaticcraft.entityTracker.info.acquiring"), 0, 0, 0xFFD0D0D0, matrixStack, buffer, false, true);
+                RenderUtils.renderString3d((int)targetAcquireProgress + "%", 37, 24, 0xFFD0D0D0, matrixStack, buffer, false, true);
             } else if (ticksExisted < -30) {
                 matrixStack.scale(1.5F, 1.5F, 1.5F);
                 stat.render3d(matrixStack, buffer, partialTicks);

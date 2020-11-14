@@ -23,6 +23,7 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 
 import javax.annotation.Nonnull;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -75,8 +76,8 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
         }
     }
 
-    public ITextComponent getExtraStringInfo() {
-        return varAsTextComponent(variable);
+    public List<ITextComponent> getExtraStringInfo() {
+        return Collections.singletonList(varAsTextComponent(variable));
     }
 
     @Nonnull

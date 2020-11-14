@@ -22,7 +22,6 @@ import net.minecraft.util.text.StringTextComponent;
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.opengl.GL11;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -92,12 +91,12 @@ public class ProgWidgetRenderer {
     }
 
     public static void renderGenericExtras(MatrixStack matrixStack, IProgWidget progWidget) {
-        ITextComponent info = progWidget.getExtraStringInfo();
+        List<ITextComponent> info = progWidget.getExtraStringInfo();
         if (!info.equals(StringTextComponent.EMPTY)) {
             matrixStack.push();
             matrixStack.scale(0.5f, 0.5f, 0.5f);
             FontRenderer fr = Minecraft.getInstance().fontRenderer;
-            List<IReorderingProcessor> splittedInfo = GuiUtils.wrapTextComponentList(Collections.singletonList(info), 150, fr);
+            List<IReorderingProcessor> splittedInfo = GuiUtils.wrapTextComponentList(info, 150, fr);
             for (int i = 0; i < splittedInfo.size(); i++) {
                 int stringWidth = fr.func_243245_a(splittedInfo.get(i));
                 int startX = progWidget.getWidth() / 2 - stringWidth / 4;

@@ -15,16 +15,13 @@ import net.minecraft.util.text.TranslationTextComponent;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public abstract class ProgWidget implements IProgWidget {
-    static final StringTextComponent ALL_SIDES = new StringTextComponent("*");
-    static final StringTextComponent NO_SIDES = new StringTextComponent("-");
+    static final TranslationTextComponent ALL_TEXT = xlate("pneumaticcraft.gui.misc.all");
+    static final TranslationTextComponent NONE_TEXT = xlate("pneumaticcraft.gui.misc.none");
 
     private final ProgWidgetType<?> type;
     private int x, y;
@@ -56,8 +53,8 @@ public abstract class ProgWidget implements IProgWidget {
     }
 
     @Override
-    public ITextComponent getExtraStringInfo() {
-        return StringTextComponent.EMPTY;
+    public List<ITextComponent> getExtraStringInfo() {
+        return Collections.emptyList();
     }
 
     @Override
