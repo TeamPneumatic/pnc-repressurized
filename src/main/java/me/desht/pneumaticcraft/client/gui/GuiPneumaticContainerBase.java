@@ -392,7 +392,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
 
         buttons.stream().filter(w -> w instanceof ITickableWidget).forEach(w -> ((ITickableWidget) w).tickWidget());
 
-        if (pressureStat != null) {
+        if (pressureStat != null && pressureStat.isDoneExpanding()) {
             List<ITextComponent> pressureText = new ArrayList<>();
             addPressureStatInfo(pressureText);
             pressureStat.setText(pressureText);
