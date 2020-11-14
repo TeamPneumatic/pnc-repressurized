@@ -39,9 +39,9 @@ public class CoreComponentsOptions extends IOptionPage.SimpleToggleableOptions<C
         }));
 
         gui.addWidget(new WidgetCheckBox(5, 45, 0xFFFFFFFF, xlate("pneumaticcraft.armor.gui.misc.showPressureNumerically"), b -> {
-            getClientUpgradeHandler().showPressureNumerically = b.checked;
+            getClientUpgradeHandler().setShowPressureNumerically(b.checked);
             getClientUpgradeHandler().saveToConfig();
-        }).setChecked(getClientUpgradeHandler().showPressureNumerically));
+        }).setChecked(getClientUpgradeHandler().shouldShowPressureNumerically()));
 
         changeKeybindingButton = new KeybindingButton(30, 172, 150, 20,
                 xlate("pneumaticcraft.armor.gui.misc.setKey"), KeyHandler.getInstance().keybindOpenOptions,

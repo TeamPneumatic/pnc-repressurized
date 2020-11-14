@@ -36,7 +36,8 @@ public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.Abst
     private final float[] lastPressure = new float[] { -1, -1, -1, -1 };
     private WidgetAnimatedStat powerStat;
     public WidgetAnimatedStat testMessageStat;
-    public boolean showPressureNumerically;  // false for numeric readout, true for horizontal bars
+    private boolean showPressureNumerically;  // false for numeric readout, true for horizontal bars
+    private boolean forceUpdatePressureStat = true;
 
     public CoreComponentsClientHandler() {
         super(ArmorUpgradeRegistry.getInstance().coreComponentsHandler);
@@ -44,7 +45,7 @@ public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.Abst
 
     @Override
     public void tickClient(ICommonArmorHandler armorHandler) {
-        boolean needUpdate = false;
+        boolean needUpdate = forceUpdatePressureStat;
         for (int i = 0; i < 4; i++) {
             if (lastPressure[i] != armorHandler.getArmorPressure(ArmorUpgradeRegistry.ARMOR_SLOTS[i])) {
                 lastPressure[i] = armorHandler.getArmorPressure(ArmorUpgradeRegistry.ARMOR_SLOTS[i]);
@@ -56,6 +57,7 @@ public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.Abst
                     .map(slot -> getPressureStr(armorHandler, slot))
                     .collect(Collectors.toList());
             powerStat.setText(l);
+            forceUpdatePressureStat = false;
         }
     }
 
@@ -67,6 +69,15 @@ public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.Abst
     @Override
     public void saveToConfig() {
         ConfigHelper.setShowPressureNumerically(showPressureNumerically);
+    }
+
+    public boolean shouldShowPressureNumerically() {
+        return showPressureNumerically;
+    }
+
+    public void setShowPressureNumerically(boolean showPressureNumerically) {
+        if (showPressureNumerically != this.showPressureNumerically) forceUpdatePressureStat = true;
+        this.showPressureNumerically = showPressureNumerically;
     }
 
     private ITextComponent getPressureStr(ICommonArmorHandler handler, EquipmentSlotType slot) {
