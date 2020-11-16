@@ -6,7 +6,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.16.3 / 1.16.4
 
-## 2.6.0-67 (5 Nov 2020)
+## 2.6.0-70 (16 Nov 2020)
 
 ### New
 * Added a new mob spawning system!
@@ -19,16 +19,19 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ### Updates 
 * The Vacuum Pump is now more efficient at creating a vacuum (more vacuum produced on the "-" side per air consumed on the "+" side) 
+* Redstone Mode selection in GUI's has had a makeover
+  * There is now one button per mode, rather than a single button to cycle the modes
 * Animated stats (i.e. GUI side tabs and the popup HUD boxes for pneumatic armor) have been heavily reworked internally
   * Player-visible changes are fairly limited, but side tabs do wrap their text better now (taking advantage of some vanilla `ITextComponent`/`IReorderingProcessor` code to manage text wrapping & layout)
-  * Side tabs don't scale their text now when short of space, since that never looked good. Instead, text is always wrapped to fit the available width and a scrollbar added where necessary.
+  * Side tabs don't scale their text now when short of horizontal space, since that never looked good. 
+  * Instead, text is always wrapped to fit the available width and a scrollbar added where necessary.
   * Dropped the remaining use of raw `String` in many places, in favour of `ITextComponent`
   * There are API breaks for `IGuiAnimatedStat`, `IHackableBlock` and `IHackableEntity` - sorry!
 * The `/dumpNBT` command now requires player permission level 2 (it could be used to inspect item data which should remain secret from regular players)
 
 ### Fixes
-* Hopefully fixed a problem on SMP where players get kicked when they are near other players wearing or holding pressurizable items (tools & armor)
-  * I couldn't reproduce this one myself and I suspect another mod may be interfering, but I've added some defensive coding to cover it
+* Fixed a problem on SMP where players get kicked when they are near other players wearing or holding pressurizable items (tools & armor)
+  * I couldn't reproduce this one myself, and I suspect another mod may be interfering, but I've added some defensive coding to cover it
 
 ## 2.5.0-66 (5 Nov 2020)
   
