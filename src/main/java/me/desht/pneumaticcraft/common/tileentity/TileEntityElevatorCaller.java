@@ -7,12 +7,13 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.items.IItemHandler;
 
-public class TileEntityElevatorCaller extends TileEntityTickableBase implements ICamouflageableTE {
+public class TileEntityElevatorCaller extends TileEntityTickableBase implements ICamouflageableTE, IRedstoneControl<TileEntityElevatorCaller> {
     private ElevatorButton[] floors = new ElevatorButton[0];
     private int thisFloor;
     private boolean emittingRedstone;
     private boolean shouldUpdateNeighbors;
     private BlockState camoState;
+    private final RedstoneController<TileEntityElevatorCaller> rsController = new RedstoneController<>(this);
 
     public TileEntityElevatorCaller() {
         super(ModTileEntities.ELEVATOR_CALLER.get());
@@ -78,9 +79,9 @@ public class TileEntityElevatorCaller extends TileEntityTickableBase implements 
 
     @Override
     public void onNeighborBlockUpdate() {
-        boolean wasPowered = poweredRedstone > 0;
+        boolean wasPowered = getRedstoneController().getCurrentRedstonePower() > 0;
         super.onNeighborBlockUpdate();
-        if (poweredRedstone > 0 && !wasPowered) {
+        if (getRedstoneController().getCurrentRedstonePower() > 0 && !wasPowered) {
             BlockElevatorCaller.setSurroundingElevators(getWorld(), getPos(), thisFloor);
         }
     }
@@ -114,6 +115,11 @@ public class TileEntityElevatorCaller extends TileEntityTickableBase implements 
     public void setCamouflage(BlockState state) {
         camoState = state;
         ICamouflageableTE.syncToClient(this);
+    }
+
+    @Override
+    public RedstoneController<TileEntityElevatorCaller> getRedstoneController() {
+        return rsController;
     }
 
     public static class ElevatorButton {

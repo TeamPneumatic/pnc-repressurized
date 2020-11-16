@@ -9,7 +9,6 @@ import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.item.ItemEmptyPCB;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.IOHelper;
-import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -35,7 +34,8 @@ import javax.annotation.Nullable;
 //import elucent.albedo.lighting.Light;
 
 //@Optional.Interface(iface = "elucent.albedo.lighting.ILightProvider", modid = "albedo")
-public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMinWorkingPressure, IRedstoneControlled, INamedContainerProvider /*,ILightProvider */ {
+public class TileEntityUVLightBox extends TileEntityPneumaticBase implements
+        IMinWorkingPressure, IRedstoneControl<TileEntityUVLightBox>, INamedContainerProvider /*,ILightProvider */ {
     private static final String NBT_EXPOSURE = "pneumaticcraft:uv_exposure";
 
     public static final int INVENTORY_SIZE = 1;
@@ -48,7 +48,7 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
     private BlockState pendingState;
 
     @GuiSynced
-    public int redstoneMode;
+    public final RedstoneController<TileEntityUVLightBox> rsController = new RedstoneController<>(this);
     @GuiSynced
     public int threshold = 100;
 
@@ -72,7 +72,7 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
             ticksExisted++;
             ItemStack stack = getLoadedPCB();
             boolean didWork = false;
-            if (!stack.isEmpty() && redstoneAllows()) {
+            if (!stack.isEmpty() && rsController.shouldRun()) {
                 int progress = getExposureProgress(stack);
                 if (getPressure() >= PneumaticValues.MIN_PRESSURE_UV_LIGHTBOX && progress < 100) {
                     addAir((int) (-PneumaticValues.USAGE_UV_LIGHTBOX * getSpeedUsageMultiplierFromUpgrades()));
@@ -154,7 +154,6 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
     public void read(BlockState state, CompoundNBT tag) {
         super.read(state, tag);
 
-        redstoneMode = tag.getInt(NBTKeys.NBT_REDSTONE_MODE);
         threshold = tag.getInt("threshold");
         inputHandler.deserializeNBT(tag.getCompound("Items"));
     }
@@ -163,7 +162,6 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
     public CompoundNBT write(CompoundNBT nbt) {
         super.write(nbt);
         nbt.putInt("threshold", threshold);
-        nbt.putInt(NBTKeys.NBT_REDSTONE_MODE, redstoneMode);
         nbt.put("Items", inputHandler.serializeNBT());
         return nbt;
     }
@@ -212,16 +210,12 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
 
     @Override
     public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player) {
-        if (tag.equals(IGUIButtonSensitive.REDSTONE_TAG)) {
-            redstoneMode++;
-            if (redstoneMode > 2) redstoneMode = 0;
-            updateNeighbours();
-        } else {
-            try {
-                threshold = MathHelper.clamp(Integer.parseInt(tag), 1, 100);
-                markDirty();
-            } catch (IllegalArgumentException ignored) {
-            }
+        if (rsController.parseRedstoneMode(tag))
+            return;
+        try {
+            threshold = MathHelper.clamp(Integer.parseInt(tag), 1, 100);
+            markDirty();
+        } catch (IllegalArgumentException ignored) {
         }
     }
 
@@ -240,8 +234,8 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements IMi
     }
 
     @Override
-    public int getRedstoneMode() {
-        return redstoneMode;
+    public RedstoneController<TileEntityUVLightBox> getRedstoneController() {
+        return rsController;
     }
 
     @Override

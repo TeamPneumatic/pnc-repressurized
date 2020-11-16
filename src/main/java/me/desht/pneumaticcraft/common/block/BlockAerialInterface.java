@@ -50,6 +50,6 @@ public class BlockAerialInterface extends BlockPneumaticCraft {
     @Override
     public int getWeakPower(BlockState blockState, IBlockReader blockAccess, BlockPos pos, Direction side) {
         return PneumaticCraftUtils.getTileEntityAt(blockAccess, pos, TileEntityAerialInterface.class)
-                .map(teAI -> teAI.shouldEmitRedstone() ? 15 : 0).orElse(0);
+                .map(teAI -> teAI.getRedstoneController().shouldEmit() ? 15 : 0).orElse(0);
     }
 }

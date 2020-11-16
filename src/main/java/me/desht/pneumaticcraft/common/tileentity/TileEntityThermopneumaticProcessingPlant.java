@@ -13,7 +13,6 @@ import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
-import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -44,8 +43,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Map;
 
-public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumaticBase
-        implements IMinWorkingPressure, IRedstoneControlled, ISerializableTanks,
+public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumaticBase implements
+        IMinWorkingPressure, IRedstoneControl<TileEntityThermopneumaticProcessingPlant>, ISerializableTanks,
         IAutoFluidEjecting, INamedContainerProvider, IComparatorSupport {
 
     private static final int INVENTORY_SIZE = 1;
@@ -62,7 +61,7 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
     private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
     private final LazyOptional<IHeatExchangerLogic> heatCap = LazyOptional.of(() -> heatExchanger);
     @GuiSynced
-    public int redstoneMode;
+    public final RedstoneController<TileEntityThermopneumaticProcessingPlant> rsController = new RedstoneController<>(this);
     @GuiSynced
     private int craftingProgress;
     @GuiSynced
@@ -137,7 +136,7 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
                 requiredPressure = currentRecipe.getRequiredPressure();
                 minTemperature = currentRecipe.getOperatingTemperature().getMin();
                 maxTemperature = currentRecipe.getOperatingTemperature().getMax();
-                if (redstoneAllows()
+                if (rsController.shouldRun()
                         && currentRecipe.getOperatingTemperature().inRange(heatExchanger.getTemperature())
                         && hasEnoughPressure()) {
                     double inc = minTemperature > 0 ? Math.min(MAX_SPEED_UP, heatExchanger.getTemperature() / minTemperature) : 1.0;
@@ -227,7 +226,6 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
 
         tag.put("Items", itemHandler.serializeNBT());
         tag.put("Output", outputItemHandler.serializeNBT());
-        tag.putByte(NBTKeys.NBT_REDSTONE_MODE, (byte) redstoneMode);
         tag.putInt("craftingProgress", craftingProgress);
         return tag;
     }
@@ -238,7 +236,6 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
 
         itemHandler.deserializeNBT(tag.getCompound("Items"));
         outputItemHandler.deserializeNBT(tag.getCompound("Output"));
-        redstoneMode = tag.getByte(NBTKeys.NBT_REDSTONE_MODE);
         craftingProgress = tag.getInt("craftingProgress");
     }
 
@@ -249,10 +246,9 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
 
     @Override
     public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player) {
-        if (tag.equals(IGUIButtonSensitive.REDSTONE_TAG)) {
-            redstoneMode++;
-            if (redstoneMode > 2) redstoneMode = 0;
-        } else if (tag.equals("dump")) {
+        if (rsController.parseRedstoneMode(tag))
+            return;
+        if (tag.equals("dump")) {
             FluidStack moved;
             if (shiftHeld) {
                 moved = inputTank.drain(inputTank.getCapacity(), FluidAction.EXECUTE);
@@ -271,8 +267,8 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
     }
 
     @Override
-    public int getRedstoneMode() {
-        return redstoneMode;
+    public RedstoneController<TileEntityThermopneumaticProcessingPlant> getRedstoneController() {
+        return rsController;
     }
 
     @Override

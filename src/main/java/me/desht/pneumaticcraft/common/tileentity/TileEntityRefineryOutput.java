@@ -30,7 +30,7 @@ import javax.annotation.Nullable;
 import java.util.Map;
 
 public class TileEntityRefineryOutput extends TileEntityTickableBase
-        implements IRedstoneControlled, IComparatorSupport, ISerializableTanks, INamedContainerProvider {
+        implements IRedstoneControl<TileEntityRefineryOutput>, IComparatorSupport, ISerializableTanks, INamedContainerProvider {
 
     private TileEntityRefineryController controllerTE = null;
 
@@ -43,6 +43,7 @@ public class TileEntityRefineryOutput extends TileEntityTickableBase
 
     private final LazyOptional<IFluidHandler> fluidCap = LazyOptional.of(() -> outputTank);
     private final LazyOptional<IFluidHandler> fluidCapWrapped = LazyOptional.of(() -> new TankWrapper(outputTank));
+    private final RedstoneController<TileEntityRefineryOutput> rsController = new RedstoneController<>(this);
 
     public TileEntityRefineryOutput() {
         super(ModTileEntities.REFINERY_OUTPUT.get());
@@ -59,6 +60,11 @@ public class TileEntityRefineryOutput extends TileEntityTickableBase
     public int getComparatorValue() {
         TileEntityRefineryController controller = getRefineryController();
         return controller == null ? 0 : controller.getComparatorValue();
+    }
+
+    @Override
+    public RedstoneController<TileEntityRefineryOutput> getRedstoneController() {
+        return rsController;
     }
 
     @Override

@@ -21,6 +21,8 @@ import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.ComputerEventManager;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethod;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethodRegistry;
+import me.desht.pneumaticcraft.common.tileentity.RedstoneController.EmittingRedstoneMode;
+import me.desht.pneumaticcraft.common.tileentity.RedstoneController.RedstoneMode;
 import me.desht.pneumaticcraft.common.util.GlobalTileEntityCacheManager;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -31,10 +33,12 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -52,13 +56,16 @@ import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class TileEntityUniversalSensor extends TileEntityPneumaticBase
-        implements IRangeLineShower, IGUITextFieldSensitive, IMinWorkingPressure, IRedstoneControl, INamedContainerProvider {
+public class TileEntityUniversalSensor extends TileEntityPneumaticBase implements
+        IRangeLineShower, IGUITextFieldSensitive, IMinWorkingPressure,
+        IRedstoneControl<TileEntityUniversalSensor>, INamedContainerProvider {
 
-    private static final List<String> REDSTONE_LABELS = ImmutableList.of(
-            "pneumaticcraft.gui.tab.redstoneBehaviour.universalSensor.button.normal",
-            "pneumaticcraft.gui.tab.redstoneBehaviour.universalSensor.button.inverted"
+    private static final List<RedstoneMode<TileEntityUniversalSensor>> REDSTONE_MODES = ImmutableList.of(
+            new EmittingRedstoneMode<>("universalSensor.normal", new ItemStack(Items.REDSTONE), te -> true),
+            new EmittingRedstoneMode<>("universalSensor.inverted", new ItemStack(Items.REDSTONE_TORCH), te -> true)
     );
+    private static final byte RS_MODE_NORMAL = 0;
+    private static final byte RS_MODE_INVERTED = 1;
 
     @GuiSynced
     private String sensorSetting = "";
@@ -69,7 +76,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
     public float oldDishRotation;
     private float dishSpeed;
     @GuiSynced
-    private boolean invertedRedstone;
+    private final RedstoneController<TileEntityUniversalSensor> rsController = new RedstoneController<>(this, REDSTONE_MODES);
     @DescSynced
     public boolean isSensorActive;
     @GuiSynced
@@ -114,6 +121,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
         super.tick();
 
         if (!getWorld().isRemote) {
+            boolean invertedRedstone = rsController.getCurrentMode() == RS_MODE_INVERTED;
             tickTimer++;
             ISensorSetting sensor = SensorHandler.getInstance().getSensorFromPath(sensorSetting);
             if (updateStatus(sensor) == SensorStatus.OK  && sensor != null && getPressure() > PneumaticValues.MIN_PRESSURE_UNIVERSAL_SENSOR) {
@@ -214,7 +222,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
         if (sensor instanceof IEventSensorSetting && getPressure() >= getMinWorkingPressure()) {
             int newRedstoneStrength = ((IEventSensorSetting) sensor).emitRedstoneOnEvent(event, this, getRange(), sensorGuiText);
             if (newRedstoneStrength != 0) redstonePulseCounter = ((IEventSensorSetting) sensor).getRedstonePulseLength();
-            if (invertedRedstone) newRedstoneStrength = 15 - newRedstoneStrength;
+            if (rsController.getCurrentMode() == RS_MODE_INVERTED) newRedstoneStrength = 15 - newRedstoneStrength;
             if (redstonePulseCounter > 0 && ThirdPartyManager.instance().isModTypeLoaded(ThirdPartyManager.ModType.COMPUTER)) {
                 if (event instanceof PlayerInteractEvent) {
                     PlayerInteractEvent e = (PlayerInteractEvent) event;
@@ -265,7 +273,6 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
 
         tag.put("Items", itemHandler.serializeNBT());
         tag.putString("sensorSetting", sensorSetting);
-        tag.putBoolean("invertedRedstone", invertedRedstone);
         tag.putFloat("dishSpeed", dishSpeed);
         tag.putString("sensorText", sensorGuiText);
 
@@ -278,7 +285,10 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
 
         itemHandler.deserializeNBT(tag.getCompound("Items"));
         setSensorSetting(tag.getString("sensorSetting"));
-        invertedRedstone = tag.getBoolean("invertedRedstone");
+        if (tag.contains("invertedRedstone")) {
+            // TODO remove in 1.17 - legacy compat
+            rsController.setCurrentMode(tag.getBoolean("invertedRedstone") ? RS_MODE_INVERTED : RS_MODE_NORMAL);
+        }
         dishSpeed = tag.getFloat("dishSpeed");
         sensorGuiText = tag.getString("sensorText");
 
@@ -287,6 +297,12 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
 
     @Override
     public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player) {
+        if (rsController.parseRedstoneMode(tag)) {
+            redstoneStrength = 15 - redstoneStrength;
+            updateNeighbours();
+            return;
+        }
+
         if (tag.equals("back")) {
             // the 'back' button
             String[] folders = getSensorSetting().split("/");
@@ -296,10 +312,6 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
             }
             setSensorSetting(newPath);
             setText(0, "");
-        } else if (tag.equals(IGUIButtonSensitive.REDSTONE_TAG)) {
-            invertedRedstone = !invertedRedstone;
-            redstoneStrength = 15 - redstoneStrength;
-            updateNeighbours();
         } else if (tag.startsWith("set:")) {
             try {
                 int t = Integer.parseInt(tag.split(":")[1]);
@@ -505,8 +517,8 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
     }
 
     @Override
-    public int getRedstoneMode() {
-        return invertedRedstone ? 1 : 0;
+    public RedstoneController<TileEntityUniversalSensor> getRedstoneController() {
+        return rsController;
     }
 
     @Override
@@ -515,21 +527,16 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase
     }
 
     @Override
-    public ITextComponent getRedstoneTabTitle() {
+    public IFormattableTextComponent getRedstoneTabTitle() {
         return xlate("pneumaticcraft.gui.tab.redstoneBehaviour.universalSensor.redstoneEmission");
     }
 
-    @Override
-    protected List<String> getRedstoneButtonLabels() {
-        return REDSTONE_LABELS;
-    }
-    
     @Override
     public void remove(){
         super.remove();
         GlobalTileEntityCacheManager.getInstance().universalSensors.remove(this);
     }
-    
+
     @Override
     public void validate(){
         super.validate();

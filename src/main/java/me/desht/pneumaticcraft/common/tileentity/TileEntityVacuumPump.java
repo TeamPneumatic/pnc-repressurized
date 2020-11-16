@@ -9,7 +9,6 @@ import me.desht.pneumaticcraft.common.inventory.ContainerVacuumPump;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -31,7 +30,8 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class TileEntityVacuumPump extends TileEntityPneumaticBase implements IRedstoneControlled, IManoMeasurable, INamedContainerProvider {
+public class TileEntityVacuumPump extends TileEntityPneumaticBase implements
+        IRedstoneControl<TileEntityVacuumPump>, IManoMeasurable, INamedContainerProvider {
     @GuiSynced
     private final MachineAirHandler vacuumHandler;
     private final LazyOptional<IAirHandlerMachine> vacuumCap;
@@ -42,7 +42,7 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements IRe
     public boolean turning = false;
     private int rotationSpeed;
     @GuiSynced
-    public int redstoneMode;
+    public final RedstoneController<TileEntityVacuumPump> rsController = new RedstoneController<>(this);
 
     public TileEntityVacuumPump() {
         super(ModTileEntities.VACUUM_PUMP.get(), PneumaticValues.DANGER_PRESSURE_VACUUM_PUMP, PneumaticValues.MAX_PRESSURE_VACUUM_PUMP, PneumaticValues.VOLUME_VACUUM_PUMP, 4);
@@ -84,7 +84,7 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements IRe
         if (!getWorld().isRemote) {
             if (turnTimer >= 0) turnTimer--;
 
-            if (airHandler.getPressure() > PneumaticValues.MIN_PRESSURE_VACUUM_PUMP && vacuumHandler.getPressure() > -0.99F && redstoneAllows()) {
+            if (airHandler.getPressure() > PneumaticValues.MIN_PRESSURE_VACUUM_PUMP && vacuumHandler.getPressure() > -0.99F && rsController.shouldRun()) {
                 if (turnTimer == -1) {
                     turning = true;
                 }
@@ -119,7 +119,6 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements IRe
         super.write(tag);
         tag.put("vacuum", vacuumHandler.serializeNBT());
         tag.putBoolean("turning", turning);
-        tag.putInt(NBTKeys.NBT_REDSTONE_MODE, redstoneMode);
         return tag;
     }
 
@@ -129,15 +128,11 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements IRe
 
         vacuumHandler.deserializeNBT(tag.getCompound("vacuum"));
         turning = tag.getBoolean("turning");
-        redstoneMode = tag.getInt(NBTKeys.NBT_REDSTONE_MODE);
     }
 
     @Override
     public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player) {
-        if (tag.equals(IGUIButtonSensitive.REDSTONE_TAG)) {
-            redstoneMode++;
-            if (redstoneMode > 2) redstoneMode = 0;
-        }
+        rsController.parseRedstoneMode(tag);
     }
 
     @Override
@@ -148,8 +143,8 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements IRe
     }
 
     @Override
-    public int getRedstoneMode() {
-        return redstoneMode;
+    public RedstoneController<TileEntityVacuumPump> getRedstoneController() {
+        return rsController;
     }
 
     @Override

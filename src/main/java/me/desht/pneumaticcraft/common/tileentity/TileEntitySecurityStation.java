@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.authlib.GameProfile;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.util.RangeLines;
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerSecurityStationHacking;
 import me.desht.pneumaticcraft.common.inventory.ContainerSecurityStationMain;
@@ -12,9 +13,10 @@ import me.desht.pneumaticcraft.common.item.ItemNetworkComponent;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketRenderRangeLines;
+import me.desht.pneumaticcraft.common.tileentity.RedstoneController.EmittingRedstoneMode;
+import me.desht.pneumaticcraft.common.tileentity.RedstoneController.RedstoneMode;
 import me.desht.pneumaticcraft.common.util.GlobalTileEntityCacheManager;
 import me.desht.pneumaticcraft.lib.Log;
-import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -22,6 +24,8 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -43,12 +47,12 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 public class TileEntitySecurityStation extends TileEntityTickableBase implements IGUITextFieldSensitive,
-        IRangeLineShower, IRedstoneControl, INamedContainerProvider {
+        IRangeLineShower, IRedstoneControl<TileEntitySecurityStation>, INamedContainerProvider {
 
-    private static final List<String> REDSTONE_LABELS = ImmutableList.of(
-            "pneumaticcraft.gui.tab.redstoneBehaviour.button.never",
-            "pneumaticcraft.gui.tab.redstoneBehaviour.securityStation.button.hacked",
-            "pneumaticcraft.gui.tab.redstoneBehaviour.securityStation.button.doneRebooting"
+    private static final List<RedstoneMode<TileEntitySecurityStation>> REDSTONE_MODES = ImmutableList.of(
+            new EmittingRedstoneMode<>("standard.never", new ItemStack(Items.GUNPOWDER), te -> false),
+            new EmittingRedstoneMode<>("securityStation.hacked", EnumUpgrade.SECURITY.getItemStack(), TileEntitySecurityStation::isHacked),
+            new EmittingRedstoneMode<>("securityStation.doneRebooting", new ItemStack(ModBlocks.SECURITY_STATION.get()), te -> te.getRebootTime() <= 0)
     );
 
     public static final int INV_ROWS = 7;
@@ -60,16 +64,17 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
 
     public final List<GameProfile> hackedUsers = new ArrayList<>(); // Stores all the users that have hacked this Security Station.
     public final List<GameProfile> sharedUsers = new ArrayList<>(); // Stores all the users that have been allowed by the stationOwner.
+
     @GuiSynced
     private int rebootTimer; // When the player decides to reset the station, this variable will hold the remaining reboot time.
     @GuiSynced
     private String textFieldText = "";
+    @GuiSynced
+    public final RedstoneController<TileEntitySecurityStation> rsController = new RedstoneController<>(this, REDSTONE_MODES);
+
     private int securityRange;
     private int oldSecurityRange; //range used by the range line renderer, to figure out if the range has been changed.
     public RangeLines rangeLines;
-
-    @GuiSynced
-    public int redstoneMode;
     private boolean oldRedstoneStatus;
 
     private boolean validNetwork;
@@ -77,13 +82,13 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
     public TileEntitySecurityStation() {
         super(ModTileEntities.SECURITY_STATION.get(), 4);
     }
-    
+
     @Override
     public void remove(){
         super.remove();
         GlobalTileEntityCacheManager.getInstance().securityStations.remove(this);
     }
-    
+
     @Override
     public void validate(){
         super.validate();
@@ -108,8 +113,8 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
             }
             rangeLines.tick(world.rand);
         }
-        if (/* !getWorld().isRemote && */oldRedstoneStatus != shouldEmitRedstone()) {
-            oldRedstoneStatus = shouldEmitRedstone();
+        if (/* !getWorld().isRemote && */oldRedstoneStatus != rsController.shouldEmit()) {
+            oldRedstoneStatus = rsController.shouldEmit();
             updateNeighbours();
         }
 
@@ -146,11 +151,9 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
 
     @Override
     public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player) {
-        if (tag.equals(IGUIButtonSensitive.REDSTONE_TAG)) {
-            redstoneMode++;
-            if (redstoneMode > 2) redstoneMode = 0;
-            updateNeighbours();
-        } else if (tag.equals("reboot")) {
+        if (rsController.parseRedstoneMode(tag)) return;
+
+        if (tag.equals("reboot")) {
             rebootStation();
         } else if (tag.equals("test")) {
             if (!hasValidNetwork()) {
@@ -197,18 +200,6 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
         return profile1.getId() != null && profile2.getId() != null ? profile1.getId().equals(profile2.getId()) : profile1.getName().equals(profile2.getName());
     }
 
-    public boolean shouldEmitRedstone() {
-        switch (redstoneMode) {
-            case 0:
-                return false;
-            case 1:
-                return isHacked();
-            case 2:
-                return getRebootTime() <= 0;
-        }
-        return false;
-    }
-
     public boolean isHacked() {
         return hackedUsers.size() > 0;
     }
@@ -231,7 +222,6 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
     public void read(BlockState state, CompoundNBT tag) {
         super.read(state, tag);
 
-        redstoneMode = tag.getInt(NBTKeys.NBT_REDSTONE_MODE);
         rebootTimer = tag.getInt("startupTimer");
         inventory.deserializeNBT(tag.getCompound("Items"));
         checkForNetworkValidity();
@@ -240,7 +230,7 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
     @Override
     public CompoundNBT write(CompoundNBT tag) {
         super.write(tag);
-        tag.putInt(NBTKeys.NBT_REDSTONE_MODE, redstoneMode);
+
         tag.putInt("startupTimer", rebootTimer);
         tag.put("Items", inventory.serializeNBT());
         return tag;
@@ -455,15 +445,9 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
     }
 
     @Override
-    public int getRedstoneMode() {
-        return redstoneMode;
+    public RedstoneController<TileEntitySecurityStation> getRedstoneController() {
+        return rsController;
     }
-
-    @Override
-    protected List<String> getRedstoneButtonLabels() {
-        return REDSTONE_LABELS;
-    }
-
 
     /**
      * Get a count of the number of security stations protecting the given blockpos from the given player.

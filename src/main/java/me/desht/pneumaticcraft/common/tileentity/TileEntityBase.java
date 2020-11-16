@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
-import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
@@ -31,7 +30,6 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IWorld;
 import net.minecraftforge.client.model.data.IModelData;
@@ -50,21 +48,11 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.BiPredicate;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
-
 public abstract class TileEntityBase extends TileEntity implements IGUIButtonSensitive, IDescSynced, IUpgradeAcceptor, IUpgradeHolder, ILuaMethodProvider {
-    private static final List<String> REDSTONE_LABELS = ImmutableList.of(
-            "pneumaticcraft.gui.tab.redstoneBehaviour.button.anySignal",
-            "pneumaticcraft.gui.tab.redstoneBehaviour.button.highSignal",
-            "pneumaticcraft.gui.tab.redstoneBehaviour.button.lowSignal"
-    );
-
     private final UpgradeCache upgradeCache = new UpgradeCache(this);
 
     @GuiSynced
     private final UpgradeHandler upgradeHandler;
-    @GuiSynced
-    int poweredRedstone; // The redstone strength currently applied to the block.
 
     boolean firstRun = true;  // True only the first time updateEntity invokes in a session
     private boolean forceFullSync;
@@ -271,6 +259,9 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
         getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY)
                 .ifPresent(logic -> tag.put(NBTKeys.NBT_HEAT_EXCHANGER, logic.serializeNBT()));
 
+        if (this instanceof IRedstoneControl) {
+            ((IRedstoneControl<?>) this).getRedstoneController().serialize(tag);
+        }
         if (this instanceof ISerializableTanks) {
             tag.put(NBTKeys.NBT_SAVED_TANKS, ((ISerializableTanks) this).serializeTanks());
         }
@@ -290,6 +281,9 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
         getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY)
                 .ifPresent(logic -> logic.deserializeNBT(tag.getCompound(NBTKeys.NBT_HEAT_EXCHANGER)));
 
+        if (this instanceof IRedstoneControl) {
+            ((IRedstoneControl<?>) this).getRedstoneController().deserialize(tag);
+        }
         if (this instanceof ISerializableTanks) {
             ((ISerializableTanks) this).deserializeTanks(tag.getCompound(NBTKeys.NBT_SAVED_TANKS));
         }
@@ -388,25 +382,15 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
     }
 
     public void onNeighborBlockUpdate() {
-        poweredRedstone = PneumaticCraftUtils.getRedstoneLevel(getWorld(), getPos());
         if (getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY).isPresent()) {
             initializeHullHeatExchangers();
+        }
+        if (this instanceof IRedstoneControl) {
+            ((IRedstoneControl<?>)this).getRedstoneController().updateRedstonePower(this);
         }
         for (TileEntityCache cache : getTileCache()) {
             cache.update();
         }
-    }
-
-    public boolean redstoneAllows() {
-        switch (((IRedstoneControl) this).getRedstoneMode()) {
-            case 0:
-                return true;
-            case 1:
-                return poweredRedstone > 0;
-            case 2:
-                return poweredRedstone == 0;
-        }
-        return false;
     }
 
     private void initializeHullHeatExchangers() {
@@ -523,8 +507,6 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
             return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.orEmpty(cap, getInventoryCap());
         } else if (cap == PNCCapabilities.HEAT_EXCHANGER_CAPABILITY) {
             return PNCCapabilities.HEAT_EXCHANGER_CAPABILITY.orEmpty(cap, getHeatCap(side));
-//        } else if (cap == Mekanism.CAPABILITY_HEAT_TRANSFER && this instanceof IHeatExchanger) {
-//            return Mekanism.getHeatAdapter(this, side).cast();
         }
         return super.getCapability(cap, side);
     }
@@ -557,28 +539,6 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
                 drops.add(ICamouflageableTE.getStackForState(camoState));
             }
         }
-    }
-
-    public final ITextComponent getRedstoneButtonText(int mode) {
-        if (mode >= 0 && mode < getRedstoneButtonLabels().size()) {
-            return xlate(getRedstoneButtonLabels().get(mode));
-        } else {
-            return new StringTextComponent("<ERROR>");
-        }
-    }
-
-    protected List<String> getRedstoneButtonLabels() {
-        return REDSTONE_LABELS;
-    }
-
-    public int getRedstoneModeCount() {
-        return getRedstoneButtonLabels().size();
-    }
-
-    public ITextComponent getRedstoneTabTitle() {
-        return this instanceof IRedstoneControlled ?
-                xlate("pneumaticcraft.gui.tab.redstoneBehaviour.enableOn") :
-                xlate("pneumaticcraft.gui.tab.redstoneBehaviour.emitRedstoneWhen");
     }
 
     /**

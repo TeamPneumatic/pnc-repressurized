@@ -41,8 +41,9 @@ import javax.annotation.Nullable;
 import java.util.*;
 
 public class TileEntityFluidMixer extends TileEntityPneumaticBase implements
-        IMinWorkingPressure, IRedstoneControlled, INamedContainerProvider,
-        ISerializableTanks, IAutoFluidEjecting {
+        IMinWorkingPressure, IRedstoneControl<TileEntityFluidMixer>, INamedContainerProvider,
+        ISerializableTanks, IAutoFluidEjecting
+{
     // Maps a fluid to all of the other fluids it can combine with
     private static final Map<Fluid, Set<Fluid>> FLUID_MATCHES = new HashMap<>();
 
@@ -69,6 +70,8 @@ public class TileEntityFluidMixer extends TileEntityPneumaticBase implements
     public int maxProgress; // 0 when no recipe, recipe's process time * 100 when there is a recipe
     @DescSynced
     public boolean didWork;
+    @GuiSynced
+    private final RedstoneController<TileEntityFluidMixer> rsController = new RedstoneController<>(this);
 
     private float airUsed;
     private FluidMixerRecipe currentRecipe = null;
@@ -98,7 +101,7 @@ public class TileEntityFluidMixer extends TileEntityPneumaticBase implements
                 maxProgress = currentRecipe != null ? currentRecipe.getProcessingTime() * 100 : 0;
                 searchRecipes = false;
             }
-            if (redstoneAllows() && currentRecipe != null && getPressure() >= requiredPressure && hasOutputSpace()) {
+            if (rsController.shouldRun() && currentRecipe != null && getPressure() >= requiredPressure && hasOutputSpace()) {
                 craftingProgress += 100 * (1 + Math.min(getPressure() - requiredPressure, 1.5f));
                 didWork = true;
                 airUsed += 2.5f * getPressure();
@@ -239,14 +242,14 @@ public class TileEntityFluidMixer extends TileEntityPneumaticBase implements
 
     @Override
     public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player) {
+        if (rsController.parseRedstoneMode(tag))
+            return;
+
         if (tag.startsWith("dump")) {
             try {
                 moveOrDump(player, Integer.parseInt(tag.substring(4)), shiftHeld);
             } catch (NumberFormatException ignored) {
             }
-        } else if (tag.equals(IGUIButtonSensitive.REDSTONE_TAG)) {
-            redstoneMode++;
-            if (redstoneMode > 2) redstoneMode = 0;
         } else {
             super.handleGUIButtonPress(tag, shiftHeld, player);
         }
@@ -266,8 +269,8 @@ public class TileEntityFluidMixer extends TileEntityPneumaticBase implements
     }
 
     @Override
-    public int getRedstoneMode() {
-        return redstoneMode;
+    public RedstoneController<TileEntityFluidMixer> getRedstoneController() {
+        return rsController;
     }
 
     @Nonnull

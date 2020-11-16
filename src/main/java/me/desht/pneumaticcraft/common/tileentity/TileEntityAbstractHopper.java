@@ -4,12 +4,12 @@ import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.block.BlockOmnidirectionalHopper;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
-import me.desht.pneumaticcraft.lib.NBTKeys;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.EntityPredicates;
@@ -19,11 +19,9 @@ import net.minecraft.util.text.ITextComponent;
 import java.util.Collections;
 import java.util.List;
 
-public abstract class TileEntityAbstractHopper extends TileEntityTickableBase
-        implements IRedstoneControlled, IComparatorSupport, INamedContainerProvider {
+public abstract class TileEntityAbstractHopper<T extends TileEntity & IRedstoneControl<T>> extends TileEntityTickableBase
+        implements IRedstoneControl<T>, IComparatorSupport, INamedContainerProvider {
     private int lastComparatorValue = -1;
-    @GuiSynced
-    public int redstoneMode;
     private int cooldown;
     @GuiSynced
     int leaveMaterialCount; // leave items/liquids (used as filter)
@@ -72,7 +70,7 @@ public abstract class TileEntityAbstractHopper extends TileEntityTickableBase
 
         super.tick();
 
-        if (!getWorld().isRemote && --cooldown <= 0 && redstoneAllows()) {
+        if (!getWorld().isRemote && --cooldown <= 0 && getRedstoneController().shouldRun()) {
             int maxItems = getMaxItems();
             boolean success = doImport(maxItems);
             success |= doExport(maxItems);
@@ -115,7 +113,6 @@ public abstract class TileEntityAbstractHopper extends TileEntityTickableBase
     @Override
     public CompoundNBT write(CompoundNBT tag) {
         super.write(tag);
-        tag.putInt(NBTKeys.NBT_REDSTONE_MODE, redstoneMode);
         tag.putInt("leaveMaterialCount", leaveMaterialCount);
         return tag;
     }
@@ -124,7 +121,6 @@ public abstract class TileEntityAbstractHopper extends TileEntityTickableBase
     public void read(BlockState state, CompoundNBT tag) {
         super.read(state, tag);
 
-        redstoneMode = tag.getInt(NBTKeys.NBT_REDSTONE_MODE);
         if (tag.contains("leaveMaterial")) {
             leaveMaterialCount = (byte)(tag.getBoolean("leaveMaterial") ? 1 : 0);
         } else {
@@ -134,11 +130,10 @@ public abstract class TileEntityAbstractHopper extends TileEntityTickableBase
 
     @Override
     public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player) {
+        if (getRedstoneController().parseRedstoneMode(tag))
+            return;
+
         switch (tag) {
-            case IGUIButtonSensitive.REDSTONE_TAG:
-                redstoneMode++;
-                if (redstoneMode > 2) redstoneMode = 0;
-                break;
             case "empty":
                 leaveMaterialCount = 0;
                 break;
@@ -146,11 +141,6 @@ public abstract class TileEntityAbstractHopper extends TileEntityTickableBase
                 leaveMaterialCount = 1;
                 break;
         }
-    }
-
-    @Override
-    public int getRedstoneMode() {
-        return redstoneMode;
     }
 
     public boolean doesLeaveMaterial() {

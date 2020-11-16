@@ -12,14 +12,16 @@ import me.desht.pneumaticcraft.common.inventory.ContainerKeroseneLamp;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.tileentity.RedstoneController.ReceivingRedstoneMode;
+import me.desht.pneumaticcraft.common.tileentity.RedstoneController.RedstoneMode;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.lib.NBTKeys;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.nbt.NBTUtil;
@@ -47,19 +49,25 @@ import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.block.BlockKeroseneLamp.LIT;
 
-public class TileEntityKeroseneLamp extends TileEntityTickableBase implements IRedstoneControlled, ISerializableTanks, INamedContainerProvider {
+public class TileEntityKeroseneLamp extends TileEntityTickableBase implements
+        IRedstoneControl<TileEntityKeroseneLamp>, ISerializableTanks, INamedContainerProvider {
 
-    private static final List<String> REDSTONE_LABELS = ImmutableList.of(
-            "pneumaticcraft.gui.tab.redstoneBehaviour.button.anySignal",
-            "pneumaticcraft.gui.tab.redstoneBehaviour.button.highSignal",
-            "pneumaticcraft.gui.tab.redstoneBehaviour.button.lowSignal",
-            "pneumaticcraft.gui.tab.redstoneBehaviour.keroseneLamp.button.interpolate"
+    private static final List<RedstoneMode<TileEntityKeroseneLamp>> REDSTONE_MODES = ImmutableList.of(
+            new ReceivingRedstoneMode<>("standard.always", new ItemStack(Items.GUNPOWDER),
+                    te -> true),
+            new ReceivingRedstoneMode<>("standard.high_signal", new ItemStack(Items.REDSTONE),
+                    te -> te.getCurrentRedstonePower() > 0),
+            new ReceivingRedstoneMode<>("standard.low_signal", new ItemStack(Items.REDSTONE_TORCH),
+                    te -> te.getCurrentRedstonePower() == 0),
+            new ReceivingRedstoneMode<>("keroseneLamp.interpolate", new ItemStack(Items.COMPARATOR),
+                    te -> te.getCurrentRedstonePower() > 0)
     );
 
     public static final int INVENTORY_SIZE = 2;
 
     private static final int INPUT_SLOT = 0;
     private static final int OUTPUT_SLOT = 1;
+    private static final int RS_MODE_INTERPOLATE = 3;
     private static final int LIGHT_SPACING = 3;
     public static final int MAX_RANGE = 30;
 
@@ -70,7 +78,7 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements IR
     @GuiSynced
     private int targetRange = 10;
     @GuiSynced
-    private int redstoneMode;
+    private final RedstoneController<TileEntityKeroseneLamp> rsController = new RedstoneController<>(this, REDSTONE_MODES);
     @GuiSynced
     private int fuel;
     private int checkingX, checkingY, checkingZ;
@@ -121,9 +129,11 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements IR
             if (fuelQuality < 0) recalculateFuelQuality();
             processFluidItem(INPUT_SLOT, OUTPUT_SLOT);
             if (getWorld().getGameTime() % 5 == 0) {
-                int realTargetRange = redstoneAllows() && fuel > 0 ? targetRange : 0;
-                if (redstoneMode == 3) realTargetRange = (int) (poweredRedstone / 15D * targetRange);
-                updateRange(Math.min(realTargetRange, tank.getFluidAmount())); //Fade out the lamp when almost empty.
+                int effectiveRange = rsController.shouldRun() && fuel > 0 ? targetRange : 0;
+                if (rsController.getCurrentMode() == RS_MODE_INTERPOLATE) {
+                    effectiveRange = (int) (rsController.getCurrentRedstonePower() / 15D * targetRange);
+                }
+                updateRange(Math.min(effectiveRange, tank.getFluidAmount())); //Fade out the lamp when almost empty.
                 updateLights();
                 useFuel();
             }
@@ -282,7 +292,6 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements IR
     public CompoundNBT write(CompoundNBT tag) {
         super.write(tag);
         tag.put("lights", managingLights.stream().map(NBTUtil::writeBlockPos).collect(Collectors.toCollection(ListNBT::new)));
-        tag.putByte(NBTKeys.NBT_REDSTONE_MODE, (byte) redstoneMode);
         tag.putByte("targetRange", (byte) targetRange);
         tag.putByte("range", (byte) range);
         tag.put("Items", inventory.serializeNBT());
@@ -299,15 +308,9 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements IR
             managingLights.add(NBTUtil.readBlockPos(lights.getCompound(i)));
         }
         recalculateFuelQuality();
-        redstoneMode = tag.getByte(NBTKeys.NBT_REDSTONE_MODE);
         targetRange = tag.getByte("targetRange");
         range = tag.getByte("range");
         inventory.deserializeNBT(tag.getCompound("Items"));
-    }
-
-    @Override
-    public boolean redstoneAllows() {
-        return redstoneMode == 3 || super.redstoneAllows();
     }
 
     @Override
@@ -316,20 +319,18 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements IR
     }
 
     @Override
-    public int getRedstoneMode() {
-        return redstoneMode;
+    public RedstoneController<TileEntityKeroseneLamp> getRedstoneController() {
+        return rsController;
     }
 
     @Override
     public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player) {
-        if (tag.equals(IGUIButtonSensitive.REDSTONE_TAG)) {
-            redstoneMode++;
-            if (redstoneMode > 3) redstoneMode = 0;
-        } else {
-            try {
-                targetRange = MathHelper.clamp(Integer.parseInt(tag), 1, MAX_RANGE);
-            } catch (IllegalArgumentException ignored) {
-            }
+        if (rsController.parseRedstoneMode(tag))
+            return;
+
+        try {
+            targetRange = MathHelper.clamp(Integer.parseInt(tag), 1, MAX_RANGE);
+        } catch (IllegalArgumentException ignored) {
         }
     }
 
@@ -361,11 +362,6 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements IR
 
     public float getFuelQuality() {
         return fuelQuality;
-    }
-
-    @Override
-    protected List<String> getRedstoneButtonLabels() {
-        return REDSTONE_LABELS;
     }
 
     @Nonnull

@@ -12,12 +12,14 @@ import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethod;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethodRegistry;
+import me.desht.pneumaticcraft.common.tileentity.RedstoneController.ReceivingRedstoneMode;
+import me.desht.pneumaticcraft.common.tileentity.RedstoneController.RedstoneMode;
 import me.desht.pneumaticcraft.common.util.EntityDistanceComparator;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.ItemLaunching;
 import me.desht.pneumaticcraft.common.util.fakeplayer.FakeNetHandlerPlayerServer;
-import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
+import me.desht.pneumaticcraft.lib.Textures;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -39,6 +41,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.util.Constants;
@@ -56,12 +59,15 @@ import java.util.Map.Entry;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class TileEntityAirCannon extends TileEntityPneumaticBase
-        implements IMinWorkingPressure, IRedstoneControl, IGUIButtonSensitive, INamedContainerProvider {
+        implements IMinWorkingPressure, IRedstoneControl<TileEntityAirCannon>, IGUIButtonSensitive, INamedContainerProvider {
 
-    private static final List<String> REDSTONE_LABELS = ImmutableList.of(
-            "pneumaticcraft.gui.tab.redstoneBehaviour.airCannon.button.highSignalAndAngle",
-            "pneumaticcraft.gui.tab.redstoneBehaviour.button.highSignal",
-            "pneumaticcraft.gui.tab.redstoneBehaviour.airCannon.button.highAndSpace"
+    private static final List<RedstoneMode<TileEntityAirCannon>> REDSTONE_MODES = ImmutableList.of(
+            new ReceivingRedstoneMode<>("airCannon.highSignalAndAngle", Textures.GUI_HIGH_SIGNAL_ANGLE,
+                    te -> te.getCurrentRedstonePower() > 0 && te.doneTurning),
+            new ReceivingRedstoneMode<>("standard.high_signal", new ItemStack(Items.REDSTONE_TORCH),
+                    te -> te.getCurrentRedstonePower() > 0),
+            new ReceivingRedstoneMode<>("airCannon.highAndSpace", Textures.GUI_HIGH_SIGNAL_SPACE,
+                    te -> te.getCurrentRedstonePower() > 0 && te.inventoryCanCarry())
     );
 
     private final AirCannonStackHandler itemHandler = new AirCannonStackHandler(this);
@@ -90,7 +96,8 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     @GuiSynced
     public boolean coordWithinReach;
     @GuiSynced
-    private int redstoneMode;
+    private final RedstoneController<TileEntityAirCannon> rsController = new RedstoneController<>(this, REDSTONE_MODES);
+
     private int oldRangeUpgrades;
     private boolean externalControl;//used in the CC API, to disallow the Cannon to update its angles when things like range upgrades / GPS Tool have changed.
     private boolean entityUpgradeInserted, dispenserUpgradeInserted;
@@ -407,7 +414,6 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
         gpsX = tag.getInt("gpsX");
         gpsY = tag.getInt("gpsY");
         gpsZ = tag.getInt("gpsZ");
-        redstoneMode = tag.getByte(NBTKeys.NBT_REDSTONE_MODE);
         coordWithinReach = tag.getBoolean("targetWithinReach");
         itemHandler.deserializeNBT(tag.getCompound("Items"));
         forceMult = tag.getInt("forceMult");
@@ -438,7 +444,6 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
         tag.putInt("gpsX", gpsX);
         tag.putInt("gpsY", gpsY);
         tag.putInt("gpsZ", gpsZ);
-        tag.putByte(NBTKeys.NBT_REDSTONE_MODE, (byte) redstoneMode);
         tag.putBoolean("targetWithinReach", coordWithinReach);
         tag.put("Items", itemHandler.serializeNBT());
         tag.putInt("forceMult", forceMult);
@@ -474,6 +479,11 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
         return getDisplayNameInternal();
     }
 
+    @Override
+    public RedstoneController<TileEntityAirCannon> getRedstoneController() {
+        return rsController;
+    }
+
     private class AirCannonStackHandler extends BaseItemStackHandler {
         AirCannonStackHandler(TileEntity te) {
             super(te, INVENTORY_SIZE);
@@ -499,12 +509,15 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
 
     @Override
     public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player) {
+        if (rsController.parseRedstoneMode(tag)) {
+            if (rsController.getCurrentMode() == 2 && getUpgrades(EnumUpgrade.BLOCK_TRACKER) == 0) {
+                rsController.setCurrentMode(0);
+            }
+            return;
+        }
+
         int oldForceMult = forceMult;
         switch (tag) {
-            case IGUIButtonSensitive.REDSTONE_TAG:
-                if (++redstoneMode > 2) redstoneMode = 0;
-                if (redstoneMode == 2 && getUpgrades(EnumUpgrade.BLOCK_TRACKER) == 0) redstoneMode = 0;
-                break;
             case "--":
                 forceMult = Math.max(forceMult - 10, 0);
                 break;
@@ -523,10 +536,10 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
 
     @Override
     public void onNeighborBlockUpdate() {
-        boolean wasPowered = poweredRedstone > 0;
+        boolean wasPowered = rsController.getCurrentRedstonePower() > 0;
         super.onNeighborBlockUpdate();
-        boolean isPowered = poweredRedstone > 0;
-        if (isPowered && !wasPowered && (redstoneMode != 0 || doneTurning) && (redstoneMode != 2 || inventoryCanCarry())) {
+        boolean isPowered = rsController.getCurrentRedstonePower() > 0;
+        if (isPowered && !wasPowered && rsController.shouldRun()) {
             fire();
         }
     }
@@ -703,17 +716,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     }
 
     @Override
-    public int getRedstoneMode() {
-        return redstoneMode;
-    }
-
-    @Override
-    protected List<String> getRedstoneButtonLabels() {
-        return REDSTONE_LABELS;
-    }
-
-    @Override
-    public ITextComponent getRedstoneTabTitle() {
+    public IFormattableTextComponent getRedstoneTabTitle() {
         return xlate("pneumaticcraft.gui.tab.redstoneBehaviour.airCannon.fireUpon");
     }
 

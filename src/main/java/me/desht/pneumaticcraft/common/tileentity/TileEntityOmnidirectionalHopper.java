@@ -25,14 +25,15 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class TileEntityOmnidirectionalHopper extends TileEntityAbstractHopper {
+public class TileEntityOmnidirectionalHopper extends TileEntityAbstractHopper<TileEntityOmnidirectionalHopper> {
     public static final int INVENTORY_SIZE = 5;
 
     private final ComparatorItemStackHandler itemHandler = new ComparatorItemStackHandler(this, getInvSize());
     private final LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> itemHandler);
-    @GuiSynced
     public boolean roundRobin;
     private int rrSlot;
+    @GuiSynced
+    private final RedstoneController<TileEntityOmnidirectionalHopper> rsController = new RedstoneController<>(this);
 
     public TileEntityOmnidirectionalHopper() {
         super(ModTileEntities.OMNIDIRECTIONAL_HOPPER.get());
@@ -205,6 +206,11 @@ public class TileEntityOmnidirectionalHopper extends TileEntityAbstractHopper {
         } else {
             super.handleGUIButtonPress(tag, shiftHeld, player);
         }
+    }
+
+    @Override
+    public RedstoneController<TileEntityOmnidirectionalHopper> getRedstoneController() {
+        return rsController;
     }
 
     private static class DropInWorldHandler implements IItemHandler {

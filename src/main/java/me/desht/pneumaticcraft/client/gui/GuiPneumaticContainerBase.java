@@ -57,11 +57,10 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
     private WidgetAnimatedStat pressureStat;
     private WidgetAnimatedStat redstoneTab;
     WidgetAnimatedStat problemTab;
-    private WidgetButtonExtended redstoneButton;
+    private final List<WidgetButtonExtended> redstoneButtons = new ArrayList<>();
     boolean firstUpdate = true;
     private final List<IGuiAnimatedStat> statWidgets = new ArrayList<>();
     private int sendDelay = -1;
-    boolean redstoneAllows;
 
     public GuiPneumaticContainerBase(C container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
@@ -87,7 +86,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
                 addInfoTab(GuiUtils.xlateAndSplit(ICustomTooltipName.getTranslationKey(new ItemStack(te.getBlockState().getBlock()), false)));
             }
             if (shouldAddRedstoneTab() && te instanceof IRedstoneControl) {
-                addRedstoneTab();
+                addRedstoneTab(((IRedstoneControl<?>) te).getRedstoneController());
             }
             if (te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY).isPresent()) {
                 addAnimatedStat(xlate("pneumaticcraft.gui.tab.info.heat.title"),
@@ -149,14 +148,31 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         return statWidgets;
     }
 
-    private void addRedstoneTab() {
+    private void addRedstoneTab(RedstoneController<?> redstoneController) {
         redstoneTab = addAnimatedStat(xlate("pneumaticcraft.gui.tab.redstoneBehaviour"), new ItemStack(Items.REDSTONE), 0xFFCC0000, true);
-        int width = getWidestRedstoneLabel();
-        redstoneTab.setText(te.getRedstoneTabTitle());
-        redstoneTab.setMinimumExpandedDimensions(width, 45);
-        redstoneButton = new WidgetButtonExtended(-width - 12, 24, width + 10, 18, StringTextComponent.EMPTY, button -> { })
-                .withTag(IGUIButtonSensitive.REDSTONE_TAG);
-        redstoneTab.addSubWidget(redstoneButton);
+
+        redstoneButtons.clear();
+        int nModes = redstoneController.getModeCount();
+        int bx = -23 * nModes;
+        for (int i = 0; i < nModes; i++) {
+            redstoneButtons.add(createRedstoneModeButton(bx, i, redstoneController.getModeDetails(i)));
+            bx += 23;
+        }
+        redstoneButtons.forEach(b -> redstoneTab.addSubWidget(b));
+
+        redstoneTab.setText(redstoneController.getRedstoneTabTitle());
+        redstoneTab.setMinimumExpandedDimensions(23 * nModes + 5, 46);
+    }
+
+    private WidgetButtonExtended createRedstoneModeButton(int x, int idx, RedstoneController.RedstoneMode<?> mode) {
+        WidgetButtonExtended b = new WidgetButtonExtended(x, 24, 20, 20, StringTextComponent.EMPTY).withTag("redstone:" + idx);
+        if (mode.getTexture() != null) {
+            b.setRenderedIcon(mode.getTexture());
+        } else if (!mode.getStackIcon().isEmpty()) {
+            b.setRenderStacks(mode.getStackIcon());
+        }
+        b.setTooltipKey(mode.getTranslationKey());
+        return b;
     }
 
     protected void addJeiFilterInfoTab() {
@@ -192,13 +208,13 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
     protected void addExtraUpgradeText(List<ITextComponent> upgradeText) {
     }
 
-    private int getWidestRedstoneLabel() {
-        int max = 0;
-        for (int i = 0; i < te.getRedstoneModeCount(); i++) {
-            max = Math.max(max, font.getStringPropertyWidth(te.getRedstoneButtonText(i)));
-        }
-        return max;
-    }
+//    private int getWidestRedstoneLabel() {
+//        int max = 0;
+//        for (int i = 0; i < te.getRedstoneModeCount(); i++) {
+//            max = Math.max(max, font.getStringPropertyWidth(te.getRedstoneButtonText(i)));
+//        }
+//        return max;
+//    }
 
     private void addSideConfiguratorTabs() {
         for (SideConfigurator<?> sc : ((ISideConfigurable) te).getSideConfigurators()) {
@@ -400,11 +416,12 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         if (problemTab != null && ((Minecraft.getInstance().world.getGameTime() & 0x7) == 0 || firstUpdate)) {
             handleProblemsTab();
         }
-        if (redstoneTab != null) {
-            redstoneButton.setMessage(te.getRedstoneButtonText(((IRedstoneControl) te).getRedstoneMode()));
-        }
-        if (te instanceof IRedstoneControlled) {
-            redstoneAllows = te.redstoneAllows();
+        if (redstoneTab != null && te instanceof IRedstoneControl) {
+            redstoneTab.setExtraTooltipText(Collections.singletonList(((IRedstoneControl<?>) te).getRedstoneController().getDescription()));
+            int rsMode = ((IRedstoneControl<?>) te).getRedstoneMode();
+            for (int i = 0; i < redstoneButtons.size(); i++) {
+                redstoneButtons.get(i).active = i != rsMode;
+            }
         }
 
         firstUpdate = false;
@@ -490,13 +507,15 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
      * @param curInfo string list to append to, which may already contain some problem text
      */
     protected void addWarnings(List<ITextComponent> curInfo) {
-        if (te instanceof IRedstoneControlled && !redstoneAllows) {
-            IRedstoneControlled redstoneControlled = (IRedstoneControlled) te;
-            curInfo.add(xlate("pneumaticcraft.gui.tab.problems.redstoneDisallows"));
-            if (redstoneControlled.getRedstoneMode() == 1) {
-                curInfo.add(xlate("pneumaticcraft.gui.tab.problems.provideRedstone"));
-            } else {
-                curInfo.add(xlate("pneumaticcraft.gui.tab.problems.removeRedstone"));
+        if (te instanceof IRedstoneControl) {
+            IRedstoneControl<?> teR = (IRedstoneControl<?>) te;
+            if (!teR.getRedstoneController().isEmitter() && !teR.getRedstoneController().shouldRun()) {
+                curInfo.add(xlate("pneumaticcraft.gui.tab.problems.redstoneDisallows"));
+                if (teR.getRedstoneMode() == 1) {
+                    curInfo.add(xlate("pneumaticcraft.gui.tab.problems.provideRedstone"));
+                } else {
+                    curInfo.add(xlate("pneumaticcraft.gui.tab.problems.removeRedstone"));
+                }
             }
         }
     }

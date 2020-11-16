@@ -7,7 +7,6 @@ import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -28,7 +27,7 @@ import net.minecraftforge.items.IItemHandler;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class TileEntityAirCompressor extends TileEntityPneumaticBase implements IRedstoneControlled, INamedContainerProvider {
+public class TileEntityAirCompressor extends TileEntityPneumaticBase implements IRedstoneControl<TileEntityAirCompressor>, INamedContainerProvider {
     private static final int INVENTORY_SIZE = 1;
 
     private final AirCompressorFuelHandler itemHandler = new AirCompressorFuelHandler();
@@ -41,7 +40,7 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
     @GuiSynced
     private int maxBurnTime; // in here the total burn time of the current burning item is stored.
     @GuiSynced
-    public int redstoneMode = 0; // determines how the compressor responds to redstone.
+    public final RedstoneController<TileEntityAirCompressor> rsController = new RedstoneController<>(this);
     @DescSynced
     private boolean isActive;
     @GuiSynced
@@ -79,7 +78,7 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
         if (!getWorld().isRemote) {
             airPerTick = getBaseProduction() * getSpeedMultiplierFromUpgrades() * getHeatEfficiency() / 100F;
 
-            if (redstoneAllows() && burnTime < curFuelUsage) {
+            if (rsController.shouldRun() && burnTime < curFuelUsage) {
                 ItemStack fuelStack = itemHandler.getStackInSlot(FUEL_SLOT);
                 int itemBurnTime = PneumaticCraftUtils.getBurnTime(fuelStack);
                 if (itemBurnTime > 0) {
@@ -164,10 +163,7 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
 
     @Override
     public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player) {
-        if (tag.equals(IGUIButtonSensitive.REDSTONE_TAG)) {
-            redstoneMode++;
-            if (redstoneMode > 2) redstoneMode = 0;
-        }
+        rsController.parseRedstoneMode(tag);
     }
 
     @Override
@@ -192,23 +188,21 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
 
         burnTime = tag.getInt("burnTime");
         maxBurnTime = tag.getInt("maxBurn");
-        redstoneMode = tag.getInt(NBTKeys.NBT_REDSTONE_MODE);
         itemHandler.deserializeNBT(tag.getCompound("Items"));
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT nbtTagCompound) {
-        super.write(nbtTagCompound);
-        nbtTagCompound.putInt("burnTime", burnTime);
-        nbtTagCompound.putInt("maxBurn", maxBurnTime);
-        nbtTagCompound.putInt(NBTKeys.NBT_REDSTONE_MODE, redstoneMode);
-        nbtTagCompound.put("Items", itemHandler.serializeNBT());
-        return nbtTagCompound;
+    public CompoundNBT write(CompoundNBT tag) {
+        super.write(tag);
+        tag.putInt("burnTime", burnTime);
+        tag.putInt("maxBurn", maxBurnTime);
+        tag.put("Items", itemHandler.serializeNBT());
+        return tag;
     }
 
     @Override
-    public int getRedstoneMode() {
-        return redstoneMode;
+    public RedstoneController<TileEntityAirCompressor> getRedstoneController() {
+        return rsController;
     }
 
     private class AirCompressorFuelHandler extends BaseItemStackHandler {

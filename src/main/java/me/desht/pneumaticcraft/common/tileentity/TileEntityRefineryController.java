@@ -12,15 +12,12 @@ import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
-import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
@@ -44,7 +41,7 @@ import java.util.Map;
 import java.util.stream.IntStream;
 
 public class TileEntityRefineryController extends TileEntityTickableBase
-        implements IRedstoneControlled, IComparatorSupport, ISerializableTanks, INamedContainerProvider {
+        implements IRedstoneControl<TileEntityRefineryController>, IComparatorSupport, ISerializableTanks, INamedContainerProvider {
 
     @GuiSynced
     @DescSynced
@@ -56,7 +53,7 @@ public class TileEntityRefineryController extends TileEntityTickableBase
     private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
     private final LazyOptional<IHeatExchangerLogic> heatCap = LazyOptional.of(() -> heatExchanger);
     @GuiSynced
-    private int redstoneMode;
+    private final RedstoneController<TileEntityRefineryController> rsController = new RedstoneController<>(this);
     @GuiSynced
     private boolean blocked;
     @GuiSynced
@@ -126,7 +123,7 @@ public class TileEntityRefineryController extends TileEntityTickableBase
                     redistributeFluids();
                 }
 
-                if (outputCount > 1 && redstoneAllows() && doRefiningStep(FluidAction.SIMULATE)) {
+                if (outputCount > 1 && doesRedstoneAllow() && doRefiningStep(FluidAction.SIMULATE)) {
                     hasWork = true;
                     if (operatingTemp.inRange(heatExchanger.getTemperature())
                             && inputTank.getFluidAmount() >= currentRecipe.getInput().getAmount()) {
@@ -262,20 +259,21 @@ public class TileEntityRefineryController extends TileEntityTickableBase
         return true;
     }
 
-    @Override
-    public boolean redstoneAllows() {
-        int totalPower = poweredRedstone;
+    private boolean doesRedstoneAllow() {
+        // TODO need a better implementation here (cache power level in controller when any output gets an update)
+
+        int totalPower = getRedstoneController().getCurrentRedstonePower();
 
         // power to each refinery output block is also considered
-        TileEntityRefineryOutput refineryOutput = findAdjacentOutput();
-        if (refineryOutput != null) {
-            while (refineryOutput.getCachedNeighbor(Direction.UP) instanceof TileEntityRefineryOutput) {
-                totalPower += refineryOutput.poweredRedstone;
-                refineryOutput = (TileEntityRefineryOutput) refineryOutput.getCachedNeighbor(Direction.UP);
+        TileEntityRefineryOutput teRO = findAdjacentOutput();
+        if (teRO != null) {
+            while (teRO.getCachedNeighbor(Direction.UP) instanceof TileEntityRefineryOutput) {
+                totalPower = Math.max(totalPower, teRO.getRedstoneController().getCurrentRedstonePower());
+                teRO = (TileEntityRefineryOutput) teRO.getCachedNeighbor(Direction.UP);
             }
         }
 
-        switch (getRedstoneMode()) {
+        switch (getRedstoneController().getCurrentMode()) {
             case 0: return true;
             case 1: return totalPower > 0;
             case 2: return totalPower == 0;
@@ -297,32 +295,13 @@ public class TileEntityRefineryController extends TileEntityTickableBase
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tag) {
-        super.write(tag);
-
-        tag.putByte(NBTKeys.NBT_REDSTONE_MODE, (byte) redstoneMode);
-
-        return tag;
-    }
-
-    @Override
-    public void read(BlockState state, CompoundNBT tag) {
-        super.read(state, tag);
-
-        redstoneMode = tag.getByte(NBTKeys.NBT_REDSTONE_MODE);
-    }
-
-    @Override
-    public int getRedstoneMode() {
-        return redstoneMode;
+    public RedstoneController<TileEntityRefineryController> getRedstoneController() {
+        return rsController;
     }
 
     @Override
     public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player) {
-        if (tag.equals(IGUIButtonSensitive.REDSTONE_TAG)) {
-            redstoneMode++;
-            if (redstoneMode > 2) redstoneMode = 0;
-        }
+        rsController.parseRedstoneMode(tag);
     }
 
     private void updateComparatorValue(int outputCount, boolean didWork) {

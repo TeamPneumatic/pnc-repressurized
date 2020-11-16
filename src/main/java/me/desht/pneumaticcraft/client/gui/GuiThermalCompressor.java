@@ -64,7 +64,7 @@ public class GuiThermalCompressor extends GuiPneumaticContainerBase<ContainerThe
         super.addPressureStatInfo(pressureStatText);
 
         double prod = te.airProduced(Direction.NORTH) + te.airProduced(Direction.EAST);
-        if (prod > 0 && redstoneAllows) {
+        if (prod > 0 && te.getRedstoneController().shouldRun()) {
             pressureStatText.add(xlate("pneumaticcraft.gui.tooltip.producingAir",
                     PneumaticCraftUtils.roundNumberTo(prod, 1)).mergeStyle(TextFormatting.BLACK));
         }

@@ -9,7 +9,6 @@ import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketRenderRangeLines;
-import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
 import net.minecraft.block.BlockState;
@@ -35,7 +34,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class TileEntityPressurizedSpawner extends TileEntityPneumaticBase
-        implements IMinWorkingPressure, IRedstoneControlled, INamedContainerProvider, IRangeLineShower {
+        implements IMinWorkingPressure, IRedstoneControl<TileEntityPressurizedSpawner>, INamedContainerProvider, IRangeLineShower {
     public static final int BASE_SPAWN_INTERVAL = 200;
 
     private final ItemSpawnerCore.SpawnerCoreItemHandler inventory = new ItemSpawnerCore.SpawnerCoreItemHandler();
@@ -43,7 +42,7 @@ public class TileEntityPressurizedSpawner extends TileEntityPneumaticBase
     @DescSynced
     public TileEntityVacuumTrap.Problems problem = TileEntityVacuumTrap.Problems.OK;
     @GuiSynced
-    private int redstoneMode;
+    private final RedstoneController<TileEntityPressurizedSpawner> rsController = new RedstoneController<>(this);
     private int counter = BASE_SPAWN_INTERVAL;
     @DescSynced
     private boolean running;
@@ -64,7 +63,7 @@ public class TileEntityPressurizedSpawner extends TileEntityPneumaticBase
             problem = TileEntityVacuumTrap.Problems.OK;
             if (stats == null) {
                 problem = TileEntityVacuumTrap.Problems.NO_CORE;
-            } else if (getPressure() > getMinWorkingPressure() && redstoneAllows()) {
+            } else if (getPressure() > getMinWorkingPressure() && rsController.shouldRun()) {
                 running = true;
                 if (--counter <= 0) {
                     if (!trySpawnSomething(stats)) {
@@ -148,16 +147,13 @@ public class TileEntityPressurizedSpawner extends TileEntityPneumaticBase
     }
 
     @Override
-    public int getRedstoneMode() {
-        return redstoneMode;
+    public RedstoneController<TileEntityPressurizedSpawner> getRedstoneController() {
+        return rsController;
     }
 
     @Override
     public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player) {
-        if (tag.equals(IGUIButtonSensitive.REDSTONE_TAG)) {
-            redstoneMode++;
-            if (redstoneMode > 2) redstoneMode = 0;
-        }
+        rsController.parseRedstoneMode(tag);
     }
 
     @Override
@@ -175,7 +171,6 @@ public class TileEntityPressurizedSpawner extends TileEntityPneumaticBase
     public CompoundNBT write(CompoundNBT tag) {
         super.write(tag);
 
-        tag.putByte(NBTKeys.NBT_REDSTONE_MODE, (byte) redstoneMode);
         tag.put("Inventory", inventory.serializeNBT());
 
         return tag;
@@ -185,7 +180,6 @@ public class TileEntityPressurizedSpawner extends TileEntityPneumaticBase
     public void read(BlockState state, CompoundNBT tag) {
         super.read(state, tag);
 
-        redstoneMode = tag.getByte(NBTKeys.NBT_REDSTONE_MODE);
         inventory.deserializeNBT(tag.getCompound("Inventory"));
     }
 

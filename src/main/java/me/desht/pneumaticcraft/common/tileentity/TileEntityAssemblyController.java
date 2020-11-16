@@ -93,7 +93,7 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase
                     if (assemblySystem == null) {
                         assemblySystem = findAssemblySystem();
                     }
-                    if (assemblySystem != null && (!isMachineMissing || curProgram == null) && !isMachineDuplicate) {
+                    if ((!isMachineMissing || curProgram == null) && !isMachineDuplicate) {
                         boolean useAir;
                         if (curProgram != null) {
                             useAir = curProgram.executeStep(assemblySystem);

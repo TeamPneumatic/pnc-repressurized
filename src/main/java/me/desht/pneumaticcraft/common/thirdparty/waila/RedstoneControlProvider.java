@@ -5,12 +5,11 @@ import mcp.mobius.waila.api.IDataAccessor;
 import mcp.mobius.waila.api.IPluginConfig;
 import mcp.mobius.waila.api.IServerDataProvider;
 import me.desht.pneumaticcraft.common.tileentity.IRedstoneControl;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
+import me.desht.pneumaticcraft.common.tileentity.RedstoneController;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
 import java.util.HashMap;
@@ -35,18 +34,12 @@ public class RedstoneControlProvider {
             Map<ITextComponent, ITextComponent> values = new HashMap<>();
 
             if (tag.contains("redstoneMode")) {
-                int mode = tag.getInt("redstoneMode");
                 TileEntity te = accessor.getTileEntity();
-                if (te instanceof TileEntityBase) {
-                    values.put(((TileEntityBase) te).getRedstoneTabTitle(), ((TileEntityBase) te).getRedstoneButtonText(mode));
+                if (te instanceof IRedstoneControl) {
+                    RedstoneController<?> rsController = ((IRedstoneControl<?>) te).getRedstoneController();
+                    tooltip.add(rsController.getDescription());
                 }
             }
-
-            // Get all the values from the map and put them in the list.
-            values.forEach((k, v) -> tooltip.add(k.deepCopy()
-                    .appendString(": ")
-                    .append(v.deepCopy().mergeStyle(TextFormatting.RED))
-            ));
         }
     }
 }

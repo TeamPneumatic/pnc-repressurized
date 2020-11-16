@@ -105,10 +105,7 @@ public class BlockSecurityStation extends BlockPneumaticCraft {
 
     @Override
     public int getWeakPower(BlockState blockState, IBlockReader blockAccess, BlockPos pos, Direction side) {
-        TileEntity te = blockAccess.getTileEntity(pos);
-        if (te instanceof TileEntitySecurityStation) {
-            return ((TileEntitySecurityStation) te).shouldEmitRedstone() ? 15 : 0;
-        }
-        return 0;
+        return PneumaticCraftUtils.getTileEntityAt(blockAccess, pos, TileEntitySecurityStation.class)
+                .map(teSS -> teSS.getRedstoneController().shouldEmit() ? 15 : 0).orElse(0);
     }
 }

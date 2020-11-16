@@ -535,7 +535,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
                 return showWidgetDocs();
             case GLFW.GLFW_KEY_R:
                 if (exportButton.isHovered()) {
-                    NetworkHandler.sendToServer(new PacketGuiButton("redstone"));
+                    NetworkHandler.sendToServer(new PacketGuiButton("program_when"));
                 }
                 return true;
             case GLFW.GLFW_KEY_TAB:
@@ -822,7 +822,8 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
     private void updateExportButtonTooltip(ItemStack programmedItem) {
         List<ITextComponent> exportButtonTooltip = new ArrayList<>();
         exportButtonTooltip.add(xlate("pneumaticcraft.gui.programmer.button.export"));
-        exportButtonTooltip.add(xlate("pneumaticcraft.gui.programmer.button.export.programmingWhen", xlate("pneumaticcraft.gui.programmer.button.export." + (te.redstoneMode == 0 ? "pressingButton" : "onItemInsert"))));
+        exportButtonTooltip.add(xlate("pneumaticcraft.gui.programmer.button.export.programmingWhen",
+                xlate("pneumaticcraft.gui.programmer.button.export." + (te.programOnInsert ? "onItemInsert" : "pressingButton"))));
         exportButtonTooltip.add(xlate("pneumaticcraft.gui.programmer.button.export.pressRToChange"));
         if (!programmedItem.isEmpty()) {
             int required = te.getRequiredPuzzleCount();

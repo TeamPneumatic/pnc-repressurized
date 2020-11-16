@@ -9,7 +9,6 @@ import me.desht.pneumaticcraft.common.heat.SyncedTemperature;
 import me.desht.pneumaticcraft.common.inventory.ContainerThermalCompressor;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
-import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -28,7 +27,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 public class TileEntityThermalCompressor extends TileEntityPneumaticBase
-        implements IHeatTinted, IRedstoneControlled, INamedContainerProvider {
+        implements IHeatTinted, IRedstoneControl<TileEntityThermalCompressor>, INamedContainerProvider {
     private static final double AIR_GEN_MULTIPLIER = 0.05;  // mL per degree of difference
 
     // track running air generation amounts; won't be added to the air handler until > 1.0
@@ -46,7 +45,7 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase
     private final SyncedTemperature[] syncedTemperatures = new SyncedTemperature[4];  // S-W-N-E
 
     @GuiSynced
-    private int redstoneMode;
+    private final RedstoneController<TileEntityThermalCompressor> rsController = new RedstoneController<>(this);
 
     public TileEntityThermalCompressor() {
         super(ModTileEntities.THERMAL_COMPRESSOR.get(), PneumaticValues.DANGER_PRESSURE_THERMAL_COMPRESSOR, PneumaticValues.MAX_PRESSURE_THERMAL_COMPRESSOR, PneumaticValues.VOLUME_THERMAL_COMPRESSOR, 4);
@@ -89,7 +88,7 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase
                 heatExchanger.tick();
             }
 
-            if (redstoneAllows()) {
+            if (rsController.shouldRun()) {
                 connector1.tick();
                 connector2.tick();
 
@@ -166,7 +165,6 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase
         }
         tag.put("connector1", connector1.serializeNBT());
         tag.put("connector2", connector2.serializeNBT());
-        tag.putInt(NBTKeys.NBT_REDSTONE_MODE, redstoneMode);
         return tag;
     }
 
@@ -179,7 +177,6 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase
         }
         connector1.deserializeNBT(tag.getCompound("connector1"));
         connector2.deserializeNBT(tag.getCompound("connector2"));
-        redstoneMode = tag.getInt(NBTKeys.NBT_REDSTONE_MODE);
     }
 
     @Override
@@ -188,16 +185,13 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase
     }
 
     @Override
-    public void handleGUIButtonPress(String guiID, boolean shiftHeld, PlayerEntity player) {
-        if (guiID.equals(IGUIButtonSensitive.REDSTONE_TAG)) {
-            redstoneMode++;
-            if (redstoneMode > 2) redstoneMode = 0;
-        }
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player) {
+        rsController.parseRedstoneMode(tag);
     }
 
     @Override
-    public int getRedstoneMode() {
-        return redstoneMode;
+    public RedstoneController<TileEntityThermalCompressor> getRedstoneController() {
+        return rsController;
     }
 
     @Override

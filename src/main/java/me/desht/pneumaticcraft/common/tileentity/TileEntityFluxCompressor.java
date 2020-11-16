@@ -8,7 +8,6 @@ import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.inventory.ContainerEnergy;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
-import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -27,7 +26,8 @@ import net.minecraftforge.items.IItemHandler;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class TileEntityFluxCompressor extends TileEntityPneumaticBase implements IRedstoneControlled, INamedContainerProvider {
+public class TileEntityFluxCompressor extends TileEntityPneumaticBase
+        implements IRedstoneControl<TileEntityFluxCompressor>, INamedContainerProvider {
     private static final int BASE_FE_PRODUCTION = 40;
     private final PneumaticEnergyStorage energy = new PneumaticEnergyStorage(100000);
     private final LazyOptional<IEnergyStorage> energyCap = LazyOptional.of(() -> energy);
@@ -38,7 +38,7 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase implements
     private float airPerTick;
     private float airBuffer;
     @GuiSynced
-    private int redstoneMode;
+    private final RedstoneController<TileEntityFluxCompressor> rsController = new RedstoneController<>(this);
     @GuiSynced
     private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
     private final LazyOptional<IHeatExchangerLogic> heatCap = LazyOptional.of(() -> heatExchanger);
@@ -66,7 +66,7 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase implements
                         * (Machines.fluxCompressorEfficiency / 100f));
                 rfPerTick = (int) (BASE_FE_PRODUCTION * this.getSpeedUsageMultiplierFromUpgrades());
             }
-            if (redstoneAllows() && energy.getEnergyStored() >= rfPerTick) {
+            if (rsController.shouldRun() && energy.getEnergyStored() >= rfPerTick) {
                 airBuffer += airPerTick;
                 if (airBuffer >= 1f) {
                     int toAdd = (int) airBuffer;
@@ -86,8 +86,8 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase implements
     }
 
     @Override
-    public int getRedstoneMode() {
-        return redstoneMode;
+    public RedstoneController<TileEntityFluxCompressor> getRedstoneController() {
+        return rsController;
     }
 
     @Nonnull
@@ -104,7 +104,6 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase implements
     public CompoundNBT write(CompoundNBT tag){
         super.write(tag);
         energy.writeToNBT(tag);
-        tag.putByte(NBTKeys.NBT_REDSTONE_MODE, (byte)redstoneMode);
         return tag;
     }
 
@@ -113,14 +112,11 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase implements
         super.read(state, tag);
 
         energy.readFromNBT(tag);
-        redstoneMode = tag.getByte(NBTKeys.NBT_REDSTONE_MODE);
     }
 
     @Override
     public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player) {
-        if (tag.equals(IGUIButtonSensitive.REDSTONE_TAG) && ++redstoneMode == 3) {
-            redstoneMode = 0;
-        }
+        rsController.parseRedstoneMode(tag);
     }
 
     @Override

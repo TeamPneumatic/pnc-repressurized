@@ -91,6 +91,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
     private boolean needTextRecalc = true;
     private int foregroundColor = 0xFFFFFFFF;
     private int titleColor = 0xFFFFFF00;
+    private List<ITextComponent> extraTooltipText = new ArrayList<>();
 
     public WidgetAnimatedStat(Screen gui, ITextComponent title, int xPos, int yPos, int backGroundColor,
                               IGuiAnimatedStat statAbove, boolean leftSided) {
@@ -706,12 +707,21 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
     public void addTooltip(double mouseX, double mouseY, List<ITextComponent> curTooltip, boolean shiftPressed) {
         if (mouseIsHoveringOverIcon(mouseX, mouseY)) {
             curTooltip.add(getMessage());
+            curTooltip.addAll(getExtraTooltipText());
         }
 
         for (Widget widget : subWidgets)
             if (widget.isHovered() && widget instanceof ITooltipProvider) {
                 ((ITooltipProvider) widget).addTooltip(mouseX, mouseY, curTooltip, shiftPressed);
             }
+    }
+
+    public void setExtraTooltipText(List<ITextComponent> extraTooltipText) {
+        this.extraTooltipText = extraTooltipText;
+    }
+
+    private List<ITextComponent> getExtraTooltipText() {
+        return extraTooltipText;
     }
 
     private boolean mouseIsHoveringOverIcon(double x, double y) {

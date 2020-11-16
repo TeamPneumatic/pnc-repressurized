@@ -14,7 +14,6 @@ import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.EntityDistanceComparator;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.fakeplayer.FakeNetHandlerPlayerServer;
-import me.desht.pneumaticcraft.lib.NBTKeys;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -46,7 +45,8 @@ import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.List;
 
-public class TileEntitySentryTurret extends TileEntityTickableBase implements IRedstoneControlled, IGUITextFieldSensitive, INamedContainerProvider {
+public class TileEntitySentryTurret extends TileEntityTickableBase implements
+        IRedstoneControl<TileEntitySentryTurret>, IGUITextFieldSensitive, INamedContainerProvider {
     private static final int INVENTORY_SIZE = 4;
     public static final String NBT_ENTITY_FILTER = "entityFilter";
 
@@ -56,7 +56,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
     @GuiSynced
     private String entityFilter = "@mob";
     @GuiSynced
-    private int redstoneMode;
+    private final RedstoneController<TileEntitySentryTurret> rsController = new RedstoneController<>(this);
     @DescSynced
     private double range;
     @DescSynced
@@ -82,7 +82,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
     public void tick() {
         super.tick();
         if (!getWorld().isRemote) {
-            if (getMinigun().getAttackTarget() == null && redstoneAllows()) {
+            if (getMinigun().getAttackTarget() == null && rsController.shouldRun()) {
                 if (!PneumaticCraftUtils.areFloatsEqual(getMinigun().minigunYaw, getMinigun().getIdleYaw())) {
                     getMinigun().setReturning(true);
                 }
@@ -102,11 +102,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
             }
             LivingEntity target = getMinigun().getAttackTarget();
             if (target != null) {
-                if (!redstoneAllows() || !entitySelector.apply(target)) {
-                    getMinigun().setAttackTarget(null);
-                    getMinigun().minigunYaw = idleYaw;
-                    targetEntityId = -1;
-                } else {
+                if (rsController.shouldRun() && entitySelector.apply(target)) {
                     if ((getWorld().getGameTime() & 0x7) == 0) {
                         // Make sure any knockback has the right direction.
                         getFakePlayer().setPosition(getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5);
@@ -120,6 +116,10 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
                             }
                         }
                     }
+                } else {
+                    getMinigun().setAttackTarget(null);
+                    getMinigun().minigunYaw = idleYaw;
+                    targetEntityId = -1;
                 }
             }
         }
@@ -195,7 +195,6 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
     public CompoundNBT write(CompoundNBT tag) {
         super.write(tag);
         tag.put("Items", inventory.serializeNBT());
-        tag.putByte(NBTKeys.NBT_REDSTONE_MODE, (byte) redstoneMode);
         tag.putString(NBT_ENTITY_FILTER, entityFilter);
         tag.putFloat("idleYaw", idleYaw);
         return tag;
@@ -206,14 +205,8 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
         super.read(state, tag);
 
         inventory.deserializeNBT(tag.getCompound("Items"));
-        redstoneMode = tag.getByte(NBTKeys.NBT_REDSTONE_MODE);
         idleYaw = tag.getFloat("idleYaw");
         setText(0, tag.getString(NBT_ENTITY_FILTER));
-    }
-
-    @Override
-    public boolean redstoneAllows() {
-        return redstoneMode == 3 || super.redstoneAllows();
     }
 
     @Override
@@ -222,16 +215,13 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements IR
     }
 
     @Override
-    public int getRedstoneMode() {
-        return redstoneMode;
+    public RedstoneController<TileEntitySentryTurret> getRedstoneController() {
+        return rsController;
     }
 
     @Override
     public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player) {
-        if (tag.equals(IGUIButtonSensitive.REDSTONE_TAG)) {
-            redstoneMode++;
-            if (redstoneMode > 2) redstoneMode = 0;
-        }
+        rsController.parseRedstoneMode(tag);
     }
 
     @Override

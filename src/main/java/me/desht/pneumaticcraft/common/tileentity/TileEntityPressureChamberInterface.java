@@ -14,7 +14,6 @@ import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -41,7 +40,7 @@ import java.util.Locale;
 import java.util.Set;
 
 public class TileEntityPressureChamberInterface extends TileEntityPressureChamberWall
-        implements ITickableTileEntity, IRedstoneControlled, INamedContainerProvider {
+        implements ITickableTileEntity, IRedstoneControl<TileEntityPressureChamberInterface>, INamedContainerProvider {
     public static final int MAX_PROGRESS = 40;
     public static final int INVENTORY_SIZE = 1;
     private static final int MIN_SOUND_INTERVAL = 400;  // ticks - the sound effect is ~2.5s long
@@ -72,7 +71,7 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
     @DescSynced
     private boolean shouldOpenInput, shouldOpenOutput;
     @GuiSynced
-    public int redstoneMode;
+    public final RedstoneController<TileEntityPressureChamberInterface> rsController = new RedstoneController<>(this);
     private int inputTimeOut;
     private int oldItemCount;
     @GuiSynced
@@ -141,7 +140,7 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
                     shouldOpenOutput = false;
                     if (outputProgress == 0) {
                         shouldOpenInput = true;
-                        if (interfaceMode == InterfaceDirection.EXPORT && inputProgress == MAX_PROGRESS && redstoneAllows()) {
+                        if (interfaceMode == InterfaceDirection.EXPORT && inputProgress == MAX_PROGRESS && rsController.shouldRun()) {
                             importFromChamber(core);
                         }
                     }
@@ -281,7 +280,6 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
         inputProgress = tag.getFloat("inputProgress");
         interfaceMode = InterfaceDirection.values()[tag.getInt("interfaceMode")];
         exportAny = tag.getBoolean("exportAny");
-        redstoneMode = tag.getInt(NBTKeys.NBT_REDSTONE_MODE);
     }
 
     @Override
@@ -292,7 +290,6 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
         tag.putFloat("inputProgress", inputProgress);
         tag.putInt("interfaceMode", interfaceMode.ordinal());
         tag.putBoolean("exportAny", exportAny);
-        tag.putInt(NBTKeys.NBT_REDSTONE_MODE, redstoneMode);
         return tag;
     }
 
@@ -309,18 +306,17 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
 
     @Override
     public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player) {
-        if (tag.equals(IGUIButtonSensitive.REDSTONE_TAG)) {
-            redstoneMode++;
-            if (redstoneMode > 2) redstoneMode = 0;
-        } else if (tag.equals("export_mode")) {
+        if (rsController.parseRedstoneMode(tag))
+            return;
+        if (tag.equals("export_mode")) {
             exportAny = !exportAny;
+            markDirty();
         }
-        markDirty();
     }
 
     @Override
-    public int getRedstoneMode() {
-        return redstoneMode;
+    public RedstoneController<TileEntityPressureChamberInterface> getRedstoneController() {
+        return rsController;
     }
 
     @Override

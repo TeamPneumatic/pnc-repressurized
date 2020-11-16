@@ -188,6 +188,11 @@ public class Textures {
     public static final ResourceLocation GUI_X_BUTTON = guiIconTexture("gui_x_button.png");
     public static final ResourceLocation GUI_RIGHT_ARROW = guiIconTexture("gui_right_arrow.png");
     public static final ResourceLocation GUI_JEI_LOGO = guiIconTexture("jei_logo.png");
+    public static final ResourceLocation GUI_HIGH_SIGNAL_ANGLE = guiIconTexture("gui_high_signal_angle.png");
+    public static final ResourceLocation GUI_HIGH_SIGNAL_SPACE = guiIconTexture("gui_high_signal_space.png");
+    public static final ResourceLocation GUI_CHARGING = guiIconTexture("gui_charging.png");
+    public static final ResourceLocation GUI_DISCHARGING = guiIconTexture("gui_discharging.png");
+    public static final ResourceLocation GUI_CHARGE_IDLE = guiIconTexture("gui_charge_idle.png");
 
     // widget textures
     public static final ResourceLocation WIDGET_ENERGY = guiTexture("widget/widget_energy.png");

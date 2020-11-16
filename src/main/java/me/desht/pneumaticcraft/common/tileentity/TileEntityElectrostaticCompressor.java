@@ -7,8 +7,10 @@ import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerElectrostaticCompressor;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
-import me.desht.pneumaticcraft.lib.NBTKeys;
+import me.desht.pneumaticcraft.common.tileentity.RedstoneController.EmittingRedstoneMode;
+import me.desht.pneumaticcraft.common.tileentity.RedstoneController.RedstoneMode;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
+import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -19,7 +21,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.util.Direction;
 import net.minecraft.util.EntityPredicates;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -38,24 +41,26 @@ import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase implements IRedstoneControl, INamedContainerProvider {
+public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase
+        implements IRedstoneControl<TileEntityElectrostaticCompressor>, INamedContainerProvider {
 
     @ObjectHolder("chisel:ironpane")
     private static Block CHISELED_BARS = null;
 
-    private static final List<String> REDSTONE_LABELS = ImmutableList.of(
-            "pneumaticcraft.gui.tab.redstoneBehaviour.button.never",
-            "pneumaticcraft.gui.tab.redstoneBehaviour.electrostaticCompressor.button.struckByLightning"
+    private static final List<RedstoneMode<TileEntityElectrostaticCompressor>> REDSTONE_MODES = ImmutableList.of(
+            new EmittingRedstoneMode<>("standard.never", new ItemStack(Items.GUNPOWDER), te -> false),
+            new EmittingRedstoneMode<>("electrostaticCompressor.struckByLightning", Textures.JEI_EXPLOSION, te -> te.struckByLightningCooldown > 0)
     );
     private static final int MAX_ELECTROSTATIC_GRID_SIZE = 250;
     private static final int MAX_BARS_ABOVE = 10;
 
-    private boolean lastRedstoneState;
     @GuiSynced
-    public int redstoneMode = 0;
+    public final RedstoneController<TileEntityElectrostaticCompressor> rsController = new RedstoneController<>(this, REDSTONE_MODES);
+
+    private boolean lastRedstoneState;
     public int ironBarsBeneath = 0;
     public int ironBarsAbove = 0;
-    private int struckByLightningCooldown; //used by the redstone.
+    private int struckByLightningCooldown; // for redstone emission purposes
 
     public TileEntityElectrostaticCompressor() {
         super(ModTileEntities.ELECTROSTATIC_COMPRESSOR.get(), PneumaticValues.DANGER_PRESSURE_ELECTROSTATIC_COMPRESSOR, PneumaticValues.MAX_PRESSURE_ELECTROSTATIC_COMPRESSOR, PneumaticValues.VOLUME_ELECTROSTATIC_COMPRESSOR, 4);
@@ -83,7 +88,7 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase i
         if (!getWorld().isRemote) {
             maybeLightningStrike();
 
-            if (lastRedstoneState != shouldEmitRedstone()) {
+            if (lastRedstoneState != rsController.shouldEmit()) {
                 lastRedstoneState = !lastRedstoneState;
                 updateNeighbours();
             }
@@ -147,16 +152,6 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase i
         return dir != Direction.UP;
     }
 
-    private boolean shouldEmitRedstone() {
-        switch (redstoneMode) {
-            case 0:
-                return false;
-            case 1:
-                return struckByLightningCooldown > 0;
-        }
-        return false;
-    }
-
     public void onStruckByLightning() {
         struckByLightningCooldown = 10;
         if (getPressure() > PneumaticValues.DANGER_PRESSURE_ELECTROSTATIC_COMPRESSOR) {
@@ -168,38 +163,12 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase i
 
     @Override
     public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player) {
-        if (tag.equals(IGUIButtonSensitive.REDSTONE_TAG)) {
-            redstoneMode++;
-            if (redstoneMode > 1) redstoneMode = 0;
-        }
+        rsController.parseRedstoneMode(tag);
     }
 
     @Override
     public IItemHandler getPrimaryInventory() {
         return null;
-    }
-
-    @Override
-    public void read(BlockState state, CompoundNBT tag) {
-        super.read(state, tag);
-        redstoneMode = tag.getInt(NBTKeys.NBT_REDSTONE_MODE);
-    }
-
-    @Override
-    public CompoundNBT write(CompoundNBT nbtTagCompound) {
-        super.write(nbtTagCompound);
-        nbtTagCompound.putInt(NBTKeys.NBT_REDSTONE_MODE, redstoneMode);
-        return nbtTagCompound;
-    }
-
-    @Override
-    public int getRedstoneMode() {
-        return redstoneMode;
-    }
-
-    @Override
-    protected List<String> getRedstoneButtonLabels() {
-        return REDSTONE_LABELS;
     }
 
     /**
@@ -234,5 +203,10 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase i
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
         return new ContainerElectrostaticCompressor(i, playerInventory, getPos());
+    }
+
+    @Override
+    public RedstoneController<TileEntityElectrostaticCompressor> getRedstoneController() {
+        return rsController;
     }
 }

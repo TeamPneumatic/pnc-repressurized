@@ -59,6 +59,6 @@ public class BlockChargingStation extends BlockPneumaticCraftCamo {
     @Override
     public int getWeakPower(BlockState blockState, IBlockReader blockAccess, BlockPos pos, Direction side) {
         return PneumaticCraftUtils.getTileEntityAt(blockAccess, pos, TileEntityChargingStation.class)
-                .map(teCS -> teCS.shouldEmitRedstone() ? 15 : 0).orElse(0);
+                .map(teCS -> teCS.getRedstoneController().shouldEmit() ? 15 : 0).orElse(0);
     }
 }

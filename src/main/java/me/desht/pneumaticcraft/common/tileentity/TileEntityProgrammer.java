@@ -53,8 +53,6 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
     private static final int INVENTORY_SIZE = 1;
 
     public final List<IProgWidget> progWidgets = new ArrayList<>();
-    @GuiSynced
-    public int redstoneMode;
 
     private final ProgrammerItemHandler inventory = new ProgrammerItemHandler();
     private final LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> inventory);
@@ -71,6 +69,9 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
     public boolean canUndo;
     @GuiSynced
     public boolean canRedo;
+    @GuiSynced
+    public boolean programOnInsert; // false = program drone on button click, true = program when inserted
+
     private ListNBT history = new ListNBT(); //Used to undo/redo.
     private int historyIndex;
 
@@ -84,8 +85,13 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
     public void read(BlockState state, CompoundNBT tag) {
         super.read(state, tag);
 
-        redstoneMode = tag.getInt(NBTKeys.NBT_REDSTONE_MODE);
         inventory.deserializeNBT(tag.getCompound("Items"));
+        if (tag.contains(NBTKeys.NBT_REDSTONE_MODE)) {
+            // TODO remove in 1.17 - legacy compat
+            programOnInsert = tag.getInt(NBTKeys.NBT_REDSTONE_MODE) == 1;
+        } else {
+            programOnInsert = tag.getBoolean("ProgramOnInsert");
+        }
         history = tag.getList("history", 10);
         if (history.size() == 0) saveToHistory();
         readProgWidgetsFromNBT(tag);
@@ -99,9 +105,9 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
     @Override
     public CompoundNBT write(CompoundNBT tag) {
         super.write(tag);
-        tag.putInt(NBTKeys.NBT_REDSTONE_MODE, redstoneMode);
         tag.put("Items", inventory.serializeNBT());
         tag.put("history", history);
+        tag.putBoolean("ProgramOnInsert", programOnInsert);
         writeProgWidgetsToNBT(tag);
         return tag;
     }
@@ -300,8 +306,8 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
     @Override
     public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player) {
         switch (tag) {
-            case IGUIButtonSensitive.REDSTONE_TAG:
-                if (++redstoneMode > 1) redstoneMode = 0;
+            case "program_when":
+                programOnInsert = !programOnInsert;
                 break;
             case "import":
                 tryImport(shiftHeld);
@@ -610,7 +616,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
         @Override
         protected void onContentsChanged(int slot) {
             super.onContentsChanged(slot);
-            if (redstoneMode == 1 && slot == PROGRAM_SLOT && !getStackInSlot(slot).isEmpty() && !te.getWorld().isRemote) {
+            if (programOnInsert && slot == PROGRAM_SLOT && !getStackInSlot(slot).isEmpty() && !te.getWorld().isRemote) {
                 tryProgramDrone(null);
             }
         }

@@ -200,7 +200,7 @@ public class BlockPneumaticDoor extends BlockPneumaticCraft {
                         player.getHeldItem(hand).shrink(1);
                     }
                 }
-            } else if (doorBase != null && doorBase.redstoneMode == 2
+            } else if (doorBase != null && doorBase.getRedstoneController().getCurrentMode() == TileEntityPneumaticDoorBase.RS_MODE_WOODEN_DOOR
                     && doorBase.getPressure() >= doorBase.getMinWorkingPressure() && hand == Hand.MAIN_HAND) {
                 doorBase.setOpening(!doorBase.isOpening());
                 doorBase.setNeighborOpening(doorBase.isOpening());

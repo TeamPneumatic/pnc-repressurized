@@ -171,7 +171,7 @@ public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest
 
     @Override
     protected boolean shouldAddProblemTab() {
-        return false;
+        return true;
     }
 
     @Override

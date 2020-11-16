@@ -9,7 +9,6 @@ import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.inventory.ContainerEnergy;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
-import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -29,7 +28,8 @@ import net.minecraftforge.items.IItemHandler;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implements IRedstoneControlled, IMinWorkingPressure, INamedContainerProvider {
+public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implements
+        IRedstoneControl<TileEntityPneumaticDynamo>, IMinWorkingPressure, INamedContainerProvider {
 
     private final PneumaticEnergyStorage energy = new PneumaticEnergyStorage(100000);
     private final LazyOptional<IEnergyStorage> energyCap = LazyOptional.of(() -> energy);
@@ -40,7 +40,7 @@ public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implement
     private int airPerTick;
     public boolean isEnabled;
     @GuiSynced
-    private int redstoneMode;
+    private final RedstoneController<TileEntityPneumaticDynamo> rsController = new RedstoneController<>(this);
     @GuiSynced
     private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
     private final LazyOptional<IHeatExchangerLogic> heatCap = LazyOptional.of(() -> heatExchanger);
@@ -65,7 +65,7 @@ public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implement
             }
 
             boolean newEnabled;
-            if (redstoneAllows() && getPressure() > PneumaticValues.MIN_PRESSURE_PNEUMATIC_DYNAMO && energy.getMaxEnergyStored() - energy.getEnergyStored() >= rfPerTick) {
+            if (rsController.shouldRun() && getPressure() > getMinWorkingPressure() && energy.getMaxEnergyStored() - energy.getEnergyStored() >= rfPerTick) {
                 this.addAir(-airPerTick);
                 heatExchanger.addHeat(airPerTick / 100D);
                 energy.receiveEnergy(rfPerTick, false);
@@ -98,15 +98,13 @@ public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implement
     }
 
     @Override
-    public int getRedstoneMode(){
-        return redstoneMode;
+    public RedstoneController<TileEntityPneumaticDynamo> getRedstoneController() {
+        return rsController;
     }
 
     @Override
     public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player){
-        if (tag.equals(IGUIButtonSensitive.REDSTONE_TAG) && ++redstoneMode > 2) {
-            redstoneMode = 0;
-        }
+        rsController.parseRedstoneMode(tag);
     }
 
     @Override
@@ -152,8 +150,8 @@ public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implement
     @Override
     public CompoundNBT write(CompoundNBT tag) {
         super.write(tag);
+
         energy.writeToNBT(tag);
-        tag.putByte(NBTKeys.NBT_REDSTONE_MODE, (byte)redstoneMode);
         return tag;
     }
 
@@ -162,7 +160,6 @@ public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implement
         super.read(state, tag);
 
         energy.readFromNBT(tag);
-        redstoneMode = tag.getByte(NBTKeys.NBT_REDSTONE_MODE);
     }
 
     @Override

@@ -38,7 +38,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Map;
 
-public class TileEntityLiquidHopper extends TileEntityAbstractHopper implements ISerializableTanks {
+public class TileEntityLiquidHopper extends TileEntityAbstractHopper<TileEntityLiquidHopper> implements ISerializableTanks {
     private int comparatorValue = -1;
 
     private AxisAlignedBB outputAABB;
@@ -51,6 +51,8 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper implements 
     private final LazyOptional<IFluidHandler> inputCap = LazyOptional.of(() -> inputWrapper);
     private final WrappedFluidTank outputWrapper = new WrappedFluidTank(tank, false);
     private final LazyOptional<IFluidHandler> outputCap = LazyOptional.of(() -> outputWrapper);
+    @GuiSynced
+    private final RedstoneController<TileEntityLiquidHopper> rsController = new RedstoneController<>(this);
 
     public TileEntityLiquidHopper() {
         super(ModTileEntities.LIQUID_HOPPER.get());
@@ -221,6 +223,11 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper implements 
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
         return new ContainerLiquidHopper(i, playerInventory, getPos());
+    }
+
+    @Override
+    public RedstoneController<TileEntityLiquidHopper> getRedstoneController() {
+        return rsController;
     }
 
     public class HopperTank extends SmartSyncTank {

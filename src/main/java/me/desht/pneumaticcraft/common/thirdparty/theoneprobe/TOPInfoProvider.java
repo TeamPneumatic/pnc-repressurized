@@ -10,10 +10,7 @@ import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.heat.TemperatureData;
 import me.desht.pneumaticcraft.common.item.ItemCamoApplicator;
 import me.desht.pneumaticcraft.common.thirdparty.waila.IInfoForwarder;
-import me.desht.pneumaticcraft.common.tileentity.ICamouflageableTE;
-import me.desht.pneumaticcraft.common.tileentity.IRedstoneControl;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
+import me.desht.pneumaticcraft.common.tileentity.*;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -114,10 +111,8 @@ public class TOPInfoProvider {
 
     private static void handleRedstoneMode(ProbeMode mode, IProbeInfo probeInfo, TileEntityBase te) {
         if (te instanceof IRedstoneControl) {
-            int redstoneMode = ((IRedstoneControl) te).getRedstoneMode();
-            probeInfo.text(te.getRedstoneTabTitle().deepCopy().mergeStyle(COLOR)
-                    .appendString(": ")
-                    .append(te.getRedstoneButtonText(redstoneMode).deepCopy().mergeStyle(COLOR)));
+            RedstoneController<?> rsController = ((IRedstoneControl<?>) te).getRedstoneController();
+            probeInfo.text(rsController.getDescription());
         }
     }
 

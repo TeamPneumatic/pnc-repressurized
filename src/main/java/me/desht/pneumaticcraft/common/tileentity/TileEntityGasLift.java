@@ -10,7 +10,6 @@ import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -42,8 +41,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
-public class TileEntityGasLift extends TileEntityPneumaticBase
-        implements IMinWorkingPressure, IRedstoneControlled, ISerializableTanks, IAutoFluidEjecting, INamedContainerProvider {
+public class TileEntityGasLift extends TileEntityPneumaticBase implements
+        IMinWorkingPressure, IRedstoneControl<TileEntityGasLift>, ISerializableTanks,
+        IAutoFluidEjecting, INamedContainerProvider
+{
     private static final int INVENTORY_SIZE = 1;
 
     public enum Status implements ITranslatableEnum {
@@ -79,7 +80,7 @@ public class TileEntityGasLift extends TileEntityPneumaticBase
     @GuiSynced
     public int currentDepth;
     @GuiSynced
-    public int redstoneMode;
+    public final RedstoneController<TileEntityGasLift> rsController = new RedstoneController<>(this);
     @GuiSynced
     public PumpMode pumpMode = PumpMode.PUMP_EMPTY;
     @GuiSynced
@@ -127,7 +128,7 @@ public class TileEntityGasLift extends TileEntityPneumaticBase
                 ticker = 0;
             }
 
-            if (redstoneAllows() && getPressure() >= getMinWorkingPressure()) {
+            if (rsController.shouldRun() && getPressure() >= getMinWorkingPressure()) {
                 workTimer += this.getSpeedMultiplierFromUpgrades();
                 while (workTimer > 20) {
                     workTimer -= 20;
@@ -273,21 +274,18 @@ public class TileEntityGasLift extends TileEntityPneumaticBase
 
     @Override
     public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player) {
-        if (tag.equals(IGUIButtonSensitive.REDSTONE_TAG)) {
-            redstoneMode++;
-            if (redstoneMode > 2) redstoneMode = 0;
-        } else {
-            try {
-                pumpMode = PumpMode.valueOf(tag);
-            } catch (IllegalArgumentException ignored) {
+        if (rsController.parseRedstoneMode(tag))
+            return;
 
-            }
+        try {
+            pumpMode = PumpMode.valueOf(tag);
+        } catch (IllegalArgumentException ignored) {
         }
     }
 
     @Override
-    public int getRedstoneMode() {
-        return redstoneMode;
+    public RedstoneController<TileEntityGasLift> getRedstoneController() {
+        return rsController;
     }
 
     @Override
@@ -300,7 +298,6 @@ public class TileEntityGasLift extends TileEntityPneumaticBase
         super.write(tag);
 
         tag.put("Items", inventory.serializeNBT());
-        tag.putByte(NBTKeys.NBT_REDSTONE_MODE, (byte) redstoneMode);
         tag.putString("mode", pumpMode.toString());
         tag.putInt("currentDepth", currentDepth);
         return tag;
@@ -311,7 +308,6 @@ public class TileEntityGasLift extends TileEntityPneumaticBase
         super.read(state, tag);
 
         inventory.deserializeNBT(tag.getCompound("Items"));
-        redstoneMode = tag.getByte(NBTKeys.NBT_REDSTONE_MODE);
         if (tag.contains("mode")) pumpMode = PumpMode.valueOf(tag.getString("mode"));
         currentDepth = tag.getInt("currentDepth");
     }

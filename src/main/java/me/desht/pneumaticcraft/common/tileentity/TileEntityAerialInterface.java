@@ -3,16 +3,18 @@ package me.desht.pneumaticcraft.common.tileentity;
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.XPFluidManager;
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerAerialInterface;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.thirdparty.curios.Curios;
+import me.desht.pneumaticcraft.common.tileentity.RedstoneController.EmittingRedstoneMode;
+import me.desht.pneumaticcraft.common.tileentity.RedstoneController.RedstoneMode;
 import me.desht.pneumaticcraft.common.tileentity.SideConfigurator.RelativeFace;
 import me.desht.pneumaticcraft.common.util.EnchantmentUtils;
 import me.desht.pneumaticcraft.common.util.GlobalTileEntityCacheManager;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
-import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
@@ -63,11 +65,18 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class TileEntityAerialInterface extends TileEntityPneumaticBase
-        implements IMinWorkingPressure, IRedstoneControl, IComparatorSupport, ISideConfigurable, INamedContainerProvider {
+        implements IMinWorkingPressure, IRedstoneControl<TileEntityAerialInterface>, IComparatorSupport, ISideConfigurable, INamedContainerProvider {
 
     private static final UUID NO_PLAYER = new UUID(0L, 0L);
     private static final int ENERGY_CAPACITY = 100000;
     private static final int RF_PER_TICK = 1000;
+
+    private static final List<RedstoneMode<TileEntityAerialInterface>> REDSTONE_MODES = ImmutableList.of(
+            new EmittingRedstoneMode<>("standard.never", new ItemStack(Items.GUNPOWDER),
+                    te -> false),
+            new EmittingRedstoneMode<>("aerialInterface.playerConnected", new ItemStack(ModBlocks.AERIAL_INTERFACE.get()),
+                    te -> te.isConnectedToPlayer)
+    );
 
     @GuiSynced
     public String playerName = "";
@@ -79,8 +88,6 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
     public int curXPFluidIndex = -1;  // index into PneumaticCraftAPIHandler.availableLiquidXPs, -1 = disabled
 
     @GuiSynced
-    public int redstoneMode;
-    @GuiSynced
     public FeedMode feedMode = FeedMode.FRUGAL;
     private boolean oldRedstoneStatus;
     private boolean needUpdateNeighbours;
@@ -88,6 +95,8 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
     public boolean isConnectedToPlayer = false;
     @GuiSynced
     public boolean dispenserUpgradeInserted;
+    @GuiSynced
+    private final RedstoneController<TileEntityAerialInterface> rsController = new RedstoneController<>(this, REDSTONE_MODES);
 
     private final SideConfigurator<IItemHandler> itemHandlerSideConfigurator;
 
@@ -215,8 +224,8 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
             }
         }
 
-        if (oldRedstoneStatus != shouldEmitRedstone()) {
-            oldRedstoneStatus = shouldEmitRedstone();
+        if (oldRedstoneStatus != rsController.shouldEmit()) {
+            oldRedstoneStatus = rsController.shouldEmit();
             needUpdateNeighbours = true;
         }
 
@@ -225,10 +234,10 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
 
     @Override
     public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player) {
-        if (tag.equals(IGUIButtonSensitive.REDSTONE_TAG)) {
-            redstoneMode++;
-            if (redstoneMode > 1) redstoneMode = 0;
-        } else if (tag.equals("xpType")) {
+        if (rsController.parseRedstoneMode(tag))
+            return;
+
+        if (tag.equals("xpType")) {
             curXPFluidIndex++;
             List<Fluid> available = XPFluidManager.getInstance().getAvailableLiquidXPs();
             if (curXPFluidIndex >= available.size()) {
@@ -254,16 +263,6 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
     @Override
     public IItemHandler getPrimaryInventory() {
         return null;
-    }
-
-    public boolean shouldEmitRedstone() {
-        switch (redstoneMode) {
-            case 0:
-                return false;
-            case 1:
-                return isConnectedToPlayer;
-        }
-        return false;
     }
 
     private PlayerEntity getPlayer() {
@@ -292,7 +291,6 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
     public void read(BlockState state, CompoundNBT tag) {
         super.read(state, tag);
 
-        redstoneMode = tag.getInt(NBTKeys.NBT_REDSTONE_MODE);
         feedMode = FeedMode.valueOf(tag.getString("feedMode"));
         setPlayerId(tag.getString("playerName"), UUID.fromString(tag.getString("playerUUID")));
         curXpFluid = tag.contains("curXpFluid") ? ForgeRegistries.FLUIDS.getValue(new ResourceLocation(tag.getString("curXpFluid"))) : Fluids.EMPTY;
@@ -307,7 +305,6 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
     public CompoundNBT write(CompoundNBT tag) {
         super.write(tag);
 
-        tag.putInt(NBTKeys.NBT_REDSTONE_MODE, redstoneMode);
         tag.putString("feedMode", feedMode.toString());
         tag.putString("playerName", playerName);
         tag.putString("playerUUID", playerUUID.toString());
@@ -323,13 +320,8 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
     }
 
     @Override
-    public int getRedstoneMode() {
-        return redstoneMode;
-    }
-
-    @Override
     public int getComparatorValue() {
-        return shouldEmitRedstone() ? 15 : 0;
+        return rsController.shouldEmit() ? 15 : 0;
     }
 
     private void scanForChargeableItems() {
@@ -367,16 +359,6 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
         }
     }
 
-    private static final List<String> REDSTONE_LABELS = ImmutableList.of(
-            "pneumaticcraft.gui.tab.redstoneBehaviour.button.never",
-            "pneumaticcraft.gui.tab.redstoneBehaviour.aerialInterface.button.playerConnected"
-    );
-
-    @Override
-    protected List<String> getRedstoneButtonLabels() {
-        return REDSTONE_LABELS;
-    }
-
     @Override
     public List<SideConfigurator<?>> getSideConfigurators() {
         return Collections.singletonList(itemHandlerSideConfigurator);
@@ -396,6 +378,11 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
     @Override
     public Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity playerEntity) {
         return new ContainerAerialInterface(windowId, playerInventory, getPos());
+    }
+
+    @Override
+    public RedstoneController<TileEntityAerialInterface> getRedstoneController() {
+        return rsController;
     }
 
     private abstract class PlayerInvHandler implements IItemHandler {

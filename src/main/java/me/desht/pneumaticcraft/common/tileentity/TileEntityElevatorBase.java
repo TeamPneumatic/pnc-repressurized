@@ -14,10 +14,11 @@ import me.desht.pneumaticcraft.common.inventory.ContainerElevator;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethod;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethodRegistry;
+import me.desht.pneumaticcraft.common.tileentity.RedstoneController.ReceivingRedstoneMode;
+import me.desht.pneumaticcraft.common.tileentity.RedstoneController.RedstoneMode;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorCaller.ElevatorButton;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
-import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
 import net.minecraft.block.BlockState;
@@ -26,6 +27,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.tileentity.TileEntity;
@@ -34,6 +36,7 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
@@ -52,16 +55,19 @@ import java.util.Stack;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
-        IGUITextFieldSensitive, IRedstoneControlled, IMinWorkingPressure,
+        IGUITextFieldSensitive, IRedstoneControl<TileEntityElevatorBase>, IMinWorkingPressure,
         ICamouflageableTE, INamedContainerProvider
 {
-    private static final List<String> REDSTONE_LABELS = ImmutableList.of(
-            "pneumaticcraft.gui.tab.redstoneBehaviour.elevator.button.redstone",
-            "pneumaticcraft.gui.tab.redstoneBehaviour.elevator.button.elevatorCallers"
+    private static final List<RedstoneMode<TileEntityElevatorBase>> REDSTONE_LABELS = ImmutableList.of(
+            new ReceivingRedstoneMode<>("elevator.redstone", new ItemStack(Items.REDSTONE), te -> true),
+            new ReceivingRedstoneMode<>("elevator.caller", new ItemStack(ModBlocks.ELEVATOR_CALLER.get()), te -> true)
     );
 
     private static final float BUTTON_HEIGHT = 0.06F;
     private static final float BUTTON_SPACING = 0.02F;
+
+    private static final byte RS_REDSTONE_MODE = 0;
+    private static final byte RS_CALLER_MODE = 1;
 
     public float oldExtension;
     @DescSynced
@@ -79,7 +85,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
     @DescSynced
     public int multiElevatorCount;
     @GuiSynced
-    private int redstoneMode;
+    private final RedstoneController<TileEntityElevatorBase> rsController = new RedstoneController<>(this, REDSTONE_LABELS);
     public int[] floorHeights = new int[0]; //list of every floor of Elevator Callers.
     private HashMap<Integer, String> floorNames = new HashMap<>();
     @GuiSynced
@@ -211,35 +217,28 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
 
     @Override
     public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player) {
-        if (tag.equals(IGUIButtonSensitive.REDSTONE_TAG)) {
-            redstoneMode++;
-            if (redstoneMode > 1) redstoneMode = 0;
+        rsController.parseRedstoneMode(tag);
+    }
 
-            if (multiElevators != null) {
-                for (TileEntityElevatorBase base : multiElevators) {
-                    while (base.redstoneMode != redstoneMode) {
-                        base.handleGUIButtonPress(tag, shiftHeld, player);
-                    }
-                }
+    @Override
+    public void onRedstoneModeChanged(int newModeIdx) {
+        if (multiElevators != null) {
+            for (TileEntityElevatorBase base : multiElevators) {
+                base.getRedstoneController().setCurrentMode(newModeIdx);
             }
+        }
 
-            int i = -1;
-            TileEntity te = getWorld().getTileEntity(getPos().offset(Direction.DOWN));
-            while (te instanceof TileEntityElevatorBase) {
-                ((TileEntityElevatorBase) te).redstoneMode = redstoneMode;
-                i--;
-                te = getWorld().getTileEntity(getPos().add(0, i, 0));
-            }
+        int i = -1;
+        TileEntity te = getWorld().getTileEntity(getPos().offset(Direction.DOWN));
+        while (te instanceof TileEntityElevatorBase) {
+            ((TileEntityElevatorBase) te).getRedstoneController().setCurrentMode(newModeIdx);
+            i--;
+            te = getWorld().getTileEntity(getPos().add(0, i, 0));
         }
     }
 
     private boolean isControlledByRedstone() {
-        return redstoneMode == 0;
-    }
-
-    @Override
-    public boolean redstoneAllows() {
-        return true;
+        return getRedstoneController().getCurrentMode() == RS_REDSTONE_MODE;
     }
 
     private void updateRedstoneInputLevel() {
@@ -286,7 +285,6 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
         super.read(state, tag);
         extension = tag.getFloat("extension");
         targetExtension = tag.getFloat("targetExtension");
-        redstoneMode = tag.getInt(NBTKeys.NBT_REDSTONE_MODE);
         if (!tag.contains("maxFloorHeight")) {//backwards compatibility implementation.
             updateMaxElevatorHeight();
         } else {
@@ -299,7 +297,6 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
         super.write(tag);
         tag.putFloat("extension", extension);
         tag.putFloat("targetExtension", targetExtension);
-        tag.putInt(NBTKeys.NBT_REDSTONE_MODE, redstoneMode);
         tag.putInt("maxFloorHeight", maxFloorHeight);
         return tag;
     }
@@ -483,7 +480,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
 
     public void goToFloor(int floor) {
         if (getCoreElevator().isControlledByRedstone()) {
-            getCoreElevator().handleGUIButtonPress(IGUIButtonSensitive.REDSTONE_TAG, false, null);
+            getCoreElevator().getRedstoneController().setCurrentMode(RS_CALLER_MODE);
         }
         if (floor >= 0 && floor < floorHeights.length) {
             setTargetHeight(floorHeights[floor]);
@@ -588,7 +585,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
                 requireArgs(args, 1, "height (in blocks)");
                 setTargetHeight(((Double) args[0]).floatValue());
                 if (getCoreElevator().isControlledByRedstone()) {
-                    getCoreElevator().handleGUIButtonPress(IGUIButtonSensitive.REDSTONE_TAG, false, null);
+                    getCoreElevator().getRedstoneController().setCurrentMode(RS_CALLER_MODE);
                 }
                 getCoreElevator().sendDescPacketFromAllElevators();
                 return null;
@@ -616,7 +613,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
                 requireArgs(args, 1, "true/false");
                 if ((Boolean) args[0] && getCoreElevator().isControlledByRedstone()
                         || !(Boolean) args[0] && !getCoreElevator().isControlledByRedstone()) {
-                    getCoreElevator().handleGUIButtonPress(IGUIButtonSensitive.REDSTONE_TAG, false, null);
+                    getCoreElevator().getRedstoneController().setCurrentMode(RS_CALLER_MODE);
                 }
                 return null;
             }
@@ -629,8 +626,8 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
     }
 
     @Override
-    public int getRedstoneMode() {
-        return redstoneMode;
+    public RedstoneController<TileEntityElevatorBase> getRedstoneController() {
+        return rsController;
     }
 
     @Override
@@ -650,13 +647,8 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
     }
 
     @Override
-    public ITextComponent getRedstoneTabTitle() {
+    public IFormattableTextComponent getRedstoneTabTitle() {
         return xlate("pneumaticcraft.gui.tab.redstoneBehaviour.elevator.controlBy");
-    }
-
-    @Override
-    protected List<String> getRedstoneButtonLabels() {
-        return REDSTONE_LABELS;
     }
 
     @Override

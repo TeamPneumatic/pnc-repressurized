@@ -1,0 +1,202 @@
+package me.desht.pneumaticcraft.common.tileentity;
+
+import com.google.common.collect.ImmutableList;
+import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.NBTKeys;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.common.util.Constants;
+import org.apache.commons.lang3.Validate;
+
+import java.lang.ref.WeakReference;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
+/**
+ * Handles redstone behaviour & emission for a tile entity
+ */
+public class RedstoneController<T extends TileEntity & IRedstoneControl<T>> {
+    private static final Pattern RS_TAG_PATTERN = Pattern.compile("^redstone:(\\d+)$");
+
+    private final WeakReference<T> teRef;
+    private final List<RedstoneMode<T>> modes;
+    @GuiSynced
+    private int currentMode;
+    @GuiSynced
+    private int currentRedstonePower; // current power level for the tile entity's block
+
+    public RedstoneController(T te) {
+        this.teRef = new WeakReference<>(te);
+        this.modes = new StandardReceivingModes<T>().modes();
+    }
+
+    public RedstoneController(T te, List<RedstoneMode<T>> modes) {
+        Validate.isTrue(modes.size() >= 2, "must have at least 2 modes!");
+        this.teRef = new WeakReference<>(te);
+        this.modes = modes;
+    }
+
+    public int getModeCount() {
+        return modes.size();
+    }
+
+    public RedstoneMode<T> getModeDetails(int idx) {
+        return modes.get(idx);
+    }
+
+    public int getCurrentMode() {
+        return currentMode;
+    }
+
+    public void setCurrentMode(int currentMode) {
+        if (currentMode != this.currentMode && currentMode >= 0 && currentMode < modes.size()) {
+            this.currentMode = currentMode;
+            T te = teRef.get();
+            if (te != null) {
+                te.onRedstoneModeChanged(this.currentMode);
+                te.markDirty();
+            }
+        }
+    }
+
+    public int getCurrentRedstonePower() {
+        return currentRedstonePower;
+    }
+
+    public boolean shouldRun() {
+        T te = teRef.get();
+        return te != null && modes.get(currentMode).runPredicate.test(te);
+    }
+
+    public boolean shouldEmit() {
+        T te = teRef.get();
+        return te != null && modes.get(currentMode).emissionPredicate.test(te);
+    }
+
+    public void serialize(CompoundNBT tag) {
+        tag.putInt(NBTKeys.NBT_REDSTONE_MODE, currentMode);
+    }
+
+    public void deserialize(CompoundNBT tag) {
+        if (tag.contains(NBTKeys.NBT_REDSTONE_MODE, Constants.NBT.TAG_BYTE)) {
+            // TODO remove in 1.17 - legacy compat
+            currentMode = tag.getByte(NBTKeys.NBT_REDSTONE_MODE);
+        } else {
+            currentMode = tag.getInt(NBTKeys.NBT_REDSTONE_MODE);
+        }
+    }
+
+    public boolean parseRedstoneMode(String tag) {
+        Matcher m = RS_TAG_PATTERN.matcher(tag);
+        if (m.matches() && m.groupCount() == 1) {
+            setCurrentMode(Integer.parseInt(m.group(1)));
+            return true;
+        }
+        return false;
+    }
+
+    public void updateRedstonePower(TileEntity te) {
+        currentRedstonePower = PneumaticCraftUtils.getRedstoneLevel(te.getWorld(), te.getPos());
+    }
+
+    public boolean isEmitter() {
+        return !modes.isEmpty() && modes.get(0) instanceof EmittingRedstoneMode;
+    }
+
+    public ITextComponent getRedstoneTabTitle() {
+        T te = teRef.get();
+        return te != null ? te.getRedstoneTabTitle() : StringTextComponent.EMPTY;
+    }
+
+    public ITextComponent getDescription() {
+        T te = teRef.get();
+        if (te != null) {
+            return te.getRedstoneTabTitle().appendString(": ").append(xlate(modes.get(currentMode).getTranslationKey()).mergeStyle(TextFormatting.YELLOW));
+        } else {
+            return StringTextComponent.EMPTY;
+        }
+    }
+
+    public static abstract class RedstoneMode<T extends TileEntity & IRedstoneControl<T>> {
+        private final String id;
+        private final ItemStack stackIcon;
+        private final ResourceLocation texture;
+        private final Predicate<T> runPredicate;
+        private final Predicate<T> emissionPredicate;
+
+        public RedstoneMode(String id, ResourceLocation texture, Predicate<T> runPredicate, Predicate<T> emissionPredicate) {
+            this.id = id;
+            this.texture = texture;
+            this.runPredicate = runPredicate;
+            this.emissionPredicate = emissionPredicate;
+            this.stackIcon = ItemStack.EMPTY;
+        }
+
+        public RedstoneMode(String id, ItemStack stackIcon, Predicate<T> runPredicate, Predicate<T> emissionPredicate) {
+            this.id = id;
+            this.stackIcon = stackIcon;
+            this.runPredicate = runPredicate;
+            this.emissionPredicate = emissionPredicate;
+            this.texture = null;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public ItemStack getStackIcon() {
+            return stackIcon;
+        }
+
+        public ResourceLocation getTexture() {
+            return texture;
+        }
+
+        public String getTranslationKey() {
+            return "pneumaticcraft.gui.tab.redstoneBehaviour." + id;
+        }
+    }
+
+    public static class EmittingRedstoneMode<T extends TileEntity & IRedstoneControl<T>> extends RedstoneMode<T> {
+        public EmittingRedstoneMode(String id, ResourceLocation texture, Predicate<T> emissionPredicate) {
+            super(id, texture, te -> false, emissionPredicate);
+        }
+
+        public EmittingRedstoneMode(String id, ItemStack stackIcon, Predicate<T> emissionPredicate) {
+            super(id, stackIcon, te -> false, emissionPredicate);
+        }
+    }
+
+    public static class ReceivingRedstoneMode<T extends TileEntity & IRedstoneControl<T>> extends RedstoneMode<T> {
+        public ReceivingRedstoneMode(String id, ResourceLocation texture, Predicate<T> runPredicate) {
+            super(id, texture, runPredicate, t -> false);
+        }
+
+        public ReceivingRedstoneMode(String id, ItemStack stackIcon, Predicate<T> runPredicate) {
+            super(id, stackIcon, runPredicate, te -> false);
+        }
+    }
+
+    private static class StandardReceivingModes<T extends TileEntity & IRedstoneControl<T>> {
+        public List<RedstoneController.RedstoneMode<T>> modes() {
+            return ImmutableList.of(
+                    new ReceivingRedstoneMode<>("standard.always", new ItemStack(Items.GUNPOWDER),
+                            te -> true),
+                    new ReceivingRedstoneMode<>("standard.high_signal", new ItemStack(Items.REDSTONE),
+                            te -> te.getCurrentRedstonePower() > 0),
+                    new ReceivingRedstoneMode<>("standard.low_signal",  new ItemStack(Items.REDSTONE_TORCH),
+                            te -> te.getCurrentRedstonePower() == 0));
+        }
+    }
+}

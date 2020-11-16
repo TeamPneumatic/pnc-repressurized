@@ -45,7 +45,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class TileEntitySmartChest extends TileEntityTickableBase
-        implements INamedContainerProvider, IRedstoneControlled, IComparatorSupport {
+        implements INamedContainerProvider, IRedstoneControl<TileEntitySmartChest>, IComparatorSupport {
     public static final int CHEST_SIZE = 72;
     private static final String NBT_ITEMS = "Items";
 
@@ -57,7 +57,7 @@ public class TileEntitySmartChest extends TileEntityTickableBase
     };
     private final LazyOptional<IItemHandler> inventoryCap = LazyOptional.of(() -> inventory);
     @GuiSynced
-    private int redstoneMode;
+    private final RedstoneController<TileEntitySmartChest> rsController = new RedstoneController<>(this);
     @GuiSynced
     private int pushPullModes = 0;  // 6 tristate (2-bit) values packed into an int (for sync reasons...)
     @GuiSynced
@@ -75,7 +75,7 @@ public class TileEntitySmartChest extends TileEntityTickableBase
     public void tick() {
         super.tick();
 
-        if (!world.isRemote && redstoneAllows()) {
+        if (!world.isRemote && rsController.shouldRun()) {
             if ((world.getGameTime() % Math.max(getTickRate(), cooldown)) == 0) {
                 boolean didWork = false;
                 for (RelativeFace face : RelativeFace.values()) {
@@ -301,7 +301,6 @@ public class TileEntitySmartChest extends TileEntityTickableBase
     @Override
     public CompoundNBT write(CompoundNBT tag) {
         tag.put(NBT_ITEMS, inventory.serializeNBT());
-        tag.putInt(NBTKeys.NBT_REDSTONE_MODE, redstoneMode);
         tag.putInt("pushPull", pushPullModes);
 
         return super.write(tag);
@@ -311,7 +310,6 @@ public class TileEntitySmartChest extends TileEntityTickableBase
     public void read(BlockState state, CompoundNBT tag) {
         super.read(state, tag);
 
-        redstoneMode = tag.getInt(NBTKeys.NBT_REDSTONE_MODE);
         inventory.deserializeNBT(tag.getCompound(NBT_ITEMS));
         pushPullModes = tag.getInt("pushPull");
     }
@@ -320,7 +318,7 @@ public class TileEntitySmartChest extends TileEntityTickableBase
     public void serializeExtraItemData(CompoundNBT blockEntityTag, boolean preserveState) {
         super.serializeExtraItemData(blockEntityTag, preserveState);
 
-        boolean shouldSave = inventory.lastSlot < CHEST_SIZE || redstoneMode != 0;
+        boolean shouldSave = inventory.lastSlot < CHEST_SIZE || rsController.getCurrentMode() != 0;
         if (!shouldSave) {
             for (int i = 0; i < inventory.getSlots(); i++) {
                 if (!inventory.getStackInSlot(i).isEmpty() || !inventory.filter[i].isEmpty()) {
@@ -330,16 +328,15 @@ public class TileEntitySmartChest extends TileEntityTickableBase
         }
         if (shouldSave) {
             blockEntityTag.put(NBT_ITEMS, inventory.serializeNBT());
-            blockEntityTag.putInt(NBTKeys.NBT_REDSTONE_MODE, redstoneMode);
+            blockEntityTag.putInt(NBTKeys.NBT_REDSTONE_MODE, rsController.getCurrentMode());
         }
     }
 
     @Override
     public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player) {
-        if (tag.equals(IGUIButtonSensitive.REDSTONE_TAG)) {
-            redstoneMode++;
-            if (redstoneMode > 2) redstoneMode = 0;
-        } else if (tag.startsWith("push_pull:")) {
+        if (rsController.parseRedstoneMode(tag))
+            return;
+        if (tag.startsWith("push_pull:")) {
             String[] s = tag.split(":");
             if (s.length == 2) {
                 try {
@@ -389,8 +386,8 @@ public class TileEntitySmartChest extends TileEntityTickableBase
     }
 
     @Override
-    public int getRedstoneMode() {
-        return redstoneMode;
+    public RedstoneController<TileEntitySmartChest> getRedstoneController() {
+        return rsController;
     }
 
     @Override
