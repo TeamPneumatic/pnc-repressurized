@@ -9,7 +9,6 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
@@ -17,6 +16,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class BlockTrackEntryEndPortalFrame implements IBlockTrackEntry {
 
@@ -38,9 +38,9 @@ public class BlockTrackEntryEndPortalFrame implements IBlockTrackEntry {
     @Override
     public void addInformation(World world, BlockPos pos, TileEntity te, Direction face, List<ITextComponent> infoList) {
         if (world.getBlockState(pos).get(EndPortalFrameBlock.EYE)) {
-            infoList.add(new StringTextComponent("Eye inserted"));
+            infoList.add(xlate("pneumaticcraft.blockTracker.info.endportal.eye"));
         } else {
-            infoList.add(new StringTextComponent("Eye not inserted"));
+            infoList.add(xlate("pneumaticcraft.blockTracker.info.endportal.noEye"));
         }
     }
 

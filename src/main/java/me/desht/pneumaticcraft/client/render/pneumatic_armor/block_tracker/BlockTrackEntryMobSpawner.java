@@ -15,8 +15,6 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraft.world.spawner.AbstractSpawner;
@@ -25,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class BlockTrackEntryMobSpawner implements IBlockTrackEntry {
 
@@ -49,13 +48,14 @@ public class BlockTrackEntryMobSpawner implements IBlockTrackEntry {
         if (te instanceof MobSpawnerTileEntity) {
             AbstractSpawner spawner = ((MobSpawnerTileEntity) te).getSpawnerBaseLogic();
             Entity e = spawner.getCachedEntity();
-            infoList.add(new StringTextComponent("Spawner Type: " + TextFormatting.AQUA + e.getName()));
+            infoList.add(xlate("pneumaticcraft.blockTracker.info.spawner.type", e.getName().getString()));
             if (Reflections.isActivated(spawner) || hasAgitator(world, pos)) {
-                infoList.add(new StringTextComponent("Time until next spawn: " + PneumaticCraftUtils.convertTicksToMinutesAndSeconds(spawner.spawnDelay, false)));
+                infoList.add(xlate("pneumaticcraft.blockTracker.info.spawner.time",
+                        PneumaticCraftUtils.convertTicksToMinutesAndSeconds(spawner.spawnDelay, false)));
             } else if (HackableMobSpawner.isHacked(world, pos)) {
-                infoList.add(new StringTextComponent("Spawner is hacked"));
+                infoList.add(xlate("pneumaticcraft.blockTracker.info.spawner.hacked"));
             } else {
-                infoList.add(new StringTextComponent("Spawner is standing by"));
+                infoList.add(xlate("pneumaticcraft.blockTracker.info.spawner.standby"));
             }
         }
     }
