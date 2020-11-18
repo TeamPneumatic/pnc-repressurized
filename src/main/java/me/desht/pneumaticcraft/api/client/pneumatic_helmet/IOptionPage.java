@@ -56,7 +56,7 @@ public interface IOptionPage {
     void renderPost(MatrixStack matrixStack, int x, int y, float partialTicks);
 
     /**
-     * Called immediately after Screen#keyPressed(int, int, int).
+     * Called by {@link Screen#keyPressed(int, int, int)} when a key is pressed.
      *
      * @param keyCode typed keycode
      * @param scanCode the scan code (rarely useful)
@@ -96,7 +96,8 @@ public interface IOptionPage {
     boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY);
 
     /**
-     * Can this upgrade be toggled off & on?
+     * Can this upgrade be toggled off & on?  If true, a checkbox (with the ability to bind a key) will be
+     * automatically displayed in this upgrade's GUI.
      *
      * @return true if the upgrade is toggleable, false otherwise
      */

@@ -31,7 +31,7 @@ public interface IArmorUpgradeClientHandler {
     /**
      * This method is called every client tick, and should be used to update logic like the tracking and velocities
      * of stuff.
-     *  @param armorHandler the player wearing the pneumatic helmet
+     *  @param armorHandler common armor handler for the player wearing this armor piece
      *
      */
     void tickClient(ICommonArmorHandler armorHandler);
@@ -46,7 +46,7 @@ public interface IArmorUpgradeClientHandler {
     void render3D(MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks);
 
     /**
-     * Called in the 2D render stage (called from {@link net.minecraftforge.event.TickEvent.RenderTickEvent})
+     * Called in the 2D render stage (called from {@link net.minecraftforge.client.event.RenderGameOverlayEvent.Post})
      *
      * @param partialTicks partial ticks since last world tick
      * @param helmetEnabled true when isEnabled() returned true earlier. Can be used to close AnimatedStats for instance.

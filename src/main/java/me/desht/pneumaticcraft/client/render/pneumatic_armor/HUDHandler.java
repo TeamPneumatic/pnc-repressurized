@@ -236,15 +236,15 @@ public enum HUDHandler implements IKeyListener {
             Minecraft mc = Minecraft.getInstance();
             PlayerEntity player = event.player;
             if (player == mc.player && player.world.isRemote) {
-                boolean armorEquipped = false;
+                boolean anyArmorEquipped = false;
                 CommonArmorHandler comHudHandler = CommonArmorHandler.getHandlerForPlayer();
                 for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
                     if (isPneumaticArmorPiece(player, slot)) {
                         updateArmorPiece(mc.player, slot, comHudHandler);
-                        armorEquipped = true;
+                        anyArmorEquipped = true;
                     }
                 }
-                if (armorEquipped) {
+                if (anyArmorEquipped) {
                     ensureArmorInit(player, comHudHandler);
                     updateLauncherTracker();
                     pendingMessages.forEach(message -> message.getStat().tickWidget());
@@ -285,20 +285,12 @@ public enum HUDHandler implements IKeyListener {
         boolean armorEnabled = WidgetKeybindCheckBox.getCoreComponents().checked;
         List<IArmorUpgradeHandler> upgradeHandlers = ArmorUpgradeRegistry.getInstance().getHandlersForSlot(slot);
 
-        // At start of init, inform the server which upgrades are enabled
-        if (commonArmorHandler.getTicksSinceEquipped(slot) == 0) {
-            for (IArmorUpgradeClientHandler handler : ArmorUpgradeClientRegistry.getInstance().getHandlersForSlot(slot)) {
-                handler.reset();
-            }
-            for (int i = 0; i < upgradeHandlers.size(); i++) {
-                boolean state = armorEnabled && WidgetKeybindCheckBox.forUpgrade(upgradeHandlers.get(i)).checked;
-                commonArmorHandler.setUpgradeEnabled(slot, (byte) i, state);
-                NetworkHandler.sendToServer(new PacketToggleArmorFeature((byte) i, state, slot));
-            }
-        }
+        int ticksSinceEquipped = commonArmorHandler.getTicksSinceEquipped(slot);
+        int startupTime = commonArmorHandler.getStartupTime(slot);
+        ITextComponent itemName = player.getItemStackFromSlot(slot).getDisplayName();
 
-        // After full init, run handler's update() on each installed upgrade
-        if (commonArmorHandler.getTicksSinceEquipped(slot) > commonArmorHandler.getStartupTime(slot) && armorEnabled) {
+        if (ticksSinceEquipped > startupTime && armorEnabled) {
+            // After full init: tick the client handler for each installed upgrade and open/close stat windows as needed
             for (int i = 0; i < upgradeHandlers.size(); i++) {
                 IArmorUpgradeHandler upgradeHandler = upgradeHandlers.get(i);
                 if (commonArmorHandler.isUpgradeInserted(slot, i) && commonArmorHandler.isUpgradeEnabled(slot, i)) {
@@ -315,33 +307,40 @@ public enum HUDHandler implements IKeyListener {
                     clientHandler.tickClient(commonArmorHandler);
                 }
             }
-        }
-
-        // During init, display found/not found message for each possible upgrade
-        for (int i = 0; i < upgradeHandlers.size(); i++) {
-            if (commonArmorHandler.getTicksSinceEquipped(slot) == commonArmorHandler.getStartupTime(slot) / (upgradeHandlers.size() + 2) * (i + 1)) {
-                playArmorInitSound(player, ModSounds.HUD_INIT.get(), 0.5F + (float) (i + 1) / (upgradeHandlers.size() + 2) * 0.5F);
-                boolean upgradeEnabled = commonArmorHandler.isUpgradeInserted(slot, i);
-                ITextComponent message = xlate(upgradeHandlers.get(i).getTranslationKey())
-                        .appendString(upgradeEnabled ? " installed" : " not installed");
-                addMessage(new ArmorMessage(message, 80, upgradeEnabled ? 0x7000AA00 : 0x70FF8000));
-            }
-        }
-
-        ITextComponent itemName = player.getItemStackFromSlot(slot).getDisplayName();
-
-        if (commonArmorHandler.getTicksSinceEquipped(slot) == 1) {
-            playArmorInitSound(player, ModSounds.HUD_INIT.get(), 0.5F);
-            addMessage(new ArmorMessage(xlate("pneumaticcraft.armor.message.initStarted", itemName), 50, 0x7000AA00));
-        }
-
-        if (commonArmorHandler.getTicksSinceEquipped(slot) == commonArmorHandler.getStartupTime(slot)) {
+        } else if (ticksSinceEquipped == startupTime) {
+            // full init: display "init complete" message
             playArmorInitSound(player, ModSounds.HUD_INIT_COMPLETE.get(), 1.0F);
             addMessage(new ArmorMessage(xlate("pneumaticcraft.armor.message.initComplete", itemName), 50, 0x7000AA00));
+        } else if (ticksSinceEquipped == 0) {
+            // tick 0: inform the server which upgrades are enabled
+            for (IArmorUpgradeClientHandler handler : ArmorUpgradeClientRegistry.getInstance().getHandlersForSlot(slot)) {
+                handler.reset();
+            }
+            for (int i = 0; i < upgradeHandlers.size(); i++) {
+                boolean state = armorEnabled && WidgetKeybindCheckBox.forUpgrade(upgradeHandlers.get(i)).checked;
+                commonArmorHandler.setUpgradeEnabled(slot, (byte) i, state);
+                NetworkHandler.sendToServer(new PacketToggleArmorFeature((byte) i, state, slot));
+            }
+        } else if (ticksSinceEquipped == 1) {
+            // tick 1: display the "init started" message
+            playArmorInitSound(player, ModSounds.HUD_INIT.get(), 0.5F);
+            addMessage(new ArmorMessage(xlate("pneumaticcraft.armor.message.initStarted", itemName), 50, 0x7000AA00));
+        } else {
+            // any other tick during startup: display found/not found message for each possible upgrade
+            for (int i = 0; i < upgradeHandlers.size(); i++) {
+                if (ticksSinceEquipped == startupTime / (upgradeHandlers.size() + 2) * (i + 1)) {
+                    playArmorInitSound(player, ModSounds.HUD_INIT.get(), 0.5F + (float) (i + 1) / (upgradeHandlers.size() + 2) * 0.5F);
+                    boolean upgradeEnabled = commonArmorHandler.isUpgradeInserted(slot, i);
+                    ITextComponent message = xlate(upgradeHandlers.get(i).getTranslationKey())
+                            .appendString(upgradeEnabled ? " installed" : " not installed");
+                    addMessage(new ArmorMessage(message, 80, upgradeEnabled ? 0x7000AA00 : 0x70FF8000));
+                }
+            }
         }
     }
 
     private void playArmorInitSound(PlayerEntity player, SoundEvent sound, float pitch) {
+        // avoid playing sounds too often... if many upgrades are installed it could get really noisy
         long when = player.world.getGameTime();
         if (when - lastArmorInitSound >= 30) {
             player.world.playSound(player.getPosX(), player.getPosY(), player.getPosZ(), sound, SoundCategory.PLAYERS, 0.2F, pitch, true);
