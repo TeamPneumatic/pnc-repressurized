@@ -6,6 +6,12 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.16.3 / 1.16.4
 
+## 2.6.1-72 (18 Nov 2020)
+
+### Fixes
+* Fixed crash with Spawner Extractor on dedicated server
+* Fixed a couple of HUD messages with helmet block tracker & mob spawners
+
 ## 2.6.0-70 (16 Nov 2020)
 
 ### New
