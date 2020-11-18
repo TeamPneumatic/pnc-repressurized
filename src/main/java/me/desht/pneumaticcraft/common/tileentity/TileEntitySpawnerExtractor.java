@@ -45,10 +45,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.function.Function;
 
 public class TileEntitySpawnerExtractor extends TileEntityPneumaticBase implements IMinWorkingPressure, INamedContainerProvider {
 
     private static final int MAX_ENTITY_RANGE = 6;
+    private Entity cachedEntity;
 
     public enum Mode { INIT, RUNNING, FINISHED }
 
@@ -200,7 +202,7 @@ public class TileEntitySpawnerExtractor extends TileEntityPneumaticBase implemen
         PneumaticCraftUtils.getTileEntityAt(world, pos.down(), MobSpawnerTileEntity.class).ifPresent(te -> {
             ItemStack spawnerCore = new ItemStack(ModItems.SPAWNER_CORE.get());
             SpawnerCoreStats stats = SpawnerCoreStats.forItemStack(spawnerCore);
-            Entity e = te.getSpawnerBaseLogic().getCachedEntity();
+            Entity e = getCachedEntity(te);
             if (e != null && stats != null) {
                 stats.addAmount(e.getType(), 100);
                 stats.serialize(spawnerCore);
@@ -220,7 +222,7 @@ public class TileEntitySpawnerExtractor extends TileEntityPneumaticBase implemen
         return PneumaticCraftUtils.getTileEntityAt(world, pos.down(), MobSpawnerTileEntity.class).map(te -> {
             int players = 0;
             int matches = 0;
-            Entity e0 = te.getSpawnerBaseLogic().getCachedEntity();
+            Entity e0 = getCachedEntity(te);
             if (e0 == null) return 0f;
             List<LivingEntity> l = world.getEntitiesWithinAABB(LivingEntity.class, new AxisAlignedBB(pos).grow(MAX_ENTITY_RANGE), e -> true);
             for (LivingEntity e : l) {
@@ -230,6 +232,13 @@ public class TileEntitySpawnerExtractor extends TileEntityPneumaticBase implemen
             int n = players > 0 ? Math.min(10, matches + spawnFailures) : 10;
             return 1f - (n / 10f);
         }).orElse(0f);
+    }
+
+    public Entity getCachedEntity(MobSpawnerTileEntity te) {
+        if (this.cachedEntity == null) {
+            this.cachedEntity = EntityType.loadEntityAndExecute(te.getSpawnerBaseLogic().spawnData.getNbt(), this.getWorld(), Function.identity());
+        }
+        return this.cachedEntity;
     }
 
     public float getRotationDegrees() {
