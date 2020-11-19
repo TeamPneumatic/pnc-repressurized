@@ -355,6 +355,7 @@ public class ClientSetup {
         cr.registerHandler(r.chargingHandler, new ChargingClientHandler());
         cr.registerHandler(r.chestplateLauncherHandler, new ChestplateLauncherClientHandler());
         cr.registerHandler(r.airConHandler, new AirConClientHandler());
+        cr.registerHandler(r.reachDistanceHandler, new ReachDistanceClientHandler());
 
         cr.registerHandler(r.runSpeedHandler, new SpeedBoostClientHandler());
         cr.registerHandler(r.jumpBoostHandler, new JumpBoostClientHandler());

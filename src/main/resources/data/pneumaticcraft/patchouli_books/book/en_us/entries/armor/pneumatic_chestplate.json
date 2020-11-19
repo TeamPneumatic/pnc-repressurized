@@ -53,6 +53,11 @@
     },
     {
       "type": "spotlight",
+      "item": "pneumaticcraft:range_upgrade",
+      "text": "A $(l:base_concepts/upgrades#range)Range Upgrade/$ installed in your chestplate increases your reach distance for block interactions (not melee attacks) by 3.5 blocks while it's active. This does come with a small ongoing air cost, however."
+    },
+    {
+      "type": "spotlight",
       "item": "pneumaticcraft:air_conditioning_upgrade",
       "flag": "mod:toughasnails",
       "title": "A/C Upgrade",

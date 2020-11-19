@@ -28,6 +28,8 @@ import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
 import net.minecraft.entity.item.ExperienceOrbEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -50,6 +52,7 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.IBlockReader;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
+import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
@@ -61,6 +64,9 @@ import net.minecraftforge.fml.network.PacketDistributor;
 import java.util.*;
 
 public class CommonArmorHandler implements ICommonArmorHandler {
+    private static final UUID REACH_DIST_BOOST_ID = UUID.fromString("c9dce729-70c4-4c0f-95d4-31d2e50bc826");
+    private static final AttributeModifier REACH_DIST_BOOST = new AttributeModifier(REACH_DIST_BOOST_ID, "Pneumatic Reach Boost", 3.5D, AttributeModifier.Operation.ADDITION);
+
     private static final CommonArmorHandler clientHandler = new CommonArmorHandler(null);
     private static final CommonArmorHandler serverHandler = new CommonArmorHandler(null);
 
@@ -87,6 +93,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
     private boolean magnetEnabled;
     private boolean chargingEnabled;
     private boolean stepAssistEnabled;
+    private boolean reachDistanceEnabled;
     private boolean runSpeedEnabled;
     private boolean jumpBoostEnabled;
     private boolean entityTrackerEnabled;
@@ -236,8 +243,11 @@ public class CommonArmorHandler implements ICommonArmorHandler {
             case HEAD:
                 if (nightVisionEnabled) player.removeActivePotionEffect(Effects.NIGHT_VISION);
                 break;
-            case FEET:
-                player.stepHeight = 0.6F;
+            case CHEST:
+                ModifiableAttributeInstance attr = player.getAttribute(ForgeMod.REACH_DISTANCE.get());
+                if (attr != null) {
+                    attr.removeModifier(REACH_DIST_BOOST);
+                }
                 break;
         }
     }
@@ -261,16 +271,13 @@ public class CommonArmorHandler implements ICommonArmorHandler {
             case CHEST:
                 handleChestplateMagnet();
                 handleChestplateCharging();
+                handleReachDistance();
                 break;
             case LEGS:
                 handleLeggingsSpeedBoost();
                 break;
             case FEET:
-                if (getArmorPressure(EquipmentSlotType.FEET) > 0.0F && isStepAssistEnabled()) {
-                    player.stepHeight = player.isSneaking() ? 0.6001F : 1.25F;
-                } else {
-                    player.stepHeight = 0.6F;
-                }
+                handleStepAssist();
                 handleJetBoots();
                 handleFlippersSpeedBoost();
                 break;
@@ -289,7 +296,6 @@ public class CommonArmorHandler implements ICommonArmorHandler {
                     && nightVisionEnabled;
             if (shouldEnable) {
                 player.addPotionEffect(new EffectInstance(Effects.NIGHT_VISION, 500, 0, false, false));
-//                addAir(EquipmentSlotType.HEAD, -PneumaticValues.PNEUMATIC_NIGHT_VISION_USAGE * 8);
             } else if (wasNightVisionEnabled) {
                 player.removePotionEffect(Effects.NIGHT_VISION);
             }
@@ -319,9 +325,27 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         }
     }
 
-    // track player movement across ticks on the server - very transient, a capability would be overkill here
+    private void handleReachDistance() {
+        ModifiableAttributeInstance attr = player.getAttribute(ForgeMod.REACH_DISTANCE.get());
+        if (attr != null) {
+            attr.removeModifier(REACH_DIST_BOOST);
+            if (getArmorPressure(EquipmentSlotType.CHEST) > 0f && armorEnabled && reachDistanceEnabled) {
+                attr.applyNonPersistentModifier(REACH_DIST_BOOST);
+            }
+        }
+    }
 
+    private void handleStepAssist() {
+        if (getArmorPressure(EquipmentSlotType.FEET) > 0.0F && isStepAssistEnabled()) {
+            player.stepHeight = player.isSneaking() ? 0.6001F : 1.25F;
+        } else {
+            player.stepHeight = 0.6F;
+        }
+    }
+
+    // track player movement across ticks on the server - very transient, a capability would be overkill here
     private static final Map<UUID,Vector3d> moveMap = new HashMap<>();
+
     private void handleLeggingsSpeedBoost() {
         double speedBoost = getSpeedBoostFromLegs();
         if (player.world.isRemote) {
@@ -626,6 +650,8 @@ public class CommonArmorHandler implements ICommonArmorHandler {
             nightVisionEnabled = state;
         } else if (handler instanceof ScubaHandler) {
             scubaEnabled = state;
+        } else if (handler instanceof ReachDistanceHandler) {
+            reachDistanceEnabled = state;
         }
         /*else if (handler instanceof AirConUpgradeHandler) {
             airConEnabled = state;

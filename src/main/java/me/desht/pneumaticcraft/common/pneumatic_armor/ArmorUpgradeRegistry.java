@@ -40,6 +40,7 @@ public enum ArmorUpgradeRegistry {
     public final IArmorUpgradeHandler chargingHandler;
     public final IArmorUpgradeHandler chestplateLauncherHandler;
     public final IArmorUpgradeHandler airConHandler;
+    public final IArmorUpgradeHandler reachDistanceHandler;
 
     public final IArmorUpgradeHandler runSpeedHandler;
     public final IArmorUpgradeHandler jumpBoostHandler;
@@ -72,6 +73,7 @@ public enum ArmorUpgradeRegistry {
         chargingHandler = registerUpgradeHandler(new ChargingHandler());
         chestplateLauncherHandler = registerUpgradeHandler(new ChestplateLauncherHandler());
         airConHandler = registerUpgradeHandler(new AirConHandler());
+        reachDistanceHandler = registerUpgradeHandler(new ReachDistanceHandler());
 
         runSpeedHandler = registerUpgradeHandler(new SpeedBoostHandler());
         jumpBoostHandler = registerUpgradeHandler(new JumpBoostHandler());
