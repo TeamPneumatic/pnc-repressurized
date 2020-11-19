@@ -81,14 +81,26 @@ public class GuiArmorMainScreen extends GuiPneumaticScreenBase implements IGuiSc
         children.clear();
         upgradeOptions.clear();
         addPages();
+
+        int xPos = 200;
+        int yPos = 5;
+        int buttonWidth = font.getStringPropertyWidth(xlate("pneumaticcraft.armor.upgrade.core_components"));
+        for (UpgradeOption opt : upgradeOptions) {
+            buttonWidth = Math.max(buttonWidth, font.getStringPropertyWidth(opt.page.getPageName()));
+        }
+
         for (int i = 0; i < upgradeOptions.size(); i++) {
             final int idx = i;
-            WidgetButtonExtended button = new WidgetButtonExtended(210, 20 + i * 22, 120, 20,
+            WidgetButtonExtended button = new WidgetButtonExtended(xPos, yPos, buttonWidth + 10, 20,
                     upgradeOptions.get(i).page.getPageName(), b -> setPage(idx));
-            button.setRenderStacks(upgradeOptions.get(i).icons);
-            button.setIconPosition(WidgetButtonExtended.IconPosition.RIGHT);
+            button.setRenderStacks(upgradeOptions.get(i).icons).setIconPosition(WidgetButtonExtended.IconPosition.RIGHT).setIconSpacing(12);
             if (pageNumber == i) button.active = false;
             addButton(button);
+            yPos += 22;
+            if (yPos > ySize - 22) {
+                yPos = 5;
+                xPos += buttonWidth + 55;
+            }
         }
         if (pageNumber > upgradeOptions.size() - 1) {
             pageNumber = upgradeOptions.size() - 1;

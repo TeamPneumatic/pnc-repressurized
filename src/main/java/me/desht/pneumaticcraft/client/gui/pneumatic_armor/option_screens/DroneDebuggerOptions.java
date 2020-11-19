@@ -129,11 +129,13 @@ public class DroneDebuggerOptions extends IOptionPage.SimpleToggleableOptions<Dr
         followCheckbox.render(matrixStack, x, y, partialTicks);
 
         if (selectedDrone == null) {
-            guiScreen.drawCenteredString(matrixStack, Minecraft.getInstance().fontRenderer,
+            matrixStack.translate(0, 0, 200);
+            AbstractGui.drawCenteredString(matrixStack, Minecraft.getInstance().fontRenderer,
                     xlate("pneumaticcraft.gui.progWidget.debug.pressToDebug",
                             ClientUtils.translateKeyBind(KeyHandler.getInstance().keybindDebuggingDrone)),
-                    screenWidth / 2, screenHeight / 2, 0xFFFF0000
+                    screenWidth / 2, screenHeight - 40, 0xFFFF0000
             );
+            matrixStack.translate(0, 0, 200);
         }
 
         IProgWidget widget = programmerUnit.getHoveredWidget(x, y);

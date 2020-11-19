@@ -27,6 +27,8 @@ import java.util.List;
  * 2) ability to draw itemstack or textured icons & 3) can render its area when invisible
  */
 public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidget, ITooltipProvider {
+    private int iconSpacing = 18;
+
     public enum IconPosition { MIDDLE, LEFT, RIGHT }
     private ItemStack[] renderedStacks;
 
@@ -108,6 +110,11 @@ public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidge
         return this;
     }
 
+    public WidgetButtonExtended setIconSpacing(int spacing) {
+        this.iconSpacing = spacing;
+        return this;
+    }
+
     public WidgetButtonExtended setTexture(Object texture) {
         if (texture instanceof ItemStack) {
             setRenderStacks((ItemStack) texture);
@@ -162,8 +169,8 @@ public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidge
             if (renderedStacks != null) {
                 int startX = getIconX();
                 RenderHelper.enableStandardItemLighting();
-                for (int i = 0; i < renderedStacks.length; i++) {
-                    GuiUtils.renderItemStack(matrixStack, renderedStacks[i], startX + i * 18, this.y + 2);
+                for (int i = renderedStacks.length - 1; i >= 0; i--) {
+                    GuiUtils.renderItemStack(matrixStack, renderedStacks[i], startX + i * iconSpacing, this.y + 2);
                 }
                 RenderHelper.disableStandardItemLighting();
             }
