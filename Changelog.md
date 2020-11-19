@@ -6,6 +6,16 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.16.3 / 1.16.4
 
+## 2.6.2-?? (unreleased)
+
+### New
+* Placing a Range Upgrade in the Pneumatic Chestplate now gives the player a 3.5-block reach distance upgrade
+  * This does not affect melee range, just block interaction
+  * There is an associated air cost (5mL/t) while the upgrade is switched on
+  
+## Updates
+* Armor GUI: upgrade button layout in the main armor screen handles low resolutions and/or large scaling better now
+
 ## 2.6.1-72 (18 Nov 2020)
 
 ### Fixes
