@@ -6,7 +6,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.16.3 / 1.16.4
 
-## 2.6.2-?? (unreleased)
+## 2.6.2-73 (20 Nov 2020)
 
 ### New
 * Placing a Range Upgrade in the Pneumatic Chestplate now gives the player a 3.5-block reach distance upgrade
@@ -15,6 +15,9 @@ Changes are in reverse chronological order; newest changes at the top.
   
 ## Updates
 * Armor GUI: upgrade button layout in the main armor screen handles low resolutions and/or large scaling better now
+
+## Fixes
+* Fixed NPE when breaking Aerial Interface
 
 ## 2.6.1-72 (18 Nov 2020)
 
