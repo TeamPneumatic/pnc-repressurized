@@ -13,10 +13,10 @@ Changes are in reverse chronological order; newest changes at the top.
   * This does not affect melee range, just block interaction
   * There is an associated air cost (5mL/t) while the upgrade is switched on
   
-## Updates
+### Updates
 * Armor GUI: upgrade button layout in the main armor screen handles low resolutions and/or large scaling better now
 
-## Fixes
+### Fixes
 * Fixed NPE when breaking Aerial Interface
 
 ## 2.6.1-72 (18 Nov 2020)

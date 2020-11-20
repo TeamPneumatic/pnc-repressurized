@@ -326,11 +326,13 @@ public class CommonArmorHandler implements ICommonArmorHandler {
     }
 
     private void handleReachDistance() {
-        ModifiableAttributeInstance attr = player.getAttribute(ForgeMod.REACH_DISTANCE.get());
-        if (attr != null) {
-            attr.removeModifier(REACH_DIST_BOOST);
-            if (getArmorPressure(EquipmentSlotType.CHEST) > 0f && armorEnabled && reachDistanceEnabled) {
-                attr.applyNonPersistentModifier(REACH_DIST_BOOST);
+        if ((getTicksSinceEquipped(EquipmentSlotType.CHEST) & 0xf) == 0) {
+            ModifiableAttributeInstance attr = player.getAttribute(ForgeMod.REACH_DISTANCE.get());
+            if (attr != null) {
+                attr.removeModifier(REACH_DIST_BOOST);
+                if (getArmorPressure(EquipmentSlotType.CHEST) > 0f && getUpgradeCount(EquipmentSlotType.CHEST, EnumUpgrade.RANGE) > 0 && armorEnabled && reachDistanceEnabled) {
+                    attr.applyNonPersistentModifier(REACH_DIST_BOOST);
+                }
             }
         }
     }
