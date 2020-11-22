@@ -136,6 +136,8 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
 
         MinecraftForge.EVENT_BUS.post(new DroneConstructingEvent(this));
 
+        MinecraftForge.EVENT_BUS.register(this);
+
         itemHandlerSideConfigurator = new SideConfigurator<>("items", this);
         itemHandlerSideConfigurator.registerHandler("droneInv", new ItemStack(ModItems.DRONE.get()),
                 CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, () -> droneItemHandler,
@@ -189,11 +191,13 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
                 maybeChargeHeldItem();
             }
         } else {
-            if (drone == null || !drone.isAlive()) {
+            if ((drone == null || !drone.isAlive()) && getWorld().isAreaLoaded(new BlockPos(curX, curY, curZ), 1)) {
                 drone = ModEntities.PROGRAMMABLE_CONTROLLER.get().create(getWorld());
-                drone.setController(this);
-                drone.setPosition(curX, curY, curZ);
-                ClientUtils.spawnEntityClientside(drone);
+                if (drone != null) {
+                    drone.setController(this);
+                    drone.setPosition(curX, curY, curZ);
+                    ClientUtils.spawnEntityClientside(drone);
+                }
             }
             drone.setPosition(curX, curY, curZ);
         }
@@ -225,15 +229,6 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
         super.remove();
 
         MinecraftForge.EVENT_BUS.unregister(this);
-    }
-
-    @Override
-    public void onDescUpdate() {
-        super.onDescUpdate();
-
-        if (drone != null) {
-            drone.remove();
-        }
     }
 
     private UUID getOwnerUUID() {
@@ -400,8 +395,6 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
         curX = targetX = getPos().getX() + 0.5;
         curY = targetY = getPos().getY() + 1.0;
         curZ = targetZ = getPos().getZ() + 0.5;
-
-        MinecraftForge.EVENT_BUS.register(this);
     }
 
     private static boolean isProgrammableAndValidForDrone(IDroneBase drone, ItemStack programmable) {
@@ -700,5 +693,4 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
             return itemStack.isEmpty() || isProgrammableAndValidForDrone(TileEntityProgrammableController.this, itemStack);
         }
     }
-
 }
