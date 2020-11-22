@@ -332,7 +332,8 @@ public class DroneAIManager implements IVariableProvider {
     
     private void pickupItemsIfMagnet() {
         int magnetUpgrades = drone.getUpgrades(EnumUpgrade.MAGNET);
-        if (magnetUpgrades > 0) {
+        // drone must also have an active program
+        if (magnetUpgrades > 0 && !drone.getProgWidgets().isEmpty()) {
             int range = Math.min(6, 1 + magnetUpgrades);
             int rangeSq = range * range;
             Vector3d v = drone.getDronePos();
