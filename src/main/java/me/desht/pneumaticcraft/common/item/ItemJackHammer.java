@@ -16,6 +16,7 @@ import me.desht.pneumaticcraft.common.item.ItemDrillBit.DrillBitType;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
+import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
@@ -45,6 +46,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.ForgeHooks;
@@ -58,9 +60,11 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 import static net.minecraft.util.Direction.Axis.Y;
 
-public class ItemJackHammer extends ItemPressurizable implements IChargeableContainerProvider, IUpgradeAcceptor, ColorHandlers.ITintableItem {
+public class ItemJackHammer extends ItemPressurizable
+        implements IChargeableContainerProvider, IUpgradeAcceptor, ColorHandlers.ITintableItem, IShiftScrollable {
     private static final float[] SPEED_MULT = new float[] {
             1f,
             2f,
@@ -76,8 +80,14 @@ public class ItemJackHammer extends ItemPressurizable implements IChargeableCont
     };
     private static final String NBT_DIG_MODE = "DigMode";
 
+    private static long lastModeSwitchTime; // client-side: when player last scrolled to change mode
+
     public ItemJackHammer() {
         super(ModItems.toolProps(), PneumaticValues.VOLUME_JACKHAMMER * 10, PneumaticValues.VOLUME_JACKHAMMER);
+    }
+
+    public static long getLastModeSwitchTime() {
+        return lastModeSwitchTime;
     }
 
     public static DrillBitHandler getDrillBitHandler(ItemStack stack) {
@@ -344,13 +354,48 @@ public class ItemJackHammer extends ItemPressurizable implements IChargeableCont
         stack.getOrCreateTag().putString(NBT_DIG_MODE, mode.toString());
     }
 
+    public static DigMode cycleDigMode(ItemStack stack, boolean forward) {
+        if (stack.getItem() instanceof ItemJackHammer) {
+            DrillBitType ourBit = ((ItemJackHammer) stack.getItem()).getDrillBit(stack);
+            DigMode currentMode = getDigMode(stack);
+            int nModes = DigMode.values().length;
+            for (int i = 0; i < nModes; i++) {
+                int nextOrd = currentMode.ordinal() + (forward ? i : -i);
+                if (nextOrd >= nModes)
+                    nextOrd = 0;
+                else if (nextOrd < 0)
+                    nextOrd = ourBit.getBestDigType().ordinal();
+                DigMode nextMode = DigMode.values()[nextOrd];
+                if (nextMode.getBitType().getTier() <= ourBit.getTier() && nextMode != currentMode) {
+                    setDigMode(stack, nextMode);
+                    return nextMode;
+                }
+            }
+            return currentMode;
+        }
+        return null;
+    }
+
     @Override
     public boolean isEnchantable(ItemStack stack) {
         // not enchantable by normal means; only by adding a silk touch or fortune book via GUI
         return false;
     }
 
-    public enum DigMode {
+    @Override
+    public void onShiftScrolled(PlayerEntity player, boolean forward) {
+        if (!player.world.isRemote) {
+            DigMode newMode = cycleDigMode(player.getHeldItemMainhand(), forward);
+            if (newMode != null) {
+                player.sendStatusMessage(xlate("pneumaticcraft.message.jackhammer.mode")
+                        .append(xlate(newMode.getTranslationKey()).mergeStyle(TextFormatting.YELLOW)), true);
+            }
+        } else {
+            lastModeSwitchTime = player.world.getGameTime();
+        }
+    }
+
+    public enum DigMode implements ITranslatableEnum {
         MODE_1X1("1x1", 1, DrillBitType.IRON),
         MODE_1X2("1x2", 2, DrillBitType.COMPRESSED_IRON),
         MODE_1X3("1x3", 3, DrillBitType.COMPRESSED_IRON),
@@ -397,6 +442,11 @@ public class ItemJackHammer extends ItemPressurizable implements IChargeableCont
                 case MODE_VEIN_PLUS: return true;
                 default: return false;
             }
+        }
+
+        @Override
+        public String getTranslationKey() {
+            return "pneumaticcraft.message.jackhammer.mode." + name;
         }
     }
 

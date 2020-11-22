@@ -10,17 +10,20 @@ import me.desht.pneumaticcraft.client.gui.GuiPneumaticContainerBase;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticScreenBase;
 import me.desht.pneumaticcraft.client.gui.IExtraGuiHandling;
 import me.desht.pneumaticcraft.client.gui.widget.IDrawAfterRender;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.event.DateEventHandler;
+import me.desht.pneumaticcraft.common.item.IShiftScrollable;
 import me.desht.pneumaticcraft.common.item.ItemJackHammer;
 import me.desht.pneumaticcraft.common.item.ItemMinigun;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketJetBootsActivate;
+import me.desht.pneumaticcraft.common.network.PacketShiftScrollWheel;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
 import me.desht.pneumaticcraft.lib.Names;
@@ -29,6 +32,7 @@ import net.minecraft.client.GameSettings;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.IGuiEventListener;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.RenderType;
@@ -126,15 +130,14 @@ public class ClientEventHandler {
     }
 
     private static void renderJackHamerOverlay(RenderGameOverlayEvent.Pre event, PlayerEntity player, ItemStack heldStack) {
-        if (player.isCrouching()) return;
-
         Minecraft mc = Minecraft.getInstance();
         MatrixStack matrixStack = event.getMatrixStack();
         int w = event.getWindow().getScaledWidth();
         int h = event.getWindow().getScaledHeight();
 
+        long timedelta = player.world.getGameTime() - ItemJackHammer.getLastModeSwitchTime();
         ItemJackHammer.DigMode digMode = ItemJackHammer.getDigMode(heldStack);
-        if (digMode != null && digMode.atLeast(ItemJackHammer.DigMode.MODE_1X2)) {
+        if (digMode != null && (digMode.atLeast(ItemJackHammer.DigMode.MODE_1X2) || timedelta < 30 || player.isCrouching())) {
             mc.getTextureManager().bindTexture(digMode.getGuiIcon());
             RenderSystem.enableBlend();
             RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
@@ -387,6 +390,16 @@ public class ClientEventHandler {
                     ((IDrawAfterRender) l).renderAfterEverythingElse(event.getMatrixStack(), event.getMouseX(), event.getMouseY(), event.getRenderPartialTicks());
                 }
             }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onShiftScroll(InputEvent.MouseScrollEvent event) {
+        ItemStack stack = ClientUtils.getClientPlayer().getHeldItemMainhand();
+        if (Screen.hasShiftDown() && stack.getItem() instanceof IShiftScrollable) {
+            NetworkHandler.sendToServer(new PacketShiftScrollWheel(event.getScrollDelta() > 0));
+            ((IShiftScrollable) stack.getItem()).onShiftScrolled(ClientUtils.getClientPlayer(), event.getScrollDelta() > 0);
+            event.setCanceled(true);
         }
     }
 }
