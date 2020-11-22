@@ -4,10 +4,14 @@ import me.desht.pneumaticcraft.common.entity.living.EntityDroneBase;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammableController;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+/**
+ * Special client-only entity used for rendering the programmable controller's "minidrone".
+ */
 public class EntityProgrammableController extends EntityDroneBase {
     private TileEntityProgrammableController controller;
     private float propSpeed = 0f;
@@ -22,17 +26,11 @@ public class EntityProgrammableController extends EntityDroneBase {
         this.controller = controller;
     }
 
-    /**
-     * Returns true if other Entities should be prevented from moving through this Entity.
-     */
     @Override
     public boolean canBeCollidedWith() {
         return false;
     }
 
-    /**
-     * Returns true if this entity should push and be pushed by other entities when colliding.
-     */
     @Override
     public boolean canBePushed() {
         return false;
@@ -40,11 +38,12 @@ public class EntityProgrammableController extends EntityDroneBase {
 
     @Override
     public void tick() {
-        if (controller != null) {
-            if (controller.isRemoved()) {
+        if (world.isRemote && controller != null) {
+            TileEntity te = world.getTileEntity(controller.getPos());
+            if (te != controller) {
+                // expire stale minidrones
                 remove();
-            }
-            if (world.isRemote) {
+            } else {
                 if (controller.isIdle) {
                     propSpeed = Math.max(0, propSpeed - 0.04F);
                 } else {
@@ -73,6 +72,6 @@ public class EntityProgrammableController extends EntityDroneBase {
 
     @Override
     public ItemStack getDroneHeldItem() {
-        return controller == null ? ItemStack.EMPTY :controller.getFakePlayer().getHeldItemMainhand();
+        return controller == null ? ItemStack.EMPTY : controller.getFakePlayer().getHeldItemMainhand();
     }
 }
