@@ -104,7 +104,7 @@ public class DroneEntityAIPickupItems extends Goal {
         ItemStack stack = itemEntity.getItem();
         int stackSize = stack.getCount();
 
-        ItemStack remainder = IOHelper.insert(drone, stack, Direction.UP, false);
+        ItemStack remainder = IOHelper.insert(drone, stack, null, false);
         int collected = stackSize - remainder.getCount();
         if (collected > 0) {
             drone.onItemPickupEvent(itemEntity, collected);
