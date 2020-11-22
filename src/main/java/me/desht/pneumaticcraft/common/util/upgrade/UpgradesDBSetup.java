@@ -187,6 +187,7 @@ public class UpgradesDBSetup {
                 .with(EnumUpgrade.SPEED, 10));
         db.addApplicableUpgrades(ModTileEntities.PROGRAMMABLE_CONTROLLER.get(), new Builder()
                 .with(EnumUpgrade.SECURITY, 1)
+                .with(EnumUpgrade.MAGNET, 6)
                 .with(EnumUpgrade.VOLUME, MAX_VOLUME)
                 .with(EnumUpgrade.SPEED, 10)
                 .with(EnumUpgrade.INVENTORY, 35));
