@@ -782,6 +782,7 @@
    "pneumaticcraft.gui.programmer.warnings" : "Warnings:",
    "pneumaticcraft.gui.progWidget.area.error.areaTooBig" : "Over-large area: > %d blocks. See 'I:maxProgrammingArea' in config.",
    "pneumaticcraft.gui.progWidget.area.error.noArea" : "No area specified.",
+   "pneumaticcraft.gui.progWidget.area.error.onlyAreaTypeBox" : "The %s parent widget only supports an area type of Box.",
    "pneumaticcraft.gui.progWidget.area.point1" : "Point 1",
    "pneumaticcraft.gui.progWidget.area.point2" : "Point 2",
    "pneumaticcraft.gui.progWidget.area.selectGPS1" : "Select P1 from GPS Tool",

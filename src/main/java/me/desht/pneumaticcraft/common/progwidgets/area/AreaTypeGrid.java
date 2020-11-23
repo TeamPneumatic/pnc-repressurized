@@ -18,6 +18,11 @@ public class AreaTypeGrid extends AreaType{
     }
 
     @Override
+    public String toString() {
+        return getName() + "/" + interval;
+    }
+
+    @Override
     public void addArea(Consumer<BlockPos> areaAdder, BlockPos p1, BlockPos p2, int minX, int minY, int minZ, int maxX, int maxY, int maxZ){
         if (p1.equals(p2) || interval <= 0) {
             areaAdder.accept(p1);

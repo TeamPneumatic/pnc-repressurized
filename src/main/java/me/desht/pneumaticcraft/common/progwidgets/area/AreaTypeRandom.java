@@ -19,6 +19,11 @@ public class AreaTypeRandom extends AreaType {
     }
 
     @Override
+    public String toString() {
+        return getName() + "/" + pickedAmount;
+    }
+
+    @Override
     public void addArea(Consumer<BlockPos> areaAdder, BlockPos p1, BlockPos p2, int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
         int size = (maxX - minX) * (maxY - minY) * (maxZ - minZ);
 

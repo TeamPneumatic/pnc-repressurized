@@ -20,6 +20,11 @@ public class AreaTypeWall extends AreaType{
     }
 
     @Override
+    public String toString() {
+        return getName() + "/" + axis;
+    }
+
+    @Override
     public void addArea(Consumer<BlockPos> areaAdder, BlockPos p1, BlockPos p2, int minX, int minY, int minZ, int maxX, int maxY, int maxZ){
         switch (axis) {
             case X:

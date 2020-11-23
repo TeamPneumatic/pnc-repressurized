@@ -35,6 +35,11 @@ public class AreaTypeBox extends AreaType {
     }
 
     @Override
+    public String toString() {
+        return getName() + "/" + boxType;
+    }
+
+    @Override
     public void addArea(Consumer<BlockPos> areaAdder, BlockPos p1, BlockPos p2, int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
         switch (boxType) {
             case FILLED:

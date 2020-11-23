@@ -35,6 +35,11 @@ public class AreaTypeSphere extends AreaType{
     }
 
     @Override
+    public String toString() {
+        return getName() + "/" + sphereType;
+    }
+
+    @Override
     public void addArea(Consumer<BlockPos> areaAdder, BlockPos p1, BlockPos p2, int minX, int minY, int minZ, int maxX, int maxY, int maxZ){
         double radius = PneumaticCraftUtils.distBetween(p1, p2);
         double radiusSq = radius * radius;

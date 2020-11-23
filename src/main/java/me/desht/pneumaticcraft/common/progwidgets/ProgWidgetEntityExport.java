@@ -35,6 +35,6 @@ public class ProgWidgetEntityExport extends ProgWidgetAreaItemBase {
 
     @Override
     public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
-        return new DroneAIEntityExport(drone, (ProgWidgetAreaItemBase) widget);
+        return new DroneAIEntityExport<>(drone, (ProgWidgetAreaItemBase) widget);
     }
 }

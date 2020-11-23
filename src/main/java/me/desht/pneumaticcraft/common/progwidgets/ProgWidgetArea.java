@@ -103,8 +103,10 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         if (res.length() > 0) res.append("${br}");
         if (!coord2Variable.isEmpty()) {
             res.append("\"").append(coord2Variable).append("\"");
+            res.append(type.toString());
         } else if (x2 != 0 && y2 != 0 && z2 != 0) {
             res.append(String.format("%d, %d, %d", x2, y2, z2));
+            res.append(type.toString());
         }
         return res.toString();
     }
@@ -127,25 +129,10 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         }
 
         if (c1 != null) curTooltip.add(new StringTextComponent(c1));
-        if (c2 != null) curTooltip.add(new StringTextComponent(c2));
-
-//        if (c1 == null) {
-//            c1 = c2;
-//            c2 = null;
-//        }
-//
-//        if (c1 != null) {
-//            if (c2 != null) {
-//                curTooltip.add(new StringTextComponent("Contains the points:"));
-//                curTooltip.add(new StringTextComponent(c1.replace("%s", "1")));
-//                curTooltip.add(new StringTextComponent(c2.replace("%s", "2")));
-//            } else {
-//                curTooltip.add(new StringTextComponent("Contains the point:"));
-//                curTooltip.add(new StringTextComponent(c1.replace("%s", "1")));
-//            }
-//        }
-
-        addAreaTypeTooltip(curTooltip);
+        if (c2 != null) {
+            curTooltip.add(new StringTextComponent(c2));
+            addAreaTypeTooltip(curTooltip);
+        }
     }
 
     public void addAreaTypeTooltip(List<ITextComponent> curTooltip) {
@@ -163,6 +150,18 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         super.addErrors(curInfo, widgets);
         if (coord1Variable.equals("") && coord2Variable.equals("") && x1 == 0 && y1 == 0 && z1 == 0 && x2 == 0 && y2 == 0 && z2 == 0) {
             curInfo.add(xlate("pneumaticcraft.gui.progWidget.area.error.noArea"));
+        }
+        if (!(type instanceof AreaTypeBox)) {
+            IProgWidget p = this;
+            while ((p = p.getParent()) != null) {
+                ProgWidgetType<?> type = p.getType();
+                if (type == ModProgWidgets.ENTITY_ATTACK || type == ModProgWidgets.ENTITY_IMPORT
+                        || type == ModProgWidgets.ENTITY_RIGHT_CLICK || type == ModProgWidgets.CONDITION_ENTITY
+                        || type == ModProgWidgets.PICKUP_ITEM) {
+                    curInfo.add(xlate("pneumaticcraft.gui.progWidget.area.error.onlyAreaTypeBox", xlate(p.getTranslationKey())));
+                    break;
+                }
+            }
         }
     }
 
