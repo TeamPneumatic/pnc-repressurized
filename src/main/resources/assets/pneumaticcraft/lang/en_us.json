@@ -1226,6 +1226,7 @@
    "pneumaticcraft.gui.tab.info.item.drone.speedUpgrade" : "§0For each Speed Upgrade inserted, the movement speed of the Drone is increased by 10%% of its base speed.",
    "pneumaticcraft.gui.tab.info.item.drone.standbyUpgrade" : "§0When inserted, the Drone will go into Standby mode when idle, saving air. Don't forget that Drones take fall damage, so care is advised.",
    "pneumaticcraft.gui.tab.info.item.drone.volumeUpgrade" : "§0For each Volume Upgrade inserted, the Drone's air volume will be increased by 5000mL. This could be useful for long journeys.",
+   "pneumaticcraft.gui.tab.info.item.jackhammer.magnetUpgrade" : "§0A Magnet Upgrade will, when veinmining, cause all broken blocks to be dropped at the position of the block that was mined. This comes with a small extra air cost, but only when in a veinmining dig mode.",
    "pneumaticcraft.gui.tab.info.item.jackhammer.speedUpgrade" : "§0Increases the mining speed of the Jackhammer, with a corresponding increase in air usage. Adding more Speed Upgrades has diminishing returns.",
    "pneumaticcraft.gui.tab.info.item.jackhammer.volumeUpgrade" : "§0Increases the Jackhammer's air storage by by 2 * √U, where U = the number of Volume Upgrades, allowing the Jackhammer to run longer between recharges.",
    "pneumaticcraft.gui.tab.info.item.minigun.dispenserUpgrade" : "§0Each Dispenser Upgrade added increases the chance of ammo effects (potions, explosive, freezing etc.) being activated. This can significantly increase air usage, depending on the ammo type in use.",

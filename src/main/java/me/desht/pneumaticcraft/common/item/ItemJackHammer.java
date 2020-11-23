@@ -170,9 +170,12 @@ public class ItemJackHammer extends ItemPressurizable
             RayTraceResult brtr = PneumaticCraftUtils.getEntityLookedObject(player);
             if (brtr instanceof BlockRayTraceResult) {
                 itemstack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(airHandler -> {
-                    List<Integer> upgrades = UpgradableItemUtils.getUpgradeList(itemstack, EnumUpgrade.SPEED, EnumUpgrade.RANGE, EnumUpgrade.MAGNET);
-                    int speed = upgrades.get(0);
                     DigMode digMode = ItemJackHammer.getDigMode(itemstack);
+
+                    List<Integer> upgrades = UpgradableItemUtils.getUpgradeList(itemstack, EnumUpgrade.SPEED, EnumUpgrade.MAGNET);
+                    int speed = upgrades.get(0);
+                    boolean magnet = upgrades.get(1) > 0 && digMode.isVeinMining();
+
                     DrillBitType bitType = getDrillBit(itemstack);
                     if (digMode.getBitType().getTier() > bitType.getTier()) {
                         // sanity check
@@ -184,6 +187,8 @@ public class ItemJackHammer extends ItemPressurizable
                     float air = airHandler.getAir();
                     float air0 = air;
                     float usage = PneumaticValues.USAGE_JACKHAMMER * SPEED_MULT[speed];
+                    if (magnet) usage *= 1.1f;
+
                     for (BlockPos pos1 : brokenPos) {
                         BlockState state1 = world.getBlockState(pos1);
                         if (state1.getBlockHardness(world, pos1) < 0) continue;
@@ -199,9 +204,13 @@ public class ItemJackHammer extends ItemPressurizable
                         boolean removed = state1.removedByPlayer(world, pos1, player, true, world.getFluidState(pos1));
                         if (removed) {
                             block.onPlayerDestroy(world, pos1, state1);
-                            block.harvestBlock(world, player, pos1, state1, null, itemstack);
+                            if (magnet) {
+                                magnetHarvest(block, world, player, pos, pos1, state1, itemstack);
+                            } else {
+                                block.harvestBlock(world, player, pos1, state1, null, itemstack);
+                            }
                             if (exp > 0 && world instanceof ServerWorld) {
-                                block.dropXpOnBlockBreak((ServerWorld) world, pos1, exp);
+                                block.dropXpOnBlockBreak((ServerWorld) world, magnet ? pos : pos1, exp);
                             }
                             if (!player.isCreative()) {
                                 air -= usage;
@@ -217,6 +226,18 @@ public class ItemJackHammer extends ItemPressurizable
             }
         }
         return super.onBlockStartBreak(itemstack, pos, player);
+    }
+
+    // just like Block#harvest, except all items are dropped in the same place (the block that was mined)
+    private static void magnetHarvest(Block block, World world, PlayerEntity player, BlockPos pos0, BlockPos pos, BlockState state, ItemStack stack) {
+        player.addStat(Stats.BLOCK_MINED.get(block));
+        player.addExhaustion(0.005F);
+        if (world instanceof ServerWorld) {
+            Block.getDrops(state, (ServerWorld)world, pos, null, player, stack).forEach((stackToSpawn) -> {
+                Block.spawnAsEntity(world, pos0, stackToSpawn);
+            });
+            state.spawnAdditionalDrops((ServerWorld)world, pos, stack);
+        }
     }
 
     private Set<BlockPos> getBreakPositions(World world, BlockPos pos, Direction dir, Direction playerHoriz, DigMode digMode) {

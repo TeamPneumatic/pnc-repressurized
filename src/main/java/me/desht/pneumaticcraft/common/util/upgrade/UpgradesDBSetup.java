@@ -70,6 +70,7 @@ public class UpgradesDBSetup {
         db.addApplicableUpgrades(ModItems.JACKHAMMER.get(), new Builder()
                 .with(EnumUpgrade.SPEED, 10)
                 .with(EnumUpgrade.VOLUME, MAX_VOLUME)
+                .with(EnumUpgrade.MAGNET, 1)
         );
 
         // Pneumatic Armor
