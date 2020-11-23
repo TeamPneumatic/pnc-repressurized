@@ -40,4 +40,6 @@ public interface IDroneBase extends IDrone {
     void playSound(SoundEvent soundEvent, SoundCategory category, float volume, float pitch);
 
     void addAirToDrone(int air);
+
+    default void onVariableChanged(String varname, boolean isCoordinate) { }
 }

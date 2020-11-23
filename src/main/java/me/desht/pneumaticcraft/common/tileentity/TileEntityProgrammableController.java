@@ -109,6 +109,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     private final List<IProgWidget> progWidgets = new ArrayList<>();
     private final int[] redstoneLevels = new int[6];
     private final SideConfigurator<IItemHandler> itemHandlerSideConfigurator;
+    private CompoundNBT variablesNBT = null;  // pending variable data to add to ai manager
 
     @DescSynced
     private double targetX, targetY, targetZ;
@@ -222,6 +223,11 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
                 airHandler.addAir(-50);
             }
         });
+    }
+
+    @Override
+    public void onVariableChanged(String varname, boolean isCoordinate) {
+        markDirty();
     }
 
     @Override
@@ -342,6 +348,8 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
         itemHandlerSideConfigurator.updateHandler("droneInv", () -> droneItemHandler);
 
         shouldChargeHeldItem = tag.getBoolean("chargeHeld");
+
+        variablesNBT = tag.getCompound("variables");
     }
 
     @Override
@@ -366,6 +374,8 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
         energy.writeToNBT(tag);
 
         tag.putBoolean("chargeHeld", shouldChargeHeldItem);
+
+        if (aiManager != null) tag.put("variables", aiManager.writeToNBT(new CompoundNBT()));
 
         return tag;
     }
@@ -617,6 +627,10 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
             if (aiManager == null) {
                 aiManager = new DroneAIManager(this, new ArrayList<>());
                 aiManager.dontStopWhenEndReached();
+                if (variablesNBT != null) {
+                    aiManager.readFromNBT(variablesNBT);
+                    variablesNBT = null;
+                }
             }
         }
         return aiManager;
@@ -683,7 +697,8 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
                 if (updateNeighbours) updateNeighbours();
                 isIdle = true;
             }
-            if (!getWorld().isRemote) {
+            if (getWorld() != null && !getWorld().isRemote) {
+                getAIManager().clearVariables();
                 getAIManager().setWidgets(progWidgets);
             }
         }

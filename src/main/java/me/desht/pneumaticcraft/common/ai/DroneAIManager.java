@@ -64,7 +64,7 @@ public class DroneAIManager implements IVariableProvider {
         theProfiler = drone.world().getProfiler();
         this.drone = drone;
         if (!drone.world().isRemote) {
-            // we normally don't get called clientside, but The One Probe can do it
+            // we don't do much clientside, but instances can be created (programmable controller, The One Probe...)
             // don't try to set the widgets clientside because there aren't any and that messes up entity tracker info
             setWidgets(drone.getProgWidgets());
         }
@@ -100,6 +100,11 @@ public class DroneAIManager implements IVariableProvider {
         subAI.itemVariables = itemVariables;
     }
 
+    public void clearVariables() {
+        coordinateVariables.clear();
+        itemVariables.clear();
+    }
+
     public boolean isIdling() {
         return curWidgetAI == null;
     }
@@ -121,7 +126,15 @@ public class DroneAIManager implements IVariableProvider {
             tagList.add(t);
         }
         tag.put("coords", tagList);
-        GlobalVariableManager.getInstance().writeItemVars(tag);
+
+        ListNBT tagList2 = new ListNBT();
+        for (Map.Entry<String, ItemStack> entry : itemVariables.entrySet()) {
+            CompoundNBT t = new CompoundNBT();
+            t.putString("key", entry.getKey());
+            t.put("item", entry.getValue().serializeNBT());
+            tagList2.add(t);
+        }
+        tag.put("items", tagList2);
 
         return tag;
     }
@@ -134,7 +147,11 @@ public class DroneAIManager implements IVariableProvider {
             coordinateVariables.put(t.getString("key"), NBTUtil.readBlockPos(t.getCompound("pos")));
         }
 
-        GlobalVariableManager.readItemVars(tag, itemVariables);
+        ListNBT tagList2 = tag.getList("items", Constants.NBT.TAG_COMPOUND);
+        for (int i = 0; i < tagList2.size(); i++) {
+            CompoundNBT t = tagList2.getCompound(i);
+            itemVariables.put(t.getString("key"), ItemStack.read(t.getCompound("item")));
+        }
     }
 
     @Override
@@ -163,7 +180,10 @@ public class DroneAIManager implements IVariableProvider {
     public void setCoordinate(String varName, BlockPos coord) {
         if (varName.startsWith("#")) {
             GlobalVariableManager.getInstance().set(varName.substring(1), coord);
-        } else if (!varName.startsWith("$")) coordinateVariables.put(varName, coord);
+        } else if (!varName.startsWith("$")) {
+            coordinateVariables.put(varName, coord);
+            drone.onVariableChanged(varName, true);
+        }
     }
 
     @Override
@@ -189,7 +209,10 @@ public class DroneAIManager implements IVariableProvider {
     public void setItem(String varName, @Nonnull ItemStack item) {
         if (varName.startsWith("#")) {
             GlobalVariableManager.getInstance().set(varName.substring(1), item);
-        } else if (!varName.startsWith("$")) itemVariables.put(varName, item);
+        } else if (!varName.startsWith("$")) {
+            itemVariables.put(varName, item);
+            drone.onVariableChanged(varName, false);
+        }
     }
 
     private void updateWidgetFlow() {
