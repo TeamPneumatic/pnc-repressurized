@@ -101,7 +101,7 @@ public class ProgWidgetRenderer {
                 int stringWidth = fr.func_243245_a(splittedInfo.get(i));
                 int startX = progWidget.getWidth() / 2 - stringWidth / 4;
                 int startY = progWidget.getHeight() / 2 - (fr.FONT_HEIGHT + 1) * (splittedInfo.size() - 1) / 4 + (fr.FONT_HEIGHT + 1) * i / 2 - fr.FONT_HEIGHT / 4;
-                AbstractGui.fill(matrixStack, startX * 2 - 1, startY * 2 - 1, startX * 2 + stringWidth + 1, startY * 2 + fr.FONT_HEIGHT + 1, 0xFFFFFFFF);
+                AbstractGui.fill(matrixStack, startX * 2 - 1, startY * 2 - 1, startX * 2 + stringWidth + 1, startY * 2 + fr.FONT_HEIGHT + 1, 0xC0FFFFFF);
                 GuiUtils.drawOutline(matrixStack, Tessellator.getInstance().getBuffer(), startX * 2 - 1, startY * 2 - 1, 0, stringWidth + 2, fr.FONT_HEIGHT + 2, 192, 192, 192, 255);
                 fr.func_238422_b_(matrixStack, splittedInfo.get(i),startX * 2, startY * 2, 0xFF000000); // draw reordering processor w/o drop shadow
             }
