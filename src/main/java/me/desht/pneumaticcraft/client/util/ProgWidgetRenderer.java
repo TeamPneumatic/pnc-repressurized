@@ -77,7 +77,7 @@ public class ProgWidgetRenderer {
                 int stringLength = fr.getStringWidth(splittedInfo.get(i));
                 int startX = progWidget.getWidth() / 2 - stringLength / 4;
                 int startY = progWidget.getHeight() / 2 - (fr.FONT_HEIGHT + 1) * (splittedInfo.size() - 1) / 4 + (fr.FONT_HEIGHT + 1) * i / 2 - fr.FONT_HEIGHT / 4;
-                AbstractGui.fill(startX * 2 - 1, startY * 2 - 1, startX * 2 + stringLength + 1, startY * 2 + fr.FONT_HEIGHT + 1, 0xFFFFFFFF);
+                AbstractGui.fill(startX * 2 - 1, startY * 2 - 1, startX * 2 + stringLength + 1, startY * 2 + fr.FONT_HEIGHT + 1, 0xC0FFFFFF);
                 fr.drawString(splittedInfo.get(i), startX * 2, startY * 2, 0xFF000000);
             }
             RenderSystem.popMatrix();
