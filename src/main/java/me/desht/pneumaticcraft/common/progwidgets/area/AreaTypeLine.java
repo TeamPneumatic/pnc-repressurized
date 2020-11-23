@@ -15,6 +15,11 @@ public class AreaTypeLine extends AreaType {
     }
 
     @Override
+    public String toString() {
+        return getName();
+    }
+
+    @Override
     public void addArea(Consumer<BlockPos> areaAdder, BlockPos p1, BlockPos p2, int minX, int minY, int minZ, int maxX, int maxY, int maxZ){
         Vector3d lineVec = new Vector3d(p2.getX() - p1.getX(), p2.getY() - p1.getY(), p2.getZ() - p1.getZ()).normalize().scale(0.1);
         double curX = p1.getX() + 0.5;

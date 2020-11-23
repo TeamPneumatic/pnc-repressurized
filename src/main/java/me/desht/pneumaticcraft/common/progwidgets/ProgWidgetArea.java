@@ -102,8 +102,10 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         }
         if (!coord2Variable.isEmpty()) {
             res.add(new StringTextComponent("\"" + coord2Variable + "\""));
+            res.add(new StringTextComponent(type.toString()));
         } else if (x2 != 0 && y2 != 0 && z2 != 0) {
             res.add(new StringTextComponent(String.format("%d, %d, %d", x2, y2, z2)));
+            res.add(new StringTextComponent(type.toString()));
         }
         return res;
     }
@@ -126,9 +128,10 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         }
 
         if (c1 != null) curTooltip.add(new StringTextComponent(c1));
-        if (c2 != null) curTooltip.add(new StringTextComponent(c2));
-
-        addAreaTypeTooltip(curTooltip);
+        if (c2 != null) {
+            curTooltip.add(new StringTextComponent(c2));
+            addAreaTypeTooltip(curTooltip);
+        }
     }
 
     public void addAreaTypeTooltip(List<ITextComponent> curTooltip) {
@@ -146,6 +149,18 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         super.addErrors(curInfo, widgets);
         if (coord1Variable.equals("") && coord2Variable.equals("") && x1 == 0 && y1 == 0 && z1 == 0 && x2 == 0 && y2 == 0 && z2 == 0) {
             curInfo.add(xlate("pneumaticcraft.gui.progWidget.area.error.noArea"));
+        }
+        if (!(type instanceof AreaTypeBox)) {
+            IProgWidget p = this;
+            while ((p = p.getParent()) != null) {
+                ProgWidgetType<?> type = p.getType();
+                if (type == ModProgWidgets.ENTITY_ATTACK || type == ModProgWidgets.ENTITY_IMPORT
+                        || type == ModProgWidgets.ENTITY_RIGHT_CLICK || type == ModProgWidgets.CONDITION_ENTITY
+                        || type == ModProgWidgets.PICKUP_ITEM) {
+                    curInfo.add(xlate("pneumaticcraft.gui.progWidget.area.error.onlyAreaTypeBox", xlate(p.getTranslationKey())));
+                    break;
+                }
+            }
         }
     }
 
