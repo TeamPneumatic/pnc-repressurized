@@ -32,7 +32,6 @@ import net.minecraft.client.GameSettings;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.IGuiEventListener;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.RenderType;
@@ -396,7 +395,7 @@ public class ClientEventHandler {
     @SubscribeEvent
     public static void onShiftScroll(InputEvent.MouseScrollEvent event) {
         ItemStack stack = ClientUtils.getClientPlayer().getHeldItemMainhand();
-        if (Screen.hasShiftDown() && stack.getItem() instanceof IShiftScrollable) {
+        if (ClientUtils.getClientPlayer().isCrouching() && stack.getItem() instanceof IShiftScrollable) {
             NetworkHandler.sendToServer(new PacketShiftScrollWheel(event.getScrollDelta() > 0));
             ((IShiftScrollable) stack.getItem()).onShiftScrolled(ClientUtils.getClientPlayer(), event.getScrollDelta() > 0);
             event.setCanceled(true);
