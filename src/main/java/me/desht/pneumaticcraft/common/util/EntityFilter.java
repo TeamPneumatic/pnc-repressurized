@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.util;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import joptsimple.internal.Strings;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
@@ -39,23 +40,18 @@ import java.util.regex.Pattern;
 public class EntityFilter implements Predicate<Entity>, com.google.common.base.Predicate<Entity> {
     private static final Pattern ELEMENT_DIVIDER = Pattern.compile(";");
     private static final Pattern ELEMENT_SUBDIVIDER = Pattern.compile("[(),]");
-
-    private static final EntityFilter ALLOW_FILTER = EntityFilter.allow();
-    private static final EntityFilter DENY_FILTER = EntityFilter.deny();
-
-    private static final Map<String,Class<?>> ENTITY_CLASSES = new HashMap<>();
-    static {
-        ENTITY_CLASSES.put("mob", IMob.class);
-        ENTITY_CLASSES.put("animal", AnimalEntity.class);
-        ENTITY_CLASSES.put("living", LivingEntity.class);
-        ENTITY_CLASSES.put("player", PlayerEntity.class);
-        ENTITY_CLASSES.put("item", ItemEntity.class);
-        ENTITY_CLASSES.put("drone", EntityDrone.class);
-        ENTITY_CLASSES.put("boat", BoatEntity.class);
-        ENTITY_CLASSES.put("minecart", MinecartEntity.class);
-        ENTITY_CLASSES.put("painting", PaintingEntity.class);
-        ENTITY_CLASSES.put("orb", ExperienceOrbEntity.class);
-    }
+    private static final Map<String,Class<?>> ENTITY_CLASSES = ImmutableMap.<String,Class<?>>builder()
+            .put("mob", IMob.class)
+            .put("animal", AnimalEntity.class)
+            .put("living", LivingEntity.class)
+            .put("player", PlayerEntity.class)
+            .put("item", ItemEntity.class)
+            .put("drone", EntityDrone.class)
+            .put("boat", BoatEntity.class)
+            .put("minecart", MinecartEntity.class)
+            .put("painting", PaintingEntity.class)
+            .put("orb", ExperienceOrbEntity.class)
+            .build();
 
     private final List<EntityMatcher> matchers = new ArrayList<>();
     private final boolean sense;
@@ -91,7 +87,7 @@ public class EntityFilter implements Predicate<Entity>, com.google.common.base.P
                 return new EntityFilter(Strings.join(l, ";"));
             }
         }
-        return whitelist ? ALLOW_FILTER : DENY_FILTER;
+        return whitelist ? ConstantEntityFilter.ALLOW : ConstantEntityFilter.DENY;
     }
 
     public static EntityFilter fromString(String s) {
@@ -104,11 +100,11 @@ public class EntityFilter implements Predicate<Entity>, com.google.common.base.P
     }
 
     public static EntityFilter allow() {
-        return new ConstantEntityFilter(true);
+        return ConstantEntityFilter.ALLOW;
     }
 
     public static EntityFilter deny() {
-        return new ConstantEntityFilter(false);
+        return ConstantEntityFilter.DENY;
     }
 
     @Override
@@ -279,6 +275,9 @@ public class EntityFilter implements Predicate<Entity>, com.google.common.base.P
     }
 
     public static class ConstantEntityFilter extends EntityFilter {
+        static final ConstantEntityFilter ALLOW = new ConstantEntityFilter(true);
+        static final ConstantEntityFilter DENY = new ConstantEntityFilter(false);
+
         private final boolean allow;
 
         private ConstantEntityFilter(boolean allow) {
