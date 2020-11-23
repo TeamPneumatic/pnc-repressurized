@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.client.gui.programmer;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticScreenBase;
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketProgrammerUpdate;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
@@ -62,6 +63,6 @@ public abstract class GuiProgWidgetOptionBase<P extends IProgWidget> extends Gui
 
     @Override
     public boolean isPauseScreen() {
-        return false;
+        return PNCConfig.Client.programmerGuiPauses;
     }
 }

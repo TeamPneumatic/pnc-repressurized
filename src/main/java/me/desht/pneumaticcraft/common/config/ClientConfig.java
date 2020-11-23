@@ -17,6 +17,7 @@ public class ClientConfig {
         ForgeConfigSpec.BooleanValue alwaysShowPressureDurabilityBar;
         ForgeConfigSpec.BooleanValue tubeModuleRedstoneParticles;
         ForgeConfigSpec.BooleanValue guiRemoteGridSnap;
+        ForgeConfigSpec.BooleanValue programmerGuiPauses;
     }
 
     public static class Armor {
@@ -80,6 +81,11 @@ public class ClientConfig {
                 .comment("Should widgets in the GUI Remote Editor be snapped to a 4x4 grid?")
                 .translation("pneumaticcraft.config.client.general.gui_remote_grid_snap")
                 .define("gui_remote_grid_snap", true);
+        general.programmerGuiPauses = builder
+                .comment("Should the SSP game pause when the Programmer GUI is open (does not apply in SMP)" +
+                        "?")
+                .translation("pneumaticcraft.config.client.general.programmer_gui_pauses")
+                .define("programmer_gui_pauses", false);
         builder.pop();
 
         builder.push("armor");

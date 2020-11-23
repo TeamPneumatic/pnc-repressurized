@@ -222,6 +222,11 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         programmerUnit.gotoPiece(findWidget(te.progWidgets, ProgWidgetStart.class));
     }
 
+    @Override
+    public boolean isPauseScreen() {
+        return PNCConfig.Client.programmerGuiPauses;
+    }
+
     public static void onCloseFromContainer() {
         if (Minecraft.getInstance().currentScreen instanceof GuiProgrammer) {
             GuiProgrammer p = (GuiProgrammer) Minecraft.getInstance().currentScreen;

@@ -28,6 +28,7 @@ public class ConfigHelper {
         PNCConfig.Client.alwaysShowPressureDurabilityBar = client.general.alwaysShowPressureDurabilityBar.get();
         PNCConfig.Client.tubeModuleRedstoneParticles = client.general.tubeModuleRedstoneParticles.get();
         PNCConfig.Client.guiRemoteGridSnap = client.general.guiRemoteGridSnap.get();
+        PNCConfig.Client.programmerGuiPauses = client.general.programmerGuiPauses.get();
 
         PNCConfig.Client.Armor.blockTrackerMaxTimePerTick = client.armor.blockTrackerMaxTimePerTick.get();
         PNCConfig.Client.Armor.fancyArmorModels = client.armor.fancyArmorModels.get();
