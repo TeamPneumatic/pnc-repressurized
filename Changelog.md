@@ -6,6 +6,25 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.16.3 / 1.16.4
 
+## 2.6.3-?? (unreleased)
+
+### Updates
+* The Jackhammer now takes a Magnet Upgrade, used in the two veinmining modes
+  * When installed, all veinmined blocks will be dropped at the position of the block actually broken
+  * This has a small extra air cost when used (only when in a veinmining mode)
+* Applicable Jackhammer dig modes for the installed drill type can now be cycled through with Sneak & Mouse Wheel
+* It is now a compile error in the Programmer to use an Area widget with a type other than Box with those widgets which only use a Box shape
+  * These widgets are: Entity Import, Entity Attack, Entity Right Click, Condition: Entity, and Pickup Items
+  * These have always required an area type of Box, but previously accepted other area types, silently interpreting as Box type
+  * New behaviour is clearer and less misleading
+  * Existing already-programmed drones will continue to function as before (it's a compile-time check)
+* Programmable Controller now accepts up to 6 Magnet Upgrades to auto-pickup items (same as actual Drones)
+* Magnet Upgrade in Drones and Programmable Controllers only functions when the drone/PC actually has a program to run
+
+### Fixes
+* Fixed enablement of reach distance upgrade (added in 2.6.2) persisting across world changes in SSP
+* Fixed Programmable Controller minidrones "cloning" themselves when leaving and returning to an area
+
 ## 2.6.2-73 (20 Nov 2020)
 
 ### New
@@ -18,6 +37,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ### Fixes
 * Fixed NPE when breaking Aerial Interface
+
 
 ## 2.6.1-72 (18 Nov 2020)
 
