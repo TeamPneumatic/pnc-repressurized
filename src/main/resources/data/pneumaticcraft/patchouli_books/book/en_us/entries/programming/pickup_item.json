@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "The $(l:tools/drone)Drone/$ will pick up item entities in the world and put them into its inventory. Keep in mind that any $(l:programming/area)Area/$ widgets connected to this widget will always be interpreted as area type $(thing)Box/$, regardless of the given area type. It's possible to create more complex shapes, though, by using whitelisting/blacklisting of multiple areas."
+      "text": "The $(l:tools/drone)Drone/$ will pick up item entities in the world and put them into its inventory. Keep in mind that any $(l:programming/area)Area/$ widgets connected to this widget must have an area type of $(thing)Box/$; this is only supported shape. It's possible to create more complex shapes, though, by using whitelisting/blacklisting of multiple areas."
     },
     {
       "type": "text",

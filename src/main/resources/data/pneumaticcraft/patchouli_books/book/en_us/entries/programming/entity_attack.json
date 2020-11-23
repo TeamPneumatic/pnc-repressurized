@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "The $(l:tools/drone)Drone/$ will attack every living creature within the area.$(p)Keep in mind that the $(l:programming/area)Area/$ widgets connected to an $(thing)Entity Attack/$ widget will always be interpreted with cuboid mode, regardless of the $(thing)Area/$ widget's area mode. It's possible to create different shapes, though, by using whitelisting/blacklisting of areas."
+      "text": "The $(l:tools/drone)Drone/$ will attack every living creature within the area.$(p)Keep in mind that any $(l:programming/area)Area/$ widgets connected to this widget must have an area type of $(thing)Box/$; this is only supported shape. It's possible to create different shapes, though, by using whitelisting/blacklisting of areas."
     },
     {
       "type": "text",
