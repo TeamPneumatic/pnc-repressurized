@@ -30,6 +30,7 @@ public class GuiInventorySearcher extends ContainerScreen<ContainerInventorySear
     private final Screen parentScreen;
     private Predicate<ItemStack> stackPredicate = itemStack -> true;
     private WidgetLabel label;
+    private int clickedMouseButton;
 
     public GuiInventorySearcher(ContainerInventorySearcher container, PlayerInventory inv, ITextComponent title) {
         super(container, inv, title);
@@ -82,12 +83,14 @@ public class GuiInventorySearcher extends ContainerScreen<ContainerInventorySear
     }
 
     @Override
-    protected void handleMouseClick(Slot par1Slot, int par2, int par3, ClickType par4) {
-        if (par1Slot != null) {
-            if (par1Slot.slotNumber == 36) {
-                par1Slot.putStack(ItemStack.EMPTY);
+    protected void handleMouseClick(Slot slot, int slotId, int mouseButton, ClickType clickType) {
+        if (slot != null) {
+            if (slot.slotNumber == 36) {
+                clickedMouseButton = 0;
+                slot.putStack(ItemStack.EMPTY);
             } else {
-                setSearchStack(par1Slot.getStack());
+                clickedMouseButton = mouseButton;
+                setSearchStack(slot.getStack());
             }
         }
     }
@@ -96,17 +99,27 @@ public class GuiInventorySearcher extends ContainerScreen<ContainerInventorySear
     public void tick() {
         super.tick();
 
-        label.setMessage(StringTextComponent.EMPTY);
+        if (inventory.getStackInSlot(0).getItem() instanceof IPositionProvider) {
+            label.setMessage(new StringTextComponent(PneumaticCraftUtils.posToString(getBlockPos())));
+        } else {
+            label.setMessage(StringTextComponent.EMPTY);
+        }
+    }
+
+    /**
+     * Special case for when the searched item is a position provider
+     * @return the selected blockpos, or null if the search item is not a position provider
+     */
+    @Nonnull
+    public BlockPos getBlockPos() {
         ItemStack stack = inventory.getStackInSlot(0);
         if (stack.getItem() instanceof IPositionProvider) {
-            List<BlockPos> posList = ((IPositionProvider) stack.getItem()).getStoredPositions(ClientUtils.getClientWorld(), stack);
+            List<BlockPos> posList = ((IPositionProvider) stack.getItem()).getRawStoredPositions(ClientUtils.getClientWorld(), stack);
             if (!posList.isEmpty()) {
-                BlockPos pos = posList.get(0);
-                if (pos != null) {
-                    label.setMessage(new StringTextComponent(PneumaticCraftUtils.posToString(pos)));
-                }
+                return posList.get(Math.min(clickedMouseButton, posList.size() - 1));
             }
         }
+        return BlockPos.ZERO;
     }
 
     @Override

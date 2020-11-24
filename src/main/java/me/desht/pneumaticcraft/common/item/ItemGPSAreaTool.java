@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.item;
 
+import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.client.gui.areatool.GuiGPSAreaTool;
 import me.desht.pneumaticcraft.common.core.ModItems;
@@ -164,6 +165,15 @@ public class ItemGPSAreaTool extends Item implements IPositionProvider {
         Set<BlockPos> posSet = new HashSet<>();
         getArea(stack).getArea(posSet);
         return new ArrayList<>(posSet);
+    }
+
+    @Override
+    public List<BlockPos> getRawStoredPositions(World world, ItemStack stack) {
+        ProgWidgetArea area = getArea(stack);
+        return ImmutableList.of(
+                new BlockPos(area.x1, area.y1, area.z1),
+                new BlockPos(area.x2, area.y2, area.z2)
+        );
     }
 
     @Override
