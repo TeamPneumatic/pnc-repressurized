@@ -202,14 +202,17 @@ public class ModBlocks {
             BlockPressurizedSpawner::new);
 
     public static final List<RegistryObject<BlockPlasticBrick>> PLASTIC_BRICKS = new ArrayList<>();
+    public static final List<RegistryObject<BlockWallLamp>> WALL_LAMPS = new ArrayList<>();
+    public static final List<RegistryObject<BlockWallLamp>> WALL_LAMPS_INVERTED = new ArrayList<>();
     static {
         for (DyeColor color : DyeColor.values()) {
             PLASTIC_BRICKS.add(register("plastic_brick_" + color.getTranslationKey(), () -> new BlockPlasticBrick(color),
                     block -> () -> new BlockPlasticBrick.ItemPlasticBrick(block.get())));
+            WALL_LAMPS.add(register("wall_lamp_" + color.getTranslationKey(), () -> new BlockWallLamp(color, false),
+                    block -> () -> new BlockWallLamp.ItemWallLamp(block.get())));
+            WALL_LAMPS_INVERTED.add(register("wall_lamp_inverted_" + color.getTranslationKey(), () -> new BlockWallLamp(color, true),
+                    block -> () -> new BlockWallLamp.ItemWallLamp(block.get())));
         }
-    }
-    public static RegistryObject<BlockPlasticBrick> plasticBrick(DyeColor color) {
-        return PLASTIC_BRICKS.get(color.getId());
     }
 
     public static final RegistryObject<Block> REINFORCED_STONE = register("reinforced_stone",
@@ -256,4 +259,14 @@ public class ModBlocks {
             () -> new FlowingFluidBlock(() -> (FlowingFluid) ModFluids.VEGETABLE_OIL.get(), fluidProps()));
     public static final RegistryObject<FlowingFluidBlock> BIODIESEL = registerNoItem("biodiesel",
             () -> new FlowingFluidBlock(() -> (FlowingFluid) ModFluids.BIODIESEL.get(), fluidProps()));
+
+
+
+    public static RegistryObject<BlockPlasticBrick> plasticBrick(DyeColor color) {
+        return PLASTIC_BRICKS.get(color.getId());
+    }
+
+    public static RegistryObject<BlockWallLamp> wallLamp(DyeColor color, boolean inverted) {
+        return inverted ? WALL_LAMPS_INVERTED.get(color.getId()) : WALL_LAMPS.get(color.getId());
+    }
 }

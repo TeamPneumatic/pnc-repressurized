@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    "pneumaticcraft:wall_lamp_inverted_white",
+    "pneumaticcraft:wall_lamp_inverted_orange",
+    "pneumaticcraft:wall_lamp_inverted_magenta",
+    "pneumaticcraft:wall_lamp_inverted_light_blue",
+    "pneumaticcraft:wall_lamp_inverted_yellow",
+    "pneumaticcraft:wall_lamp_inverted_lime",
+    "pneumaticcraft:wall_lamp_inverted_pink",
+    "pneumaticcraft:wall_lamp_inverted_gray",
+    "pneumaticcraft:wall_lamp_inverted_light_gray",
+    "pneumaticcraft:wall_lamp_inverted_cyan",
+    "pneumaticcraft:wall_lamp_inverted_purple",
+    "pneumaticcraft:wall_lamp_inverted_blue",
+    "pneumaticcraft:wall_lamp_inverted_brown",
+    "pneumaticcraft:wall_lamp_inverted_green",
+    "pneumaticcraft:wall_lamp_inverted_red",
+    "pneumaticcraft:wall_lamp_inverted_black"
+  ]
+}

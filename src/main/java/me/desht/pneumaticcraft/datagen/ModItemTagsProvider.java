@@ -29,6 +29,8 @@ public class ModItemTagsProvider extends ItemTagsProvider {
         copy(PneumaticCraftTags.Blocks.DOORS, PneumaticCraftTags.Items.DOORS);
         copy(PneumaticCraftTags.Blocks.STORAGE_BLOCKS_COMPRESSED_IRON, PneumaticCraftTags.Items.STORAGE_BLOCKS_COMPRESSED_IRON);
         copy(PneumaticCraftTags.Blocks.PLASTIC_BRICKS, PneumaticCraftTags.Items.PLASTIC_BRICKS);
+        copy(PneumaticCraftTags.Blocks.WALL_LAMPS, PneumaticCraftTags.Items.WALL_LAMPS);
+        copy(PneumaticCraftTags.Blocks.WALL_LAMPS_INVERTED, PneumaticCraftTags.Items.WALL_LAMPS_INVERTED);
         copy(PneumaticCraftTags.Blocks.FLUID_TANKS, PneumaticCraftTags.Items.FLUID_TANKS);
         copy(PneumaticCraftTags.Blocks.CHESTS, PneumaticCraftTags.Items.CHESTS);
         copy(PneumaticCraftTags.Blocks.REINFORCED_STONE, PneumaticCraftTags.Items.REINFORCED_STONE);

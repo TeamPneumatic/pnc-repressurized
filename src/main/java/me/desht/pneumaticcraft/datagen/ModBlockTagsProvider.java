@@ -40,6 +40,8 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
                 ModBlocks.COMPRESSED_IRON_BLOCK);
 
         createTag(PneumaticCraftTags.Blocks.PLASTIC_BRICKS, ModBlocks.PLASTIC_BRICKS.toArray(new Supplier[0]));
+        createTag(PneumaticCraftTags.Blocks.WALL_LAMPS, ModBlocks.WALL_LAMPS.toArray(new Supplier[0]));
+        createTag(PneumaticCraftTags.Blocks.WALL_LAMPS_INVERTED, ModBlocks.WALL_LAMPS_INVERTED.toArray(new Supplier[0]));
         createTag(PneumaticCraftTags.Blocks.FLUID_TANKS, ModBlocks.TANK_SMALL, ModBlocks.TANK_MEDIUM, ModBlocks.TANK_LARGE);
 
         getOrCreateBuilder(Tags.Blocks.ORES);

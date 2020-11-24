@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "facing=down": { "model": "pneumaticcraft:block/wall_lamp", "x": 180 },
+    "facing=up": { "model": "pneumaticcraft:block/wall_lamp" },
+    "facing=north": { "model": "pneumaticcraft:block/wall_lamp", "x": 90 },
+    "facing=south": { "model": "pneumaticcraft:block/wall_lamp", "x": 270 },
+    "facing=west": { "model": "pneumaticcraft:block/wall_lamp", "x" : 90, "y": 270 },
+    "facing=east": { "model": "pneumaticcraft:block/wall_lamp", "x" : 90, "y": 90 }
+  }
+}

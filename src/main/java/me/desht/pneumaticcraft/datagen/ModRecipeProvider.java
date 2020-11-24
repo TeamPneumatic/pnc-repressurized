@@ -1047,9 +1047,11 @@ public class ModRecipeProvider extends RecipeProvider {
                 'B', ModBlocks.REINFORCED_BRICKS.get()
         ).build(consumer);
 
-        // plastic bricks
+        // plastic bricks & wall lamps
         for (DyeColor dye : DyeColor.values()) {
             plasticBrick(dye, dye.getTag()).build(consumer);
+            wallLamp(dye, false, dye.getTag()).build(consumer);
+            wallLamp(dye, true, dye.getTag()).build(consumer);
         }
 
         // specials
@@ -1434,6 +1436,16 @@ public class ModRecipeProvider extends RecipeProvider {
         return shaped(brick, 8, ModItems.PLASTIC.get(),
                 "PPP/PDP/PPP",
                 'P', PneumaticCraftTags.Items.PLASTIC_SHEETS,
+                'D', dyeIngredient);
+    }
+
+    private ShapedRecipeBuilder wallLamp(DyeColor color, boolean inverted, ITag<Item> dyeIngredient) {
+        Item lamp = ModBlocks.wallLamp(color, inverted).get().asItem();
+        return shaped(lamp, 4, ModItems.COMPRESSED_IRON_INGOT.get(),
+                " R /IGI/ D ",
+                'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
+                'G', Items.GLOWSTONE,
+                'R', inverted ? Items.REDSTONE_TORCH : Tags.Items.DUSTS_REDSTONE,
                 'D', dyeIngredient);
     }
 

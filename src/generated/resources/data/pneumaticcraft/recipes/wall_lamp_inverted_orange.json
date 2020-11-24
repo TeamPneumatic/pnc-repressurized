@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " R ",
+    "IGI",
+    " D "
+  ],
+  "key": {
+    "I": {
+      "tag": "forge:ingots/compressed_iron"
+    },
+    "G": {
+      "item": "minecraft:glowstone"
+    },
+    "R": {
+      "item": "minecraft:redstone_torch"
+    },
+    "D": {
+      "tag": "forge:dyes/orange"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:wall_lamp_inverted_orange",
+    "count": 4
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " R ",
+    "IGI",
+    " D "
+  ],
+  "key": {
+    "I": {
+      "tag": "forge:ingots/compressed_iron"
+    },
+    "G": {
+      "item": "minecraft:glowstone"
+    },
+    "R": {
+      "tag": "forge:dusts/redstone"
+    },
+    "D": {
+      "tag": "forge:dyes/purple"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:wall_lamp_purple",
+    "count": 4
+  }
+}

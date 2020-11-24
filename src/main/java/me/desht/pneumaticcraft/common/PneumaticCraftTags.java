@@ -21,6 +21,8 @@ public class PneumaticCraftTags {
         public static final ITag.INamedTag<Block> CHESTS = modTag("chests");
         public static final ITag.INamedTag<Block> REINFORCED_STONE = modTag("reinforced_stone");
         public static final ITag.INamedTag<Block> REINFORCED_STONE_BRICKS = modTag("reinforced_stone_bricks");
+        public static final ITag.INamedTag<Block> WALL_LAMPS = modTag("wall_lamps");
+        public static final ITag.INamedTag<Block> WALL_LAMPS_INVERTED = modTag("wall_lamps_inverted");
 
         public static final ITag.INamedTag<Block> STORAGE_BLOCKS_COMPRESSED_IRON = forgeTag("storage_blocks/compressed_iron");
 
@@ -45,6 +47,8 @@ public class PneumaticCraftTags {
         public static final ITag.INamedTag<Item> DOORS = modTag("doors");
         public static final ITag.INamedTag<Item> WALLS = modTag("walls");
         public static final ITag.INamedTag<Item> PLASTIC_BRICKS = modTag("plastic_bricks");
+        public static final ITag.INamedTag<Item> WALL_LAMPS = modTag("wall_lamps");
+        public static final ITag.INamedTag<Item> WALL_LAMPS_INVERTED = modTag("wall_lamps_inverted");
         public static final ITag.INamedTag<Item> FLUID_TANKS = modTag("fluid_tanks");
         public static final ITag.INamedTag<Item> CHESTS = modTag("chests");
         public static final ITag.INamedTag<Item> REINFORCED_STONE = modTag("reinforced_stone");

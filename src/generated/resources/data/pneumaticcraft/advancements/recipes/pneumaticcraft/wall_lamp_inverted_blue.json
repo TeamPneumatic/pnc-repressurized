@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "pneumaticcraft:wall_lamp_inverted_blue"
+    ]
+  },
+  "criteria": {
+    "has_ingot_iron_compressed": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:ingot_iron_compressed"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "pneumaticcraft:wall_lamp_inverted_blue"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_ingot_iron_compressed",
+      "has_the_recipe"
+    ]
+  ]
+}
