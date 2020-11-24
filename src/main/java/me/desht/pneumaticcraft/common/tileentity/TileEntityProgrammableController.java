@@ -698,8 +698,11 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
                 isIdle = true;
             }
             if (getWorld() != null && !getWorld().isRemote) {
-                getAIManager().clearVariables();
-                getAIManager().setWidgets(progWidgets);
+                aiManager = null;
+                aiManager = getAIManager();
+                aiManager.setWidgets(progWidgets);
+//                getAIManager().clearVariables();
+//                getAIManager().setWidgets(progWidgets);
             }
         }
 

@@ -375,9 +375,9 @@ public class DroneAIManager implements IVariableProvider {
     }
 
     public void onUpdateTasks() {
-        pickupItemsIfMagnet();
-        
         if (PNCConfig.Common.Advanced.stopDroneAI) return;
+
+        pickupItemsIfMagnet();
 
         if (!drone.isAIOverridden()) {
             if (wasAIOveridden && curWidgetTargetAI != null) drone.getTargetAI().addGoal(2, curWidgetTargetAI);
