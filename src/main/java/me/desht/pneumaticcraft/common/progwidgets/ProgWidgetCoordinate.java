@@ -187,7 +187,7 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
     @Override
     public List<ITextComponent> getExtraStringInfo() {
         if (useVariable) return Collections.singletonList(varAsTextComponent(variable));
-        else return x != 0 || y != 0 || z != 0 ? Collections.singletonList(new StringTextComponent(x + ", " + y + ", " + z)) : null;
+        else return x != 0 || y != 0 || z != 0 ? Collections.singletonList(new StringTextComponent(x + ", " + y + ", " + z)) : Collections.emptyList();
     }
 
     @Override
