@@ -19,7 +19,7 @@
     {
       "type": "text",
       "title": "Interfacing Items/Fluids",
-      "text": "Any items or fluids that the $(thing)minidrone/$ collects can be interfaced via the sides of the $(item)Programmable Controller/$ block.$(p)By default, the 'drone' has a single inventory slot, and a 16000mB tank. The inventory size can be increased by adding $(l:base_concepts/upgrades#dispenser)Dispenser Upgrades/$ (max 35), which also increases the tank size by 1000mB per upgrade."
+      "text": "Any items or fluids that the $(thing)minidrone/$ collects can be interfaced via the sides of the $(item)Programmable Controller/$ block.$(p)By default, the 'drone' has a single inventory slot, and a 16000mB tank. The inventory size can be increased by adding $(l:base_concepts/upgrades#inventory)Inventory Upgrades/$ (max 35), which also increases the tank size by 1000mB per upgrade."
     },
     {
       "type": "text",
