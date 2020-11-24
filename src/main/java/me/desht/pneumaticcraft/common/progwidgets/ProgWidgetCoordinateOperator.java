@@ -14,7 +14,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -224,7 +223,7 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
 
     @Override
     public List<ITextComponent> getExtraStringInfo() {
-        return Collections.singletonList(varAsTextComponent(variable));
+        return ImmutableList.of(varAsTextComponent(variable), xlate(operator.getTranslationKey()));
     }
 
     @Override
