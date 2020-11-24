@@ -515,9 +515,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
                 matrixStack.scale(0.5f, 0.5f, 1f);
                 ProgWidgetRenderer.renderProgWidget2d(matrixStack, w);
                 matrixStack.pop();
-                rw.ty += rw.velY;
-                rw.tx += rw.velX;
-                rw.velY += 0.3;
+                rw.tick();
 
             }
         }
@@ -1016,28 +1014,40 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
                         NetworkHandler.sendToServer(new PacketProgrammerUpdate(te));
                     }
                 } else {
-                    // clicked on an empty area: create a new area or coordinate widget
-                    ProgWidget toCreate = null;
+                    // clicked on an empty area: create a new area or coordinate widget(s)
+                    List<IProgWidget> toCreate = new ArrayList<>();
                     if (areaToolWidget != null) {
-                        toCreate = areaToolWidget;
+                        if (Screen.hasShiftDown()) {
+                            ProgWidgetCoordinate pc = new ProgWidgetCoordinate();
+                            pc.setCoordinate(new BlockPos(areaToolWidget.x1, areaToolWidget.y1, areaToolWidget.z1));
+                            toCreate.add(pc);
+                            if (areaToolWidget.x2 != 0 && areaToolWidget.y2 != 0 && areaToolWidget.z2 != 0) {
+                                ProgWidgetCoordinate pc2 = new ProgWidgetCoordinate();
+                                pc2.setCoordinate(new BlockPos(areaToolWidget.x2, areaToolWidget.y2, areaToolWidget.z2));
+                                toCreate.add(pc2);
+                            }
+                        } else {
+                            toCreate.add(areaToolWidget);
+                        }
                     } else if (heldItem.getItem() == ModItems.GPS_TOOL.get()) {
                         if (Screen.hasShiftDown()) {
                             BlockPos pos = ItemGPSTool.getGPSLocation(heldItem);
                             ProgWidgetArea areaWidget = ProgWidgetArea.fromPositions(pos, BlockPos.ZERO);
                             String var = ItemGPSTool.getVariable(heldItem);
                             if (!var.isEmpty()) areaWidget.setCoord1Variable(var);
-                            toCreate = areaWidget;
+                            toCreate.add(areaWidget);
                         } else {
                             ProgWidgetCoordinate coordWidget = new ProgWidgetCoordinate();
                             coordWidget.loadFromGPSTool(heldItem);
-                            toCreate = coordWidget;
+                            toCreate.add(coordWidget);
                         }
                     }
-                    if (toCreate != null) {
-                        toCreate.setX((int) (mouseX - guiLeft - toCreate.getWidth() / 3d));
-                        toCreate.setY((int) (mouseY - guiTop - toCreate.getHeight() / 4d));
-                        if (!programmerUnit.isOutsideProgrammingArea(toCreate)) {
-                            te.progWidgets.add(toCreate);
+                    for (int i = 0; i < toCreate.size(); i++) {
+                        IProgWidget p = toCreate.get(i);
+                        p.setX((int) (mouseX - guiLeft - p.getWidth() / 3d));
+                        p.setY((int) (mouseY - guiTop - p.getHeight() / 4d) + i * p.getHeight());
+                        if (!programmerUnit.isOutsideProgrammingArea(p)) {
+                            te.progWidgets.add(p);
                         }
                     }
                 }
@@ -1197,6 +1207,12 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
 
         private RemovingWidget(IProgWidget widget) {
             this.widget = widget;
+        }
+
+        public void tick() {
+            ty += velY;
+            tx += velX;
+            velY += 0.35;
         }
     }
 }
