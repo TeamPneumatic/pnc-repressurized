@@ -77,7 +77,7 @@ public class PacketSyncSemiblock {
         if (semiBlock != null) {
             semiBlock.readFromBuf(payload);
         } else {
-            Log.warning("PacketSemiBlockSync: did not get expected ISemiBlock entity for entity ID %s", entityID);
+            Log.warning("PacketSemiBlockSync: did not get expected ISemiBlock entity for entity ID %d", entityID);
         }
     }
 }

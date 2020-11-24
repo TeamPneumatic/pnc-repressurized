@@ -99,7 +99,7 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
 
         if (invSearchGui != null) {
             // returning from GPS selection GUI; copy the selected blockpos to the progwidget
-            BlockPos searchPos = getSearchedGPSPos();
+            BlockPos searchPos = invSearchGui.getBlockPos();
             if (pointSearched == 0) {
                 progWidget.x1 = searchPos.getX();
                 progWidget.y1 = searchPos.getY();
@@ -120,17 +120,6 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
 
     private String formatPos(int x, int y, int z) {
         return x == 0 && y == 0 && z == 0 ? "-" : String.format("[ %d, %d, %d ]", x, y, z);
-    }
-
-    private BlockPos getSearchedGPSPos() {
-        ItemStack stack = invSearchGui.getSearchStack();
-        if (stack.getItem() instanceof IPositionProvider) {
-            List<BlockPos> posList = ((IPositionProvider) stack.getItem()).getStoredPositions(ClientUtils.getClientWorld(), stack);
-            if (!posList.isEmpty() && posList.get(0) != null) {
-                return posList.get(0);
-            }
-        }
-        return BlockPos.ZERO;
     }
 
     private void openInvSearchGUI(int which) {

@@ -16,7 +16,6 @@ public interface IPositionProvider {
      * Get block position data from the given ItemStack.  It is up to the implementor to decide how the block positions
      * should be stored on the itemstack and in what order they should be returned.
      *
-     *
      * @param world the world (if a server world, global variables may be used)
      * @param stack the itemstack
      * @return a list of block positions that has been retrieved from the itemstack
@@ -38,4 +37,17 @@ public interface IPositionProvider {
      * @return true if visible through the world, false if not.
      */
     default boolean disableDepthTest() { return true; }
+
+    /**
+     * Gets the raw stored positions in this provider. E.g. for the GPS Area Tool, just the two clicked
+     * positions, not the whole set of positions defined by the tool's area type.
+     *
+     * @param world the world (if a server world, global variables may be used)
+     * @param stack the itemstack
+     * @return the raw positions stored on the itemstack
+     */
+    default List<BlockPos> getRawStoredPositions(World world, ItemStack stack) {
+        return getStoredPositions(world, stack);
+    }
+
 }
