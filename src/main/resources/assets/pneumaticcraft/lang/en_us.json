@@ -565,6 +565,7 @@
    "pneumaticcraft.armor.gui.coordinateTracker.pathUpdate.slow": "Path Update: Slow",
    "pneumaticcraft.armor.gui.coordinateTracker.pathUpdate.normal": "Path Update: Normal",
    "pneumaticcraft.armor.gui.coordinateTracker.pathUpdate.fast": "Path Update: Fast",
+   "pneumaticcraft.armor.gui.search.searchingFor": "Searching For:",
    "pneumaticcraft.armor.gui.misc.moveStatScreen": "Move Stat Screen...",
    "pneumaticcraft.armor.gui.misc.movePressureScreen": "Move Pressure Screen...",
    "pneumaticcraft.armor.gui.misc.moveMessageScreen": "Move Message Screen...",

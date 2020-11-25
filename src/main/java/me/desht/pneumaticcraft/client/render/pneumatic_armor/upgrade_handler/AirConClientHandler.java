@@ -20,7 +20,7 @@ public class AirConClientHandler extends IArmorUpgradeClientHandler.SimpleToggle
     public static int deltaTemp;  // set by packet from server
     private static int currentAC = 0; // cosmetic
 
-    private WidgetAnimatedStat acStat;
+    private IGuiAnimatedStat acStat;
 
     public AirConClientHandler() {
         super(ArmorUpgradeRegistry.getInstance().airConHandler);
@@ -48,7 +48,7 @@ public class AirConClientHandler extends IArmorUpgradeClientHandler.SimpleToggle
                     + Strings.repeat("|", Math.abs(ac))
                     + TextFormatting.DARK_GRAY
                     + Strings.repeat("|", MAX_AC - Math.abs(ac));
-            acStat.setMessage(new StringTextComponent("A/C: " + bar).mergeStyle(TextFormatting.YELLOW));
+            acStat.setTitle(new StringTextComponent("A/C: " + bar).mergeStyle(TextFormatting.YELLOW));
             acStat.setBackgroundColor(ac < 0 ? 0x300080FF : (ac == 0 ? 0x3000AA00 : 0x30FFD000));
         }
     }

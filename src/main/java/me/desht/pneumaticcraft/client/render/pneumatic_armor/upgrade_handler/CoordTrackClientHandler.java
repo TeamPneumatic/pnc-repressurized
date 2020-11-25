@@ -95,7 +95,7 @@ public class CoordTrackClientHandler extends IArmorUpgradeClientHandler.Abstract
             BlockPos pos = ItemPneumaticArmor.getCoordTrackerPos(ClientUtils.getWornArmor(EquipmentSlotType.HEAD), armorHandler.getPlayer().world);
             if (pos != null) {
                 coordTracker = new RenderCoordWireframe(armorHandler.getPlayer().world, pos);
-                navigator = new RenderNavigator(coordTracker.world, coordTracker.pos);
+                navigator = new RenderNavigator(coordTracker.pos);
             }
         }
         if (noPathCooldown > 0) {
@@ -113,7 +113,7 @@ public class CoordTrackClientHandler extends IArmorUpgradeClientHandler.Abstract
     @Override
     public void render3D(MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks) {
         if (coordTracker != null) {
-            if (!Minecraft.getInstance().player.world.getDimensionKey().getLocation().equals(coordTracker.world.getDimensionKey().getLocation()))
+            if (!Minecraft.getInstance().player.world.getDimensionKey().getLocation().equals(coordTracker.worldKey.getLocation()))
                 return;
             coordTracker.render(matrixStack, buffer, partialTicks);
             if (PNCConfig.Client.Armor.pathEnabled && navigator != null) {
@@ -144,7 +144,7 @@ public class CoordTrackClientHandler extends IArmorUpgradeClientHandler.Abstract
                 BlockPos pathPos = new BlockPos(pathPoint.x, pathPoint.y, pathPoint.z);
                 if (world.canBlockSeeSky(pathPos)) {
                     coordTracker = new RenderCoordWireframe(world, pathPos);
-                    navigator = new RenderNavigator(world, pathPos);
+                    navigator = new RenderNavigator(pathPos);
                     return EnumNavigationResult.EASY_PATH;
                 }
             }
@@ -156,7 +156,7 @@ public class CoordTrackClientHandler extends IArmorUpgradeClientHandler.Abstract
                 BlockPos pathPos = new BlockPos(pathPoint.x, pathPoint.y, pathPoint.z);
                 if (world.canBlockSeeSky(pathPos)) {
                     coordTracker = new RenderCoordWireframe(world, pathPos);
-                    navigator = new RenderNavigator(world, pathPos);
+                    navigator = new RenderNavigator(pathPos);
                     return EnumNavigationResult.DRONE_PATH;
                 }
             }

@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IEntityTrackEntry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.option_screens.DroneDebuggerOptions;
@@ -39,7 +40,7 @@ public class RenderEntityTarget {
     private final RenderTargetCircle circle2;
     public int ticksExisted = 0;
     private float oldSize;
-    private final WidgetAnimatedStat stat;
+    private final IGuiAnimatedStat stat;
     private boolean didMakeLockSound;
     public boolean isLookingAtTarget;
     private List<ITextComponent> textList = new ArrayList<>();
@@ -56,6 +57,7 @@ public class RenderEntityTarget {
         stat = new WidgetAnimatedStat(null, entity.getDisplayName(), StatIcon.NONE,
                 20, -20, 0x3000AA00, null, false);
         stat.setMinimumContractedDimensions(0, 0);
+        stat.setAutoLineWrap(false);
     }
 
     public RenderDroneAI getDroneAIRenderer() {
@@ -69,7 +71,7 @@ public class RenderEntityTarget {
 
     public void update() {
         stat.tickWidget();
-        stat.setMessage(entity.getDisplayName());
+        stat.setTitle(entity.getDisplayName());
         PlayerEntity player = Minecraft.getInstance().player;
 
         distToEntity = entity.getDistance(ClientUtils.getClientPlayer());
@@ -151,13 +153,13 @@ public class RenderEntityTarget {
             // a bit of growing or shrinking to keep the stat on screen and/or of legible size
             float mul = getStatSizeMultiplier(distToEntity);
             matrixStack.scale(mul, mul, mul);
-            stat.render3d(matrixStack, buffer, partialTicks);
+            stat.renderStat(matrixStack, buffer, partialTicks);
         } else if (ticksExisted > 50) {
             RenderUtils.renderString3d("Acquiring Target...", 0, 0, 0xFF7F7F7F, matrixStack, buffer, false, true);
             RenderUtils.renderString3d((int)targetAcquireProgress + "%", 37, 24, 0xFF002F00, matrixStack, buffer, false, true);
         } else if (ticksExisted < -30) {
             stat.closeStat();
-            stat.render3d(matrixStack, buffer, partialTicks);
+            stat.renderStat(matrixStack, buffer, partialTicks);
             RenderUtils.renderString3d("Lost Target!", 0, 0, 0xFF7F7F7F, matrixStack, buffer, false, true);
         }
 

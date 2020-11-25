@@ -1,44 +1,46 @@
 package me.desht.pneumaticcraft.api.client;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import me.desht.pneumaticcraft.client.gui.widget.ITickableWidget;
+import net.minecraft.client.gui.IGuiEventListener;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.util.text.ITextComponent;
 
 import java.util.List;
 
 /**
- * This interface doesn't have to be implemented. In PneumaticCraft there already is a class which implements this interface
- * which is used many times in PneumaticCraft (GUI side tabs, Pneumatic Helmet 2D and 3D stats). You can get an instance of this
- * class via the various {@link IClientRegistry} getAnimatedStat() methods. Implementing your own version of animated
- * stats is also possible, and they will interact with the PneumaticCraft GuiAnimatedStats if you implement it correctly.
+ * This interface doesn't have to be implemented. In PneumaticCraft there already is a widget which implements this
+ * interface used in many places: GUI side tabs, Pneumatic Helmet 2D and 3D stats. You can get an instance of this
+ * class via the various {@link IClientRegistry} getAnimatedStat() methods.
+ * <p>
+ * Implementing your own version of animated stats is also possible.
  */
-public interface IGuiAnimatedStat extends ITickableWidget {
+public interface IGuiAnimatedStat extends ITickableWidget, IGuiEventListener {
     /**
-     * Returns true if the stat expands to the left.
+     * Check which direction this expands to when opened.
      *
-     * @return
+     * @return true if the stat expands to the left, false otherwise
      */
     boolean isLeftSided();
 
     /**
-     * Returns true if the stat is done with expanding (when text will be displayed).
+     * Set the direction this stat will expand in when opened.
      *
-     * @return
-     */
-    boolean isDoneExpanding();
-
-    /**
-     * Pass true if the statistic should expand to the left, otherwise false.
-     *
-     * @param leftSided
+     * @param leftSided true if the stat should expand to the left, false otherwise
      */
     void setLeftSided(boolean leftSided);
 
     /**
+     * Check if this stat is fully opened.
+     *
+     * @return true if the stat is done with expanding (when text and subwidgets will be displayed)
+     */
+    boolean isDoneExpanding();
+
+    /**
      * Sets the main text of this stat. Every line should be stored in a separate list element, but lines do not need
-     * to be split manually; overlong lines will be automatically by wrapped to fit horizontally, and a scrollbar will
-     * be added if necessary.
+     * to be split manually; overlong lines will be automatically by wrapped to fit horizontally (if auto-wrap is
+     * enabled), and a scrollbar will be added if necessary.
      *
      * @param text a list of text components
      * @return this, so you can chain calls.
@@ -47,8 +49,8 @@ public interface IGuiAnimatedStat extends ITickableWidget {
 
     /**
      * Sets the main text of this stat. Every line should be stored in a separate list element, but lines do not need
-     * to be split manually; overlong lines will be automatically by wrapped to fit horizontally, and a scrollbar will
-     * be added if necessary.
+     * to be split manually; overlong lines will be automatically by wrapped to fit horizontally (if auto-wrap is
+     * enabled), and a scrollbar will be added if necessary.
      *
      * @param text a text component
      * @return this, so you can chain calls.
@@ -64,9 +66,9 @@ public interface IGuiAnimatedStat extends ITickableWidget {
     void appendText(List<ITextComponent> text);
 
     /**
-     * Defines what dimensions the stat should have when it is not expanded (default 17x17) and resets the stat to these
-     * dimensions. Used in PneumaticCraft by the block/entity tracker stats, they are 0x0 when not expanded so it looks
-     * like they expand (and appear) from nothing.
+     * Defines what dimensions the stat should have when it is not expanded (default 17x17, sufficient to display the
+     * stat's icon) and resets the stat to these dimensions. Stats which should disappear completely when closed
+     * (e.g. the Pneumatic Armor HUD stats) should be given a minimum size of 0x0.
      *
      * @param minWidth the minimum width
      * @param minHeight the minimum height
@@ -89,15 +91,16 @@ public interface IGuiAnimatedStat extends ITickableWidget {
     void setMinimumExpandedDimensions(int minWidth, int minHeight);
 
     /**
-     * When this stat gets a parent stat assigned, the Y position of this stat will be auto-adjusted to be directly
-     * beneath the parent stat. This will cause this stat to move up and down when the parent stat expands/moves.
+     * When this stat gets a parent stat assigned, the effective Y position of this stat should be auto-adjusted to be
+     * directly beneath the parent stat. This will cause this stat to move up and down when the parent stat
+     * expands/moves.
      *
      * @param stat the parent stat
      */
     void setParentStat(IGuiAnimatedStat stat);
 
     /**
-     * Change the background color of this stat.
+     * Set the background color of this stat.
      *
      * @param backgroundColor color, in ARGB format
      */
@@ -136,21 +139,21 @@ public interface IGuiAnimatedStat extends ITickableWidget {
     void setBeveled(boolean bevel);
 
     /**
-     * Sets the x location of this stat.
+     * Sets the x position of this stat.
      *
      * @param x the X position
      */
     void setBaseX(int x);
 
     /**
-     * Sets the base Y of this stat.
+     * Sets the base Y position of this stat (see {@link #setParentStat(IGuiAnimatedStat)}.
      *
      * @param y the Y position
      */
     void setBaseY(int y);
 
     /**
-     * Returns the actual Y position of this stat. This is the same as getBaseY when there is no parent stat, but if
+     * Get the effective Y position of this stat. This is the same as getBaseY when there is no parent stat, but if
      * there is one, this method returns the value described in {@link #setParentStat(IGuiAnimatedStat)}.  This is the
      * position used to render the stat, and to define the area where keyboard and mouse input is checked for.
      *
@@ -184,13 +187,23 @@ public interface IGuiAnimatedStat extends ITickableWidget {
     Rectangle2d getBounds();
 
     /**
-     * Should be called every render tick to render the stat.
+     * Render the stat in 2D (gui) context.
      *
-     * @param mouseX
-     * @param mouseY
-     * @param partialTicks
+     * @param matrixStack the matrix stack
+     * @param mouseX the mouse X position
+     * @param mouseY the mouse Y position
+     * @param partialTicks partial ticks since last client tick
      */
     void renderStat(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks);
+
+    /**
+     * Render the stat in 3D (in-world) context.
+     *
+     * @param matrixStack the matrix stack
+     * @param buffer the render buffer
+     * @param partialTicks partial ticks since last client tick
+     */
+    void renderStat(MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks);
 
     /**
      * Forces the stat to close.
@@ -203,10 +216,32 @@ public interface IGuiAnimatedStat extends ITickableWidget {
     void openStat();
 
     /**
-     * Check if the stat is currently toggled open.
+     * Check if the stat is currently toggled open (but not necessarily fully-open - see {@link #isDoneExpanding()})
      *
      * @return true if the stat is open
      */
     boolean isStatOpen();
 
+    /**
+     * Enable/disable auto-line-wrapping functionality of the widget. This is enabled by default. When disabled, the
+     * widget will make no effort to keep all text on screen; unwrapped text could extend off the right-hand edge of
+     * the screen.
+     *
+     * @param wrap enablement of wrapping
+     */
+    void setAutoLineWrap(boolean wrap);
+
+    /**
+     * Get this stat's title line.
+     *
+     * @return the title
+     */
+    ITextComponent getTitle();
+
+    /**
+     * Set the title line for this stat; the text drawn on the top line. This text is never wrapped, so be mindful
+     * of the length of this line.
+     * @param title the title string
+     */
+    void setTitle(ITextComponent title);
 }

@@ -4,17 +4,18 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import me.desht.pneumaticcraft.client.render.ModRenderTypes;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.util.RegistryKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.world.World;
 
 public class RenderCoordWireframe {
     public final BlockPos pos;
-    public final World world;
+    public final RegistryKey<World> worldKey;
     public int ticksExisted;
 
     public RenderCoordWireframe(World world, BlockPos pos) {
-        this.world = world;
+        this.worldKey = world.getDimensionKey();
         this.pos = pos;
     }
 

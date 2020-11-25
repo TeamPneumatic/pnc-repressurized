@@ -43,11 +43,12 @@ public interface IClientRegistry {
      * Draws a Pressure Gauge, the same which is also used in many PneumaticCraft applications. This should only be used
      * in GUI context, <strong>not</strong> for in-world rendering!
      *
+     * @param matrixStack        the matrix stack
      * @param fontRenderer       fontrenderer used to draw the numbers of the pressure gauge.
      * @param minPressure        The minimal pressure that needs to be displayed (this is -1 in most applications).
-     * @param maxPressure        The maximal pressure that needs to be rendererd (this is 7 for tier one machines, and 25 for tier two).
+     * @param maxPressure        The maximal pressure that needs to be rendered (this is 7 for tier one machines, and 25 for tier two).
      * @param dangerPressure     The transition pressure from green to red (this is 5 for tier one, and 20 for tier two machines).
-     * @param minWorkingPressure The transition pressure from yellow to green (variates per machine).
+     * @param minWorkingPressure The transition pressure from yellow to green (varies per machine).
      * @param currentPressure    The pressure that the needle should point to.
      * @param xPos               x position of the gauge.
      * @param yPos               y position of the gauge.

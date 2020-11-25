@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.EntityTrackEvent;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
@@ -48,7 +49,7 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
     private final Map<Integer, RenderEntityTarget> targets = new HashMap<>();
     private boolean shouldStopSpamOnEntityTracking = false;
 
-    private WidgetAnimatedStat entityTrackInfo;
+    private IGuiAnimatedStat entityTrackInfo;
     @Nonnull
     private EntityFilter entityFilter = new EntityFilter("");
 
@@ -151,6 +152,7 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
     @Override
     public void reset() {
         targets.clear();
+        entityTrackInfo = null;
     }
 
     @Override
@@ -159,12 +161,13 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
     }
 
     @Override
-    public WidgetAnimatedStat getAnimatedStat() {
+    public IGuiAnimatedStat getAnimatedStat() {
         if (entityTrackInfo == null) {
             WidgetAnimatedStat.StatIcon icon = WidgetAnimatedStat.StatIcon.of(EnumUpgrade.ENTITY_TRACKER.getItemStack());
             entityTrackInfo = new WidgetAnimatedStat(null, xlate("pneumaticcraft.entityTracker.info.trackedEntities"), icon,
                      0x3000AA00, null, ArmorHUDLayout.INSTANCE.entityTrackerStat);
             entityTrackInfo.setMinimumContractedDimensions(0, 0);
+            entityTrackInfo.setAutoLineWrap(false);
         }
         return entityTrackInfo;
 

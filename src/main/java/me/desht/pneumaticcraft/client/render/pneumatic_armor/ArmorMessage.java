@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
@@ -13,7 +14,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class ArmorMessage {
-    private final WidgetAnimatedStat stat;
+    private final IGuiAnimatedStat stat;
     int lifeSpan;
 
     public ArmorMessage(ITextComponent title, int duration, int backColor) {
@@ -29,12 +30,12 @@ public class ArmorMessage {
         player.world.playSound(player.getPosX(), player.getPosY(), player.getPosZ(), ModSounds.SCI_FI.get(), SoundCategory.PLAYERS, 0.1F, 1.0F, true);
     }
 
-    void setDependingMessage(WidgetAnimatedStat dependingStat) {
+    void setDependingMessage(IGuiAnimatedStat dependingStat) {
         stat.setParentStat(dependingStat);
         stat.setBaseY(2);
     }
 
-    public WidgetAnimatedStat getStat() {
+    public IGuiAnimatedStat getStat() {
         return stat;
     }
 
@@ -44,6 +45,6 @@ public class ArmorMessage {
         } else {
             stat.closeStat();
         }
-        stat.render(matrixStack, -1, -1, partialTicks);
+        stat.renderStat(matrixStack, -1, -1, partialTicks);
     }
 }

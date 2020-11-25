@@ -62,6 +62,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
     private final List<Widget> subWidgets = new ArrayList<>();
     private int effectiveY;  // where the widget is actually rendered (if it has a "parent" stat, it will always render below that)
     private int reservedLines = 0; // space at the top where text isn't rendered
+    private boolean autoLineWrap = true;
 
     // for interpolation purposes, to smoothly animate the widget expanding/contracting
     private int prevX;
@@ -175,6 +176,21 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
     }
 
     @Override
+    public void setAutoLineWrap(boolean wrap) {
+        autoLineWrap = wrap;
+    }
+
+    @Override
+    public ITextComponent getTitle() {
+        return getMessage();
+    }
+
+    @Override
+    public void setTitle(ITextComponent title) {
+        setMessage(title);
+    }
+
+    @Override
     public IGuiAnimatedStat setText(List<ITextComponent> text) {
         textComponents.clear();
         textComponents.addAll(text);
@@ -258,10 +274,15 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
         dropShadows.clear();
 
         FontRenderer font = Minecraft.getInstance().fontRenderer;
-        int availableWidth = calculateAvailableWidth();
-        int titleWidth = Math.min(availableWidth, font.getStringPropertyWidth(getMessage()));
-        reorderingProcessors.addAll(GuiUtils.wrapTextComponentList(textComponents, availableWidth, font));
-        expandedWidth = Math.min(availableWidth, Math.max(titleWidth, minExpandedWidth));
+        int titleWidth = font.getStringPropertyWidth(getMessage());
+        if (autoLineWrap) {
+            int availableWidth = calculateAvailableWidth();
+            reorderingProcessors.addAll(GuiUtils.wrapTextComponentList(textComponents, availableWidth, font));
+            expandedWidth = Math.min(availableWidth, Math.max(titleWidth, minExpandedWidth));
+        } else {
+            expandedWidth = titleWidth;
+            textComponents.forEach(c -> reorderingProcessors.add(c.func_241878_f()));
+        }
         reorderingProcessors.forEach(processedLine -> {
             expandedWidth = Math.max(expandedWidth, font.func_243245_a(processedLine));
             dropShadows.add(needsDropShadow(processedLine));
@@ -467,8 +488,9 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
         }
     }
 
-    // used by the Block Tracker & Entity Tracker armor upgrades
-    public void render3d(MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks) {
+    @Override
+    public void renderStat(MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks) {
+        // used by the Block Tracker & Entity Tracker armor upgrades
         if (needTextRecalc) recalcText();
 
         int renderBaseX = (int) MathHelper.lerp(partialTicks, prevX, x);

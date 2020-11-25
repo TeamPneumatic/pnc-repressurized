@@ -16,8 +16,6 @@ import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
@@ -37,7 +35,7 @@ public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.Abst
 
     private final float[] lastPressure = new float[] { -1, -1, -1, -1 };
     private WidgetAnimatedStat powerStat;
-    public WidgetAnimatedStat testMessageStat;
+    public IGuiAnimatedStat testMessageStat;
     private boolean showPressureNumerically;  // false for numeric readout, true for horizontal bars
     private boolean forceUpdatePressureStat = true;
 
@@ -141,9 +139,7 @@ public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.Abst
                 powerStat.addSubWidget(pressureButton);
             }
             powerStat.setMinimumContractedDimensions(0, 0);
-            FontRenderer font = Minecraft.getInstance().fontRenderer;
-            int minWidth = showPressureNumerically ? font.getStringWidth("10.0") : MAX_BARS * font.getStringWidth("|");
-            powerStat.setMinimumExpandedDimensions(minWidth + 5, 60);
+            powerStat.setAutoLineWrap(false);
             powerStat.openStat();
         }
         return powerStat;
@@ -162,6 +158,7 @@ public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.Abst
     @Override
     public void onResolutionChanged() {
         powerStat = null;
+        forceUpdatePressureStat = true;
         Arrays.fill(lastPressure, -1);
     }
 }

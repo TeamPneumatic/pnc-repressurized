@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
+import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
@@ -41,13 +42,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
 public class SearchClientHandler extends IArmorUpgradeClientHandler.AbstractHandler {
     private int totalSearchedItemCount;
     private int itemSearchCount;
     private int ticksExisted;
     private final Map<ItemEntity, Integer> searchedItems = new HashMap<>();
     private final Map<BlockPos, RenderSearchItemBlock> trackedInventories = new HashMap<>();
-    private WidgetAnimatedStat searchInfo;
+    private IGuiAnimatedStat searchInfo;
     private ItemStack searchedStack = ItemStack.EMPTY;
 
     public SearchClientHandler() {
@@ -205,10 +208,10 @@ public class SearchClientHandler extends IArmorUpgradeClientHandler.AbstractHand
     }
 
     @Override
-    public WidgetAnimatedStat getAnimatedStat() {
+    public IGuiAnimatedStat getAnimatedStat() {
         if (searchInfo == null) {
             WidgetAnimatedStat.StatIcon icon = WidgetAnimatedStat.StatIcon.of(EnumUpgrade.SEARCH.getItemStack());
-            searchInfo = new WidgetAnimatedStat(null, new StringTextComponent("Currently searching for:"), icon,
+            searchInfo = new WidgetAnimatedStat(null, xlate("pneumaticcraft.armor.gui.search.searchingFor"), icon,
                     0x3000AA00, null, ArmorHUDLayout.INSTANCE.itemSearchStat);
             searchInfo.setMinimumContractedDimensions(0, 0);
         }

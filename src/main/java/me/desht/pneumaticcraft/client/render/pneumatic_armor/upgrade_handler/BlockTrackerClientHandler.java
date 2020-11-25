@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.*;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
@@ -47,7 +48,7 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
     private static final int HARD_MAX_BLOCKS_PER_TICK = 50000;
 
     private final Map<BlockPos, RenderBlockTarget> blockTargets = new HashMap<>();
-    private WidgetAnimatedStat blockTrackInfo;
+    private IGuiAnimatedStat blockTrackInfo;
     private final Map<ResourceLocation, Integer> blockTypeCount = new HashMap<>();
     private final Map<ResourceLocation, Integer> blockTypeCountPartial = new HashMap<>();
     private int xOff = 0, yOff = 0, zOff = 0;
@@ -266,10 +267,10 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
         List<ITextComponent> textList = new ArrayList<>();
 
         if (focusedTarget != null) {
-            blockTrackInfo.setMessage(focusedTarget.stat.getMessage());
+            blockTrackInfo.setTitle(focusedTarget.stat.getTitle());
             textList.addAll(focusedTarget.textList);
         } else {
-            blockTrackInfo.setMessage(xlate("pneumaticcraft.blockTracker.info.trackedBlocks")); //new StringTextComponent("Current tracked blocks:"));
+            blockTrackInfo.setTitle(xlate("pneumaticcraft.blockTracker.info.trackedBlocks")); //new StringTextComponent("Current tracked blocks:"));
 
             blockTypeCount.forEach((k, v) -> {
                 if (v > 0 && WidgetKeybindCheckBox.get(k).checked) {
@@ -319,12 +320,13 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
     }
 
     @Override
-    public WidgetAnimatedStat getAnimatedStat() {
+    public IGuiAnimatedStat getAnimatedStat() {
         if (blockTrackInfo == null) {
             WidgetAnimatedStat.StatIcon icon = WidgetAnimatedStat.StatIcon.of(EnumUpgrade.BLOCK_TRACKER.getItemStack());
             blockTrackInfo = new WidgetAnimatedStat(null, xlate("pneumaticcraft.blockTracker.info.trackedBlocks"),
                     icon, 0x3000AA00, null, ArmorHUDLayout.INSTANCE.blockTrackerStat);
             blockTrackInfo.setMinimumContractedDimensions(0, 0);
+            blockTrackInfo.setAutoLineWrap(false);
         }
         return blockTrackInfo;
 

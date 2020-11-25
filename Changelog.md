@@ -8,6 +8,12 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## 2.6.3-?? (unreleased)
 
+### New
+* Added Wall Lamps!
+  * These are just simple redstone-activated lamps, in the 16 dye colors
+  * Can go on any solid surface, in any of the six orientations (will pop off if their attached block is broken)
+  * Also provided inverted versions which go out when a signal is applied
+
 ### Updates
 * The Jackhammer now takes a Magnet Upgrade, used in the two veinmining modes
   * When installed, all veinmined blocks will be dropped at the position of the block actually broken
@@ -23,6 +29,11 @@ Changes are in reverse chronological order; newest changes at the top.
 * Added client-side config setting "programmer_gui_pauses" to pause the game in SSP when the Programmer is being used
   * Default "false", which is the same as previous behaviour
   * This has no effect in SMP, of course
+* Smarter behaviour when using a GPS Area Tool to set a coordinate in the Area progwidget GUI
+  * Now left-clicking will select P1, and right-clicking will select P2
+  * Previous behaviour of just selecting an arbitrary point in the area was not very intuitive
+* Shift-clicking a GPS Area Tool on the background in the Programmer GUI will now create two coordinate widgets, if possible
+  * The two coordinates correspond to the P1 and P2 points of the GPS Area Tool
 
 ### Fixes
 * Fixed enablement of reach distance upgrade (added in 2.6.2) persisting across world changes in SSP
@@ -30,6 +41,8 @@ Changes are in reverse chronological order; newest changes at the top.
 * Programmable Controller state is now properly reinitialized when the programmable item is changed
   * Behaviour is now much more like wrenching and re-deploying a Drone, in that all variable state is reset
 * Fixed client NPE when mousing over unconfigured Coordinate progwidget in Programmer GUI
+* Fixed pressure text on Pneumatic Helmet HUD wrapping sometimes and looking derpy
+  * I couldn't reproduce this myself, but forced a minimum width on the stat widget
 
 ## 2.6.2-73 (20 Nov 2020)
 

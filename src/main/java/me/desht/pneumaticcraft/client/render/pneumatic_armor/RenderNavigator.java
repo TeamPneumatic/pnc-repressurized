@@ -13,7 +13,6 @@ import net.minecraft.pathfinding.Path;
 import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Matrix4f;
-import net.minecraft.world.World;
 
 public class RenderNavigator {
     private final BlockPos targetPos;
@@ -21,7 +20,7 @@ public class RenderNavigator {
     private boolean increaseAlpha;
     private float alphaValue = 0.2F;
 
-    public RenderNavigator(World world, BlockPos targetPos) {
+    public RenderNavigator(BlockPos targetPos) {
         this.targetPos = targetPos;
         updatePath();
     }
