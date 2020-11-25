@@ -34,6 +34,11 @@ Changes are in reverse chronological order; newest changes at the top.
   * Previous behaviour of just selecting an arbitrary point in the area was not very intuitive
 * Shift-clicking a GPS Area Tool on the background in the Programmer GUI will now create two coordinate widgets, if possible
   * The two coordinates correspond to the P1 and P2 points of the GPS Area Tool
+* Fluid tagging changes (mainly around fuels)
+  * All fuels are now tagged in the "forge:XXX" namespace for maximum inter-mod compat
+  * Immersive Engineering Ethanol & Plant Oil are equivalent to PNC:R Ethanol & Vegetable Oil, respectively
+  * Immersive Petroleum Crude Oil, Lubricant & Gasoline are equivalent to their PNC:R counterparts
+  * API break: `IFuelRegistry.registerFuel()` methods now take a `ITag<Fluid>` rather than `Fluid`
 
 ### Fixes
 * Fixed enablement of reach distance upgrade (added in 2.6.2) persisting across world changes in SSP
