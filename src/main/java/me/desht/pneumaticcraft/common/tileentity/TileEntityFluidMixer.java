@@ -14,12 +14,14 @@ import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.recipes.machine.FluidMixerRecipeImpl;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.Direction;
 import net.minecraft.util.SoundCategory;
@@ -47,7 +49,7 @@ public class TileEntityFluidMixer extends TileEntityPneumaticBase implements
     // Maps a fluid to all of the other fluids it can combine with
     private static final Map<Fluid, Set<Fluid>> FLUID_MATCHES = new HashMap<>();
 
-    private final ItemStackHandler outputInv = new BaseItemStackHandler(1);
+    private final ItemStackHandler outputInv = new BaseItemStackHandler(this, 1);
     private final OutputItemHandler outputInvWrapper = new OutputItemHandler(outputInv);
     private final LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> outputInvWrapper);
 
@@ -125,6 +127,22 @@ public class TileEntityFluidMixer extends TileEntityPneumaticBase implements
                 ClientUtils.emitParticles(world, pos, ParticleTypes.RAIN);
             }
         }
+    }
+
+    @Override
+    public CompoundNBT write(CompoundNBT tag) {
+        super.write(tag);
+
+        tag.put("Items", outputInv.serializeNBT());
+
+        return tag;
+    }
+
+    @Override
+    public void read(BlockState state, CompoundNBT tag) {
+        super.read(state, tag);
+
+        outputInv.deserializeNBT(tag.getCompound("Items"));
     }
 
     private boolean takeInputIngredients() {

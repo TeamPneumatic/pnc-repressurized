@@ -227,9 +227,9 @@ public class TileEntityEtchingTank extends TileEntityTickableBase
         failedHandler.deserializeNBT(tag.getCompound("Failed"));
     }
 
-    private static class EtchingTankHandler extends BaseItemStackHandler {
+    private class EtchingTankHandler extends BaseItemStackHandler {
         EtchingTankHandler() {
-            super(ETCHING_SLOTS);
+            super(TileEntityEtchingTank.this, ETCHING_SLOTS);
         }
 
         @Override
@@ -243,9 +243,9 @@ public class TileEntityEtchingTank extends TileEntityTickableBase
         }
     }
 
-    private static class OutputItemHandler extends BaseItemStackHandler {
+    private class OutputItemHandler extends BaseItemStackHandler {
         OutputItemHandler() {
-            super(1);
+            super(TileEntityEtchingTank.this, 1);
         }
 
         @Override
@@ -254,9 +254,9 @@ public class TileEntityEtchingTank extends TileEntityTickableBase
         }
     }
 
-    private static class FailedItemHandler extends BaseItemStackHandler {
+    private class FailedItemHandler extends BaseItemStackHandler {
         FailedItemHandler() {
-            super(1);
+            super(TileEntityEtchingTank.this, 1);
         }
 
         @Override
