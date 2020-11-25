@@ -22,12 +22,15 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.ContainerType;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particles.IParticleData;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.data.EmptyModelData;
@@ -35,6 +38,8 @@ import net.minecraftforge.client.settings.KeyModifier;
 
 import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
 
 /**
  * Miscellaneous client-side utilities
@@ -196,5 +201,25 @@ public class ClientUtils {
         }
         String mod = keyBinding.getKeyModifier() != KeyModifier.NONE ? keyBinding.getKeyModifier() + " + " : "";
         return mod + res;
+    }
+
+    /**
+     * Add some context-sensitive info to an item's tooltip, based on the currently-open GUI.
+     *
+     * @param stack the item stack
+     * @param tooltip tooltip to add data to
+     */
+    public static void addGuiContextSensitiveTooltip(ItemStack stack, List<ITextComponent> tooltip) {
+        Screen screen = Minecraft.getInstance().currentScreen;
+
+        if (screen != null) {
+            String subKey = screen.getClass().getSimpleName().toLowerCase(Locale.ROOT);
+            Item item = stack.getItem();
+            String base = item instanceof BlockItem ? "gui.tooltip.block" : "gui.tooltip.item";
+            String k = String.join(".", base, item.getRegistryName().getNamespace(), item.getRegistryName().getPath(), subKey);
+            if (I18n.hasKey(k)) {
+                tooltip.addAll(GuiUtils.xlateAndSplit(k).stream().map(s -> s.deepCopy().mergeStyle(TextFormatting.GRAY)).collect(Collectors.toList()));
+            }
+        }
     }
 }
