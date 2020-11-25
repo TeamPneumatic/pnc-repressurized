@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.thirdparty.immersiveengineering;
 
 import blusunrize.immersiveengineering.api.energy.DieselHandler;
-import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.harvesting.HarvestHandler;
 import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.harvesting.HarvestHandlerCactusLike;
@@ -10,8 +9,6 @@ import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.ModIds;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.Block;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.Fluids;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -26,23 +23,14 @@ public class ImmersiveEngineering implements IThirdParty {
     @ObjectHolder("immersiveengineering:hemp")
     private static Block HEMP_BLOCK = null;
 
-    @ObjectHolder("immersiveengineering:biodiesel")
-    private static Fluid IE_BIODIESEL = null;
-
     @Override
     public void init() {
         MinecraftForge.EVENT_BUS.register(ElectricAttackHandler.class);
         IEHeatHandler.registerHeatHandler();
 
-        DieselHandler.registerFuel(PneumaticCraftTags.Fluids.DIESEL, 125);  // equivalent to IE biodiesel
-        DieselHandler.registerFuel(PneumaticCraftTags.Fluids.BIODIESEL, 125);  // equivalent to IE biodiesel
-
-        if (IE_BIODIESEL != null && IE_BIODIESEL != Fluids.EMPTY) {
-            // equivalent to PNC:R diesel
-            PneumaticRegistry.getInstance().getFuelRegistry().registerFuel(IE_BIODIESEL, 1000000, 0.8f);
-        } else if (ModList.get().isLoaded(ModIds.IMMERSIVE_ENGINEERING)) {
-            Log.error("fluid 'immersiveengineering:biodiesel' did not get registered? not adding it as a PneumaticCraft fuel!");
-        }
+        // equivalent to IE biodiesel
+        DieselHandler.registerFuel(PneumaticCraftTags.Fluids.DIESEL, 125);
+        DieselHandler.registerFuel(PneumaticCraftTags.Fluids.BIODIESEL, 125);
     }
 
     @Mod.EventBusSubscriber(modid = Names.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)

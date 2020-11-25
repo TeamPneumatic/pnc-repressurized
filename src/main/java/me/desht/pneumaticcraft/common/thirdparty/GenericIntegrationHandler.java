@@ -1,6 +1,9 @@
 package me.desht.pneumaticcraft.common.thirdparty;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
+import me.desht.pneumaticcraft.api.fuel.IFuelRegistry;
+import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
+import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
@@ -15,8 +18,20 @@ public class GenericIntegrationHandler implements IThirdParty {
     @Override
     public void postInit() {
         registerXPFluids();
+        registerNonNativeFuels();
         ModdedWrenchUtils.getInstance().registerThirdPartyWrenches();
         ModNameCache.init();
+    }
+
+    private void registerNonNativeFuels() {
+        // all done with fluid tags now, so we can be very mod-agnostic
+
+        IFuelRegistry fuelApi = PneumaticCraftAPIHandler.getInstance().getFuelRegistry();
+
+        // equivalent to LPG
+        fuelApi.registerFuel(PneumaticCraftTags.Fluids.forgeTag("ethene"), 1800000, 1.25f);
+        // low fuel value, but fast burning
+        fuelApi.registerFuel(PneumaticCraftTags.Fluids.forgeTag("hydrogen"), 300000, 1.5f);
     }
 
     private void registerXPFluids() {

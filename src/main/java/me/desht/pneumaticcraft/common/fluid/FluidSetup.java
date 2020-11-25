@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.fluid;
 
 import me.desht.pneumaticcraft.api.fuel.IFuelRegistry;
 import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
+import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModItems;
@@ -12,25 +13,26 @@ import net.minecraftforge.registries.ForgeRegistries;
 public class FluidSetup {
     /**
      * Fluid setup tasks to be done AFTER fluids (and items/blocks) are registered
-     * TODO use a datapack here
      */
     public static void init() {
         PneumaticCraftAPIHandler api = PneumaticCraftAPIHandler.getInstance();
         IFuelRegistry fuelApi = api.getFuelRegistry();
 
-        // proper fuels
-        fuelApi.registerFuel(ModFluids.OIL.get(), 200000, 0.25f);
-        fuelApi.registerFuel(ModFluids.DIESEL.get(), 1000000, 0.8f);
-        fuelApi.registerFuel(ModFluids.BIODIESEL.get(), 1000000, 0.8f);
-        fuelApi.registerFuel(ModFluids.KEROSENE.get(), 1100000);
-        fuelApi.registerFuel(ModFluids.GASOLINE.get(), 1500000, 1.5f);
-        fuelApi.registerFuel(ModFluids.LPG.get(), 1800000, 1.25f);
-        fuelApi.registerFuel(ModFluids.ETHANOL.get(), 400000);
+        // PNC-native fuel fluid tags
+        // see GenericIntegrationHandler for other fuel fluid tags
+        fuelApi.registerFuel(PneumaticCraftTags.Fluids.CRUDE_OIL, 200000, 0.25f);
+        fuelApi.registerFuel(PneumaticCraftTags.Fluids.DIESEL, 1000000, 0.8f);
+        fuelApi.registerFuel(PneumaticCraftTags.Fluids.BIODIESEL, 1000000, 0.8f);
+        fuelApi.registerFuel(PneumaticCraftTags.Fluids.KEROSENE, 1100000);
+        fuelApi.registerFuel(PneumaticCraftTags.Fluids.GASOLINE, 1500000, 1.5f);
+        fuelApi.registerFuel(PneumaticCraftTags.Fluids.LPG, 1800000, 1.25f);
+        fuelApi.registerFuel(PneumaticCraftTags.Fluids.ETHANOL, 400000);
 
-        // register hot fluids as (fairly inefficient) fuels
+        // register hot fluids as (very inefficient) fuels
         for (Fluid fluid : ForgeRegistries.FLUIDS.getValues()) {
             if (fluid.getAttributes().getTemperature() >= PNCConfig.Common.General.minFluidFuelTemperature && fluid.isSource(fluid.getDefaultState())) {
-                fuelApi.registerFuel(fluid, (fluid.getAttributes().getTemperature() - 300) * 40, 0.25f);
+                // non-API usage... register an explicit fluid rather than a tag
+                FuelRegistry.getInstance().registerHotFluid(fluid, (fluid.getAttributes().getTemperature() - 300) * 40, 0.25f);
             }
         }
 

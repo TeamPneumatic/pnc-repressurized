@@ -80,19 +80,19 @@ public class PneumaticCraftTags {
     }
 
     public static class Fluids extends PneumaticCraftTags {
-        public static final ITag.INamedTag<Fluid> OIL = forgeTag("oil");
+        public static final ITag.INamedTag<Fluid> CRUDE_OIL = forgeTag("crude_oil");
         public static final ITag.INamedTag<Fluid> LUBRICANT = forgeTag("lubricant");
         public static final ITag.INamedTag<Fluid> ETHANOL = forgeTag("ethanol");
+        public static final ITag.INamedTag<Fluid> DIESEL = forgeTag("diesel");
+        public static final ITag.INamedTag<Fluid> KEROSENE = forgeTag("kerosene");
+        public static final ITag.INamedTag<Fluid> GASOLINE = forgeTag("gasoline");
+        public static final ITag.INamedTag<Fluid> LPG = forgeTag("lpg");
+        public static final ITag.INamedTag<Fluid> BIODIESEL = forgeTag("biodiesel");
+        public static final ITag.INamedTag<Fluid> PLANT_OIL = forgeTag("plantoil");
 
         public static final ITag.INamedTag<Fluid> ETCHING_ACID = modTag("etching_acid");
         public static final ITag.INamedTag<Fluid> PLASTIC = modTag("plastic");
-        public static final ITag.INamedTag<Fluid> DIESEL = modTag("diesel");
-        public static final ITag.INamedTag<Fluid> KEROSENE = modTag("kerosene");
-        public static final ITag.INamedTag<Fluid> GASOLINE = modTag("gasoline");
-        public static final ITag.INamedTag<Fluid> LPG = modTag("lpg");
         public static final ITag.INamedTag<Fluid> YEAST_CULTURE = modTag("yeast_culture");
-        public static final ITag.INamedTag<Fluid> VEGETABLE_OIL = modTag("vegetable_oil");
-        public static final ITag.INamedTag<Fluid> BIODIESEL = modTag("biodiesel");
 
         static ITag.INamedTag<Fluid> tag(String modid, String name) {
             return FluidTags.makeWrapperTag(new ResourceLocation(modid, name).toString());
@@ -102,7 +102,7 @@ public class PneumaticCraftTags {
             return tag(Names.MOD_ID, name);
         }
 
-        static ITag.INamedTag<Fluid> forgeTag(String name) {
+        public static ITag.INamedTag<Fluid> forgeTag(String name) {
             return tag("forge", name);
         }
     }

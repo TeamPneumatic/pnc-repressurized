@@ -19,7 +19,7 @@ public class ModFluidTagsProvider extends FluidTagsProvider {
 
     @Override
     protected void registerTags() {
-        createTag(PneumaticCraftTags.Fluids.OIL, ModFluids.OIL);
+        createTag(PneumaticCraftTags.Fluids.CRUDE_OIL, ModFluids.OIL);
         createTag(PneumaticCraftTags.Fluids.ETCHING_ACID, ModFluids.ETCHING_ACID);
         createTag(PneumaticCraftTags.Fluids.PLASTIC, ModFluids.PLASTIC);
         createTag(PneumaticCraftTags.Fluids.LUBRICANT, ModFluids.LUBRICANT);
@@ -29,7 +29,7 @@ public class ModFluidTagsProvider extends FluidTagsProvider {
         createTag(PneumaticCraftTags.Fluids.LPG, ModFluids.LPG);
         createTag(PneumaticCraftTags.Fluids.YEAST_CULTURE, ModFluids.YEAST_CULTURE);
         createTag(PneumaticCraftTags.Fluids.ETHANOL, ModFluids.ETHANOL);
-        createTag(PneumaticCraftTags.Fluids.VEGETABLE_OIL, ModFluids.VEGETABLE_OIL);
+        createTag(PneumaticCraftTags.Fluids.PLANT_OIL, ModFluids.VEGETABLE_OIL);
         createTag(PneumaticCraftTags.Fluids.BIODIESEL, ModFluids.BIODIESEL);
     }
 

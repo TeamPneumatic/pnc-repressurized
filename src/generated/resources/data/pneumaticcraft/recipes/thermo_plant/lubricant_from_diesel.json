@@ -5,7 +5,7 @@
   },
   "fluid_input": {
     "type": "pneumaticcraft:fluid",
-    "tag": "pneumaticcraft:diesel",
+    "tag": "forge:diesel",
     "amount": 1000
   },
   "fluid_output": {

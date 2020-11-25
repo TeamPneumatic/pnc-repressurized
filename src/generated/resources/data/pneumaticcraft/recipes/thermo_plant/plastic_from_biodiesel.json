@@ -5,7 +5,7 @@
   },
   "fluid_input": {
     "type": "pneumaticcraft:fluid",
-    "tag": "pneumaticcraft:biodiesel",
+    "tag": "forge:biodiesel",
     "amount": 100
   },
   "fluid_output": {

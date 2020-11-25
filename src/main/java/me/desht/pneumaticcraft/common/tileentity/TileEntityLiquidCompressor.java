@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
+import me.desht.pneumaticcraft.common.fluid.FuelRegistry;
 import me.desht.pneumaticcraft.common.inventory.ContainerLiquidCompressor;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
@@ -22,6 +23,7 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -41,7 +43,12 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
     private static final int OUTPUT_SLOT = 1;
 
     @GuiSynced
-    private final SmartSyncTank tank = new SmartSyncTank(this, PneumaticValues.NORMAL_TANK_CAPACITY);
+    private final SmartSyncTank tank = new SmartSyncTank(this, PneumaticValues.NORMAL_TANK_CAPACITY) {
+        @Override
+        public boolean isFluidValid(FluidStack stack) {
+            return FuelRegistry.getInstance().getFuelValue(stack.getFluid()) > 0;
+        }
+    };
 
     private final ItemStackHandler itemHandler = new BaseItemStackHandler(this, INVENTORY_SIZE) {
         @Override

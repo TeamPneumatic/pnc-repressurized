@@ -5,7 +5,7 @@
   },
   "fluid_input": {
     "type": "pneumaticcraft:fluid",
-    "tag": "pneumaticcraft:vegetable_oil",
+    "tag": "forge:plantoil",
     "amount": 100
   },
   "item_output": {

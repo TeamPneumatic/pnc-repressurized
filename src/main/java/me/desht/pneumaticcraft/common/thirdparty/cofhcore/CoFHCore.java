@@ -20,11 +20,11 @@ public class CoFHCore implements IThirdParty {
         Log.info("(not implemented) Added PneumaticCraft: Repressurized fuels to CoFH Compression Dynamo");
 
         // TODO 1.14 verify these will be the right fluid names
-        IThirdParty.registerFuel("thermalfoundation:creosote", 75000);
-        IThirdParty.registerFuel("thermalfoundation:coal", 300000);
-        IThirdParty.registerFuel("thermalfoundation:tree_oil", 750000);
-        IThirdParty.registerFuel("thermalfoundation:refined_oil", 937500);
-        IThirdParty.registerFuel("thermalfoundation:refined_fuel", 1500000);
+//        IThirdParty.registerFuel("thermalfoundation:creosote", 75000);
+//        IThirdParty.registerFuel("thermalfoundation:coal", 300000);
+//        IThirdParty.registerFuel("thermalfoundation:tree_oil", 750000);
+//        IThirdParty.registerFuel("thermalfoundation:refined_oil", 937500);
+//        IThirdParty.registerFuel("thermalfoundation:refined_fuel", 1500000);
     }
 
 //    @SubscribeEvent

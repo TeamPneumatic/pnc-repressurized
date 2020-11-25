@@ -2,7 +2,7 @@
   "type": "pneumaticcraft:fluid_mixer",
   "input1": {
     "type": "pneumaticcraft:fluid",
-    "tag": "pneumaticcraft:vegetable_oil",
+    "tag": "forge:plantoil",
     "amount": 25
   },
   "input2": {

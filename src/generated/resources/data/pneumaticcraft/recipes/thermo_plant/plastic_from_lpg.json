@@ -5,7 +5,7 @@
   },
   "fluid_input": {
     "type": "pneumaticcraft:fluid",
-    "tag": "pneumaticcraft:lpg",
+    "tag": "forge:lpg",
     "amount": 100
   },
   "fluid_output": {

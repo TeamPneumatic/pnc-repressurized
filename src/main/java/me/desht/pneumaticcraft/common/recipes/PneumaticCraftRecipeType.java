@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.recipes;
 import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipeTypes;
 import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe;
 import me.desht.pneumaticcraft.api.crafting.recipe.PneumaticCraftRecipe;
+import me.desht.pneumaticcraft.common.fluid.FuelRegistry;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketClearRecipeCache;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
@@ -131,6 +132,7 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
         public CompletableFuture<Void> reload(IStage stage, IResourceManager resourceManager, IProfiler preparationsProfiler, IProfiler reloadProfiler, Executor backgroundExecutor, Executor gameExecutor) {
             return CompletableFuture.runAsync(() -> {
                 clearCachedRecipes();
+                FuelRegistry.getInstance().clearCachedFuelFluids();
                 if (ServerLifecycleHooks.getCurrentServer() != null) {
                     NetworkHandler.sendToAll(new PacketClearRecipeCache());
                 }

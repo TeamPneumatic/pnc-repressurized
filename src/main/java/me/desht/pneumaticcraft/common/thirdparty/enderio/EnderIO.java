@@ -36,8 +36,8 @@ public class EnderIO implements IThirdParty {
 
     @Override
     public void postInit() {
-        IThirdParty.registerFuel("enderio:hootch", 60 * 6000);
-        IThirdParty.registerFuel("enderio:rocket_fuel", 160 * 7000);
-        IThirdParty.registerFuel("enderio:fire_water",80 * 15000);
+//        IThirdParty.registerFuel("enderio:hootch", 60 * 6000);
+//        IThirdParty.registerFuel("enderio:rocket_fuel", 160 * 7000);
+//        IThirdParty.registerFuel("enderio:fire_water",80 * 15000);
     }
 }

@@ -1161,18 +1161,18 @@ public class ModRecipeProvider extends RecipeProvider {
                 .build(consumer, RL("heat_frame_cooling/plastic"));
 
         // refinery
-        refinery(FluidIngredient.of(10, PneumaticCraftTags.Fluids.OIL),
+        refinery(FluidIngredient.of(10, PneumaticCraftTags.Fluids.CRUDE_OIL),
                 TemperatureRange.min(373),
                 new FluidStack(ModFluids.DIESEL.get(), 4),
                 new FluidStack(ModFluids.LPG.get(), 2)
         ).build(consumer, RL("refinery/oil_2"));
-        refinery(FluidIngredient.of(10, PneumaticCraftTags.Fluids.OIL),
+        refinery(FluidIngredient.of(10, PneumaticCraftTags.Fluids.CRUDE_OIL),
                 TemperatureRange.min(373),
                 new FluidStack(ModFluids.DIESEL.get(), 2),
                 new FluidStack(ModFluids.KEROSENE.get(), 3),
                 new FluidStack(ModFluids.LPG.get(), 2)
         ).build(consumer, RL("refinery/oil_3"));
-        refinery(FluidIngredient.of(10, PneumaticCraftTags.Fluids.OIL),
+        refinery(FluidIngredient.of(10, PneumaticCraftTags.Fluids.CRUDE_OIL),
                 TemperatureRange.min(373),
                 new FluidStack(ModFluids.DIESEL.get(), 2),
                 new FluidStack(ModFluids.KEROSENE.get(), 3),
@@ -1241,7 +1241,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 FluidStack.EMPTY, new ItemStack(ModItems.DIAMOND_DRILL_BIT.get()),
                 TemperatureRange.min(773), 4.5f, 0.1f, false
         ).build(consumer, RL("thermo_plant/diamond_drill_bit"));
-        thermoPlant(FluidIngredient.of(100, PneumaticCraftTags.Fluids.VEGETABLE_OIL), Ingredient.fromTag(Tags.Items.CROPS_POTATO),
+        thermoPlant(FluidIngredient.of(100, PneumaticCraftTags.Fluids.PLANT_OIL), Ingredient.fromTag(Tags.Items.CROPS_POTATO),
                 FluidStack.EMPTY, new ItemStack(ModItems.CHIPS.get(), 4),
                 TemperatureRange.min(423), 0f, 1.0f, false
         ).build(consumer, RL("thermo_plant/chips"));
@@ -1322,7 +1322,7 @@ public class ModRecipeProvider extends RecipeProvider {
 
         // fluid mixer
         fluidMixer(
-                FluidIngredient.of(25, PneumaticCraftTags.Fluids.VEGETABLE_OIL),
+                FluidIngredient.of(25, PneumaticCraftTags.Fluids.PLANT_OIL),
                 FluidIngredient.of(25, PneumaticCraftTags.Fluids.ETHANOL),
                 new FluidStack(ModFluids.BIODIESEL.get(), 50), new ItemStack(ModItems.GLYCEROL.get()),
                 2.0f, 300
