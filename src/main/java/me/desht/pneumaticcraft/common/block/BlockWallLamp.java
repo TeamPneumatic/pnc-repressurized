@@ -154,7 +154,12 @@ public class BlockWallLamp extends BlockPneumaticCraft implements ColorHandlers.
 
         @Override
         public String getCustomTooltipTranslationKey() {
-            return "block.pneumaticcraft.wall_lamp";
+            if (getBlock() instanceof BlockWallLamp) {
+                return ((BlockWallLamp) getBlock()).inverted ? "block.pneumaticcraft.wall_lamp_inverted" : "block.pneumaticcraft.wall_lamp";
+            } else {
+                // shouldn't happen
+                return "block.pneumaticcraft.wall_lamp";
+            }
         }
     }
 }
