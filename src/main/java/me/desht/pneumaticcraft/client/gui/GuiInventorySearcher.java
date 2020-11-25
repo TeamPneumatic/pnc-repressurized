@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.inventory.ContainerInventorySearcher;
+import me.desht.pneumaticcraft.common.item.ItemGPSAreaTool;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
@@ -113,15 +114,25 @@ public class GuiInventorySearcher extends ContainerScreen<ContainerInventorySear
         ItemStack stack = inventory.getStackInSlot(0);
         if (stack.getItem() instanceof IPositionProvider) {
             List<BlockPos> posList = ((IPositionProvider) stack.getItem()).getRawStoredPositions(ClientUtils.getClientWorld(), stack);
+            int posIdx = getPosIdx(stack);
             if (!posList.isEmpty()) {
-                BlockPos pos = posList.get(0);
-                if (pos != null) {
-                    label.setMessage(PneumaticCraftUtils.posToString(pos));
-                }
-                return posList.get(Math.min(clickedMouseButton, posList.size() - 1));
+                return posList.get(Math.min(posIdx, posList.size() - 1));
             }
         }
         return BlockPos.ZERO;
+    }
+
+    private int getPosIdx(ItemStack stack) {
+        if (stack.getItem() instanceof ItemGPSAreaTool) {
+            // for gps area tool, RMB is idx 0, LMB is idx 1
+            switch (clickedMouseButton) {
+                case 0: return 1;  // LMB
+                case 1: return 0;  // RMB
+                default: return 1;  // any other button
+            }
+        } else {
+            return clickedMouseButton;
+        }
     }
 
     @Override

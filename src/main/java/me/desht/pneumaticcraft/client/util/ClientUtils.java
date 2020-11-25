@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.client.util;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.EntityTrackUpgradeHandler;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
@@ -21,17 +22,22 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.ContainerType;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particles.IParticleData;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.data.EmptyModelData;
 
 import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
 
 /**
  * Miscellaneous client-side utilities
@@ -171,5 +177,26 @@ public class ClientUtils {
 
     public static String translateDirection(Direction d) {
         return I18n.format("pneumaticcraft.gui.tooltip.direction." + d.toString());
+    }
+
+    /**
+     * Add some context-sensitive info to an item's tooltip, based on the currently-open GUI.
+     *
+     * @param stack the item stack
+     * @param tooltip tooltip to add data to
+     */
+    public static void addGuiContextSensitiveTooltip(ItemStack stack, List<ITextComponent> tooltip) {
+        Screen screen = Minecraft.getInstance().currentScreen;
+
+        if (screen != null) {
+            String subKey = screen.getClass().getSimpleName().toLowerCase(Locale.ROOT);
+            Item item = stack.getItem();
+            String base = item instanceof BlockItem ? "gui.tooltip.block" : "gui.tooltip.item";
+            String k = String.join(".", base, item.getRegistryName().getNamespace(), item.getRegistryName().getPath(), subKey);
+            if (I18n.hasKey(k)) {
+                tooltip.addAll(PneumaticCraftUtils.asStringComponent(PneumaticCraftUtils.splitString(k))
+                        .stream().map(s -> s.applyTextStyle(TextFormatting.GRAY)).collect(Collectors.toList()));
+            }
+        }
     }
 }

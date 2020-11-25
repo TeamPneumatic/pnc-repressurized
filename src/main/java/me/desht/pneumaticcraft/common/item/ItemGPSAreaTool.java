@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.item;
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.client.gui.areatool.GuiGPSAreaTool;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea;
@@ -79,7 +80,9 @@ public class ItemGPSAreaTool extends Item implements IPositionProvider {
     @Override
     public void addInformation(ItemStack stack, World worldIn, List<ITextComponent> infoList, ITooltipFlag par4) {
         super.addInformation(stack, worldIn, infoList, par4);
+
         if (worldIn != null) {
+            ClientUtils.addGuiContextSensitiveTooltip(stack, infoList);
             for (int index = 0; index < 2; index++) {
                 BlockPos pos = getGPSLocation(worldIn, stack, index);
                 infoList.add(new StringTextComponent(getMessageText(pos, index)).applyTextStyle(index == 0 ? TextFormatting.RED : TextFormatting.GREEN));
