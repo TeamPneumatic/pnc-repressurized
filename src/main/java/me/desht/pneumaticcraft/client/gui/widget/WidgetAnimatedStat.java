@@ -264,6 +264,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
         return MAX_VISIBLE_LINES - reservedLines;
     }
 
+    @Override
     public void setReservedLines(int reservedLines) {
         this.reservedLines = MathHelper.clamp(reservedLines, 0, MAX_VISIBLE_LINES - 1);
         needTextRecalc = true;

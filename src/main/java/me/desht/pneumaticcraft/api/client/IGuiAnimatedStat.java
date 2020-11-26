@@ -244,4 +244,12 @@ public interface IGuiAnimatedStat extends ITickableWidget, IGuiEventListener {
      * @param title the title string
      */
     void setTitle(ITextComponent title);
+
+    /**
+     * This can be used to reserve one or more lines at the top of the stat; text will only drawn below the reserved
+     * area.  Useful if you want to have a static area for widget display.
+     *
+     * @param reservedLines number of text lines to reserve
+     */
+    void setReservedLines(int reservedLines);
 }

@@ -1,13 +1,13 @@
 package me.desht.pneumaticcraft.client.gui;
 
-import me.desht.pneumaticcraft.api.PneumaticRegistry;
-import me.desht.pneumaticcraft.api.fuel.IFuelRegistry;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.fluid.FuelRegistry;
 import me.desht.pneumaticcraft.common.inventory.ContainerLiquidCompressor;
+import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityLiquidCompressor;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -26,6 +26,8 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -38,9 +40,9 @@ public class GuiLiquidCompressor extends GuiPneumaticContainerBase<ContainerLiqu
     public void init() {
         super.init();
         addButton(new WidgetTank(guiLeft + getFluidOffset(), guiTop + 15, te.getTank()));
-        WidgetAnimatedStat stat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.liquidCompressor.fuel"), new ItemStack(ModItems.LPG_BUCKET.get()), 0xFFC04400, true);
+        WidgetAnimatedStat stat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.liquidCompressor.fuel"), new ItemStack(ModItems.LPG_BUCKET.get()), 0xFFB04000, true);
         Pair<Integer, List<ITextComponent>> p = getAllFuels();
-        stat.setMinimumExpandedDimensions(p.getLeft(), 17);
+        stat.setMinimumExpandedDimensions(p.getLeft() + 30, 17);
         stat.setText(p.getRight());
     }
 
@@ -79,21 +81,36 @@ public class GuiLiquidCompressor extends GuiPneumaticContainerBase<ContainerLiqu
         text.add(header.mergeStyle(TextFormatting.UNDERLINE, TextFormatting.AQUA));
         int maxWidth = font.getStringPropertyWidth(header);
 
-        IFuelRegistry api = PneumaticRegistry.getInstance().getFuelRegistry();
-        List<Fluid> fluids = new ArrayList<>(api.registeredFuels());
-        fluids.sort((o1, o2) -> Integer.compare(api.getFuelValue(o2), api.getFuelValue(o1)));
+        FuelRegistry fuelRegistry = FuelRegistry.getInstance();
+
+        // kludge to get rid of negatively cached values (too-early init via JEI perhaps?)
+        // not a big deal to clear this cache client-side since the fuel manager only really used here on the client
+        fuelRegistry.clearCachedFuelFluids();
+
+        List<Fluid> fluids = new ArrayList<>(fuelRegistry.registeredFuels());
+        fluids.sort((o1, o2) -> Integer.compare(fuelRegistry.getFuelValue(o2), fuelRegistry.getFuelValue(o1)));
+
+        Map<String, Integer> counted = fluids.stream()
+                .collect(Collectors.toMap(fluid -> new FluidStack(fluid, 1).getDisplayName().getString(), fluid -> 1, Integer::sum));
+
         int w = font.getStringWidth(".");
         for (Fluid fluid : fluids) {
-            String value = String.format("%4d", api.getFuelValue(fluid) / 1000);
+            String value = String.format("%4d", fuelRegistry.getFuelValue(fluid) / 1000);
             int nSpc = (32 - font.getStringWidth(value)) / w;
             value = value + StringUtils.repeat('.', nSpc);
-            FluidStack stack = new FluidStack(fluid, 1);
-            float mul = api.getBurnRateMultiplier(fluid);
+            String fluidName = new FluidStack(fluid, 1).getDisplayName().getString();
+            float mul = fuelRegistry.getBurnRateMultiplier(fluid);
             StringTextComponent line = mul == 1 ?
-                    new StringTextComponent(value + "| " + StringUtils.abbreviate(stack.getDisplayName().getString(), 25)) :
-                    new StringTextComponent(value + "| " + StringUtils.abbreviate(stack.getDisplayName().getString(), 20) + " (x" + PneumaticCraftUtils.roundNumberTo(mul, 2) + ")");
+                    new StringTextComponent(value + "| " + StringUtils.abbreviate(fluidName, 25)) :
+                    new StringTextComponent(value + "| " + StringUtils.abbreviate(fluidName, 20)
+                            + " (x" + PneumaticCraftUtils.roundNumberTo(mul, 2) + ")");
             maxWidth = Math.max(maxWidth, font.getStringPropertyWidth(line));
             text.add(line);
+            if (counted.getOrDefault(fluidName, 0) > 1) {
+                ITextComponent line2 = new StringTextComponent("       " + ModNameCache.getModName(fluid)).mergeStyle(TextFormatting.GOLD);
+                text.add(line2);
+                maxWidth = Math.max(maxWidth, font.getStringPropertyWidth(line2));
+            }
         }
 
         return Pair.of(Math.min(maxWidth, guiLeft - 10), text);

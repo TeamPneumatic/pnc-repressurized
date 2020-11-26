@@ -7,6 +7,7 @@ import net.minecraft.tags.ITag;
 import org.apache.commons.lang3.Validate;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public enum FuelRegistry implements IFuelRegistry {
@@ -14,7 +15,9 @@ public enum FuelRegistry implements IFuelRegistry {
 
     private static final FuelEntry MISSING_FUEL_ENTRY = new FuelEntry(0, 1f);
 
-    private final Map<ITag<Fluid>, FuelEntry> liquidFuels = new HashMap<>();
+    // could be accessed from off-thread via API
+    private final Map<ITag<Fluid>, FuelEntry> liquidFuels = new ConcurrentHashMap<>();
+
     private final Map<Fluid, FuelEntry> cachedFuels = new HashMap<>();  // cleared on a /reload
     private final Map<Fluid, FuelEntry> hotFluids = new HashMap<>();
 
@@ -65,7 +68,10 @@ public enum FuelRegistry implements IFuelRegistry {
     @Override
     public Collection<Fluid> registeredFuels() {
         List<Fluid> fluids = new ArrayList<>(hotFluids.keySet());
-        liquidFuels.keySet().forEach(tag -> fluids.addAll(tag.getAllElements().stream().filter(f -> f.isSource(f.getDefaultState())).collect(Collectors.toList())));
+        liquidFuels.keySet().forEach(tag -> {
+            List<Fluid> l = tag.getAllElements().stream().filter(f -> f.isSource(f.getDefaultState())).collect(Collectors.toList());
+            fluids.addAll(l);
+        });
         return fluids;
     }
 
