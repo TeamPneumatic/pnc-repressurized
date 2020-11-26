@@ -23,7 +23,7 @@ public class BlockTrackEntryMisc implements IBlockTrackEntry {
     @Override
     public boolean shouldTrackWithThisEntry(IBlockReader world, BlockPos pos, BlockState state, TileEntity te) {
         Block block = state.getBlock();
-        return block == Blocks.TNT || block == Blocks.TRIPWIRE || block instanceof SilverfishBlock;
+        return block == Blocks.TNT || block == Blocks.TRIPWIRE || block instanceof SilverfishBlock || block == Blocks.BEE_NEST;
     }
 
     @Override
