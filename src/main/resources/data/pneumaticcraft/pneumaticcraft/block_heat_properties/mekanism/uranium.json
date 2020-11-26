@@ -1,0 +1,9 @@
+{
+  "block": "mekanism:block_uranium",
+  "temperature": 438,
+  "thermalResistance": 500,
+  "transformCold": {
+    "block": "mekanism:block_lead"
+  },
+  "heatCapacity": 500000
+}
