@@ -36,8 +36,7 @@ public class GuiProgWidgetCoordinate extends GuiProgWidgetAreaShow<ProgWidgetCoo
         super.init();
 
         if (invSearchGui != null) {
-            BlockPos pos = !invSearchGui.getSearchStack().isEmpty() ? ItemGPSTool.getGPSLocation(invSearchGui.getSearchStack()) : null;
-            progWidget.setCoordinate(pos);
+            progWidget.setCoordinate(invSearchGui.getBlockPos());
         }
 
         List<WidgetRadioButton> radioButtons = new ArrayList<>();
