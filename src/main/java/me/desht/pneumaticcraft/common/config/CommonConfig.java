@@ -15,6 +15,7 @@ public class CommonConfig {
         ForgeConfigSpec.DoubleValue fuelBucketEfficiency;
         ForgeConfigSpec.IntValue maxProgrammingArea;
         ForgeConfigSpec.ConfigValue<List<String>> oilWorldGenBlacklist;
+        ForgeConfigSpec.ConfigValue<List<String>> oilWorldGenCategoryBlacklist;
         ForgeConfigSpec.ConfigValue<List<String>> vacuumTrapBlacklist;
         ForgeConfigSpec.IntValue minFluidFuelTemperature;
         ForgeConfigSpec.BooleanValue useUpDyesWhenColoring;
@@ -174,9 +175,14 @@ public class CommonConfig {
                 .defineInRange("max_programming_area", 250000, 1, Integer.MAX_VALUE);
         general.oilWorldGenBlacklist = builder
                 .worldRestart()
-                .comment("Oil worldgen blacklist: add biome IDs to this list if you don't want oil worldgen to happen there.")
+                .comment("Oil worldgen blacklist: add biome IDs to this list if you don't want oil worldgen to happen there.  This works in conjunction with 'oil_world_gen_category_blacklist' - if a biome matches either, then no oil lakes will generate there.")
                 .translation("pneumaticcraft.config.common.general.oil_world_gen_blacklist")
                 .define("oil_world_gen_blacklist", Lists.newArrayList("minecraft:soul_sand_valley", "minecraft:crimson_forest", "minecraft:warped_forest", "minecraft:the_void", "minecraft:the_end", "minecraft:small_end_islands", "minecraft:end_midlands", "minecraft:end_highlands", "minecraft:end_barrens"));
+        general.oilWorldGenCategoryBlacklist = builder
+                .worldRestart()
+                .comment("Oil worldgen blacklist by biome category: add biome categories to this list if you don't want oil worldgen to happen there. Accepted categories are: beach, desert, extreme_hills, forest, icy, jungle, mesa, mushroom, nether, none, ocean, plains, river, savanna, swamp, taiga, the_end.  This works in conjunction with 'oil_world_gen_blacklist' - if a biome matches either, then no oil lakes will generate there.")
+                .translation("pneumaticcraft.config.common.general.oil_world_gen_category_blacklist")
+                .define("oil_world_gen_category_blacklist", Lists.newArrayList("none"));
         general.minFluidFuelTemperature = builder
                 .worldRestart()
                 .comment("Fluids at least as hot as this temperature (Kelvin) will be auto-registered as Liquid Compressor fuels, the quality being dependent on fluid temperature.")

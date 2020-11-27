@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.config;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
 import me.desht.pneumaticcraft.common.config.ClientConfig.PathUpdateSetting;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget.WidgetDifficulty;
@@ -64,6 +65,7 @@ public class ConfigHelper {
         PNCConfig.Common.General.oilGenerationChance = common.general.oilGenerationChance.get();
         PNCConfig.Common.General.oilWorldGenBlacklist = common.general.oilWorldGenBlacklist.get()
                 .stream().map(resourceName -> new ResourceLocation(resourceName.toLowerCase())).collect(Collectors.toSet());
+        PNCConfig.Common.General.oilWorldGenCategoryBlacklist = ImmutableSet.copyOf(common.general.oilWorldGenCategoryBlacklist.get());
         PNCConfig.Common.General.useUpDyesWhenColoring = common.general.useUpDyesWhenColoring.get();
         PNCConfig.Common.General.dronesRenderHeldItem = common.general.dronesRenderHeldItem.get();
         PNCConfig.Common.General.dronesCanImportXPOrbs = common.general.dronesCanImportXPOrbs.get();

@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.worldgen;
 
 import me.desht.pneumaticcraft.common.config.ConfigHelper;
-import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.PNCConfig.Common.General;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModDecorators;
 import net.minecraft.util.registry.Registry;
@@ -28,7 +28,7 @@ public class ModWorldGen {
     }
 
     public static void onBiomeLoading(BiomeLoadingEvent event) {
-        if (!PNCConfig.Common.General.oilWorldGenBlacklist.contains(event.getName())) {
+        if (!General.oilWorldGenBlacklist.contains(event.getName()) && !General.oilWorldGenCategoryBlacklist.contains(event.getCategory().getName())) {
             event.getGeneration().withFeature(GenerationStage.Decoration.LAKES, OIL_LAKES);
         }
     }

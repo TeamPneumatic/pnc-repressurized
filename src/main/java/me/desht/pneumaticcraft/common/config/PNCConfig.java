@@ -58,6 +58,7 @@ public class PNCConfig {
             public static boolean dronesRenderHeldItem;
             public static boolean dronesCanImportXPOrbs;
             public static Set<ResourceLocation> vacuumTrapBlacklist;
+            public static Set<String> oilWorldGenCategoryBlacklist;
         }
 
         public static class Machines {
