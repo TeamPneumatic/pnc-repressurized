@@ -6,7 +6,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.16.3 / 1.16.4
 
-## 2.6.3-?? (unreleased)
+## 2.7.0-?? (unreleased)
 
 ### New
 * Added Wall Lamps!
@@ -25,12 +25,12 @@ Changes are in reverse chronological order; newest changes at the top.
   * New behaviour is clearer and less misleading
   * Existing already-programmed drones will continue to function as before (it's a compile-time check)
 * Programmable Controller now accepts up to 6 Magnet Upgrades to auto-pickup items (same as actual Drones)
-* Magnet Upgrade in Drones and Programmable Controllers only functions when the drone/PC actually has a program to run
+* Magnet Upgrade in Drones and Programmable Controllers now only functions when the drone/PC actually has a program to run
 * Added client-side config setting "programmer_gui_pauses" to pause the game in SSP when the Programmer is being used
   * Default "false", which is the same as previous behaviour
   * This has no effect in SMP, of course
 * Smarter behaviour when using a GPS Area Tool to set a coordinate in the Area progwidget GUI
-  * Now left-clicking will select P1, and right-clicking will select P2
+  * Now left-clicking the item will select P1, and right-clicking will select P2
   * Previous behaviour of just selecting an arbitrary point in the area was not very intuitive
 * Shift-clicking a GPS Area Tool on the background in the Programmer GUI will now create two coordinate widgets, if possible
   * The two coordinates correspond to the P1 and P2 points of the GPS Area Tool
@@ -38,11 +38,26 @@ Changes are in reverse chronological order; newest changes at the top.
   * All fuels are now tagged in the "forge:XXX" namespace for maximum inter-mod compat
   * Immersive Engineering Ethanol & Plant Oil are equivalent to PNC:R Ethanol & Vegetable Oil, respectively
   * Immersive Petroleum Crude Oil, Lubricant & Gasoline are equivalent to their PNC:R counterparts
-  * API break: `IFuelRegistry.registerFuel()` methods now take a `ITag<Fluid>` rather than `Fluid`
+  * API break: `IFuelRegistry.registerFuel()` methods now take a `ITag<Fluid>` rather than a `Fluid`
+  * PneumaticCraft "Oil" is now known as "Crude Oil" (translation change only; internal block/fluid ID has not changed)
+  * Liquid Compressor GUI: fuels tab now shows the fluid's mod when there are multiple fluids with the same name
+* Allow blacklisting of oil worldgen by biome category, in addition to (already existing) biome ID
+  * See "oil_world_gen_category_blacklist" in `config/pneumaticcraft-common.toml`
+* Flux Compressor now has an on/off texture on its front face to indicate if it's currently running
+* Some performance improvements for the Thermopneumatic Processing Plant
+  * Less searching of recipe lists required now
+* Potatoes, melons and apples can now be used (with Yeast Culture) to make Ethanol in the Thermopneumatic Processing Plant
+  * Sugar can still be used, and processes faster than it used to
+  * Beware: potatoes without Yeast Culture will make Vegetable Oil if the TPP has enough pressure
+  * So don't pressurize your TPP if you intend to make Ethanol with it!
+* Mekanism Uranium Blocks can now be used as heat sources, same as Immersive Engineering Uranium Blocks
+  * They will eventually turn into Mekanism Lead Blocks
+* Pneumatic Helmet Block Tracker: "Miscellaneous" setting will now also find Bee Nests
+  * Useful to find them in thick forests...
 
 ### Fixes
 * Fixed enablement of reach distance upgrade (added in 2.6.2) persisting across world changes in SSP
-* Fixed Programmable Controller minidrones "cloning" themselves when leaving and returning to an area
+* Fixed Programmable Controller minidrones "cloning" themselves on the client when leaving and returning to an area
 * Programmable Controller state is now properly reinitialized when the programmable item is changed
   * Behaviour is now much more like wrenching and re-deploying a Drone, in that all variable state is reset
 * Fixed client NPE when mousing over unconfigured Coordinate progwidget in Programmer GUI
