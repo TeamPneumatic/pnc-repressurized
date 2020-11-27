@@ -64,7 +64,7 @@ public class TileEntityDroneInterface extends TileEntity implements ITickableTil
                 if (ringSendCooldown > 0) ringSendCooldown--;
                 if (!ringSendQueue.isEmpty() && ringSendCooldown <= 0) {
                     ringSendCooldown = ringSendQueue.size() > 10 ? 1 : 5;
-                    NetworkHandler.sendToAllAround(new PacketSpawnRing(getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5, drone, ringSendQueue.poll()), getWorld());
+                    NetworkHandler.sendToAllTracking(new PacketSpawnRing(getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5, drone, ringSendQueue.poll()), this);
                 }
                 if (!getBlockState().get(BlockDroneInterface.CONNECTED)) {
                     world.setBlockState(pos, getBlockState().with(BlockDroneInterface.CONNECTED, true));
@@ -253,7 +253,7 @@ public class TileEntityDroneInterface extends TileEntity implements ITickableTil
                 requireNoArgs(args);
                 Set<BlockPos> area = new HashSet<>();
                 getWidget().getArea(area);
-                NetworkHandler.sendToAllAround(new PacketShowArea(getPos(), area), world);
+                NetworkHandler.sendToAllTracking(new PacketShowArea(getPos(), area), TileEntityDroneInterface.this);
                 return null;
             }
         });
@@ -262,7 +262,7 @@ public class TileEntityDroneInterface extends TileEntity implements ITickableTil
             @Override
             public Object[] call(Object[] args) {
                 requireNoArgs(args);
-                NetworkHandler.sendToAllAround(new PacketShowArea(getPos()), world);
+                NetworkHandler.sendToAllTracking(new PacketShowArea(getPos()), TileEntityDroneInterface.this);
                 return null;
             }
         });

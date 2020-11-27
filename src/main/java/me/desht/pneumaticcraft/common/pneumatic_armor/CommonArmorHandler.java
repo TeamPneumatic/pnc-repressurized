@@ -59,7 +59,6 @@ import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.network.PacketDistributor;
 
 import java.util.*;
 
@@ -321,7 +320,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
             addAir(EquipmentSlotType.HEAD, -airUsed);
             NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.SCUBA.get(), SoundCategory.PLAYERS, player.getPosition(), 1.5f, 1.0f, false), (ServerPlayerEntity) player);
             Vector3d eyes = player.getEyePosition(1.0f).add(player.getLookVec().scale(0.5));
-            NetworkHandler.sendToAllAround(new PacketSpawnParticle(ParticleTypes.BUBBLE, eyes.x - 0.5, eyes.y, eyes.z -0.5, 0.0, 0.2, 0.0, 10, 1.0, 1.0, 1.0), player.world);
+            NetworkHandler.sendToAllTracking(new PacketSpawnParticle(ParticleTypes.BUBBLE, eyes.x - 0.5, eyes.y, eyes.z -0.5, 0.0, 0.2, 0.0, 10, 1.0, 1.0, 1.0), player.world, player.getPosition());
         }
     }
 
@@ -432,7 +431,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         if (jetbootsAirUsage != 0 && !player.world.isRemote) {
             if (prevJetBootsAirUsage == 0) {
                 // jet boots starting up
-                NetworkHandler.sendToDimension(new PacketPlayMovingSound(MovingSounds.Sound.JET_BOOTS, player), player.world.getDimensionKey());
+                NetworkHandler.sendToAllTracking(new PacketPlayMovingSound(MovingSounds.Sound.JET_BOOTS, player), player.world, player.getPosition());
                 AdvancementTriggers.FLIGHT.trigger((ServerPlayerEntity) player);
             }
             if (player.collidedHorizontally) {
@@ -525,6 +524,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         }
     }
 
+    // only called server-side
     private void handleHacking() {
         if (hackedBlockPos != null) {
             IHackableBlock hackableBlock = HackableHandler.getHackableForBlock(hackedBlockPos.world, hackedBlockPos.pos, player);
@@ -533,7 +533,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
                 if (world != null && ++hackTime >= hackableBlock.getHackTime(world, hackedBlockPos.pos, player)) {
                     hackableBlock.onHackComplete(player.world, hackedBlockPos.pos, player);
                     HackTickHandler.instance().trackBlock(player.world, hackedBlockPos.pos, hackableBlock);
-                    NetworkHandler.sendToAllAround(new PacketHackingBlockFinish(hackedBlockPos), player.world);
+                    NetworkHandler.sendToAllTracking(new PacketHackingBlockFinish(hackedBlockPos), player.world, player.getPosition());
                     setHackedBlockPos(null);
                     AdvancementTriggers.BLOCK_HACK.trigger((ServerPlayerEntity) player);  // safe to cast, this is server-side
                 }
@@ -547,7 +547,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
                     if (hackedEntity.isAlive()) {
                         hackableEntity.onHackFinished(hackedEntity, player);
                         HackTickHandler.instance().trackEntity(hackedEntity, hackableEntity);
-                        NetworkHandler.sendToAllAround(new PacketHackingEntityFinish(hackedEntity), new PacketDistributor.TargetPoint(hackedEntity.getPosX(), hackedEntity.getPosY(), hackedEntity.getPosZ(), 64, hackedEntity.world.getDimensionKey()));
+                        NetworkHandler.sendToAllTracking(new PacketHackingEntityFinish(hackedEntity), hackedEntity);
                         AdvancementTriggers.ENTITY_HACK.trigger((ServerPlayerEntity) player);  // safe to cast, this is server-side
                     }
                     setHackedEntity(null);

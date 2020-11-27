@@ -140,7 +140,7 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
         if (getWorld().isRemote) {
             rangeLines.startRendering(getSecurityRange());
         } else {
-            NetworkHandler.sendToAllAround(new PacketRenderRangeLines(this), getWorld(), TileEntityConstants.PACKET_UPDATE_DISTANCE + getSecurityRange());
+            NetworkHandler.sendToAllTracking(new PacketRenderRangeLines(this), this);
         }
     }
 

@@ -120,7 +120,7 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
             int colorId = color.getId();
             if (!player.world.isRemote) {
                 setColorChannel(colorId);
-                NetworkHandler.sendToAllAround(new PacketUpdateLogisticsModule(this, 0), getTube().getWorld());
+                NetworkHandler.sendToAllTracking(new PacketUpdateLogisticsModule(this, 0), getTube());
                 if (PNCConfig.Common.General.useUpDyesWhenColoring && !player.isCreative()) {
                     heldStack.shrink(1);
                 }
@@ -137,7 +137,7 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
         if (!getTube().getWorld().isRemote) {
             if (powered != getTube().getPressure() >= PNCConfig.Common.Logistics.minPressure) {
                 powered = !powered;
-                NetworkHandler.sendToAllAround(new PacketUpdateLogisticsModule(this, 0), getTube().getWorld());
+                NetworkHandler.sendToAllTracking(new PacketUpdateLogisticsModule(this, 0), getTube());
             }
             if (--ticksUntilNextCycle <= 0) {
                 LogisticsManager manager = new LogisticsManager();
@@ -273,7 +273,7 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
     }
 
     private void sendModuleUpdate(ModuleLogistics module, boolean enoughAir) {
-        NetworkHandler.sendToAllAround(new PacketUpdateLogisticsModule(module, enoughAir ? 1 : 2), module.getTube().getWorld());
+        NetworkHandler.sendToAllTracking(new PacketUpdateLogisticsModule(module, enoughAir ? 1 : 2), module.getTube());
     }
 
     @Override

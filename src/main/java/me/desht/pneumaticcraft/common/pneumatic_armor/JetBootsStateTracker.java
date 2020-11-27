@@ -50,7 +50,7 @@ public class JetBootsStateTracker {
             state.enabled = enabled;
             state.active = active;
             state.builderMode = builderMode;
-            if (sendPacket) NetworkHandler.sendToDimension(new PacketJetBootsStateSync(player, state), player.world.getDimensionKey());
+            if (sendPacket) NetworkHandler.sendToAllTracking(new PacketJetBootsStateSync(player, state), player.world, player.getPosition());
         }
     }
 

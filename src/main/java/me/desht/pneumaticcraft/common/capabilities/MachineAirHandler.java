@@ -128,7 +128,7 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
             if (prevLeakDir != actualLeakDir || actualLeakDir != null && (world.getGameTime() & 0x1f) == 0) {
                 // if leak status changes, sync pressure & leak dir to the client
                 // OR if already leaking, periodically sync pressure & leak dir to the client
-                NetworkHandler.sendToAllAround(new PacketUpdatePressureBlock(ownerTE, anyConnectedFace(), actualLeakDir, getAir()), world, 32D);
+                NetworkHandler.sendToAllTracking(new PacketUpdatePressureBlock(ownerTE, anyConnectedFace(), actualLeakDir, getAir()), ownerTE);
             }
 
             prevAir = getAir();

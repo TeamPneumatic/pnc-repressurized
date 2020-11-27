@@ -149,7 +149,7 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
                 float f = (rand.nextFloat() - 0.5F) * 0.02F * teleportCounter;
                 float f1 = (rand.nextFloat() - 0.5F) * 0.02F * teleportCounter;
                 float f2 = (rand.nextFloat() - 0.5F) * 0.02F * teleportCounter;
-                NetworkHandler.sendToAllAround(new PacketSpawnParticle(ParticleTypes.PORTAL, pathfindingEntity.getPosX(), pathfindingEntity.getPosY(), pathfindingEntity.getPosZ(), f, f1, f2), pathfindingEntity.world);
+                NetworkHandler.sendToAllTracking(new PacketSpawnParticle(ParticleTypes.PORTAL, pathfindingEntity.getPosX(), pathfindingEntity.getPosY(), pathfindingEntity.getPosZ(), f, f1, f2), pathfindingEntity);
             }
 
             if (++teleportCounter > TELEPORT_TICKS) {
@@ -165,13 +165,9 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
             // super.onUpdateNavigation();
             if (!noPath()) {
                 pathFollow();
-
                 if (!noPath()) {
                     Vector3d vec32 = currentPath.getPosition(entity);
-
-                    if (vec32 != null) {
-                        entity.getMoveHelper().setMoveTo(vec32.x, vec32.y, vec32.z, speed);
-                    }
+                    entity.getMoveHelper().setMoveTo(vec32.x, vec32.y, vec32.z, speed);
                 }
             }
         }
@@ -192,7 +188,7 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
             double d7 = pathfindingEntity.getPosX() + (telPos.getX() + 0.5 - pathfindingEntity.getPosX()) * d6 + (rand.nextDouble() - 0.5D) * width * 2.0D;
             double d8 = pathfindingEntity.getPosY() + (telPos.getY()       - pathfindingEntity.getPosY()) * d6 + rand.nextDouble() * height;
             double d9 = pathfindingEntity.getPosZ() + (telPos.getZ() + 0.5 - pathfindingEntity.getPosZ()) * d6 + (rand.nextDouble() - 0.5D) * width * 2.0D;
-            NetworkHandler.sendToAllAround(new PacketSpawnParticle(ParticleTypes.PORTAL, d7, d8, d9, f, f1, f2), pathfindingEntity.world);
+            NetworkHandler.sendToAllTracking(new PacketSpawnParticle(ParticleTypes.PORTAL, d7, d8, d9, f, f1, f2), pathfindingEntity);
         }
 
         pathfindingEntity.playSound(SoundEvents.ENTITY_ENDERMAN_TELEPORT, 1.0F, 1.0F);

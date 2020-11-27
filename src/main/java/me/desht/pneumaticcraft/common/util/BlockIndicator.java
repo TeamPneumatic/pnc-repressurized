@@ -17,7 +17,7 @@ public class BlockIndicator {
                     world.addParticle(new RedstoneParticleData(1f, 0.2f, 0f, 1.0F), dx, dy, dz, 0, 0, 0);
                 }
             } else {
-                NetworkHandler.sendToAllAround(new PacketDebugBlock(pos), world);
+                NetworkHandler.sendToAllTracking(new PacketDebugBlock(pos), world, pos);
             }
         }
     }

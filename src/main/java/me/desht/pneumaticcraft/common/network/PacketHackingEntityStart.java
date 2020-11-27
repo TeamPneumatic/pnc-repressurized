@@ -10,7 +10,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraftforge.fml.network.PacketDistributor;
 
 import java.util.function.Supplier;
 
@@ -55,7 +54,7 @@ public class PacketHackingEntityStart {
                 Entity entity = player.world.getEntityByID(entityId);
                 if (entity != null) {
                     CommonArmorHandler.getHandlerForPlayer(player).setHackedEntity(entity);
-                    NetworkHandler.sendToAllAround(this, new PacketDistributor.TargetPoint(entity.getPosX(), entity.getPosY(), entity.getPosZ(), 64, entity.world.getDimensionKey()));
+                    NetworkHandler.sendToAllTracking(this, entity);
                 }
             }
         });

@@ -125,7 +125,7 @@ public class EventHandlerPneumaticArmor {
             for (int i = 0; i < event.getDistance() / 2; i++) {
                 float sx = player.getRNG().nextFloat() * 0.6F - 0.3F;
                 float sz = player.getRNG().nextFloat() * 0.6F - 0.3F;
-                NetworkHandler.sendToAllAround(new PacketSpawnParticle(AirParticleData.DENSE, player.getPosX(), player.getPosY(), player.getPosZ(), sx, 0.1, sz), player.world);
+                NetworkHandler.sendToAllTracking(new PacketSpawnParticle(AirParticleData.DENSE, player.getPosX(), player.getPosY(), player.getPosZ(), sx, 0.1, sz), player.world, player.getPosition());
             }
             player.world.playSound(null, player.getPosition(), ModSounds.SHORT_HISS.get(), SoundCategory.PLAYERS, 0.3f, 0.8f);
             handler.addAir(EquipmentSlotType.FEET, (int) -airNeeded);
@@ -147,7 +147,7 @@ public class EventHandlerPneumaticArmor {
                         for (int i = 0; i < 2; i++) {
                             float sx = player.getRNG().nextFloat() * 1.5F - 0.75F;
                             float sz = player.getRNG().nextFloat() * 1.5F - 0.75F;
-                            NetworkHandler.sendToAllAround(new PacketSpawnParticle(AirParticleData.DENSE, player.getPosX() + sx, player.getPosY() + 1, player.getPosZ() + sz, sx / 4, -0.2, sz / 4), player.world);
+                            NetworkHandler.sendToAllTracking(new PacketSpawnParticle(AirParticleData.DENSE, player.getPosX() + sx, player.getPosY() + 1, player.getPosZ() + sz, sx / 4, -0.2, sz / 4), player.world, player.getPosition());
                         }
                         if ((player.ticksExisted & 0xf) == 0) {
                             player.world.playSound(null, player.getPosition(), ModSounds.LEAKING_GAS.get(), SoundCategory.PLAYERS, 1f, 0.7f);

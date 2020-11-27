@@ -26,7 +26,6 @@ import me.desht.pneumaticcraft.common.tileentity.RedstoneController.RedstoneMode
 import me.desht.pneumaticcraft.common.util.GlobalTileEntityCacheManager;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import me.desht.pneumaticcraft.lib.TileEntityConstants;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -206,7 +205,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
         if (getWorld().isRemote) {
             rangeLines.startRendering(getRange());
         } else {
-            NetworkHandler.sendToAllAround(new PacketRenderRangeLines(this), getWorld(), TileEntityConstants.PACKET_UPDATE_DISTANCE + getRange());
+            NetworkHandler.sendToAllTracking(new PacketRenderRangeLines(this), this);
         }
     }
 

@@ -43,7 +43,7 @@ public class PacketHackingBlockStart extends LocationIntPacket {
             } else {
                 // server
                 CommonArmorHandler.getHandlerForPlayer(player).setHackedBlockPos(new WorldAndCoord(player.world, pos));
-                NetworkHandler.sendToAllAround(this, player.world);
+                NetworkHandler.sendToAllTracking(this, player.world, player.getPosition());
             }
         });
         ctx.get().setPacketHandled(true);

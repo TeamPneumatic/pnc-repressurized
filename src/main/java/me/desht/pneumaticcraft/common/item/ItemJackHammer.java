@@ -556,7 +556,7 @@ public class ItemJackHammer extends ItemPressurizable
                 if (event.getWorld().isRemote) {
                     MovingSounds.playMovingSound(MovingSounds.Sound.JACKHAMMER, event.getPlayer());
                 } else {
-                    NetworkHandler.sendToAllTracking(new PacketPlayMovingSound(MovingSounds.Sound.JACKHAMMER, player), player);
+                    NetworkHandler.sendToAllTracking(new PacketPlayMovingSound(MovingSounds.Sound.JACKHAMMER, player), player.world, player.getPosition());
                 }
             }
         }

@@ -35,8 +35,8 @@ public class ElectricAttackHandler {
                 drone.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY).orElseThrow(RuntimeException::new).addAir((int)(-50 * dmg));
                 event.setAmount(0f);
                 double dy = Math.min(dmg / 4, 0.5);
-                NetworkHandler.sendToAllAround(new PacketSpawnParticle(AirParticleData.DENSE, drone.getPosX(), drone.getPosY(), drone.getPosZ(),
-                            0, -dy, 0, (int) (dmg), 0, 0, 0), drone.world);
+                NetworkHandler.sendToAllTracking(new PacketSpawnParticle(AirParticleData.DENSE, drone.getPosX(), drone.getPosY(), drone.getPosZ(),
+                            0, -dy, 0, (int) (dmg), 0, 0, 0), drone);
                 playLeakSound(drone);
             }
         } else if (event.getEntityLiving() instanceof PlayerEntity) {
@@ -49,7 +49,7 @@ public class ElectricAttackHandler {
                 float sx = player.getRNG().nextFloat() * 1.5F - 0.75F;
                 float sz = player.getRNG().nextFloat() * 1.5F - 0.75F;
                 double dy = Math.min(event.getAmount() / 4, 0.5);
-                NetworkHandler.sendToAllAround(new PacketSpawnParticle(AirParticleData.DENSE, player.getPosX() + sx, player.getPosY() + 1, player.getPosZ() + sz, sx / 4, -dy, sz / 4), player.world);
+                NetworkHandler.sendToAllTracking(new PacketSpawnParticle(AirParticleData.DENSE, player.getPosX() + sx, player.getPosY() + 1, player.getPosZ() + sz, sx / 4, -dy, sz / 4), player.world, player.getPosition());
                 event.setAmount(0f);
                 playLeakSound(player);
             }

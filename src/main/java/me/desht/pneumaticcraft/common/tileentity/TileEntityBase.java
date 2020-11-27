@@ -140,7 +140,7 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
     void sendDescriptionPacket(double maxPacketDistance) {
         PacketDescription descPacket = new PacketDescription(this, forceFullSync);
         if (descPacket.hasData()) {
-            NetworkHandler.sendToAllAround(descPacket, world, maxPacketDistance);
+            NetworkHandler.sendToAllTracking(descPacket, this);
         }
         fieldsToSync.clear();
         forceFullSync = false;

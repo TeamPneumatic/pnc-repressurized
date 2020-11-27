@@ -21,7 +21,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.RegistryKey;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.NetworkRegistry;
@@ -237,6 +239,14 @@ public class NetworkHandler {
 	public static void sendToAllTracking(Object message, Entity entity) {
 		NETWORK.send(PacketDistributor.TRACKING_ENTITY.with(() -> entity), message);
 	}
+
+	public static void sendToAllTracking(Object message, World world, BlockPos pos) {
+		NETWORK.send(PacketDistributor.TRACKING_CHUNK.with(() -> world.getChunkAt(pos)), message);
+	}
+
+	public static void sendToAllTracking(Object message, TileEntity te) {
+    	if (te.getWorld() != null) sendToAllTracking(message, te.getWorld(), te.getPos());
+    }
 
 	public static void sendToDimension(Object message, RegistryKey<World> world) {
 		if (message instanceof ILargePayload) {

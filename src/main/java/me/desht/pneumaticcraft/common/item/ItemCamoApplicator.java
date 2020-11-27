@@ -73,8 +73,8 @@ public class ItemCamoApplicator extends ItemPressurizable {
                 if (!(te instanceof ICamouflageableTE)) {
                     // right-click non-camo block: copy its state
                     setCamoState(stack, state);
-                    NetworkHandler.sendToAllAround(new PacketPlaySound(ModSounds.CHIRP.get(), SoundCategory.PLAYERS,
-                            pos, 1.0F, 2.0F, false), world);
+                    NetworkHandler.sendToAllTracking(new PacketPlaySound(ModSounds.CHIRP.get(), SoundCategory.PLAYERS,
+                            pos, 1.0F, 2.0F, true), world, pos);
                 } else {
                     // right-click camo block: try to apply (or remove) camo
 
@@ -88,8 +88,8 @@ public class ItemCamoApplicator extends ItemPressurizable {
                     BlockState existingCamo = ((ICamouflageableTE) te).getCamouflage();
 
                     if (existingCamo == newCamo) {
-                        NetworkHandler.sendToAllAround(new PacketPlaySound(SoundEvents.BLOCK_COMPARATOR_CLICK, SoundCategory.PLAYERS,
-                                pos, 1.0F, 2.0F, false), world);
+                        NetworkHandler.sendToAllTracking(new PacketPlaySound(SoundEvents.BLOCK_COMPARATOR_CLICK, SoundCategory.PLAYERS,
+                                pos, 1.0F, 2.0F, true), world, pos);
                         return ActionResultType.SUCCESS;
                     }
 
@@ -100,8 +100,8 @@ public class ItemCamoApplicator extends ItemPressurizable {
                             player.sendStatusMessage(new TranslationTextComponent("pneumaticcraft.message.camo.notEnoughBlocks")
                                     .append(camoStack.getDisplayName())
                                     .mergeStyle(TextFormatting.RED), true);
-                            NetworkHandler.sendToAllAround(new PacketPlaySound(ModSounds.MINIGUN_STOP.get(), SoundCategory.PLAYERS,
-                                    pos, 1.0F, 2.0F, false), world);
+                            NetworkHandler.sendToAllTracking(new PacketPlaySound(ModSounds.MINIGUN_STOP.get(), SoundCategory.PLAYERS,
+                                    pos, 1.0F, 2.0F, true), world, pos);
                             return ActionResultType.FAIL;
                         }
                     }
@@ -121,7 +121,7 @@ public class ItemCamoApplicator extends ItemPressurizable {
                     if (particleState != null) {
                         player.getEntityWorld().playEvent(Constants.WorldEvents.BREAK_BLOCK_EFFECTS, pos, Block.getStateId(particleState));
                     }
-                    NetworkHandler.sendToAllAround(new PacketPlaySound(ModSounds.SHORT_HISS.get(), SoundCategory.PLAYERS, pos, 1.0F, 1.0F, false), world);
+                    NetworkHandler.sendToAllTracking(new PacketPlaySound(ModSounds.SHORT_HISS.get(), SoundCategory.PLAYERS, pos, 1.0F, 1.0F, true), world, pos);
                 }
             }
         }

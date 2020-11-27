@@ -10,7 +10,6 @@ import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketRenderRangeLines;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
-import me.desht.pneumaticcraft.lib.TileEntityConstants;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -188,7 +187,7 @@ public class TileEntityPressurizedSpawner extends TileEntityPneumaticBase
         if (getWorld().isRemote) {
             rangeLines.startRendering(getRange());
         } else {
-            NetworkHandler.sendToAllAround(new PacketRenderRangeLines(this), getWorld(), TileEntityConstants.PACKET_UPDATE_DISTANCE + getRange());
+            NetworkHandler.sendToAllTracking(new PacketRenderRangeLines(this), this);
         }
     }
 

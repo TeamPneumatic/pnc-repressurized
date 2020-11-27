@@ -615,10 +615,9 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
 
     @Override
     public void overload(String msgKey, Object... params) {
-        NetworkHandler.sendToAllAround(new PacketSpawnParticle(ParticleTypes.SMOKE,
+        NetworkHandler.sendToAllTracking(new PacketSpawnParticle(ParticleTypes.SMOKE,
                 getPos().getX() - 0.5, getPos().getY() + 1, getPos().getZ() - 0.5,
-                0, 0, 0, 10, 1, 1, 1), getWorld()
-        );
+                0, 0, 0, 10, 1, 1, 1), this);
     }
 
     @Override

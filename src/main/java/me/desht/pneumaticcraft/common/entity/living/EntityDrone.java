@@ -1087,7 +1087,7 @@ public class EntityDrone extends EntityDroneBase implements
 
     @Override
     public void sendWireframeToClient(BlockPos pos) {
-        NetworkHandler.sendToAllAround(new PacketShowWireframe(this, pos), world);
+        NetworkHandler.sendToAllTracking(new PacketShowWireframe(this, pos), this);
     }
 
     /**

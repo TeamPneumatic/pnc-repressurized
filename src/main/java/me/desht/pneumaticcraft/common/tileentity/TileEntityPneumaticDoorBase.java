@@ -149,7 +149,7 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
         boolean wasOpening = this.opening;
         this.opening = opening;
         if (this.opening != wasOpening) {
-            NetworkHandler.sendToAllAround(new PacketPlaySound(ModSounds.PNEUMATIC_DOOR.get(), SoundCategory.BLOCKS, getPos(), 1.0F, 1.0F, false), getWorld());
+            NetworkHandler.sendToAllTracking(new PacketPlaySound(ModSounds.PNEUMATIC_DOOR.get(), SoundCategory.BLOCKS, getPos(), 1.0F, 1.0F, false),this);
             sendDescriptionPacket();
         }
     }

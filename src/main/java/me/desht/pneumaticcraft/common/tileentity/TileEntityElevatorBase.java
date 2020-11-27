@@ -41,7 +41,6 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 
@@ -143,8 +142,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
                 soundName = ModSounds.ELEVATOR_RISING_START.get();
                 isStopped = false;
                 if (!getWorld().isRemote && shouldPlaySounds()) {
-                    PacketDistributor.TargetPoint tp = new PacketDistributor.TargetPoint(pos.getX(), pos.getY(), pos.getZ(), 1024, world.getDimensionKey());
-                    NetworkHandler.sendToAllAround(new PacketPlayMovingSound(MovingSounds.Sound.ELEVATOR, getCoreElevator()), tp);
+                    NetworkHandler.sendToAllTracking(new PacketPlayMovingSound(MovingSounds.Sound.ELEVATOR, getCoreElevator()), this);
                 }
             }
             float startingExtension = extension;
@@ -169,8 +167,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
                 soundName = ModSounds.ELEVATOR_RISING_START.get();
                 isStopped = false;
                 if (!world.isRemote && shouldPlaySounds()) {
-                    PacketDistributor.TargetPoint tp = new PacketDistributor.TargetPoint(pos.getX(), pos.getY(), pos.getZ(), 1024, world.getDimensionKey());
-                    NetworkHandler.sendToAllAround(new PacketPlayMovingSound(MovingSounds.Sound.ELEVATOR, getCoreElevator()), tp);
+                    NetworkHandler.sendToAllTracking(new PacketPlayMovingSound(MovingSounds.Sound.ELEVATOR, getCoreElevator()), this);
                 }
             }
             if (getUpgrades(EnumUpgrade.CHARGING) > 0 && getPressure() < dangerPressure - 0.1f) {

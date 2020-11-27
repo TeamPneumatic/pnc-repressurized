@@ -65,7 +65,7 @@ public abstract class HeatBehaviourTransition extends HeatBehaviourLiquid {
 
     void onTransition(BlockPos pos) {
         getWorld().playSound(null, pos, SoundEvents.ENTITY_GENERIC_EXTINGUISH_FIRE, SoundCategory.BLOCKS, 0.5f, 2.6F + (getWorld().rand.nextFloat() - getWorld().rand.nextFloat()) * 0.8F);
-        NetworkHandler.sendToAllAround(new PacketSpawnParticle(ParticleTypes.SMOKE, pos.getX(), pos.getY() + 1, pos.getZ(),
-                        0, 0, 0, 8, 1, 0, 1), getWorld());
+        NetworkHandler.sendToAllTracking(new PacketSpawnParticle(ParticleTypes.SMOKE, pos.getX(), pos.getY() + 1, pos.getZ(),
+                        0, 0, 0, 8, 1, 0, 1), getWorld(), pos);
     }
 }

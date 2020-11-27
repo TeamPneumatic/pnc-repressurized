@@ -64,7 +64,7 @@ public class ItemPneumaticWrench extends ItemPressurizable {
     }
 
     private void playWrenchSound(World world, BlockPos pos) {
-        NetworkHandler.sendToAllAround(new PacketPlaySound(ModSounds.PNEUMATIC_WRENCH.get(), SoundCategory.PLAYERS, pos, 1.0F, 1.0F, false), world);
+        NetworkHandler.sendToAllTracking(new PacketPlaySound(ModSounds.PNEUMATIC_WRENCH.get(), SoundCategory.PLAYERS, pos, 1.0F, 1.0F, true), world, pos);
     }
 
     @Override

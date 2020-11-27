@@ -12,7 +12,10 @@ import me.desht.pneumaticcraft.common.block.BlockPressureChamberValve;
 import me.desht.pneumaticcraft.common.block.IBlockPressureChamber;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerPressureChamberValve;
-import me.desht.pneumaticcraft.common.network.*;
+import me.desht.pneumaticcraft.common.network.DescSynced;
+import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.network.NetworkHandler;
+import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.util.CountedItemStacks;
@@ -281,7 +284,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
                 if (giveOutput(recipe.getResultsForDisplay(), true)) {
                     giveOutput(recipe.craftRecipe(itemsInChamber, applicableRecipe.slots), false);
                     if (getWorld().getGameTime() - lastSoundTick > 5) {
-                        NetworkHandler.sendToAllAround(new PacketPlaySound(SoundEvents.ENTITY_CHICKEN_EGG, SoundCategory.BLOCKS, getPos(), 0.7f, 0.8f + getWorld().rand.nextFloat() * 0.4f, false), getWorld());
+                        getWorld().playSound(null, getPos(), SoundEvents.ENTITY_CHICKEN_EGG, SoundCategory.BLOCKS, 0.7f, 0.8f);
                         lastSoundTick = getWorld().getGameTime();
                     }
                 }
@@ -564,11 +567,11 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
                     if (te != null) {
                         double dx = x == 0 ? -0.1 : 0.1;
                         double dz = z == 0 ? -0.1 : 0.1;
-                        NetworkHandler.sendToAllAround(
+                        NetworkHandler.sendToAllTracking(
                                 new PacketSpawnParticle(ParticleTypes.POOF,
                                         te.getPos().getX() + 0.5, te.getPos().getY() + 0.5, te.getPos().getZ() + 0.5,
                                         dx, 0.3, dz, 5, 0, 0, 0),
-                                world);
+                                te);
                     }
                 }
             }

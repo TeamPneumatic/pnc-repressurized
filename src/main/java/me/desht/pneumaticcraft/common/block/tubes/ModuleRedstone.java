@@ -83,7 +83,7 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
                 int out = computeOutputSignal(outputLevel, levels);
                 if (inverted) out = out > 0 ? 0 : 15;
                 if (setOutputLevel(out)) {
-                    NetworkHandler.sendToAllAround(new PacketSyncRedstoneModuleToClient(this), getTube().getWorld());
+                    NetworkHandler.sendToAllTracking(new PacketSyncRedstoneModuleToClient(this), getTube());
                 }
             } else {
                 if (inputLevel < 0) updateInputLevel();  // first update
@@ -274,7 +274,7 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
             redstoneDirection = redstoneDirection == EnumRedstoneDirection.INPUT ? EnumRedstoneDirection.OUTPUT : EnumRedstoneDirection.INPUT;
             updateNeighbors();
             if (!updateInputLevel()) {
-                NetworkHandler.sendToAllAround(new PacketSyncRedstoneModuleToClient(this), getTube().getWorld());
+                NetworkHandler.sendToAllTracking(new PacketSyncRedstoneModuleToClient(this), getTube());
             }
             return true;
         } else if (!getTube().getWorld().isRemote) {
@@ -296,7 +296,7 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
 
         if (newInputLevel != inputLevel) {
             inputLevel = newInputLevel;
-            NetworkHandler.sendToAllAround(new PacketSyncRedstoneModuleToClient(this), getTube().getWorld());
+            NetworkHandler.sendToAllTracking(new PacketSyncRedstoneModuleToClient(this), getTube());
             return true;
         }
         return false;

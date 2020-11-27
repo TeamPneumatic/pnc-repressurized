@@ -20,10 +20,10 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.*;
 import net.minecraft.item.*;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.fml.network.PacketDistributor;
 
 /**
  * Common code for the Air Cannon and Pneumatic Chestplate item launcher
@@ -36,9 +36,9 @@ public class ItemLaunching {
             launchedEntity.stopRiding();
         }
 
+        BlockPos trackPos = new BlockPos(initialPos);
         launchedEntity.setPosition(initialPos.x, initialPos.y, initialPos.z);
-        NetworkHandler.sendToAllAround(new PacketSetEntityMotion(launchedEntity, velocity),
-                new PacketDistributor.TargetPoint(initialPos.x, initialPos.y, initialPos.z, 64, world.getDimensionKey()));
+        NetworkHandler.sendToAllTracking(new PacketSetEntityMotion(launchedEntity, velocity), world, trackPos);
         if (launchedEntity instanceof FireballEntity) {
             // fireball velocity is handled a little differently...
             FireballEntity fireball = (FireballEntity) launchedEntity;
@@ -61,7 +61,7 @@ public class ItemLaunching {
             double velX = velocity.x * 0.4D + (world.rand.nextGaussian() - 0.5D) * 0.05D;
             double velY = velocity.y * 0.4D + (world.rand.nextGaussian() - 0.5D) * 0.05D;
             double velZ = velocity.z * 0.4D + (world.rand.nextGaussian() - 0.5D) * 0.05D;
-            NetworkHandler.sendToAllAround(new PacketSpawnParticle(AirParticleData.DENSE, initialPos.x, initialPos.y, initialPos.z, velX, velY, velZ), world);
+            NetworkHandler.sendToAllTracking(new PacketSpawnParticle(AirParticleData.DENSE, initialPos.x, initialPos.y, initialPos.z, velX, velY, velZ), world, trackPos);
         }
         world.playSound(null, initialPos.x, initialPos.y, initialPos.z, ModSounds.AIR_CANNON.get(), SoundCategory.BLOCKS, 1f,world.rand.nextFloat() / 4f + 0.75f);
     }
