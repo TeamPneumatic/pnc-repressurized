@@ -52,7 +52,7 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
 
     @Override
     public boolean matches(FluidStack fluidStack, @Nonnull ItemStack stack) {
-        return (inputFluid == FluidIngredient.EMPTY || inputFluid.testFluid(fluidStack))
+        return (inputFluid == FluidIngredient.EMPTY || inputFluid.testFluid(fluidStack.getFluid()))
                 && (inputItem == Ingredient.EMPTY || inputItem.test(stack));
     }
 

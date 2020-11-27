@@ -46,7 +46,7 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
     private static final int MIN_SOUND_INTERVAL = 400;  // ticks - the sound effect is ~2.5s long
 
     // cache items we know are accepted to reduce recipe searching
-    private final Set<Item> acceptedItemCache = new HashSet<>();
+    private static final Set<Item> acceptedItemCache = new HashSet<>();
 
     @DescSynced
     private final PressureChamberInterfaceHandler inventory = new PressureChamberInterfaceHandler();
@@ -88,6 +88,10 @@ public class TileEntityPressureChamberInterface extends TileEntityPressureChambe
 
     public TileEntityPressureChamberInterface() {
         super(ModTileEntities.PRESSURE_CHAMBER_INTERFACE.get(), 4);
+    }
+
+    public static void clearCachedItems() {
+        acceptedItemCache.clear();
     }
 
     @Override

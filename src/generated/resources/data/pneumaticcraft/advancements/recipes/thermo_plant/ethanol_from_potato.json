@@ -2,7 +2,7 @@
   "parent": "minecraft:recipes/root",
   "rewards": {
     "recipes": [
-      "pneumaticcraft:thermo_plant/ethanol"
+      "pneumaticcraft:thermo_plant/ethanol_from_potato"
     ]
   },
   "criteria": {
@@ -19,7 +19,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "pneumaticcraft:thermo_plant/ethanol"
+        "recipe": "pneumaticcraft:thermo_plant/ethanol_from_potato"
       }
     }
   },

@@ -1,7 +1,7 @@
 {
   "type": "pneumaticcraft:thermo_plant",
   "item_input": {
-    "item": "minecraft:sugar"
+    "item": "minecraft:melon_slice"
   },
   "fluid_input": {
     "type": "pneumaticcraft:fluid",
@@ -10,12 +10,12 @@
   },
   "fluid_output": {
     "fluid": "pneumaticcraft:ethanol",
-    "amount": 50
+    "amount": 10
   },
   "temperature": {
     "min_temp": 303,
     "max_temp": 333
   },
-  "speed": 0.2,
+  "speed": 0.5,
   "exothermic": true
 }

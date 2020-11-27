@@ -9,6 +9,8 @@ import me.desht.pneumaticcraft.common.network.PacketClearRecipeCache;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
 import me.desht.pneumaticcraft.common.recipes.machine.*;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityFluidMixer;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberInterface;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityThermopneumaticProcessingPlant;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.item.crafting.RecipeManager;
@@ -89,6 +91,8 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
 
         HeatFrameCoolingRecipeImpl.cacheMaxThresholdTemp(Collections.emptyList());  // clear the cached temp
         TileEntityFluidMixer.clearCachedFluids();
+        TileEntityPressureChamberInterface.clearCachedItems();
+        TileEntityThermopneumaticProcessingPlant.clearCachedItemsAndFluids();
     }
 
     public Map<ResourceLocation, T> getRecipes(World world) {

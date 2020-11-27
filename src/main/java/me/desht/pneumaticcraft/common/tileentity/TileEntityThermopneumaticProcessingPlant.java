@@ -21,9 +21,11 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.particles.ParticleTypes;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
@@ -41,22 +43,27 @@ import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumaticBase implements
         IMinWorkingPressure, IRedstoneControl<TileEntityThermopneumaticProcessingPlant>, ISerializableTanks,
         IAutoFluidEjecting, INamedContainerProvider, IComparatorSupport {
 
     private static final int INVENTORY_SIZE = 1;
-    private static final int CRAFTING_TIME = 60 * 100;
-    private static final double MAX_SPEED_UP = 2.5;
+    private static final int CRAFTING_TIME = 60 * 100;  // 60 ticks base crafting time
+    private static final double MAX_SPEED_UP = 2.5;  // speed-up due to temperature
+
+    private static final Set<Item> acceptedItemCache = new HashSet<>();
+    private static final Set<Fluid> acceptedFluidCache = new HashSet<>();
 
     @GuiSynced
     @DescSynced
     private final ThermopneumaticFluidTankInput inputTank = new ThermopneumaticFluidTankInput(PneumaticValues.NORMAL_TANK_CAPACITY);
     @GuiSynced
     @DescSynced
-    private final ThermopneumaticFluidTankOutput outputTank = new ThermopneumaticFluidTankOutput(PneumaticValues.NORMAL_TANK_CAPACITY);
+    private final SmartSyncTank outputTank = new SmartSyncTank(this, PneumaticValues.NORMAL_TANK_CAPACITY);
     @GuiSynced
     private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
     private final LazyOptional<IHeatExchangerLogic> heatCap = LazyOptional.of(() -> heatExchanger);
@@ -65,38 +72,21 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
     @GuiSynced
     private int craftingProgress;
     @GuiSynced
-    public boolean hasRecipe;
-    @GuiSynced
     private float requiredPressure;
     @GuiSynced
     public int minTemperature;
     @GuiSynced
     public int maxTemperature;
-    @SuppressWarnings("unused")
-    @DescSynced
-    private int inputAmountScaled, outputAmountScaled;
+    @GuiSynced
+    public TPProblem problem;
     @DescSynced
     private boolean didWork;
     private ThermoPlantRecipe currentRecipe;
     private boolean searchForRecipe = true;
 
-    private final ItemStackHandler itemHandler = new BaseItemStackHandler(this, INVENTORY_SIZE) {
-        @Override
-        public boolean isItemValid(int slot, ItemStack stack) {
-            return stack.isEmpty()
-                    || PneumaticCraftRecipeType.THERMO_PLANT.stream(world).anyMatch(r -> r.getInputItem().test(stack));
-        }
-
-        @Override
-        protected void onContentsChanged(int slot) {
-            super.onContentsChanged(slot);
-            searchForRecipe = true;
-        }
-    };
-
+    private final ItemStackHandler inputItemHandler = new InputItemHandler(this);
     private final ItemStackHandler outputItemHandler = new BaseItemStackHandler(this, INVENTORY_SIZE);
-    private final ThermopneumaticInvWrapper invWrapper = new ThermopneumaticInvWrapper(itemHandler, outputItemHandler);
-
+    private final ThermopneumaticInvWrapper invWrapper = new ThermopneumaticInvWrapper(inputItemHandler, outputItemHandler);
     private final LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> invWrapper);
 
     private final ThermopneumaticFluidHandler fluidHandler = new ThermopneumaticFluidHandler();
@@ -120,39 +110,51 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
         outputTank.tick();
 
         if (!getWorld().isRemote) {
-            // bit of a kludge since inv/fluid changes aren't always reliably detected
-            if (searchForRecipe || (getWorld().getGameTime() & 0xf) == 0) {
+            problem = TPProblem.OK;
+
+            ThermoPlantRecipe prevRecipe = currentRecipe;
+            if (searchForRecipe) {
                 currentRecipe = findApplicableRecipe();
                 searchForRecipe = false;
             }
-            boolean hadRecipe = hasRecipe;
-            hasRecipe = currentRecipe != null;
-            if (hasRecipe != hadRecipe) {
+            if (prevRecipe != currentRecipe) {
                 getWorld().updateComparatorOutputLevel(getPos(), getBlockState().getBlock());
             }
 
             didWork = false;
-            if (hasRecipe) {
-                requiredPressure = currentRecipe.getRequiredPressure();
-                minTemperature = currentRecipe.getOperatingTemperature().getMin();
-                maxTemperature = currentRecipe.getOperatingTemperature().getMax();
-                if (rsController.shouldRun()
-                        && currentRecipe.getOperatingTemperature().inRange(heatExchanger.getTemperature())
-                        && hasEnoughPressure()) {
-                    double inc = minTemperature > 0 ? Math.min(MAX_SPEED_UP, heatExchanger.getTemperature() / minTemperature) : 1.0;
-                    craftingProgress += inc * currentRecipe.getRecipeSpeed() * 100;
-                    if (craftingProgress >= CRAFTING_TIME) {
-                        outputTank.fill(currentRecipe.getOutputFluid().copy(), FluidAction.EXECUTE);
-                        outputItemHandler.insertItem(0, currentRecipe.getOutputItem().copy(), false);
-                        inputTank.drain(currentRecipe.getInputFluid().getAmount(), FluidAction.EXECUTE);
-                        itemHandler.extractItem(0, 1, false);
-                        addAir(-currentRecipe.airUsed());
-                        heatExchanger.addHeat(-currentRecipe.heatUsed(heatExchanger.getAmbientTemperature()) * inc * 0.75);
-                        craftingProgress -= CRAFTING_TIME;
+            if (currentRecipe != null) {
+                if (getInputTank().getFluidAmount() < currentRecipe.getInputFluid().getAmount()) {
+                    problem = TPProblem.NOT_ENOUGH_FLUID;
+                } else if (heatExchanger.getTemperature() > currentRecipe.getOperatingTemperature().getMax()) {
+                    problem = TPProblem.TOO_HOT;
+                } else if (heatExchanger.getTemperature() < currentRecipe.getOperatingTemperature().getMin()) {
+                    problem = TPProblem.TOO_COLD;
+                } else {
+                    if (rsController.shouldRun() && hasEnoughPressure()) {
+                        double inc = minTemperature > 0 ? Math.min(MAX_SPEED_UP, heatExchanger.getTemperature() / minTemperature) : 1.0;
+                        if (craftingProgress < CRAFTING_TIME) {
+                            craftingProgress += inc * currentRecipe.getRecipeSpeed() * 100;
+                        }
+                        if (craftingProgress >= CRAFTING_TIME) {
+                            int filled = outputTank.fill(currentRecipe.getOutputFluid().copy(), FluidAction.SIMULATE);
+                            ItemStack excess = outputItemHandler.insertItem(0, currentRecipe.getOutputItem().copy(), true);
+                            if (filled == currentRecipe.getOutputFluid().getAmount() && excess.isEmpty()) {
+                                outputTank.fill(currentRecipe.getOutputFluid().copy(), FluidAction.EXECUTE);
+                                outputItemHandler.insertItem(0, currentRecipe.getOutputItem().copy(), false);
+                                inputTank.drain(currentRecipe.getInputFluid().getAmount(), FluidAction.EXECUTE);
+                                inputItemHandler.extractItem(0, 1, false);
+                                addAir(-currentRecipe.airUsed());
+                                heatExchanger.addHeat(-currentRecipe.heatUsed(heatExchanger.getAmbientTemperature()) * inc * 0.75);
+                                craftingProgress -= CRAFTING_TIME;
+                            } else {
+                                problem = TPProblem.OUTPUT_BLOCKED;
+                            }
+                        }
+                        didWork = problem == TPProblem.OK;
                     }
-                    didWork = true;
                 }
             } else {
+                problem = TPProblem.NO_RECIPE;
                 craftingProgress = 0;
                 minTemperature = 0;
                 maxTemperature = 0;
@@ -176,18 +178,17 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
     }
 
     /**
-     * Find a recipe which matches the input fluid and/or item, AND for which there's space in the output tank and/or
-     * item slot for the recipe output.
+     * Find a recipe which matches the input fluid and/or item
+     *
      * @return a recipe, or null for no matching recipe
      */
     private ThermoPlantRecipe findApplicableRecipe() {
         for (ThermoPlantRecipe recipe : PneumaticCraftRecipeType.THERMO_PLANT.getRecipes(world).values()) {
-            if (recipe.matches(inputTank.getFluid(), itemHandler.getStackInSlot(0))) {
-                int filled = outputTank.fill(recipe.getOutputFluid(), FluidAction.SIMULATE);
-                ItemStack excess = outputItemHandler.insertItem(0, recipe.getOutputItem(), true);
-                if (filled == recipe.getOutputFluid().getAmount() && excess.isEmpty()) {
-                    return recipe;
-                }
+            if (recipe.matches(inputTank.getFluid(), inputItemHandler.getStackInSlot(0))) {
+                requiredPressure = recipe.getRequiredPressure();
+                minTemperature = recipe.getOperatingTemperature().getMin();
+                maxTemperature = recipe.getOperatingTemperature().getMax();
+                return recipe;
             }
         }
         return null;
@@ -224,7 +225,7 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
     public CompoundNBT write(CompoundNBT tag) {
         super.write(tag);
 
-        tag.put("Items", itemHandler.serializeNBT());
+        tag.put("Items", inputItemHandler.serializeNBT());
         tag.put("Output", outputItemHandler.serializeNBT());
         tag.putInt("craftingProgress", craftingProgress);
         return tag;
@@ -234,7 +235,7 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
     public void read(BlockState state, CompoundNBT tag) {
         super.read(state, tag);
 
-        itemHandler.deserializeNBT(tag.getCompound("Items"));
+        inputItemHandler.deserializeNBT(tag.getCompound("Items"));
         outputItemHandler.deserializeNBT(tag.getCompound("Output"));
         craftingProgress = tag.getInt("craftingProgress");
     }
@@ -263,7 +264,7 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
 
     @Override
     public IItemHandler getPrimaryInventory() {
-        return itemHandler;
+        return inputItemHandler;
     }
 
     @Override
@@ -299,50 +300,62 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
 
     @Override
     public int getComparatorValue() {
-        return hasRecipe ? 15 : 0;
+        return currentRecipe != null ? 15 : 0;
+    }
+
+    public static void clearCachedItemsAndFluids() {
+        acceptedItemCache.clear();
+        acceptedFluidCache.clear();
     }
 
     private class ThermopneumaticFluidTankInput extends SmartSyncTank {
-        private Fluid prevFluid;
+        private FluidStack prevFluid = FluidStack.EMPTY;
 
         ThermopneumaticFluidTankInput(int capacity){
             super(TileEntityThermopneumaticProcessingPlant.this, capacity);
         }
         
         @Override
-        public boolean isFluidValid(FluidStack fluid){
-            return fluid.isEmpty() || PneumaticCraftRecipeType.THERMO_PLANT.stream(world)
-                    .anyMatch(r -> r.getInputFluid().testFluid(fluid.getFluid()));
+        public boolean isFluidValid(FluidStack fluid) {
+            if (fluid.isEmpty() || acceptedFluidCache.contains(fluid.getFluid())) return true;
+            boolean accepted = PneumaticCraftRecipeType.THERMO_PLANT.stream(world).anyMatch(r -> r.getInputFluid().testFluid(fluid.getFluid()));
+            if (accepted) acceptedFluidCache.add(fluid.getFluid());
+            return accepted;
         }
 
         @Override
         protected void onContentsChanged() {
             super.onContentsChanged();
-            Fluid newFluid = getFluid().getFluid();
-            if (prevFluid != newFluid) {
+            FluidStack newFluid = getFluid();
+            if (prevFluid.getFluid() != newFluid.getFluid() || prevFluid.isEmpty() && !newFluid.isEmpty() || newFluid.isEmpty() && !prevFluid.isEmpty()) {
                 searchForRecipe = true;
-                prevFluid = newFluid;
+                prevFluid = getFluid().copy();
             }
         }
     }
 
-    private class ThermopneumaticFluidTankOutput extends SmartSyncTank {
-        ThermopneumaticFluidTankOutput(int capacity){
-            super(TileEntityThermopneumaticProcessingPlant.this, capacity);
+    private class InputItemHandler extends BaseItemStackHandler {
+        private Item prev = null;
+
+        public InputItemHandler(TileEntity te) {
+            super(te, INVENTORY_SIZE);
         }
 
         @Override
-        public FluidStack drain(FluidStack resource, FluidAction doDrain) {
-            FluidStack res = super.drain(resource, doDrain);
-            if (doDrain.execute() && !res.isEmpty()) searchForRecipe = true;
-            return res;
+        public boolean isItemValid(int slot, ItemStack stack) {
+            if (stack.isEmpty() || acceptedItemCache.contains(stack.getItem())) return true;
+            boolean accepted = PneumaticCraftRecipeType.THERMO_PLANT.stream(world).anyMatch(r -> r.getInputItem().test(stack));
+            if (accepted) acceptedItemCache.add(stack.getItem());
+            return accepted;
         }
 
         @Override
-        public FluidStack drain(int maxDrain, FluidAction doDrain) {
-            FluidStack res = super.drain(maxDrain, doDrain);
-            if (doDrain.execute() && !res.isEmpty()) searchForRecipe = true;
-            return res;
+        protected void onContentsChanged(int slot) {
+            super.onContentsChanged(slot);
+            if (getStackInSlot(0).getItem() != prev) {
+                searchForRecipe = true;
+            }
+            prev = getStackInSlot(0).getItem();
         }
     }
 
@@ -413,7 +426,7 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
         @Nonnull
         @Override
         public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-            return itemHandler.insertItem(0, stack, simulate);
+            return inputItemHandler.insertItem(0, stack, simulate);
         }
 
         @Nonnull
@@ -430,6 +443,21 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
         @Override
         public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
             return slot == 0 ? input.isItemValid(0, stack) : output.isItemValid(0, stack);
+        }
+    }
+
+    public enum TPProblem {
+        OK(""),
+        NO_RECIPE("pneumaticcraft.gui.tab.problems.noRecipe"),
+        NOT_ENOUGH_FLUID("pneumaticcraft.gui.tab.problems.notEnoughFluid"),
+        TOO_HOT("pneumaticcraft.gui.tab.problems.tooMuchHeat"),
+        TOO_COLD("pneumaticcraft.gui.tab.problems.notEnoughHeat"),
+        OUTPUT_BLOCKED("pneumaticcraft.gui.tab.problems.outputBlocked");
+
+        public final String key;
+
+        TPProblem(String key) {
+            this.key = key;
         }
     }
 }

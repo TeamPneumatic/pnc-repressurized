@@ -1,9 +1,7 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
-import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
@@ -12,6 +10,7 @@ import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.inventory.ContainerThermopneumaticProcessingPlant;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityThermopneumaticProcessingPlant;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityThermopneumaticProcessingPlant.TPProblem;
 import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.player.PlayerInventory;
@@ -115,16 +114,8 @@ public class GuiThermopneumaticProcessingPlant extends
     public void addProblems(List<ITextComponent> curInfo) {
         super.addProblems(curInfo);
 
-        if (!te.hasRecipe) {
-            curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.thermopneumaticProcessingPlant.noSufficientIngredients"));
-        } else {
-            int temp = te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY)
-                    .map(IHeatExchangerLogic::getTemperatureAsInt).orElseThrow(RuntimeException::new);
-            if (temp < te.minTemperature) {
-                curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.notEnoughHeat"));
-            } else if (temp > te.maxTemperature) {
-                curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.tooMuchHeat"));
-            }
+        if (te.problem != TPProblem.OK) {
+            curInfo.addAll(GuiUtils.xlateAndSplit(te.problem.key));
         }
     }
 

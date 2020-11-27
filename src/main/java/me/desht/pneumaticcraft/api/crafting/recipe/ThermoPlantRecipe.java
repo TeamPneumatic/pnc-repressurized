@@ -14,7 +14,7 @@ public abstract class ThermoPlantRecipe extends PneumaticCraftRecipe {
 
     /**
      * Check if this recipe matches the given input fluid and item.  This does not take any required temperature and
-     * pressure into account.
+     * pressure into account.  It will also match if the input fluid matches but is insufficient.
      *
      * @param inputFluid the input fluid
      * @param inputItem the input item

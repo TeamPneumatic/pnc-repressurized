@@ -1,0 +1,21 @@
+{
+  "type": "pneumaticcraft:thermo_plant",
+  "item_input": {
+    "tag": "forge:crops/potato"
+  },
+  "fluid_input": {
+    "type": "pneumaticcraft:fluid",
+    "tag": "pneumaticcraft:yeast_culture",
+    "amount": 100
+  },
+  "fluid_output": {
+    "fluid": "pneumaticcraft:ethanol",
+    "amount": 50
+  },
+  "temperature": {
+    "min_temp": 303,
+    "max_temp": 333
+  },
+  "speed": 0.25,
+  "exothermic": true
+}

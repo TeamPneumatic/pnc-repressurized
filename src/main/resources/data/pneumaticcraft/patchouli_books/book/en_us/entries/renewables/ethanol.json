@@ -14,7 +14,19 @@
     },
     {
       "type": "pneumaticcraft:thermo_plant",
-      "recipe": "pneumaticcraft:thermo_plant/ethanol"
+      "recipe": "pneumaticcraft:thermo_plant/ethanol_from_sugar"
+    },
+    {
+      "type": "pneumaticcraft:thermo_plant",
+      "recipe": "pneumaticcraft:thermo_plant/ethanol_from_melon"
+    },
+    {
+      "type": "pneumaticcraft:thermo_plant",
+      "recipe": "pneumaticcraft:thermo_plant/ethanol_from_potato"
+    },
+    {
+      "type": "pneumaticcraft:thermo_plant",
+      "recipe": "pneumaticcraft:thermo_plant/ethanol_from_apple"
     }
   ]
 }
