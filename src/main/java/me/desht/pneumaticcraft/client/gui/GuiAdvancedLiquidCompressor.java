@@ -46,7 +46,7 @@ public class GuiAdvancedLiquidCompressor extends GuiLiquidCompressor {
         super.addWarnings(curInfo);
 
         if (te.getHeatEfficiency() < 100) {
-            curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.advancedAirCompressor.efficiency", te.getHeatEfficiency() + "%%"));
+            curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.advancedAirCompressor.efficiency", te.getHeatEfficiency() + "%"));
         }
     }
     @Override

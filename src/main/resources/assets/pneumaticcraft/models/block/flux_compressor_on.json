@@ -1,11 +1,11 @@
 {
   "parent": "forge:block/default",
   "textures": {
-    "particle": "pneumaticcraft:block/flux_compressor_front",
+    "particle": "pneumaticcraft:block/flux_compressor_front_off",
     "down": "pneumaticcraft:block/flux_compressor_bottom",
     "up": "pneumaticcraft:block/flux_compressor_top",
     "north": "pneumaticcraft:block/flux_compressor_back",
-    "south": "pneumaticcraft:block/flux_compressor_front",
+    "south": "pneumaticcraft:block/flux_compressor_front_on",
     "west": "pneumaticcraft:block/flux_compressor_side",
     "east": "pneumaticcraft:block/flux_compressor_side"
   },

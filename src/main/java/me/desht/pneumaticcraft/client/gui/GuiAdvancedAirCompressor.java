@@ -45,7 +45,7 @@ public class GuiAdvancedAirCompressor extends GuiAirCompressor {
     public void addWarnings(List<ITextComponent> curInfo) {
         super.addWarnings(curInfo);
         if (te.getHeatEfficiency() < 100) {
-            curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.advancedAirCompressor.efficiency", te.getHeatEfficiency() + "%%"));
+            curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.advancedAirCompressor.efficiency", te.getHeatEfficiency() + "%"));
         }
     }
 

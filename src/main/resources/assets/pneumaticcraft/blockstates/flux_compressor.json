@@ -1,8 +1,12 @@
 {
   "variants": {
-    "facing=north": { "model": "pneumaticcraft:block/flux_compressor", "y": 180 },
-    "facing=south": { "model": "pneumaticcraft:block/flux_compressor" },
-    "facing=west": { "model": "pneumaticcraft:block/flux_compressor", "y": 90 },
-    "facing=east": { "model": "pneumaticcraft:block/flux_compressor", "y": 270 }
+    "active=false,facing=north": { "model": "pneumaticcraft:block/flux_compressor_off", "y": 180 },
+    "active=false,facing=south": { "model": "pneumaticcraft:block/flux_compressor_off" },
+    "active=false,facing=west": { "model": "pneumaticcraft:block/flux_compressor_off", "y": 90 },
+    "active=false,facing=east": { "model": "pneumaticcraft:block/flux_compressor_off", "y": 270 },
+    "active=true,facing=north": { "model": "pneumaticcraft:block/flux_compressor_on", "y": 180 },
+    "active=true,facing=south": { "model": "pneumaticcraft:block/flux_compressor_on" },
+    "active=true,facing=west": { "model": "pneumaticcraft:block/flux_compressor_on", "y": 90 },
+    "active=true,facing=east": { "model": "pneumaticcraft:block/flux_compressor_on", "y": 270 }
   }
 }

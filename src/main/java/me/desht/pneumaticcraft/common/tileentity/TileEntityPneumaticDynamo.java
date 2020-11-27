@@ -38,7 +38,7 @@ public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implement
     private int rfPerTick;
     @GuiSynced
     private int airPerTick;
-    public boolean isEnabled;
+    private boolean isEnabled;
     @GuiSynced
     private final RedstoneController<TileEntityPneumaticDynamo> rsController = new RedstoneController<>(this);
     @GuiSynced
@@ -73,7 +73,7 @@ public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implement
             } else {
                 newEnabled = false;
             }
-            if (world.getGameTime() % 20 == 0 && newEnabled != isEnabled) {
+            if ((world.getGameTime() & 0xf) == 0 && newEnabled != isEnabled) {
                 isEnabled = newEnabled;
                 BlockState state = world.getBlockState(pos);
                 world.setBlockState(pos, state.with(BlockPneumaticDynamo.ACTIVE, isEnabled));

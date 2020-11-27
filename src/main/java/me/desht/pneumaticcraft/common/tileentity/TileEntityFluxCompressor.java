@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
+import me.desht.pneumaticcraft.common.block.BlockPneumaticDynamo;
 import me.desht.pneumaticcraft.common.config.PNCConfig.Common.Machines;
 import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
@@ -37,6 +38,7 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase
     @GuiSynced
     private float airPerTick;
     private float airBuffer;
+    private boolean isEnabled;
     @GuiSynced
     private final RedstoneController<TileEntityFluxCompressor> rsController = new RedstoneController<>(this);
     @GuiSynced
@@ -66,6 +68,7 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase
                         * (Machines.fluxCompressorEfficiency / 100f));
                 rfPerTick = (int) (BASE_FE_PRODUCTION * this.getSpeedUsageMultiplierFromUpgrades());
             }
+            boolean newEnabled = false;
             if (rsController.shouldRun() && energy.getEnergyStored() >= rfPerTick) {
                 airBuffer += airPerTick;
                 if (airBuffer >= 1f) {
@@ -75,6 +78,12 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase
                     heatExchanger.addHeat(toAdd / 20d);
                 }
                 energy.extractEnergy(rfPerTick, false);
+                newEnabled = true;
+            }
+            if ((world.getGameTime() & 0x7) == 0 && newEnabled != isEnabled) {
+                isEnabled = newEnabled;
+                BlockState state = world.getBlockState(pos);
+                world.setBlockState(pos, state.with(BlockPneumaticDynamo.ACTIVE, isEnabled));
             }
             airHandler.setSideLeaking(hasNoConnectedAirHandlers() ? getRotation().getOpposite() : null);
         }

@@ -75,7 +75,7 @@ public class GuiPneumaticDynamo extends GuiPneumaticContainerBase<ContainerPneum
     public void addProblems(List<ITextComponent> curInfo) {
         super.addProblems(curInfo);
         if (te.getEfficiency() < 100) {
-            curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.advancedAirCompressor.efficiency", te.getEfficiency() + "%%"));
+            curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.advancedAirCompressor.efficiency", te.getEfficiency() + "%"));
         }
     }
 
