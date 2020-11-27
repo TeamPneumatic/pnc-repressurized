@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.hacking.block;
 
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableBlock;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.JukeboxBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Hand;
@@ -22,7 +23,8 @@ public class HackableJukebox implements IHackableBlock {
 
     @Override
     public boolean canHack(IBlockReader world, BlockPos pos, PlayerEntity player) {
-        return world.getBlockState(pos).get(JukeboxBlock.HAS_RECORD);
+        BlockState state = world.getBlockState(pos);
+        return state.getBlock() == Blocks.JUKEBOX && state.get(JukeboxBlock.HAS_RECORD);
     }
 
     @Override
