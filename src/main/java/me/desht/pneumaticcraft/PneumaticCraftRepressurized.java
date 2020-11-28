@@ -157,7 +157,6 @@ public class PneumaticCraftRepressurized {
 
     private void addReloadListeners(AddReloadListenerEvent event) {
         event.addListener(PneumaticCraftRecipeType.getCacheReloadListener());
-        event.addListener(new AmadronOfferManager.ReloadListener());
         event.addListener(new BlockHeatProperties.ReloadListener());
     }
 

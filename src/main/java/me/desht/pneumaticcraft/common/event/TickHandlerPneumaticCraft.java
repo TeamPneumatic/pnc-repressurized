@@ -24,6 +24,9 @@ public class TickHandlerPneumaticCraft {
                 // In case world are going to get their own thread: MinecraftServer.getServer().worldTickTimes.get(event.world.provider.getDimension())
                 NetworkHandler.sendToDimension(new PacketServerTickTime(tickTime), event.world.getDimensionKey());
             }
+            if (event.world.getDimensionKey() == World.OVERWORLD) {
+                AmadronOfferManager.getInstance().maybeRebuildActiveOffers(event.world);
+            }
         }
     }
 

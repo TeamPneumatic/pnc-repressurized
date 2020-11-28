@@ -1,7 +1,5 @@
 package me.desht.pneumaticcraft.common.recipes.amadron;
 
-import com.google.gson.*;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.config.subconfig.AmadronPlayerOffers;
@@ -9,24 +7,21 @@ import me.desht.pneumaticcraft.common.entity.living.EntityAmadrone;
 import me.desht.pneumaticcraft.common.inventory.ContainerAmadron;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncAmadronOffers;
+import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Names;
-import net.minecraft.client.resources.JsonReloadListener;
 import net.minecraft.entity.merchant.villager.VillagerProfession;
 import net.minecraft.entity.merchant.villager.VillagerTrades;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.MerchantOffer;
-import net.minecraft.profiler.IProfiler;
-import net.minecraft.resources.IResourceManager;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import java.util.*;
 import java.util.stream.IntStream;
@@ -46,6 +41,8 @@ public enum AmadronOfferManager {
     private final Map<ResourceLocation, AmadronOffer> allOffers = new HashMap<>();
     // And these are the offers which are actually available via the Amadron Tablet (and shown in JEI) at this time
     private final Map<ResourceLocation, AmadronOffer> activeOffers = new LinkedHashMap<>();
+    // rebuild offers?  true initially and after a /reload
+    private boolean rebuildRequired = true;
 
     public static AmadronOfferManager getInstance() {
         return INSTANCE;
@@ -154,19 +151,6 @@ public enum AmadronOfferManager {
     }
 
     /**
-     * Called on server start or reload
-     *
-     * @param resourceList a collection of all the static offers loaded as recipes
-     */
-    public void initOffers(Map<ResourceLocation, JsonElement> resourceList) {
-        loadRecipeOffers(resourceList);
-
-        setupVillagerTrades();
-
-        compileActiveOffersList();
-    }
-
-    /**
      * Called when the server is stopping to ensure everything is serialized
      */
     public void saveAll() {
@@ -178,7 +162,7 @@ public enum AmadronOfferManager {
     }
 
     /**
-     * Called by initOffers(), and periodically to shuffle new periodic offers in
+     * Called on a resource reload (including startup) and periodically to shuffle new periodic offers in
      */
     public void compileActiveOffersList() {
         activeOffers.clear();
@@ -219,6 +203,7 @@ public enum AmadronOfferManager {
 
         // send active list to all clients (but not the local player for an integrated server)
         NetworkHandler.sendNonLocal(new PacketSyncAmadronOffers());
+        Log.info(activeOffers.size() + " active Amadron offers to sync to clients");
     }
 
     public void addPlayerOffers() {
@@ -276,31 +261,8 @@ public enum AmadronOfferManager {
         }
     }
 
-    private void loadRecipeOffers(Map<ResourceLocation, JsonElement> resourceList) {
-        staticOffers.clear();
-        periodicOffers.clear();
-        resourceList.forEach((id, jsonElement) -> {
-            if (jsonElement.isJsonObject()) {
-                JsonObject json = jsonElement.getAsJsonObject();
-                if (JSONUtils.getString(json, "type", "").equals("pneumaticcraft:amadron")) {
-                    try {
-                        AmadronOffer offer = AmadronOffer.fromJson(id, json);
-                        if (offer.isStaticOffer()) {
-                            staticOffers.add(offer);
-                        } else {
-                            periodicOffers.computeIfAbsent(offer.getTradeLevel(), l -> new ArrayList<>()).add(offer);
-                        }
-                    } catch (CommandSyntaxException | JsonSyntaxException e) {
-                        Log.error("Syntax error for offer id " + id + ": " + e.getMessage());
-                        Log.error(ExceptionUtils.getStackTrace(e));
-                    }
-                }
-            }
-        });
-    }
-
     private void setupVillagerTrades() {
-        // this only needs to be done once, on first-time data load
+        // this only needs to be done once, on first load
         if (villagerTrades.isEmpty()) {
             Set<VillagerProfession> validSet = new HashSet<>();
             Random rand = new Random();
@@ -326,16 +288,29 @@ public enum AmadronOfferManager {
         }
     }
 
-    public static class ReloadListener extends JsonReloadListener {
-        private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().disableHtmlEscaping().create();
+    public void rebuildRequired() {
+        rebuildRequired = true;
+    }
 
-        public ReloadListener() {
-            super(GSON, "recipes");
-        }
+    public void maybeRebuildActiveOffers(World world) {
+        if (rebuildRequired) {
+            Log.info("Rebuilding Amadron offer list");
 
-        @Override
-        protected void apply(Map<ResourceLocation, JsonElement> resourceList, IResourceManager resourceManagerIn, IProfiler profilerIn) {
-            AmadronOfferManager.getInstance().initOffers(resourceList);
+            staticOffers.clear();
+            periodicOffers.clear();
+
+            PneumaticCraftRecipeType.AMADRON_OFFERS.getRecipes(world).values().forEach(offer -> {
+                if (offer.isStaticOffer()) {
+                    staticOffers.add(offer);
+                } else {
+                    periodicOffers.computeIfAbsent(offer.getTradeLevel(), l -> new ArrayList<>()).add(offer);
+                }
+            });
+
+            setupVillagerTrades();
+            compileActiveOffersList();
+
+            rebuildRequired = false;
         }
     }
 

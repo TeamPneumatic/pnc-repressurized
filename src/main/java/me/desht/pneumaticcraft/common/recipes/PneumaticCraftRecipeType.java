@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.common.fluid.FuelRegistry;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketClearRecipeCache;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
+import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.recipes.machine.*;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityFluidMixer;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberInterface;
@@ -93,6 +94,7 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
         TileEntityFluidMixer.clearCachedFluids();
         TileEntityPressureChamberInterface.clearCachedItems();
         TileEntityThermopneumaticProcessingPlant.clearCachedItemsAndFluids();
+        AmadronOfferManager.getInstance().rebuildRequired();
     }
 
     public Map<ResourceLocation, T> getRecipes(World world) {

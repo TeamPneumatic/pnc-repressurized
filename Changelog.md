@@ -63,6 +63,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed client NPE when mousing over unconfigured Coordinate progwidget in Programmer GUI
 * Fixed pressure text on Pneumatic Helmet HUD wrapping sometimes and looking derpy
   * I couldn't reproduce this myself, but forced a minimum width on the stat widget
+* Fixed KubeJS (or indeed any mod which can modify the recipe manager) not being able to remove Amadron offers
 
 ## 2.6.2-73 (20 Nov 2020)
 

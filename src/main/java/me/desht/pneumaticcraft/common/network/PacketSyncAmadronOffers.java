@@ -8,7 +8,6 @@ import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.function.Supplier;
 
 /**
@@ -23,20 +22,15 @@ public class PacketSyncAmadronOffers {
     }
 
     public PacketSyncAmadronOffers(PacketBuffer buf) {
-        this.activeOffers = readOffers(buf);
-    }
-
-    private Collection<AmadronOffer> readOffers(PacketBuffer buf) {
+        this.activeOffers = new ArrayList<>();
         int offerCount = buf.readVarInt();
-        List<AmadronOffer> offers = new ArrayList<>();
         for (int i = 0; i < offerCount; i++) {
             if (buf.readBoolean()) {
-                offers.add(AmadronPlayerOffer.playerOfferFromBuf(buf.readResourceLocation(), buf));
+                activeOffers.add(AmadronPlayerOffer.playerOfferFromBuf(buf.readResourceLocation(), buf));
             } else {
-                offers.add(AmadronOffer.offerFromBuf(buf.readResourceLocation(), buf));
+                activeOffers.add(AmadronOffer.offerFromBuf(buf.readResourceLocation(), buf));
             }
         }
-        return offers;
     }
 
     public void toBytes(PacketBuffer buf) {
