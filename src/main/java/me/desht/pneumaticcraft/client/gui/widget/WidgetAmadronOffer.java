@@ -38,8 +38,15 @@ public class WidgetAmadronOffer extends Widget implements ITooltipProvider {
         if (offer.getOutput().getType() == AmadronTradeResource.Type.FLUID) {
             subWidgets.add(new WidgetFluidStack(x + 51, y + 15, offer.getOutput().getFluid(), null));
         }
-        tooltipRectangles[0] = new Rectangle2d(x + 6, y + 15, 16, 16);
-        tooltipRectangles[1] = new Rectangle2d(x + 51, y + 15, 16, 16);
+        tooltipRectangles[0] = new Rectangle2d(x + 5, y + 14, 18, 18);
+        tooltipRectangles[1] = new Rectangle2d(x + 50, y + 14, 18, 18);
+    }
+
+    @Override
+    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+        super.render(matrixStack, mouseX, mouseY, partialTicks);
+
+        subWidgets.forEach(w -> w.render(matrixStack, mouseX, mouseY, partialTicks));
     }
 
     @Override
@@ -50,9 +57,6 @@ public class WidgetAmadronOffer extends Widget implements ITooltipProvider {
                 Minecraft.getInstance().getTextureManager().bindTexture(Textures.WIDGET_AMADRON_OFFER);
                 RenderSystem.color4f(1f, canBuy ? 1f : 0.4f, canBuy ? 1f : 0.4f, canBuy ? 0.75f : 1f);
                 AbstractGui.blit(matrixStack, x, y, 0, 0, width, height, 256, 256);
-            }
-            for (Widget widget : subWidgets) {
-                widget.renderButton(matrixStack, mouseX, mouseY, partialTick);
             }
             fr.drawString(matrixStack, offer.getVendor(), x + 2, y + 2, 0xFF000000);
             boolean playerOffer = offer instanceof AmadronPlayerOffer;
@@ -78,6 +82,7 @@ public class WidgetAmadronOffer extends Widget implements ITooltipProvider {
 
     @Override
     public void addTooltip(double mouseX, double mouseY, List<ITextComponent> curTip, boolean shiftPressed) {
+        int l = curTip.size();
         for (Widget widget : subWidgets) {
             if (widget.isHovered() && widget instanceof ITooltipProvider) {
                 ((ITooltipProvider) widget).addTooltip(mouseX, mouseY, curTip, shiftPressed);

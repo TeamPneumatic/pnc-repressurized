@@ -64,6 +64,12 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed pressure text on Pneumatic Helmet HUD wrapping sometimes and looking derpy
   * I couldn't reproduce this myself, but forced a minimum width on the stat widget
 * Fixed KubeJS (or indeed any mod which can modify the recipe manager) not being able to remove Amadron offers
+* Fixed client crash with Pneumatic Helmet hacking of Jukeboxes
+* Amadron GUI cosmetic fixes
+  * The search textfield is no longer focused by default, since right-clicking of offers doesn't work when it's
+    focused, which is highly unintuitive.  It's still easy to search: press Tab, then type your string.
+  * Fixed fluid resources in Amadron offers lacking their tooltip
+  * Fixed tooltip overlap on edge of right-hand slot in an offer leading to garbled tooltip
 
 ## 2.6.2-73 (20 Nov 2020)
 

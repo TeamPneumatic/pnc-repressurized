@@ -63,7 +63,6 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
         customTradesTab = addAnimatedStat(xlate("pneumaticcraft.gui.tab.amadron.customTrades"), new ItemStack(Items.DIAMOND), 0xFFD07000, false);
         customTradesTab.setMinimumExpandedDimensions(80, 50);
         searchBar = new WidgetTextField(font, guiLeft + 79, guiTop + 40, 73, font.FONT_HEIGHT);
-        searchBar.setFocused2(true);
         searchBar.setResponder(s -> sendDelayed(8));
         addButton(searchBar);
         setListener(searchBar);
