@@ -174,27 +174,26 @@ public enum AmadronOfferManager {
             addOffer(allOffers, offer);
         });
 
-        // then some randomly-picked periodic & villager trades
-        periodicOffers.values().forEach(offers -> offers.forEach(offer -> addOffer(allOffers, offer)));
-        villagerTrades.values().forEach(offers -> offers.forEach(offer -> addOffer(allOffers, offer)));
+        Random rand = new Random();
 
-        int nProfessions = validProfessions.size() + (periodicOffers.isEmpty() ? 0 : 1);
-        if (nProfessions > 0) {  // should always be > 0, but sanity checking...
-            Random rand = new Random();
-            for (int i = 0; i < PNCConfig.Common.Amadron.numPeriodicOffers; i++) {
-                int p = rand.nextInt(nProfessions);
-                AmadronOffer offer;
-                if (!periodicOffers.isEmpty() && p == validProfessions.size()) {
-                    offer = pickRandomPeriodicTrade(rand);
-                } else {
-                    if (p == validProfessions.size()) {
-                        p = rand.nextInt(validProfessions.size());
-                    }
-                    offer = pickRandomVillagerTrade(validProfessions.get(p), rand);
-                }
-                if (offer != null) {
-                    addOffer(activeOffers, offer);
-                }
+        // random periodic trades
+        int s1 = allOffers.size();
+        periodicOffers.values().forEach(offers -> offers.forEach(offer -> addOffer(allOffers, offer)));
+        int nPeriodics = allOffers.size() - s1;
+        for (int i = 0; i < Math.min(nPeriodics, PNCConfig.Common.Amadron.numPeriodicOffers); i++) {
+            AmadronOffer offer = pickRandomPeriodicTrade(rand);
+            if (offer != null) addOffer(activeOffers, offer);
+        }
+
+        // random villager trades
+        int s2 = allOffers.size();
+        villagerTrades.values().forEach(offers -> offers.forEach(offer -> addOffer(allOffers, offer)));
+        int nVillager = allOffers.size() - s2;
+        if (!validProfessions.isEmpty()) {
+            for (int i = 0; i < Math.min(nVillager, PNCConfig.Common.Amadron.numVillagerOffers); i++) {
+                int profIdx = rand.nextInt(validProfessions.size());
+                AmadronOffer offer = pickRandomVillagerTrade(validProfessions.get(profIdx), rand);
+                if (offer != null) addOffer(activeOffers, offer);
             }
         }
 
@@ -215,7 +214,7 @@ public enum AmadronOfferManager {
     }
 
     private AmadronOffer pickRandomPeriodicTrade(Random rand) {
-        int level = getWeightedTradeLevel();
+        int level = getWeightedTradeLevel(rand);
         do {
             List<AmadronOffer> offers = periodicOffers.get(level);
             if (offers != null && !offers.isEmpty()) {
@@ -230,7 +229,7 @@ public enum AmadronOfferManager {
     }
 
     private AmadronOffer pickRandomVillagerTrade(VillagerProfession profession, Random rand) {
-        int level = getWeightedTradeLevel();
+        int level = getWeightedTradeLevel(rand);
         do {
             String key = profession.toString() + "_" + level;
             List<AmadronOffer> offers = villagerTrades.get(key);
@@ -245,9 +244,9 @@ public enum AmadronOfferManager {
         return null;
     }
 
-    private int getWeightedTradeLevel() {
-        // weighted villager trade level makes higher level trades much rarer
-        int n = new Random().nextInt(100);
+    private int getWeightedTradeLevel(Random rand) {
+        // weighted trade level makes higher level trades much rarer
+        int n = rand.nextInt(100);
         if (n < 50) {
             return 1;
         } else if (n < 75) {

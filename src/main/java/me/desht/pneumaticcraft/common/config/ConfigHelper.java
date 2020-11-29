@@ -152,6 +152,7 @@ public class ConfigHelper {
         PNCConfig.Common.Heat.ambientTempHeightModifier = common.heat.ambientTemperatureHeightModifier.get();
 
         PNCConfig.Common.Amadron.numPeriodicOffers = common.amadron.numPeriodicOffers.get();
+        PNCConfig.Common.Amadron.numVillagerOffers = common.amadron.numVillagerOffers.get();
         PNCConfig.Common.Amadron.reshuffleInterval = common.amadron.reshuffleInterval.get();
         PNCConfig.Common.Amadron.maxTradesPerPlayer = common.amadron.maxTradesPerPlayer.get();
         PNCConfig.Common.Amadron.notifyOfDealMade = common.amadron.notifyOfDealMade.get();

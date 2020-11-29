@@ -101,6 +101,7 @@ public class WidgetAmadronOffer extends Widget implements ITooltipProvider {
             curTip.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.inBasket", shoppingAmount));
             if (offer.getStock() >= 0) curTip.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.stock", offer.getStock()));
             if (AmadronPlayerOffer.isPlayerOffer(offer, Minecraft.getInstance().player)) {
+                curTip.add(StringTextComponent.EMPTY);
                 curTip.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.amadron.amadronWidget.sneakRightClickToRemove"));
             }
             if (Minecraft.getInstance().gameSettings.advancedItemTooltips) {

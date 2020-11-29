@@ -104,6 +104,7 @@ public class CommonConfig {
 
     public static class Amadron {
         ForgeConfigSpec.IntValue numPeriodicOffers;
+        ForgeConfigSpec.IntValue numVillagerOffers;
         ForgeConfigSpec.IntValue reshuffleInterval;
         ForgeConfigSpec.IntValue maxTradesPerPlayer;
         ForgeConfigSpec.BooleanValue notifyOfTradeAddition;
@@ -489,9 +490,13 @@ public class CommonConfig {
 
         builder.push("Amadron");
         amadron.numPeriodicOffers = builder
-                .comment("Number of periodic offers randomly selected for the 'live' offer list")
+                .comment("Number of periodic offers randomly selected for the 'live' offer list. Note: this a maximum, and the actual number chosen each time may be less.")
                 .translation("pneumaticcraft.config.common.amadron.num_periodic_offers")
-                .defineInRange("numPeriodicOffers", 20,0, Integer.MAX_VALUE);
+                .defineInRange("numPeriodicOffers", 10,0, Integer.MAX_VALUE);
+        amadron.numVillagerOffers = builder
+                .comment("Number of villager offers randomly selected for the 'live' offer list. Note: this a maximum, and the actual number chosen each time may be less.")
+                .translation("pneumaticcraft.config.common.amadron.num_villager_offers")
+                .defineInRange("numVillagerOffers", 20,0, Integer.MAX_VALUE);
         amadron.reshuffleInterval = builder
                 .comment("Time in ticks between each periodic offer reshuffle (24000 ticks = one Minecraft day)")
                 .translation("pneumaticcraft.config.common.amadron.reshuffle_interval")
@@ -499,7 +504,7 @@ public class CommonConfig {
         amadron.maxTradesPerPlayer = builder
                 .comment("Max number of custom trades a player may add")
                 .translation("pneumaticcraft.config.common.amadron.max_trades_per_player")
-                .defineInRange("max_trades_per_player", 50, 1, Integer.MAX_VALUE);
+                .defineInRange("max_trades_per_player", 50, 0, Integer.MAX_VALUE);
         amadron.notifyOfTradeAddition = builder
                 .comment("Broadcast a notification when player adds a custom trade")
                 .translation("pneumaticcraft.config.common.amadron.notify_of_trade_addition")
@@ -509,7 +514,7 @@ public class CommonConfig {
                 .translation("pneumaticcraft.config.common.amadron.notify_of_trade_removal")
                 .define("notify_of_trade_removal", true);
         amadron.notifyOfDealMade = builder
-                .comment("Broadcast a notification when an Amadron trade is made")
+                .comment("Broadcast a notification when a custom Amadron trade is made")
                 .translation("pneumaticcraft.config.common.amadron.notify_of_deal_made")
                 .define("notify_of_deal_made", true);
         builder.pop();
