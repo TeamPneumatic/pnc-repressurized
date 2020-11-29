@@ -206,7 +206,7 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
     protected void addProblems(List<ITextComponent> curInfo) {
         super.addProblems(curInfo);
         if (container.problemState != EnumProblemState.NO_PROBLEMS) {
-            curInfo.add(xlate(container.problemState.getTranslationKey()));
+            curInfo.addAll(GuiUtils.xlateAndSplit(container.problemState.getTranslationKey()));
         }
     }
 
