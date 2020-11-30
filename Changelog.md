@@ -6,6 +6,34 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.15.2
 
+## 1.5.3-89 (30 Nov 2020)
+
+## Updates
+
+* Thermopneumatic Processing Plant now has Comparator support for "has work" condition (like the Refinery does)
+* Area Widgets now show their coords & area type in Programmer GUI (when "Show Info" is checked)
+* Drone programming: item variables can now be displayed using the "${varname}" notation
+* Programmer now warns if multiple Item Filter widgets are attached to a Item Assign widget
+* It is now a compile error in the Programmer to use an Area widget with a type other than Box with those widgets which can only use a Box shape
+  * These widgets are: Entity Import, Entity Attack, Entity Right Click, Condition: Entity, and Pickup Items
+  * These have always required an area type of Box, but previously accepted other area types, silently interpreting as Box type
+  * New behaviour is clearer and less misleading
+  * Existing already-programmed drones will continue to function as before (it's a compile-time check)
+* Programmable Controller now accepts up to 6 Magnet Upgrades to auto-pickup items (same as actual Drones)
+* Magnet Upgrade in Drones and Programmable Controllers now only functions when the drone/PC actually has a program to run
+* Smarter behaviour when using a GPS Area Tool to set a coordinate in the Area progwidget GUI (using the "Inventory Search" button)
+  * Now left-clicking the tool selects P1, and right-clicking it selects P2
+  * Previous behaviour of just selecting an arbitrary point in the tool's area was not very useful
+* Shift-clicking a GPS Area Tool on the background in the Programmer GUI will now create two coordinate widgets, if possible
+  * The two coordinates correspond to the P1 and P2 points of the GPS Area Tool
+
+## Fixes
+
+* Drone debugger widget view can now be dragged around again in GUI, like it could in 1.12.2
+* Memory Stick left click (to toggle xp auto-absorb) now works when left-clicking air
+* Fixed Programmable Controller minidrones "cloning" themselves on the client when leaving and returning to an area
+* Fixed client crash with Pneumatic Helmet hacking of Jukeboxes
+
 ## 1.5.2-83 (25 Oct 2020)
 
 ### Updates
