@@ -194,7 +194,7 @@ public class ClientUtils {
             String base = item instanceof BlockItem ? "gui.tooltip.block" : "gui.tooltip.item";
             String k = String.join(".", base, item.getRegistryName().getNamespace(), item.getRegistryName().getPath(), subKey);
             if (I18n.hasKey(k)) {
-                tooltip.addAll(PneumaticCraftUtils.asStringComponent(PneumaticCraftUtils.splitString(k))
+                tooltip.addAll(PneumaticCraftUtils.asStringComponent(PneumaticCraftUtils.splitString(I18n.format(k)))
                         .stream().map(s -> s.applyTextStyle(TextFormatting.GRAY)).collect(Collectors.toList()));
             }
         }
