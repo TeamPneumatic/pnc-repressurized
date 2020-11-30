@@ -29,15 +29,15 @@ Changes are in reverse chronological order; newest changes at the top.
 * Added client-side config setting "programmer_gui_pauses" to pause the game in SSP when the Programmer is being used
   * Default "false", which is the same as previous behaviour
   * This has no effect in SMP, of course
-* Smarter behaviour when using a GPS Area Tool to set a coordinate in the Area progwidget GUI
-  * Now left-clicking the item will select P1, and right-clicking will select P2
-  * Previous behaviour of just selecting an arbitrary point in the area was not very intuitive
+* Smarter behaviour when using a GPS Area Tool to set a coordinate in the Area progwidget GUI (using the "Inventory Search" button)
+  * Now left-clicking the tool selects P1, and right-clicking it selects P2
+  * Previous behaviour of just selecting an arbitrary point in the tool's area was not very useful
 * Shift-clicking a GPS Area Tool on the background in the Programmer GUI will now create two coordinate widgets, if possible
   * The two coordinates correspond to the P1 and P2 points of the GPS Area Tool
 * Fluid tagging changes (mainly around fuels)
   * All fuels are now tagged in the "forge:XXX" namespace for maximum inter-mod compat
-  * Immersive Engineering Ethanol & Plant Oil are equivalent to PNC:R Ethanol & Vegetable Oil, respectively
-  * Immersive Petroleum Crude Oil, Lubricant & Gasoline are equivalent to their PNC:R counterparts
+  * Immersive Engineering's Ethanol & Plant Oil are equivalent to PNC:R Ethanol & Vegetable Oil, respectively
+  * Immersive Petroleum's Crude Oil, Lubricant & Gasoline are equivalent to their PNC:R counterparts
   * API break: `IFuelRegistry.registerFuel()` methods now take a `ITag<Fluid>` rather than a `Fluid`
   * PneumaticCraft "Oil" is now known as "Crude Oil" (translation change only; internal block/fluid ID has not changed)
   * Liquid Compressor GUI: fuels tab now shows the fluid's mod when there are multiple fluids with the same name
@@ -50,10 +50,17 @@ Changes are in reverse chronological order; newest changes at the top.
   * Sugar can still be used, and processes faster than it used to
   * Beware: potatoes without Yeast Culture will make Vegetable Oil if the TPP has enough pressure
   * So don't pressurize your TPP if you intend to make Ethanol with it!
-* Mekanism Uranium Blocks can now be used as heat sources, same as Immersive Engineering Uranium Blocks
+* Mekanism Uranium Blocks can now be used as heat sources, same heat properties as Immersive Engineering Uranium Blocks (not very hot, but last for ages)
   * They will eventually turn into Mekanism Lead Blocks
 * Pneumatic Helmet Block Tracker: "Miscellaneous" setting will now also find Bee Nests
   * Useful to find them in thick forests...
+* Amadron changes
+  * Added new config setting in `config/pneumaticcraft-common.toml`: "numVillagerOffers", in addition to the existing "numPeriodicOffers"
+  * Periodic trades (from JSON files) are now shuffled into the active Amadron offer list separately from villager trades instead of all being in one big pool
+  * This gives server admins more control over how many periodic trades will be shown on each shuffle
+  * "numVillagerOffers" and "numPeriodicOffers" set the maximum number of each offer type which can be added when the active trades are shuffled
+  * You can set either down to 0, to completely prevent any of that offer type being added
+  * Also, "max_trades_per_player" can now be set to 0 (previous minimum 1) to disable player->player trades being added
 
 ### Fixes
 * Fixed enablement of reach distance upgrade (added in 2.6.2) persisting across world changes in SSP
@@ -63,7 +70,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed client NPE when mousing over unconfigured Coordinate progwidget in Programmer GUI
 * Fixed pressure text on Pneumatic Helmet HUD wrapping sometimes and looking derpy
   * I couldn't reproduce this myself, but forced a minimum width on the stat widget
-* Fixed KubeJS (or indeed any mod which can modify the recipe manager) not being able to remove Amadron offers
+* Fixed KubeJS (or indeed any mod which can modify the recipe manager) not being able to remove or modify Amadron offers
 * Fixed client crash with Pneumatic Helmet hacking of Jukeboxes
 * Amadron GUI cosmetic fixes
   * The search textfield is no longer focused by default, since right-clicking of offers doesn't work when it's
