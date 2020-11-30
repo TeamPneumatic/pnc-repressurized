@@ -103,10 +103,10 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         if (res.length() > 0) res.append("${br}");
         if (!coord2Variable.isEmpty()) {
             res.append("\"").append(coord2Variable).append("\"");
-            res.append(type.toString());
+            res.append("${br}").append(type.toString());
         } else if (x2 != 0 && y2 != 0 && z2 != 0) {
             res.append(String.format("%d, %d, %d", x2, y2, z2));
-            res.append(type.toString());
+            res.append("${br}").append(type.toString());
         }
         return res.toString();
     }
