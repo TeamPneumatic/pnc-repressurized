@@ -40,8 +40,12 @@ public class EntityVortex extends ThrowableEntity {
         super.tick();
 
         // onImpact() is no longer called for blocks with no collision box, like shrubs & crops, as of MC 1.16.2
-        if (!world.isRemote && vortexBreakable(world.getBlockState(getPosition()).getBlock())) {
-            handleVortexCollision(getOnPosition());
+        if (!world.isRemote) {
+            if (vortexBreakable(world.getBlockState(getOnPosition()).getBlock())) {
+                handleVortexCollision(getOnPosition());
+            } else if (vortexBreakable(world.getBlockState(getPosition()).getBlock())) {
+                handleVortexCollision(getPosition());
+            }
         }
 
         setMotion(getMotion().scale(0.95));
