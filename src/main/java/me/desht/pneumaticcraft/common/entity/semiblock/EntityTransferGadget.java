@@ -2,6 +2,8 @@ package me.desht.pneumaticcraft.common.entity.semiblock;
 
 import me.desht.pneumaticcraft.api.semiblock.IDirectionalSemiblock;
 import me.desht.pneumaticcraft.common.util.IOHelper;
+import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
+import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -11,9 +13,9 @@ import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidUtil;
@@ -21,6 +23,7 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
 
 import java.util.List;
+import java.util.Locale;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -34,17 +37,8 @@ public class EntityTransferGadget extends EntitySemiblockBase implements IDirect
     private static final DataParameter<Integer> IO_MODE = EntityDataManager.createKey(EntityTransferGadget.class, DataSerializers.VARINT);
     private static final DataParameter<Integer> SIDE = EntityDataManager.createKey(EntityTransferGadget.class, DataSerializers.VARINT);
 
-    public enum EnumInputOutput {
-        INPUT,
-        OUTPUT;
-
-        EnumInputOutput toggle() {
-            return this == INPUT ? OUTPUT : INPUT;
-        }
-    }
-
     private int counter;
-    public Vector3d renderingOffset;
+//    public Vector3d renderingOffset;
 
     public EntityTransferGadget(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
@@ -54,7 +48,7 @@ public class EntityTransferGadget extends EntitySemiblockBase implements IDirect
     protected void registerData() {
         super.registerData();
 
-        getDataManager().register(IO_MODE, EnumInputOutput.OUTPUT.ordinal());
+        getDataManager().register(IO_MODE, IOMode.OUTPUT.ordinal());
         getDataManager().register(SIDE, Direction.UP.ordinal());
     }
 
@@ -72,7 +66,7 @@ public class EntityTransferGadget extends EntitySemiblockBase implements IDirect
     public void onPlaced(PlayerEntity player, ItemStack stack, Direction facing) {
         super.onPlaced(player, stack, facing);
 
-        setIOMode(EnumInputOutput.OUTPUT);
+        setIOMode(IOMode.OUTPUT);
         setSide(facing);
     }
 
@@ -108,31 +102,11 @@ public class EntityTransferGadget extends EntitySemiblockBase implements IDirect
         getDataManager().set(SIDE, facing.ordinal());
     }
 
-    @Override
-    public void notifyDataManagerChange(DataParameter<?> param) {
-        if (param == SIDE) renderingOffset = calcRenderingOffset(getBoundingBox(), getSide());
+    public IOMode getIOMode() {
+        return IOMode.values()[getDataManager().get(IO_MODE)];
     }
 
-    private Vector3d calcRenderingOffset(AxisAlignedBB aabb, Direction d) {
-        double xl = aabb.getXSize() / 2;
-        double zl = aabb.getZSize() / 2;
-
-        switch (d) {
-            case DOWN: return new Vector3d(0, -THICKNESS, 0);
-            case UP: return new Vector3d(0, aabb.getYSize(), 0);
-            case NORTH: return new Vector3d(-THICKNESS / 2, -THICKNESS / 2, -zl);
-            case SOUTH: return new Vector3d(0, -THICKNESS / 2, zl);
-            case WEST: return new Vector3d(-xl - THICKNESS, -THICKNESS / 2, 0);
-            case EAST: return new Vector3d(xl, -THICKNESS / 2, 0);
-            default: throw new IllegalArgumentException();
-        }
-    }
-
-    public EnumInputOutput getIOMode() {
-        return EnumInputOutput.values()[getDataManager().get(IO_MODE)];
-    }
-
-    private void setIOMode(EnumInputOutput mode) {
+    private void setIOMode(IOMode mode) {
         getDataManager().set(IO_MODE, mode.ordinal());
     }
 
@@ -142,7 +116,7 @@ public class EntityTransferGadget extends EntitySemiblockBase implements IDirect
 
         counter = compound.getInt("counter");
         setSide(Direction.byIndex(compound.getByte("facing")));
-        setIOMode(compound.getBoolean("input") ? EnumInputOutput.INPUT : EnumInputOutput.OUTPUT);
+        setIOMode(compound.getBoolean("input") ? IOMode.INPUT : IOMode.OUTPUT);
     }
 
     @Override
@@ -151,12 +125,13 @@ public class EntityTransferGadget extends EntitySemiblockBase implements IDirect
 
         compound.putInt("counter", counter);
         compound.putByte("facing", (byte) getSide().getIndex());
-        compound.putBoolean("input", getIOMode() == EnumInputOutput.INPUT);
+        compound.putBoolean("input", getIOMode() == IOMode.INPUT);
     }
 
     @Override
     public void addTooltip(List<ITextComponent> curInfo, PlayerEntity player, CompoundNBT tag, boolean extended) {
         curInfo.add(xlate("pneumaticcraft.gui.logistics_frame.facing", getSide()));
+        curInfo.add(xlate(getIOMode().getTranslationKey()));
     }
 
     @Override
@@ -191,7 +166,7 @@ public class EntityTransferGadget extends EntitySemiblockBase implements IDirect
         TileEntity inputTE = getCachedTileEntity();
         TileEntity outputTE = world.getTileEntity(getBlockPos().offset(getSide()));
         if (inputTE != null && outputTE != null) {
-            if (getIOMode() == EnumInputOutput.OUTPUT) {
+            if (getIOMode() == IOMode.OUTPUT) {
                 tryTransferItem(inputTE, outputTE);
                 tryTransferFluid(inputTE, outputTE);
             } else {
@@ -211,5 +186,29 @@ public class EntityTransferGadget extends EntitySemiblockBase implements IDirect
         inputTE.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, getSide())
                 .ifPresent(input -> outputTE.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, getSide().getOpposite())
                         .ifPresent(output -> FluidUtil.tryFluidTransfer(output, input, 100, true)));
+    }
+
+    public enum IOMode implements ITranslatableEnum {
+        INPUT(Textures.MODEL_TRANSFER_GADGET_IN),
+        OUTPUT(Textures.MODEL_TRANSFER_GADGET_OUT);
+
+        private final ResourceLocation texture;
+
+        IOMode(ResourceLocation texture) {
+            this.texture = texture;
+        }
+
+        public ResourceLocation getTexture() {
+            return texture;
+        }
+
+        IOMode toggle() {
+            return this == INPUT ? OUTPUT : INPUT;
+        }
+
+        @Override
+        public String getTranslationKey() {
+            return "pneumaticcraft.gui.transfer_gadget.io_mode." + toString().toLowerCase(Locale.ROOT);
+        }
     }
 }

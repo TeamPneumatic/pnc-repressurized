@@ -214,6 +214,8 @@ public class Textures {
     public static final ResourceLocation VORTEX_ENTITY = entityTexture("vortex.png");
     public static final ResourceLocation DRONE_ENTITY = entityTexture("drone.png");
     public static final ResourceLocation MICROMISSILE_ENTITY = entityTexture("micromissile.png");
+    public static final ResourceLocation MODEL_TRANSFER_GADGET_IN = entityTexture("transfer_gadget_in.png");
+    public static final ResourceLocation MODEL_TRANSFER_GADGET_OUT = entityTexture("transfer_gadget_out.png");
 
     private static ResourceLocation guiTexture(String img) {
         return new ResourceLocation(GUI_LOCATION + img);
