@@ -6,6 +6,13 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.16.3 / 1.16.4
 
+## 2.7.1-?? (unreleased)
+
+### Fixes
+* Fixed Vortex Cannon bug making it less effective at breaking grass/crops/leaves etc. than it should be
+* Fixed Transfer Gadgets not rendering properly
+  * New entity model and item texture for the Transfer Gadget
+
 ## 2.7.0-83 (30 Nov 2020)
 
 ### New
