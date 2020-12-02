@@ -164,27 +164,29 @@ public class EntityTransferGadget extends EntitySemiblockBase implements IDirect
     private void doTransfer() {
         // TODO capability caching
         TileEntity inputTE = getCachedTileEntity();
-        TileEntity outputTE = world.getTileEntity(getBlockPos().offset(getSide()));
+        Direction side = getSide();
+        Direction otherSide = getSide().getOpposite();
+        TileEntity outputTE = world.getTileEntity(getBlockPos().offset(side));
         if (inputTE != null && outputTE != null) {
             if (getIOMode() == IOMode.OUTPUT) {
-                tryTransferItem(inputTE, outputTE);
-                tryTransferFluid(inputTE, outputTE);
+                tryTransferItem(inputTE, outputTE, side, otherSide);
+                tryTransferFluid(inputTE, outputTE, side, otherSide);
             } else {
-                tryTransferItem(outputTE, inputTE);
-                tryTransferFluid(outputTE, inputTE);
+                tryTransferItem(outputTE, inputTE, otherSide, side);
+                tryTransferFluid(outputTE, inputTE, otherSide, side);
             }
         }
     }
 
-    private void tryTransferItem(TileEntity inputTE, TileEntity outputTE) {
-        inputTE.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, getSide())
-                .ifPresent(input -> outputTE.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, getSide().getOpposite())
+    private void tryTransferItem(TileEntity inputTE, TileEntity outputTE, Direction side, Direction otherSide) {
+        inputTE.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, side)
+                .ifPresent(input -> outputTE.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, otherSide)
                         .ifPresent(output -> IOHelper.transferOneItem(input, output)));
     }
 
-    private void tryTransferFluid(TileEntity inputTE, TileEntity outputTE) {
-        inputTE.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, getSide())
-                .ifPresent(input -> outputTE.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, getSide().getOpposite())
+    private void tryTransferFluid(TileEntity inputTE, TileEntity outputTE, Direction side, Direction otherSide) {
+        inputTE.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, side)
+                .ifPresent(input -> outputTE.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, otherSide)
                         .ifPresent(output -> FluidUtil.tryFluidTransfer(output, input, 100, true)));
     }
 
