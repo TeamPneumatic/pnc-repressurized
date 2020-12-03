@@ -6,7 +6,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.16.3 / 1.16.4
 
-## 2.7.1-?? (unreleased)
+## 2.7.1-85 (3 Dec 2020)
 
 ### Updates
 * Omnidirectional and Liquid Hoppers can now take an Entity Tracker Upgrade
@@ -17,8 +17,10 @@ Changes are in reverse chronological order; newest changes at the top.
   * Note: this does not apply to vanilla-style absorption of item entities, which continues to work without needing an Entity Tracker Upgrade
 * Transfer Gadget input/output mode can now be toggled by right-clicking with an empty hand
   * Logistics Configurator is no longer required, but still works
+* TNT fired from an Air Cannon (with Dispenser Upgrade) now has a much longer fuse time, but explodes immediately on impact
 
 ### Fixes
+* Fix startup crash (missing fluid tags) when Mekanism not installed
 * Fixed Vortex Cannon bug making it less effective at breaking grass/crops/leaves etc. than it should be (vortices missing blocks when they should have hit)
 * Fixed Transfer Gadgets not rendering properly
   * New entity model and item texture for the Transfer Gadget

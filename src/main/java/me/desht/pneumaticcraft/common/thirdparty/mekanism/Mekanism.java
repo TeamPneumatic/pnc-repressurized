@@ -34,11 +34,6 @@ public class Mekanism implements IThirdParty {
         fuelApi.registerFuel(PneumaticCraftTags.Fluids.forgeTag("ethene"), 1800000, 1.25f);
         // low fuel value, but fast burning
         fuelApi.registerFuel(PneumaticCraftTags.Fluids.forgeTag("hydrogen"), 300000, 1.5f);
-
-//        // takes some effort to make, so it's as good as LPG
-//        PneumaticRegistry.getInstance().getFuelRegistry().registerFuel(FluidTags.makeWrapperTag("forge:ethene"), 1800000, 1.25f);
-//        // low fuel value, but burns fast
-//        PneumaticRegistry.getInstance().getFuelRegistry().registerFuel(FluidTags.makeWrapperTag("forge:hydrogen"), 300000, 2f);
     }
 
     @SubscribeEvent
