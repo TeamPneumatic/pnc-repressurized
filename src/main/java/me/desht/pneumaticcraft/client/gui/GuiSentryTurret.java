@@ -18,11 +18,13 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.Collections;
 import java.util.List;
 
 public class GuiSentryTurret extends GuiPneumaticContainerBase<ContainerSentryTurret,TileEntitySentryTurret> {
     private WidgetTextField entityFilter;
     private WidgetButtonExtended errorButton;
+    private String prevFilterText = "";
 
     public GuiSentryTurret(ContainerSentryTurret container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
@@ -50,6 +52,7 @@ public class GuiSentryTurret extends GuiPneumaticContainerBase<ContainerSentryTu
     public void tick() {
         if (firstUpdate) {
             // setting the filter value in the textfield on init() isn't reliable; might not be sync'd in time
+            prevFilterText = te.getText(0);
             entityFilter.setText(te.getText(0));
             entityFilter.setResponder(this::onEntityFilterChanged);
         }
@@ -61,9 +64,12 @@ public class GuiSentryTurret extends GuiPneumaticContainerBase<ContainerSentryTu
 
     private void onEntityFilterChanged(String newText) {
         try {
-            new EntityFilter(newText);
-            errorButton.setTooltipText(StringTextComponent.EMPTY);
-            sendDelayed(5);
+            if (!newText.equals(prevFilterText)) {
+                new EntityFilter(newText);
+                errorButton.setTooltipText(Collections.emptyList());
+                sendDelayed(5);
+                prevFilterText = newText;
+            }
         } catch (IllegalArgumentException e) {
             errorButton.setTooltipText(new StringTextComponent(e.getMessage()));
         }
