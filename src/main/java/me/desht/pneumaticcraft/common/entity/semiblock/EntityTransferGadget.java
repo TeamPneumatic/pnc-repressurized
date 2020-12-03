@@ -12,10 +12,9 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvents;
+import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidUtil;
@@ -38,7 +37,6 @@ public class EntityTransferGadget extends EntitySemiblockBase implements IDirect
     private static final DataParameter<Integer> SIDE = EntityDataManager.createKey(EntityTransferGadget.class, DataSerializers.VARINT);
 
     private int counter;
-//    public Vector3d renderingOffset;
 
     public EntityTransferGadget(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
@@ -73,12 +71,28 @@ public class EntityTransferGadget extends EntitySemiblockBase implements IDirect
     @Override
     public boolean onRightClickWithConfigurator(PlayerEntity player, Direction side) {
         if (getSide() == side) {
-            setIOMode(getIOMode().toggle());
-            player.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 1.0f, 1.0f);
+            toggle(player);
             return true;
         } else {
             return super.onRightClickWithConfigurator(player, side);
         }
+    }
+
+    @Override
+    public ActionResultType applyPlayerInteraction(PlayerEntity player, Vector3d hitVec, Hand hand) {
+        // since this is a cheap early game item, let's allow toggling with empty hand
+        // not force the player to craft & charge up a logistics configurator
+        if (player.getHeldItem(hand).isEmpty()) {
+            toggle(player);
+            return ActionResultType.SUCCESS;
+        } else {
+            return super.applyPlayerInteraction(player, hitVec, hand);
+        }
+    }
+
+    private void toggle(PlayerEntity player) {
+        setIOMode(getIOMode().toggle());
+        player.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 1.0f, 1.0f);
     }
 
     @Override
