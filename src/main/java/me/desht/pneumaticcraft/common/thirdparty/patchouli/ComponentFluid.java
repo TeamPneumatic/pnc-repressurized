@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("unused")
 public class ComponentFluid implements ICustomComponent {
     private transient List<FluidStack> fluidStacks;
     private transient WidgetTank tankWidget;

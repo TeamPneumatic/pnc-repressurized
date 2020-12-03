@@ -11,6 +11,7 @@ import vazkii.patchouli.api.IComponentProcessor;
 import vazkii.patchouli.api.IVariable;
 import vazkii.patchouli.api.IVariableProvider;
 
+@SuppressWarnings("unused")
 public class ProcessorThermoPlant implements IComponentProcessor {
     private ThermoPlantRecipe recipe = null;
     private String header = null;
