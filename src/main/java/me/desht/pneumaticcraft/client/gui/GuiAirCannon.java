@@ -109,6 +109,11 @@ public class GuiAirCannon extends GuiPneumaticContainerBase<ContainerAirCannon,T
     }
 
     @Override
+    protected void addWarnings(List<ITextComponent> curInfo) {
+        // nothing: override default redstone warnings
+    }
+
+    @Override
     protected void addInformation(List<ITextComponent> curInfo) {
         super.addInformation(curInfo);
         if (curInfo.isEmpty()) {

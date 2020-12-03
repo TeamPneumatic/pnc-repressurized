@@ -25,6 +25,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.item.TNTEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -103,6 +104,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     private boolean entityUpgradeInserted, dispenserUpgradeInserted;
     private final List<ItemEntity> trackedItems = new ArrayList<>(); //Items that are being checked to be hoppering into inventories.
     private Set<UUID> trackedItemIds;
+    private final Set<TNTEntity> trackedTNT = new HashSet<>();
     private BlockPos lastInsertingInventory; // Last coordinate where the item went into the inventory (as a result of the Block Tracker upgrade).
     private Direction lastInsertingInventorySide;
     @GuiSynced
@@ -145,12 +147,27 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
         updateRotationAngles();
         if (!world.isRemote) {
             updateTrackedItems();
+            updateTrackedTNT();
         }
 
         super.tick();
 
         if (!getWorld().isRemote) {
             airHandler.setSideLeaking(hasNoConnectedAirHandlers() ? getRotation() : null);
+        }
+    }
+
+    private void updateTrackedTNT() {
+        Iterator<TNTEntity> iter = trackedTNT.iterator();
+        while (iter.hasNext()) {
+            TNTEntity e = iter.next();
+            if (!e.isAlive()) {
+                iter.remove();
+            } else {
+                if (e.ticksExisted > 5 && e.getMotion().lengthSquared() < 0.01) {
+                    e.setFuse(0);
+                }
+            }
         }
     }
 
@@ -339,7 +356,6 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
         }
         // simulate the trajectory for angles from 45 to 90 degrees,
         // returning the angle which lands the projectile closest to the target distance
-//        for (double i = Math.PI * 0.25D; i < Math.PI * 0.50D; i += 0.001D) {
         for (double i = Math.PI * 0.01D; i < Math.PI * 0.5D; i += 0.01D) {
             double motionX = MathHelper.cos((float) i) * force;// calculate the x component of the vector
             double motionY = MathHelper.sin((float) i) * force;// calculate the y component of the vector
@@ -365,7 +381,6 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     private synchronized void setTargetAngles(float rotationAngle, float heightAngle) {
         targetRotationAngle = rotationAngle;
         targetHeightAngle = heightAngle;
-//        if (!getWorld().isRemote) scheduleDescriptionPacket();
     }
 
     // this function calculates with the parsed in X and Z angles and the force
@@ -574,6 +589,10 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
             if (launchedEntity == null) {
                 shootingInventory = true;
                 launchedEntity = getPayloadEntity();
+                if (launchedEntity instanceof TNTEntity) {
+                    ((TNTEntity) launchedEntity).setFuse(400); // long fuse, but will explode on contact
+                    trackedTNT.add((TNTEntity) launchedEntity);
+                }
                 if (launchedEntity instanceof ItemEntity) {
                     itemHandler.setStackInSlot(CANNON_SLOT, ItemStack.EMPTY);
                     if (getUpgrades(EnumUpgrade.BLOCK_TRACKER) > 0) {
