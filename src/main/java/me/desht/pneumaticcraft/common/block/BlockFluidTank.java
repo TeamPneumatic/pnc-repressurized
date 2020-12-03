@@ -10,6 +10,7 @@ import me.desht.pneumaticcraft.common.item.IFluidRendered;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityFluidTank;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
+import me.desht.pneumaticcraft.lib.NBTKeys;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -186,7 +187,9 @@ public class BlockFluidTank extends BlockPneumaticCraft implements ColorHandlers
         @Override
         public int getItemStackLimit(ItemStack stack) {
             // empty tanks may stack, but not filled tanks (even if filled to the same level)
-            return hasContainerItem(stack) ? 1 : 64;
+            // note: can't use hasContainerItem() here: it can lead to infinite recursion on init
+            // https://github.com/TeamPneumatic/pnc-repressurized/issues/666
+            return stack.hasTag() && stack.getTag().contains(NBTKeys.BLOCK_ENTITY_TAG) ? 1 : 64;
         }
 
         @Nullable
