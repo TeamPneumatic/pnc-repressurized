@@ -6,7 +6,12 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.16.3 / 1.16.4
 
-## 2.7.1-85 (3 Dec 2020)
+## 2.7.2-86 (3 Dec 2020)
+
+### Fixes
+* Hotfix: avoid infinite recursion crash when Quark is also installed
+
+## 2.7.1-84 (3 Dec 2020)
 
 ### Updates
 * Omnidirectional and Liquid Hoppers can now take an Entity Tracker Upgrade
