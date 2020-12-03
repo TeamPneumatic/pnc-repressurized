@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.common.block.BlockOmnidirectionalHopper;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.container.INamedContainerProvider;
@@ -16,20 +17,28 @@ import net.minecraft.util.EntityPredicates;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.text.ITextComponent;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public abstract class TileEntityAbstractHopper<T extends TileEntity & IRedstoneControl<T>> extends TileEntityTickableBase
         implements IRedstoneControl<T>, IComparatorSupport, INamedContainerProvider {
+    private static final int BASE_TICK_RATE = 8;
+
     private int lastComparatorValue = -1;
     private int cooldown;
+    private int entityScanCooldown;
     @GuiSynced
     int leaveMaterialCount; // leave items/liquids (used as filter)
     @DescSynced
     public boolean isCreative; // has a creative upgrade installed
     private boolean wasCreative = false;
     Direction inputDir = Direction.UP;
-    AxisAlignedBB inputAABB; // region to check for item entities
+    // regions to check for entities (items, or maybe entities with an item/fluid capability)
+    AxisAlignedBB inputAABB;
+    AxisAlignedBB outputAABB;
+    final List<Entity> cachedInputEntities = new ArrayList<>();
+    final List<Entity> cachedOutputEntities = new ArrayList<>();
 
     TileEntityAbstractHopper(TileEntityType type) {
         super(type, 4);
@@ -44,24 +53,15 @@ public abstract class TileEntityAbstractHopper<T extends TileEntity & IRedstoneC
         super.onFirstServerTick();
 
         isCreative = getUpgrades(EnumUpgrade.CREATIVE) > 0;
-        setupInputAABB();
-    }
-
-    private void setupInputAABB() {
-        // The 0.625 and 1.375 values here ensure an accurate bounding box; the input bowl of the hopper's blockspace
-        // plus the block in front of the input direction. Items in the hopper's blockspace but not in the input bowl
-        // won't get sucked in.
-        inputDir = getInputDirection();
-        inputAABB = new AxisAlignedBB(pos)
-                .offset(inputDir.getXOffset() * 0.625, inputDir.getYOffset() * 0.625, inputDir.getZOffset() * 0.625)
-                .expand(inputDir.getXOffset() * 1.375, inputDir.getYOffset() * 1.375, inputDir.getZOffset() * 1.375);
+        setupInputOutputRegions();
     }
 
     @Override
     public void onBlockRotated() {
         super.onBlockRotated();
 
-        setupInputAABB();
+        inputDir = getInputDirection();
+        setupInputOutputRegions();
     }
 
     @Override
@@ -70,16 +70,30 @@ public abstract class TileEntityAbstractHopper<T extends TileEntity & IRedstoneC
 
         super.tick();
 
-        if (!getWorld().isRemote && --cooldown <= 0 && getRedstoneController().shouldRun()) {
-            int maxItems = getMaxItems();
-            boolean success = doImport(maxItems);
-            success |= doExport(maxItems);
+        if (!getWorld().isRemote && getRedstoneController().shouldRun()) {
+            if (--entityScanCooldown <= 0) {
+                cachedInputEntities.clear();
+                if (shouldScanForEntities(inputDir)) {
+                    cachedInputEntities.addAll(world.getEntitiesWithinAABB(Entity.class, inputAABB, EntityPredicates.IS_ALIVE));
+                }
+                cachedOutputEntities.clear();
+                if (shouldScanForEntities(getRotation())) {
+                    cachedOutputEntities.addAll(world.getEntitiesWithinAABB(Entity.class, outputAABB, EntityPredicates.IS_ALIVE));
+                }
+                entityScanCooldown = BASE_TICK_RATE;
+            }
 
-            // If we couldn't pull or push, slow down a bit for performance reasons
-            cooldown = success ? getItemTransferInterval() : 8;
+            if (--cooldown <= 0) {
+                int maxItems = getMaxItems();
+                boolean success = doImport(maxItems);
+                success |= doExport(maxItems);
 
-            if (lastComparatorValue != getComparatorValueInternal()) {
-                lastComparatorValue = getComparatorValueInternal();
+                // If we couldn't pull or push, slow down a bit for performance reasons
+                cooldown = success ? getItemTransferInterval() : BASE_TICK_RATE;
+
+                if (lastComparatorValue != getComparatorValueInternal()) {
+                    lastComparatorValue = getComparatorValueInternal();
+                }
             }
         }
     }
@@ -101,8 +115,10 @@ public abstract class TileEntityAbstractHopper<T extends TileEntity & IRedstoneC
     }
 
     public int getItemTransferInterval() {
-        return 8 / (1 << getUpgrades(EnumUpgrade.SPEED));
+        return BASE_TICK_RATE / (1 << getUpgrades(EnumUpgrade.SPEED));
     }
+
+    protected abstract void setupInputOutputRegions();
 
     protected abstract boolean doExport(int maxItems);
 
@@ -141,6 +157,9 @@ public abstract class TileEntityAbstractHopper<T extends TileEntity & IRedstoneC
                 leaveMaterialCount = 1;
                 break;
         }
+
+        markDirty();
+
     }
 
     public boolean doesLeaveMaterial() {
@@ -175,4 +194,6 @@ public abstract class TileEntityAbstractHopper<T extends TileEntity & IRedstoneC
     List<ItemEntity> getNeighborItems(AxisAlignedBB aabb) {
         return aabb == null ? Collections.emptyList() : world.getEntitiesWithinAABB(ItemEntity.class, aabb, EntityPredicates.IS_ALIVE);
     }
+
+    abstract boolean shouldScanForEntities(Direction dir);
 }

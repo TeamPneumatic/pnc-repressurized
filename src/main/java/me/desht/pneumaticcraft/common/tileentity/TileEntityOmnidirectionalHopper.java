@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.common.block.BlockOmnidirectionalHopper;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerOmnidirectionalHopper;
@@ -8,17 +9,22 @@ import me.desht.pneumaticcraft.common.inventory.handler.ComparatorItemStackHandl
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 
@@ -30,6 +36,7 @@ public class TileEntityOmnidirectionalHopper extends TileEntityAbstractHopper<Ti
 
     private final ComparatorItemStackHandler itemHandler = new ComparatorItemStackHandler(this, getInvSize());
     private final LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> itemHandler);
+    @GuiSynced
     public boolean roundRobin;
     private int rrSlot;
     @GuiSynced
@@ -57,15 +64,25 @@ public class TileEntityOmnidirectionalHopper extends TileEntityAbstractHopper<Ti
 
         // TODO cache the capability rather than the TE?
         LazyOptional<IItemHandler> inv = IOHelper.getInventoryForTE(getCachedNeighbor(outputDir), outputDir.getOpposite());
-        int notExported;
+        int notExported = maxItems;
         if (inv.isPresent()) {
             notExported = inv.map(h -> exportToInventory(h, maxItems)).orElse(maxItems);
-        } else if (PNCConfig.Common.Machines.omniHopperDispenser && getUpgrades(EnumUpgrade.DISPENSER) > 0) {
+        } else if (getUpgrades(EnumUpgrade.ENTITY_TRACKER) > 0) {
+            notExported = tryEntityExport(maxItems, outputDir.getOpposite());
+        }
+        if (notExported == maxItems && PNCConfig.Common.Machines.omniHopperDispenser && getUpgrades(EnumUpgrade.DISPENSER) > 0) {
             notExported = exportToInventory(new DropInWorldHandler(getWorld(), getPos(), outputDir), maxItems);
-        } else {
-            notExported = maxItems;
         }
         return notExported < maxItems;
+    }
+
+    private int tryEntityExport(int maxItems, Direction dir) {
+        for (Entity e : cachedOutputEntities) {
+            if (!e.isAlive()) continue;
+            int notExported = e.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir).map(h -> exportToInventory(h, maxItems)).orElse(maxItems);
+            if (notExported < maxItems) return notExported;
+        }
+        return maxItems;
     }
 
     private int exportToInventory(IItemHandler otherHandler, int maxItems) {
@@ -111,47 +128,66 @@ public class TileEntityOmnidirectionalHopper extends TileEntityAbstractHopper<Ti
             return false;
         }
 
-        Direction inputDir = getInputDirection();
-
         // Suck from input inventory
         LazyOptional<IItemHandler> cap = IOHelper.getInventoryForTE(getCachedNeighbor(inputDir), inputDir.getOpposite());
         if (cap.isPresent()) {
-            return cap.map(otherHandler -> {
-                int remaining = maxItems;
-                for (int i = 0; i < otherHandler.getSlots(); i++) {
-                    if (otherHandler.getStackInSlot(i).isEmpty()) continue;
-                    ItemStack toExtract = otherHandler.extractItem(i, remaining, true);
-                    ItemStack excess = ItemHandlerHelper.insertItemStacked(itemHandler, toExtract, false);
-                    int transferred = toExtract.getCount() - excess.getCount();
-                    if (transferred > 0) {
-                        otherHandler.extractItem(i, transferred, false);
-                        remaining -= transferred;
-                        if (remaining <= 0) {
-                            return true;
-                        }
-                    }
-                }
-                return remaining < maxItems;
-            }).orElse(false);
+            int imported = cap.map(otherHandler -> importFromInventory(otherHandler, maxItems)).orElse(0);
+            return imported > 0;
+        } else if (getUpgrades(EnumUpgrade.ENTITY_TRACKER) > 0 && tryEntityImport(maxItems) > 0) {
+            return true;
         }
 
+        // Suck in item entities in front of the input
         BlockPos inputPos = pos.offset(inputDir);
-        if (!PneumaticCraftUtils.blockHasSolidSide(world.getBlockState(inputPos), world, inputPos, inputDir.getOpposite())) {
-            // Suck in item entities
-            for (ItemEntity entity : getNeighborItems(inputAABB)) {
-                ItemStack remainder = ItemHandlerHelper.insertItem(itemHandler, entity.getItem(), false); //IOHelper.insert(this, entity.getItem(), null, false);
-                if (remainder.isEmpty()) {
-                    entity.remove();
-                    success = true;
-                } else if (remainder.getCount() < entity.getItem().getCount()) {
-                    // some but not all were inserted
-                    entity.setItem(remainder);
-                    success = true;
+        if (!Block.hasEnoughSolidSide(world, inputPos, inputDir.getOpposite())) {
+            for (Entity e : cachedInputEntities) {
+                if (e.isAlive() && e instanceof ItemEntity) {
+                    ItemEntity entity = (ItemEntity) e;
+                    ItemStack remainder = ItemHandlerHelper.insertItem(itemHandler, entity.getItem(), false);
+                    if (remainder.isEmpty()) {
+                        entity.remove();
+                        success = true;
+                    } else if (remainder.getCount() < entity.getItem().getCount()) {
+                        // some but not all were inserted
+                        entity.setItem(remainder);
+                        success = true;
+                    }
                 }
             }
         }
 
         return success;
+    }
+
+    private int tryEntityImport(int maxItems) {
+        Direction dir = inputDir.getOpposite();
+        int remaining = maxItems;
+        for (Entity e : cachedInputEntities) {
+            if (!e.isAlive()) continue;
+            final int r = remaining;
+            int imported = e.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir).map(h -> importFromInventory(h, r)).orElse(0);
+            remaining -= imported;
+            if (remaining <= 0) return maxItems - remaining;
+        }
+        return 0;
+    }
+
+    private int importFromInventory(IItemHandler inv, int maxItems) {
+        int remaining = maxItems;
+        for (int i = 0; i < inv.getSlots(); i++) {
+            if (inv.getStackInSlot(i).isEmpty()) continue;
+            ItemStack toExtract = inv.extractItem(i, remaining, true);
+            ItemStack excess = ItemHandlerHelper.insertItemStacked(itemHandler, toExtract, false);
+            int transferred = toExtract.getCount() - excess.getCount();
+            if (transferred > 0) {
+                inv.extractItem(i, transferred, false);
+                remaining -= transferred;
+                if (remaining <= 0) {
+                    return maxItems;
+                }
+            }
+        }
+        return maxItems - remaining;
     }
 
     private boolean isInventoryFull() {
@@ -162,6 +198,28 @@ public class TileEntityOmnidirectionalHopper extends TileEntityAbstractHopper<Ti
             }
         }
         return true;
+    }
+
+    @Override
+    protected void setupInputOutputRegions() {
+        // Ensure the input region also contains the hollow part of the hopper itself
+        AxisAlignedBB bowl = BlockOmnidirectionalHopper.INPUT_SHAPES[inputDir.getIndex()].getBoundingBox().offset(pos);
+        inputAABB = bowl.union(new AxisAlignedBB(pos.offset(inputDir)));
+        // output zone is a bit simpler
+        outputAABB = new AxisAlignedBB(getPos().offset(getRotation()));
+
+        cachedInputEntities.clear();
+        cachedOutputEntities.clear();
+    }
+
+    @Override
+    boolean shouldScanForEntities(Direction dir) {
+        if (Block.hasEnoughSolidSide(world, pos.offset(dir), dir.getOpposite())
+                || dir == getRotation() && getUpgrades(EnumUpgrade.ENTITY_TRACKER) == 0) {
+            return false;
+        }
+        TileEntity te = getCachedNeighbor(dir);
+        return te == null || !te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir.getOpposite()).isPresent();
     }
 
     @Override
@@ -238,7 +296,7 @@ public class TileEntityOmnidirectionalHopper extends TileEntityAbstractHopper<Ti
         @Nonnull
         @Override
         public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-            if (!PneumaticCraftUtils.blockHasSolidSide(world.getBlockState(pos), world, pos, outputDir.getOpposite())) {
+            if (!Block.hasEnoughSolidSide(world, pos, outputDir.getOpposite())) {
                 if (!simulate) {
                     PneumaticCraftUtils.dropItemOnGroundPrecisely(stack, world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
                 }

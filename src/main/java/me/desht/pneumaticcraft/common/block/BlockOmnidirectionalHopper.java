@@ -45,7 +45,7 @@ public class BlockOmnidirectionalHopper extends BlockPneumaticCraft implements C
     private static final VoxelShape INPUT_SOUTH = VoxelShapeUtils.rotateX(INPUT_UP, 90);
     private static final VoxelShape INPUT_WEST  = VoxelShapeUtils.rotateY(INPUT_NORTH, 270);
     private static final VoxelShape INPUT_EAST  = VoxelShapeUtils.rotateY(INPUT_NORTH, 90);
-    private static final VoxelShape[] INPUT_SHAPES = {
+    public static final VoxelShape[] INPUT_SHAPES = {
         INPUT_DOWN, INPUT_UP, INPUT_NORTH, INPUT_SOUTH, INPUT_WEST, INPUT_EAST
     };
 

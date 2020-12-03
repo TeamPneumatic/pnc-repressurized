@@ -11,7 +11,9 @@ import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -41,8 +43,6 @@ import java.util.Map;
 public class TileEntityLiquidHopper extends TileEntityAbstractHopper<TileEntityLiquidHopper> implements ISerializableTanks {
     private int comparatorValue = -1;
 
-    private AxisAlignedBB outputAABB;
-
     @DescSynced
     @GuiSynced
     private final HopperTank tank = new HopperTank(PneumaticValues.NORMAL_TANK_CAPACITY);
@@ -66,24 +66,6 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper<TileEntityL
             comparatorValue = (int) (1 + ((float) fluidStack.getAmount() / tank.getCapacity() * 14f));
         }
         return comparatorValue;
-    }
-
-    @Override
-    protected void onFirstServerTick() {
-        super.onFirstServerTick();
-
-        setupOutputAABB();
-    }
-
-    @Override
-    public void onBlockRotated() {
-        super.onBlockRotated();
-
-        setupOutputAABB();
-    }
-
-    private void setupOutputAABB() {
-        outputAABB = new AxisAlignedBB(getPos().offset(getRotation()));
     }
 
     @Override
@@ -114,16 +96,27 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper<TileEntityL
                 FluidStack transferred = FluidUtil.tryFluidTransfer(fluidHandler, tank, amount, true);
                 return !transferred.isEmpty();
             }).orElse(false);
+        } else if (getUpgrades(EnumUpgrade.ENTITY_TRACKER) > 0) {
+            for (Entity e : cachedOutputEntities) {
+                if (!e.isAlive()) continue;
+                FluidStack transferred = e.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, getRotation().getOpposite()).map(h -> {
+                    int amount = Math.min(maxItems * 100, tank.getFluid().getAmount() - leaveMaterialCount * 1000);
+                    return FluidUtil.tryFluidTransfer(h, tank, amount, true);
+                }).orElse(FluidStack.EMPTY);
+                if (!transferred.isEmpty()) return true;
+            }
         }
 
         // try to fill any fluid-handling items in front of the output
-        if (getWorld().isAirBlock(getPos().offset(dir))) {
-            for (ItemEntity entity : getNeighborItems(outputAABB)) {
-                FluidActionResult res = FluidUtil.tryFillContainer(entity.getItem(), tank, maxItems * 100, null, true);
+        for (Entity e : cachedOutputEntities) {
+            if (e.isAlive() && e instanceof ItemEntity) {
+                ItemEntity entity = (ItemEntity) e;
+                int maxFill = entity.getItem().getItem() instanceof BucketItem ? 1000 : maxItems * 100;
+                FluidActionResult res = FluidUtil.tryFillContainer(entity.getItem(), tank, maxFill, null, true);
                 if (res.success) {
                     entity.setItem(res.result);
-                    break;
                 }
+                if (tank.isEmpty()) break;
             }
         }
 
@@ -144,7 +137,7 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper<TileEntityL
             if (cap.isPresent()) {
                 return cap.map(fluidHandler -> {
                     FluidStack fluid = fluidHandler.drain(maxItems * 100, FluidAction.SIMULATE);
-                    if (fluid != null) {
+                    if (!fluid.isEmpty()) {
                         int filledFluid = tank.fill(fluid, FluidAction.EXECUTE);
                         if (filledFluid > 0) {
                             fluidHandler.drain(filledFluid, FluidAction.EXECUTE);
@@ -154,17 +147,26 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper<TileEntityL
                     return false;
                 }).orElse(false);
             }
+        } else if (getUpgrades(EnumUpgrade.ENTITY_TRACKER) > 0) {
+            for (Entity e : cachedInputEntities) {
+                if (!e.isAlive()) continue;
+                FluidStack transferred = e.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, inputDir.getOpposite())
+                        .map(h -> FluidUtil.tryFluidTransfer(tank, h, maxItems * 100, true))
+                        .orElse(FluidStack.EMPTY);
+                if (!transferred.isEmpty()) return true;
+            }
         }
 
-        if (getWorld().isAirBlock(getPos().offset(inputDir))) {
-            for (ItemEntity entity : getNeighborItems(inputAABB)) {
+        for (Entity e : cachedInputEntities) {
+            if (e.isAlive() && e instanceof ItemEntity) {
+                ItemEntity entity = (ItemEntity) e;
                 // special case: buckets can only drain 1000 mB at a time
                 int max = entity.getItem().getItem() instanceof BucketItem ? 1000 : maxItems * 100;
                 FluidActionResult res = FluidUtil.tryEmptyContainer(entity.getItem(), tank, max, null, true);
                 if (res.success) {
                     entity.setItem(res.result);
-                    return true;
                 }
+                if (tank.getFluidAmount() >= tank.getCapacity()) break;
             }
         }
 
@@ -174,6 +176,22 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper<TileEntityL
         }
 
         return false;
+    }
+
+    @Override
+    protected void setupInputOutputRegions() {
+        inputAABB = new AxisAlignedBB(pos.offset(inputDir));
+        outputAABB = new AxisAlignedBB(getPos().offset(getRotation()));
+
+        cachedInputEntities.clear();
+        cachedOutputEntities.clear();
+    }
+
+    @Override
+    boolean shouldScanForEntities(Direction dir) {
+        TileEntity te = getCachedNeighbor(dir);
+        return (te == null || !te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dir.getOpposite()).isPresent())
+                && !Block.hasEnoughSolidSide(world, pos.offset(dir), dir.getOpposite());
     }
 
     public HopperTank getTank() {

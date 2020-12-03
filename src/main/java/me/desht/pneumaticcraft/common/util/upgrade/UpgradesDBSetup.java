@@ -178,10 +178,12 @@ public class UpgradesDBSetup {
         db.addApplicableUpgrades(ModTileEntities.OMNIDIRECTIONAL_HOPPER.get(), new Builder()
                 .with(EnumUpgrade.SPEED, 11)
                 .with(EnumUpgrade.CREATIVE, 1)
+                .with(EnumUpgrade.ENTITY_TRACKER, 1)
                 .with(EnumUpgrade.DISPENSER, 1));
         db.addApplicableUpgrades(ModTileEntities.LIQUID_HOPPER.get(), new Builder()
                 .with(EnumUpgrade.SPEED, 11)
                 .with(EnumUpgrade.CREATIVE, 1)
+                .with(EnumUpgrade.ENTITY_TRACKER, 1)
                 .with(EnumUpgrade.DISPENSER, 1));
         db.addApplicableUpgrades(ModTileEntities.LIQUID_COMPRESSOR.get(), new Builder()
                 .with(EnumUpgrade.SECURITY, 1)
