@@ -10,11 +10,11 @@
     },
     {
       "type": "text",
-      "text": "The Transfer Gadget will show two colors:$(li)$(9)Blue/$, indicating the input side.$(li)$(6)Orange/$, indicating the output side.$(p)The $(item)Transfer Gadget/$ transfers items from the $(9)blue input side/$ to the $(6)orange output side/$, at a rate of 1 item or 100mB fluid every 2 seconds."
+      "text": "The Transfer Gadget will have one of two colors:$(li)$(6)Orange/$ - output mode$(li)$(9)Blue/$ - input mode.$(p)An $(6)output mode/$ gadget extracts from the inventory/tank it's placed on, inserting to the neighbouring block, and an $(9)input mode/$ gadget does the opposite. Resources are transferred at a rate of 1 item or 100mB fluid every 2 seconds."
     },
     {
       "type": "text",
-      "text": "$(thing)Right-click/$ the $(item)Transfer Gadget/$ with a $(l:tools/logistics_configurator)Logistics Configurator/$, to toggle the input and output sides. $(thing)Sneak+right-click/$ to remove the $(item)Transfer Gadget/$.$(p)Because of its slow speed and cheap recipe, this is ideal for early-game item/fluid transfer where space is limited."
+      "text": "$(thing)Right-click/$ the $(item)Transfer Gadget/$ with an empty hand or a $(l:tools/logistics_configurator)Logistics Configurator/$ to toggle input/output mode. $(thing)Sneak+right-click/$ (or left-click - hit) to remove the $(item)Transfer Gadget/$.$(p)Because of its low speed and cheap recipe, this is ideal for early-game item/fluid transfer where space might be limited."
     },
     {
       "type": "crafting",

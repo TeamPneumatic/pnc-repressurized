@@ -8,10 +8,22 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## 2.7.1-?? (unreleased)
 
+### Updates
+* Omnidirectional and Liquid Hoppers can now take an Entity Tracker Upgrade
+  * This allows them to transfer items and fluids to/from entities in front of the hopper's input or output
+  * Tested successfully on: players, Drones, Chest Minecarts and Immersive Engineering's Barrel Minecarts
+  * Should work on any entity which provides the appropriate item or fluid capability
+  * For players, a horizontally aligned omnihopper will access the equipments slots (armor & offhand), and a vertically aligned omnihopper will access the main inventory
+  * Note: this does not apply to vanilla-style absorption of item entities, which continues to work without needing an Entity Tracker Upgrade
+* Transfer Gadget input/output mode can now be toggled by right-clicking with an empty hand
+  * Logistics Configurator is no longer required, but still works
+
 ### Fixes
-* Fixed Vortex Cannon bug making it less effective at breaking grass/crops/leaves etc. than it should be
+* Fixed Vortex Cannon bug making it less effective at breaking grass/crops/leaves etc. than it should be (vortices missing blocks when they should have hit)
 * Fixed Transfer Gadgets not rendering properly
   * New entity model and item texture for the Transfer Gadget
+* Fixed Transfer Gadgets in input mode pulling from the wrong side of sided inventories such as furnaces
+* Fixed spurious error icon for filter showing on Sentry Turret GUI even when the filter is valid
 
 ## 2.7.0-83 (30 Nov 2020)
 
