@@ -234,7 +234,9 @@ public class ItemPneumaticArmor extends ArmorItem
     }
 
     public static void setSearchedItem(ItemStack helmetStack, Item searchedItem) {
-        NBTUtils.setString(helmetStack, NBT_SEARCH_ITEM, searchedItem.getRegistryName().toString());
+        if (helmetStack.getItem() instanceof ItemPneumaticArmor) {
+            NBTUtils.setString(helmetStack, NBT_SEARCH_ITEM, searchedItem.getRegistryName().toString());
+        }
     }
 
     public static BlockPos getCoordTrackerPos(ItemStack helmetStack, World world) {

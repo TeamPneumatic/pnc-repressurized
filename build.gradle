@@ -58,6 +58,9 @@ repositories {
         name = "K-4u Mod maven"
         url = "https://modmaven.dev/"
     }
+    maven {
+        url = "https://www.cursemaven.com"
+    }
 //    maven {
 //        name = "ic2"
 //        url = "http://maven.ic2.player.to/"

@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.inventory.ContainerAmadronAddTrade;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -46,15 +47,17 @@ public class PacketAmadronTradeAddCustom extends PacketAbstractAmadronTrade {
     }
 
     private void handleServerSide(ServerPlayerEntity player, AmadronPlayerOffer offer) {
-        offer.updatePlayerId();
-        if (AmadronOfferManager.getInstance().hasSimilarPlayerOffer(offer.getReversedOffer())) {
-            player.sendStatusMessage(xlate("pneumaticcraft.message.amadron.duplicateReversedOffer"), false);
-        } else if (AmadronOfferManager.getInstance().addPlayerOffer(offer)) {
-            if (PNCConfig.Common.Amadron.notifyOfTradeAddition) {
-                NetworkHandler.sendToAll(this);
+        if (player.openContainer instanceof ContainerAmadronAddTrade) {
+            offer.updatePlayerId();
+            if (AmadronOfferManager.getInstance().hasSimilarPlayerOffer(offer.getReversedOffer())) {
+                player.sendStatusMessage(xlate("pneumaticcraft.message.amadron.duplicateReversedOffer"), false);
+            } else if (AmadronOfferManager.getInstance().addPlayerOffer(offer)) {
+                if (PNCConfig.Common.Amadron.notifyOfTradeAddition) {
+                    NetworkHandler.sendToAll(this);
+                }
+            } else {
+                player.sendStatusMessage(xlate("pneumaticcraft.message.amadron.duplicateOffer"), false);
             }
-        } else {
-            player.sendStatusMessage(xlate("pneumaticcraft.message.amadron.duplicateOffer"), false);
         }
     }
 

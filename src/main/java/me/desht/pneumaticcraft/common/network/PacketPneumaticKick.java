@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.core.ModSounds;
-import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
+import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.Entity;
@@ -22,6 +22,10 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.function.Supplier;
 
+/**
+ * Received on: SERVER
+ * Sent by client when the kick hotkey is pressed
+ */
 public class PacketPneumaticKick {
     public PacketPneumaticKick() {
         // empty
@@ -38,13 +42,11 @@ public class PacketPneumaticKick {
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             ServerPlayerEntity player = ctx.get().getSender();
-            if (ItemPneumaticArmor.isPneumaticArmorPiece(player, EquipmentSlotType.FEET)) {
-                CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
-                if (handler.isArmorEnabled() && handler.isArmorReady(EquipmentSlotType.FEET) && handler.getArmorPressure(EquipmentSlotType.FEET) > 0.1f) {
-                    int upgrades = handler.getUpgradeCount(EquipmentSlotType.FEET, EnumUpgrade.DISPENSER);
-                    if (upgrades > 0) {
-                        handleKick(player, Math.min(PneumaticValues.PNEUMATIC_KICK_MAX_UPGRADES, upgrades));
-                    }
+            CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
+            if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().kickHandler, false)) {
+                int upgrades = handler.getUpgradeCount(EquipmentSlotType.FEET, EnumUpgrade.DISPENSER);
+                if (upgrades > 0) {
+                    handleKick(player, Math.min(PneumaticValues.PNEUMATIC_KICK_MAX_UPGRADES, upgrades));
                 }
             }
         });

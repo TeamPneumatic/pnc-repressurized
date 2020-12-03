@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.util.ItemLaunching;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -51,11 +52,11 @@ public class PacketChestplateLauncher {
 
         ItemStack stack = player.getHeldItemOffhand();
         CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
-        int upgrades = handler.getUpgradeCount(EquipmentSlotType.CHEST, EnumUpgrade.DISPENSER, PneumaticValues.PNEUMATIC_LAUNCHER_MAX_UPGRADES);
 
-        if (handler.getArmorPressure(EquipmentSlotType.CHEST) > 0.1f && handler.isArmorReady(EquipmentSlotType.CHEST) && upgrades > 0 && !stack.isEmpty()) {
+        if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().chestplateLauncherHandler, false) && !stack.isEmpty()) {
             ItemStack toFire = player.isCreative() ? ItemHandlerHelper.copyStackWithSize(stack, 1) : stack.split(1);
             Entity launchedEntity = ItemLaunching.getEntityToLaunch(player.getEntityWorld(), toFire, player,true, true);
+            int upgrades = handler.getUpgradeCount(EquipmentSlotType.CHEST, EnumUpgrade.DISPENSER, PneumaticValues.PNEUMATIC_LAUNCHER_MAX_UPGRADES);
 
             if (launchedEntity instanceof AbstractArrowEntity) {
                 AbstractArrowEntity arrow = (AbstractArrowEntity) launchedEntity;

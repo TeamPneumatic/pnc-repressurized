@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderEntityTarget;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.EntityTrackerClientHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -51,10 +52,13 @@ public class PacketHackingEntityStart {
                 }
             } else {
                 // server
-                Entity entity = player.world.getEntityByID(entityId);
-                if (entity != null) {
-                    CommonArmorHandler.getHandlerForPlayer(player).setHackedEntity(entity);
-                    NetworkHandler.sendToAllTracking(this, entity);
+                CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
+                if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().entityTrackerHandler, true)) {
+                    Entity entity = player.world.getEntityByID(entityId);
+                    if (entity != null) {
+                        handler.setHackedEntity(entity);
+                        NetworkHandler.sendToAllTracking(this, entity);
+                    }
                 }
             }
         });

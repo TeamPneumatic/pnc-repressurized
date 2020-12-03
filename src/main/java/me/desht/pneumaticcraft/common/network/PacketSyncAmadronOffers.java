@@ -12,7 +12,8 @@ import java.util.function.Supplier;
 
 /**
  * Received on: CLIENT
- * Sent by server to sync up current Amadron offer list when the offer list changes, or when a player logs in
+ * Sent by server to sync up current Amadron offer list when the offer list changes (due to a shuffle or reload),
+ * or when a player logs in
  */
 public class PacketSyncAmadronOffers {
     private final Collection<AmadronOffer> activeOffers;

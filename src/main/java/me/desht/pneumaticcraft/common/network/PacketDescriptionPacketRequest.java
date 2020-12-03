@@ -1,5 +1,7 @@
 package me.desht.pneumaticcraft.common.network;
 
+import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.LockableLootTileEntity;
 import net.minecraft.tileentity.TileEntity;
@@ -28,10 +30,13 @@ public class PacketDescriptionPacketRequest extends LocationIntPacket {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            TileEntity te = ctx.get().getSender().world.getTileEntity(pos);
-            if (te != null) {
-                forceLootGeneration(te);
-                NetworkHandler.sendToPlayer(new PacketSendNBTPacket(te), ctx.get().getSender());
+            CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(ctx.get().getSender());
+            if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().blockTrackerHandler, true)) {
+                TileEntity te = ctx.get().getSender().world.getTileEntity(pos);
+                if (te != null) {
+                    forceLootGeneration(te);
+                    NetworkHandler.sendToPlayer(new PacketSendNBTPacket(te), ctx.get().getSender());
+                }
             }
         });
         ctx.get().setPacketHandled(true);

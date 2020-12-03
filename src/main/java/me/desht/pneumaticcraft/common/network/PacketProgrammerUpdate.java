@@ -1,13 +1,10 @@
 package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.Unpooled;
-import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.List;
@@ -48,11 +45,7 @@ public class PacketProgrammerUpdate extends LocationIntPacket implements ILargeP
     }
 
     private void updateTE(PlayerEntity player) {
-        World world = player == null ? ClientUtils.getClientWorld() : player.world;
-        TileEntity te = world.getTileEntity(pos);
-        if (te instanceof TileEntityProgrammer) {
-            ((TileEntityProgrammer) te).setProgWidgets(widgets, player);
-        }
+        PacketUtil.getTE(player, pos, TileEntityProgrammer.class).ifPresent(te -> te.setProgWidgets(widgets, player));
     }
 
     @Override

@@ -9,10 +9,9 @@ import java.util.function.Supplier;
 
 /**
  * Received on: SERVER
- * Sent by client GUI's to update a IGUITextFieldSensitive object server-side
+ * Sent by client GUI's to update a IGUITextFieldSensitive tile entity server-side
  */
-public class PacketUpdateTextfield extends LocationIntPacket {
-
+public class PacketUpdateTextfield {
     private int textFieldID;
     private String text;
 
@@ -20,30 +19,27 @@ public class PacketUpdateTextfield extends LocationIntPacket {
     }
 
     public PacketUpdateTextfield(TileEntity te, int textfieldID) {
-        super(te.getPos());
         textFieldID = textfieldID;
         text = ((IGUITextFieldSensitive) te).getText(textfieldID);
     }
 
     public PacketUpdateTextfield(PacketBuffer buffer) {
-        super(buffer);
         textFieldID = buffer.readInt();
         text = buffer.readString(32767);
     }
 
-    @Override
     public void toBytes(PacketBuffer buffer) {
-        super.toBytes(buffer);
         buffer.writeInt(textFieldID);
         buffer.writeString(text);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            TileEntity te = ctx.get().getSender().getServerWorld().getTileEntity(pos);
-            if (te instanceof IGUITextFieldSensitive) {
-                ((IGUITextFieldSensitive) te).setText(textFieldID, text);
-            }
+            PacketUtil.getTE(ctx.get().getSender(), TileEntity.class).ifPresent(te -> {
+                if (te instanceof IGUITextFieldSensitive) {
+                    ((IGUITextFieldSensitive) te).setText(textFieldID, text);
+                }
+            });
         });
         ctx.get().setPacketHandled(true);
     }

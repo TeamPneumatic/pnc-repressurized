@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.api.block.IPneumaticWrenchable;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -68,8 +69,7 @@ public class PacketModWrenchBlock extends LocationIntPacket {
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             ServerPlayerEntity player = ctx.get().getSender();
-            if (player.world.isAreaLoaded(pos, 0)
-                    && player.getDistanceSq(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) < 64) {
+            if (player.world.isAreaLoaded(pos, 0) && PneumaticCraftUtils.canPlayerReach(player, pos)) {
                 if (ModdedWrenchUtils.getInstance().isModdedWrench(player.getHeldItem(hand))) {
                     if (entityID >= 0) {
                         Entity e = player.world.getEntityByID(entityID);

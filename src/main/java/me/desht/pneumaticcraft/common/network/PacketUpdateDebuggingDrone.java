@@ -1,6 +1,8 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
+import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.lib.NBTKeys;
 import net.minecraft.entity.Entity;
@@ -38,8 +40,9 @@ public class PacketUpdateDebuggingDrone {
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             ServerPlayerEntity player = ctx.get().getSender();
-            ItemStack stack = player.getItemStackFromSlot(EquipmentSlotType.HEAD);
-            if (!stack.isEmpty()) {
+            CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
+            if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().droneDebugHandler, false)) {
+                ItemStack stack = player.getItemStackFromSlot(EquipmentSlotType.HEAD);
                 NBTUtils.setInteger(stack, NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE, entityId);
                 if (entityId > 0) {
                     Entity entity = player.world.getEntityByID(entityId);

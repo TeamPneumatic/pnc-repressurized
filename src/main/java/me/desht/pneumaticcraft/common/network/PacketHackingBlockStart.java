@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderBlockTarget;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.BlockTrackerClientHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.hacking.WorldAndCoord;
+import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -42,8 +43,11 @@ public class PacketHackingBlockStart extends LocationIntPacket {
                 if (target != null) target.onHackConfirmServer();
             } else {
                 // server
-                CommonArmorHandler.getHandlerForPlayer(player).setHackedBlockPos(new WorldAndCoord(player.world, pos));
-                NetworkHandler.sendToAllTracking(this, player.world, player.getPosition());
+                CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
+                if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().blockTrackerHandler, true)) {
+                    handler.setHackedBlockPos(new WorldAndCoord(player.world, pos));
+                    NetworkHandler.sendToAllTracking(this, player.world, player.getPosition());
+                }
             }
         });
         ctx.get().setPacketHandled(true);

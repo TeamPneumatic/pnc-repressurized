@@ -1,13 +1,15 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
+import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -38,11 +40,12 @@ public class PacketCoordTrackUpdate extends LocationIntPacket {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            if (ctx.get().getSender() != null) {
-                ItemStack stack = ctx.get().getSender().getItemStackFromSlot(EquipmentSlotType.HEAD);
-                World world = ctx.get().getSender().getServerWorld();
-                if (stack.getItem() instanceof ItemPneumaticArmor) {
-                    ItemPneumaticArmor.setCoordTrackerPos(stack, GlobalPosHelper.makeGlobalPos(world, pos));
+            PlayerEntity player = ctx.get().getSender();
+            if (player != null) {
+                CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
+                if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().coordTrackerHandler, false)) {
+                    ItemStack stack = player.getItemStackFromSlot(EquipmentSlotType.HEAD);
+                    ItemPneumaticArmor.setCoordTrackerPos(stack, GlobalPosHelper.makeGlobalPos(player.world, pos));
                 }
             }
         });

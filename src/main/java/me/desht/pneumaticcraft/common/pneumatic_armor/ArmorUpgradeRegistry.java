@@ -1,10 +1,13 @@
 package me.desht.pneumaticcraft.common.pneumatic_armor;
 
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.*;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.util.ResourceLocation;
+import org.apache.commons.lang3.Validate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +21,7 @@ public enum ArmorUpgradeRegistry {
     private static final String UPGRADE_PREFIX = "pneumaticcraft.armor.upgrade.";
 
     private final List<List<IArmorUpgradeHandler>> upgradeHandlers;
+    private final Object2IntMap<IArmorUpgradeHandler> indexMap;
 
     public static final EquipmentSlotType[] ARMOR_SLOTS = new EquipmentSlotType[] {
             EquipmentSlotType.HEAD,
@@ -58,6 +62,8 @@ public enum ArmorUpgradeRegistry {
         for (int i = 0; i < 4; i++) {
             upgradeHandlers.add(new ArrayList<>());
         }
+        indexMap = new Object2IntOpenHashMap<>(30);
+        indexMap.defaultReturnValue(-1);
 
         coreComponentsHandler = registerUpgradeHandler(new CoreComponentsHandler());
         blockTrackerHandler = registerUpgradeHandler(new BlockTrackerHandler());
@@ -104,11 +110,19 @@ public enum ArmorUpgradeRegistry {
     }
 
     IArmorUpgradeHandler registerUpgradeHandler(IArmorUpgradeHandler handler) {
-        upgradeHandlers.get(handler.getEquipmentSlot().getIndex()).add(handler);
+        List<IArmorUpgradeHandler> l = upgradeHandlers.get(handler.getEquipmentSlot().getIndex());
+        indexMap.put(handler, l.size());
+        l.add(handler);
         return handler;
     }
 
     public List<IArmorUpgradeHandler> getHandlersForSlot(EquipmentSlotType slotType) {
         return upgradeHandlers.get(slotType.getIndex());
+    }
+
+    public int getIndexForHandler(IArmorUpgradeHandler handler) {
+        int idx = indexMap.getInt(handler);
+        Validate.isTrue(idx >= 0, "unknown handler: " + handler);
+        return idx;
     }
 }

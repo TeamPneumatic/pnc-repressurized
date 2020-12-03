@@ -2,8 +2,8 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.DamageSourcePneumaticCraft;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.network.NetworkEvent;
 
@@ -28,12 +28,13 @@ public class PacketSecurityStationFailedHack extends LocationIntPacket {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            TileEntity te = ctx.get().getSender().world.getTileEntity(pos);
-            if (te instanceof TileEntitySecurityStation) {
-                TileEntitySecurityStation station = (TileEntitySecurityStation) te;
-                if (!station.isPlayerOnWhiteList(ctx.get().getSender())) {
-                    ctx.get().getSender().attackEntityFrom(DamageSourcePneumaticCraft.SECURITY_STATION, 19);
-                }
+            ServerPlayerEntity player = ctx.get().getSender();
+            if (player != null) {
+                PacketUtil.getTE(player, pos, TileEntitySecurityStation.class).ifPresent(te -> {
+                    if (!te.isPlayerOnWhiteList(ctx.get().getSender())) {
+                        player.attackEntityFrom(DamageSourcePneumaticCraft.SECURITY_STATION, player.getMaxHealth() - 0.5f);
+                    }
+                });
             }
         });
         ctx.get().setPacketHandled(true);

@@ -41,7 +41,9 @@ public abstract class PacketUpdateTubeModule extends LocationIntPacket {
             TubeModule tm = te.getModule(moduleSide);
             if (tm != null) {
                 PlayerEntity player = ctx.get().getSender();
-                onModuleUpdate(tm, player);
+                if (PneumaticCraftUtils.canPlayerReach(player, te.getPos())) {
+                    onModuleUpdate(tm, player);
+                }
             }
         }));
         ctx.get().setPacketHandled(true);

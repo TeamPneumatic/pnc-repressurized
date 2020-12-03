@@ -1,7 +1,9 @@
 package me.desht.pneumaticcraft.common.network;
 
+import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -40,8 +42,12 @@ public class PacketToggleArmorFeature {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            if (featureIndex >= 0 && featureIndex < ArmorUpgradeRegistry.getInstance().getHandlersForSlot(slot).size()) {
-                CommonArmorHandler.getHandlerForPlayer(ctx.get().getSender()).setUpgradeEnabled(slot, featureIndex, state);
+            PlayerEntity player = ctx.get().getSender();
+            if (player != null && featureIndex >= 0
+                    && featureIndex < ArmorUpgradeRegistry.getInstance().getHandlersForSlot(slot).size()
+                    && ItemPneumaticArmor.isPneumaticArmorPiece(player, slot))
+            {
+                CommonArmorHandler.getHandlerForPlayer(player).setUpgradeEnabled(slot, featureIndex, state);
             }
         });
         ctx.get().setPacketHandled(true);

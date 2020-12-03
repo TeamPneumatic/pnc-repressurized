@@ -15,6 +15,7 @@ import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
+import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
 import net.minecraft.entity.item.ExperienceOrbEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.monster.ZombieEntity;
@@ -37,6 +38,7 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
+import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.util.BlockSnapshot;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.fluids.FluidStack;
@@ -777,5 +779,11 @@ public class PneumaticCraftUtils {
     // this method from Block went missing in 1.16.2
     public static boolean blockHasSolidSide(BlockState state, IBlockReader worldIn, BlockPos pos, Direction side) {
         return Block.doesSideFillSquare(state.getRenderShape(worldIn, pos), side);
+    }
+
+    public static boolean canPlayerReach(PlayerEntity player, BlockPos pos) {
+        ModifiableAttributeInstance attr = player.getAttribute(ForgeMod.REACH_DISTANCE.get());
+        double dist = attr != null ? player.getAttribute(ForgeMod.REACH_DISTANCE.get()).getValue() + 1 : 4.5;
+        return player.getDistanceSq(Vector3d.copyCentered(pos)) <= dist * dist;
     }
 }

@@ -765,6 +765,22 @@ public class CommonArmorHandler implements ICommonArmorHandler {
     }
 
     /**
+     * Validate that the given upgrade can currently be used. Also requires that the armor is enabled, and that the
+     * associated armor piece has enough pressure and has finished initialising. For non-toggleable upgrades
+     * (e.g. chestplate launcher), pass false for {@code mustBeActive}
+     *
+     * @param upgrade the upgrade to check
+     * @param mustBeActive true if the upgrade must be switched on, false otherwise
+     * @return true if the upgrade can currently be used
+     */
+    public boolean upgradeUsable(IArmorUpgradeHandler upgrade, boolean mustBeActive) {
+        EquipmentSlotType slot = upgrade.getEquipmentSlot();
+        int idx = ArmorUpgradeRegistry.getInstance().getIndexForHandler(upgrade);
+        return armorEnabled && isArmorReady(slot) && getArmorPressure(slot) > 0f
+                && isUpgradeInserted(slot, idx) && (!mustBeActive || isUpgradeEnabled(slot, idx));
+    }
+
+    /**
      * Called both client- and server-side when a custom NBT field in an armor item has been updated.  Used to
      * cache data (e.g. legs speed boost %) for performance reasons.
      *

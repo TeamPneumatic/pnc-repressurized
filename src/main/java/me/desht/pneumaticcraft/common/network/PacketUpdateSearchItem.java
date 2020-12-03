@@ -1,9 +1,13 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
+import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
+import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -36,10 +40,14 @@ public class PacketUpdateSearchItem {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            ItemStack helmetStack = ctx.get().getSender().getItemStackFromSlot(EquipmentSlotType.HEAD);
-            Item searchedItem = ForgeRegistries.ITEMS.getValue(itemId);
-            if (!helmetStack.isEmpty() && searchedItem != null) {
-                ItemPneumaticArmor.setSearchedItem(helmetStack, searchedItem);
+            PlayerEntity player = ctx.get().getSender();
+            CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
+            if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().searchHandler, true)) {
+                ItemStack helmetStack = player.getItemStackFromSlot(EquipmentSlotType.HEAD);
+                Item searchedItem = ForgeRegistries.ITEMS.getValue(itemId);
+                if (searchedItem != null && searchedItem != Items.AIR) {
+                    ItemPneumaticArmor.setSearchedItem(helmetStack, searchedItem);
+                }
             }
         });
         ctx.get().setPacketHandled(true);

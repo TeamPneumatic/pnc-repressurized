@@ -1,11 +1,13 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAphorismTile;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
@@ -47,11 +49,12 @@ public class PacketAphorismTileUpdate extends LocationIntPacket {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            TileEntity te = ctx.get().getSender().world.getTileEntity(pos);
-            if (te instanceof TileEntityAphorismTile) {
-                // notification not required: the client told us about the text in the first place
-                ((TileEntityAphorismTile) te).setTextLines(text, false);
-                ((TileEntityAphorismTile) te).textRotation = textRotation;
+            PlayerEntity player = Objects.requireNonNull(ctx.get().getSender());
+            if (PneumaticCraftUtils.canPlayerReach(player, pos)) {
+                PneumaticCraftUtils.getTileEntityAt(player.world, pos, TileEntityAphorismTile.class).ifPresent(te -> {
+                    te.setTextLines(text, false);
+                    te.textRotation = textRotation;
+                });
             }
         });
         ctx.get().setPacketHandled(true);
