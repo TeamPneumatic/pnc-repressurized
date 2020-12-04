@@ -84,6 +84,7 @@ public class GuiAirGrateModule extends GuiTubeModule<ModuleAirGrate> {
     public void tick() {
         super.tick();
         if (sendTimer > 0 && --sendTimer == 0) {
+            module.setEntityFilter(textfield.getText());
             NetworkHandler.sendToServer(new PacketUpdateAirGrateModule(module, textfield.getText()));
         }
     }
