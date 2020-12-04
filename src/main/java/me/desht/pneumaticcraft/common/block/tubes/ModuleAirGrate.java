@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.block.tubes;
 
 import me.desht.pneumaticcraft.client.util.RangeLines;
+import me.desht.pneumaticcraft.common.entity.semiblock.EntitySemiblockBase;
 import me.desht.pneumaticcraft.common.item.ItemTubeModule;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityHeatSink;
@@ -136,7 +137,8 @@ public class ModuleAirGrate extends TubeModule {
         if (entity instanceof PlayerEntity) {
             return ((PlayerEntity) entity).isCreative() || entity.isSneaking() || entity.isSpectator();
         } else {
-            return false;
+            // don't touch semiblocks, at all
+            return entity instanceof EntitySemiblockBase;
         }
     }
 
@@ -146,7 +148,7 @@ public class ModuleAirGrate extends TubeModule {
             Vec3d entityVec = new Vec3d(entity.getPosX(), entity.getPosY() + entity.getEyeHeight(), entity.getPosZ());
             RayTraceContext ctx = new RayTraceContext(entityVec, tileVec, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, entity);
             BlockRayTraceResult trace = entity.getEntityWorld().rayTraceBlocks(ctx);
-            return trace != null && trace.getPos().equals(pressureTube.getPos());
+            return trace.getPos().equals(pressureTube.getPos());
         });
     }
 
