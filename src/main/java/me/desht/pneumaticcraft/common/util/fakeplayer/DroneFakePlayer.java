@@ -50,4 +50,9 @@ public class DroneFakePlayer extends FakePlayer {
     protected void playEquipSound(ItemStack stack) {
         // nothing
     }
+
+    @Override
+    public Vector3d getPositionVec() {
+        return drone.getDronePos();
+    }
 }

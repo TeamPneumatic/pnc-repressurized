@@ -3,11 +3,14 @@ package me.desht.pneumaticcraft.common.ai;
 import me.desht.pneumaticcraft.common.progwidgets.IBlockRightClicker;
 import me.desht.pneumaticcraft.common.progwidgets.ISidedWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetBlockRightClick;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CommandBlockBlock;
 import net.minecraft.block.StructureBlock;
+import net.minecraft.command.arguments.EntityAnchorArgument;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
@@ -41,8 +44,16 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetBl
 
     @Override
     protected boolean isValidPosition(BlockPos pos) {
-        return !visitedPositions.contains(pos) &&
-                (progWidget.isItemFilterEmpty() || DroneAIDig.isBlockValidForFilter(drone.world(), pos, drone, progWidget));
+        if (visitedPositions.contains(pos)) return false;
+        if (progWidget.isItemFilterEmpty()) return true;
+        switch (progWidget.getClickType()) {
+            case CLICK_ITEM: return progWidget.isItemValidForFilters(drone.getFakePlayer().getHeldItemMainhand());
+            case CLICK_BLOCK: return DroneAIDig.isBlockValidForFilter(drone.world(), pos, drone, progWidget);
+        }
+        return false;
+
+//        return !visitedPositions.contains(pos) &&
+//                (progWidget.isItemFilterEmpty() || DroneAIDig.isBlockValidForFilter(drone.world(), pos, drone, progWidget));
     }
 
     @Override
@@ -107,6 +118,20 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetBl
                     net.minecraftforge.event.ForgeEventFactory.onPlayerDestroyItem(fakePlayer, copyBeforeUse, Hand.MAIN_HAND);
                 }
             }
+
+            // At this point, it's possible that something the drone has done has added items to the fake player's inventory
+            // in slots beyond the drone's effective inventory size.
+            // We can't prevent this, so look for any such items, and drop them on the ground.
+            PlayerInventory fakeInv = fakePlayer.inventory;
+            if (drone.getInv().getSlots() < fakeInv.getSizeInventory() && !fakeInv.getStackInSlot(drone.getInv().getSlots()).isEmpty()) {
+                for (int slot = drone.getInv().getSlots(); slot < fakeInv.getSizeInventory(); slot++) {
+                    ItemStack stack1 = fakeInv.getStackInSlot(slot);
+                    if (!stack1.isEmpty()) {
+                        PneumaticCraftUtils.dropItemOnGround(stack1, drone.world(), new BlockPos(drone.getDronePos()));
+                        fakeInv.setInventorySlotContents(slot, ItemStack.EMPTY);
+                    }
+                }
+            }
         } catch (Throwable e) {
             Log.error("DroneAIBlockInteract crashed! Stacktrace: ");
             e.printStackTrace();
@@ -132,9 +157,9 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetBl
     private BlockRayTraceResult doTrace(World world, BlockPos pos, FakePlayer fakePlayer) {
         BlockState state = world.getBlockState(pos);
         List<AxisAlignedBB> l = state.getShape(world, pos).toBoundingBoxList();
-        if (l.isEmpty()) return null;
-        Vector3d vec = l.get(0).getCenter().add(Vector3d.copy(pos));
-        BlockRayTraceResult brtr = drone.world().rayTraceBlocks(new RayTraceContext(drone.getDronePos(), vec, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, fakePlayer));
+        Vector3d targetVec = l.isEmpty() ? Vector3d.copyCentered(pos) : l.get(0).getCenter().add(Vector3d.copy(pos));
+        fakePlayer.lookAt(EntityAnchorArgument.Type.FEET, targetVec);
+        BlockRayTraceResult brtr = drone.world().rayTraceBlocks(new RayTraceContext(drone.getDronePos(), targetVec, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.SOURCE_ONLY, fakePlayer));
         if (!brtr.getPos().equals(pos)) return null;
         return brtr;
     }
