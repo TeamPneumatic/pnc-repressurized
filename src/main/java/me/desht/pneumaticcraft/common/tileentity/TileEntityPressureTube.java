@@ -24,6 +24,8 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.items.IItemHandler;
@@ -44,7 +46,8 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     private AxisAlignedBB renderBoundingBox = null;
     private Direction inLineModuleDir = null;  // only one inline module allowed
     private final List<Direction> connectedNeighbours = new ArrayList<>();
-
+    private VoxelShape cachedModuleShape = null;
+    
     public TileEntityPressureTube() {
         this(ModTileEntities.PRESSURE_TUBE.get(), PneumaticValues.DANGER_PRESSURE_PRESSURE_TUBE, PneumaticValues.MAX_PRESSURE_PRESSURE_TUBE, PneumaticValues.VOLUME_PRESSURE_TUBE, 0);
     }
@@ -101,6 +104,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     public void readFromPacket(CompoundNBT tag) {
         super.readFromPacket(tag);
 
+        cachedModuleShape = null;
         Arrays.fill(modules, null);
         ListNBT moduleList = tag.getList("modules", Constants.NBT.TAG_COMPOUND);
         for (int i = 0; i < moduleList.size(); i++) {
@@ -213,6 +217,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
                 inLineModuleDir = null;
             }
         }
+        cachedModuleShape = null;
         modules[side.getIndex()] = module;
         if (getWorld() != null && !getWorld().isRemote) {
             world.setBlockState(getPos(), BlockPressureTube.recalculateState(world, pos, getBlockState()), Constants.BlockFlags.DEFAULT);
@@ -289,6 +294,16 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
         ICamouflageableTE.syncToClient(this);
     }
 
+    public VoxelShape getCachedModuleShape() {
+        if (cachedModuleShape == null) {
+            cachedModuleShape = VoxelShapes.empty();
+            for (TubeModule module : modules) {
+                if (module != null) cachedModuleShape = VoxelShapes.or(cachedModuleShape, module.getShape());
+            }
+        }
+        return cachedModuleShape;
+    }
+    
     public static TileEntityPressureTube getTube(TileEntity te) {
         return te instanceof TileEntityPressureTube ? (TileEntityPressureTube) te : null;
     }

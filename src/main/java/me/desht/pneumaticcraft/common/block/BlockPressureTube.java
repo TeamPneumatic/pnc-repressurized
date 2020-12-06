@@ -192,7 +192,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
     public VoxelShape getUncamouflagedShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext ctx) {
         VoxelShape res = getCachedShape(state);
         TileEntityPressureTube te = getPressureTube(reader, pos);
-        return te != null ? te.tubeModules().map(TubeModule::getShape).reduce(res, VoxelShapes::or) : res;
+        return te != null ? VoxelShapes.or(res, te.getCachedModuleShape()) : res;
     }
 
     private VoxelShape getCachedShape(BlockState state) {
