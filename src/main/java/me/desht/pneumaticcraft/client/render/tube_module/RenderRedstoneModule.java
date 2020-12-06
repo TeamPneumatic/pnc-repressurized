@@ -55,7 +55,7 @@ public class RenderRedstoneModule extends TubeModuleRendererBase<ModuleRedstone>
             cols = RenderUtils.decomposeColorF(0xFF300000 | (l * 13 << 16));
             matrixStack.push();
             matrixStack.translate(0, 0, 5.2 / 16);
-            matrixStack.scale(1, 1, 0.25f + 0.75f * MathHelper.lerp(partialTicks, module.lastExtension, module.extension));
+            matrixStack.scale(1, 1, 0.25f + 0.72f * MathHelper.lerp(partialTicks, module.lastExtension, module.extension));
             matrixStack.translate(0, 0, -5.2 / 16);
         }
         redstoneConnector.render(matrixStack, builder, combinedLight, combinedOverlay, cols[1], cols[2], cols[3], cols[0]);
