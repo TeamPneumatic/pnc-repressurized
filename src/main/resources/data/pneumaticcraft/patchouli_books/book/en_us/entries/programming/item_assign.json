@@ -10,7 +10,7 @@
     },
     {
       "type": "text",
-      "text": "To store an item in a given $(thing)variable/$, place an $(l:programming/item_filter)Item Filter/$ widget on the $(italic)right-hand/$ side of the $(thing)Item Assignment/$ widget. The selected filter will be transferred into the variable name, which you specify in the GUI opened by $(thing)right-clicking/$ the $(thing)Item Assignment/$ widget. Only the actual item will be transferred from the filter; filter settings (e.g. Ore Dictionary) are not."
+      "text": "To store an item in a given $(thing)variable/$, place an $(l:programming/item_filter)Item Filter/$ widget on the $(italic)right-hand/$ side of the $(thing)Item Assignment/$ widget with the desired item. This item will be assigned to the variable, which you specify by $(thing)right-clicking/$ the $(thing)Item Assignment/$ widget. Only the actual item will be transferred from the filter; filter settings are not.$(p)If you omit the $(thing)Item Filter/$ widget, the drone's held item will be assigned to the variable instead."
     },
     {
       "type": "image",

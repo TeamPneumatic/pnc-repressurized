@@ -217,11 +217,7 @@ public class GuiUtils {
         }
         matrixStack.push();
         matrixStack.translate(0, 0, 400);
-        AbstractGui.fill(matrixStack,x - 4, y - 4, x + boxWidth + 8, y + boxHeight + 8, 0xC0000000);
-        AbstractGui.fill(matrixStack,x - 4, y - 4, x + boxWidth + 8, y - 3, 0xFF808080);
-        AbstractGui.fill(matrixStack,x - 4, y + boxHeight + 8, x + boxWidth + 8, y + boxHeight + 9, 0xFF808080);
-        AbstractGui.fill(matrixStack,x - 4, y - 4, x - 3, y + boxHeight + 8, 0xFF808080);
-        AbstractGui.fill(matrixStack,x + boxWidth + 8, y - 4, x + boxWidth + 9, y + boxHeight + 8, 0xFF808080);
+        drawPanel(matrixStack, x, y, boxHeight, boxWidth);
 
         for (IReorderingProcessor line : l) {
             fontRenderer.func_238422_b_(matrixStack, line, x, y, 0xFFE0E0E0);  // draw reordering processor w/o drop shadow
@@ -230,6 +226,15 @@ public class GuiUtils {
         }
         matrixStack.pop();
     }
+
+    public static void drawPanel(MatrixStack matrixStack, int x, int y, int panelHeight, int panelWidth) {
+        AbstractGui.fill(matrixStack,x - 4, y - 4, x + panelWidth + 8, y + panelHeight + 8, 0xC0000000);
+        AbstractGui.fill(matrixStack,x - 4, y - 4, x + panelWidth + 8, y - 3, 0xFF808080);
+        AbstractGui.fill(matrixStack,x - 4, y + panelHeight + 8, x + panelWidth + 8, y + panelHeight + 9, 0xFF808080);
+        AbstractGui.fill(matrixStack,x - 4, y - 4, x - 3, y + panelHeight + 8, 0xFF808080);
+        AbstractGui.fill(matrixStack,x + panelWidth + 8, y - 4, x + panelWidth + 9, y + panelHeight + 8, 0xFF808080);
+    }
+
 
     public static void drawTexture(MatrixStack matrixStack, ResourceLocation texture, int x, int y) {
         Minecraft.getInstance().getTextureManager().bindTexture(texture);

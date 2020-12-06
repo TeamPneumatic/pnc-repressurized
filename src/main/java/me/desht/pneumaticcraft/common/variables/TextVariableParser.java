@@ -1,8 +1,11 @@
 package me.desht.pneumaticcraft.common.variables;
 
 import me.desht.pneumaticcraft.common.ai.DroneAIManager;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
+import org.apache.commons.lang3.StringUtils;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -40,32 +43,36 @@ public class TextVariableParser {
     }
 
     private String getVariableValue(String variable) {
-        boolean x = variable.endsWith(".x");
-        boolean y = variable.endsWith(".y");
-        boolean z = variable.endsWith(".z");
-        if (x || y || z) variable = variable.substring(0, variable.length() - 2);
+        String[] f = StringUtils.splitByWholeSeparator(variable, ".");
+        String ext = "";
+        if (f.length > 1) {
+            ext = f[f.length - 1];
+            variable = f.length == 2 ? f[0] : String.join(".", Arrays.copyOf(f, f.length - 1));
+        }
 
         relevantVariables.add(variable);
 
         if (variableHolder == null) {
             String v1 = variable.startsWith("#") ? variable.substring(1) : variable;
             GlobalVariableManager gvm = GlobalVariableManager.getInstance();
-            return gvm.hasItem(v1) ? gvm.getItem(v1).getDisplayName().getString() : posToStr(gvm.getPos(v1), x, y, z);
+            return gvm.hasItem(v1) ? stackToStr(gvm.getItem(v1), ext.equals("id")) : posToStr(gvm.getPos(v1), ext);
         } else {
             return variableHolder.hasCoordinate(variable) ?
-                    posToStr(variableHolder.getCoordinate(variable), x, y, z) :
-                    (variableHolder.hasStack(variable) ? variableHolder.getStack(variable).getDisplayName().getString() : "");
+                    posToStr(variableHolder.getCoordinate(variable), ext) :
+                    (variableHolder.hasStack(variable) ? stackToStr(variableHolder.getStack(variable), ext.equals("id")) : "");
         }
     }
 
-    private String posToStr(BlockPos pos, boolean x, boolean y, boolean z) {
-        if (x)
-            return Integer.toString(pos.getX());
-        else if (y)
-            return Integer.toString(pos.getY());
-        else if (z)
-            return Integer.toString(pos.getZ());
-        else
-            return pos.getX() + ", " + pos.getY() + ", " + pos.getZ();
+    private String stackToStr(ItemStack stack, boolean id) {
+        return id ? stack.getItem().getRegistryName().toString() : stack.getDisplayName().getString();
+    }
+
+    private String posToStr(BlockPos pos, String ext) {
+        switch (ext) {
+            case "x": return Integer.toString(pos.getX());
+            case "y": return Integer.toString(pos.getY());
+            case "z": return Integer.toString(pos.getZ());
+            default: return pos.getX() + ", " + pos.getY() + ", " + pos.getZ();
+        }
     }
 }

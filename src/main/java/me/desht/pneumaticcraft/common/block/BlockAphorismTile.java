@@ -3,10 +3,12 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.client.gui.GuiAphorismTile;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAphorismTile;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.util.ITooltipFlag;
@@ -18,6 +20,8 @@ import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
+import net.minecraft.state.BooleanProperty;
+import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
@@ -46,7 +50,6 @@ import static me.desht.pneumaticcraft.lib.NBTKeys.BLOCK_ENTITY_TAG;
 import static me.desht.pneumaticcraft.lib.NBTKeys.NBT_EXTRA;
 
 public class BlockAphorismTile extends BlockPneumaticCraft implements ColorHandlers.ITintableBlock {
-
     private static final VoxelShape[] SHAPES = new VoxelShape[] {
             Block.makeCuboidShape(0, 0, 0, 16,  1, 16),
             Block.makeCuboidShape(0, 15, 0, 16, 16, 16),
@@ -55,14 +58,31 @@ public class BlockAphorismTile extends BlockPneumaticCraft implements ColorHandl
             Block.makeCuboidShape(0, 0, 0,  1, 16, 16),
             Block.makeCuboidShape(15, 0, 0, 16, 16, 16),
     };
+    private static final VoxelShape[] INVIS_SHAPES = new VoxelShape[] {
+            Block.makeCuboidShape(0, 0, 0, 16,  0.01, 16),
+            Block.makeCuboidShape(0, 15.99, 0, 16, 16, 16),
+            Block.makeCuboidShape(0, 0, 0, 16, 16,  0.01),
+            Block.makeCuboidShape(0, 0, 15.99, 16, 16, 16),
+            Block.makeCuboidShape(0, 0, 0,  0.01, 16, 16),
+            Block.makeCuboidShape(15.99, 0, 0, 16, 16, 16),
+    };
+    public static final BooleanProperty INVISIBLE = BooleanProperty.create("invisible");
 
     public BlockAphorismTile() {
         super(Block.Properties.create(Material.ROCK).hardnessAndResistance(1.5f, 4.0f).doesNotBlockMovement());
+        setDefaultState(getStateContainer().getBaseState().with(INVISIBLE, false));
+    }
+
+    @Override
+    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
+        super.fillStateContainer(builder);
+        builder.add(INVISIBLE);
     }
 
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext selectionContext) {
-        return SHAPES[getRotation(state).getIndex()];
+        return state.getBlock() == ModBlocks.APHORISM_TILE.get() && state.get(BlockAphorismTile.INVISIBLE) ?
+                INVIS_SHAPES[getRotation(state).getIndex()] : SHAPES[getRotation(state).getIndex()];
     }
 
     @Nullable
@@ -74,6 +94,12 @@ public class BlockAphorismTile extends BlockPneumaticCraft implements ColorHandl
     @Override
     protected Class<? extends TileEntity> getTileEntityClass() {
         return TileEntityAphorismTile.class;
+    }
+
+    @Override
+    public BlockRenderType getRenderType(BlockState state) {
+        return state.getBlock() == ModBlocks.APHORISM_TILE.get() && state.get(BlockAphorismTile.INVISIBLE) ?
+                BlockRenderType.INVISIBLE : super.getRenderType(state);
     }
 
     @Override
@@ -105,7 +131,7 @@ public class BlockAphorismTile extends BlockPneumaticCraft implements ColorHandl
             PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityAphorismTile.class).ifPresent(teAT -> {
                 CompoundNBT tag = iStack.getChildTag(BLOCK_ENTITY_TAG);
                 if (tag != null) teAT.readFromPacket(tag);
-                GuiAphorismTile.openGui(teAT);
+                GuiAphorismTile.openGui(teAT, true);
                 if (entityLiving instanceof PlayerEntity) sendEditorMessage((PlayerEntity) entityLiving);
             });
         }
@@ -115,7 +141,7 @@ public class BlockAphorismTile extends BlockPneumaticCraft implements ColorHandl
     public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
         if (world.isRemote && hand == Hand.MAIN_HAND && player.getHeldItem(hand).isEmpty() && !player.isSneaking()) {
             PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityAphorismTile.class).ifPresent(teAT -> {
-                GuiAphorismTile.openGui(teAT);
+                GuiAphorismTile.openGui(teAT, false);
                 sendEditorMessage(player);
             });
         } else if (!world.isRemote) {

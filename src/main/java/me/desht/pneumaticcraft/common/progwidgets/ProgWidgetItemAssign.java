@@ -12,7 +12,6 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 
 import java.util.Collections;
 import java.util.List;
@@ -80,7 +79,7 @@ public class ProgWidgetItemAssign extends ProgWidget implements IVariableSetWidg
     public IProgWidget getOutputWidget(IDroneBase drone, List<IProgWidget> allWidgets) {
         if (!variable.equals("")) {
             ProgWidgetItemFilter filter = (ProgWidgetItemFilter) getConnectedParameters()[0];
-            aiManager.setItem(variable, filter != null ? filter.getFilter() : null);
+            aiManager.setItem(variable, filter != null ? filter.getFilter() : drone.getInv().getStackInSlot(0).copy());
         }
         return super.getOutputWidget(drone, allWidgets);
     }
@@ -122,7 +121,8 @@ public class ProgWidgetItemAssign extends ProgWidget implements IVariableSetWidg
     @Override
     public void getTooltip(List<ITextComponent> curTooltip) {
         super.getTooltip(curTooltip);
-        curTooltip.add(new StringTextComponent("Setting variable: \"" + variable + "\""));
+        curTooltip.add(xlate("pneumaticcraft.gui.progWidget.itemAssign.settingVariable")
+                .appendString(": \"").appendString(variable).appendString("\""));
     }
 
     @Override
