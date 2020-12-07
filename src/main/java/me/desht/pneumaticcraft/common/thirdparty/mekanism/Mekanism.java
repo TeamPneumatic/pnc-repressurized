@@ -1,8 +1,5 @@
 package me.desht.pneumaticcraft.common.thirdparty.mekanism;
 
-import me.desht.pneumaticcraft.api.fuel.IFuelRegistry;
-import me.desht.pneumaticcraft.common.PneumaticCraftAPIHandler;
-import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
 import me.desht.pneumaticcraft.lib.ModIds;
@@ -27,13 +24,6 @@ public class Mekanism implements IThirdParty {
     @Override
     public void init() {
         available = true;
-
-        IFuelRegistry fuelApi = PneumaticCraftAPIHandler.getInstance().getFuelRegistry();
-
-        // equivalent to LPG
-        fuelApi.registerFuel(PneumaticCraftTags.Fluids.forgeTag("ethene"), 1800000, 1.25f);
-        // low fuel value, but fast burning
-        fuelApi.registerFuel(PneumaticCraftTags.Fluids.forgeTag("hydrogen"), 300000, 1.5f);
     }
 
     @SubscribeEvent

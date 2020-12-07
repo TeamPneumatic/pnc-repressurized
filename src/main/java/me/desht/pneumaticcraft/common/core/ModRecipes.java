@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.api.crafting.ShapedPressurizableRecipe;
 import me.desht.pneumaticcraft.api.crafting.recipe.*;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
 import me.desht.pneumaticcraft.common.recipes.machine.*;
+import me.desht.pneumaticcraft.common.recipes.other.FuelQualityRecipeImpl;
 import me.desht.pneumaticcraft.common.recipes.special.*;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.item.crafting.IRecipeSerializer;
@@ -56,6 +57,10 @@ public class ModRecipes {
     public static final RegistryObject<IRecipeSerializer<FluidMixerRecipe>> FLUID_MIXER
             = RECIPES.register(PneumaticCraftRecipeTypes.FLUID_MIXER,
             () -> new FluidMixerRecipeImpl.Serializer<>(FluidMixerRecipeImpl::new));
+
+    public static final RegistryObject<IRecipeSerializer<FuelQualityRecipe>> FUEL_QUALITY
+            = RECIPES.register(PneumaticCraftRecipeTypes.FUEL_QUALITY,
+            () -> new FuelQualityRecipeImpl.Serializer<>(FuelQualityRecipeImpl::new));
 
     public static final RegistryObject<SpecialRecipeSerializer<OneProbeCrafting>> ONE_PROBE_HELMET_CRAFTING
             = RECIPES.register("one_probe_helmet_crafting", () -> new SpecialRecipeSerializer<>(OneProbeCrafting::new));

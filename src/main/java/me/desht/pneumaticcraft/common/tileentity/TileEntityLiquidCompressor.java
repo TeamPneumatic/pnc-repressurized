@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableMap;
-import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.fluid.FuelRegistry;
@@ -46,7 +45,7 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
     private final SmartSyncTank tank = new SmartSyncTank(this, PneumaticValues.NORMAL_TANK_CAPACITY) {
         @Override
         public boolean isFluidValid(FluidStack stack) {
-            return FuelRegistry.getInstance().getFuelValue(stack.getFluid()) > 0;
+            return FuelRegistry.getInstance().getFuelValue(world, stack.getFluid()) > 0;
         }
     };
 
@@ -98,12 +97,12 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
             if (rsController.shouldRun()) {
                 double usageRate = getBaseProduction() * this.getSpeedUsageMultiplierFromUpgrades() * burnMultiplier;
                 if (internalFuelBuffer < usageRate) {
-                    double fuelValue = PneumaticRegistry.getInstance().getFuelRegistry().getFuelValue(tank.getFluid().getFluid()) / 1000D;
+                    double fuelValue = FuelRegistry.getInstance().getFuelValue(world, tank.getFluid().getFluid()) / 1000D;
                     if (fuelValue > 0) {
                         int usedFuel = Math.min(tank.getFluidAmount(), (int) (usageRate / fuelValue) + 1);
                         tank.drain(usedFuel, IFluidHandler.FluidAction.EXECUTE);
                         internalFuelBuffer += usedFuel * fuelValue;
-                        burnMultiplier = PneumaticRegistry.getInstance().getFuelRegistry().getBurnRateMultiplier(tank.getFluid().getFluid());
+                        burnMultiplier = FuelRegistry.getInstance().getBurnRateMultiplier(world, tank.getFluid().getFluid());
                     }
                 }
                 if (internalFuelBuffer >= usageRate) {

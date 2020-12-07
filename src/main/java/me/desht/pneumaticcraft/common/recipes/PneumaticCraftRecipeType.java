@@ -3,12 +3,14 @@ package me.desht.pneumaticcraft.common.recipes;
 import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipeTypes;
 import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe;
 import me.desht.pneumaticcraft.api.crafting.recipe.PneumaticCraftRecipe;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.fluid.FuelRegistry;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketClearRecipeCache;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.recipes.machine.*;
+import me.desht.pneumaticcraft.common.recipes.other.FuelQualityRecipeImpl;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityFluidMixer;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberInterface;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityThermopneumaticProcessingPlant;
@@ -55,6 +57,8 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
             = registerType(PneumaticCraftRecipeTypes.THERMO_PLANT);
     public static final PneumaticCraftRecipeType<FluidMixerRecipeImpl> FLUID_MIXER
             = registerType(PneumaticCraftRecipeTypes.FLUID_MIXER);
+    public static final PneumaticCraftRecipeType<FuelQualityRecipeImpl> FUEL_QUALITY
+            = registerType(PneumaticCraftRecipeTypes.FUEL_QUALITY);
 
     private final Map<ResourceLocation, T> cachedRecipes = new HashMap<>();
     private final ResourceLocation registryName;
@@ -95,12 +99,15 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
         TileEntityPressureChamberInterface.clearCachedItems();
         TileEntityThermopneumaticProcessingPlant.clearCachedItemsAndFluids();
         AmadronOfferManager.getInstance().rebuildRequired();
+        FuelRegistry.getInstance().clearCachedFuelFluids();
     }
 
     public Map<ResourceLocation, T> getRecipes(World world) {
         if (world == null) {
             // we should pretty much always have a world, but here's a fallback: the overworld
             world = ServerLifecycleHooks.getCurrentServer().getWorld(World.OVERWORLD);
+            // no overworld? let's hope this is the client, then...
+            if (world == null) world = ClientUtils.getClientWorld();
             if (world == null) return Collections.emptyMap();
         }
 
@@ -138,7 +145,7 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
         public CompletableFuture<Void> reload(IStage stage, IResourceManager resourceManager, IProfiler preparationsProfiler, IProfiler reloadProfiler, Executor backgroundExecutor, Executor gameExecutor) {
             return CompletableFuture.runAsync(() -> {
                 clearCachedRecipes();
-                FuelRegistry.getInstance().clearCachedFuelFluids();
+//                FuelRegistry.getInstance().clearCachedFuelFluids();
                 if (ServerLifecycleHooks.getCurrentServer() != null) {
                     NetworkHandler.sendToAll(new PacketClearRecipeCache());
                 }

@@ -148,7 +148,7 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements
         if (!tank.isEmpty()) {
             if (PNCConfig.Common.Machines.keroseneLampCanUseAnyFuel) {
                 // 110 comes from kerosene's fuel value of 1,100,000 divided by the old FUEL_PER_MB value (10000)
-                fuelQuality = PneumaticRegistry.getInstance().getFuelRegistry().getFuelValue(tank.getFluid().getFluid()) / 110f;
+                fuelQuality = PneumaticRegistry.getInstance().getFuelRegistry().getFuelValue(world, tank.getFluid().getFluid()) / 110f;
             } else {
                 fuelQuality = tank.getFluid().getFluid() == ModFluids.KEROSENE.get() ? 10000f : 0f;
             }

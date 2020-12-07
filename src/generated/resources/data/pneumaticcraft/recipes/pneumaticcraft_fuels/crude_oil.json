@@ -1,0 +1,10 @@
+{
+  "type": "pneumaticcraft:fuel_quality",
+  "fluid": {
+    "type": "pneumaticcraft:fluid",
+    "tag": "forge:crude_oil",
+    "amount": 1000
+  },
+  "air_per_bucket": 200000,
+  "burn_rate": 0.25
+}

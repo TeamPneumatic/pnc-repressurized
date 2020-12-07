@@ -1345,6 +1345,28 @@ public class ModRecipeProvider extends RecipeProvider {
                 FluidStack.EMPTY, new ItemStack(Items.OBSIDIAN),
                 0.5f, 40
         ).build(consumer, RL("fluid_mixer/mix_obsidian"));
+
+        // fuels
+        fuelQuality(FluidIngredient.of(1000, PneumaticCraftTags.Fluids.CRUDE_OIL), 200000, 0.25f)
+                .build(consumer, RL("pneumaticcraft_fuels/crude_oil"));
+        fuelQuality(FluidIngredient.of(1000, PneumaticCraftTags.Fluids.DIESEL), 1000000, 0.8f)
+                .build(consumer, RL("pneumaticcraft_fuels/diesel"));
+        fuelQuality(FluidIngredient.of(1000, PneumaticCraftTags.Fluids.BIODIESEL), 1000000, 0.8f)
+                .build(consumer, RL("pneumaticcraft_fuels/biodiesel"));
+        fuelQuality(FluidIngredient.of(1000, PneumaticCraftTags.Fluids.KEROSENE), 1100000, 1f)
+                .build(consumer, RL("pneumaticcraft_fuels/kerosene"));
+        fuelQuality(FluidIngredient.of(1000, PneumaticCraftTags.Fluids.GASOLINE), 1500000, 1.5f)
+                .build(consumer, RL("pneumaticcraft_fuels/gasoline"));
+        fuelQuality(FluidIngredient.of(1000, PneumaticCraftTags.Fluids.LPG), 1800000, 1.25f)
+                .build(consumer, RL("pneumaticcraft_fuels/lpg"));
+        fuelQuality(FluidIngredient.of(1000, PneumaticCraftTags.Fluids.ETHANOL), 400000, 1f)
+                .build(consumer, RL("pneumaticcraft_fuels/ethanol"));
+
+        // non-pneumaticcraft fuel compat
+        fuelQuality(FluidIngredient.of(1000, PneumaticCraftTags.Fluids.forgeTag("ethene")), 1800000, 1.25f)
+                .build(consumer, RL("pneumaticcraft_fuels/ethylene"));
+        fuelQuality(FluidIngredient.of(1000, PneumaticCraftTags.Fluids.forgeTag("hydrogen")), 300000, 1.5f)
+                .build(consumer, RL("pneumaticcraft_fuels/hydrogen"));
     }
 
     private <T extends IItemProvider & IForgeRegistryEntry<?>> ShapelessRecipeBuilder shapeless(T result, T required, Object... ingredients) {
@@ -1535,6 +1557,11 @@ public class ModRecipeProvider extends RecipeProvider {
     private FluidMixerRecipeBuilder fluidMixer(FluidIngredient input1, FluidIngredient input2, FluidStack outputFluid, ItemStack outputItem, float pressure, int processingTime) {
         return new FluidMixerRecipeBuilder(input1, input2, outputFluid, outputItem, pressure, processingTime)
                 .addCriterion(Criteria.has(ModBlocks.FLUID_MIXER.get()));
+    }
+
+    private FuelQualityBuilder fuelQuality(FluidIngredient fuel, int airPerBucket, float burnRate) {
+        return new FuelQualityBuilder(fuel, airPerBucket, burnRate)
+                .addCriterion(Criteria.has(ModBlocks.LIQUID_COMPRESSOR.get()));
     }
 
     private String getId(String s) {

@@ -27,8 +27,8 @@ import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefineryController;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
-import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.util.DeferredTaskManager;
+import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.Block;
@@ -84,7 +84,7 @@ public class EventHandlerPneumaticCraft {
         FluidUtil.getFluidContained(event.getItemStack()).ifPresent(fluidStack -> {
             ResourceLocation name = fluidStack.getFluid().getRegistryName();
             if (Names.MOD_ID.equals(name.getNamespace())) {
-                int value = PneumaticRegistry.getInstance().getFuelRegistry().getFuelValue(fluidStack.getFluid());
+                int value = PneumaticRegistry.getInstance().getFuelRegistry().getFuelValue(null, fluidStack.getFluid());
                 event.setBurnTime(value > 0 ? (int)(value * PNCConfig.Common.General.fuelBucketEfficiency) : -1);
             }
         });

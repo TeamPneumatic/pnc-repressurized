@@ -19,6 +19,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import org.apache.commons.lang3.StringUtils;
@@ -84,28 +85,33 @@ public class GuiLiquidCompressor extends GuiPneumaticContainerBase<ContainerLiqu
         FuelRegistry fuelRegistry = FuelRegistry.getInstance();
 
         // kludge to get rid of negatively cached values (too-early init via JEI perhaps?)
-        // not a big deal to clear this cache client-side since the fuel manager only really used here on the client
+        // not a big deal to clear this cache client-side since the fuel manager is only really used here on the client
         fuelRegistry.clearCachedFuelFluids();
 
-        List<Fluid> fluids = new ArrayList<>(fuelRegistry.registeredFuels());
-        fluids.sort((o1, o2) -> Integer.compare(fuelRegistry.getFuelValue(o2), fuelRegistry.getFuelValue(o1)));
+        World world = te.getWorld();
+        List<Fluid> fluids = new ArrayList<>(fuelRegistry.registeredFuels(world));
+        fluids.sort((o1, o2) -> Integer.compare(fuelRegistry.getFuelValue(world, o2), fuelRegistry.getFuelValue(world, o1)));
 
         Map<String, Integer> counted = fluids.stream()
                 .collect(Collectors.toMap(fluid -> new FluidStack(fluid, 1).getDisplayName().getString(), fluid -> 1, Integer::sum));
 
-        int w = font.getStringWidth(".");
+        int dotWidth = font.getStringWidth(".");
+        ITextComponent prevLine = StringTextComponent.EMPTY;
         for (Fluid fluid : fluids) {
-            String value = String.format("%4d", fuelRegistry.getFuelValue(fluid) / 1000);
-            int nSpc = (32 - font.getStringWidth(value)) / w;
+            String value = String.format("%4d", fuelRegistry.getFuelValue(world, fluid) / 1000);
+            int nSpc = (32 - font.getStringWidth(value)) / dotWidth;
             value = value + StringUtils.repeat('.', nSpc);
             String fluidName = new FluidStack(fluid, 1).getDisplayName().getString();
-            float mul = fuelRegistry.getBurnRateMultiplier(fluid);
+            float mul = fuelRegistry.getBurnRateMultiplier(world, fluid);
             StringTextComponent line = mul == 1 ?
                     new StringTextComponent(value + "| " + StringUtils.abbreviate(fluidName, 25)) :
                     new StringTextComponent(value + "| " + StringUtils.abbreviate(fluidName, 20)
                             + " (x" + PneumaticCraftUtils.roundNumberTo(mul, 2) + ")");
-            maxWidth = Math.max(maxWidth, font.getStringPropertyWidth(line));
-            text.add(line);
+            if (!line.equals(prevLine)) {
+                maxWidth = Math.max(maxWidth, font.getStringPropertyWidth(line));
+                text.add(line);
+            }
+            prevLine = line;
             if (counted.getOrDefault(fluidName, 0) > 1) {
                 ITextComponent line2 = new StringTextComponent("       " + ModNameCache.getModName(fluid)).mergeStyle(TextFormatting.GOLD);
                 text.add(line2);
