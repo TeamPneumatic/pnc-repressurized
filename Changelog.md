@@ -6,6 +6,29 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.16.3 / 1.16.4
 
+## 2.8.0-?? (unreleased)
+
+### Updates
+* Aphorism Tiles have had a major boost in functionality
+  * The editor is much more better now (support horizontal cursor positioning, joining/splitting lines & more...)
+  * The Aphorism Tile can now display one or more items instead of, or in addition to, text lines
+  * Use `{item:<item-id>}`" on a line on its own to show an item, or use the friendly GUI item searcher to add an item
+  * The string `{redstone}` anywhere on a line will be substituted with the redstone signal level for the block behind the tile
+    * There's also a GUI button to insert this string
+  * Tile margin width can be adjusted now, via GUI slider
+  * The tile can be now made invisible via GUI checkbox, showing only the text and/or items on the tile
+* All fuels (as used by the Liquid Compressors & Kerosene Lamp) are now defined in datapacks as a special recipe type
+  * This makes it very easy to override existing values or add new custom fuels
+  * See https://github.com/TeamPneumatic/pnc-repressurized/tree/1.16.4/src/generated/resources/data/pneumaticcraft/recipes/pneumaticcraft_fuels/ for the default fuel JSONs
+* Performance improvement for Pressure Tubes: made block shape calculation much more efficient
+  * May help with FPS drops in chunks with a lot of tubes, and where a lot of block updates are happening
+
+### Fixes
+* Fixed elevator callers not emitted redstone when the elevator is at that floor
+* Fixed drone not being able to fill bottles with water from water source blocks
+  * Note that filling water bottles from water tanks is still not possible (with or without a drone)
+* Fixed Air Grate entity filter setting (with Advanced PCB installed) not taking effect right away
+
 ## 2.7.2-86 (3 Dec 2020)
 
 ### Fixes
