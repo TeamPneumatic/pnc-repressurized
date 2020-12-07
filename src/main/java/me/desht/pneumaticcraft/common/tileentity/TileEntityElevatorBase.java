@@ -87,6 +87,10 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
     private BlockState prevCamoState;
     public float[] fakeFloorTextureUV;
 
+    private final List<Integer> floorList = new ArrayList<>();
+    private final List<BlockPos> callerList = new ArrayList<>();
+    private long lastFloorUpdate = 0L;
+
     public TileEntityElevatorBase() {
         super(ModTileEntities.ELEVATOR_BASE.get(), PneumaticValues.DANGER_PRESSURE_ELEVATOR, PneumaticValues.MAX_PRESSURE_ELEVATOR, PneumaticValues.VOLUME_ELEVATOR, 4);
     }
@@ -173,6 +177,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
         if (oldExtension == extension && !isStopped) {
             soundName = ModSounds.ELEVATOR_RISING_STOP.get();
             isStopped = true;
+            if (!world.isRemote) updateFloors(false);
         }
 
         if (soundName != null && getWorld().isRemote && shouldPlaySounds()) {
@@ -401,37 +406,39 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
     }
 
     public void updateFloors(boolean notifyClient) {
-        List<Integer> floorList = new ArrayList<>();
-        List<BlockPos> callerList = new ArrayList<>();
-
-        if (multiElevators != null) {  // should always be the case, even if only a single member
-            int yOffset = 0;
-            boolean shouldBreak = false;
-            while (!shouldBreak) {
-                boolean registeredThisFloor = false;
-                for (TileEntityElevatorBase base : multiElevators) {
-                    for (Direction dir : PneumaticCraftUtils.HORIZONTALS) {
-                        BlockPos checkPos = base.getPos().offset(dir).up(yOffset + 2);
-                        if (base.world.getBlockState(checkPos).getBlock() == ModBlocks.ELEVATOR_CALLER.get()) {
-                            callerList.add(checkPos);
-                            if (!registeredThisFloor) floorList.add(yOffset);
-                            registeredThisFloor = true;
+        if (world.getGameTime() - lastFloorUpdate > 20) {
+            callerList.clear();
+            floorList.clear();
+            if (multiElevators != null) {  // should always be the case, even if only a single member
+                int yOffset = 0;
+                int worldHeight = world.getDimensionType().getLogicalHeight();
+                BlockPos.Mutable mut = new BlockPos.Mutable();
+                scanLoop: while (pos.getY() + yOffset < worldHeight - 2) {
+                    boolean registeredThisFloor = false;
+                    for (TileEntityElevatorBase base : multiElevators) {
+                        for (Direction dir : PneumaticCraftUtils.HORIZONTALS) {
+                            mut.setPos(base.getPos());
+                            mut.move(dir.getXOffset(), yOffset + 2, dir.getZOffset());
+                            if (base.world.getBlockState(mut).getBlock() == ModBlocks.ELEVATOR_CALLER.get()) {
+                                callerList.add(mut.toImmutable());
+                                if (!registeredThisFloor) floorList.add(yOffset);
+                                registeredThisFloor = true;
+                            }
+                        }
+                    }
+                    yOffset++;
+                    for (TileEntityElevatorBase base : multiElevators) {
+                        if (base.world.getBlockState(base.getPos().up(yOffset)).getBlock() != ModBlocks.ELEVATOR_FRAME.get()) {
+                            break scanLoop;
                         }
                     }
                 }
 
-                yOffset++;
                 for (TileEntityElevatorBase base : multiElevators) {
-                    if (base.world.getBlockState(base.getPos().up(yOffset)).getBlock() != ModBlocks.ELEVATOR_FRAME.get()) {
-                        shouldBreak = true;
-                        break;
-                    }
+                    base.floorHeights = floorList.stream().mapToInt(Integer::intValue).toArray();
                 }
             }
-
-            for (TileEntityElevatorBase base : multiElevators) {
-                base.floorHeights = floorList.stream().mapToInt(Integer::intValue).toArray();
-            }
+            lastFloorUpdate = world.getGameTime();
         }
 
         ElevatorButton[] elevatorButtons = new ElevatorButton[floorHeights.length];
