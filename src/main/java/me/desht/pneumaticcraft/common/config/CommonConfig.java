@@ -62,6 +62,7 @@ public class CommonConfig {
         ForgeConfigSpec.IntValue fluidTankUpdateRate;
         ForgeConfigSpec.IntValue pressureSyncPrecision;
         ForgeConfigSpec.BooleanValue stopDroneAI;
+        ForgeConfigSpec.BooleanValue dontUpdateInfiniteWaterSources;
     }
     public static class Micromissiles {
         ForgeConfigSpec.DoubleValue baseExplosionDamage;
@@ -330,6 +331,10 @@ public class CommonConfig {
                 .comment("When set to true, Drones will not execute any program. This is useful to set to true when due to a bug Drones are lagging your server or crashing it. Please report the bug if you encounter it.")
                 .translation("pneumaticcraft.config.common.advanced.stop_drone_ai")
                 .define("stop_drone_ai", false);
+        advanced.dontUpdateInfiniteWaterSources = builder
+                .comment("Don't remove a water source block when picking up (drones, liquid hoppers, gas lift) if it has at least two water source neighbours. This can reduce lag due to frequent block updates, and can also potentially make water import much faster. Set this to false if you want no-infinite-water rules in a world, or want to limit the speed of water importing to vanilla block update rates.")
+                .translation("pneumaticcraft.config.common.advanced.dont_update_infinite_water_sources")
+                .define("dont_update_infinite_water_sources", true);
         builder.pop();
 
         builder.push("Micromissile Properties");

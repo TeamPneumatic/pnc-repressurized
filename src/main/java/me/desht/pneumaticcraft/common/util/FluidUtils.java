@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.util;
 
 import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.IBucketPickupHandler;
@@ -200,7 +201,19 @@ public class FluidUtils {
             return FluidStack.EMPTY;
         }
         // actually do the pickup & transfer now
-        ((IBucketPickupHandler) state.getBlock()).pickupFluid(world, pos, state);
+        boolean removeBlock = true;
+        if (fluid == Fluids.WATER && PNCConfig.Common.Advanced.dontUpdateInfiniteWaterSources) {
+            int n = 0;
+            for (Direction d : PneumaticCraftUtils.HORIZONTALS) {
+                if (world.getFluidState(pos.offset(d)).getFluid() == Fluids.WATER && ++n >= 2) {
+                    removeBlock = false;
+                    break;
+                }
+            }
+        }
+        if (removeBlock) {
+            ((IBucketPickupHandler) state.getBlock()).pickupFluid(world, pos, state);
+        }
         FluidStack transferred = fluidCap.map(h ->
                 FluidUtil.tryFluidTransfer(h, tank, BUCKET_VOLUME, action.execute()))
                 .orElse(FluidStack.EMPTY);

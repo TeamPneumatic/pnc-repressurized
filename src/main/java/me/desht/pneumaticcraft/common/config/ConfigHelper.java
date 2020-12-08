@@ -108,6 +108,7 @@ public class ConfigHelper {
         PNCConfig.Common.Advanced.fluidTankUpdateRate = common.advanced.fluidTankUpdateRate.get();
         PNCConfig.Common.Advanced.pressureSyncPrecision = common.advanced.pressureSyncPrecision.get();
         PNCConfig.Common.Advanced.stopDroneAI = common.advanced.stopDroneAI.get();
+        PNCConfig.Common.Advanced.dontUpdateInfiniteWaterSources = common.advanced.dontUpdateInfiniteWaterSources.get();
 
         PNCConfig.Common.Micromissiles.baseExplosionDamage = common.micromissiles.baseExplosionDamage.get();
         PNCConfig.Common.Micromissiles.damageTerrain = common.micromissiles.damageTerrain.get();

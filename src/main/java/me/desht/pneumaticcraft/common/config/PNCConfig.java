@@ -104,6 +104,7 @@ public class PNCConfig {
             public static int fluidTankUpdateRate;
             public static boolean stopDroneAI;
             public static int pressureSyncPrecision;
+            public static boolean dontUpdateInfiniteWaterSources;
         }
 
         public static class Micromissiles {
