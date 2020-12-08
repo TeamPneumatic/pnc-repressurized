@@ -20,8 +20,8 @@ public class ProgressingLine {
 
     public ProgressingLine(Vector3f start, Vector3f end) {
         this.startX = start.getX();
-        this.startX = start.getY();
-        this.startX = start.getZ();
+        this.startY = start.getY();
+        this.startZ = start.getZ();
         this.endX = end.getX();
         this.endY = end.getY();
         this.endZ = end.getZ();
