@@ -55,12 +55,12 @@ public class RenderElevatorBase extends AbstractTileModelRenderer<TileEntityElev
         IVertexBuilder builder = bufferIn.getBuffer(RenderType.getEntityCutout(Textures.MODEL_ELEVATOR));
 
         float extension = MathHelper.lerp(partialTicks, te.oldExtension, te.extension);
-        renderPole(matrixStackIn, builder, combinedLightIn, combinedOverlayIn, pole4, 0, extension);
-        renderPole(matrixStackIn, builder, combinedLightIn, combinedOverlayIn, pole3, 1, extension);
-        renderPole(matrixStackIn, builder, combinedLightIn, combinedOverlayIn, pole2, 2, extension);
-        renderPole(matrixStackIn, builder, combinedLightIn, combinedOverlayIn, pole1, 3, extension);
+        renderPole(matrixStackIn, builder, te.lightAbove, combinedOverlayIn, pole4, 0, extension);
+        renderPole(matrixStackIn, builder, te.lightAbove, combinedOverlayIn, pole3, 1, extension);
+        renderPole(matrixStackIn, builder, te.lightAbove, combinedOverlayIn, pole2, 2, extension);
+        renderPole(matrixStackIn, builder, te.lightAbove, combinedOverlayIn, pole1, 3, extension);
 
-        floor.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
+        floor.render(matrixStackIn, builder, te.lightAbove, combinedOverlayIn);
     }
 
     @Override
@@ -75,10 +75,10 @@ public class RenderElevatorBase extends AbstractTileModelRenderer<TileEntityElev
             float uMax = te.fakeFloorTextureUV[2];
             float vMax = te.fakeFloorTextureUV[3];
             Matrix4f posMat = matrixStack.getLast().getMatrix();
-            builder.pos(posMat,0, 0, 1).color(1f, 1f, 1f, 1f).tex(uMin, vMax).lightmap(combinedLightIn).endVertex();
-            builder.pos(posMat,1, 0, 1).color(1f, 1f, 1f, 1f).tex(uMax, vMax).lightmap(combinedLightIn).endVertex();
-            builder.pos(posMat,1, 0, 0).color(1f, 1f, 1f, 1f).tex(uMax, vMin).lightmap(combinedLightIn).endVertex();
-            builder.pos(posMat,0, 0, 0).color(1f, 1f, 1f, 1f).tex(uMin, vMin).lightmap(combinedLightIn).endVertex();
+            builder.pos(posMat,0, 0, 1).color(1f, 1f, 1f, 1f).tex(uMin, vMax).lightmap(te.lightAbove).endVertex();
+            builder.pos(posMat,1, 0, 1).color(1f, 1f, 1f, 1f).tex(uMax, vMax).lightmap(te.lightAbove).endVertex();
+            builder.pos(posMat,1, 0, 0).color(1f, 1f, 1f, 1f).tex(uMax, vMin).lightmap(te.lightAbove).endVertex();
+            builder.pos(posMat,0, 0, 0).color(1f, 1f, 1f, 1f).tex(uMin, vMin).lightmap(te.lightAbove).endVertex();
             matrixStack.pop();
         }
     }

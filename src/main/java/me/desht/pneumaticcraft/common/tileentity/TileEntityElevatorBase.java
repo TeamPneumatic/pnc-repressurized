@@ -97,6 +97,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
     private final List<Integer> floorList = new ArrayList<>();
     private final List<BlockPos> callerList = new ArrayList<>();
     private long lastFloorUpdate = 0L;
+    public int lightAbove;
 
     public TileEntityElevatorBase() {
         super(ModTileEntities.ELEVATOR_BASE.get(), PneumaticValues.DANGER_PRESSURE_ELEVATOR, PneumaticValues.MAX_PRESSURE_ELEVATOR, PneumaticValues.VOLUME_ELEVATOR, 4);
@@ -109,6 +110,11 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
         if (!isCoreElevator()) {
             extension = 0f;
             return;
+        }
+
+        if (world.isRemote && (world.getGameTime() & 0xf) == 0) {
+            // kludge to prevent elevator TER rendering unlit sometimes
+            lightAbove = ClientUtils.getLightAt(pos.up());
         }
 
         super.tick();

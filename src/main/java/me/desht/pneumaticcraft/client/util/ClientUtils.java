@@ -10,6 +10,7 @@ import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.renderer.FirstPersonRenderer;
 import net.minecraft.client.renderer.Rectangle2d;
+import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -152,6 +153,10 @@ public class ClientUtils {
         } else {
             return 0.0F;
         }
+    }
+
+    public static int getLightAt(BlockPos pos) {
+        return WorldRenderer.getCombinedLight(Minecraft.getInstance().world, pos);
     }
 
     public static int getStringWidth(String line) {
