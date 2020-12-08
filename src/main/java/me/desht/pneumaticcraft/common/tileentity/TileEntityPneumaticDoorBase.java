@@ -42,6 +42,8 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
             new ReceivingRedstoneMode<>("pneumaticDoor.playerNearbyAndLooking", new ItemStack(Items.ENDER_EYE),
                     te -> true),
             new ReceivingRedstoneMode<>("pneumaticDoor.woodenDoor", new ItemStack(Items.OAK_DOOR),
+                    te -> true),
+            new ReceivingRedstoneMode<>("pneumaticDoor.ironDoor", new ItemStack(Items.IRON_DOOR),
                     te -> true)
     );
 
@@ -49,6 +51,7 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
     private static final int RS_MODE_NEAR = 0;
     private static final int RS_MODE_NEAR_LOOKING = 1;
     public static final int RS_MODE_WOODEN_DOOR = 2;
+    public static final int RS_MODE_IRON_DOOR = 3;
 
     private TileEntityPneumaticDoor door;
     private TileEntityPneumaticDoorBase doubleDoor;
@@ -140,6 +143,7 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
                 }
                 return false;
             case RS_MODE_WOODEN_DOOR:
+            case RS_MODE_IRON_DOOR:
                 return opening;
         }
         return false;

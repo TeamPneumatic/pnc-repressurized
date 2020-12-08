@@ -1400,6 +1400,7 @@
    "pneumaticcraft.gui.tab.redstoneBehaviour.emitRedstoneWhen" : "Emit Redstone When",
    "pneumaticcraft.gui.tab.redstoneBehaviour.enableOn" : "Enable on",
    "pneumaticcraft.gui.tab.redstoneBehaviour.keroseneLamp.interpolate" : "Interpolate Signal",
+   "pneumaticcraft.gui.tab.redstoneBehaviour.pneumaticDoor.ironDoor" : "Iron Door Behaviour",
    "pneumaticcraft.gui.tab.redstoneBehaviour.pneumaticDoor.playerNearbyAndLooking" : "Player Nearby and Looking",
    "pneumaticcraft.gui.tab.redstoneBehaviour.pneumaticDoor.playerNearby" : "Player Nearby",
    "pneumaticcraft.gui.tab.redstoneBehaviour.pneumaticDoor.woodenDoor" : "Wooden Door Behaviour",

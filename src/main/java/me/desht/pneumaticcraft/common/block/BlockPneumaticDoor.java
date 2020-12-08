@@ -220,6 +220,7 @@ public class BlockPneumaticDoor extends BlockPneumaticCraft {
             if (powered != doorBase.wasPowered) {
                 doorBase.wasPowered = powered;
                 doorBase.setOpening(powered);
+                doorBase.setNeighborOpening(doorBase.isOpening());
             }
         }
     }
