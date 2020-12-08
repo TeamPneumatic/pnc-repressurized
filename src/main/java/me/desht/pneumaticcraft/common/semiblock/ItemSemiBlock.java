@@ -76,12 +76,12 @@ public class ItemSemiBlock extends Item {
                 }
             }
 
-            if (SemiblockTracker.getInstance().getAllSemiblocks(world, eSemi.getBlockPos()).anyMatch(s -> !s.canCoexist(eSemi))) {
-                return ActionResultType.FAIL;
-            }
-
             if (eSemi instanceof IDirectionalSemiblock) {
                 ((IDirectionalSemiblock) eSemi).setSide(direction);
+            }
+
+            if (SemiblockTracker.getInstance().getAllSemiblocks(world, eSemi.getBlockPos()).anyMatch(s -> !s.canCoexist(eSemi))) {
+                return ActionResultType.FAIL;
             }
 
             world.addEntity(eSemi);
