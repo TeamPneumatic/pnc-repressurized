@@ -18,12 +18,12 @@ import java.util.List;
 public class ProgWidgetPressureCondition extends ProgWidgetCondition {
 
     public ProgWidgetPressureCondition() {
-        super(ModProgWidgets.CONDITION_PRESSURE);
+        super(ModProgWidgets.CONDITION_PRESSURE.get());
     }
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.AREA, ModProgWidgets.TEXT);
+        return ImmutableList.of(ModProgWidgets.AREA.get(), ModProgWidgets.TEXT.get());
     }
 
     @Override

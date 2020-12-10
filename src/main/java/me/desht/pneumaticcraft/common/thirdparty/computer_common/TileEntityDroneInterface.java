@@ -6,7 +6,6 @@ import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager.EntityAITaskEntry;
 import me.desht.pneumaticcraft.common.core.ModEntities;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
-import me.desht.pneumaticcraft.common.core.ModRegistries;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -162,7 +161,7 @@ public class TileEntityDroneInterface extends TileEntity implements ITickableTil
                 requireNoArgs(args);
                 List<String> actions = new ArrayList<>();
                 EntityDrone drone = ModEntities.DRONE.get().create(getWorld());
-                for (ProgWidgetType<?> type : ModProgWidgets.Sorted.WIDGET_LIST) {
+                for (ProgWidgetType<?> type : ModProgWidgets.PROG_WIDGETS.get().getValues()) {
                     IProgWidget widget = IProgWidget.create(type);
                     if (widget.canBeRunByComputers(drone, getWidget())) {
                         actions.add(type.getRegistryName().toString());
@@ -215,7 +214,7 @@ public class TileEntityDroneInterface extends TileEntity implements ITickableTil
                             ((Double) args[3]).intValue(), ((Double) args[4]).intValue(), ((Double) args[5]).intValue(),
                             (String) args[6]);
                 }
-                messageToDrone(ModProgWidgets.AREA);
+                messageToDrone(ModProgWidgets.AREA.get());
                 return null;
             }
         });
@@ -232,7 +231,7 @@ public class TileEntityDroneInterface extends TileEntity implements ITickableTil
                             (String) args[6]);
 
                 }
-                messageToDrone(ModProgWidgets.AREA);
+                messageToDrone(ModProgWidgets.AREA.get());
                 return null;
             }
         });
@@ -242,7 +241,7 @@ public class TileEntityDroneInterface extends TileEntity implements ITickableTil
             public Object[] call(Object[] args) {
                 requireNoArgs(args);
                 getWidget().clearArea();
-                messageToDrone(ModProgWidgets.AREA);
+                messageToDrone(ModProgWidgets.AREA.get());
                 return null;
             }
         });
@@ -272,7 +271,7 @@ public class TileEntityDroneInterface extends TileEntity implements ITickableTil
             public Object[] call(Object[] args) {
                 requireArgs(args, 3, "<string> item/block name, <bool> Use NBT, <bool> Use Mod Similarity");
                 getWidget().addWhitelistItemFilter((String) args[0], (Boolean) args[1], (Boolean) args[2]);
-                messageToDrone(ModProgWidgets.ITEM_FILTER);
+                messageToDrone(ModProgWidgets.ITEM_FILTER.get());
                 return null;
             }
         });
@@ -282,7 +281,7 @@ public class TileEntityDroneInterface extends TileEntity implements ITickableTil
             public Object[] call(Object[] args) {
                 requireArgs(args, 3, "<string> item/block name, <bool> Use NBT, <bool> Use Mod Similarity");
                 getWidget().addBlacklistItemFilter((String) args[0], (Boolean) args[1], (Boolean) args[2]);
-                messageToDrone(ModProgWidgets.ITEM_FILTER);
+                messageToDrone(ModProgWidgets.ITEM_FILTER.get());
                 return null;
             }
         });
@@ -292,7 +291,7 @@ public class TileEntityDroneInterface extends TileEntity implements ITickableTil
             public Object[] call(Object[] args) {
                 requireNoArgs(args);
                 getWidget().clearItemWhitelist();
-                messageToDrone(ModProgWidgets.ITEM_FILTER);
+                messageToDrone(ModProgWidgets.ITEM_FILTER.get());
                 return null;
             }
         });
@@ -302,7 +301,7 @@ public class TileEntityDroneInterface extends TileEntity implements ITickableTil
             public Object[] call(Object[] args) {
                 requireNoArgs(args);
                 getWidget().clearItemBlacklist();
-                messageToDrone(ModProgWidgets.ITEM_FILTER);
+                messageToDrone(ModProgWidgets.ITEM_FILTER.get());
                 return null;
             }
         });
@@ -312,7 +311,7 @@ public class TileEntityDroneInterface extends TileEntity implements ITickableTil
             public Object[] call(Object[] args) {
                 requireArgs(args, 1, "<string> text");
                 getWidget().addWhitelistText((String) args[0]);
-                messageToDrone(ModProgWidgets.TEXT);
+                messageToDrone(ModProgWidgets.TEXT.get());
                 return null;
             }
         });
@@ -322,7 +321,7 @@ public class TileEntityDroneInterface extends TileEntity implements ITickableTil
             public Object[] call(Object[] args) {
                 requireArgs(args, 1, "<string> text");
                 getWidget().addBlacklistText((String) args[0]);
-                messageToDrone(ModProgWidgets.TEXT);
+                messageToDrone(ModProgWidgets.TEXT.get());
                 return null;
             }
         });
@@ -332,7 +331,7 @@ public class TileEntityDroneInterface extends TileEntity implements ITickableTil
             public Object[] call(Object[] args) {
                 requireNoArgs(args);
                 getWidget().clearWhitelistText();
-                messageToDrone(ModProgWidgets.TEXT);
+                messageToDrone(ModProgWidgets.TEXT.get());
                 return null;
             }
         });
@@ -342,7 +341,7 @@ public class TileEntityDroneInterface extends TileEntity implements ITickableTil
             public Object[] call(Object[] args) {
                 requireNoArgs(args);
                 getWidget().clearBlacklistText();
-                messageToDrone(ModProgWidgets.TEXT);
+                messageToDrone(ModProgWidgets.TEXT.get());
                 return null;
             }
         });
@@ -543,7 +542,7 @@ public class TileEntityDroneInterface extends TileEntity implements ITickableTil
                 String widgetName = (String) args[0];
                 // allow a default namespace of 'pneumaticcraft' if omitted
                 ResourceLocation id = widgetName.contains(":") ? new ResourceLocation(widgetName) : RL(widgetName);
-                ProgWidgetType<?> type = ModRegistries.PROG_WIDGETS.getValue(id);
+                ProgWidgetType<?> type = ModProgWidgets.PROG_WIDGETS.get().getValue(id);
 
                 Validate.notNull(type,
                         "No action with the name '" + widgetName + "'!");

@@ -13,7 +13,7 @@ import java.util.List;
 
 public class ProgWidgetComment extends ProgWidgetText {
     public ProgWidgetComment() {
-        super(ModProgWidgets.COMMENT);
+        super(ModProgWidgets.COMMENT.get());
     }
 
     @Override

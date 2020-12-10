@@ -19,7 +19,7 @@ public class ProgWidgetDig extends ProgWidgetDigAndPlace implements IToolUser {
     private boolean requireDiggingTool;
     
     public ProgWidgetDig() {
-        super(ModProgWidgets.DIG, Ordering.CLOSEST);
+        super(ModProgWidgets.DIG.get(), Ordering.CLOSEST);
     }
 
     @Override

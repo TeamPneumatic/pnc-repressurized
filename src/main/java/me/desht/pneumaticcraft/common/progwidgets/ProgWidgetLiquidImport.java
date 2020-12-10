@@ -16,7 +16,7 @@ import java.util.List;
 public class ProgWidgetLiquidImport extends ProgWidgetInventoryBase implements ILiquidFiltered {
 
     public ProgWidgetLiquidImport() {
-        super(ModProgWidgets.LIQUID_IMPORT);
+        super(ModProgWidgets.LIQUID_IMPORT.get());
     }
 
     @Override
@@ -26,7 +26,7 @@ public class ProgWidgetLiquidImport extends ProgWidgetInventoryBase implements I
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.AREA, ModProgWidgets.LIQUID_FILTER);
+        return ImmutableList.of(ModProgWidgets.AREA.get(), ModProgWidgets.LIQUID_FILTER.get());
     }
 
     @Override

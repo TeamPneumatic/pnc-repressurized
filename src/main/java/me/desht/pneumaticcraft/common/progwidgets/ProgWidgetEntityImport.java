@@ -23,7 +23,7 @@ public class ProgWidgetEntityImport extends ProgWidget implements IProgWidget, I
     private EntityFilterPair<ProgWidgetEntityImport> entityFilters;
 
     public ProgWidgetEntityImport() {
-        super(ModProgWidgets.ENTITY_IMPORT);
+        super(ModProgWidgets.ENTITY_IMPORT.get());
     }
 
     @Override
@@ -52,7 +52,7 @@ public class ProgWidgetEntityImport extends ProgWidget implements IProgWidget, I
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.AREA, ModProgWidgets.TEXT);
+        return ImmutableList.of(ModProgWidgets.AREA.get(), ModProgWidgets.TEXT.get());
     }
 
     @Override

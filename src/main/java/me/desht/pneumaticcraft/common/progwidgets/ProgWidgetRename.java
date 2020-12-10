@@ -21,7 +21,7 @@ public class ProgWidgetRename extends ProgWidget implements IRenamingWidget, IVa
     private DroneAIManager aiManager;
 
     public ProgWidgetRename() {
-        super(ModProgWidgets.RENAME);
+        super(ModProgWidgets.RENAME.get());
     }
 
     @Override
@@ -36,7 +36,7 @@ public class ProgWidgetRename extends ProgWidget implements IRenamingWidget, IVa
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.TEXT);
+        return ImmutableList.of(ModProgWidgets.TEXT.get());
     }
 
     @Override

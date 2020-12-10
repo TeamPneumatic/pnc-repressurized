@@ -25,7 +25,7 @@ public class ProgWidgetForEachItem extends ProgWidget implements IJumpBackWidget
     private DroneAIManager aiManager;
 
     public ProgWidgetForEachItem() {
-        super(ModProgWidgets.FOR_EACH_ITEM);
+        super(ModProgWidgets.FOR_EACH_ITEM.get());
     }
 
     @Override
@@ -40,7 +40,7 @@ public class ProgWidgetForEachItem extends ProgWidget implements IJumpBackWidget
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.ITEM_FILTER, ModProgWidgets.TEXT);
+        return ImmutableList.of(ModProgWidgets.ITEM_FILTER.get(), ModProgWidgets.TEXT.get());
     }
 
     @Override

@@ -60,12 +60,12 @@ public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrder
     private RightClickType clickType = RightClickType.CLICK_ITEM;
 
     public ProgWidgetCC() {
-        super(ModProgWidgets.COMPUTER_CONTROL);
+        super(ModProgWidgets.COMPUTER_CONTROL.get());
     }
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.AREA);
+        return ImmutableList.of(ModProgWidgets.AREA.get());
     }
 
     @Override

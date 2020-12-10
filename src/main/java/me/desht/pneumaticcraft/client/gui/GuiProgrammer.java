@@ -263,7 +263,8 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
             }
         }
         int i = 0;
-        for (ProgWidgetType<?> type : ModProgWidgets.Sorted.WIDGET_LIST) {
+        int nWidgets = ModProgWidgets.PROG_WIDGETS.get().getValues().size();
+        for (ProgWidgetType<?> type : ModProgWidgets.PROG_WIDGETS.get().getValues()) {
             IProgWidget widget = IProgWidget.create(type);
             if (widget.isAvailable() && difficulty >= widget.getDifficulty().ordinal()) {
                 widget.setY(y + 40);
@@ -278,7 +279,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
                     y = 0;
                     x += WIDGET_X_SPACING;
                     page++;
-                    if (i < ModProgWidgets.Sorted.WIDGET_LIST.size() - 1) maxPage++;
+                    if (i < nWidgets - 1) maxPage++;
                 }
             }
             i++;

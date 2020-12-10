@@ -9,7 +9,7 @@ import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.client.gui.IGuiDrone;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.core.ModRegistries;
+import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.item.ICustomTooltipName;
 import me.desht.pneumaticcraft.common.item.ItemMicromissiles;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
@@ -121,7 +121,7 @@ public class TooltipEventHandler {
             Map<ResourceLocation, Integer> widgetMap = getPuzzleSummary(widgets);
             for (Map.Entry<ResourceLocation, Integer> entry : widgetMap.entrySet()) {
                 TextFormatting[] prefix = new TextFormatting[0];
-                ProgWidgetType<?> widgetType = ModRegistries.PROG_WIDGETS.getValue(entry.getKey());
+                ProgWidgetType<?> widgetType = ModProgWidgets.PROG_WIDGETS.get().getValue(entry.getKey());
                 Screen curScreen = Minecraft.getInstance().currentScreen;
                 if (curScreen instanceof IGuiDrone) {
                     if (!((IGuiDrone) curScreen).getDrone().isProgramApplicable(widgetType)) {

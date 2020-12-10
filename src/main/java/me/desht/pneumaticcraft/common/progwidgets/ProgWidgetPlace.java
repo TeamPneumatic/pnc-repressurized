@@ -11,7 +11,7 @@ import net.minecraft.util.ResourceLocation;
 
 public class ProgWidgetPlace extends ProgWidgetDigAndPlace {
     public ProgWidgetPlace() {
-        super(ModProgWidgets.PLACE, Ordering.LOW_TO_HIGH);
+        super(ModProgWidgets.PLACE.get(), Ordering.LOW_TO_HIGH);
     }
 
     ProgWidgetPlace(ProgWidgetType<?> type) {

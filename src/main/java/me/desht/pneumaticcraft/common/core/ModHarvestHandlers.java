@@ -2,44 +2,39 @@ package me.desht.pneumaticcraft.common.core;
 
 import me.desht.pneumaticcraft.api.harvesting.HarvestHandler;
 import me.desht.pneumaticcraft.common.harvesting.*;
+import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CocoaBlock;
 import net.minecraft.block.NetherWartBlock;
 import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.RegistryObject;
+import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistry;
+import net.minecraftforge.registries.RegistryBuilder;
 
 import java.util.Locale;
+import java.util.function.Supplier;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
-
-@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class ModHarvestHandlers {
-    @SubscribeEvent
-    public static void register(RegistryEvent.Register<HarvestHandler> event) {
-        IForgeRegistry<HarvestHandler> r = event.getRegistry();
+    public static final DeferredRegister<HarvestHandler> HARVEST_HANDLERS_DEFERRED = DeferredRegister.create(HarvestHandler.class, Names.MOD_ID);
+    public static final Supplier<IForgeRegistry<HarvestHandler>> HARVEST_HANDLERS = HARVEST_HANDLERS_DEFERRED
+            .makeRegistry("harvest_handlers", () -> new RegistryBuilder<HarvestHandler>().disableSaving().disableSync());
 
-        register(r, "crops", new HarvestHandlerCrops());
-        register(r, "nether_wart", new HarvestHandlerCropLike(state ->
-                state.getBlock() == Blocks.NETHER_WART, NetherWartBlock.AGE, stack -> stack.getItem() == Items.NETHER_WART)
-        );
-        register(r, "cocoa_beans", new HarvestHandlerCropLike(state ->
-                state.getBlock() == Blocks.COCOA, CocoaBlock.AGE, stack -> stack.getItem() == Items.COCOA_BEANS)
-        );
-        register(r, "cactus_like", new HarvestHandlerCactusLike(state -> state.getBlock() == Blocks.CACTUS || state.getBlock() == Blocks.SUGAR_CANE)
-        );
-        register(r, "pumpkin_like", new HarvestHandler.SimpleHarvestHandler(Blocks.PUMPKIN, Blocks.MELON));
-        register(r, "leaves", new HarvestHandlerLeaves());
-        register(r, "trees", new HarvestHandlerTree());
-    }
+    public static final RegistryObject<HarvestHandler> CROPS = register("crops", HarvestHandlerCrops::new);
+    public static final RegistryObject<HarvestHandler> NETHER_WART = register("nether_wart", () -> new HarvestHandlerCropLike(state ->
+            state.getBlock() == Blocks.NETHER_WART, NetherWartBlock.AGE, stack -> stack.getItem() == Items.NETHER_WART));
+    public static final RegistryObject<HarvestHandler> COCOA = register("cocoa_beans", () -> new HarvestHandlerCropLike(state ->
+                state.getBlock() == Blocks.COCOA, CocoaBlock.AGE, stack -> stack.getItem() == Items.COCOA_BEANS));
+    public static final RegistryObject<HarvestHandler> CACTUS = register("cactus_like", () -> new HarvestHandlerCactusLike(state -> state.getBlock() == Blocks.CACTUS || state.getBlock() == Blocks.SUGAR_CANE));
+    public static final RegistryObject<HarvestHandler> PUMPKIN = register("pumpkin_like", () -> new HarvestHandler.SimpleHarvestHandler(Blocks.PUMPKIN, Blocks.MELON));
+    public static final RegistryObject<HarvestHandler> LEAVES = register("leaves", HarvestHandlerLeaves::new);
+    public static final RegistryObject<HarvestHandler> TREES = register("trees", HarvestHandlerTree::new);
 
-    private static void register(IForgeRegistry<HarvestHandler> r, String name, HarvestHandler handler) {
-        r.register(handler.setRegistryName(RL(name)));
+    private static <T extends HarvestHandler> RegistryObject<T> register(String name, final Supplier<T> sup) {
+        return HARVEST_HANDLERS_DEFERRED.register(name, sup);
     }
 
     public enum TreePart {

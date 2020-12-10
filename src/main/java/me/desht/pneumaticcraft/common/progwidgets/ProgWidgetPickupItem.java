@@ -14,7 +14,7 @@ public class ProgWidgetPickupItem extends ProgWidgetAreaItemBase {
     private boolean canSteal = false;
 
     public ProgWidgetPickupItem() {
-        super(ModProgWidgets.PICKUP_ITEM);
+        super(ModProgWidgets.PICKUP_ITEM.get());
     }
 
     @Override

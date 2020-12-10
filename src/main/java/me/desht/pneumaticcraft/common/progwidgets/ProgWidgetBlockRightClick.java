@@ -21,7 +21,7 @@ public class ProgWidgetBlockRightClick extends ProgWidgetPlace implements IBlock
     private RightClickType clickType = RightClickType.CLICK_ITEM;
 
     public ProgWidgetBlockRightClick() {
-        super(ModProgWidgets.BLOCK_RIGHT_CLICK);
+        super(ModProgWidgets.BLOCK_RIGHT_CLICK.get());
     }
 
     @Override

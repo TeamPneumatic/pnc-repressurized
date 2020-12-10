@@ -54,7 +54,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     }
 
     public ProgWidgetArea() {
-        super(ModProgWidgets.AREA);
+        super(ModProgWidgets.AREA.get());
     }
 
     private static <T extends AreaType> void register(String id, Class<T> clazz, Supplier<T> creator) {
@@ -154,9 +154,9 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
             IProgWidget p = this;
             while ((p = p.getParent()) != null) {
                 ProgWidgetType<?> type = p.getType();
-                if (type == ModProgWidgets.ENTITY_ATTACK || type == ModProgWidgets.ENTITY_IMPORT
-                        || type == ModProgWidgets.ENTITY_RIGHT_CLICK || type == ModProgWidgets.CONDITION_ENTITY
-                        || type == ModProgWidgets.PICKUP_ITEM) {
+                if (type == ModProgWidgets.ENTITY_ATTACK.get() || type == ModProgWidgets.ENTITY_IMPORT.get()
+                        || type == ModProgWidgets.ENTITY_RIGHT_CLICK.get() || type == ModProgWidgets.CONDITION_ENTITY.get()
+                        || type == ModProgWidgets.PICKUP_ITEM.get()) {
                     curInfo.add(xlate("pneumaticcraft.gui.progWidget.area.error.onlyAreaTypeBox", xlate(p.getTranslationKey())));
                     break;
                 }
@@ -207,12 +207,12 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
 
     @Override
     public ProgWidgetType<?> returnType() {
-        return ModProgWidgets.AREA;
+        return ModProgWidgets.AREA.get();
     }
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.AREA);
+        return ImmutableList.of(ModProgWidgets.AREA.get());
     }
 
     @Override

@@ -142,7 +142,7 @@ public class DroneAILogistics extends Goal {
         private final boolean[] sides = new boolean[6];
 
         FakeWidgetLogistics(BlockPos pos, Direction side, @Nonnull ItemStack stack) {
-            super(ModProgWidgets.LOGISTICS);
+            super(ModProgWidgets.LOGISTICS.get());
             this.stack = stack;
             this.fluid = FluidStack.EMPTY;
             area = new HashSet<>();
@@ -151,7 +151,7 @@ public class DroneAILogistics extends Goal {
         }
 
         FakeWidgetLogistics(BlockPos pos, Direction side, FluidStack fluid) {
-            super(ModProgWidgets.LOGISTICS);
+            super(ModProgWidgets.LOGISTICS.get());
             this.stack = ItemStack.EMPTY;
             this.fluid = fluid;
             area = new HashSet<>();

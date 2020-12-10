@@ -5,7 +5,7 @@ import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModRegistries;
+import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerProgrammer;
@@ -209,7 +209,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
         for (int i = 0; i < widgetTags.size(); i++) {
             CompoundNBT widgetTag = widgetTags.getCompound(i);
             ResourceLocation typeID = new ResourceLocation(widgetTag.getString("name"));
-            ProgWidgetType<?> type = ModRegistries.PROG_WIDGETS.getValue(typeID);
+            ProgWidgetType<?> type = ModProgWidgets.PROG_WIDGETS.get().getValue(typeID);
             if (type != null) {
                 IProgWidget addedWidget = IProgWidget.create(type);
                 if (addedWidget.isAvailable()) {

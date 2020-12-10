@@ -1688,7 +1688,6 @@
    "pneumaticcraft.waila.temperature.up" : "Top Temperature: ",
    "pneumaticcraft.waila.temperature.west" : "West Temperature: ",
    "pneumaticcraft.waila.tubeModule.threshold" : "Threshold: §e%d bar",
-   "ppneumaticcraft.pressure_tube" : "This block is used to transport air. It can be camouflaged and Tube Modules can be placed on it to provide additional functionality.",
    "programmingPuzzle.pneumaticcraft.area.name" : "Area",
    "programmingPuzzle.pneumaticcraft.block_right_click.name" : "Right Click",
    "programmingPuzzle.pneumaticcraft.comment.name" : "Comment",

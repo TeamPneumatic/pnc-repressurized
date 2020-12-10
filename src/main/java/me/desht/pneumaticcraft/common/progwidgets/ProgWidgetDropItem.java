@@ -22,7 +22,7 @@ public class ProgWidgetDropItem extends ProgWidgetInventoryBase implements IItem
     private boolean pickupDelay = true;
 
     public ProgWidgetDropItem() {
-        super(ModProgWidgets.DROP_ITEM);
+        super(ModProgWidgets.DROP_ITEM.get());
     }
 
     @Override

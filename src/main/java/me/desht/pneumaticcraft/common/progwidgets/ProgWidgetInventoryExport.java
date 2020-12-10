@@ -11,7 +11,7 @@ import net.minecraft.util.ResourceLocation;
 public class ProgWidgetInventoryExport extends ProgWidgetInventoryBase {
 
     public ProgWidgetInventoryExport() {
-        super(ModProgWidgets.INVENTORY_EXPORT);
+        super(ModProgWidgets.INVENTORY_EXPORT.get());
     }
 
     @Override

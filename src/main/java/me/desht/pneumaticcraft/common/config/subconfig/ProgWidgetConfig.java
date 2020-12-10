@@ -17,7 +17,7 @@ public class ProgWidgetConfig extends AuxConfigJson {
     public static final ProgWidgetConfig INSTANCE = new ProgWidgetConfig();
 
     private ProgWidgetConfig() {
-        super(true);
+        super(false);
     }
 
     public boolean isWidgetBlacklisted(ProgWidgetType<?> widgetType) {
@@ -43,7 +43,7 @@ public class ProgWidgetConfig extends AuxConfigJson {
         json.add("blacklist", array);
 
         JsonArray allArray = new JsonArray();
-        for (ProgWidgetType<?> name : ModProgWidgets.Sorted.WIDGET_LIST) {
+        for (ProgWidgetType<?> name : ModProgWidgets.PROG_WIDGETS.get().getValues()) {
             allArray.add(new JsonPrimitive(name.getRegistryName().toString()));
         }
         json.add("allWidgets", allArray);

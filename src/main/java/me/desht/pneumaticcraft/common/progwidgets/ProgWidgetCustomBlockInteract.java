@@ -9,8 +9,6 @@ import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.item.DyeColor;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.RegistryManager;
 import org.apache.commons.lang3.Validate;
 
 import java.util.List;
@@ -31,8 +29,7 @@ public class ProgWidgetCustomBlockInteract extends ProgWidgetInventoryBase {
     @Override
     public ProgWidgetType<?> getType() {
         if (customType == null) {
-            IForgeRegistry<ProgWidgetType<?>> r = RegistryManager.ACTIVE.getRegistry(ProgWidgetType.class);
-            customType = r.getValue(interactor.getID());
+            customType = ModProgWidgets.PROG_WIDGETS.get().getValue(interactor.getID());
             Validate.notNull(customType);
         }
         return customType;
@@ -57,7 +54,7 @@ public class ProgWidgetCustomBlockInteract extends ProgWidgetInventoryBase {
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.AREA);
+        return ImmutableList.of(ModProgWidgets.AREA.get());
     }
 
     @Override

@@ -17,7 +17,7 @@ import java.util.List;
 
 public class ProgWidgetEnergyCondition extends ProgWidgetCondition {
     public ProgWidgetEnergyCondition() {
-        super(ModProgWidgets.CONDITION_RF);
+        super(ModProgWidgets.CONDITION_RF.get());
     }
 
     @Override
@@ -27,7 +27,7 @@ public class ProgWidgetEnergyCondition extends ProgWidgetCondition {
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.AREA, ModProgWidgets.TEXT);
+        return ImmutableList.of(ModProgWidgets.AREA.get(), ModProgWidgets.TEXT.get());
     }
 
     @Override

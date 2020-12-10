@@ -16,7 +16,7 @@ import java.util.List;
 
 public class ProgWidgetVoidItem extends ProgWidget {
     public ProgWidgetVoidItem() {
-        super(ModProgWidgets.VOID_ITEM);
+        super(ModProgWidgets.VOID_ITEM.get());
     }
 
     @Override
@@ -42,7 +42,7 @@ public class ProgWidgetVoidItem extends ProgWidget {
     @Nonnull
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.ITEM_FILTER);
+        return ImmutableList.of(ModProgWidgets.ITEM_FILTER.get());
     }
 
     @Override
@@ -57,8 +57,8 @@ public class ProgWidgetVoidItem extends ProgWidget {
 
     public boolean isItemValidForFilters(ItemStack item) {
         return ProgWidgetItemFilter.isItemValidForFilters(item,
-                ProgWidget.getConnectedWidgetList(this, 0, ModProgWidgets.ITEM_FILTER),
-                ProgWidget.getConnectedWidgetList(this, getParameters().size(), ModProgWidgets.ITEM_FILTER),
+                ProgWidget.getConnectedWidgetList(this, 0, ModProgWidgets.ITEM_FILTER.get()),
+                ProgWidget.getConnectedWidgetList(this, getParameters().size(), ModProgWidgets.ITEM_FILTER.get()),
                 null
         );
     }

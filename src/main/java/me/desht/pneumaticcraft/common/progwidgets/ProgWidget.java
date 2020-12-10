@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.progwidgets;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.config.subconfig.ProgWidgetConfig;
-import me.desht.pneumaticcraft.common.core.ModRegistries;
+import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
@@ -35,6 +35,7 @@ public abstract class ProgWidget implements IProgWidget {
             connectedParameters = new IProgWidget[getParameters().size() * 2]; //times two because black- and whitelist.
     }
 
+    @Override
     public ProgWidgetType<?> getType() {
         return type;
     }
@@ -133,11 +134,6 @@ public abstract class ProgWidget implements IProgWidget {
     public IProgWidget getParent() {
         return parent;
     }
-
-//    @Override
-//    public void renderExtraInfo() {
-//        ProgWidgetRenderer.renderExtras(this);
-//    }
 
     @Override
     public Pair<Float,Float> getMaxUV() {
@@ -279,7 +275,7 @@ public abstract class ProgWidget implements IProgWidget {
 
     public static IProgWidget fromPacket(PacketBuffer buf) {
         ResourceLocation typeID = buf.readResourceLocation();
-        ProgWidgetType<?> type = ModRegistries.PROG_WIDGETS.getValue(typeID);
+        ProgWidgetType<?> type = ModProgWidgets.PROG_WIDGETS.get().getValue(typeID);
         if (type != null) {
             IProgWidget newWidget = IProgWidget.create(type);
             newWidget.readFromPacket(buf);

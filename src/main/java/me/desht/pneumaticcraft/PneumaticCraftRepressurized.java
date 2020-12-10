@@ -107,7 +107,10 @@ public class PneumaticCraftRepressurized {
         ModVillagers.POI.register(modBus);
         ModVillagers.PROFESSIONS.register(modBus);
 
-        // TODO: custom registries not handled via deferred registration (harvest handlers, hoe handlers, progwidgets)
+        // custom registries
+        ModHarvestHandlers.HARVEST_HANDLERS_DEFERRED.register(modBus);
+        ModHoeHandlers.HOE_HANDLERS_DEFERRED.register(modBus);
+        ModProgWidgets.PROG_WIDGETS_DEFERRED.register(modBus);
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {

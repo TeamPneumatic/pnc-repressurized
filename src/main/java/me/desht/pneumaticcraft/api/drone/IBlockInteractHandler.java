@@ -10,13 +10,12 @@ import net.minecraft.util.math.BlockPos;
 public interface IBlockInteractHandler {
 
     /**
-     * Returns a boolean[6] of all sides. When true, this side is accessible.  The sides are in order D,U,N,S,W,E,
-     * same as for EnumFacing.  You can use {@link Direction#byIndex(int)} with an index into this
-     * array to get the facing direction.
+     * Returns a boolean[6] of all sides. When true, this side is accessible.  The sides are in order D,U,N,S,W,E;
+     * you can use {@link Direction#byIndex(int)} with an index into this array to get the facing direction.
      * <p>
      * See also {@link #isSideAccessible(Direction)}
      *
-     * @return an array of booleans indexed by the EnumFacing index
+     * @return an array of booleans indexed by the Direction index
      */
     boolean[] getSides();
 

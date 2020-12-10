@@ -25,7 +25,7 @@ public class ProgWidgetLiquidFilter extends ProgWidget {
     private Fluid fluid = Fluids.EMPTY;
 
     public ProgWidgetLiquidFilter() {
-        super(ModProgWidgets.LIQUID_FILTER);
+        super(ModProgWidgets.LIQUID_FILTER.get());
     }
 
     public static ProgWidgetLiquidFilter withFilter(Fluid fluid) {
@@ -47,12 +47,12 @@ public class ProgWidgetLiquidFilter extends ProgWidget {
 
     @Override
     public ProgWidgetType<?> returnType() {
-        return ModProgWidgets.LIQUID_FILTER;
+        return ModProgWidgets.LIQUID_FILTER.get();
     }
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.LIQUID_FILTER);
+        return ImmutableList.of(ModProgWidgets.LIQUID_FILTER.get());
     }
 
     @Override

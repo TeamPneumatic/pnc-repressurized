@@ -28,7 +28,7 @@ public class ProgWidgetEmitRedstone extends ProgWidget implements IRedstoneEmiss
     private boolean[] accessingSides = new boolean[]{true, true, true, true, true, true};
 
     public ProgWidgetEmitRedstone() {
-        super(ModProgWidgets.EMIT_REDSTONE);
+        super(ModProgWidgets.EMIT_REDSTONE.get());
     }
 
     @Override
@@ -136,7 +136,7 @@ public class ProgWidgetEmitRedstone extends ProgWidget implements IRedstoneEmiss
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.TEXT);
+        return ImmutableList.of(ModProgWidgets.TEXT.get());
     }
 
     @Override

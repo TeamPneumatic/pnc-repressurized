@@ -30,7 +30,7 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
     private DroneAIManager aiManager;
 
     public ProgWidgetCoordinate() {
-        super(ModProgWidgets.COORDINATE);
+        super(ModProgWidgets.COORDINATE.get());
     }
 
     @Override
@@ -40,12 +40,12 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
 
     @Override
     public ProgWidgetType<?> returnType() {
-        return ModProgWidgets.COORDINATE;
+        return ModProgWidgets.COORDINATE.get();
     }
 
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.COORDINATE);
+        return ImmutableList.of(ModProgWidgets.COORDINATE.get());
     }
 
     @Override
