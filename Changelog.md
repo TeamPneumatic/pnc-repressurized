@@ -10,7 +10,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ### Updates
 * Aphorism Tiles have had a major boost in functionality
-  * The editor is much more better now (support horizontal cursor positioning, joining/splitting lines & more...)
+  * The editor is much more powerful now (supports horizontal cursor positioning, joining/splitting lines & more...)
   * The Aphorism Tile can now display one or more items instead of, or in addition to, text lines
   * Use `{item:<item-id>}`" on a line on its own to show an item, or use the friendly GUI item searcher to add an item
   * The string `{redstone}` anywhere on a line will be substituted with the redstone signal level for the block behind the tile
@@ -22,12 +22,21 @@ Changes are in reverse chronological order; newest changes at the top.
   * See https://github.com/TeamPneumatic/pnc-repressurized/tree/1.16.4/src/generated/resources/data/pneumaticcraft/recipes/pneumaticcraft_fuels/ for the default fuel JSONs
 * Performance improvement for Pressure Tubes: made block shape calculation much more efficient
   * May help with FPS drops in chunks with a lot of tubes, and where a lot of block updates are happening
+* Pneumatic Doors now have an "Iron Door" mode in addition to the existing 3 modes
+  * Like vanilla Iron Doors, these will *only* open on a redstone signal
+* Infinite water source blocks are no longer block-updated when absorbed by Drones/Gas Lifts/Liquid Hoppers
+  * This intended primarily for performance (eliminating frequent block updates)
+  * Can be disabled in config (pneumaticcraft-comingmon.toml -> Advanced -> `dont_update_infinite_water_sources`) if you want to enforce no-infinite-water mechanics in your world
 
 ### Fixes
-* Fixed elevator callers not emitted redstone when the elevator is at that floor
+* Fixed elevator callers not emitting redstone when the elevator is at that floor
 * Fixed drone not being able to fill bottles with water from water source blocks
-  * Note that filling water bottles from water tanks is still not possible (with or without a drone)
+  * Note that filling water bottles from water tanks is still not possible (with or without a drone) - this is intended behaviour
 * Fixed Air Grate entity filter setting (with Advanced PCB installed) not taking effect right away
+* Fixed Security Station GUI rendering lines wrongly and eventually starving the client of memory
+* Fixed camouflaged Elevators rendering unlit after a neighbour block update
+* Fixed Transfer Gadgets not being placeable on a block if a Transfer Gadget already existed on the top face
+* Fixed JEI init bug (causing no PNC recipes to show) if `explosion_crafting` is disabled in config
 
 ## 2.7.2-86 (3 Dec 2020)
 
