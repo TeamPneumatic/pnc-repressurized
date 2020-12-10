@@ -74,12 +74,12 @@ public class ItemSpawnerCore extends Item implements ColorHandlers.ITintableItem
         ItemStack stack = context.getItem();
         if (stack.getCount() != 1) return false;
         SpawnerCoreStats stats = SpawnerCoreStats.forItemStack(stack);
-        World world = context.getWorld();
         if (stats != null) {
+            World world = context.getWorld();
             EntityType<?> type = stats.pickEntity(false);
             if (type != null && type.getRegistryName() != null) {
                 Vector3d vec = context.getHitVec();
-                if (context.getWorld().hasNoCollisions(type.getBoundingBoxWithSizeApplied(vec.getX(), vec.getY(), vec.getZ()))) {
+                if (world.hasNoCollisions(type.getBoundingBoxWithSizeApplied(vec.getX(), vec.getY(), vec.getZ()))) {
                     ServerWorld serverworld = (ServerWorld)world;
                     CompoundNBT nbt = new CompoundNBT();
                     nbt.putString("id", type.getRegistryName().toString());
@@ -144,12 +144,18 @@ public class ItemSpawnerCore extends Item implements ColorHandlers.ITintableItem
         public void serialize(ItemStack stack) {
             if (stack.getItem() instanceof ItemSpawnerCore) {
                 if (unused == 100) {
-                    CompoundNBT nbt = stack.getTag();
-                    if (nbt != null) nbt.remove(NBT_SPAWNER_CORE);
+                    CompoundNBT tag = stack.getTag();
+                    if (tag != null) tag.remove(NBT_SPAWNER_CORE);
                 } else {
-                    CompoundNBT nbt = stack.getOrCreateChildTag(NBT_SPAWNER_CORE);
+                    CompoundNBT subTag = stack.getOrCreateChildTag(NBT_SPAWNER_CORE);
                     entityCounts.forEach((type, amount) -> {
-                        if (amount > 0 && type.getRegistryName() != null) nbt.putInt(type.getRegistryName().toString(), amount);
+                        if (type.getRegistryName() != null) {
+                            if (amount > 0) {
+                                subTag.putInt(type.getRegistryName().toString(), amount);
+                            } else {
+                                subTag.remove(type.getRegistryName().toString());
+                            }
+                        }
                     });
                 }
             }
