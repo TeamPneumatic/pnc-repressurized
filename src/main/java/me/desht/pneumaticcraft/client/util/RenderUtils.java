@@ -212,11 +212,12 @@ public class RenderUtils {
      * @param line the line to render
      * @param color line's colour
      */
-    public static void renderProgressingLineGUI(MatrixStack matrixStack, ProgressingLine line, int color) {
+    public static void renderProgressingLineGUI(MatrixStack matrixStack, ProgressingLine line, int color, float lineWidth) {
         int[] cols = decomposeColor(color);
         float progress = line.getProgress();
         Matrix4f posMat = matrixStack.getLast().getMatrix();
         BufferBuilder wr = Tessellator.getInstance().getBuffer();
+        RenderSystem.lineWidth(lineWidth);
         wr.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR);
         wr.pos(posMat, line.startX, line.startY, line.startZ)
                 .color(cols[1], cols[2], cols[3], cols[0])

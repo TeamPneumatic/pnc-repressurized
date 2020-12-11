@@ -76,7 +76,7 @@ public class NetworkConnectionHandler implements INeedTickUpdate {
         RenderSystem.disableTexture();
         RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         for (ProgressingLine line : lineList) {
-            RenderUtils.renderProgressingLineGUI(matrixStack, line, color);
+            RenderUtils.renderProgressingLineGUI(matrixStack, line, color, 3f);
         }
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();

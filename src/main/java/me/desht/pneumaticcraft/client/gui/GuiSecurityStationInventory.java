@@ -177,7 +177,7 @@ public class GuiSecurityStationInventory extends GuiSecurityStationBase<Containe
 
     private List<ITextComponent> getStatusText() {
         List<ITextComponent> text = new ArrayList<>();
-        text.add(new StringTextComponent("Protection").mergeStyle(TextFormatting.GRAY));
+        text.add(new StringTextComponent("Protection").mergeStyle(TextFormatting.WHITE));
         if (te.getRebootTime() > 0) {
             text.add(new StringTextComponent("No protection because of rebooting!").mergeStyle(TextFormatting.DARK_RED));
         } else if (te.isHacked()) {
@@ -188,12 +188,12 @@ public class GuiSecurityStationInventory extends GuiSecurityStationBase<Containe
         } else {
             text.add(new StringTextComponent("System secure").mergeStyle(TextFormatting.BLACK));
         }
-        text.add(new StringTextComponent("Security Level").mergeStyle(TextFormatting.GRAY));
+        text.add(new StringTextComponent("Security Level").mergeStyle(TextFormatting.WHITE));
         text.add(new StringTextComponent("Level " + te.getSecurityLevel()).mergeStyle(TextFormatting.BLACK));
-        text.add(new StringTextComponent("Intruder Detection Chance").mergeStyle(TextFormatting.BLACK));
-        text.add(new StringTextComponent(te.getDetectionChance() + "%%").mergeStyle(TextFormatting.BLACK));
-        text.add(new StringTextComponent("Security Range").mergeStyle(TextFormatting.BLACK));
-        text.add(new StringTextComponent(te.getRange() + "m (square)").mergeStyle(TextFormatting.BLACK));
+        text.add(new StringTextComponent("Intruder Detection Chance").mergeStyle(TextFormatting.WHITE));
+        text.add(new StringTextComponent(te.getDetectionChance() + "%").mergeStyle(TextFormatting.BLACK));
+        text.add(new StringTextComponent("Security Range").mergeStyle(TextFormatting.WHITE));
+        text.add(new StringTextComponent((te.getRange() * 2 + 1) + "m²").mergeStyle(TextFormatting.BLACK));
         return text;
     }
 
