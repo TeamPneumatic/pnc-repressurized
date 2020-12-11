@@ -226,9 +226,9 @@ public class CommonConfig {
                 .translation("pneumaticcraft.config.common.machine_properties.electrostatic_lightning_chance")
                 .defineInRange("electrostatic_lightning_chance", 100000, 0, Integer.MAX_VALUE);
         machines.elevatorBaseBlocksPerBase = builder
-                .comment("The max height of an elevator per stacked Elevator Base.")
+                .comment("The max height of an elevator per stacked Elevator Base block.")
                 .translation("pneumaticcraft.config.common.machine_properties.elevator_base_blocks_per_base")
-                .defineInRange("elevator_base_blocks_per_base", 4, 1, 256);
+                .defineInRange("elevator_base_blocks_per_base", 6, 1, 256);
         machines.fluxCompressorEfficiency = builder
                 .comment("The amount of air produced by using 100 FE (Forge Energy) in the flux compressor")
                 .translation("pneumaticcraft.config.common.machine_properties.flux_compressor_efficiency")

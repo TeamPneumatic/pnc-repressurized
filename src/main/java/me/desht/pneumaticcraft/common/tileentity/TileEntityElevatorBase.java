@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableList;
-import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
@@ -38,13 +37,10 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -107,6 +103,8 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
     public void tick() {
         oldExtension = extension;
 
+        super.tick();
+
         if (!isCoreElevator()) {
             extension = 0f;
             return;
@@ -116,8 +114,6 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
             // kludge to prevent elevator TER rendering unlit sometimes
             lightAbove = ClientUtils.getLightAt(pos.up());
         }
-
-        super.tick();
 
         float speedMultiplier;
         if (!getWorld().isRemote) {
@@ -269,7 +265,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
         int max = maxFloorHeight;
         if (multiElevators != null) {
             for (TileEntityElevatorBase base : multiElevators) {
-                max = Math.max(max, base.maxFloorHeight);
+                max = Math.min(max, base.maxFloorHeight);
             }
         }
         return max;
@@ -379,13 +375,15 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
     private void updateConnections() {
         if (getWorld().getBlockState(getPos().offset(Direction.UP)).getBlock() != ModBlocks.ELEVATOR_BASE.get()) {
             coreElevator = this;
-            int i = -1;
-            TileEntity te = getWorld().getTileEntity(getPos().offset(Direction.DOWN));
-            while (te instanceof TileEntityElevatorBase) {
-                ((TileEntityElevatorBase) te).coreElevator = this;
-                i--;
-                te = getWorld().getTileEntity(getPos().add(0, i, 0));
-            }
+//            int i = -1;
+//            TileEntity te = getWorld().getTileEntity(getPos().offset(Direction.DOWN));
+//            while (te instanceof TileEntityElevatorBase) {
+//                ((TileEntityElevatorBase) te).coreElevator = this;
+//                i--;
+//                te = getWorld().getTileEntity(getPos().add(0, i, 0));
+//            }
+        } else {
+            coreElevator = null; // force recalc
         }
     }
 
@@ -546,17 +544,8 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
 
     @Override
     public boolean canConnectPneumatic(Direction side) {
-        return side != Direction.UP && side != Direction.DOWN
-                || getWorld().getBlockState(getPos().offset(side)).getBlock() != ModBlocks.ELEVATOR_BASE.get();
-    }
-
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (cap == PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY && !isCoreElevator()) {
-            return getCoreElevator().getCapability(cap, side);
-        }
-        return super.getCapability(cap, side);
+        // only connect to other elevator bases on the UP face
+        return side != Direction.UP || world.getBlockState(pos.offset(side)).getBlock() == ModBlocks.ELEVATOR_BASE.get();
     }
 
     @Override

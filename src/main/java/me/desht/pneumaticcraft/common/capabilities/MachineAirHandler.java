@@ -224,8 +224,11 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
         if (!neighbourAirHandlers.get(idx).isPresent()) {
             TileEntity te1 = ownerTE.getWorld().getTileEntity(ownerTE.getPos().offset(dir));
             if (te1 != null) {
-                neighbourAirHandlers.set(idx, te1.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, dir.getOpposite()));
-                neighbourAirHandlers.get(idx).addListener(l -> neighbourAirHandlers.set(idx, LazyOptional.empty()));
+                LazyOptional<IAirHandlerMachine> cap = te1.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, dir.getOpposite());
+                if (cap.isPresent()) {
+                    neighbourAirHandlers.set(idx, cap);
+                    neighbourAirHandlers.get(idx).addListener(l -> neighbourAirHandlers.set(idx, LazyOptional.empty()));
+                }
             } else {
                 neighbourAirHandlers.set(idx, LazyOptional.empty());
             }
