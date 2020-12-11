@@ -17,7 +17,14 @@ Changes are in reverse chronological order; newest changes at the top.
     * There's also a GUI button to insert this string
   * Tile margin width can be adjusted now, via GUI slider
   * The tile can be now made invisible via GUI checkbox, showing only the text and/or items on the tile
-* All fuels (as used by the Liquid Compressors & Kerosene Lamp) are now defined in datapacks as a special recipe type
+* Elevator pressure mechanics (for stacked elevators specifically) have been reworked
+  * All lower Elevator Bases in a stack now have their own air storage, unlike previous versions where they just "proxied" the top elevator in the stack
+  * The old system never worked well and was just too bug-prone
+  * If you have stacked elevators, you will likely notice a one-time pressure drop after upgrading to this release, due to the extra air storage
+  * On the plus side, you now effectively have a bunch of free volume upgrades!  Pressure will drop more slowly as air is used.
+  * Also, raised the default elevator max height from 4 blocks per elevator base to 6 blocks per base
+    * If you want to take advantage of this in an existing world, edit pneumaticcraft-common.toml -> Machines -> `elevator_base_blocks_per_base`
+* All fuels (as used by the Liquid Compressors & Kerosene Lamp) are now defined in datapacks as a special recipe type "pneumaticcraft:fuel_quality"
   * This makes it very easy to override existing values or add new custom fuels
   * See https://github.com/TeamPneumatic/pnc-repressurized/tree/1.16.4/src/generated/resources/data/pneumaticcraft/recipes/pneumaticcraft_fuels/ for the default fuel JSONs
 * Performance improvement for Pressure Tubes: made block shape calculation much more efficient
@@ -26,7 +33,12 @@ Changes are in reverse chronological order; newest changes at the top.
   * Like vanilla Iron Doors, these will *only* open on a redstone signal
 * Infinite water source blocks are no longer block-updated when absorbed by Drones/Gas Lifts/Liquid Hoppers
   * This intended primarily for performance (eliminating frequent block updates)
-  * Can be disabled in config (pneumaticcraft-comingmon.toml -> Advanced -> `dont_update_infinite_water_sources`) if you want to enforce no-infinite-water mechanics in your world
+  * Can be disabled in config (pneumaticcraft-common.toml -> Advanced -> `dont_update_infinite_water_sources`) if you want to enforce no-infinite-water mechanics in your world
+* Area preview has been reworked for several machines:
+  * Pressurized Spawner, Security Station, Universal Sensor now have a common "R" GUI button (in bottom right of GUI) to toggle range preview
+  * This is now a toggle instead of displaying for a few seconds and disappearing
+  * Uses similar preview style (and same code internally) as GPS Tool / GPS Area Tool area previews
+  * Air Grate Module also uses this new functionality, but right-click it with empty hand to toggle range preview
 
 ### Fixes
 * Fixed elevator callers not emitting redstone when the elevator is at that floor
