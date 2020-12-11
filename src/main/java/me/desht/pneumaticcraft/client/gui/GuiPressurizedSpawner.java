@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.client.gui;
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetRangeToggleButton;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
@@ -21,6 +22,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiPressurizedSpawner extends GuiPneumaticContainerBase<ContainerPressurizedSpawner, TileEntityPressurizedSpawner> {
     WidgetAnimatedStat infoStat;
+    WidgetButtonExtended rangeButton;
 
     public GuiPressurizedSpawner(ContainerPressurizedSpawner container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
@@ -30,7 +32,7 @@ public class GuiPressurizedSpawner extends GuiPneumaticContainerBase<ContainerPr
     public void init() {
         super.init();
 
-        addButton(new WidgetButtonExtended(guiLeft + 152, guiTop + 66, 16, 16, "R", b -> { closeScreen(); te.showRangeLines(); }));
+        addButton(rangeButton = new WidgetRangeToggleButton(guiLeft + 152, guiTop + 66, te));
 
         infoStat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.status"), new ItemStack(ModBlocks.PRESSURIZED_SPAWNER.get()), 0xFF4E4066, false);
     }

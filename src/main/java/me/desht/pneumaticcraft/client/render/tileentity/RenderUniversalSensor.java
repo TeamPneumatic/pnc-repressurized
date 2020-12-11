@@ -2,7 +2,6 @@ package me.desht.pneumaticcraft.client.render.tileentity;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
-import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUniversalSensor;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
@@ -74,10 +73,5 @@ public class RenderUniversalSensor extends AbstractTileModelRenderer<TileEntityU
         dish4.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
         dish5.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
         dish6.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-    }
-
-    @Override
-    protected void renderExtras(TileEntityUniversalSensor te, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer iRenderTypeBuffer, int combinedLightIn, int combinedOverlayIn) {
-        RenderUtils.renderRangeLines(te.rangeLines, matrixStack, iRenderTypeBuffer.getBuffer(RenderType.LINES));
     }
 }

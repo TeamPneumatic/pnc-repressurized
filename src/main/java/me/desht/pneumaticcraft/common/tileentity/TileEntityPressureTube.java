@@ -125,7 +125,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
         camoState = ICamouflageableTE.readCamo(tag);
     }
 
-    private void updateRenderBoundingBox() {
+    public void updateRenderBoundingBox() {
         renderBoundingBox = new AxisAlignedBB(getPos().getX(), getPos().getY(), getPos().getZ(), getPos().getX() + 1, getPos().getY() + 1, getPos().getZ() + 1);
 
         for (int i = 0; i < 6; i++) {
@@ -273,6 +273,8 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     public AxisAlignedBB getRenderBoundingBox() {
         return renderBoundingBox != null ? renderBoundingBox : new AxisAlignedBB(getPos());
     }
+
+
 
     @Override
     public void printManometerMessage(PlayerEntity player, List<ITextComponent> text) {

@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.universal_sensor.ISensorSetting;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetRangeToggleButton;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
@@ -168,7 +169,7 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
             addButtonLocal(new WidgetButtonExtended(guiLeft + 70, guiTop + 20, 16, 16, ARROW_LEFT).withTag("back"));
         }
         if (directories.length == 0 || te.getSensorSetting().isEmpty()) {
-            addButtonLocal(new WidgetButtonExtended(guiLeft + 70, guiTop + 125, 98, 20, xlate("pneumaticcraft.gui.button.showRange"), b -> { onClose(); te.showRangeLines(); }));
+            addButtonLocal(new WidgetRangeToggleButton(guiLeft + 150, guiTop + 130, te));
         }
 
         maxPage = (directories.length - 1) / MAX_SENSORS_PER_PAGE + 1;

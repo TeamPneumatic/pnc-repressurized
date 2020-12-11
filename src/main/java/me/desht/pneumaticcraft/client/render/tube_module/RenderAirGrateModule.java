@@ -2,13 +2,9 @@ package me.desht.pneumaticcraft.client.render.tube_module;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
-import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleAirGrate;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 
 public class RenderAirGrateModule extends TubeModuleRendererBase<ModuleAirGrate> {
@@ -77,21 +73,5 @@ public class RenderAirGrateModule extends TubeModuleRendererBase<ModuleAirGrate>
         base1.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
         base2.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
         base3.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
-    }
-
-    @Override
-    protected void renderExtras(ModuleAirGrate module, MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks, int combinedLight, int combinedOverlay) {
-        if (module.getRangeLines().shouldRender()) {
-            Direction d = module.getDirection();
-            int r = -module.getGrateRange() - 1;
-
-            matrixStack.push();
-
-            // negation of X necessary due to the transforms in place for model rendering
-            matrixStack.translate(-d.getXOffset() * r, d.getYOffset() * r, d.getZOffset() * r);
-            RenderUtils.renderRangeLines(module.getRangeLines(), matrixStack, buffer.getBuffer(RenderType.LINES));
-
-            matrixStack.pop();
-        }
     }
 }

@@ -4,20 +4,20 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.client.TubeModuleClientRegistry;
 import me.desht.pneumaticcraft.client.render.tube_module.TubeModuleRendererBase;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.item.ItemTubeModule;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockRayTraceResult;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class RenderPressureTubeModule extends TileEntityRenderer<TileEntityPressureTube> {
 
@@ -41,40 +41,35 @@ public class RenderPressureTubeModule extends TileEntityRenderer<TileEntityPress
             holdingModule = Hand.OFF_HAND;
         }
 
-        if (tile.tubeModules().noneMatch(e -> true) && holdingModule == null)
+        List<TubeModule> modules = tile.tubeModules().collect(Collectors.toList());
+
+        if (modules.isEmpty() && holdingModule == null)
             return;
 
-        matrixStack.push();
-        matrixStack.translate(0.5, 1.5, 0.5);
-        matrixStack.scale(1f, -1f, -1f);
-
-        // "fake" module is for showing a preview of where the module would be placed
-        if (holdingModule != null) attachFakeModule(mc, tile, holdingModule);
-
-        for (Direction dir : Direction.VALUES) {
-            TubeModule module = tile.getModule(dir);
-            if (module != null) {
-                // FIXME: map lookup isn't ideal for performance here: need a cached index-based lookup of module->model
-                getModel(module).renderModule(module, matrixStack, buffer, partialTicks, combinedLight, combinedOverlay);
-
-                if (module.isFake()) {
-                    tile.setModule(dir, null);
-                }
+        if (holdingModule != null && mc.objectMouseOver instanceof BlockRayTraceResult) {
+            // "fake" module is for showing a preview of where the module would be placed
+            BlockRayTraceResult brtr = (BlockRayTraceResult) mc.objectMouseOver;
+            if (brtr.getPos().equals(tile.getPos()) && mc.world.getTileEntity(brtr.getPos()) == tile && tile.getModule(brtr.getFace()) == null) {
+                TubeModule fakeModule = ((ItemTubeModule) mc.player.getHeldItem(holdingModule).getItem()).createModule();
+                fakeModule.markFake();
+                fakeModule.setDirection(brtr.getFace());
+                fakeModule.setTube(tile);
+                getModuleRenderer(fakeModule).renderModule(fakeModule, matrixStack, buffer, partialTicks, combinedLight, combinedOverlay);
             }
         }
-        matrixStack.pop();
+
+        for (TubeModule m : modules) {
+            getModuleRenderer(m).renderModule(m, matrixStack, buffer, partialTicks, combinedLight, combinedOverlay);
+            if (m.isFake()) tile.setModule(m.getDirection(), null);
+        }
     }
 
-    private TubeModuleRendererBase getModel(TubeModule module) {
+    private TubeModuleRendererBase getModuleRenderer(TubeModule module) {
         return models.computeIfAbsent(module.getType(), k -> TubeModuleClientRegistry.createModel(module));
     }
 
-    private void attachFakeModule(Minecraft mc, TileEntityPressureTube tile, Hand hand) {
-        if (mc.objectMouseOver instanceof BlockRayTraceResult) {
-            BlockRayTraceResult brtr = (BlockRayTraceResult) mc.objectMouseOver;
-            if (brtr.getPos().equals(tile.getPos()) && mc.world.getTileEntity(brtr.getPos()) == tile) {
-                ModBlocks.PRESSURE_TUBE.get().tryPlaceModule(mc.player, mc.world, tile.getPos(), brtr.getFace(), hand,true);
-            }
-        }
+    @Override
+    public boolean isGlobalRenderer(TileEntityPressureTube te) {
+        return te.tubeModules().findAny().isPresent();
     }
 }

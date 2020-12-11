@@ -5,6 +5,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetRangeToggleButton;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
@@ -70,11 +71,12 @@ public class GuiSecurityStationInventory extends GuiSecurityStationBase<Containe
         });
         accessStat.addSubWidget(sharedUserTextField);
         accessStat.addSubWidget(addUserButton);
+        accessStat.setMinimumExpandedDimensions(150, 40);
 
         addButton(new WidgetButtonExtended(guiLeft + 108, guiTop + 103, 64, 20, xlate("pneumaticcraft.gui.securityStation.test")))
                 .withTag("test");
         addButton(rebootButton);
-        addButton(new WidgetButtonExtended(guiLeft + 108, guiTop + 125, 64, 20, xlate("pneumaticcraft.gui.button.showRange"), b -> te.showRangeLines()));
+        addButton(new WidgetRangeToggleButton(guiLeft + 154, guiTop + 130, te));
 
         updateUserRemoveButtons();
 
@@ -191,7 +193,7 @@ public class GuiSecurityStationInventory extends GuiSecurityStationBase<Containe
         text.add(new StringTextComponent("Intruder Detection Chance").mergeStyle(TextFormatting.BLACK));
         text.add(new StringTextComponent(te.getDetectionChance() + "%%").mergeStyle(TextFormatting.BLACK));
         text.add(new StringTextComponent("Security Range").mergeStyle(TextFormatting.BLACK));
-        text.add(new StringTextComponent(te.getSecurityRange() + "m (square)").mergeStyle(TextFormatting.BLACK));
+        text.add(new StringTextComponent(te.getRange() + "m (square)").mergeStyle(TextFormatting.BLACK));
         return text;
     }
 

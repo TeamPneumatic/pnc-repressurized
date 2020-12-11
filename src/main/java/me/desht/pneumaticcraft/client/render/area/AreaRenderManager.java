@@ -28,8 +28,9 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class AreaRenderManager {
-    private static final AreaRenderManager INSTANCE = new AreaRenderManager();
+public enum AreaRenderManager {
+    INSTANCE;
+
     private final Map<BlockPos, AreaRenderer> showHandlers = new HashMap<>();
     private World world;
     private DroneDebugClientHandler droneDebugger;
@@ -38,6 +39,7 @@ public class AreaRenderManager {
     private AreaRenderer camoPositionShower;
     private BlockPos lastPlayerPos;
     private int lastItemHashCode = 0;
+
     public static AreaRenderManager getInstance() {
         return INSTANCE;
     }
@@ -169,12 +171,16 @@ public class AreaRenderManager {
         return showArea(new HashSet<>(Arrays.asList(area)), color, areaShower);
     }
 
-    public AreaRenderer showArea(Set<BlockPos> area, int color, TileEntity areaShower) {
+    public AreaRenderer showArea(Set<BlockPos> area, int color, TileEntity areaShower, boolean depth) {
         if (areaShower == null) return null;
         removeHandlers(areaShower);
-        AreaRenderer handler = new AreaRenderer(area, color, true);
+        AreaRenderer handler = new AreaRenderer(area, color, depth);
         showHandlers.put(new BlockPos(areaShower.getPos().getX(), areaShower.getPos().getY(), areaShower.getPos().getZ()), handler);
         return handler;
+    }
+
+    public AreaRenderer showArea(Set<BlockPos> area, int color, TileEntity areaShower) {
+        return showArea(area, color, areaShower, true);
     }
 
     public boolean isShowing(TileEntity te) {

@@ -1,9 +1,13 @@
 package me.desht.pneumaticcraft.common.block.tubes;
 
-import me.desht.pneumaticcraft.client.util.RangeLines;
+import me.desht.pneumaticcraft.api.PNCCapabilities;
+import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntitySemiblockBase;
 import me.desht.pneumaticcraft.common.item.ItemTubeModule;
+import me.desht.pneumaticcraft.common.network.NetworkHandler;
+import me.desht.pneumaticcraft.common.network.PacketUpdatePressureBlock;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
+import me.desht.pneumaticcraft.common.tileentity.IRangedTE;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityHeatSink;
 import me.desht.pneumaticcraft.common.util.EntityFilter;
 import me.desht.pneumaticcraft.common.util.IOHelper;
@@ -35,8 +39,7 @@ public class ModuleAirGrate extends TubeModule {
     private int grateRange;
     private boolean vacuum;
     private final Set<TileEntityHeatSink> heatSinks = new HashSet<>();
-    private final RangeLines rangeLines = new RangeLines(0x5500FF00);
-    private boolean renderRangeLines;
+    public boolean showRange;
     private EntityFilter entityFilter = null;
     private TileEntity adjacentInsertionTE = null;
     private Direction adjacentInsertionSide;
@@ -46,19 +49,8 @@ public class ModuleAirGrate extends TubeModule {
         super(itemTubeModule);
     }
 
-    private int getRange() {
-        float range = pressureTube.getPressure() * 4f;
-        vacuum = range < 0;
-        if (vacuum) range *= -4f;
-        return (int) range;
-    }
-
     public int getGrateRange() {
         return grateRange;
-    }
-
-    public RangeLines getRangeLines() {
-        return rangeLines;
     }
 
     @Override
@@ -75,26 +67,32 @@ public class ModuleAirGrate extends TubeModule {
 
         if ((world.getGameTime() & 0x1f) == 0) traceabilityCache.clear();
 
-        if (!world.isRemote) {
-            int oldGrateRange = grateRange;
-            grateRange = getRange();
-//            pressureTube.addAir((vacuum ? 1 : -1) * grateRange * PneumaticValues.USAGE_AIR_GRATE);
-            if (oldGrateRange != grateRange) sendDescriptionPacket();
-
-            coolHeatSinks();
-        } else {
-            if (renderRangeLines) {
-                rangeLines.startRendering(grateRange);
-                renderRangeLines = false;
+        int oldGrateRange = grateRange;
+        grateRange = calculateRange();
+        if (oldGrateRange != grateRange) {
+            if (!world.isRemote) {
+                getTube().getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY)
+                        .ifPresent(h -> NetworkHandler.sendToAllTracking(new PacketUpdatePressureBlock(getTube(), null, h.getSideLeaking(), h.getAir()), getTube()));
+            } else {
+                if (showRange) {
+                    AreaRenderManager.getInstance().showArea(IRangedTE.getFrame(getAffectedAABB()), 0x60FFC060, pressureTube, false);
+                }
             }
-            rangeLines.tick(world.rand);
         }
 
+        coolHeatSinks();
         pushEntities(world, pos, new Vector3d(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D));
     }
 
     private AxisAlignedBB getAffectedAABB() {
         return new AxisAlignedBB(pressureTube.getPos().offset(getDirection(), grateRange + 1)).grow(grateRange);
+    }
+
+    private int calculateRange() {
+        float range = pressureTube.getPressure() * 4f;
+        vacuum = range < 0;
+        if (vacuum) range *= -4f;
+        return (int) range;
     }
 
     private void pushEntities(World world, BlockPos pos, Vector3d tileVec) {
@@ -142,7 +140,7 @@ public class ModuleAirGrate extends TubeModule {
             return ((PlayerEntity) entity).isCreative() || entity.isSneaking() || entity.isSpectator();
         } else {
             // don't touch semiblocks, at all
-            return entity instanceof EntitySemiblockBase;
+            return !entity.canBePushed() || entity instanceof EntitySemiblockBase;
         }
     }
 
@@ -239,7 +237,7 @@ public class ModuleAirGrate extends TubeModule {
 
     @Override
     public AxisAlignedBB getRenderBoundingBox() {
-        return getAffectedAABB();
+        return new AxisAlignedBB(pressureTube.getPos().offset(getDirection(), grateRange + 1)).grow(grateRange * 2);
     }
 
     public String getEntityFilterString() {
@@ -252,14 +250,19 @@ public class ModuleAirGrate extends TubeModule {
 
     @Override
     public boolean onActivated(PlayerEntity player, Hand hand) {
-        if (player.world.isRemote && !rangeLines.shouldRender()) {
-            renderRangeLines = true;
+        if (player.world.isRemote && pressureTube != null) {
+            showRange = !showRange;
+            if (showRange) {
+                AreaRenderManager.getInstance().showArea(IRangedTE.getFrame(getAffectedAABB()), 0x60FFC060, pressureTube, false);
+            } else {
+                AreaRenderManager.getInstance().removeHandlers(pressureTube);
+            }
         }
         return super.onActivated(player, hand);
     }
 
     @Override
     public void onPlaced() {
-        renderRangeLines = true;
+        showRange = true;
     }
 }

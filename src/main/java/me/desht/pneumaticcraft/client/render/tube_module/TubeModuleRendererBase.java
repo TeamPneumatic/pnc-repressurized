@@ -20,6 +20,10 @@ public abstract class TubeModuleRendererBase<T extends TubeModule> {
     public final void renderModule(T module, MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks, int combinedLight, int combinedOverlay) {
         matrixStack.push();
 
+        // transforms to get model orientation right
+        matrixStack.translate(0.5, 1.5, 0.5);
+        matrixStack.scale(1f, -1f, -1f);
+
         RenderUtils.rotateMatrixForDirection(matrixStack, module.getDirection());
         float r, g, b, a;
         if (module.isUpgraded()) {
@@ -30,7 +34,7 @@ public abstract class TubeModuleRendererBase<T extends TubeModule> {
         } else {
             r = g = b = a = 1f;
         }
-        if (module.isFake()) a = 0.5f;
+        if (module.isFake()) a = 0.3f;
 
         IVertexBuilder builder = module.isFake() ?
                 buffer.getBuffer(RenderType.getEntityTranslucent(getTexture())) :
@@ -46,7 +50,7 @@ public abstract class TubeModuleRendererBase<T extends TubeModule> {
 
     protected abstract ResourceLocation getTexture();
 
-    protected void renderExtras(T module,  MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks, int combinedLight, int combinedOverlay) {
+    public void renderExtras(T module, MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks, int combinedLight, int combinedOverlay) {
         // nothing; override in subclasses
     }
 }

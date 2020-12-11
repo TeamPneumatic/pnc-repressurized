@@ -7,15 +7,13 @@ import me.desht.pneumaticcraft.api.universal_sensor.IEventSensorSetting;
 import me.desht.pneumaticcraft.api.universal_sensor.IPollSensorSetting;
 import me.desht.pneumaticcraft.api.universal_sensor.ISensorSetting;
 import me.desht.pneumaticcraft.client.gui.GuiUniversalSensor;
-import me.desht.pneumaticcraft.client.util.RangeLines;
+import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerUniversalSensor;
 import me.desht.pneumaticcraft.common.item.ItemGPSTool;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
-import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketRenderRangeLines;
 import me.desht.pneumaticcraft.common.sensor.SensorHandler;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.ComputerEventManager;
@@ -56,7 +54,7 @@ import java.util.stream.Collectors;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class TileEntityUniversalSensor extends TileEntityPneumaticBase implements
-        IRangeLineShower, IGUITextFieldSensitive, IMinWorkingPressure,
+        IGUITextFieldSensitive, IMinWorkingPressure, IRangedTE,
         IRedstoneControl<TileEntityUniversalSensor>, INamedContainerProvider {
 
     private static final List<RedstoneMode<TileEntityUniversalSensor>> REDSTONE_MODES = ImmutableList.of(
@@ -87,8 +85,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
     private boolean requestPollPullEvent;  // computer support
     private final Set<BlockPos> positions = new HashSet<>();
 
-    private int oldSensorRange; // range used by the range line renderer, to figure out if the range has been changed.
-    public final RangeLines rangeLines = new RangeLines(0x600060FF);
+    public boolean showRange;
 
     private final ItemStackHandler itemHandler = new UniversalSensorItemHandler();
     private final LazyOptional<IItemHandler> inventoryCap = LazyOptional.of(() -> itemHandler);
@@ -109,14 +106,14 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
         }
         dishRotation += dishSpeed;
 
-        if (getWorld().isRemote) {
-            int sensorRange = getRange();
-            if (oldSensorRange != sensorRange || oldSensorRange == 0) {
-                oldSensorRange = sensorRange;
-                if (!firstRun) rangeLines.startRendering(sensorRange);
-            }
-            rangeLines.tick(world.rand);
-        }
+//        if (getWorld().isRemote) {
+//            int sensorRange = getRange();
+//            if (oldSensorRange != sensorRange || oldSensorRange == 0) {
+//                oldSensorRange = sensorRange;
+//                if (!firstRun) rangeLines.startRendering(sensorRange);
+//            }
+//            rangeLines.tick(world.rand);
+//        }
         super.tick();
 
         if (!getWorld().isRemote) {
@@ -200,20 +197,18 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
     /**
      * On client, initiate the wireframe rendering. On server, send a packet to every nearby client to render the box.
      */
-    @Override
-    public void showRangeLines() {
-        if (getWorld().isRemote) {
-            rangeLines.startRendering(getRange());
-        } else {
-            NetworkHandler.sendToAllTracking(new PacketRenderRangeLines(this), this);
-        }
-    }
+//    @Override
+//    public void showRangeLines() {
+//        if (getWorld().isRemote) {
+//            rangeLines.startRendering(getRange());
+//        } else {
+//            NetworkHandler.sendToAllTracking(new PacketRenderRangeLines(this), this);
+//        }
+//    }
 
     @Override
     public AxisAlignedBB getRenderBoundingBox() {
-        return rangeLines == null || !rangeLines.shouldRender() ?
-                super.getRenderBoundingBox() :
-                new AxisAlignedBB(getPos()).grow(getRange());
+        return showRange ? new AxisAlignedBB(getPos()).grow(getRange()) : super.getRenderBoundingBox();
     }
 
     public void onEvent(Event event) {
@@ -237,6 +232,24 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
         }
     }
 
+    @Override
+    public void toggleShowRange() {
+        showRange = !showRange;
+        if (world.isRemote) {
+            if (showRange) {
+                AreaRenderManager.getInstance().showArea(IRangedTE.getFrame(new AxisAlignedBB(pos).grow(getRange())), 0x605050D0, this, false);
+            } else {
+                AreaRenderManager.getInstance().removeHandlers(this);
+            }
+        }
+    }
+
+    @Override
+    public boolean shouldShowRange() {
+        return showRange;
+    }
+
+    @Override
     public int getRange() {
         return getUpgrades(EnumUpgrade.RANGE) + 8;
     }

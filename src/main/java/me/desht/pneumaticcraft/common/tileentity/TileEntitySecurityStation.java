@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 import com.google.common.collect.ImmutableList;
 import com.mojang.authlib.GameProfile;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
-import me.desht.pneumaticcraft.client.util.RangeLines;
+import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerSecurityStationHacking;
@@ -11,8 +11,6 @@ import me.desht.pneumaticcraft.common.inventory.ContainerSecurityStationMain;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.item.ItemNetworkComponent;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
-import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketRenderRangeLines;
 import me.desht.pneumaticcraft.common.tileentity.RedstoneController.EmittingRedstoneMode;
 import me.desht.pneumaticcraft.common.tileentity.RedstoneController.RedstoneMode;
 import me.desht.pneumaticcraft.common.util.GlobalTileEntityCacheManager;
@@ -46,8 +44,10 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-public class TileEntitySecurityStation extends TileEntityTickableBase implements IGUITextFieldSensitive,
-        IRangeLineShower, IRedstoneControl<TileEntitySecurityStation>, INamedContainerProvider {
+public class TileEntitySecurityStation extends TileEntityTickableBase implements
+        IGUITextFieldSensitive, IRedstoneControl<TileEntitySecurityStation>,
+        INamedContainerProvider, IRangedTE
+{
 
     private static final List<RedstoneMode<TileEntitySecurityStation>> REDSTONE_MODES = ImmutableList.of(
             new EmittingRedstoneMode<>("standard.never", new ItemStack(Items.GUNPOWDER), te -> false),
@@ -73,11 +73,10 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
     public final RedstoneController<TileEntitySecurityStation> rsController = new RedstoneController<>(this, REDSTONE_MODES);
 
     private int securityRange;
-    private int oldSecurityRange; //range used by the range line renderer, to figure out if the range has been changed.
-    public RangeLines rangeLines;
     private boolean oldRedstoneStatus;
 
     private boolean validNetwork;
+    private boolean showRange;
 
     public TileEntitySecurityStation() {
         super(ModTileEntities.SECURITY_STATION.get(), 4);
@@ -93,7 +92,6 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
     public void validate(){
         super.validate();
         GlobalTileEntityCacheManager.getInstance().securityStations.add(this);
-        rangeLines = new RangeLines(0x33FF0000);
     }
 
     @Override
@@ -106,14 +104,7 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
                 }
             }
         }
-        if (getWorld().isRemote && !firstRun) {
-            if (oldSecurityRange != getSecurityRange() || oldSecurityRange == 0) {
-                rangeLines.startRendering(getSecurityRange());
-                oldSecurityRange = getSecurityRange();
-            }
-            rangeLines.tick(world.rand);
-        }
-        if (/* !getWorld().isRemote && */oldRedstoneStatus != rsController.shouldEmit()) {
+        if (oldRedstoneStatus != rsController.shouldEmit()) {
             oldRedstoneStatus = rsController.shouldEmit();
             updateNeighbours();
         }
@@ -130,18 +121,6 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
 
     public int getRebootTime() {
         return rebootTimer;
-    }
-
-    /**
-     * Will initiate the wireframe rendering. When invoked on the server, it sends a packet to every client to render the box.
-     */
-    @Override
-    public void showRangeLines() {
-        if (getWorld().isRemote) {
-            rangeLines.startRendering(getSecurityRange());
-        } else {
-            NetworkHandler.sendToAllTracking(new PacketRenderRangeLines(this), this);
-        }
     }
 
     @Override
@@ -206,16 +185,11 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
 
     @Override
     public AxisAlignedBB getRenderBoundingBox() {
-        if (rangeLines == null || !rangeLines.shouldRender()) return super.getRenderBoundingBox();
-        return getAffectedBoundingBox();
+        return shouldShowRange() ? getAffectedBoundingBox() : super.getRenderBoundingBox();
     }
 
     public AxisAlignedBB getAffectedBoundingBox(){
-        return new AxisAlignedBB(getPos()).grow(getSecurityRange());
-    }
-
-    public int getSecurityRange() {
-        return securityRange;
+        return new AxisAlignedBB(getPos()).grow(getRange());
     }
 
     @Override
@@ -364,6 +338,28 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
         return new ContainerSecurityStationMain(i, playerInventory, getPos());
     }
 
+    @Override
+    public void toggleShowRange() {
+        showRange = !showRange;
+        if (world.isRemote) {
+            if (showRange) {
+                AreaRenderManager.getInstance().showArea(IRangedTE.getFrame(new AxisAlignedBB(pos).grow(getRange())), 0x60FF0000, this, false);
+            } else {
+                AreaRenderManager.getInstance().removeHandlers(this);
+            }
+        }
+    }
+
+    @Override
+    public boolean shouldShowRange() {
+        return showRange;
+    }
+
+    @Override
+    public int getRange() {
+        return securityRange;
+    }
+
     public enum EnumNetworkValidityProblem {
         NONE,
         NO_SUBROUTINE, NO_IO_PORT, NO_REGISTRY,
@@ -465,7 +461,7 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
             station = iterator.next();
             if (!station.doesAllowPlayer(player)) {
                 blockingStations++;
-                if (showRangeLines) station.showRangeLines();
+//                if (showRangeLines) station.showRangeLines();
             }
         }
         return blockingStations;

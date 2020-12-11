@@ -78,8 +78,6 @@ public class NetworkHandler {
 				PacketPlaySound::toBytes, PacketPlaySound::new, PacketPlaySound::handle);
 		registerMessage(PacketProgrammerUpdate.class,
 				PacketProgrammerUpdate::toBytes, PacketProgrammerUpdate::new, PacketProgrammerUpdate::handle);
-		registerMessage(PacketRenderRangeLines.class,
-				PacketRenderRangeLines::toBytes, PacketRenderRangeLines::new, PacketRenderRangeLines::handle);
 		registerMessage(PacketSecurityStationAddHacker.class,
 				PacketSecurityStationAddHacker::toBytes, PacketSecurityStationAddHacker::new, PacketSecurityStationAddHacker::handle);
 		registerMessage(PacketSecurityStationAddUser.class,

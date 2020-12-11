@@ -192,7 +192,7 @@ public class GuiSecurityStationHacking extends GuiSecurityStationBase<ContainerS
         text.add(new StringTextComponent("Security Level").mergeStyle(TextFormatting.GRAY));
         text.add(new StringTextComponent("Level " + te.getSecurityLevel()).mergeStyle(TextFormatting.BLACK));
         text.add(new StringTextComponent("Security Range").mergeStyle(TextFormatting.GRAY));
-        text.add(new StringTextComponent(te.getSecurityRange() + "m (square)").mergeStyle(TextFormatting.BLACK));
+        text.add(new StringTextComponent(te.getRange() + "m (square)").mergeStyle(TextFormatting.BLACK));
         return text;
     }
 

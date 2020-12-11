@@ -1,14 +1,12 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
-import me.desht.pneumaticcraft.client.util.RangeLines;
+import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerPressurizedSpawner;
 import me.desht.pneumaticcraft.common.item.ItemSpawnerCore;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
-import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketRenderRangeLines;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -32,21 +30,22 @@ import net.minecraftforge.items.IItemHandler;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class TileEntityPressurizedSpawner extends TileEntityPneumaticBase
-        implements IMinWorkingPressure, IRedstoneControl<TileEntityPressurizedSpawner>, INamedContainerProvider, IRangeLineShower {
+public class TileEntityPressurizedSpawner extends TileEntityPneumaticBase implements
+        IMinWorkingPressure, IRedstoneControl<TileEntityPressurizedSpawner>,
+        INamedContainerProvider, IRangedTE
+{
     public static final int BASE_SPAWN_INTERVAL = 200;
 
     private final ItemSpawnerCore.SpawnerCoreItemHandler inventory = new ItemSpawnerCore.SpawnerCoreItemHandler();
     private final LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> inventory);
-    @DescSynced
+    @GuiSynced
     public TileEntityVacuumTrap.Problems problem = TileEntityVacuumTrap.Problems.OK;
     @GuiSynced
     private final RedstoneController<TileEntityPressurizedSpawner> rsController = new RedstoneController<>(this);
     private int counter = BASE_SPAWN_INTERVAL;
     @DescSynced
     private boolean running;
-    public final RangeLines rangeLines = new RangeLines(0x80703CAA);
-    private int prevRange;
+    public boolean showRange;
 
     public TileEntityPressurizedSpawner() {
         super(ModTileEntities.PRESSURIZED_SPAWNER.get(), PneumaticValues.DANGER_PRESSURE_TIER_TWO, PneumaticValues.MAX_PRESSURE_TIER_TWO, PneumaticValues.VOLUME_PRESSURIZED_SPAWNER, 4);
@@ -80,14 +79,6 @@ public class TileEntityPressurizedSpawner extends TileEntityPneumaticBase
                 world.addParticle(ParticleTypes.SMOKE, x, y, z, 0.0D, 0.0D, 0.0D);
                 world.addParticle(ParticleTypes.FLAME, x, y, z, 0.0D, 0.0D, 0.0D);
             }
-            int range = getRange();
-            if (prevRange != range || prevRange == 0) {
-                prevRange = range;
-                if (!firstRun) {
-                    rangeLines.startRendering(range);
-                }
-            }
-            rangeLines.tick(world.rand);
         }
     }
 
@@ -183,20 +174,29 @@ public class TileEntityPressurizedSpawner extends TileEntityPneumaticBase
     }
 
     @Override
-    public void showRangeLines() {
-        if (getWorld().isRemote) {
-            rangeLines.startRendering(getRange());
-        } else {
-            NetworkHandler.sendToAllTracking(new PacketRenderRangeLines(this), this);
+    public AxisAlignedBB getRenderBoundingBox() {
+        return showRange ? new AxisAlignedBB(getPos()).grow(getRange()) : super.getRenderBoundingBox();
+    }
+
+    @Override
+    public void toggleShowRange() {
+        showRange = !showRange;
+        if (world.isRemote) {
+            if (showRange) {
+                AreaRenderManager.getInstance().showArea(IRangedTE.getFrame(new AxisAlignedBB(pos).grow(getRange())), 0x60400040, this, false);
+            } else {
+                AreaRenderManager.getInstance().removeHandlers(this);
+            }
         }
     }
 
     @Override
-    public AxisAlignedBB getRenderBoundingBox() {
-        return rangeLines == null || !rangeLines.shouldRender() ? super.getRenderBoundingBox() : new AxisAlignedBB(getPos()).grow(getRange());
+    public boolean shouldShowRange() {
+        return showRange;
     }
 
-    private int getRange() {
+    @Override
+    public int getRange() {
         return 2 + getUpgrades(EnumUpgrade.RANGE);
     }
 }

@@ -13,7 +13,8 @@ import java.util.function.Supplier;
 /**
  * Received on: CLIENT
  * Sent periodically from server to sync pressure level:
- * - For pressure tubes with an attached pressure gauge
+ * - For pressure tubes with an attached pressure gauge module
+ * - For air grate modules, when the pressure changes enough to modify the range
  * - For machine air handlers which are currently leaking
  */
 public class PacketUpdatePressureBlock extends LocationIntPacket {

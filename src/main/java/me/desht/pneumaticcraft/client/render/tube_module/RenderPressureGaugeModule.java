@@ -38,22 +38,19 @@ public class RenderPressureGaugeModule extends TubeModuleRendererBase<ModulePres
     }
 
     @Override
-    protected void renderExtras(ModulePressureGauge module, MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks, int combinedLight, int combinedOverlay) {
+    public void renderExtras(ModulePressureGauge module, MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks, int combinedLight, int combinedOverlay) {
         BlockPos pos = module.getTube().getPos();
         if (ClientUtils.getClientPlayer().getDistanceSq(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) > 256) return;
 
-        float pressure = 0f;
-        float dangerPressure = 5f;
-        float critPressure = 7f;
-        if (module != null) {
-            TileEntityPressureTube base = module.getTube();
-            pressure = base.getPressure();
-            critPressure = base.criticalPressure;
-            dangerPressure = base.dangerPressure;
-        }
+        TileEntityPressureTube base = module.getTube();
+        float pressure = base.getPressure();
+        float critPressure = base.criticalPressure;
+        float dangerPressure = base.dangerPressure;
 
         matrixStack.push();
 
+        matrixStack.translate(0.5, 1.5, 0.5);
+        matrixStack.scale(1f, -1f, -1f);
         RenderUtils.rotateMatrixForDirection(matrixStack, module.getDirection());
         matrixStack.translate(0, 1, 0.378);
         matrixStack.scale(GAUGE_SCALE, GAUGE_SCALE, GAUGE_SCALE);
