@@ -15,7 +15,7 @@ import java.util.function.Supplier;
 public class ModProgWidgets {
     public static final DeferredRegister<ProgWidgetType<?>> PROG_WIDGETS_DEFERRED = DeferredRegister.create(ProgWidgetType.CLASS_GENERIC, Names.MOD_ID);
     public static final Supplier<IForgeRegistry<ProgWidgetType<?>>> PROG_WIDGETS = PROG_WIDGETS_DEFERRED
-            .makeRegistry("prog_widgets", () -> new RegistryBuilder<ProgWidgetType<?>>().disableSaving());
+            .makeRegistry("prog_widgets", () -> new RegistryBuilder<ProgWidgetType<?>>().disableSaving().disableSync());
 
     public static final RegistryObject<ProgWidgetType<ProgWidgetComment>> COMMENT
             = register("comment", ProgWidgetComment::new);
