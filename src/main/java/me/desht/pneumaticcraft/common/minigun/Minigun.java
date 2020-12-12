@@ -18,10 +18,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.EntityRayTraceResult;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.*;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.LazyOptional;
 
@@ -280,7 +277,7 @@ public abstract class Minigun {
             float lastSpeed = getMinigunSpeed();
             setMinigunSpeed(Math.min(getMinigunSpeed() + 0.01F + speedBonus, MAX_GUN_SPEED));
             if (getMinigunSpeed() > lastSpeed && getMinigunSpeed() >= MAX_GUN_SPEED && !world.isRemote) {
-                NetworkHandler.sendToAllTracking(new PacketPlayMovingSound(MovingSounds.Sound.MINIGUN, getSoundSource()), player.world, player.getPosition());
+                NetworkHandler.sendToAllTracking(new PacketPlayMovingSound(MovingSounds.Sound.MINIGUN, getSoundSource()), player.world, new BlockPos(posX, posY, posZ));
             }
         } else {
             setMinigunSpeed(Math.max(0F, getMinigunSpeed() - 0.003F));
