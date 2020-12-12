@@ -100,16 +100,20 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
             for (IAirHandler itemAirHandler : findChargeable()) {
                 float itemPressure = itemAirHandler.getPressure();
                 float itemVolume = itemAirHandler.getVolume();
-                float delta = Math.abs(getPressure() - itemPressure) / 2.0F;
-                int airInItem = (int) (itemPressure * itemVolume);
+                float chargerPressure = getPressure();
+                float delta = Math.abs(chargerPressure - itemPressure) / 2.0F;
+                int airInItem = itemAirHandler.getAir(); //(int) (itemPressure * itemVolume);
 
-                if (itemPressure > getPressure() + 0.01F && itemPressure > 0F) {
+                if (chargerPressure == 0f && delta < 0.1f) {
+                    // small kludge to get last tiny bit of air out of an item (arithmetic rounding)
+                    itemAirHandler.addAir(-airInItem);
+                } else if (itemPressure > chargerPressure + 0.01F && itemPressure > 0F) {
                     // move air from item to charger
                     int airToMove = Math.min(Math.min(airToTransfer, airInItem), (int) (delta * airHandler.getVolume()));
                     itemAirHandler.addAir(-airToMove);
                     this.addAir(airToMove);
                     discharging = true;
-                } else if (itemPressure < getPressure() - 0.01F && itemPressure < itemAirHandler.maxPressure()) {
+                } else if (itemPressure < chargerPressure - 0.01F && itemPressure < itemAirHandler.maxPressure()) {
                     // move air from charger to item
                     int maxAirInItem = (int) (itemAirHandler.maxPressure() * itemVolume);
                     int airToMove = Math.min(Math.min(airToTransfer, airHandler.getAir()), maxAirInItem - airInItem);

@@ -51,7 +51,18 @@ public class AirHandlerItemStack implements IAirHandlerItem, ICapabilityProvider
     @Override
     public void addAir(int amount) {
         int currentAir = getAir();
-        container.getOrCreateTag().putInt(AIR_NBT_KEY, currentAir + amount);
+        int newAir = currentAir + amount;
+        if (newAir != 0) {
+            container.getOrCreateTag().putInt(AIR_NBT_KEY, currentAir + amount);
+        } else {
+            // no air in item: clean up NBT for item stackability purposes
+            if (container.hasTag()) {
+                container.getTag().remove(AIR_NBT_KEY);
+                if (container.getTag().isEmpty()) {
+                    container.setTag(null);
+                }
+            }
+        }
     }
 
     @Override
