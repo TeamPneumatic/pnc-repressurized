@@ -35,6 +35,7 @@ public class ProgWidgetLiquidInventoryCondition extends ProgWidgetCondition {
             protected boolean evaluate(BlockPos pos) {
                 TileEntity te = drone.world().getTileEntity(pos);
                 int count = te == null ? countFluid(drone.world(), pos) : countFluid(te);
+                maybeRecordMeasuredVal(drone, count);
                 return ((ICondition) progWidget).getOperator().evaluate(count, ((ICondition) progWidget).getRequiredCount());
             }
 

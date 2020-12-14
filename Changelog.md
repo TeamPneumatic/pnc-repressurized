@@ -49,6 +49,9 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed camouflaged Elevators rendering unlit after a neighbour block update
 * Fixed Transfer Gadgets not being placeable on a block if a Transfer Gadget already existed on the top face
 * Fixed JEI init bug (causing no PNC recipes to show) if `explosion_crafting` is disabled in config
+* Fixed Sentry Turret minigun firing sound not playing to clients
+* Fixed Charging Station not extracting last tiny bit of air from items when discharging them
+  * Related: clean up item NBT when all air has been extracted from an item (don't store air=0 amounts in NBT); mainly for benefit of stacking Air Canisters
 
 ## 2.7.2-86 (3 Dec 2020)
 

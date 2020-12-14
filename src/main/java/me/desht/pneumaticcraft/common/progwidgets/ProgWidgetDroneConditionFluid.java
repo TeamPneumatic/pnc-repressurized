@@ -23,8 +23,10 @@ public class ProgWidgetDroneConditionFluid extends ProgWidgetDroneCondition impl
 
     @Override
     protected int getCount(IDroneBase drone, IProgWidget widget) {
-        return !drone.getFluidTank().getFluid().isEmpty()
+        int count = !drone.getFluidTank().getFluid().isEmpty()
                 && ((ILiquidFiltered) widget).isFluidValid(drone.getFluidTank().getFluid().getFluid()) ? drone.getFluidTank().getFluidAmount() : 0;
+        maybeRecordMeasuredVal(drone, count);
+        return count;
     }
 
     @Override

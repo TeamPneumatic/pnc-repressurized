@@ -57,6 +57,7 @@ public class ProgWidgetItemInventoryCondition extends ProgWidgetCondition {
                         }
                     }
                 }
+                maybeRecordMeasuredVal(drone, count);
                 return ((ICondition) progWidget).getOperator().evaluate(count, ((ICondition) progWidget).getRequiredCount());
             }
 

@@ -2,9 +2,7 @@ package me.desht.pneumaticcraft.client.gui.programmer;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetRadioButton;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetTextFieldNumber;
+import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.progwidgets.*;
 import net.minecraft.util.Direction;
@@ -76,6 +74,13 @@ public abstract class GuiProgWidgetDroneCondition<T extends ProgWidgetDroneCondi
             textField.setResponder(s -> progWidget.setRequiredCount(textField.getValue()));
             addButton(textField);
         }
+
+        WidgetLabel label = addLabel(xlate("pneumaticcraft.gui.progWidget.condition.measure"), guiLeft + 8, guiTop + 152);
+        label.setTooltip(xlate("pneumaticcraft.gui.progWidget.condition.measure.tooltip"));
+        WidgetTextField measureTextField = new WidgetTextField(font, guiLeft + label.getWidth() + 8, guiTop + 150, 80, 11);
+        measureTextField.setText(progWidget.getMeasureVar());
+        measureTextField.setResponder(progWidget::setMeasureVar);
+        addButton(measureTextField);
     }
 
     protected boolean isSidedWidget() {

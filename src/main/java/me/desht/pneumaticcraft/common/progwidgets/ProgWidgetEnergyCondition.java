@@ -43,6 +43,7 @@ public class ProgWidgetEnergyCondition extends ProgWidgetCondition {
                         energy = Math.max(energy, getEnergy(te, face));
                     }
                 }
+                maybeRecordMeasuredVal(drone, energy);
                 return ((ICondition) progWidget).getOperator().evaluate(energy,((ICondition) progWidget).getRequiredCount());
             }
 

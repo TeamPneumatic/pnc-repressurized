@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
+import net.minecraft.util.math.BlockPos;
 
 public interface ICondition {
     boolean isAndFunction();
@@ -14,6 +15,16 @@ public interface ICondition {
     Operator getOperator();
 
     void setOperator(Operator operator);
+
+    String getMeasureVar();
+
+    void setMeasureVar(String var);
+
+    default void maybeRecordMeasuredVal(IDroneBase drone, int val) {
+        if (!getMeasureVar().isEmpty()) {
+            drone.getAIManager().setCoordinate(getMeasureVar(), new BlockPos(val, 0, 0));
+        }
+    }
 
     /**
      * Used in the CC compatibility.

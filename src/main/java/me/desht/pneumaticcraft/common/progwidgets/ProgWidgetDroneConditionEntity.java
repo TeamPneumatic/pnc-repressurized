@@ -46,6 +46,7 @@ public class ProgWidgetDroneConditionEntity extends ProgWidgetDroneCondition imp
         for (Entity e : drone.getPassengers()) {
             if (((IEntityProvider) widget).isEntityValid(e)) count++;
         }
+        maybeRecordMeasuredVal(d, count);
         return count;
     }
 

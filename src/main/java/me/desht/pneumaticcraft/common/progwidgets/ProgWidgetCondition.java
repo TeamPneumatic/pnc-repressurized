@@ -1,15 +1,17 @@
 package me.desht.pneumaticcraft.common.progwidgets;
 
+import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.DroneAIBlockCondition;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
+import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.item.DyeColor;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,10 +23,10 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
  * Base class for in-world conditions.
  */
 public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implements ICondition, IJump {
-
     private DroneAIBlockCondition evaluator;
     private boolean isAndFunction;
     private ICondition.Operator operator = ICondition.Operator.GE;
+    private String measureVar = "";
 
     public ProgWidgetCondition(ProgWidgetType<?> type) {
         super(type);
@@ -39,9 +41,27 @@ public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implem
     protected abstract DroneAIBlockCondition getEvaluator(IDroneBase drone, IProgWidget widget);
 
     @Override
+    public String getMeasureVar() {
+        return measureVar;
+    }
+
+    @Override
+    public void setMeasureVar(String measureVar) {
+        this.measureVar = measureVar;
+    }
+
+    @Override
+    public void getTooltip(List<ITextComponent> curTooltip) {
+        super.getTooltip(curTooltip);
+        if (!measureVar.isEmpty()) {
+            curTooltip.add(xlate("pneumaticcraft.gui.progWidget.condition.measure").appendString(measureVar));
+        }
+    }
+
+    @Override
     public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
-        if (getConnectedParameters()[getParameters().size() - 1] == null && getConnectedParameters()[getParameters().size() * 2 - 1] == null) {
+        if (measureVar.isEmpty() && getConnectedParameters()[getParameters().size() - 1] == null && getConnectedParameters()[getParameters().size() * 2 - 1] == null) {
             curInfo.add(xlate("pneumaticcraft.gui.progWidget.condition.error.noFlowControl"));
         }
     }
@@ -119,6 +139,7 @@ public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implem
         super.writeToNBT(tag);
         tag.putBoolean("isAndFunction", isAndFunction);
         tag.putByte("operator", (byte) operator.ordinal());
+        if (!measureVar.isEmpty()) tag.putString("measureVar", measureVar);
     }
 
     @Override
@@ -126,6 +147,7 @@ public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implem
         super.readFromNBT(tag);
         isAndFunction = tag.getBoolean("isAndFunction");
         operator = ICondition.Operator.values()[tag.getByte("operator")];
+        measureVar = tag.getString("measureVar");
     }
 
     @Override
@@ -133,6 +155,7 @@ public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implem
         super.writeToPacket(buf);
         buf.writeBoolean(isAndFunction);
         buf.writeByte(operator.ordinal());
+        buf.writeString(measureVar, GlobalVariableManager.MAX_VARIABLE_LEN);
     }
 
     @Override
@@ -140,6 +163,7 @@ public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implem
         super.readFromPacket(buf);
         isAndFunction = buf.readBoolean();
         operator = Operator.values()[buf.readByte()];
+        measureVar = buf.readString(GlobalVariableManager.MAX_VARIABLE_LEN);
     }
 
     @Override
@@ -149,8 +173,9 @@ public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implem
 
     @Override
     public List<ITextComponent> getExtraStringInfo() {
-        TranslationTextComponent anyAll = xlate(isAndFunction() ? "pneumaticcraft.gui.progWidget.condition.all" : "pneumaticcraft.gui.progWidget.condition.any");
-        return Collections.singletonList(anyAll.appendString(" " + getOperator().toString() + " " + getRequiredCount()));
+        IFormattableTextComponent anyAll = xlate(isAndFunction() ? "pneumaticcraft.gui.progWidget.condition.all" : "pneumaticcraft.gui.progWidget.condition.any")
+                .appendString(" " + getOperator().toString() + " " + getRequiredCount());
+        return measureVar.isEmpty() ? Collections.singletonList(anyAll) : ImmutableList.of(anyAll, varAsTextComponent(measureVar));
     }
 
     @Override

@@ -26,6 +26,17 @@
     },
     {
       "type": "text",
+      "title": "Measuring",
+      "text": "All $(thing)Condition/$ widget GUI's (except $(l:programming/condition_item_filter)Condition: Item Filter/$) have a $(thing)Measure/$ textfield, where you can enter the name of a $(l:programming/variables)variable/$. If a variable name is supplied here, any measurement made by the drone will be stored in the X field of the variable.$(p)This can then be later used like any other variable, e.g. you could measure the level of a fluid tank, and write it on a sign."
+    },
+    {
+      "type": "text",
+      "title": "Measuring (cont.)",
+      "text": "If a measuring variable name is supplied, then it's no longer an error to have no branching Text widgets on the Condition widget (normally at least one branch is required). This means that the Condition widget can be used purely to measure a quantity; execution will just proceed downwards as normal.$(p)Note: pressure measurement conditions store the measured pressure in millibars (e.g. 5.5 bars would be 5500)."
+    },
+    {
+      "type": "text",
+      "title": "Condition Types",
       "text": "Conditions can be divided into two categories: $(thing)Basic Conditions/$ and $(thing)Drone Conditions/$.$(p)Basic Conditions are used to check for things in the world, e.g. does a $(item)Chest/$ have a certain number of items, or does a block exist somewhere?$(p)$(thing)Drone Conditions/$ specifically target the $(l:tools/drone)Drone/$, e.g. does the Drone have a certain item, or have a certain pressure?"
     },
     {

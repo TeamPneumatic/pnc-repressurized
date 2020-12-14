@@ -43,6 +43,7 @@ public class ProgWidgetPressureCondition extends ProgWidgetCondition {
                             pressure = Math.max(pressure, p);
                         }
                     }
+                    maybeRecordMeasuredVal(drone, (int) (pressure * 1000));
                     return ((ICondition) progWidget).getOperator().evaluate(pressure, ((ICondition) progWidget).getRequiredCount());
                 }
                 return false;

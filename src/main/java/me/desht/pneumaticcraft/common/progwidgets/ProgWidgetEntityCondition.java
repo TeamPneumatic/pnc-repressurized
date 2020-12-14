@@ -36,6 +36,7 @@ public class ProgWidgetEntityCondition extends ProgWidgetCondition {
         } else {
             drone.addDebugEntry("pneumaticcraft.gui.progWidget.condition.evaluatedFalse");
         }
+        maybeRecordMeasuredVal(drone, entities.size());
         return ProgWidgetJump.jumpToLabel(drone, allWidgets, this, result);
     }
 

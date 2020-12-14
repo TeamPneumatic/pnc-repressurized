@@ -30,6 +30,7 @@ public class ProgWidgetDroneConditionItem extends ProgWidgetDroneCondition imple
                 count += droneStack.getCount();
             }
         }
+        maybeRecordMeasuredVal(drone, count);
         return count;
     }
 

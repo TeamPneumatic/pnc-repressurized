@@ -615,16 +615,6 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     }
 
     @Override
-    public void setMeasuredValue(BlockPos value) {
-        lastMeasurement = value;
-    }
-
-    @Override
-    public BlockPos getMeasuredValue() {
-        return lastMeasurement;
-    }
-
-    @Override
     public void overload(String msgKey, Object... params) {
         NetworkHandler.sendToAllTracking(new PacketSpawnParticle(ParticleTypes.SMOKE,
                 getPos().getX() - 0.5, getPos().getY() + 1, getPos().getZ() - 0.5,

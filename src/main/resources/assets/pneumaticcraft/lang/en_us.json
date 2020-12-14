@@ -985,6 +985,8 @@
    "pneumaticcraft.gui.progWidget.comment.tooltip.freeToUse" : "§aThis piece is free to use",
    "pneumaticcraft.gui.progWidget.condition.all" : "All",
    "pneumaticcraft.gui.progWidget.condition.any" : "Any",
+   "pneumaticcraft.gui.progWidget.condition.measure" : "Measure: ",
+   "pneumaticcraft.gui.progWidget.condition.measure.tooltip" : "When a variable name is provided here, the last-measured value will be stored in the X field of the named variable each time the condition is evaluated.",
    "pneumaticcraft.gui.progWidget.conditionBlock.checkForAir" : "Check for Air",
    "pneumaticcraft.gui.progWidget.conditionBlock.checkForAir.tooltip" : "Special condition. When checked, a block passes the filter when it's air.",
    "pneumaticcraft.gui.progWidget.conditionBlock.checkForLiquids" : "Check for Liquids",

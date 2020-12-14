@@ -58,6 +58,7 @@ public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrder
     String[] signText = new String[0];
     private boolean pickupDelay;
     private RightClickType clickType = RightClickType.CLICK_ITEM;
+    private String measureVar = "";
 
     public ProgWidgetCC() {
         super(ModProgWidgets.COMPUTER_CONTROL.get());
@@ -392,6 +393,16 @@ public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrder
     @Override
     public void setOperator(Operator operator) {
         this.operator = operator;
+    }
+
+    @Override
+    public String getMeasureVar() {
+        return measureVar;
+    }
+
+    @Override
+    public void setMeasureVar(String var) {
+        this.measureVar = var;
     }
 
     public synchronized void setOperator(String operator) throws IllegalArgumentException {

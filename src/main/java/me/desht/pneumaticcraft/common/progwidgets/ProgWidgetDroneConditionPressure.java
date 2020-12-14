@@ -23,9 +23,10 @@ public class ProgWidgetDroneConditionPressure extends ProgWidgetDroneCondition {
 
     @Override
     protected int getCount(IDroneBase drone, IProgWidget widget) {
-        return drone.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY)
-                .map(h -> (int) h.getPressure())
-                .orElseThrow(IllegalStateException::new);
+        float pressure = drone.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY)
+                .orElseThrow(RuntimeException::new).getPressure();
+        maybeRecordMeasuredVal(drone, (int)(pressure * 1000));
+        return (int) pressure;
     }
 
     @Override

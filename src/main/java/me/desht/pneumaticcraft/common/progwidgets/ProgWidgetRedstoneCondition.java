@@ -31,14 +31,13 @@ public class ProgWidgetRedstoneCondition extends ProgWidgetCondition {
     @Override
     protected DroneAIBlockCondition getEvaluator(IDroneBase drone, IProgWidget widget) {
         return new DroneAIBlockCondition(drone, (ProgWidgetAreaItemBase) widget) {
-
             @Override
             protected boolean evaluate(BlockPos pos) {
                 int redstoneLevel = PneumaticCraftUtils.getRedstoneLevel(drone.world(), pos);
                 int requiredRedstone = ((ICondition) progWidget).getRequiredCount();
+                maybeRecordMeasuredVal(drone, redstoneLevel);
                 return ((ICondition) progWidget).getOperator().evaluate(redstoneLevel, requiredRedstone);
             }
-
         };
     }
 }

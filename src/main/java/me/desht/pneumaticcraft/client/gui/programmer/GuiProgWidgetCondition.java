@@ -2,9 +2,7 @@ package me.desht.pneumaticcraft.client.gui.programmer;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetRadioButton;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetTextFieldNumber;
+import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.progwidgets.ICondition;
 import me.desht.pneumaticcraft.common.progwidgets.ISidedWidget;
@@ -34,14 +32,14 @@ public class GuiProgWidgetCondition<T extends ProgWidgetCondition> extends GuiPr
         if (isSidedWidget()) {
             for (Direction dir : Direction.VALUES) {
                 ITextComponent sideName = ClientUtils.translateDirectionComponent(dir);
-                WidgetCheckBox checkBox = new WidgetCheckBox(guiLeft + 4, guiTop + 30 + dir.getIndex() * 12, 0xFF404040, sideName,
+                WidgetCheckBox checkBox = new WidgetCheckBox(guiLeft + 8, guiTop + 30 + dir.getIndex() * 12, 0xFF404040, sideName,
                         b -> ((ISidedWidget) progWidget).getSides()[dir.getIndex()] = b.checked);
                 checkBox.checked = ((ISidedWidget) progWidget).getSides()[dir.getIndex()];
                 addButton(checkBox);
             }
         }
 
-        int baseX = isSidedWidget() ? 90 : 4;
+        int baseX = isSidedWidget() ? 90 : 8;
         int baseY = isUsingAndOr() ? 60 : 30;
 
         List<WidgetRadioButton> radioButtons;
@@ -80,6 +78,13 @@ public class GuiProgWidgetCondition<T extends ProgWidgetCondition> extends GuiPr
             textField.setResponder(s -> progWidget.setRequiredCount(textField.getValue()));
             addButton(textField);
         }
+
+        WidgetLabel label = addLabel(xlate("pneumaticcraft.gui.progWidget.condition.measure"), guiLeft + 8, guiTop + 152);
+        label.setTooltip(xlate("pneumaticcraft.gui.progWidget.condition.measure.tooltip"));
+        WidgetTextField measureTextField = new WidgetTextField(font, guiLeft + label.getWidth() + 8, guiTop + 150, 80, 11);
+        measureTextField.setText(progWidget.getMeasureVar());
+        measureTextField.setResponder(progWidget::setMeasureVar);
+        addButton(measureTextField);
     }
 
     protected boolean isSidedWidget() {

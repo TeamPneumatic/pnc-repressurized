@@ -31,17 +31,18 @@ public class ProgWidgetBlockCondition extends ProgWidgetCondition {
     @Override
     protected DroneAIBlockCondition getEvaluator(IDroneBase drone, IProgWidget widget) {
         return new DroneAIBlockCondition(drone, (ProgWidgetAreaItemBase) widget) {
-
             @Override
             protected boolean evaluate(BlockPos pos) {
-                if (checkingForAir && drone.world().isAirBlock(pos)) return true;
-                if (checkingForLiquids && PneumaticCraftUtils.isBlockLiquid(drone.world().getBlockState(pos).getBlock()))
-                    return true;
-                if (!checkingForAir && !checkingForLiquids || getConnectedParameters()[1] != null) {
-                    return DroneAIDig.isBlockValidForFilter(drone.world(), pos, drone, progWidget);
-                } else {
-                    return false;
+                boolean ret = false;
+                if (checkingForAir && drone.world().isAirBlock(pos)) {
+                    ret = true;
+                } else if (checkingForLiquids && PneumaticCraftUtils.isBlockLiquid(drone.world().getBlockState(pos).getBlock())) {
+                    ret = true;
+                } else if (!checkingForAir && !checkingForLiquids || getConnectedParameters()[1] != null) {
+                    ret = DroneAIDig.isBlockValidForFilter(drone.world(), pos, drone, progWidget);
                 }
+                maybeRecordMeasuredVal(drone, ret ? 1 : 0);
+                return ret;
             }
         };
     }
