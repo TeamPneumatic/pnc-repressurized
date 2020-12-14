@@ -39,9 +39,15 @@ Changes are in reverse chronological order; newest changes at the top.
   * This is now a toggle instead of displaying for a few seconds and disappearing
   * Uses similar preview style (and same code internally) as GPS Tool / GPS Area Tool area previews
   * Air Grate Module also uses this new functionality, but right-click it with empty hand to toggle range preview
+* Condition widgets can now record their last measured value in a definable variable
+  * Use the Condition widget GUI's to define a "Measure" variable name
+  * If defined, the measured value will be stored in that variable each time the condition executes
+  * When a measure variable is defined, it's no longer an error to have no branch Text widgets attached to the Condition widget (i.e. the widget can be used purely for measurement, if desired)
 
 ### Fixes
 * Fixed elevator callers not emitting redstone when the elevator is at that floor
+* Fixed elevator Charging Upgrades not being sync'd to client (on world reload)
+  * This caused client & server to disagree on elevator descent rate, leading to jerky descent
 * Fixed drone not being able to fill bottles with water from water source blocks
   * Note that filling water bottles from water tanks is still not possible (with or without a drone) - this is intended behaviour
 * Fixed Air Grate entity filter setting (with Advanced PCB installed) not taking effect right away
