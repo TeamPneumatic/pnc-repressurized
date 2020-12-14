@@ -19,6 +19,8 @@ import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
+import java.util.Optional;
+
 public class BlockElevatorCaller extends BlockPneumaticCraftCamo {
     public BlockElevatorCaller() {
         super(ModBlocks.defaultProps().notSolid());
@@ -68,10 +70,7 @@ public class BlockElevatorCaller extends BlockPneumaticCraftCamo {
 
     public static void setSurroundingElevators(World world, BlockPos pos, int floor) {
         for (Direction dir : PneumaticCraftUtils.HORIZONTALS) {
-            TileEntityElevatorBase elevator = getElevatorBase(world, pos.offset(dir).offset(Direction.DOWN, 2));
-            if (elevator != null) {
-                elevator.goToFloor(floor);
-            }
+            getElevatorBase(world, pos.offset(dir).offset(Direction.DOWN, 2)).ifPresent(te -> te.goToFloor(floor));
         }
     }
 
@@ -97,27 +96,23 @@ public class BlockElevatorCaller extends BlockPneumaticCraftCamo {
      */
     private void updateElevatorButtons(World world, BlockPos pos) {
         for (Direction dir : PneumaticCraftUtils.HORIZONTALS) {
-            TileEntityElevatorBase elevator = getElevatorBase(world, pos.offset(dir).offset(Direction.DOWN, 2));
-            if (elevator != null) {
-                elevator.updateFloors(true);
-                break;
-            }
+            boolean ok = getElevatorBase(world, pos.offset(dir).offset(Direction.DOWN, 2)).map(te -> {
+                te.updateFloors(true);
+                return true;
+            }).orElse(false);
+            if (ok) break;
         }
     }
 
-    private static TileEntityElevatorBase getElevatorBase(World world, BlockPos pos) {
+    private static Optional<TileEntityElevatorBase> getElevatorBase(World world, BlockPos pos) {
         Block block = world.getBlockState(pos).getBlock();
-        TileEntityElevatorBase elevator = null;
         if (block == ModBlocks.ELEVATOR_FRAME.get()) {
-            elevator = BlockElevatorFrame.getElevatorTE(world, pos);
+            return BlockElevatorFrame.getElevatorBase(world, pos);
+        } else if (block == ModBlocks.ELEVATOR_BASE.get()) {
+            return PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityElevatorBase.class)
+                    .filter(TileEntityElevatorBase::isCoreElevator);
         }
-        if (block == ModBlocks.ELEVATOR_BASE.get()) {
-            TileEntity te = world.getTileEntity(pos);
-            if (te instanceof TileEntityElevatorBase && ((TileEntityElevatorBase) te).isCoreElevator()) {
-                elevator = (TileEntityElevatorBase) te;
-            }
-        }
-        return elevator;
+        return Optional.empty();
     }
 
     @Override

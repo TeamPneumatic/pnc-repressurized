@@ -85,6 +85,8 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
     private HashMap<Integer, String> floorNames = new HashMap<>();
     @GuiSynced
     private int maxFloorHeight;
+    @DescSynced
+    private int chargingUpgrades; // needs to be sync'd since it affects elevator descent rate
     private int redstoneInputLevel; // current redstone input level
     private BlockState camoState;
     private BlockState prevCamoState;
@@ -160,7 +162,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
             addAir((int) ((oldExtension - extension) * PneumaticValues.USAGE_ELEVATOR * (getSpeedUsageMultiplierFromUpgrades() / speedMultiplier)));
         }
         if (extension > targetExtension) {
-            float chargingSlowdown = 1.0f - Math.min(4, getUpgrades(EnumUpgrade.CHARGING)) * 0.1f;
+            float chargingSlowdown = 1.0f - chargingUpgrades * 0.1f;
             if (extension > targetExtension + TileEntityConstants.ELEVATOR_SLOW_EXTENSION) {
                 extension -= TileEntityConstants.ELEVATOR_SPEED_FAST * syncedSpeedMult * chargingSlowdown;
             } else {
@@ -176,8 +178,8 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
                     NetworkHandler.sendToAllTracking(new PacketPlayMovingSound(MovingSounds.Sound.ELEVATOR, getCoreElevator()), this);
                 }
             }
-            if (getUpgrades(EnumUpgrade.CHARGING) > 0 && getPressure() < dangerPressure - 0.1f) {
-                float mul = 0.15f * Math.min(4, getUpgrades(EnumUpgrade.CHARGING));
+            if (!world.isRemote && chargingUpgrades > 0 && getPressure() < dangerPressure - 0.1f) {
+                float mul = 0.15f * Math.min(4, chargingUpgrades);
                 addAir((int) ((oldExtension - extension) * PneumaticValues.USAGE_ELEVATOR * mul * (getSpeedUsageMultiplierFromUpgrades() / speedMultiplier)));
             }
         }
@@ -189,6 +191,15 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
 
         if (soundName != null && getWorld().isRemote && shouldPlaySounds()) {
             getWorld().playSound(getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5, soundName, SoundCategory.BLOCKS, (float) PNCConfig.Client.Sound.elevatorVolumeStartStop, 1.0F, true);
+        }
+    }
+
+    @Override
+    public void onUpgradesChanged() {
+        super.onUpgradesChanged();
+
+        if (!world.isRemote) {
+            chargingUpgrades = getUpgrades(EnumUpgrade.CHARGING);
         }
     }
 

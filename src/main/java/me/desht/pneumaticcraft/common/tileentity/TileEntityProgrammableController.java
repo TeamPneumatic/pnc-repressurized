@@ -110,6 +110,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     private final int[] redstoneLevels = new int[6];
     private final SideConfigurator<IItemHandler> itemHandlerSideConfigurator;
     private CompoundNBT variablesNBT = null;  // pending variable data to add to ai manager
+    private BlockPos lastMeasurement = BlockPos.ZERO;
 
     @DescSynced
     private double targetX, targetY, targetZ;
@@ -611,6 +612,16 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
         if (getWorld().isRemote) return ClientUtils.getClientPlayer();
 
         return PneumaticCraftUtils.getPlayerFromId(ownerID);
+    }
+
+    @Override
+    public void setMeasuredValue(BlockPos value) {
+        lastMeasurement = value;
+    }
+
+    @Override
+    public BlockPos getMeasuredValue() {
+        return lastMeasurement;
     }
 
     @Override

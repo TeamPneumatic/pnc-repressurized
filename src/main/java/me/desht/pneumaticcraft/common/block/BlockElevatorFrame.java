@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorBase;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorFrame;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.block.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -26,6 +27,7 @@ import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
+import java.util.Optional;
 
 import static net.minecraft.state.properties.BlockStateProperties.WATERLOGGED;
 
@@ -51,10 +53,7 @@ public class BlockElevatorFrame extends BlockPneumaticCraft implements IWaterLog
     public void onBlockAdded(BlockState newState, World world, BlockPos pos, BlockState oldState, boolean isMoving) {
         super.onBlockAdded(newState, world, pos, oldState, isMoving);
 
-        TileEntityElevatorBase elevatorBase = getElevatorTE(world, pos);
-        if (elevatorBase != null) {
-            elevatorBase.updateMaxElevatorHeight();
-        }
+        getElevatorBase(world, pos).ifPresent(TileEntityElevatorBase::updateMaxElevatorHeight);
     }
 
     @Override
@@ -168,49 +167,48 @@ public class BlockElevatorFrame extends BlockPneumaticCraft implements IWaterLog
 
     @Override
     public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
-        TileEntityElevatorBase te = getElevatorTE(world, pos);
-        if (te != null && te.oldExtension != te.extension) {
-            if (Math.abs(entity.getPosY() - (te.getPos().getY() + te.extension)) < 2.5) {
-                AxisAlignedBB box = entity.getBoundingBox();
-                int x = te.getPos().getX();
-                int z = te.getPos().getZ();
-                // nudge the entity onto the platform if they're hanging over by too much
-                if (box.minX < x - 0.1) {
-                    entity.addVelocity(0.02, 0, 0);
-                } else if (box.maxX > x + 1.1) {
-                    entity.addVelocity(-0.02, 0, 0);
-                } else if (box.minZ < z - 0.1) {
-                    entity.addVelocity(0, 0, 0.02);
-                } else if (box.maxZ > z + 1.1) {
-                    entity.addVelocity(0, 0, -0.02);
+//        TileEntityElevatorBase te = getElevatorBase(world, pos);
+        getElevatorBase(world, pos).ifPresent(te -> {
+            if (te.oldExtension != te.extension && te.getPressure() > te.getMinWorkingPressure()) {
+                if (Math.abs(entity.getPosY() - (te.getPos().getY() + te.extension)) < 2.5) {
+                    AxisAlignedBB box = entity.getBoundingBox();
+                    int x = te.getPos().getX();
+                    int z = te.getPos().getZ();
+                    // nudge the entity onto the platform if they're hanging over by too much
+                    if (box.minX < x - 0.1) {
+                        entity.addVelocity(0.02, 0, 0);
+                    } else if (box.maxX > x + 1.1) {
+                        entity.addVelocity(-0.02, 0, 0);
+                    } else if (box.minZ < z - 0.1) {
+                        entity.addVelocity(0, 0, 0.02);
+                    } else if (box.maxZ > z + 1.1) {
+                        entity.addVelocity(0, 0, -0.02);
+                    }
+                    entity.setPosition(entity.getPosX(), te.getPos().getY() + 1 + te.extension, entity.getPosZ());
                 }
-                entity.setPosition(entity.getPosX(), te.getPos().getY() + 1 + te.extension, entity.getPosZ());
+                entity.fallDistance = 0;
             }
-            entity.fallDistance = 0;
-        }
+        });
     }
 
-    static TileEntityElevatorBase getElevatorTE(IBlockReader world, BlockPos pos) {
-        // TODO cache the elevator base pos in the frame's TE (careful with cache invalidation!)
-        while (true) {
-            pos = pos.offset(Direction.DOWN);
-            if (world.getBlockState(pos).getBlock() == ModBlocks.ELEVATOR_BASE.get()) break;
-            if (world.getBlockState(pos).getBlock() != ModBlocks.ELEVATOR_FRAME.get() || pos.getY() <= 0) return null;
-        }
-        return (TileEntityElevatorBase) world.getTileEntity(pos);
+    static Optional<TileEntityElevatorBase> getElevatorBase(IBlockReader world, BlockPos pos) {
+        // caching the elevator base in the frame TE - should be safe from a caching point of view,
+        // since if the base (or any frame below us) is broken, all frames above it (including us) will also break
+        return PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityElevatorFrame.class)
+                .map(te -> Optional.of(te.getElevatorBase()))
+                .orElse(Optional.empty());
     }
 
     private float getElevatorBlockHeight(IBlockReader world, BlockPos pos) {
-        TileEntityElevatorBase te = getElevatorTE(world, pos);
-        return te == null ? 0F : Math.max(te.extension - (pos.getY() - te.getPos().getY()) + 1, 0F);
+        return getElevatorBase(world, pos)
+                .map(te -> Math.max(te.extension - (pos.getY() - te.getPos().getY()) + 1, 0F))
+                .orElse(0F);
     }
 
     @Override
     public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
-        TileEntityElevatorBase elevatorBase = getElevatorTE(world, pos);
-        if (elevatorBase != null) {
-            elevatorBase.updateMaxElevatorHeight();
-        }
+        getElevatorBase(world, pos).ifPresent(TileEntityElevatorBase::updateMaxElevatorHeight);
+
         super.onReplaced(state, world, pos, newState, isMoving);
     }
 
