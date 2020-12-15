@@ -10,7 +10,7 @@
     },
     {
       "type": "text",
-      "text": "Both the number of $(item)Elevator Bases/$ and the number of $(item)Elevator Frames/$ determine how high the $(thing)Elevator/$ can extend. The maximum height of an $(thing)Elevator/$ is the lower of:$(li)1 x the number of vertically-stacked $(item)Elevator Frames/$, or$(li)$(ttcolor)$(t:You can change this multiplier in mod config - see 'I:elevatorBaseBlocksPerBase')4 x/$ the number of vertically-stacked $(item)Elevator Bases/$"
+      "text": "Both the number of $(item)Elevator Bases/$ and the number of $(item)Elevator Frames/$ determine how high the $(thing)Elevator/$ can extend. The maximum height of an $(thing)Elevator/$ is the lower of:$(li)1 x the number of vertically-stacked $(item)Elevator Frames/$, or$(li)$(ttcolor)$(t:You can change this multiplier in mod config - see 'I:elevatorBaseBlocksPerBase')6 x/$ the number of vertically-stacked $(item)Elevator Bases/$"
     },
     {
       "type": "text",

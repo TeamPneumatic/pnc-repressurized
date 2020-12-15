@@ -63,6 +63,7 @@ public class CommonConfig {
         ForgeConfigSpec.IntValue pressureSyncPrecision;
         ForgeConfigSpec.BooleanValue stopDroneAI;
         ForgeConfigSpec.BooleanValue dontUpdateInfiniteWaterSources;
+        ForgeConfigSpec.IntValue maxDroneChargingStationSearchRange;
     }
     public static class Micromissiles {
         ForgeConfigSpec.DoubleValue baseExplosionDamage;
@@ -335,6 +336,10 @@ public class CommonConfig {
                 .comment("Don't remove a water source block when picking up (drones, liquid hoppers, gas lift) if it has at least two water source neighbours. This can reduce lag due to frequent block updates, and can also potentially make water import much faster. Set this to false if you want no-infinite-water rules in a world, or want to limit the speed of water importing to vanilla block update rates.")
                 .translation("pneumaticcraft.config.common.advanced.dont_update_infinite_water_sources")
                 .define("dont_update_infinite_water_sources", true);
+        advanced.maxDroneChargingStationSearchRange = builder
+                .comment("How far will a drone go to find a Charging Station when it's low on air? Note: drones will teleport, possibly across the world to someone else's base, if this range is very large.")
+                .translation("pneumaticcraft.config.common.advanced.max_drone_charging_station_search_range")
+                .defineInRange("max_drone_charging_station_search_range", 80, 16, Integer.MAX_VALUE);
         builder.pop();
 
         builder.push("Micromissile Properties");

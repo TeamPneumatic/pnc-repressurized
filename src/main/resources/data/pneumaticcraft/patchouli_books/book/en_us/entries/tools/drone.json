@@ -16,7 +16,7 @@
     {
       "type": "text",
       "title": "Automatic Charging",
-      "text": "Drones are smart: when they're low on air, they'll search for a $(l:machines/charging_station)Charging Station/$ with pressure that has a $(l:base_concepts/upgrades#dispenser)Dispenser Upgrade/$ within the same dimension as the $(item)Drone/$. This will override the running program.$(p)When found, the $(item)Drone/$ will go to this $(item)Charging Station/$ and it will stay charging until the station can't supply any more air. After that, the $(item)Drone/$ will resume its main program."
+      "text": "Drones are smart: when they're low on air, they'll stop their main program and search for a $(l:machines/charging_station)Charging Station/$ that has a $(l:base_concepts/upgrades#dispenser)Dispenser Upgrade/$ and at least 1 bar of pressure, closer than $(ttcolor)$(t:See 'max_drone_charging_station_search_range' in mod config)80 blocks/$ away.$(p)When found, the $(item)Drone/$ will go to this $(item)Charging Station/$ and will sit charging until the station can't supply any more air. After that, the $(item)Drone/$ will resume its main program."
     },
     {
       "type": "text",
