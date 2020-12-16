@@ -46,6 +46,14 @@ Changes are in reverse chronological order; newest changes at the top.
 * Drones will now no longer travel (fly or teleport) more than 80 blocks to a Charging Station when low on air
   * 80-block limit can be adjusted in config: pneumaticcraft-common.toml -> Advanced -> `max_drone_charging_station_search_range`
   * Note that very large limits can in theory make drones teleport thousands of blocks away to someone else's base if your own charging stations are unavailable for any reason
+* Some Pneumatic Armor keybinding improvements
+  * It's now possible to bind mouse buttons to toggle armor upgrades as well as keyboard keys
+  * Fixed integration with vanilla Options -> Controls screen (changing a binding via armor GUI properly reflects in Controls screen and vice versa)
+  * Options -> Controls screen divides keybinds into 3 categories: main PneumaticCraft keys, Pneumatic Armor toggles, and Block Tracker submodule toggles
+* Made Pneumatic Kick upgrade more effective
+  * Increased entity detection area around player's foot a bit (easier to target entities)
+  * Reduced air usage somewhat, especially when 4 Dispenser Upgrades installed
+  * Increased vertical velocity of kicked target (i.e. better at launching targets into the air!)
   
 ### Fixes
 * Fixed elevator callers not emitting redstone when the elevator is at that floor
