@@ -10,6 +10,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.settings.KeyModifier;
+import org.lwjgl.glfw.GLFW;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -18,22 +19,23 @@ public class KeybindingButton extends WidgetButtonExtended {
     private final ITextComponent origButtonText;
     private boolean bindingMode = false;
 
-    public KeybindingButton(int startX, int startY, int xSize, int ySize, ITextComponent buttonText, KeyBinding keyBinding, IPressable pressable) {
-        super(startX, startY, xSize, ySize, buttonText, pressable);
+    public KeybindingButton(int startX, int startY, int xSize, int ySize, ITextComponent buttonText, KeyBinding keyBinding) {
+        super(startX, startY, xSize, ySize, buttonText);
         this.keyBinding = keyBinding;
         this.origButtonText = buttonText;
         addTooltip();
     }
 
     private void addTooltip() {
-        setTooltipText(xlate("pneumaticcraft.gui.keybindBoundKey", TextFormatting.YELLOW + ClientUtils.translateKeyBind(keyBinding)));
+        setTooltipText(xlate("pneumaticcraft.gui.keybindBoundKey", ClientUtils.translateKeyBind(keyBinding)));
     }
 
-    public void toggleKeybindMode() {
+    @Override
+    public void onPress() {
         bindingMode = !bindingMode;
 
         if (bindingMode) {
-            setMessage(xlate("pneumaticcraft.gui.setKeybind"));
+            setMessage(xlate("pneumaticcraft.gui.setKeybind").mergeStyle(TextFormatting.YELLOW));
             setTooltipText(StringTextComponent.EMPTY);
         } else {
             setMessage(origButtonText);
@@ -41,15 +43,21 @@ public class KeybindingButton extends WidgetButtonExtended {
         }
     }
 
-    public boolean receiveKey(int keyCode) {
+    public boolean receiveKey(InputMappings.Type type, int keyCode) {
         if (bindingMode) {
-            InputMappings.Input input = InputMappings.Type.KEYSYM.getOrMakeInput(keyCode);
+            InputMappings.Input input = type.getOrMakeInput(keyCode);
             if (!KeyModifier.isKeyCodeModifier(input)) {
-                keyBinding.setKeyModifierAndCode(KeyModifier.getActiveModifier(), input);
+                if (type == InputMappings.Type.KEYSYM && keyCode == GLFW.GLFW_KEY_ESCAPE) {
+                    keyBinding.setKeyModifierAndCode(KeyModifier.NONE, InputMappings.INPUT_INVALID);
+                    Minecraft.getInstance().gameSettings.setKeyBindingCode(keyBinding, InputMappings.INPUT_INVALID);
+                    Minecraft.getInstance().player.playSound(SoundEvents.BLOCK_NOTE_BLOCK_CHIME, 1.0f, 0.5f);
+                } else {
+                    keyBinding.setKeyModifierAndCode(KeyModifier.getActiveModifier(), input);
+                    Minecraft.getInstance().gameSettings.setKeyBindingCode(keyBinding, input);
+                    Minecraft.getInstance().player.playSound(SoundEvents.BLOCK_NOTE_BLOCK_CHIME, 1.0f, 1.0f);
+                }
                 KeyBinding.resetKeyBindingArrayAndHash();
-                Minecraft.getInstance().gameSettings.saveOptions();
-                Minecraft.getInstance().player.playSound(SoundEvents.BLOCK_NOTE_BLOCK_CHIME, 1.0f, 1.0f);
-                toggleKeybindMode();
+                onPress();
                 return true;
             }
         }

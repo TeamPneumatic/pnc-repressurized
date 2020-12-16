@@ -11,11 +11,13 @@ import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 public class DroneDebugClientHandler extends IArmorUpgradeClientHandler.AbstractHandler {
@@ -53,6 +55,11 @@ public class DroneDebugClientHandler extends IArmorUpgradeClientHandler.Abstract
     @Override
     public IOptionPage getGuiOptionsPage(IGuiScreen screen) {
         return new DroneDebuggerOptions(screen, this);
+    }
+
+    @Override
+    public Optional<KeyBinding> getInitialKeyBinding() {
+        return Optional.empty();
     }
 
     public static boolean enabledForPlayer(PlayerEntity player) {

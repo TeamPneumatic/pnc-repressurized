@@ -13,13 +13,17 @@ import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 
 import java.util.List;
+import java.util.Optional;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class HackClientHandler extends IArmorUpgradeClientHandler.AbstractHandler {
     public HackClientHandler() {
@@ -47,15 +51,21 @@ public class HackClientHandler extends IArmorUpgradeClientHandler.AbstractHandle
         return new HackOptions(screen, this);
     }
 
+    @Override
+    public Optional<KeyBinding> getInitialKeyBinding() {
+        return Optional.empty();
+    }
+
     public static boolean enabledForPlayer(PlayerEntity player) {
         return ItemPneumaticArmor.isPneumaticArmorPiece(player, EquipmentSlotType.HEAD)
                 && CommonArmorHandler.getHandlerForPlayer(player).getUpgradeCount(EquipmentSlotType.HEAD, EnumUpgrade.SECURITY) > 0;
     }
 
     public static void addKeybindTooltip(List<ITextComponent> curInfo) {
-        if (KeyHandler.getInstance().keybindHack.getKey().getKeyCode() != 0) {
-            String s = ClientUtils.translateKeyBind(KeyHandler.getInstance().keybindHack);
-            curInfo.add(new StringTextComponent("Press [" + s + "] to hack").mergeStyle(TextFormatting.GOLD));
+        KeyBinding hack = KeyHandler.getInstance().keybindHack;
+        if (hack.getKey().getKeyCode() != 0) {
+            IFormattableTextComponent str = xlate("pneumaticcraft.armor.hacking.pressToHack", ClientUtils.translateKeyBind(hack));
+            curInfo.add(str.mergeStyle(TextFormatting.GOLD));
         }
     }
 }

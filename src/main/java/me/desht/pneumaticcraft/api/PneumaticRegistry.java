@@ -21,6 +21,8 @@ import net.minecraftforge.fml.ModLoadingContext;
  * {@link PneumaticRegistry#getInstance()}
  */
 public final class PneumaticRegistry {
+    public static final String MOD_ID = "pneumaticcraft";
+
     private static IPneumaticCraftInterface instance;
 
     /**

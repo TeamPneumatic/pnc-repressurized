@@ -39,15 +39,15 @@ public class KeyHandler {
         registerKeyListener(HUDHandler.getInstance());
 
         keybindOpenOptions = registerKeyBinding(new KeyBinding(KeyHandler.DESCRIPTION_ARMOR_OPTIONS, KeyConflictContext.IN_GAME,
-                KeyModifier.NONE, InputMappings.Type.KEYSYM, GLFW.GLFW_KEY_U, Names.PNEUMATIC_KEYBINDING_CATEGORY));
+                KeyModifier.NONE, InputMappings.Type.KEYSYM, GLFW.GLFW_KEY_U, Names.PNEUMATIC_KEYBINDING_CATEGORY_MAIN));
         keybindHack = registerKeyBinding(new KeyBinding(KeyHandler.DESCRIPTION_HELMET_HACK, KeyConflictContext.IN_GAME,
-                KeyModifier.NONE, InputMappings.Type.KEYSYM,  GLFW.GLFW_KEY_H, Names.PNEUMATIC_KEYBINDING_CATEGORY));
+                KeyModifier.NONE, InputMappings.Type.KEYSYM,  GLFW.GLFW_KEY_H, Names.PNEUMATIC_KEYBINDING_CATEGORY_MAIN));
         keybindDebuggingDrone = registerKeyBinding(new KeyBinding(KeyHandler.DESCRIPTION_HELMET_DEBUGGING_DRONE, KeyConflictContext.IN_GAME,
-                KeyModifier.NONE, InputMappings.Type.KEYSYM, GLFW.GLFW_KEY_Y, Names.PNEUMATIC_KEYBINDING_CATEGORY));
+                KeyModifier.NONE, InputMappings.Type.KEYSYM, GLFW.GLFW_KEY_Y, Names.PNEUMATIC_KEYBINDING_CATEGORY_MAIN));
         keybindKick = registerKeyBinding(new KeyBinding(KeyHandler.DESCRIPTION_BOOTS_KICK, KeyConflictContext.IN_GAME,
-                KeyModifier.CONTROL, InputMappings.Type.KEYSYM,  GLFW.GLFW_KEY_X, Names.PNEUMATIC_KEYBINDING_CATEGORY));
+                KeyModifier.CONTROL, InputMappings.Type.KEYSYM,  GLFW.GLFW_KEY_X, Names.PNEUMATIC_KEYBINDING_CATEGORY_MAIN));
         keybindLauncher = registerKeyBinding(new KeyBinding(KeyHandler.DESCRIPTION_LAUNCHER, KeyConflictContext.IN_GAME,
-                KeyModifier.CONTROL, InputMappings.Type.KEYSYM,  GLFW.GLFW_KEY_C, Names.PNEUMATIC_KEYBINDING_CATEGORY));
+                KeyModifier.CONTROL, InputMappings.Type.KEYSYM,  GLFW.GLFW_KEY_C, Names.PNEUMATIC_KEYBINDING_CATEGORY_MAIN));
     }
 
     private KeyBinding registerKeyBinding(KeyBinding keyBinding) {
@@ -69,15 +69,23 @@ public class KeyHandler {
     public void onKey(InputEvent.KeyInputEvent event) {
         for (KeyBinding key : keys) {
             if (key.isPressed()) {
-                onKey(key);
+                dispatchInput(key);
             }
         }
     }
 
-    private void onKey(KeyBinding keybinding) {
-        for (IKeyListener listener : keyListeners) {
-            listener.onKeyPress(keybinding);
+    @SubscribeEvent
+    public void onMouse(InputEvent.MouseInputEvent event) {
+        for (KeyBinding key : keys) {
+            if (key.isPressed()) {
+                dispatchInput(key);
+            }
         }
     }
 
+    private void dispatchInput(KeyBinding keybinding) {
+        for (IKeyListener listener : keyListeners) {
+            listener.handleInput(keybinding);
+        }
+    }
 }

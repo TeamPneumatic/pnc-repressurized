@@ -4,7 +4,6 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.*;
-import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.util.ResourceLocation;
 import org.apache.commons.lang3.Validate;
@@ -92,21 +91,8 @@ public enum ArmorUpgradeRegistry {
     public static void init() {
     }
 
-    /**
-     * Source of truth for all translation keys and keybind names. Standard prefix, followed by a resource location ID,
-     * where the ID is converted to a string.  ID's from the "pneumaticcraft" namespace use just the resource location's
-     * path, while ID's from other namespaces include the namespace. E.g.:
-     * <ul>
-     * <li>"pneumaticcraft:block_tracker" -> "pneumaticcraft.armor.upgrade.block_tracker"</li>
-     * <li>"pneumaticcraft:block_tracker.module.energy" -> "pneumaticcraft.armor.upgrade.block_tracker.module.energy"</li>
-     * <li>"mod2:other_upgrade" -> "pneumaticcraft.armor.upgrade.mod2.other_upgrade"</li>
-     * </ul>
-     * @param id the ID to convert
-     * @return a converted string
-     */
     public static String getStringKey(ResourceLocation id) {
-        return UPGRADE_PREFIX +
-                (id.getNamespace().equals(Names.MOD_ID) ? id.getPath() : id.toString().replace(':', '.'));
+        return IArmorUpgradeHandler.getStringKey(id);
     }
 
     IArmorUpgradeHandler registerUpgradeHandler(IArmorUpgradeHandler handler) {

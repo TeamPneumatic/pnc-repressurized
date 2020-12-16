@@ -3,9 +3,15 @@ package me.desht.pneumaticcraft.client.pneumatic_armor;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
+import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.client.util.InputMappings;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.settings.KeyConflictContext;
+import net.minecraftforge.client.settings.KeyModifier;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import org.apache.commons.lang3.Validate;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,6 +32,13 @@ public enum ArmorUpgradeClientRegistry {
     public void registerHandler(IArmorUpgradeHandler handler, IArmorUpgradeClientHandler clientHandler) {
         id2HandlerMap.put(handler.getID(), clientHandler);
         class2HandlerMap.put(clientHandler.getClass(), clientHandler);
+
+        clientHandler.getInitialKeyBinding().ifPresent(ClientRegistry::registerKeyBinding);
+        clientHandler.getSubKeybinds().forEach(rl -> ClientRegistry.registerKeyBinding(
+                new KeyBinding(IArmorUpgradeHandler.getStringKey(rl),
+                        KeyConflictContext.IN_GAME, KeyModifier.NONE, InputMappings.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN,
+                        clientHandler.getSubKeybindCategory())
+        ));
     }
 
     public IArmorUpgradeClientHandler getClientHandler(IArmorUpgradeHandler armorUpgradeHandler) {

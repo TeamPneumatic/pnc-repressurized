@@ -19,11 +19,16 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.gen.Heightmap;
 
+import java.util.Collection;
+import java.util.Collections;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleToggleableHandler {
@@ -123,5 +128,10 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
     @Override
     public void onResolutionChanged() {
         jbStat = null;
+    }
+
+    @Override
+    public Collection<ResourceLocation> getSubKeybinds() {
+        return Collections.singletonList(RL("jet_boots.module.builder_mode"));
     }
 }

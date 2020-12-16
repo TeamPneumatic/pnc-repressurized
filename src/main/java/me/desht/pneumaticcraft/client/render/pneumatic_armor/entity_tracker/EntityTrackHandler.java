@@ -116,10 +116,10 @@ public class EntityTrackHandler {
             curInfo.add(xlate("pneumaticcraft.entityTracker.info.drone.routine", ((EntityDrone) entity).getLabel()));
             PlayerEntity player = ClientUtils.getClientPlayer();
             if (DroneDebugClientHandler.enabledForPlayer(player)) {
-                String debugKey = ClientUtils.translateKeyBind(KeyHandler.getInstance().keybindDebuggingDrone);
+                ITextComponent debugKey = ClientUtils.translateKeyBind(KeyHandler.getInstance().keybindDebuggingDrone);
                 if (ItemPneumaticArmor.isPlayerDebuggingEntity(player, entity)) {
                     curInfo.add(xlate("pneumaticcraft.entityTracker.info.drone.debugging").mergeStyle(TextFormatting.GOLD));
-                    String optionsKey = ClientUtils.translateKeyBind(KeyHandler.getInstance().keybindOpenOptions);
+                    ITextComponent optionsKey = ClientUtils.translateKeyBind(KeyHandler.getInstance().keybindOpenOptions);
                     curInfo.add(xlate("pneumaticcraft.entityTracker.info.drone.debugging.key", optionsKey).mergeStyle(TextFormatting.GOLD));
                     if (isLookingAtTarget) {
                         curInfo.add(xlate("pneumaticcraft.entityTracker.info.drone.stopDebugging.key", debugKey).mergeStyle(TextFormatting.GOLD));

@@ -46,6 +46,6 @@ public class BlockTrackOptions extends IOptionPage.SimpleToggleableOptions<Block
 
     @Override
     public int settingsYposition() {
-        return 44 + 12 * BlockTrackEntryList.INSTANCE.trackList.size();
+        return 50 + 12 * BlockTrackEntryList.INSTANCE.trackList.size();
     }
 }

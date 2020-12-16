@@ -33,38 +33,26 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.progwidgets.*;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.util.DramaSplash;
-import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
-import net.minecraft.client.util.InputMappings;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemModelsProperties;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
-import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import org.apache.commons.lang3.tuple.Pair;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.util.HashMap;
-import java.util.Map;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
 public class ClientSetup {
-    public static final Map<String, Pair<Integer,KeyModifier>> keybindToKeyCodes = new HashMap<>();
-
     public static void initEarly() {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::init);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::registerParticleFactories);
@@ -101,7 +89,6 @@ public class ClientSetup {
         registerProgWidgetExtraRenderers();
         registerTubeModuleFactories();
 
-        getAllKeybindsFromOptionsFile();
         EntityTrackHandler.init();
         GuiArmorMainScreen.initHelmetCoreComponents();
         DramaSplash.getInstance();
@@ -361,26 +348,5 @@ public class ClientSetup {
         cr.registerHandler(r.jetBootsHandler, new JetBootsClientHandler());
         cr.registerHandler(r.stepAssistHandler, new StepAssistClientHandler());
         cr.registerHandler(r.kickHandler, new KickClientHandler());
-    }
-
-    private static void getAllKeybindsFromOptionsFile() {
-        File optionsFile = new File(Minecraft.getInstance().gameDir, "options.txt");
-        if (optionsFile.exists()) {
-            try (BufferedReader bufferedreader = new BufferedReader(new FileReader(optionsFile))) {
-                String s;
-                while ((s = bufferedreader.readLine()) != null) {
-                    String[] str = s.split(":");
-                    if (str[0].startsWith("key_")) {
-                        // key_<keybind-name>:<keycode>:<modifiers>
-                        KeyModifier modifier = str.length > 2 ? KeyModifier.valueFromString(str[2]) : KeyModifier.NONE;
-                        InputMappings.Input i = InputMappings.getInputByName(str[1]);
-                        keybindToKeyCodes.put(str[0].substring(4), Pair.of(i.getKeyCode(), modifier));
-                    }
-                }
-            } catch (Exception exception1) {
-                Log.error("Failed to process options.txt:");
-                exception1.printStackTrace();
-            }
-        }
     }
 }

@@ -5,13 +5,6 @@ import net.minecraft.util.ResourceLocation;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
 public class Names {
-    // Ore dict strings; camel-case is OK here
-    public static final String INGOT_IRON_COMPRESSED = "ingotIronCompressed";
-    public static final String BLOCK_IRON_COMPRESSED = "blockIronCompressed";
-    public static final String GEAR_IRON_COMPRESSED = "gearIronCompressed";
-    public static final String DRONE = "pneumaticDrone";
-    public static final String GUN_AMMO = "pneumaticGunAmmo";
-
     public static final ResourceLocation MODULE_SAFETY_VALVE = RL("safety_tube_module");
     public static final ResourceLocation MODULE_REGULATOR = RL("regulator_tube_module");
     public static final ResourceLocation MODULE_GAUGE = RL("pressure_gauge_module");
@@ -21,7 +14,9 @@ public class Names {
     public static final ResourceLocation MODULE_LOGISTICS = RL("logistics_module");
     public static final ResourceLocation MODULE_REDSTONE = RL("redstone_module");
 
-    public static final String PNEUMATIC_KEYBINDING_CATEGORY = "key.pneumaticcraft.category";
+    public static final String PNEUMATIC_KEYBINDING_CATEGORY_MAIN = "key.pneumaticcraft.category.main";
+    public static final String PNEUMATIC_KEYBINDING_CATEGORY_UPGRADE_TOGGLES = "key.pneumaticcraft.category.upgrade_toggles";
+    public static final String PNEUMATIC_KEYBINDING_CATEGORY_BLOCK_TRACKER = "key.pneumaticcraft.category.block_tracker";
 
     public static final String MOD_ID = "pneumaticcraft";
     public static final String MOD_NAME = "PneumaticCraft: Repressurized";
@@ -32,4 +27,5 @@ public class Names {
     // Permission nodes
     public static final String AMADRON_ADD_PERIODIC_TRADE = MOD_ID + ".amadron.addPeriodicTrade";
     public static final String AMADRON_ADD_STATIC_TRADE = MOD_ID + ".amadron.addStaticTrade";
+
 }

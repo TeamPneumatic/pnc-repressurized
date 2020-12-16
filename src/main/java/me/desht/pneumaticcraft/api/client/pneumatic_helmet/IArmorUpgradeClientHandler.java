@@ -4,7 +4,18 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
+import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.client.util.InputMappings;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.client.settings.KeyConflictContext;
+import net.minecraftforge.client.settings.KeyModifier;
+import org.lwjgl.glfw.GLFW;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Optional;
 
 /**
  * Represents the client-specific part of an armor upgrade handler; provides methods for rendering, getting the
@@ -86,6 +97,51 @@ public interface IArmorUpgradeClientHandler {
      * stat positions.
      */
     default void onResolutionChanged() {
+    }
+
+    /**
+     * Get the default keybinding for toggling this upgrade on/off. By default, an unbound key binding will be
+     * registered for the upgrade, so it appears in the Config -> Controls screen with no binding. Note that only
+     * toggles are added here; keybinds which trigger specific actions (e.g. the Chestplate Launcher or Drone Debugging
+     * key) need to be registered explicitly.
+     * <p>
+     * If this upgrade is not a toggleable upgrade, return {@code Optional.empty()} here.
+     *
+     * @return the default key binding for this upgrade
+     */
+    default Optional<KeyBinding> getInitialKeyBinding() {
+        return Optional.of(new KeyBinding(IArmorUpgradeHandler.getStringKey(getCommonHandler().getID()), KeyConflictContext.IN_GAME, KeyModifier.NONE,
+                InputMappings.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, getKeybindCategory()));
+    }
+
+    /**
+     * Get all the sub-keybinds for this upgrade handler. Any checkboxes which toggle a sub-feature of this upgrade
+     * (e.g. the various Block Tracker categories, or the Jet Boots builder mode) need to be returned here so a key
+     * binding can be registered for them.
+     *
+     * @return a collection of ID's
+     */
+    default Collection<ResourceLocation> getSubKeybinds() {
+        return Collections.emptyList();
+    }
+
+    /**
+     * Get the keybind category for this upgrade.  By default, this is the same as the default category for all
+     * PneumaticCraft keybinds.
+     *
+     * @return a keybind category ID
+     */
+    default String getKeybindCategory() {
+        return Names.PNEUMATIC_KEYBINDING_CATEGORY_UPGRADE_TOGGLES;
+    }
+
+    /**
+     * Get the keybind category for any sub-keybinds.  By default, this is the same as the default category for all
+     * PneumaticCraft keybinds.
+     * @return a keybind category ID
+     */
+    default String getSubKeybindCategory() {
+        return Names.PNEUMATIC_KEYBINDING_CATEGORY_UPGRADE_TOGGLES;
     }
 
     /**

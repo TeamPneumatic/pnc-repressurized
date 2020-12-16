@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler;
 
+import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.*;
@@ -16,6 +17,7 @@ import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
@@ -36,10 +38,7 @@ import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.items.CapabilityItemHandler;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -355,5 +354,17 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
     @Override
     public void onResolutionChanged() {
         blockTrackInfo = null;
+    }
+
+    @Override
+    public Collection<ResourceLocation> getSubKeybinds() {
+        ImmutableList.Builder<ResourceLocation> builder = ImmutableList.builder();
+        BlockTrackEntryList.INSTANCE.trackList.forEach(entry -> builder.add(entry.getEntryID()));
+        return builder.build();
+    }
+
+    @Override
+    public String getSubKeybindCategory() {
+        return Names.PNEUMATIC_KEYBINDING_CATEGORY_BLOCK_TRACKER;
     }
 }

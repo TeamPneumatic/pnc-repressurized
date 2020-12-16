@@ -31,11 +31,12 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.data.EmptyModelData;
-import net.minecraftforge.client.settings.KeyModifier;
+import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -197,15 +198,18 @@ public class ClientUtils {
      * @param keyBinding the keybinding
      * @return a human-friendly string representation
      */
-    public static String translateKeyBind(KeyBinding keyBinding) {
-        String res = I18n.format(keyBinding.getTranslationKey());
-        if (res.equals(keyBinding.getTranslationKey()) && keyBinding.getKey().getType() == InputMappings.Type.KEYSYM) {
-            if (keyBinding.getKey().getKeyCode() >= 32 && keyBinding.getKey().getKeyCode() < 128) {
-                res = String.valueOf(Character.toChars(keyBinding.getKey().getKeyCode()));
+    public static ITextComponent translateKeyBind(KeyBinding keyBinding) {
+        return keyBinding.getKeyModifier().getCombinedName(keyBinding.getKey(), () -> {
+            ITextComponent s = keyBinding.getKey().func_237520_d_();
+            // small kludge to clearly distinguish keypad from non-keypad keys
+            if (keyBinding.getKey().getType() == InputMappings.Type.KEYSYM
+                    && keyBinding.getKey().getKeyCode() >= GLFW.GLFW_KEY_KP_0
+                    && keyBinding.getKey().getKeyCode() <= GLFW.GLFW_KEY_KP_EQUAL) {
+                return new StringTextComponent("KP_").append(s);
+            } else {
+                return s;
             }
-        }
-        String mod = keyBinding.getKeyModifier() != KeyModifier.NONE ? keyBinding.getKeyModifier() + " + " : "";
-        return mod + res;
+        }).deepCopy().mergeStyle(TextFormatting.YELLOW);
     }
 
     /**

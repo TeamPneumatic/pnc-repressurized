@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.gui.pneumatic_armor;
 
+import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
@@ -152,7 +153,7 @@ public class GuiArmorMainScreen extends GuiPneumaticScreenBase implements IGuiSc
         optionPage.renderPre(matrixStack, x, y, partialTicks);
         drawCenteredString(matrixStack, font, upgradeOptions.get(pageNumber).page.getPageName().deepCopy().mergeStyle(TITLE_PREFIX), 100, 12, 0xFFFFFFFF);
         if (optionPage.displaySettingsHeader()) {
-            drawCenteredString(matrixStack, font, xlate("pneumaticcraft.armor.gui.misc.settings"), 100, optionPage.settingsYposition(), 0xFFFFFFFF);
+            drawCenteredString(matrixStack, font, xlate("pneumaticcraft.armor.gui.misc.settings").mergeStyle(TextFormatting.DARK_AQUA), 100, optionPage.settingsYposition(), 0xFFFFFFFF);
         }
         super.render(matrixStack, x, y, partialTicks);
         optionPage.renderPost(matrixStack, x, y, partialTicks);
@@ -197,7 +198,7 @@ public class GuiArmorMainScreen extends GuiPneumaticScreenBase implements IGuiSc
 
     @Override
     public List<Widget> getWidgetList() {
-        return buttons;
+        return ImmutableList.copyOf(buttons);
     }
 
     @Override

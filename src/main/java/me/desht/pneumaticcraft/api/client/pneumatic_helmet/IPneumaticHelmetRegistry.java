@@ -57,7 +57,7 @@ public interface IPneumaticHelmetRegistry {
     List<IHackableEntity> getCurrentEntityHacks(Entity entity);
 
     /**
-     * Registers a Pneumatic Helmet module
+     * Registers a Pneumatic Helmet module. This must be called from a {@code FMLClientSetupEvent} handler.
      *
      * @param clientHandler the handler to register
      */

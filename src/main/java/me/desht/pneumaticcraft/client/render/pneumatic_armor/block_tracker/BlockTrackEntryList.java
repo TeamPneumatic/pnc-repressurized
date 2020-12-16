@@ -10,10 +10,10 @@ import net.minecraft.world.IBlockReader;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class BlockTrackEntryList {
-    public final NonNullList<IBlockTrackEntry> trackList = NonNullList.create();
+public enum BlockTrackEntryList {
+    INSTANCE;
 
-    public static final BlockTrackEntryList INSTANCE = new BlockTrackEntryList();
+    public final NonNullList<IBlockTrackEntry> trackList = NonNullList.create();
 
     // initialize default Block Track Entries.
     private BlockTrackEntryList() {

@@ -43,7 +43,10 @@ Changes are in reverse chronological order; newest changes at the top.
   * Use the Condition widget GUI's to define a "Measure" variable name
   * If defined, the measured value will be stored in that variable each time the condition executes
   * When a measure variable is defined, it's no longer an error to have no branch Text widgets attached to the Condition widget (i.e. the widget can be used purely for measurement, if desired)
-
+* Drones will now no longer travel (fly or teleport) more than 80 blocks to a Charging Station when low on air
+  * 80-block limit can be adjusted in config: pneumaticcraft-common.toml -> Advanced -> `max_drone_charging_station_search_range`
+  * Note that very large limits can in theory make drones teleport thousands of blocks away to someone else's base if your own charging stations are unavailable for any reason
+  
 ### Fixes
 * Fixed elevator callers not emitting redstone when the elevator is at that floor
 * Fixed elevator Charging Upgrades not being sync'd to client (on world reload)
@@ -58,6 +61,8 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed Sentry Turret minigun firing sound not playing to clients
 * Fixed Charging Station not extracting last tiny bit of air from items when discharging them
   * Related: clean up item NBT when all air has been extracted from an item (don't store air=0 amounts in NBT); mainly for benefit of stacking Air Canisters
+* Fixed distance-sorting bug when drone searches for closest Charging Station for recharge
+  * This could have caused the drone to fly (or teleport) to an unexpected Charging Station
 
 ## 2.7.2-86 (3 Dec 2020)
 

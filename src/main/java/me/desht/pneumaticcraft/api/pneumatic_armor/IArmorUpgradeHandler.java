@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.api.pneumatic_armor;
 
+import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
-import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.util.ResourceLocation;
 
@@ -12,6 +12,10 @@ import net.minecraft.util.ResourceLocation;
  * one-to-one mapping to this).
  */
 public interface IArmorUpgradeHandler {
+    /**
+     * Used for translation keys and keybind naming
+     */
+    String UPGRADE_PREFIX = "pneumaticcraft.armor.upgrade.";
 
     /**
      * Get a unique ID for this upgrade handler.
@@ -66,6 +70,23 @@ public interface IArmorUpgradeHandler {
     EquipmentSlotType getEquipmentSlot();
 
     default String getTranslationKey() {
-        return ArmorUpgradeRegistry.getStringKey(getID());
+        return getStringKey(getID());
+    }
+
+    /**
+     * Source of truth for all translation keys and keybind names. Standard "pneumaticcraft.armor.upgrade" prefix,
+     * followed by a resource location ID, where the ID is converted to a string.  ID's from the "pneumaticcraft"
+     * namespace use just the resource location's path, while ID's from other namespaces include the namespace. E.g.:
+     * <ul>
+     * <li>"pneumaticcraft:block_tracker" -> "pneumaticcraft.armor.upgrade.block_tracker"</li>
+     * <li>"pneumaticcraft:block_tracker.module.energy" -> "pneumaticcraft.armor.upgrade.block_tracker.module.energy"</li>
+     * <li>"mod2:other_upgrade" -> "pneumaticcraft.armor.upgrade.mod2.other_upgrade"</li>
+     * </ul>
+     * @param id the upgrade ID, as returned by {@link #getID()}
+     * @return a converted string
+     */
+    static String getStringKey(ResourceLocation id) {
+        return UPGRADE_PREFIX +
+                (id.getNamespace().equals(PneumaticRegistry.MOD_ID) ? id.getPath() : id.toString().replace(':', '.'));
     }
 }

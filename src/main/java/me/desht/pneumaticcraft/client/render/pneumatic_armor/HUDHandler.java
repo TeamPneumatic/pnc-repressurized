@@ -371,7 +371,7 @@ public enum HUDHandler implements IKeyListener {
     }
 
     @Override
-    public void onKeyPress(KeyBinding key) {
+    public void handleInput(KeyBinding key) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.isGameFocused()) {
             if (key == KeyHandler.getInstance().keybindOpenOptions) {
