@@ -193,7 +193,7 @@ public class PneumaticValues {
     public static final float PNEUMATIC_LEGS_BOOST_PER_UPGRADE = 0.035f;
     public static final int PNEUMATIC_ARMOR_JUMP_USAGE = 25;
     public static final int PNEUMATIC_ARMOR_FIRE_USAGE = 50;
-    public static final int PNEUMATIC_KICK_AIR_USAGE = 100;
+    public static final int PNEUMATIC_KICK_AIR_USAGE = 150;
     public static final int PNEUMATIC_KICK_MAX_UPGRADES = 4;
     public static final int PNEUMATIC_LEGS_MAX_JUMP = 4;
     public static final int PNEUMATIC_JET_BOOTS_USAGE = 12;  // every tick the boots are firing, per upgrade

@@ -54,11 +54,11 @@ public class PacketPneumaticKick {
     }
 
     private void handleKick(PlayerEntity player, int upgrades) {
-        Vector3d lookVec = player.getLookVec().normalize();
+        Vector3d lookVec = new Vector3d(player.getLookVec().x, Math.max(0, player.getLookVec().y), player.getLookVec().z).normalize();
 
-        double playerFootY = player.getPosY() - player.getHeight() / 4;
+        double playerFootY = player.getPosY() - player.getHeight() / 2;
         AxisAlignedBB box = new AxisAlignedBB(player.getPosX(), playerFootY, player.getPosZ(), player.getPosX(), playerFootY, player.getPosZ())
-                .grow(1.0, 1.0, 1.0).offset(lookVec);
+                .grow(1.5, 1.5, 1.5).offset(lookVec);
         List<Entity> entities = player.world.getEntitiesWithinAABBExcludingEntity(player, box);
         if (entities.isEmpty()) return;
         entities.sort(Comparator.comparingDouble(o -> o.getDistanceSq(player)));
@@ -67,11 +67,11 @@ public class PacketPneumaticKick {
         if (target instanceof MobEntity) {
             target.attackEntityFrom(DamageSource.causePlayerDamage(player), 3.0f + upgrades * 0.5f);
         }
-        target.setMotion(target.getMotion().add(lookVec.scale(1.0 + upgrades * 0.5f)));
+        target.setMotion(target.getMotion().add(lookVec.scale(1.0 + upgrades * 0.5)).add(0, upgrades * 0.1, 0));
 
         player.world.playSound(null, target.getPosX(), target.getPosY(), target.getPosZ(), ModSounds.PUNCH.get(), SoundCategory.PLAYERS, 1f, 1f);
         NetworkHandler.sendToAllTracking(new PacketSetEntityMotion(target, target.getMotion()), target);
         NetworkHandler.sendToAllTracking(new PacketSpawnParticle(ParticleTypes.EXPLOSION, target.getPosX(), target.getPosY(), target.getPosZ(), 1.0D, 0.0D, 0.0D), target);
-        CommonArmorHandler.getHandlerForPlayer(player).addAir(EquipmentSlotType.FEET, -PneumaticValues.PNEUMATIC_KICK_AIR_USAGE * (2 << upgrades));
+        CommonArmorHandler.getHandlerForPlayer(player).addAir(EquipmentSlotType.FEET, -PneumaticValues.PNEUMATIC_KICK_AIR_USAGE * upgrades);
     }
 }
