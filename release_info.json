@@ -1,10 +1,10 @@
 {
   "homepage": "https://minecraft.curseforge.com/projects/pneumaticcraft-repressurized",
   "promos": {
-    "1.16.3-recommmended": "1.16.4-2.7.2-86",
-    "1.16.3-latest": "1.16.4-2.7.2-86",
-    "1.16.4-recommmended": "1.16.4-2.7.2-86",
-    "1.16.4-latest": "1.16.4-2.7.2-86"
+    "1.16.3-recommmended": "1.16.4-2.8.0-95",
+    "1.16.3-latest": "1.16.4-2.8.0-95",
+    "1.16.4-recommmended": "1.16.4-2.8.0-95",
+    "1.16.4-latest": "1.16.4-2.8.0-95"
   },
   "1.16.4": {
     "1.16.3-2.5.0-66": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.4/Changelog.md#250-66-5-nov-2020",
@@ -12,7 +12,8 @@
     "1.16.4-2.6.2-73": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.4/Changelog.md#262-73-20-nov-2020",
     "1.16.4-2.7.0-83": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.4/Changelog.md#270-83-30-nov-2020",
     "1.16.4-2.7.1-85": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.4/Changelog.md#271-85-3-dec-2020",
-    "1.16.4-2.7.2-86": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.4/Changelog.md#272-86-3-dec-2020"
+    "1.16.4-2.7.2-86": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.4/Changelog.md#272-86-3-dec-2020",
+    "1.16.4-2.8.0-95": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.4/Changelog.md#280-95-14-dec-2020"
   },
   "1.16.3": {
     "1.16.3-2.4.0-36": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.3/Changelog.md#240-36-18-sep-2020",
@@ -27,6 +28,7 @@
     "1.16.4-2.6.2-73": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.4/Changelog.md#262-73-20-nov-2020",
     "1.16.4-2.7.0-83": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.4/Changelog.md#270-83-30-nov-2020",
     "1.16.4-2.7.1-85": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.4/Changelog.md#271-85-3-dec-2020",
-    "1.16.4-2.7.2-86": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.4/Changelog.md#272-86-3-dec-2020"
+    "1.16.4-2.7.2-86": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.4/Changelog.md#272-86-3-dec-2020",
+    "1.16.4-2.8.0-95": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.4/Changelog.md#280-95-14-dec-2020"
   }
 }

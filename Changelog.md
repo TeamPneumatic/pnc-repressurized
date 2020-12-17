@@ -6,7 +6,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.16.3 / 1.16.4
 
-## 2.8.0-?? (unreleased)
+## 2.8.0-95 (14 Dec 2020)
 
 ### Updates
 * Aphorism Tiles have had a major boost in functionality
