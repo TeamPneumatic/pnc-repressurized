@@ -142,6 +142,8 @@ public class NetworkHandler {
 				PacketHackingEntityFinish::toBytes, PacketHackingEntityFinish::new, PacketHackingEntityFinish::handle);
 		registerMessage(PacketToggleArmorFeature.class,
 				PacketToggleArmorFeature::toBytes, PacketToggleArmorFeature::new, PacketToggleArmorFeature::handle);
+		registerMessage(PacketToggleArmorFeatureBulk.class,
+				PacketToggleArmorFeatureBulk::toBytes, PacketToggleArmorFeatureBulk::new, PacketToggleArmorFeatureBulk::handle);
 		registerMessage(PacketUpdateDebuggingDrone.class,
 				PacketUpdateDebuggingDrone::toBytes, PacketUpdateDebuggingDrone::new, PacketUpdateDebuggingDrone::handle);
 		registerMessage(PacketSendDroneDebugEntry.class,

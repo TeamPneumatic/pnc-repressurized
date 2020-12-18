@@ -22,7 +22,7 @@ public class PacketToggleArmorFeature {
     public PacketToggleArmorFeature() {
     }
 
-    public PacketToggleArmorFeature(byte featureIndex, boolean state, EquipmentSlotType slot) {
+    public PacketToggleArmorFeature(EquipmentSlotType slot, byte featureIndex, boolean state) {
         this.featureIndex = featureIndex;
         this.state = state;
         this.slot = slot;

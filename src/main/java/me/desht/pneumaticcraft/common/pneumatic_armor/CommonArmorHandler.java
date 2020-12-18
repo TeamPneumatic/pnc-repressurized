@@ -637,6 +637,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
             chargingEnabled = state;
         } else if (handler instanceof StepAssistHandler) {
             stepAssistEnabled = state;
+            if (!stepAssistEnabled) player.stepHeight = 0.6F;
         } else if (handler instanceof SpeedBoostHandler) {
             runSpeedEnabled = state;
         } else if (handler instanceof JumpBoostHandler) {
@@ -650,6 +651,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
             entityTrackerEnabled = state;
         } else if (handler instanceof NightVisionHandler) {
             nightVisionEnabled = state;
+            if (!nightVisionEnabled) player.removeActivePotionEffect(Effects.NIGHT_VISION);
         } else if (handler instanceof ScubaHandler) {
             scubaEnabled = state;
         } else if (handler instanceof ReachDistanceHandler) {

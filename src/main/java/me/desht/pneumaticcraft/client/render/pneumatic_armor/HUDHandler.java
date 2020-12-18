@@ -23,6 +23,8 @@ import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPneumaticKick;
 import me.desht.pneumaticcraft.common.network.PacketToggleArmorFeature;
+import me.desht.pneumaticcraft.common.network.PacketToggleArmorFeatureBulk;
+import me.desht.pneumaticcraft.common.network.PacketToggleArmorFeatureBulk.FeatureSetting;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import net.minecraft.client.MainWindow;
@@ -265,7 +267,7 @@ public enum HUDHandler implements IKeyListener {
             // core-components is always in slot HEAD, index 0
             if (state) {
                 comHudHandler.setUpgradeEnabled(EquipmentSlotType.HEAD, (byte) 0, true);
-                NetworkHandler.sendToServer(new PacketToggleArmorFeature((byte) 0, true, EquipmentSlotType.HEAD));
+                NetworkHandler.sendToServer(new PacketToggleArmorFeature(EquipmentSlotType.HEAD, (byte) 0, true));
             }
             sentForceInitPacket = true;
         }
@@ -311,16 +313,18 @@ public enum HUDHandler implements IKeyListener {
             // full init: display "init complete" message
             playArmorInitSound(player, ModSounds.HUD_INIT_COMPLETE.get(), 1.0F);
             addMessage(new ArmorMessage(xlate("pneumaticcraft.armor.message.initComplete", itemName), 50, 0x7000AA00));
-        } else if (ticksSinceEquipped == 0) {
+        } else if (ticksSinceEquipped == 0 && WidgetKeybindCheckBox.getCoreComponents().checked) {
             // tick 0: inform the server which upgrades are enabled
             for (IArmorUpgradeClientHandler handler : ArmorUpgradeClientRegistry.getInstance().getHandlersForSlot(slot)) {
                 handler.reset();
             }
-            for (int i = 0; i < upgradeHandlers.size(); i++) {
-                boolean state = armorEnabled && WidgetKeybindCheckBox.forUpgrade(upgradeHandlers.get(i)).checked;
-                commonArmorHandler.setUpgradeEnabled(slot, (byte) i, state);
-                NetworkHandler.sendToServer(new PacketToggleArmorFeature((byte) i, state, slot));
+            List<FeatureSetting> features = new ArrayList<>();
+            for (byte idx = 0; idx < upgradeHandlers.size(); idx++) {
+                boolean state = armorEnabled && WidgetKeybindCheckBox.forUpgrade(upgradeHandlers.get(idx)).checked;
+                commonArmorHandler.setUpgradeEnabled(slot, idx, state);
+                features.add(new FeatureSetting(slot, idx, state));
             }
+            NetworkHandler.sendToServer(new PacketToggleArmorFeatureBulk(features));
         } else if (ticksSinceEquipped == 1) {
             // tick 1: display the "init started" message
             playArmorInitSound(player, ModSounds.HUD_INIT.get(), 0.5F);

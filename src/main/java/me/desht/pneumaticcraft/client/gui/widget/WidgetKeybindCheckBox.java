@@ -6,8 +6,11 @@ import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorFeatureStatus;
+import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketToggleArmorFeature;
+import me.desht.pneumaticcraft.common.network.PacketToggleArmorFeatureBulk;
+import me.desht.pneumaticcraft.common.network.PacketToggleArmorFeatureBulk.FeatureSetting;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import net.minecraft.client.Minecraft;
@@ -28,10 +31,7 @@ import net.minecraftforge.fml.common.Mod;
 import org.lwjgl.glfw.GLFW;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -107,38 +107,36 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
 
     private boolean handleClick(double mouseX, double mouseY, int button) {
         if (button == 0) {
+            if (!coreComponents.checked && this != coreComponents) {
+                Minecraft.getInstance().player.playSound(ModSounds.MINIGUN_STOP.get(), 1f, 2f);
+                return true;
+            }
+
             // left click - usual toggle action
             super.onClick(mouseX, mouseY);
+
             ArmorFeatureStatus.INSTANCE.setUpgradeEnabled(upgradeID, checked);
-            KeyDispatcher.id2checkBox.get(upgradeID).checked = checked;
             try {
                 ArmorFeatureStatus.INSTANCE.writeToFile();
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
             CommonArmorHandler commonArmorHandler = CommonArmorHandler.getHandlerForPlayer();
-            for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
-                List<IArmorUpgradeHandler> upgradeHandlers = ArmorUpgradeRegistry.getInstance().getHandlersForSlot(slot);
-                for (int i = 0; i < upgradeHandlers.size(); i++) {
-                    IArmorUpgradeHandler upgradeHandler = upgradeHandlers.get(i);
-                    if ((upgradeHandler.getID()).equals(upgradeID) && commonArmorHandler.isUpgradeInserted(slot, i)) {
-                        NetworkHandler.sendToServer(new PacketToggleArmorFeature((byte) i, coreComponents.checked && checked, slot));
-                        commonArmorHandler.setUpgradeEnabled(slot, (byte)i, coreComponents.checked && checked);
-                        HUDHandler.getInstance().addFeatureToggleMessage(ArmorUpgradeRegistry.getStringKey(upgradeID), checked);
-                        break;
-                    }
+            ArmorUpgradeRegistry.ArmorUpgradeEntry entry = ArmorUpgradeRegistry.getInstance().getUpgradeEntry(upgradeID);
+            if (entry != null) {
+                EquipmentSlotType slot = entry.getSlot();
+                byte idx = (byte) entry.getIndex();
+                if (commonArmorHandler.isUpgradeInserted(slot, idx)) {
+                    toggleUpgrade(commonArmorHandler, slot, idx);
                 }
-                if (upgradeID.equals(ArmorUpgradeRegistry.getInstance().coreComponentsHandler.getID())) {
-                    for (int i = 0; i < upgradeHandlers.size(); i++) {
-                        boolean state = WidgetKeybindCheckBox.forUpgrade(upgradeHandlers.get(i)).checked;
-                        NetworkHandler.sendToServer(new PacketToggleArmorFeature((byte) i, coreComponents.checked && state, slot));
-                        commonArmorHandler.setUpgradeEnabled(slot, (byte)i, coreComponents.checked && state);
-                    }
-                }
+            }
+            if (this == coreComponents) {
+                toggleAllUpgrades(commonArmorHandler);
             }
             return true;
         } else if (button == 1) {
-            // right click - clear or set up key binding
+            // right click - update or clear key binding
             if (Screen.hasShiftDown()) {
                 updateBinding(InputMappings.INPUT_INVALID);
             } else {
@@ -153,6 +151,31 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
             return true;
         }
         return false;
+    }
+
+    private void toggleUpgrade(CommonArmorHandler commonArmorHandler, EquipmentSlotType slot, byte idx) {
+        // set the on/off state for this upgrade on both client and server
+        NetworkHandler.sendToServer(new PacketToggleArmorFeature(slot, idx, coreComponents.checked && checked));
+        commonArmorHandler.setUpgradeEnabled(slot, idx, coreComponents.checked && checked);
+        HUDHandler.getInstance().addFeatureToggleMessage(ArmorUpgradeRegistry.getStringKey(upgradeID), checked);
+    }
+
+    private void toggleAllUpgrades(CommonArmorHandler commonArmorHandler) {
+        // master switch has been clicked: toggle on/off *all* installed upgrades on both client and server
+        List<FeatureSetting> features = new ArrayList<>();
+        ArmorUpgradeRegistry.getInstance().entries().forEach(entry -> {
+            boolean state = coreComponents.checked && WidgetKeybindCheckBox.forUpgrade(entry.getHandler()).checked;
+            byte idx = (byte) entry.getIndex();
+            features.add(new FeatureSetting(entry.getSlot(), idx, state));
+            commonArmorHandler.setUpgradeEnabled(entry.getSlot(), idx, state);
+        });
+        NetworkHandler.sendToServer(new PacketToggleArmorFeatureBulk(features));
+        if (checked) {
+            // force pressure stat to recalc its layout (just using .reset() isn't enough)
+            ArmorUpgradeClientRegistry.getInstance().getClientHandler(ArmorUpgradeRegistry.getInstance().coreComponentsHandler).onResolutionChanged();
+        } else {
+            Minecraft.getInstance().player.playSound(ModSounds.MINIGUN_STOP.get(), 1f, 0.5f);
+        }
     }
 
     @Override

@@ -9,7 +9,10 @@ import net.minecraft.util.ResourceLocation;
 import org.apache.commons.lang3.Validate;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
 
 public enum ArmorUpgradeRegistry {
     INSTANCE;
@@ -21,6 +24,7 @@ public enum ArmorUpgradeRegistry {
 
     private final List<List<IArmorUpgradeHandler>> upgradeHandlers;
     private final Object2IntMap<IArmorUpgradeHandler> indexMap;
+    private final Map<ResourceLocation, ArmorUpgradeEntry> byID = new HashMap<>();
 
     public static final EquipmentSlotType[] ARMOR_SLOTS = new EquipmentSlotType[] {
             EquipmentSlotType.HEAD,
@@ -98,6 +102,7 @@ public enum ArmorUpgradeRegistry {
     IArmorUpgradeHandler registerUpgradeHandler(IArmorUpgradeHandler handler) {
         List<IArmorUpgradeHandler> l = upgradeHandlers.get(handler.getEquipmentSlot().getIndex());
         indexMap.put(handler, l.size());
+        byID.put(handler.getID(), new ArmorUpgradeEntry(handler, l.size()));
         l.add(handler);
         return handler;
     }
@@ -110,5 +115,35 @@ public enum ArmorUpgradeRegistry {
         int idx = indexMap.getInt(handler);
         Validate.isTrue(idx >= 0, "unknown handler: " + handler);
         return idx;
+    }
+
+    public ArmorUpgradeEntry getUpgradeEntry(ResourceLocation upgradeID) {
+        return byID.get(upgradeID);
+    }
+
+    public Stream<ArmorUpgradeEntry> entries() {
+        return byID.values().stream();
+    }
+
+    public static class ArmorUpgradeEntry {
+        final IArmorUpgradeHandler handler;
+        final int index;
+
+        public ArmorUpgradeEntry(IArmorUpgradeHandler handler, int index) {
+            this.handler = handler;
+            this.index = index;
+        }
+
+        public IArmorUpgradeHandler getHandler() {
+            return handler;
+        }
+
+        public int getIndex() {
+            return index;
+        }
+
+        public EquipmentSlotType getSlot() {
+            return handler.getEquipmentSlot();
+        }
     }
 }
