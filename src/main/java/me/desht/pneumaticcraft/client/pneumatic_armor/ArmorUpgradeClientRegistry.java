@@ -23,6 +23,7 @@ public enum ArmorUpgradeClientRegistry {
 
     private final List<List<IArmorUpgradeClientHandler>> clientUpgradeHandlers = new ArrayList<>();
     private final Map<ResourceLocation, IArmorUpgradeClientHandler> id2HandlerMap = new HashMap<>();
+    private final Map<ResourceLocation, KeyBinding> id2KeyBindMap = new HashMap<>();
     private final Map<Class<? extends IArmorUpgradeClientHandler>, IArmorUpgradeClientHandler> class2HandlerMap = new HashMap<>();
 
     public static ArmorUpgradeClientRegistry getInstance() {
@@ -33,12 +34,21 @@ public enum ArmorUpgradeClientRegistry {
         id2HandlerMap.put(handler.getID(), clientHandler);
         class2HandlerMap.put(clientHandler.getClass(), clientHandler);
 
-        clientHandler.getInitialKeyBinding().ifPresent(ClientRegistry::registerKeyBinding);
-        clientHandler.getSubKeybinds().forEach(rl -> ClientRegistry.registerKeyBinding(
+        clientHandler.getInitialKeyBinding().ifPresent(k -> registerKeyBinding(handler.getID(), k));
+        clientHandler.getSubKeybinds().forEach(rl -> registerKeyBinding(rl,
                 new KeyBinding(IArmorUpgradeHandler.getStringKey(rl),
                         KeyConflictContext.IN_GAME, KeyModifier.NONE, InputMappings.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN,
                         clientHandler.getSubKeybindCategory())
         ));
+    }
+
+    private void registerKeyBinding(ResourceLocation upgradeID, KeyBinding keyBinding) {
+        id2KeyBindMap.put(upgradeID, keyBinding);
+        ClientRegistry.registerKeyBinding(keyBinding);
+    }
+
+    public KeyBinding getKeybindingForUpgrade(ResourceLocation upgradeID) {
+        return id2KeyBindMap.get(upgradeID);
     }
 
     public IArmorUpgradeClientHandler getClientHandler(IArmorUpgradeHandler armorUpgradeHandler) {
