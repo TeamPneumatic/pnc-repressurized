@@ -99,7 +99,7 @@ public class WidgetVerticalScrollbar extends Widget implements ICanRender3d {
     @Override
     public void render3d(MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks) {
         if (visible) {
-            renderWithType(matrixStack, buffer, ModRenderTypes.getTextureRenderColored(Textures.WIDGET_VERTICAL_SCROLLBAR, true), (posMat, builder)-> {
+            renderWithTypeAndFinish(matrixStack, buffer, ModRenderTypes.getTextureRenderColored(Textures.WIDGET_VERTICAL_SCROLLBAR, true), (posMat, builder)-> {
                 blit3d(builder, posMat, x, y, 12, 0, width, 1, 26, 15);
                 for (int i = 0; i < height - 2; i++) {
                     blit3d(builder, posMat, x, y + 1 + i, 12, 1, width, 1, 26, 15);

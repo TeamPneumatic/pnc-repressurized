@@ -56,7 +56,7 @@ public class RenderTargetCircle {
         matrixStack.rotate(Vector3f.ZP.rotationDegrees((float) renderRotationAngle));
 
         for (int pass = 0; pass < 2; pass++) {
-            RenderUtils.renderWithType(matrixStack, buffer, ModRenderTypes.TARGET_CIRCLE, (posMat, builder) -> {
+            RenderUtils.renderWithTypeAndFinish(matrixStack, buffer, ModRenderTypes.TARGET_CIRCLE, (posMat, builder) -> {
                 for (int i = 0; i < PneumaticCraftUtils.CIRCLE_POINTS / 4; i++) {
                     RenderUtils.posF(builder, posMat,PneumaticCraftUtils.cos[i] * size, PneumaticCraftUtils.sin[i] * size, 0)
                             .color(cols[0], cols[1], cols[2], alpha)
@@ -68,7 +68,7 @@ public class RenderTargetCircle {
             });
 
             if (renderAsTagged) {
-                RenderUtils.renderWithType(matrixStack, buffer, ModRenderTypes.getLineLoopsTransparent(3.0), (posMat, builder) -> {
+                RenderUtils.renderWithTypeAndFinish(matrixStack, buffer, ModRenderTypes.getLineLoopsTransparent(3.0), (posMat, builder) -> {
                     for (int i = 0; i < PneumaticCraftUtils.CIRCLE_POINTS / 4; i++) {
                         RenderUtils.posF(builder, posMat, PneumaticCraftUtils.cos[i] * size, PneumaticCraftUtils.sin[i] * size, 0)
                                 .color(255, 0, 0, 255)

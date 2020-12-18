@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 
 import static me.desht.pneumaticcraft.client.util.RenderUtils.FULL_BRIGHT;
-import static me.desht.pneumaticcraft.client.util.RenderUtils.renderWithType;
+import static me.desht.pneumaticcraft.client.util.RenderUtils.renderWithTypeAndFinish;
 
 public class ProgWidgetRenderer {
     /**
@@ -72,7 +72,7 @@ public class ProgWidgetRenderer {
         Pair<Float,Float> maxUV = progWidget.getMaxUV();
         float u = maxUV.getLeft();
         float v = maxUV.getRight();
-        renderWithType(matrixStack, buffer, ModRenderTypes.getTextureRenderColored(progWidget.getTexture()), (posMat, builder) -> {
+        renderWithTypeAndFinish(matrixStack, buffer, ModRenderTypes.getTextureRenderColored(progWidget.getTexture()), (posMat, builder) -> {
             builder.pos(posMat, 0, 0, 0).color(255, 255, 255, 255).tex(0, 0).lightmap(FULL_BRIGHT).endVertex();
             builder.pos(posMat, width, 0, 0).color(255, 255, 255, 255).tex(u, 0).lightmap(FULL_BRIGHT).endVertex();
             builder.pos(posMat, width, height, 0).color(255, 255, 255, 255).tex(u, v).lightmap(FULL_BRIGHT).endVertex();

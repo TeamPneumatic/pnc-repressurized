@@ -24,7 +24,7 @@ public class RenderProgressBar {
         double x = MathHelper.lerp(progress / 100D, minX, maxX);
 
         // draw the bar
-        RenderUtils.renderWithType(matrixStack, buffer, ModRenderTypes.getUntexturedQuad(true), (posMat, builder) -> {
+        RenderUtils.renderWithTypeAndFinish(matrixStack, buffer, ModRenderTypes.getUntexturedQuad(true), (posMat, builder) -> {
             RenderUtils.posF(builder, posMat, minX, minY, zLevel).color(f1[0], f1[1], f1[2], f1[3]).lightmap(FULL_BRIGHT).endVertex();
             RenderUtils.posF(builder, posMat, minX, minY + (maxY - minY), zLevel).color(f1[0], f1[1], f1[2], f1[3]).lightmap(FULL_BRIGHT).endVertex();
             RenderUtils.posF(builder, posMat, x, minY + (maxY - minY), zLevel).color(f2[0], f2[1], f2[2], f2[3]).lightmap(FULL_BRIGHT).endVertex();
@@ -32,7 +32,7 @@ public class RenderProgressBar {
         });
 
         // draw the outline
-        RenderUtils.renderWithType(matrixStack, buffer, ModRenderTypes.getLineLoopsTransparent(1.5), (posMat, builder) -> {
+        RenderUtils.renderWithTypeAndFinish(matrixStack, buffer, ModRenderTypes.getLineLoopsTransparent(1.5), (posMat, builder) -> {
             RenderUtils.posF(builder, posMat, minX, minY, zLevel).color(0, 0, 0, 255).endVertex();
             RenderUtils.posF(builder, posMat, minX, maxY, zLevel).color(0, 0, 0, 255).endVertex();
             RenderUtils.posF(builder, posMat, maxX, maxY, zLevel).color(0, 0, 0, 255).endVertex();

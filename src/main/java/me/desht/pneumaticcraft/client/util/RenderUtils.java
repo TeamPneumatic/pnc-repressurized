@@ -342,9 +342,15 @@ public class RenderUtils {
         }
     }
 
-    public static void renderWithType(MatrixStack matrixStack, IRenderTypeBuffer buffer, RenderType type, BiConsumer<Matrix4f, IVertexBuilder> consumer) {
+    public static void renderWithTypeAndFinish(MatrixStack matrixStack, IRenderTypeBuffer buffer, RenderType type, BiConsumer<Matrix4f, IVertexBuilder> consumer) {
+        // use when drawing from RenderWorldLastEvent
         consumer.accept(matrixStack.getLast().getMatrix(), buffer.getBuffer(type));
         finishBuffer(buffer, type);
+    }
+
+    public static void renderWithType(MatrixStack matrixStack, IRenderTypeBuffer buffer, RenderType type, BiConsumer<Matrix4f, IVertexBuilder> consumer) {
+        // use anywhere else (TER, entity renderer etc.)
+        consumer.accept(matrixStack.getLast().getMatrix(), buffer.getBuffer(type));
     }
 
     public static void renderString3d(String str, float x, float y, int color, MatrixStack matrixStack, IRenderTypeBuffer buffer) {

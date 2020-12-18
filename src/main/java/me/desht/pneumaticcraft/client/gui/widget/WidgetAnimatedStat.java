@@ -501,7 +501,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
 
         // quad bg
         int[] cols = RenderUtils.decomposeColor(backGroundColor);
-        RenderUtils.renderWithType(matrixStack, buffer, ModRenderTypes.getUntexturedQuad(true), (posMat, builder) -> {
+        RenderUtils.renderWithTypeAndFinish(matrixStack, buffer, ModRenderTypes.getUntexturedQuad(true), (posMat, builder) -> {
             int rw = leftSided ? -renderWidth : renderWidth;
             builder.pos(posMat, (float)renderBaseX, (float)renderEffectiveY + renderHeight, 0.0F)
                     .color(cols[1], cols[2], cols[3], cols[0])
@@ -522,7 +522,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
         });
 
         // line loops border
-        RenderUtils.renderWithType(matrixStack, buffer, ModRenderTypes.getLineLoopsTransparent(5.0f), (posMat, builder) -> {
+        RenderUtils.renderWithTypeAndFinish(matrixStack, buffer, ModRenderTypes.getLineLoopsTransparent(5.0f), (posMat, builder) -> {
             int rw = leftSided ? -renderWidth : renderWidth;
             float[] c1 = leftSided ? bgColorLo.getComponents(null) : bgColorHi.getComponents(null);
             float[] c2 = bgColorHi.getComponents(null);
@@ -804,7 +804,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
 
         public void render3d(MatrixStack matrixStack, IRenderTypeBuffer buffer, int x, int y, boolean leftSided) {
             if (texture != null) {
-                RenderUtils.renderWithType(matrixStack, buffer, ModRenderTypes.getTextureRenderColored(texture),
+                RenderUtils.renderWithTypeAndFinish(matrixStack, buffer, ModRenderTypes.getTextureRenderColored(texture),
                         (posMat, builder) -> RenderUtils.drawTexture(matrixStack, builder, x, y, RenderUtils.FULL_BRIGHT));
             } else {
                 ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
