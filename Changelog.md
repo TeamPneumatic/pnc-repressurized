@@ -6,6 +6,17 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.16.3 / 1.16.4
 
+## 2.8.1-96 (19 Dec 2020)
+
+### Updates
+* Further performance work on Pressure Tube shape calculation, with more aggressive caching of block shapes
+  * Tests indicate a significant reduction in client-side CPU time used for Pressure Tube shape calculation
+* Made 3D (in-world) pressure gauge rendering more CPU-friendly
+
+### Fixes
+* Fixed client crash on login when Minecolonies is installed
+* Fixed toggling of Pneumatic Armor "Core Components" (the master switch) leaving some upgrades in an inconsistent state
+
 ## 2.8.0-95 (14 Dec 2020)
 
 ### Updates
