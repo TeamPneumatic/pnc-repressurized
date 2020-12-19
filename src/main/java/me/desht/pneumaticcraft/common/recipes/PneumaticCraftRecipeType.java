@@ -20,6 +20,7 @@ import net.minecraft.item.crafting.RecipeManager;
 import net.minecraft.profiler.IProfiler;
 import net.minecraft.resources.IFutureReloadListener;
 import net.minecraft.resources.IResourceManager;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
@@ -105,8 +106,9 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
     public Map<ResourceLocation, T> getRecipes(World world) {
         if (world == null) {
             // we should pretty much always have a world, but here's a fallback: the overworld
-            world = ServerLifecycleHooks.getCurrentServer().getWorld(World.OVERWORLD);
-            // no overworld? let's hope this is the client, then...
+            MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+            if (server != null) world = server.getWorld(World.OVERWORLD);
+            // no server? let's hope this is the client, then...
             if (world == null) world = ClientUtils.getClientWorld();
             if (world == null) return Collections.emptyMap();
         }
