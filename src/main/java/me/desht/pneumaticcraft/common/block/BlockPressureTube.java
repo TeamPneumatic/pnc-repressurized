@@ -149,6 +149,9 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
     public static BlockState recalculateState(IWorld worldIn, BlockPos currentPos, BlockState stateIn) {
         TileEntityPressureTube tePT = getPressureTube(worldIn, currentPos);
         if (tePT != null) {
+            // can't clear cached shape immediately since it appears getShape() can get called
+            // soon enough to re-cache the old shape...
+            tePT.clearCachedShape();
             BlockState state = stateIn;
             for (Direction dir : Direction.VALUES) {
                 ConnectionType type = ConnectionType.UNCONNECTED;
@@ -192,7 +195,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
     public VoxelShape getUncamouflagedShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext ctx) {
         VoxelShape res = getCachedShape(state);
         TileEntityPressureTube te = getPressureTube(reader, pos);
-        return te != null ? VoxelShapes.or(res, te.getCachedModuleShape()) : res;
+        return te != null ? te.getCachedTubeShape(res) : res;
     }
 
     private VoxelShape getCachedShape(BlockState state) {
@@ -426,7 +429,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
             } else {
                 // drop the pressure tube as an item
                 if (!player.isCreative()) spawnDrops(world.getBlockState(pos), world, pos, tube);
-                world.removeBlock(pos, false);
+                removeBlockSneakWrenched(world, pos);
             }
         } else {
             if (module != null) {

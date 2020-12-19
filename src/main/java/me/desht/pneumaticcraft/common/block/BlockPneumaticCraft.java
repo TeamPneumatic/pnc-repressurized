@@ -7,6 +7,8 @@ import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicAmbient;
+import me.desht.pneumaticcraft.common.network.NetworkHandler;
+import me.desht.pneumaticcraft.common.network.PacketBlockDestroyed;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.tileentity.IComparatorSupport;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
@@ -23,7 +25,6 @@ import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.fluid.FluidState;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.BlockItemUseContext;
@@ -237,8 +238,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
             if (!player.isCreative() || preserve) {
                 Block.spawnDrops(world.getBlockState(pos), world, pos, te);
             }
-            FluidState ifluidstate = world.getFluidState(pos);
-            world.setBlockState(pos, ifluidstate.getBlockState(), Constants.BlockFlags.DEFAULT);
+            removeBlockSneakWrenched(world, pos);
             return true;
         } else {
             if (isRotatable()) {
@@ -416,5 +416,14 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
 
     public boolean allowsMovement(BlockState state, IBlockReader worldIn, BlockPos pos, PathType type) {
         return getCollisionShape(state, worldIn, pos, ISelectionContext.dummy()).isEmpty();
+    }
+
+
+    static void removeBlockSneakWrenched(World world, BlockPos pos) {
+        if (!world.isRemote()) {
+            world.removeBlock(pos, false);
+            // this only gets called server-side, but the client needs to be informed too, to update neighbour states
+            NetworkHandler.sendToAllTracking(new PacketBlockDestroyed(pos), world, pos);
+        }
     }
 }

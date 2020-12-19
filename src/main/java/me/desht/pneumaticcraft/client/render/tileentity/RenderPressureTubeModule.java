@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 public class RenderPressureTubeModule extends TileEntityRenderer<TileEntityPressureTube> {
 
-    private final Map<ResourceLocation, TubeModuleRendererBase> models = new HashMap<>();
+    private final Map<ResourceLocation, TubeModuleRendererBase<?>> models = new HashMap<>();
 
     public RenderPressureTubeModule(TileEntityRendererDispatcher dispatcher) {
         super(dispatcher);
@@ -60,12 +60,13 @@ public class RenderPressureTubeModule extends TileEntityRenderer<TileEntityPress
 
         for (TubeModule m : modules) {
             getModuleRenderer(m).renderModule(m, matrixStack, buffer, partialTicks, combinedLight, combinedOverlay);
-            if (m.isFake()) tile.setModule(m.getDirection(), null);
         }
     }
 
-    private TubeModuleRendererBase getModuleRenderer(TubeModule module) {
-        return models.computeIfAbsent(module.getType(), k -> TubeModuleClientRegistry.createModel(module));
+    private <T extends TubeModule> TubeModuleRendererBase<T> getModuleRenderer(T module) {
+        TubeModuleRendererBase<?> res = models.computeIfAbsent(module.getType(), k -> TubeModuleClientRegistry.createModel(module));
+        //noinspection unchecked
+        return (TubeModuleRendererBase<T>) res;
     }
 
     @Override

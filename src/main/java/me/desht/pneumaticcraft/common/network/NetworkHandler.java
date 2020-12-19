@@ -194,6 +194,8 @@ public class NetworkHandler {
 				PacketLeftClickEmpty::toBytes, PacketLeftClickEmpty::new, PacketLeftClickEmpty::handle);
 		registerMessage(PacketShiftScrollWheel.class,
 				PacketShiftScrollWheel::toBytes, PacketShiftScrollWheel::new, PacketShiftScrollWheel::handle);
+		registerMessage(PacketBlockDestroyed.class,
+				PacketBlockDestroyed::toBytes, PacketBlockDestroyed::new, PacketBlockDestroyed::handle);
     }
 
 	public static <MSG> void registerMessage(Class<MSG> messageType, BiConsumer<MSG, PacketBuffer> encoder, Function<PacketBuffer, MSG> decoder, BiConsumer<MSG, Supplier<NetworkEvent.Context>> messageConsumer) {

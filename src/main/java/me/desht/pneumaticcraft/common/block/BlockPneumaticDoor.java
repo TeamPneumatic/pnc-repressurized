@@ -15,7 +15,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.DoorBlock;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.fluid.FluidState;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
@@ -174,10 +173,8 @@ public class BlockPneumaticDoor extends BlockPneumaticCraft {
             if (!player.isCreative()) {
                 TileEntity te = world.getTileEntity(pos);
                 Block.spawnDrops(world.getBlockState(pos), world, pos, te);
-                FluidState ifluidstate = world.getFluidState(pos);
-                world.setBlockState(pos, ifluidstate.getBlockState(), Constants.BlockFlags.DEFAULT);
-                ifluidstate = world.getFluidState(pos.up());
-                world.setBlockState(pos.up(), ifluidstate.getBlockState(), Constants.BlockFlags.DEFAULT);
+                removeBlockSneakWrenched(world, pos);
+                removeBlockSneakWrenched(world, pos.up());
             }
         } else {
             super.onWrenched(world, player, pos, face, hand);

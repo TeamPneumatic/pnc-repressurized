@@ -12,24 +12,25 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class TubeModuleClientRegistry {
-    private static final Map<ResourceLocation, Supplier<? extends TubeModuleRendererBase>> MODEL_FACTORY = new HashMap<>();
-    private static final Map<ResourceLocation, Function<BlockPos, ? extends GuiTubeModule>> guis = new HashMap<>();
+    private static final Map<ResourceLocation, Supplier<? extends TubeModuleRendererBase<?>>> MODEL_FACTORY = new HashMap<>();
+    private static final Map<ResourceLocation, Function<BlockPos, ? extends GuiTubeModule<?>>> guis = new HashMap<>();
 
-    static void registerTubeModuleRenderer(ResourceLocation moduleType, Supplier<? extends TubeModuleRendererBase> factory) {
+    static void registerTubeModuleRenderer(ResourceLocation moduleType, Supplier<? extends TubeModuleRendererBase<?>> factory) {
         MODEL_FACTORY.put(moduleType, factory);
     }
 
-    static void registerTubeModuleGUI(ResourceLocation moduleType, Function<BlockPos, ? extends GuiTubeModule> factory) {
+    static void registerTubeModuleGUI(ResourceLocation moduleType, Function<BlockPos, ? extends GuiTubeModule<?>> factory) {
         guis.put(moduleType, factory);
     }
 
-    public static GuiTubeModule createGUI(ResourceLocation moduleType, BlockPos pos) {
-        Function<BlockPos, ? extends GuiTubeModule> factory = guis.get(moduleType);
+    public static GuiTubeModule<?> createGUI(ResourceLocation moduleType, BlockPos pos) {
+        Function<BlockPos, ? extends GuiTubeModule<?>> factory = guis.get(moduleType);
         return factory == null ? null : factory.apply(pos);
     }
 
-    public static TubeModuleRendererBase createModel(TubeModule module) {
-        return MODEL_FACTORY.get(module.getType()).get();
+    public static <T extends TubeModule> TubeModuleRendererBase<T> createModel(T module) {
+        TubeModuleRendererBase<?> res = MODEL_FACTORY.get(module.getType()).get();
+        return (TubeModuleRendererBase<T>) res;
     }
 
 }
