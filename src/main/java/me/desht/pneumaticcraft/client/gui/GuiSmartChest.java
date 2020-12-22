@@ -257,18 +257,31 @@ public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest
 
     @Override
     protected void handleMouseClick(Slot slotIn, int slotId, int mouseButton, ClickType type) {
-        if (slotId < CHEST_SIZE && mouseButton == 0 && Screen.hasAltDown()) {
+        if (slotIn != null && slotId < CHEST_SIZE && mouseButton == 0 && Screen.hasAltDown()) {
             ItemStack stack = slotIn.getStack();
             if (stack.isEmpty() && slotId > 0 && te.getFilter(slotId).isEmpty()) {
-                // alt-click an empty slot - try to mark this as the last slot
-                // but only if all slots after this are also currently empty
-                if (slotId == te.getLastSlot()) {
-                    te.setLastSlot(CHEST_SIZE);
-                } else {
-                    for (int i = slotId; i < CHEST_SIZE; i++) {
-                        if (!container.inventorySlots.get(i).getStack().isEmpty()) return;
+                if (playerInventory.getItemStack().isEmpty()) {
+                    // alt-click an empty slot - try to mark this as the last slot
+                    // but only if all slots after this are also currently empty
+                    if (slotId == te.getLastSlot()) {
+                        // re-open all closed slots
+                        te.setLastSlot(CHEST_SIZE);
+                    } else {
+                        // close all slots from the clicked one onwards, if possible
+                        for (int i = slotId; i < CHEST_SIZE; i++) {
+                            if (!container.inventorySlots.get(i).getStack().isEmpty()) return;
+                        }
+                        te.setLastSlot(slotId);
                     }
-                    te.setLastSlot(slotId);
+                } else {
+                    // alt-click an empty slot with item on cursor: try to set it as a filter
+                    ItemStack inHand = playerInventory.getItemStack().copy();
+                    if (hasShiftDown()) inHand.setCount(inHand.getMaxStackSize());
+                    te.setFilter(slotId, inHand);
+                    if (te.getLastSlot() <= slotId) {
+                        te.setLastSlot(slotId + 1);
+                    }
+                    this.filter = te.getFilter();
                 }
                 NetworkHandler.sendToServer(new PacketSyncSmartChest(this.te));
             } else {
