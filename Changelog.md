@@ -6,6 +6,23 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.16.3 / 1.16.4
 
+## 2.8.2-97 (22 Dec 2020)
+
+### Updates
+* The Coordinate Operator progwidget can now operate upon a specific subset of the X/Y/Z coordinate fields if desired
+  * Choose which fields should be affected in the widget's GUI
+  * Default is all of X/Y/Z, i.e. same behaviour as previously
+* Programmable Controllers can no longer mine themselves up via the Dig progwidget
+* Smart Chest filtering: Alt + Left Click with an item on the cursors now set that item as a filter if possible
+  * This can also be done on "closed" slots in the chest's GUI
+  * Useful to be able to update a filter without needing to open up a closed slot (potentially letting unwanted items in)
+
+### Fixes
+* Fixed Liquid Import progwidget losing any fluid it imported from a fluid block in the world
+* Fixed oil generation being allowed in Nether Wastes biome
+  * This should have been blacklisted before but was missed; oil should only appear in Basalt Delta in the Nether by default
+  * Config is not retroactively updated; add "minecraft:nether_wastes" to pneumaticcraft-common.toml -> General -> `oil_worldgen_blacklist` if you want to apply this change to an existing world.
+
 ## 2.8.1-96 (19 Dec 2020)
 
 ### Updates
