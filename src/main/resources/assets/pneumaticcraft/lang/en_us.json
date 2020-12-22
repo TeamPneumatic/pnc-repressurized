@@ -1011,6 +1011,7 @@
    "pneumaticcraft.gui.progWidget.coordinateOperator.multiply_divide" : "Mul/Div",
    "pneumaticcraft.gui.progWidget.coordinateOperator.noParameter" : "No parameters!",
    "pneumaticcraft.gui.progWidget.coordinateOperator.operator" : "Operator:",
+   "pneumaticcraft.gui.progWidget.coordinateOperator.axes" : "With Axes:",
    "pneumaticcraft.gui.progWidget.coordinateOperator.plus_minus" : "Add/Sub",
    "pneumaticcraft.gui.progWidget.coordinateOperator.plus_minus.hint" : "The variable will be set to the result of adding all the coordinates on the right of this piece, and subtracting all the coordinates on the left.",
    "pneumaticcraft.gui.progWidget.coordinate.selectFromGPS" : "Select from GPS",

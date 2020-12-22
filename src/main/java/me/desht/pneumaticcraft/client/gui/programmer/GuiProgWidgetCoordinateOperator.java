@@ -1,10 +1,13 @@
 package me.desht.pneumaticcraft.client.gui.programmer;
 
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetComboBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetRadioButton;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetCoordinateOperator;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetCoordinateOperator.EnumOperator;
+import net.minecraft.util.Direction;
+import net.minecraft.util.text.StringTextComponent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +27,7 @@ public class GuiProgWidgetCoordinateOperator extends GuiProgWidgetAreaShow<ProgW
         super.init();
 
         addLabel(xlate("pneumaticcraft.gui.progWidget.coordinateOperator.operator"), guiLeft + 7, guiTop + 30);
+        addLabel(xlate("pneumaticcraft.gui.progWidget.coordinateOperator.axes"), guiLeft + 100, guiTop + 30);
         addLabel(xlate("pneumaticcraft.gui.progWidget.coordinate.variableName"), guiLeft + 7, guiTop + 88);
 
         List<WidgetRadioButton> radioButtons = new ArrayList<>();
@@ -36,6 +40,13 @@ public class GuiProgWidgetCoordinateOperator extends GuiProgWidgetAreaShow<ProgW
             radioButton.otherChoices = radioButtons;
             radioButton.setTooltip(xlate(key + ".hint"));
             addButton(radioButton);
+        }
+
+        for (Direction.Axis axis : Direction.Axis.values()) {
+            WidgetCheckBox checkBox = new WidgetCheckBox(guiLeft + 100, guiTop + 42 + axis.ordinal() * 12, 0xFF404040,
+                    new StringTextComponent(axis.getName2()), b -> progWidget.getAxisOptions().setCheck(axis, b.checked));
+            addButton(checkBox);
+            checkBox.setChecked(progWidget.getAxisOptions().shouldCheck(axis));
         }
 
         variableField = new WidgetComboBox(font, guiLeft + 7, guiTop + 100, 80, font.FONT_HEIGHT + 1);

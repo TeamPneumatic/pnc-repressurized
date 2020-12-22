@@ -9,19 +9,21 @@ import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetCoordinateOperator.E
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.Direction.Axis;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetCoordinateCondition extends ProgWidgetConditionBase {
-
-    public final boolean[] checkingAxis = new boolean[3];
+    private final AxisOptions axisOptions = new AxisOptions(false, false, false);
     private Operator operator = Operator.GE;
 
     public ProgWidgetCoordinateCondition() {
@@ -41,7 +43,7 @@ public class ProgWidgetCoordinateCondition extends ProgWidgetConditionBase {
     @Override
     public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
-        if (!checkingAxis[0] && !checkingAxis[1] && !checkingAxis[2])
+        if (!axisOptions.shouldCheck(Axis.X) && !axisOptions.shouldCheck(Axis.Y) && !axisOptions.shouldCheck(Axis.Z))
             curInfo.add(xlate("pneumaticcraft.gui.progWidget.conditionCoordinate.error.noAxisSelected"));
     }
 
@@ -49,12 +51,15 @@ public class ProgWidgetCoordinateCondition extends ProgWidgetConditionBase {
     public boolean evaluate(IDroneBase drone, IProgWidget widget) {
         BlockPos pos1 = ProgWidgetCoordinateOperator.calculateCoordinate(widget, 0, EnumOperator.PLUS_MINUS);
         BlockPos pos2 = ProgWidgetCoordinateOperator.calculateCoordinate(widget, 1, EnumOperator.PLUS_MINUS);
-        if (checkingAxis[0] && !evaluate(pos1.getX(), pos2.getX())) return false;
-        if (checkingAxis[1] && !evaluate(pos1.getY(), pos2.getY())) return false;
-        return !(checkingAxis[2] && !evaluate(pos1.getZ(), pos2.getZ()));
+        return (!axisOptions.shouldCheck(Axis.X) || evaluate(pos1.getX(), pos2.getX()))
+                && (!axisOptions.shouldCheck(Axis.Y) || evaluate(pos1.getY(), pos2.getY()))
+                && !axisOptions.shouldCheck(Axis.Z) && !evaluate(pos1.getZ(), pos2.getZ());
     }
 
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    public AxisOptions getAxisOptions() {
+        return axisOptions;
+    }
+
     private boolean evaluate(int arg1, int arg2) {
         return operator.evaluate(arg1, arg2);
     }
@@ -70,36 +75,28 @@ public class ProgWidgetCoordinateCondition extends ProgWidgetConditionBase {
     @Override
     public void writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
-        tag.putBoolean("checkX", checkingAxis[0]);
-        tag.putBoolean("checkY", checkingAxis[1]);
-        tag.putBoolean("checkZ", checkingAxis[2]);
+        axisOptions.writeToNBT(tag);
         tag.putByte("operator", (byte) operator.ordinal());
     }
 
     @Override
     public void readFromNBT(CompoundNBT tag) {
         super.readFromNBT(tag);
-        checkingAxis[0] = tag.getBoolean("checkX");
-        checkingAxis[1] = tag.getBoolean("checkY");
-        checkingAxis[2] = tag.getBoolean("checkZ");
+        axisOptions.readFromNBT(tag, false);
         operator = Operator.values()[tag.getByte("operator")];
     }
 
     @Override
     public void writeToPacket(PacketBuffer buf) {
         super.writeToPacket(buf);
-        buf.writeBoolean(checkingAxis[0]);
-        buf.writeBoolean(checkingAxis[1]);
-        buf.writeBoolean(checkingAxis[2]);
+        axisOptions.writeToBuffer(buf);
         buf.writeByte(operator.ordinal());
     }
 
     @Override
     public void readFromPacket(PacketBuffer buf) {
         super.readFromPacket(buf);
-        checkingAxis[0] = buf.readBoolean();
-        checkingAxis[1] = buf.readBoolean();
-        checkingAxis[2] = buf.readBoolean();
+        axisOptions.readFromBuffer(buf);
         operator = Operator.values()[buf.readByte()];
     }
 
@@ -121,14 +118,9 @@ public class ProgWidgetCoordinateCondition extends ProgWidgetConditionBase {
     }
 
     public String getCondition() {
-        char[] axis = new char[]{'x', 'y', 'z'};
-        StringBuilder condition = new StringBuilder();
-        for (int i = 0; i < 3; i++) {
-            if (checkingAxis[i]) {
-                if (condition.length() > 0) condition.append(" and ");
-                condition.append(("%s1 " + operator + " %s2").replace("%s", "" + axis[i]));
-            }
-        }
-        return condition.toString();
+        return Arrays.stream(Axis.values())
+                .filter(axisOptions::shouldCheck)
+                .map(axis -> String.format("%1$s1 %2$s %1$s2", axis.getName2(), operator.toString()))
+                .collect(Collectors.joining(" and "));
     }
 }

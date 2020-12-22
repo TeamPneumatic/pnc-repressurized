@@ -23,11 +23,10 @@ public class GuiProgWidgetCoordinateCondition extends GuiProgWidgetOptionBase<Pr
         super.init();
 
         for (Direction.Axis axis : Direction.Axis.values()) {
-            final int idx = axis.ordinal();
-            WidgetCheckBox checkBox = new WidgetCheckBox(guiLeft + 10, guiTop + 30 + idx * 12, 0xFF404040,
-                    new StringTextComponent(axis.getName2()), b -> progWidget.checkingAxis[idx] = b.checked);
+            WidgetCheckBox checkBox = new WidgetCheckBox(guiLeft + 10, guiTop + 30 + axis.ordinal() * 12, 0xFF404040,
+                    new StringTextComponent(axis.getName2()), b -> progWidget.getAxisOptions().setCheck(axis, b.checked));
             addButton(checkBox);
-            checkBox.setChecked(progWidget.checkingAxis[idx]);
+            checkBox.setChecked(progWidget.getAxisOptions().shouldCheck(axis));
         }
 
         List<WidgetRadioButton> radioButtons = new ArrayList<>();
