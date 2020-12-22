@@ -211,7 +211,7 @@ public class FluidUtils {
                 }
             }
         }
-        if (removeBlock) {
+        if (removeBlock && action.execute()) {
             ((IBucketPickupHandler) state.getBlock()).pickupFluid(world, pos, state);
         }
         FluidStack transferred = fluidCap.map(h ->
