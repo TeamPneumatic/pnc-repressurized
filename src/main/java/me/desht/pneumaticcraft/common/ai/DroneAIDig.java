@@ -27,7 +27,7 @@ public class DroneAIDig<W extends ProgWidgetAreaItemBase & IToolUser> extends Dr
     protected boolean isValidPosition(BlockPos pos) {
         BlockState blockState = worldCache.getBlockState(pos);
         Block block = blockState.getBlock();
-        if (!worldCache.getBlockState(pos).isAir(worldCache, pos) && !ignoreBlock(block)) {
+        if (!worldCache.getBlockState(pos).isAir(worldCache, pos) && !ignoreBlock(block) && !pos.equals(drone.getControllerPos())) {
             for (ItemStack droppedStack : getDrops(worldCache, pos, drone)) {
                 if (progWidget.isItemValidForFilters(droppedStack, blockState)) {
                     return swapBestItemToFirstSlot(pos) || !progWidget.requiresTool();
