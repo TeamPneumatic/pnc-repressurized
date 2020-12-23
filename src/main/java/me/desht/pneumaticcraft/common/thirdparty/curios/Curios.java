@@ -4,18 +4,24 @@ import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
 import me.desht.pneumaticcraft.common.tileentity.PneumaticEnergyStorage;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.wrapper.CombinedInvWrapper;
 import org.apache.commons.lang3.tuple.Pair;
 import top.theillusivec4.curios.api.CuriosApi;
+import top.theillusivec4.curios.api.type.capability.ICuriosItemHandler;
 import top.theillusivec4.curios.api.type.inventory.ICurioStacksHandler;
 
 import java.util.Map;
 import java.util.function.Predicate;
 
 public class Curios implements IThirdParty {
+    @CapabilityInject(ICuriosItemHandler.class)
+    public static final Capability<ICuriosItemHandler> CAPABILITY_CURIO_HANDLER = null;
+
     public static boolean available = false;
 
     public static final Pair<String,Integer> NONE = Pair.of("", -1);

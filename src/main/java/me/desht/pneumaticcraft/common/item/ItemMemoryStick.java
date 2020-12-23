@@ -11,6 +11,7 @@ import me.desht.pneumaticcraft.common.thirdparty.curios.Curios;
 import me.desht.pneumaticcraft.common.util.EnchantmentUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
@@ -32,13 +33,11 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fml.common.Mod;
-import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ItemMemoryStick extends Item implements ColorHandlers.ITintableItem, ILeftClickableItem {
     private static final String TANK_NAME = "Tank";
@@ -177,6 +176,19 @@ public class ItemMemoryStick extends Item implements ColorHandlers.ITintableItem
         toggleXPAbsorption(sender, sender.getHeldItemMainhand());
     }
 
+    @Override
+    public void inventoryTick(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
+        if (shouldAbsorbXPOrbs(stack) && entityIn instanceof PlayerEntity && itemSlot >= 0) {
+            cacheMemoryStickLocation((PlayerEntity) entityIn, MemoryStickLocator.playerInv(itemSlot));
+        }
+    }
+
+    public static boolean isRoomInStick(ItemStack stick) {
+        return stick.getItem() instanceof ItemMemoryStick && stick.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY)
+                .map(h -> h.getFluidInTank(0).getAmount() < h.getTankCapacity(0))
+                .orElseThrow(RuntimeException::new);
+    }
+
     private static void toggleXPAbsorption(PlayerEntity player, ItemStack stack) {
         if (stack.getItem() instanceof ItemMemoryStick) {
             boolean absorb = shouldAbsorbXPOrbs(stack);
@@ -186,20 +198,24 @@ public class ItemMemoryStick extends Item implements ColorHandlers.ITintableItem
         }
     }
 
+    public static void cacheMemoryStickLocation(PlayerEntity entityIn, MemoryStickLocator locator) {
+        Listener.memoryStickCache.computeIfAbsent(entityIn.getUniqueID(), k -> new HashSet<>()).add(locator);
+    }
+
     @Mod.EventBusSubscriber
     public static class Listener {
-        private static final Map<PlayerEntity, Long> lastEvent = new HashMap<>();
-        private static final Map<PlayerEntity, Pair<String,Integer>> memoryStickCache = new HashMap<>();
+        private static final Map<UUID, Long> lastEvent = new HashMap<>();
+        private static final Map<UUID, Set<MemoryStickLocator>> memoryStickCache = new HashMap<>();
 
         @SubscribeEvent
         public static void onLeftClick(PlayerInteractEvent.LeftClickBlock event) {
             if (event.getItemStack().getItem() instanceof ItemMemoryStick) {
                 if (!event.getWorld().isRemote) {
                     long now = event.getWorld().getGameTime();
-                    long last = lastEvent.getOrDefault(event.getPlayer(), 0L);
+                    long last = lastEvent.getOrDefault(event.getPlayer().getUniqueID(), 0L);
                     if (now - last > 5) {
                         toggleXPAbsorption(event.getPlayer(), event.getItemStack());
-                        lastEvent.put(event.getPlayer(), now);
+                        lastEvent.put(event.getPlayer().getUniqueID(), now);
                     }
                 }
                 event.setCanceled(true);
@@ -230,39 +246,59 @@ public class ItemMemoryStick extends Item implements ColorHandlers.ITintableItem
         }
 
         private static ItemStack findMemoryStick(PlayerEntity player) {
-            Pair<String,Integer> p = memoryStickCache.get(player);
-            ItemStack stack = p == null ? ItemStack.EMPTY : getMemoryStick(player, p.getLeft(), p.getRight());
-            if (!shouldAbsorbXPOrbs(stack)) {
-                memoryStickCache.remove(player);
-                for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
-                    ItemStack stack1 = player.inventory.getStackInSlot(i);
-                    if (stack1.getItem() == ModItems.MEMORY_STICK.get() && shouldAbsorbXPOrbs(stack1)) {
-                        stack = stack1;
-                        memoryStickCache.put(player, Pair.of("", i));
-                        break;
-                    }
-                }
-                if (stack.isEmpty() && Curios.available) {
-                    Pair<String,Integer> p1 = Curios.findStack(player, ItemMemoryStick::shouldAbsorbXPOrbs);
-                    if (p1 == Curios.NONE) {
-                        stack = ItemStack.EMPTY;
-                    } else {
-                        stack = Curios.getStack(player, p1.getKey(), p1.getValue());
-                        memoryStickCache.put(player, Pair.of(p1.getKey(), p1.getValue()));
-                    }
-                }
-            }
-            return stack;
+            Set<MemoryStickLocator> locators = memoryStickCache.get(player.getUniqueID());
+            if (locators == null || locators.isEmpty()) return ItemStack.EMPTY;
+
+            locators.removeIf(loc -> !shouldAbsorbXPOrbs(loc.getMemoryStick(player))); // prune old entries
+
+            // use first suitable memory stick in inventory (xp absorb switched on, not full)
+            return locators.stream()
+                    .map(loc -> loc.getMemoryStick(player))
+                    .filter(ItemMemoryStick::isRoomInStick)
+                    .findFirst()
+                    .orElse(ItemStack.EMPTY);
+        }
+    }
+
+    public static class MemoryStickLocator {
+        final String invName; // empty string for player inv, curio inv identifier for curios inv
+        final int slot;
+
+        private MemoryStickLocator(@Nonnull String invName, int slot) {
+            Validate.notNull(invName);
+            Validate.isTrue(slot >= 0);
+            this.invName = invName;
+            this.slot = slot;
         }
 
-        @Nonnull
-        private static ItemStack getMemoryStick(PlayerEntity player, String inv, int slot) {
-            if (inv.isEmpty()) {
+        public static MemoryStickLocator playerInv(int slot) {
+            return new MemoryStickLocator("", slot);
+        }
+
+        public static MemoryStickLocator namedInv(String name, int slot) {
+            return new MemoryStickLocator(name, slot);
+        }
+
+        public ItemStack getMemoryStick(PlayerEntity player) {
+            if (invName.isEmpty()) {
                 return player.inventory.getStackInSlot(slot);
             } else if (Curios.available) {
-                return Curios.getStack(player, inv, slot);
+                return Curios.getStack(player, invName, slot);
             }
             return ItemStack.EMPTY;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof MemoryStickLocator)) return false;
+            MemoryStickLocator that = (MemoryStickLocator) o;
+            return slot == that.slot && invName.equals(that.invName);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(invName, slot);
         }
     }
 }
