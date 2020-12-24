@@ -53,12 +53,14 @@ public class ItemMemoryStick extends Item implements ColorHandlers.ITintableItem
     };
 
     public ItemMemoryStick() {
-        super(ModItems.defaultProps());
+        super(ModItems.defaultProps().maxStackSize(1));
     }
 
     @Override
     public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
         ItemStack stack = playerIn.getHeldItem(handIn);
+        if (stack.getCount() != 1) return ActionResult.resultPass(stack);
+
         if (!worldIn.isRemote) {
             stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).ifPresent(handler -> {
                 int ratio = XPFluidManager.getInstance().getXPRatio(ModFluids.MEMORY_ESSENCE.get());
@@ -145,7 +147,7 @@ public class ItemMemoryStick extends Item implements ColorHandlers.ITintableItem
     }
 
     public static boolean shouldAbsorbXPOrbs(ItemStack stack) {
-        return stack.getItem() == ModItems.MEMORY_STICK.get() && stack.hasTag() && stack.getTag().getBoolean(NBT_ABSORB_ORBS);
+        return stack.getItem() == ModItems.MEMORY_STICK.get() && stack.getCount() == 1 && stack.hasTag() && stack.getTag().getBoolean(NBT_ABSORB_ORBS);
     }
 
     public static void setAbsorbXPOrbs(ItemStack stack, boolean absorb) {
