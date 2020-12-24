@@ -22,6 +22,8 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed oil generation being allowed in Nether Wastes biome
   * This should have been blacklisted before but was missed; oil should only appear in Basalt Delta in the Nether by default
   * Config is not retroactively updated; add "minecraft:nether_wastes" to pneumaticcraft-common.toml -> General -> `oil_worldgen_blacklist` if you want to apply this change to an existing world.
+* Memory Sticks are now unstackable
+* Hopefully fixed problem where Memory Stick XP auto-absorb randomly stopped working
 
 ## 2.8.1-96 (19 Dec 2020)
 
