@@ -53,6 +53,8 @@ public class ModProgWidgets {
             = register("drop_item", ProgWidgetDropItem::new);
     public static final RegistryObject<ProgWidgetType<ProgWidgetVoidItem>> VOID_ITEM
             = register("void_item", ProgWidgetVoidItem::new);
+    public static final RegistryObject<ProgWidgetType<ProgWidgetVoidLiquid>> VOID_FLUID
+            = register("void_liquid", ProgWidgetVoidLiquid::new);
     public static final RegistryObject<ProgWidgetType<ProgWidgetInventoryExport>> INVENTORY_EXPORT
             = register("inventory_export", ProgWidgetInventoryExport::new);
     public static final RegistryObject<ProgWidgetType<ProgWidgetInventoryImport>> INVENTORY_IMPORT
@@ -130,7 +132,7 @@ public class ModProgWidgets {
     public static final RegistryObject<ProgWidgetType<ProgWidgetDroneConditionEnergy>> DRONE_CONDITION_RF
             = register("drone_condition_rf", ProgWidgetDroneConditionEnergy::new);
     public static final RegistryObject<ProgWidgetType<ProgWidgetCC>> COMPUTER_CONTROL
-            = register("computer_control", ProgWidgetCC::new);
+            = register("computer_control", ProgWidgetCC::new);;
 
     private static <P extends IProgWidgetBase, T extends ProgWidgetType<P>> RegistryObject<T> register(String name, Supplier<P> sup) {
         //noinspection unchecked

@@ -101,15 +101,17 @@ public class ProgWidgetLiquidFilter extends ProgWidget {
     }
 
     public static boolean isLiquidValid(Fluid fluid, IProgWidget mainWidget, int filterIndex) {
+        // checking blacklist first
         ProgWidgetLiquidFilter widget = (ProgWidgetLiquidFilter) mainWidget.getConnectedParameters()[mainWidget.getParameters().size() + filterIndex];
         while (widget != null) {
             if (!widget.isLiquidValid(fluid)) return false;
             widget = (ProgWidgetLiquidFilter) widget.getConnectedParameters()[0];
         }
+        // then whitelist
         widget = (ProgWidgetLiquidFilter) mainWidget.getConnectedParameters()[filterIndex];
         if (widget == null) return true;
         while (widget != null) {
-            if (widget.isLiquidValid(fluid)) return true;  // TODO verify this, looks dodgy
+            if (widget.isLiquidValid(fluid)) return true;
             widget = (ProgWidgetLiquidFilter) widget.getConnectedParameters()[0];
         }
         return false;

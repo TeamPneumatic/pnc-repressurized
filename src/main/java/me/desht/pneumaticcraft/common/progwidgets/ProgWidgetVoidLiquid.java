@@ -2,31 +2,31 @@ package me.desht.pneumaticcraft.common.progwidgets;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.common.ai.DroneAIVoidItem;
+import me.desht.pneumaticcraft.common.ai.DroneAIVoidLiquid;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.item.DyeColor;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
 import java.util.List;
 
-public class ProgWidgetVoidItem extends ProgWidget {
-    public ProgWidgetVoidItem() {
-        super(ModProgWidgets.VOID_ITEM.get());
+public class ProgWidgetVoidLiquid extends ProgWidget implements ILiquidFiltered {
+    public ProgWidgetVoidLiquid() {
+        super(ModProgWidgets.VOID_FLUID.get());
     }
 
     @Override
     public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
-        return new DroneAIVoidItem(drone, (ProgWidgetVoidItem) widget);
+        return new DroneAIVoidLiquid(drone, (ProgWidgetVoidLiquid) widget);
     }
 
     @Override
     public ResourceLocation getTexture() {
-        return Textures.PROG_WIDGET_VOID_ITEM;
+        return Textures.PROG_WIDGET_VOID_LIQUID;
     }
 
     @Override
@@ -42,7 +42,7 @@ public class ProgWidgetVoidItem extends ProgWidget {
     @Nonnull
     @Override
     public List<ProgWidgetType<?>> getParameters() {
-        return ImmutableList.of(ModProgWidgets.ITEM_FILTER.get());
+        return ImmutableList.of(ModProgWidgets.LIQUID_FILTER.get());
     }
 
     @Override
@@ -55,11 +55,8 @@ public class ProgWidgetVoidItem extends ProgWidget {
         return WidgetDifficulty.EASY;
     }
 
-    public boolean isItemValidForFilters(ItemStack item) {
-        return ProgWidgetItemFilter.isItemValidForFilters(item,
-                ProgWidget.getConnectedWidgetList(this, 0, ModProgWidgets.ITEM_FILTER.get()),
-                ProgWidget.getConnectedWidgetList(this, getParameters().size(), ModProgWidgets.ITEM_FILTER.get()),
-                null
-        );
+    @Override
+    public boolean isFluidValid(Fluid fluid) {
+        return ProgWidgetLiquidFilter.isLiquidValid(fluid, this, 0);
     }
 }
