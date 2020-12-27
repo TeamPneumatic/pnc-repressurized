@@ -212,16 +212,18 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
 
         if (energy.getEnergyStored() > 100) {
             held.getCapability(CapabilityEnergy.ENERGY).ifPresent(handler -> {
-                if (handler.getMaxEnergyStored() - handler.getEnergyStored() > 100) {
-                    handler.receiveEnergy(energy.extractEnergy(100, false), false);
+                if (handler.getMaxEnergyStored() - handler.getEnergyStored() > 250) {
+                    handler.receiveEnergy(energy.extractEnergy(250, false), false);
                 }
             });
         }
 
         held.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(handler -> {
             if (getPressure() > handler.getPressure() && handler.getPressure() < handler.maxPressure()) {
-                handler.addAir(50);
-                airHandler.addAir(-50);
+                int maxAir = (int) (handler.maxPressure() * handler.getVolume());
+                int toAdd = Math.min(250, maxAir - handler.getAir());
+                handler.addAir(toAdd);
+                airHandler.addAir(-toAdd);
             }
         });
     }
