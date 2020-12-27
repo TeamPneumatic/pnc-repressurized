@@ -53,7 +53,7 @@ public class ProgWidgetCoordinateCondition extends ProgWidgetConditionBase {
         BlockPos pos2 = ProgWidgetCoordinateOperator.calculateCoordinate(widget, 1, EnumOperator.PLUS_MINUS);
         return (!axisOptions.shouldCheck(Axis.X) || evaluate(pos1.getX(), pos2.getX()))
                 && (!axisOptions.shouldCheck(Axis.Y) || evaluate(pos1.getY(), pos2.getY()))
-                && !axisOptions.shouldCheck(Axis.Z) && !evaluate(pos1.getZ(), pos2.getZ());
+                && !(axisOptions.shouldCheck(Axis.Z) && !evaluate(pos1.getZ(), pos2.getZ()));
     }
 
     public AxisOptions getAxisOptions() {
