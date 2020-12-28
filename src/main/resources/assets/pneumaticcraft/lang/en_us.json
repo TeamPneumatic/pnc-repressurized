@@ -1078,7 +1078,7 @@
    "pneumaticcraft.gui.progWidget.itemFilter.ignoreDurability" : "▶ Ignore Item Durability",
    "pneumaticcraft.gui.progWidget.itemFilter.useNBT" : "▶ Match Item NBT",
    "pneumaticcraft.gui.progWidget.itemFilter.ignoreNBT" : "▶ Ignore Item NBT",
-   "pneumaticcraft.gui.progWidget.itemFilter.useItemCount.tooltip" : "When checked, allow only the specified number of items or quantity (mB) of fluid to be transfered.",
+   "pneumaticcraft.gui.progWidget.itemFilter.useItemCount.tooltip" : "When checked, allow only the specified number of items or quantity (mB) of fluid to be transferred.",
    "pneumaticcraft.gui.progWidget.itemFilter.useItemCount" : "Use count",
    "pneumaticcraft.gui.progWidget.itemFilter.variableLabel" : "Variable",
    "pneumaticcraft.gui.progWidget.itemFilter.warning.ignoredItemAssign" : "This widget will be ignored. Item Assign widget only takes a single Item Filter widget.",
@@ -1750,6 +1750,6 @@
    "programmingPuzzle.pneumaticcraft.teleport.name" : "Teleport to location",
    "programmingPuzzle.pneumaticcraft.text.name" : "Text",
    "programmingPuzzle.pneumaticcraft.void_item.name" : "Void Item",
-   "programmingPuzzle.pneumaticcraft.void_liquid.name" : "Void Liquid",
+   "programmingPuzzle.pneumaticcraft.void_liquid.name" : "Void Fluid",
    "programmingPuzzle.pneumaticcraft.wait.name" : "Wait"
 }

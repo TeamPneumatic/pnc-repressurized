@@ -13,17 +13,21 @@ Changes are in reverse chronological order; newest changes at the top.
   * Choose which fields should be affected in the widget's GUI
   * Default is all of X/Y/Z, i.e. same behaviour as previously
 * Programmable Controllers can no longer mine themselves up via the Dig progwidget
-* Smart Chest filtering: Alt + Left Click with an item on the cursors now set that item as a filter if possible
+* Smart Chest filtering: Alt + Left Click with an item on the cursor now sets that item as a filter if possible
   * This can also be done on "closed" slots in the chest's GUI
-  * Useful to be able to update a filter without needing to open up a closed slot (potentially letting unwanted items in)
+  * Useful to be able to update a filter without needing to open up a closed slot (potentially allowing unwanted items in)
+* Added Void Fluid progwidget, counterpart to the Void Item widget added back in 2.4.5
+* The Programmable Controller can now charge the minidrone's held item (pressure or RF) significantly faster than before
+  * This makes Jackhammers in vein+ mode highly suitable for use in a very fast quarry...
 
 ### Fixes
 * Fixed Liquid Import progwidget losing any fluid it imported from a fluid block in the world
 * Fixed oil generation being allowed in Nether Wastes biome
-  * This should have been blacklisted before but was missed; oil should only appear in Basalt Delta in the Nether by default
+  * This should have been blacklisted before but was missed; oil should only appear in Basalt Deltas in the Nether by default
   * Config is not retroactively updated; add "minecraft:nether_wastes" to pneumaticcraft-common.toml -> General -> `oil_worldgen_blacklist` if you want to apply this change to an existing world.
 * Memory Sticks are now unstackable
 * Hopefully fixed problem where Memory Stick XP auto-absorb randomly stopped working
+* Fixed higher-tier Mekanism pipes issue when extracting from UV Lightbox
 
 ## 2.8.1-96 (19 Dec 2020)
 
