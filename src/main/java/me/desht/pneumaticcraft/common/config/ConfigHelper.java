@@ -63,6 +63,7 @@ public class ConfigHelper {
         PNCConfig.Common.General.maxProgrammingArea = common.general.maxProgrammingArea.get();
         PNCConfig.Common.General.minFluidFuelTemperature = common.general.minFluidFuelTemperature.get();
         PNCConfig.Common.General.oilGenerationChance = common.general.oilGenerationChance.get();
+        PNCConfig.Common.General.surfaceOilGenerationChance = common.general.surfaceOilGenerationChance.get();
         PNCConfig.Common.General.oilWorldGenBlacklist = common.general.oilWorldGenBlacklist.get()
                 .stream().map(resourceName -> new ResourceLocation(resourceName.toLowerCase())).collect(Collectors.toSet());
         PNCConfig.Common.General.oilWorldGenCategoryBlacklist = ImmutableSet.copyOf(common.general.oilWorldGenCategoryBlacklist.get());

@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.worldgen;
 
 import com.mojang.serialization.Codec;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.gen.feature.WorldDecoratingHelper;
 import net.minecraft.world.gen.placement.ChanceConfig;
@@ -17,11 +18,12 @@ public class LakeOil extends Placement<ChanceConfig> {
     @Override
     public Stream<BlockPos> getPositions(WorldDecoratingHelper helper, Random rand, ChanceConfig chanceConfig, BlockPos pos) {
         if (rand.nextInt(100) < chanceConfig.chance) {
-            int i = rand.nextInt(16) + pos.getX();
-            int j = rand.nextInt(16) + pos.getZ();
-            int k = rand.nextInt(rand.nextInt(helper.func_242891_a() - 8) + 8);
-            if (k < helper.func_242895_b() || rand.nextInt(100) < 25) {
-                return Stream.of(new BlockPos(i, k, j));
+            int x = rand.nextInt(16) + pos.getX();
+            int z = rand.nextInt(16) + pos.getZ();
+            int y = rand.nextInt(rand.nextInt(helper.func_242891_a() - 8) + 8);
+            // if position is not below sea level, reduced random chance for surface lake
+            if (y < helper.func_242895_b() || rand.nextInt(100) < PNCConfig.Common.General.surfaceOilGenerationChance) {
+                return Stream.of(new BlockPos(x, y, z));
             }
         }
 

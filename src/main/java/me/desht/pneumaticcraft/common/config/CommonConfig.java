@@ -10,6 +10,7 @@ import java.util.List;
 public class CommonConfig {
     public static class General {
         ForgeConfigSpec.IntValue oilGenerationChance;
+        ForgeConfigSpec.IntValue surfaceOilGenerationChance;
         ForgeConfigSpec.BooleanValue enableDungeonLoot;
         ForgeConfigSpec.BooleanValue enableDroneSuffocation;
         ForgeConfigSpec.DoubleValue fuelBucketEfficiency;
@@ -157,9 +158,14 @@ public class CommonConfig {
         builder.push("General");
         general.oilGenerationChance = builder
                 .worldRestart()
-                .comment("Chance per chunk in percentage to generate an Oil Lake (although a surface lake is 4 times rarer). Set to 0 for no oil lakes.")
+                .comment("Chance per chunk as a percentage to generate an Oil Lake. Set to 0 for no oil lakes. See also 'surface_oil_generation_chance'.")
                 .translation("pneumaticcraft.config.common.general.oilGenerationChance")
                 .defineInRange("oil_generation_chance", 15, 0, 100);
+        general.surfaceOilGenerationChance = builder
+                .worldRestart()
+                .comment("When an Oil Lake would be generated at the surface (see 'oil_generation_chance'), percentage chance that this will actually generate a lake. Set to 0 for no surface oil lakes, and fewer lakes overall. Higher values don't guarantee surface oil lakes, but make them more likely, as well as making oil lakes more likely overall. It is recommended to adjust this value in conjunction with 'oil_generation_chance'.")
+                .translation("pneumaticcraft.config.common.general.surfaceOilGenerationChance")
+                .defineInRange("surface_oil_generation_chance", 25, 0, 100);
         general.enableDungeonLoot = builder
                 .comment("Enable mod dungeon loot generation")
                 .translation("pneumaticcraft.config.common.general.enable_dungeon_loot")
