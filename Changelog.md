@@ -6,7 +6,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.16.3 / 1.16.4
 
-## 2.8.2-97 (22 Dec 2020)
+## 2.8.2-97 (28 Dec 2020)
 
 ### Updates
 * The Coordinate Operator progwidget can now operate upon a specific subset of the X/Y/Z coordinate fields if desired
@@ -19,6 +19,11 @@ Changes are in reverse chronological order; newest changes at the top.
 * Added Void Fluid progwidget, counterpart to the Void Item widget added back in 2.4.5
 * The Programmable Controller can now charge the minidrone's held item (pressure or RF) significantly faster than before
   * This makes Jackhammers in vein+ mode highly suitable for use in a very fast quarry...
+* It is now possible to configure the likelihood of Oil Lakes generating at the surface
+  * See pneumaticcraft-common.toml -> General -> `surface_oil_generation_chance`
+  * This is 25% by default (i.e. if an Oil Lake would generate at the surface, there is only a 25% chance that it will actually generate)
+  * Can be set to 0 to disable surface Oil Lakes entirely
+  * Note that raising/lowering this value also raises/lowers the overall number of Oil Lakes generated, so you may also wish to modify `oil_generation_chance` if you modify this setting and want to keep a similar number of lakes overall.
 
 ### Fixes
 * Fixed Liquid Import progwidget losing any fluid it imported from a fluid block in the world
