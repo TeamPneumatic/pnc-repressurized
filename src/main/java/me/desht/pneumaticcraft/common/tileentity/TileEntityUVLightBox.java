@@ -310,13 +310,13 @@ public class TileEntityUVLightBox extends TileEntityPneumaticBase implements
         @Nonnull
         @Override
         public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-            return inputHandler.insertItem(0, stack, simulate);
+            return slot == 0 ? inputHandler.insertItem(0, stack, simulate) : stack;
         }
 
         @Nonnull
         @Override
         public ItemStack extractItem(int slot, int amount, boolean simulate) {
-            return outputHandler.extractItem(0, amount, simulate);
+            return slot == 1 ? outputHandler.extractItem(0, amount, simulate) : ItemStack.EMPTY;
         }
 
         @Override
