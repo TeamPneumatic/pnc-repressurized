@@ -16,13 +16,14 @@ import net.minecraft.util.text.ITextComponent;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 /**
  * Base class for in-world conditions.
  */
-public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implements ICondition, IJump {
+public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implements ICondition, IJump, IVariableSetWidget {
     private DroneAIBlockCondition evaluator;
     private boolean isAndFunction;
     private ICondition.Operator operator = ICondition.Operator.GE;
@@ -181,5 +182,22 @@ public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implem
     @Override
     public DyeColor getColor() {
         return DyeColor.CYAN;
+    }
+
+    @Override
+    public void addVariables(Set<String> variables) {
+        super.addVariables(variables);
+
+        if (!getMeasureVar().isEmpty()) variables.add(getMeasureVar());
+    }
+
+    @Override
+    public String getVariable() {
+        return getMeasureVar();
+    }
+
+    @Override
+    public void setVariable(String variable) {
+        setMeasureVar(variable);
     }
 }

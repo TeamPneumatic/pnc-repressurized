@@ -8,6 +8,7 @@ import me.desht.pneumaticcraft.common.progwidgets.ICondition;
 import me.desht.pneumaticcraft.common.progwidgets.ISidedWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetCondition;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetEntityCondition;
+import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import net.minecraft.util.Direction;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -81,7 +82,9 @@ public class GuiProgWidgetCondition<T extends ProgWidgetCondition> extends GuiPr
 
         WidgetLabel label = addLabel(xlate("pneumaticcraft.gui.progWidget.condition.measure"), guiLeft + 8, guiTop + 152);
         label.setTooltip(xlate("pneumaticcraft.gui.progWidget.condition.measure.tooltip"));
-        WidgetTextField measureTextField = new WidgetTextField(font, guiLeft + label.getWidth() + 8, guiTop + 150, 80, 11);
+        WidgetComboBox measureTextField = new WidgetComboBox(font, guiLeft + label.getWidth() + 8, guiTop + 150, 80, 11);
+        measureTextField.setElements(guiProgrammer.te.getAllVariables());
+        measureTextField.setMaxStringLength(GlobalVariableManager.MAX_VARIABLE_LEN);
         measureTextField.setText(progWidget.getMeasureVar());
         measureTextField.setResponder(progWidget::setMeasureVar);
         addButton(measureTextField);

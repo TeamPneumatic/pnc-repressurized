@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
 import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.progwidgets.*;
+import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import net.minecraft.util.Direction;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -70,6 +71,7 @@ public abstract class GuiProgWidgetDroneCondition<T extends ProgWidgetDroneCondi
 
             textField = new WidgetTextFieldNumber(font, guiLeft + baseX, guiTop + baseY + 40, 50, 11);
             textField.setText(progWidget.getRequiredCount() + "");
+            textField.setMaxStringLength(GlobalVariableManager.MAX_VARIABLE_LEN);
             textField.setFocused2(true);
             textField.setResponder(s -> progWidget.setRequiredCount(textField.getValue()));
             addButton(textField);
@@ -77,7 +79,8 @@ public abstract class GuiProgWidgetDroneCondition<T extends ProgWidgetDroneCondi
 
         WidgetLabel label = addLabel(xlate("pneumaticcraft.gui.progWidget.condition.measure"), guiLeft + 8, guiTop + 152);
         label.setTooltip(xlate("pneumaticcraft.gui.progWidget.condition.measure.tooltip"));
-        WidgetTextField measureTextField = new WidgetTextField(font, guiLeft + label.getWidth() + 8, guiTop + 150, 80, 11);
+        WidgetComboBox measureTextField = new WidgetComboBox(font, guiLeft + label.getWidth() + 8, guiTop + 150, 80, 11);
+        measureTextField.setElements(guiProgrammer.te.getAllVariables());
         measureTextField.setText(progWidget.getMeasureVar());
         measureTextField.setResponder(progWidget::setMeasureVar);
         addButton(measureTextField);

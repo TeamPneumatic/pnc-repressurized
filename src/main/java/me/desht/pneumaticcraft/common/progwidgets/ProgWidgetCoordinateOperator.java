@@ -120,6 +120,9 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
                 curPos = getNextPos(curPos, whiteList.getCoordinate(), op, true, axisOptions);
                 whiteList = (ProgWidgetCoordinate) whiteList.getConnectedParameters()[0];
             }
+        } else if (blackList != null) {
+            // we already picked up the first blacklist coord via op.initialValue()
+            blackList = (ProgWidgetCoordinate) blackList.getConnectedParameters()[0];
         }
         while (blackList != null) {
             curPos = getNextPos(curPos, blackList.getCoordinate(), op, false, axisOptions);
@@ -261,9 +264,11 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
         public BlockPos initialValue(ProgWidgetCoordinate whiteList, ProgWidgetCoordinate blackList) {
             switch (this) {
                 case PLUS_MINUS:
-                    return whiteList != null ? whiteList.getCoordinate() : BlockPos.ZERO;
+                    return whiteList != null ?
+                            whiteList.getCoordinate() :
+                            (blackList != null ? BlockPos.ZERO.subtract(blackList.getCoordinate()) : BlockPos.ZERO);
                 case MULIPLY_DIVIDE:
-                    return whiteList != null ? whiteList.getCoordinate() : new BlockPos(1, 1, 1);
+                    return whiteList != null ? whiteList.getCoordinate() : BlockPos.ZERO;
                 case MAX_MIN:
                     return whiteList != null ?
                             whiteList.getCoordinate() :

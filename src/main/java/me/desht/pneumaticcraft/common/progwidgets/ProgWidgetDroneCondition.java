@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.progwidgets;
 
 import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
+import me.desht.pneumaticcraft.common.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import net.minecraft.entity.ai.goal.Goal;
@@ -12,10 +13,11 @@ import net.minecraft.util.text.ITextComponent;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public abstract class ProgWidgetDroneCondition extends ProgWidgetConditionBase implements ICondition {
+public abstract class ProgWidgetDroneCondition extends ProgWidgetConditionBase implements ICondition, IVariableSetWidget {
     private boolean isAndFunction;
     private ICondition.Operator operator = ICondition.Operator.GE;
     private int requiredCount = 1;
@@ -134,5 +136,27 @@ public abstract class ProgWidgetDroneCondition extends ProgWidgetConditionBase i
         IFormattableTextComponent anyAll = xlate(isAndFunction() ? "pneumaticcraft.gui.progWidget.condition.all" : "pneumaticcraft.gui.progWidget.condition.any")
                 .appendString(" " + getOperator().toString() + " " + getRequiredCount());
         return measureVar.isEmpty() ? Collections.singletonList(anyAll) : ImmutableList.of(anyAll, varAsTextComponent(measureVar));
+    }
+
+    @Override
+    public void addVariables(Set<String> variables) {
+        if (!getMeasureVar().isEmpty()) {
+            variables.add(getMeasureVar());
+        }
+    }
+
+    @Override
+    public String getVariable() {
+        return getMeasureVar();
+    }
+
+    @Override
+    public void setVariable(String variable) {
+        setMeasureVar(variable);
+    }
+
+    @Override
+    public void setAIManager(DroneAIManager aiManager) {
+        // no-op
     }
 }
