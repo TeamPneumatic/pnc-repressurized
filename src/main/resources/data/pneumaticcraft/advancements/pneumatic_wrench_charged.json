@@ -12,16 +12,8 @@
   },
   "parent": "pneumaticcraft:pneumatic_wrench",
   "criteria": {
-    "pressure_tube": {
-      "trigger": "minecraft:inventory_changed",
-      "conditions": {
-        "items": [
-          {
-            "item": "pneumaticcraft:pneumatic_wrench",
-            "nbt": "{\"pneumaticcraft:air\":30000 }"
-          }
-        ]
-      }
+    "equipped": {
+      "trigger": "pneumaticcraft:charged_wrench"
     }
   },
   "rewards": {
