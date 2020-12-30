@@ -18,6 +18,9 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed Pneumatic Armor not reporting feature on/off status properly to server when armor newly equipped
   * Logging in with armor already equipped worked fine, which is why it took some time to spot this bug...
 * Reset step assist height when Pneumatic Boots are removed
+* Fixed certain blocks being wrongly ignored by drone's Dig widget when "Requires Tool" is checked
+  * Blocks which are harvestable with a bare hand (e.g. gravel, glowstone...) were being skipped when the drone was carrying a tool which wasn't faster than a bare hand for those blocks
+* Fixed the various PneumaticCraft Reinforced Stone blocks being harvestable without a pickaxe
 
 ## 2.8.2-97 (28 Dec 2020)
 
