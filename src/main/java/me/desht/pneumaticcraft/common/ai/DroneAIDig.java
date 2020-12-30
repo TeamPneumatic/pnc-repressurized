@@ -63,9 +63,10 @@ public class DroneAIDig<W extends ProgWidgetAreaItemBase & IToolUser> extends Dr
         // now find the best tool which is better than an empty hand
         int bestSlot = 0;
         float bestSoftness = Float.MIN_VALUE;
+        BlockState state = worldCache.getBlockState(pos);
         for (int i = 0; i < drone.getInv().getSlots(); i++) {
             drone.getInv().setStackInSlot(0, drone.getInv().getStackInSlot(i));
-            float softness = worldCache.getBlockState(pos).getPlayerRelativeBlockHardness(drone.getFakePlayer(), drone.world(), pos);
+            float softness = state.getPlayerRelativeBlockHardness(drone.getFakePlayer(), drone.world(), pos);
             if (softness > bestSoftness) {
                 bestSlot = i;
                 bestSoftness = softness;
@@ -81,7 +82,7 @@ public class DroneAIDig<W extends ProgWidgetAreaItemBase & IToolUser> extends Dr
             drone.getInv().setStackInSlot(bestSlot, drone.getInv().getStackInSlot(0));
             drone.getInv().setStackInSlot(0, bestItem);
         }
-        return hasDiggingTool;
+        return hasDiggingTool || !state.getRequiresTool();
     }
 
     @Override

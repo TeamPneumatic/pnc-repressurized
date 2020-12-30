@@ -60,6 +60,7 @@ public class ModBlocks {
 
     public static Block.Properties reinforcedStoneProps() {
         return Block.Properties.create(Material.ROCK, MaterialColor.GRAY)
+                .setRequiresTool()
                 .hardnessAndResistance(3f, 1200f)
                 .sound(SoundType.STONE);
     }
