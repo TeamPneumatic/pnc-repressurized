@@ -45,7 +45,7 @@ public class PacketToggleArmorFeature {
             PlayerEntity player = ctx.get().getSender();
             if (player != null && featureIndex >= 0
                     && featureIndex < ArmorUpgradeRegistry.getInstance().getHandlersForSlot(slot).size()
-                    && ItemPneumaticArmor.isPneumaticArmorPiece(player, slot))
+                    && (ItemPneumaticArmor.isPneumaticArmorPiece(player, slot) || slot == EquipmentSlotType.HEAD && featureIndex == 0))
             {
                 CommonArmorHandler.getHandlerForPlayer(player).setUpgradeEnabled(slot, featureIndex, state);
             }

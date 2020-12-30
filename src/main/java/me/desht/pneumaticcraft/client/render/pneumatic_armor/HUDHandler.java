@@ -234,7 +234,7 @@ public enum HUDHandler implements IKeyListener {
 
     @SubscribeEvent
     public void playerTick(TickEvent.PlayerTickEvent event) {
-        if (event.phase == TickEvent.Phase.END) {
+        if (event.phase == TickEvent.Phase.START) {
             Minecraft mc = Minecraft.getInstance();
             PlayerEntity player = event.player;
             if (player == mc.player && player.world.isRemote) {
