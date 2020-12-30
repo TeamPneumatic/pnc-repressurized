@@ -6,6 +6,19 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.16.3 / 1.16.4
 
+## 2.8.3-?? (unreleased)
+
+### Updates
+* Quality of Life: when attaching a tube module to a Pressure Tube, you can now sneak to attach to the opposite side of the tube
+* Updated some Patchouli manual information, primarily to clarify drone auto-charging functionality
+* Logistics Drones can now take Inventory Upgrades (this was actually already documented in the manual)
+
+### Fixes
+* Fixed client crash on player login when ModernUI is installed
+* Fixed Pneumatic Armor not reporting feature on/off status properly to server when armor newly equipped
+  * Logging in with armor already equipped worked fine, which is why it took some time to spot this bug...
+* Reset step assist height when Pneumatic Boots are removed
+
 ## 2.8.2-97 (28 Dec 2020)
 
 ### Updates
