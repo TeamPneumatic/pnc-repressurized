@@ -248,6 +248,9 @@ public class CommonArmorHandler implements ICommonArmorHandler {
                     attr.removeModifier(REACH_DIST_BOOST);
                 }
                 break;
+            case FEET:
+                player.stepHeight = 0.6F;
+                break;
         }
     }
 
