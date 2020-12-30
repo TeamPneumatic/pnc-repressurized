@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
+import me.desht.pneumaticcraft.common.block.tubes.INetworkedModule;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleNetworkManager;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
@@ -264,7 +265,9 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
                     world.notifyNeighborsOfStateChange(pos, this);
                     if (!player.isCreative()) heldStack.shrink(1);
                     world.playSound(null, pos, SoundType.GLASS.getStepSound(), SoundCategory.BLOCKS, SoundType.GLASS.getVolume() * 5.0f, SoundType.GLASS.getPitch() * 0.9f);
-                    ModuleNetworkManager.getInstance(world).invalidateCache();
+                    if (module instanceof INetworkedModule) {
+                        ModuleNetworkManager.getInstance(world).invalidateCache();
+                    }
                 }
                 if (!simulate) module.onPlaced();
                 return true;

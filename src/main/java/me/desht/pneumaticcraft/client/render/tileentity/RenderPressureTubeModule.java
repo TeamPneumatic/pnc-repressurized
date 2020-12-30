@@ -10,6 +10,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -49,10 +50,11 @@ public class RenderPressureTubeModule extends TileEntityRenderer<TileEntityPress
         if (holdingModule != null && mc.objectMouseOver instanceof BlockRayTraceResult) {
             // "fake" module is for showing a preview of where the module would be placed
             BlockRayTraceResult brtr = (BlockRayTraceResult) mc.objectMouseOver;
-            if (brtr.getPos().equals(tile.getPos()) && mc.world.getTileEntity(brtr.getPos()) == tile && tile.getModule(brtr.getFace()) == null) {
+            Direction face = mc.player.isCrouching() ? brtr.getFace().getOpposite() : brtr.getFace();
+            if (brtr.getPos().equals(tile.getPos()) && mc.world.getTileEntity(brtr.getPos()) == tile && tile.getModule(face) == null) {
                 TubeModule fakeModule = ((ItemTubeModule) mc.player.getHeldItem(holdingModule).getItem()).createModule();
                 fakeModule.markFake();
-                fakeModule.setDirection(brtr.getFace());
+                fakeModule.setDirection(face);
                 fakeModule.setTube(tile);
                 getModuleRenderer(fakeModule).renderModule(fakeModule, matrixStack, buffer, partialTicks, combinedLight, combinedOverlay);
             }

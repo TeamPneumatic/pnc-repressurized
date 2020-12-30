@@ -1,10 +1,15 @@
 package me.desht.pneumaticcraft.common.item;
 
+import me.desht.pneumaticcraft.common.block.BlockPressureTube;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUseContext;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -36,5 +41,18 @@ public class ItemTubeModule extends Item {
 
         TubeModule module = createModule();
         tooltip.add(new StringTextComponent("In line: " + (module.isInline() ? "Yes" : "No")).mergeStyle(TextFormatting.DARK_AQUA));
+    }
+
+    @Override
+    public ActionResultType onItemUse(ItemUseContext context) {
+        if (context.getPlayer().isCrouching()) {
+            // sneak-click module to attach it to opposite side of tube, if possible
+            BlockState state = context.getWorld().getBlockState(context.getPos());
+            if (state.getBlock() instanceof BlockPressureTube) {
+                BlockRayTraceResult brtr = new BlockRayTraceResult(context.getHitVec(), context.getFace().getOpposite(), context.getPos(), false);
+                return state.onBlockActivated(context.getWorld(), context.getPlayer(), context.getHand(), brtr);
+            }
+        }
+        return super.onItemUse(context);
     }
 }
