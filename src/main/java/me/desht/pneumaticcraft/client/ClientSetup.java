@@ -2,7 +2,6 @@ package me.desht.pneumaticcraft.client;
 
 import me.desht.pneumaticcraft.client.event.ClientTickHandler;
 import me.desht.pneumaticcraft.client.gui.*;
-import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiArmorMainScreen;
 import me.desht.pneumaticcraft.client.gui.programmer.*;
 import me.desht.pneumaticcraft.client.gui.semiblock.GuiLogisticsProvider;
 import me.desht.pneumaticcraft.client.gui.semiblock.GuiLogisticsRequester;
@@ -90,7 +89,7 @@ public class ClientSetup {
         registerTubeModuleFactories();
 
         EntityTrackHandler.init();
-        GuiArmorMainScreen.initHelmetCoreComponents();
+//        GuiArmorMainScreen.initHelmetCoreComponents();
         DramaSplash.getInstance();
     }
 

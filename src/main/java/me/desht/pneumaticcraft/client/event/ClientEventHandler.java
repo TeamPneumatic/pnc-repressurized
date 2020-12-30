@@ -9,6 +9,7 @@ import me.desht.pneumaticcraft.api.item.ICustomDurabilityBar;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticContainerBase;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticScreenBase;
 import me.desht.pneumaticcraft.client.gui.IExtraGuiHandling;
+import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiArmorMainScreen;
 import me.desht.pneumaticcraft.client.gui.widget.IDrawAfterRender;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
@@ -400,6 +401,11 @@ public class ClientEventHandler {
             ((IShiftScrollable) stack.getItem()).onShiftScrolled(ClientUtils.getClientPlayer(), event.getScrollDelta() > 0);
             event.setCanceled(true);
         }
+    }
+
+    @SubscribeEvent
+    public static void onClientConnect(ClientPlayerNetworkEvent.LoggedInEvent event) {
+        GuiArmorMainScreen.initHelmetCoreComponents();
     }
 }
 
