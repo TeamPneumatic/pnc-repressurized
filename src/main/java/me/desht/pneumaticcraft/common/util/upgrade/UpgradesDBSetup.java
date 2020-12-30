@@ -32,16 +32,18 @@ public class UpgradesDBSetup {
             .with(EnumUpgrade.ITEM_LIFE, 10)
             .with(EnumUpgrade.SECURITY, 3)
             .with(EnumUpgrade.SPEED, 10)
-            .with(EnumUpgrade.MAGNET, 6)
             .with(EnumUpgrade.STANDBY, 1);
 
     private static final Builder GUARD_DRONE_UPGRADES = new Builder(BASIC_DRONE_UPGRADES)
-            .with(EnumUpgrade.MAGNET, 0)
             .with(EnumUpgrade.MINIGUN, 1)
             .with(EnumUpgrade.RANGE, 16);
 
     private static final Builder COLLECTOR_DRONE_UPGRADES = new Builder(BASIC_DRONE_UPGRADES)
+            .with(EnumUpgrade.MAGNET, 6)
             .with(EnumUpgrade.RANGE, 16)
+            .with(EnumUpgrade.INVENTORY, 35);
+
+    private static final Builder LOGISTICS_DRONE_UPGRADES = new Builder(BASIC_DRONE_UPGRADES)
             .with(EnumUpgrade.INVENTORY, 35);
 
     public static void init() {
@@ -54,10 +56,10 @@ public class UpgradesDBSetup {
         ApplicableUpgradesDB db = ApplicableUpgradesDB.getInstance();
 
         db.addApplicableUpgrades(ModItems.DRONE.get(), DRONE_UPGRADES);
-        db.addApplicableUpgrades(ModItems.LOGISTICS_DRONE.get(), BASIC_DRONE_UPGRADES);
         db.addApplicableUpgrades(ModItems.HARVESTING_DRONE.get(), BASIC_DRONE_UPGRADES);
         db.addApplicableUpgrades(ModItems.GUARD_DRONE.get(), GUARD_DRONE_UPGRADES);
         db.addApplicableUpgrades(ModItems.COLLECTOR_DRONE.get(), COLLECTOR_DRONE_UPGRADES);
+        db.addApplicableUpgrades(ModItems.LOGISTICS_DRONE.get(), LOGISTICS_DRONE_UPGRADES);
 
         db.addApplicableUpgrades(ModItems.MINIGUN.get(), new Builder()
                 .with(EnumUpgrade.SPEED, 3)
@@ -104,10 +106,10 @@ public class UpgradesDBSetup {
         ApplicableUpgradesDB db = ApplicableUpgradesDB.getInstance();
 
         db.addApplicableUpgrades(ModEntities.DRONE.get(), DRONE_UPGRADES);
-        db.addApplicableUpgrades(ModEntities.LOGISTICS_DRONE.get(), BASIC_DRONE_UPGRADES);
         db.addApplicableUpgrades(ModEntities.HARVESTING_DRONE.get(), BASIC_DRONE_UPGRADES);
-        db.addApplicableUpgrades(ModEntities.GUARD_DRONE.get(), BASIC_DRONE_UPGRADES);
+        db.addApplicableUpgrades(ModEntities.GUARD_DRONE.get(), GUARD_DRONE_UPGRADES);
         db.addApplicableUpgrades(ModEntities.COLLECTOR_DRONE.get(), COLLECTOR_DRONE_UPGRADES);
+        db.addApplicableUpgrades(ModEntities.LOGISTICS_DRONE.get(), LOGISTICS_DRONE_UPGRADES);
     }
 
     private static void initTileEntities() {

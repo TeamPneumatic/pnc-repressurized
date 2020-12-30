@@ -11,13 +11,13 @@
     },
     {
       "type": "text",
-      "text": "Those inventories are then connected with $(l:logistics/logistics_drones)Logistics Drones/$ or $(l:tubes/pressure_tubes)Pressure Tubes/$ with $(l:tubes/logistics_module)Logistics Modules/$ attached.$(p)The $(thing)Logistics System/$ is heavily inspired by $(l:https://wiki.factorio.com/Logistic_network)Factorio/$, and if you've played that game, the concepts will be familiar. The primary difference is that this mod provides $(l:logistics/frames)Frames/$ to attach to existing inventories/tanks, rather than separate logistic chests."
+      "text": "Those inventories are then connected with $(l:logistics/logistics_drone)Logistics Drones/$ or $(l:tubes/pressure_tubes)Pressure Tubes/$ with $(l:tubes/logistics_module)Logistics Modules/$ attached.$(p)The $(thing)Logistics System/$ is heavily inspired by $(l:https://wiki.factorio.com/Logistic_network)Factorio/$, and if you've played that game, the concepts will be familiar. The primary difference is that this mod provides $(l:logistics/frames)Frames/$ to attach to existing inventories/tanks, rather than separate logistic chests."
     },
     {
       "type": "relations",
       "entries": [
         "logistics/frames",
-        "logistics/logistics_drones",
+        "logistics/logistics_drone",
         "tubes/logistics_module"
       ]
     }

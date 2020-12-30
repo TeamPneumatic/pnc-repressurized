@@ -21,6 +21,12 @@
         },
         {
             "type": "crafting",
+            "anchor": "inventory",
+            "recipe": "pneumaticcraft:inventory_upgrade",
+            "text": "Creating an Inventory Upgrade"
+        },
+        {
+            "type": "crafting",
             "anchor": "item_life",
             "recipe": "pneumaticcraft:item_life_upgrade",
             "text": "Creating a Item Life Upgrade"
@@ -45,7 +51,7 @@
         },
         {
             "type": "crafting",
-            "anchor": "speed",
+            "anchor": "speed2",
             "recipe": "pneumaticcraft:speed_upgrade_from_glycerol",
             "text": "Creating Speed Upgrades from $(l:renewables/glycerol)Glycerol/$"
         },

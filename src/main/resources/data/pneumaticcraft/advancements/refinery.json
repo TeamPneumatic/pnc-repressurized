@@ -22,7 +22,9 @@
           },
           {
             "item": "pneumaticcraft:refinery_output",
-            "count": 2
+            "count": {
+              "min": 2
+            }
           }
         ]
       }

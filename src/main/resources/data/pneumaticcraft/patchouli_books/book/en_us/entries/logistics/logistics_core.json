@@ -1,7 +1,7 @@
 {
   "name": "Logistics Core",
   "icon": "pneumaticcraft:logistics_core",
-  "category": "components",
+  "category": "logistics",
   "advancement": "pneumaticcraft:pressure_tube",
   "pages": [
     {
@@ -12,7 +12,7 @@
       "type": "relations",
       "entries": [
         "logistics/frames",
-        "logistics/logistics_drones",
+        "logistics/logistics_drone",
         "tubes/logistics_module"
       ]
     },

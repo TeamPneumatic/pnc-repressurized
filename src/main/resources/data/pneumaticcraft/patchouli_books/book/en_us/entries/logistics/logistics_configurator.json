@@ -1,7 +1,7 @@
 {
   "name": "Logistics Configurator",
   "icon": "pneumaticcraft:logistics_configurator",
-  "category": "tools",
+  "category": "logistics",
   "advancement": "pneumaticcraft:pressure_tube",
   "pages": [
     {
@@ -11,7 +11,7 @@
     {
       "type": "spotlight",
       "item": "pneumaticcraft:logistics_configurator",
-      "text": "The $(item)Logistics Configurator/$ can also be used to remove other attachable gadgets, such as the $(l:semiblocks/transfer_gadget)Transfer Gadget/$ and the $(l:semiblocks/crop_support)Crop Support/$."
+      "text": "The $(item)Logistics Configurator/$ can also be used to remove (by $(thing)Sneak right-clicking/$) other attachable gadgets, such as the $(l:semiblocks/transfer_gadget)Transfer Gadget/$ and the $(l:semiblocks/crop_support)Crop Support/$."
     },
     {
       "type": "crafting",
