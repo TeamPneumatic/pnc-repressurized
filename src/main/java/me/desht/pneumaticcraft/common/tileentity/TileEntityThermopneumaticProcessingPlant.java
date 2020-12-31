@@ -78,7 +78,7 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
     @GuiSynced
     public int maxTemperature;
     @GuiSynced
-    public TPProblem problem;
+    public TPProblem problem = TPProblem.OK;
     @DescSynced
     private boolean didWork;
     private ThermoPlantRecipe currentRecipe;

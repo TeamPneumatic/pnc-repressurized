@@ -114,7 +114,7 @@ public class GuiThermopneumaticProcessingPlant extends
     public void addProblems(List<ITextComponent> curInfo) {
         super.addProblems(curInfo);
 
-        if (te.problem != TPProblem.OK) {
+        if (te.problem != null && te.problem != TPProblem.OK) {
             curInfo.addAll(GuiUtils.xlateAndSplit(te.problem.key));
         }
     }
