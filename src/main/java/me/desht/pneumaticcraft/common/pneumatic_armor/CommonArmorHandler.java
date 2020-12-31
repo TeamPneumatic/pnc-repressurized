@@ -465,10 +465,10 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         int airAmount = upgrades * 100 + 100;
 
         for (EquipmentSlotType slot : EquipmentSlotType.values()) {
-            if (slot == EquipmentSlotType.CHEST) continue;
-            if (getArmorPressure(EquipmentSlotType.CHEST) < 0.1F) return;
-            ItemStack stack = player.getItemStackFromSlot(slot);
-            tryPressurize(airAmount, stack);
+            if (slot != EquipmentSlotType.CHEST) {
+                if (getArmorPressure(EquipmentSlotType.CHEST) < 0.1F) return;
+                tryPressurize(airAmount, player.getItemStackFromSlot(slot));
+            }
         }
         for (ItemStack stack : player.inventory.mainInventory) {
             if (getArmorPressure(EquipmentSlotType.CHEST) < 0.1F) return;
@@ -480,9 +480,9 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         destStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(destHandler -> {
             float pressure = destHandler.getPressure();
             if (pressure < destHandler.maxPressure() && pressure < getArmorPressure(EquipmentSlotType.CHEST)) {
-                float currentAir = pressure * destHandler.getVolume();
-                float targetAir = getArmorPressure(EquipmentSlotType.CHEST) * destHandler.getVolume();
-                int amountToMove = Math.min((int)(targetAir - currentAir), airAmount);
+                int currentAir = destHandler.getAir();// pressure * destHandler.getVolume();
+                int targetAir = (int) (getArmorPressure(EquipmentSlotType.CHEST) * destHandler.getVolume());
+                int amountToMove = MathHelper.clamp(targetAir - currentAir, -airAmount, airAmount);
                 destHandler.addAir(amountToMove);
                 addAir(EquipmentSlotType.CHEST, -amountToMove);
             }
