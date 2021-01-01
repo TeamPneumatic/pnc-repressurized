@@ -42,7 +42,7 @@ public class DroneAILogistics extends Goal {
             // note: this is an expensive operation!  hence we cache the logistics manager object in the drone
             Set<BlockPos> area = widget.getCachedAreaSet();
             if (!area.isEmpty()) {
-                AxisAlignedBB aabb = ProgWidgetAreaItemBase.getExtents(area);
+                AxisAlignedBB aabb = widget.getAreaExtents();
                 Stream<ISemiBlock> semiBlocksInArea = SemiblockTracker.getInstance().getSemiblocksInArea(drone.world(), aabb);
                 Stream<EntityLogisticsFrame> logisticFrames = StreamUtils.ofType(EntityLogisticsFrame.class, semiBlocksInArea);
                 LogisticsManager manager = new LogisticsManager();

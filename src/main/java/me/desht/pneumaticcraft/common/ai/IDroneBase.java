@@ -42,4 +42,8 @@ public interface IDroneBase extends IDrone {
     void addAirToDrone(int air);
 
     default void onVariableChanged(String varname, boolean isCoordinate) { }
+
+    default boolean canMoveIntoLava() {
+        return false;
+    }
 }

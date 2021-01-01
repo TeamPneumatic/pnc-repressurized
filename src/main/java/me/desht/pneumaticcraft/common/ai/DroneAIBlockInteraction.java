@@ -3,29 +3,30 @@ package me.desht.pneumaticcraft.common.ai;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
+import me.desht.pneumaticcraft.common.network.PacketSpawnIndicatorParticles;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.progwidgets.IBlockOrdered;
 import me.desht.pneumaticcraft.common.progwidgets.IBlockOrdered.Ordering;
 import me.desht.pneumaticcraft.common.progwidgets.ISidedWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetAreaItemBase;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.ThreadedSorter;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
-import net.minecraft.particles.RedstoneParticleData;
 import net.minecraft.pathfinding.PathType;
 import net.minecraft.util.Direction;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.ICollisionReader;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.Iterator;
 import java.util.List;
 
 public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> extends Goal {
@@ -41,10 +42,10 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
     private int minY, maxY;
     private ThreadedSorter<BlockPos> sorter;
     private boolean aborted;
+    private final int maxLookupsPerSearch;
 
     private boolean searching; //true while the drone is searching for a coordinate, false if traveling/processing a coordinate.
     private int searchIndex; //The current index in the area list the drone is searching at.
-    private static final int LOOKUPS_PER_SEARCH_TICK = 30; //How many blocks does the drone access per AI update.
     private int totalActions;
     private int maxActions = -1;
 
@@ -58,16 +59,13 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
         this.progWidget = progWidget;
         order = progWidget instanceof IBlockOrdered ? ((IBlockOrdered) progWidget).getOrder() : Ordering.CLOSEST;
         area = progWidget.getCachedAreaList();
-        worldCache = ProgWidgetAreaItemBase.getCache(area, drone.world());
+        worldCache = progWidget.getChunkCache(drone.world());
+        AxisAlignedBB extents = progWidget.getAreaExtents();
+        // heuristic: use horizontal cross-section size of the area as a guide to the max searched blocks per attempt
+        maxLookupsPerSearch = MathHelper.clamp((int) ((extents.maxX - extents.minX + 3) * (extents.maxZ - extents.minZ + 3)), 30, 500);
         if (area.size() > 0) {
-            Iterator<BlockPos> iterator = area.iterator();
-            BlockPos pos = iterator.next();
-            minY = maxY = pos.getY();
-            while (iterator.hasNext()) {
-                pos = iterator.next();
-                minY = Math.min(minY, pos.getY());
-                maxY = Math.max(maxY, pos.getY());
-            }
+            minY = (int) extents.minY;
+            maxY = (int) extents.maxY;
             if (order == Ordering.HIGH_TO_LOW) {
                 curY = maxY;
             } else if (order == Ordering.LOW_TO_HIGH) {
@@ -90,7 +88,7 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
                 curPos = null;
                 lastSuccessfulY = curY;
                 if (sorter == null || sorter.isDone())
-                    sorter = new ThreadedSorter<>(area, new ChunkPositionSorter(drone));
+                    sorter = new ThreadedSorter<>(area, new ChunkPositionSorter(drone, order));
                 return true;
             } else {
                 return false;
@@ -145,17 +143,18 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
     public boolean shouldContinueExecuting() {
         if (aborted) return false;
         if (searching) {
-            if (!sorter.isDone()) return true; // wait until the area is sorted from closest to furthest.
+            if (!sorter.isDone()) return true; // wait until the area is sorted according to the given ordering
+
             boolean firstRun = true;
             int searchedBlocks = 0; // tracks the number of inspected blocks; stop searching when LOOKUPS_PER_SEARCH_TICK is reached
             while (curPos == null && curY != lastSuccessfulY && order != Ordering.CLOSEST || firstRun) {
                 firstRun = false;
+                List<BlockPos> indicators = new ArrayList<>();
                 while (!shouldAbort() && searchIndex < area.size()) {
                     BlockPos pos = area.get(searchIndex);
-                    if (isYValid(pos.getY()) && !blacklist.contains(pos)
-                            && (!respectClaims() || !DroneClaimManager.getInstance(drone.world()).isClaimed(pos)))
-                    {
-                        indicateToListeningPlayers(pos);
+                    if (isYValid(pos.getY()) && !blacklist.contains(pos) && (!respectClaims() || !DroneClaimManager.getInstance(drone.world()).isClaimed(pos))) {
+//                        indicateToListeningPlayers(pos);
+                        indicators.add(pos);
                         if (isValidPosition(pos)) {
                             curPos = pos;
                             if (moveToPositions()) {
@@ -176,19 +175,21 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
                         searchedBlocks++;
                     }
                     searchIndex++;
-                    if (searchedBlocks >= lookupsPerSearch()) return true;
+                    if (searchedBlocks >= maxLookupsPerSearch) return true;
                 }
+                indicateToListeningPlayers(indicators);
                 if (curPos == null) updateY();
             }
             if (!shouldAbort()) addEndingDebugEntry();
             return false;
         } else {
-            Vector3d dronePos = drone.getDronePos();
-            double dist = curPos != null ? PneumaticCraftUtils.distBetween(curPos.getX() + 0.5, curPos.getY() + 0.5, curPos.getZ() + 0.5, dronePos.x, dronePos.y, dronePos.z) : 0;
+            // found a block to interact with; we're now either moving to it, or we've arrived there
             if (curPos != null) {
-                if (!moveToPositions()) return doBlockInteraction(curPos, dist);
-                if (respectClaims()) DroneClaimManager.getInstance(drone.world()).claim(curPos);
-                if (dist < (moveIntoBlock() ? 1 : 2)) {
+                if (respectClaims()) {
+                    DroneClaimManager.getInstance(drone.world()).claim(curPos);
+                }
+                double dist = drone.getDronePos().distanceTo(Vector3d.copyCentered(curPos));
+                if (!moveToPositions() || dist < (moveIntoBlock() ? 1 : 2)) {
                     return doBlockInteraction(curPos, dist);
                 }
             }
@@ -198,7 +199,7 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
 
     private boolean tryMoveToBlock(BlockPos pos) {
         if (moveIntoBlock()) {
-            if (worldCache.getBlockState(curPos).allowsMovement(worldCache, curPos, PathType.AIR)
+            if (blockAllowsMovement(worldCache, curPos, worldCache.getBlockState(pos))
                     && drone.getPathNavigator().moveToXYZ(curPos.getX(), curPos.getY() + 0.5, curPos.getZ())) {
                 return movedToBlockOK(pos);
             }
@@ -211,13 +212,17 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
                     return movedToBlockOK(pos);
                 }
                 if ((w == null || w.isSideSelected(dir))
-                        && worldCache.getBlockState(pos2).allowsMovement(worldCache, pos2, PathType.AIR)
+                        && blockAllowsMovement(worldCache, pos2, worldCache.getBlockState(pos))
                         && drone.getPathNavigator().moveToXYZ(pos2.getX(), pos2.getY() + 0.5, pos2.getZ())) {
                     return movedToBlockOK(pos);
                 }
             }
         }
         return false;
+    }
+
+    private boolean blockAllowsMovement(ICollisionReader world, BlockPos pos, BlockState state) {
+        return state.getBlock() instanceof FlowingFluidBlock ? drone.canMoveIntoLava() : world.getBlockState(pos).allowsMovement(world, pos, PathType.AIR);
     }
 
     private boolean movedToBlockOK(BlockPos pos) {
@@ -230,10 +235,6 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
 
     protected void addEndingDebugEntry() {
         drone.addDebugEntry("pneumaticcraft.gui.progWidget.blockInteraction.debug.noBlocksValid");
-    }
-
-    private int lookupsPerSearch() {
-        return LOOKUPS_PER_SEARCH_TICK;
     }
 
     protected boolean respectClaims() {
@@ -258,20 +259,21 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
     }
 
     /**
-     * Sends particle spawn packets to any close player that has a charged pneumatic helmet with entity tracker.
+     * Sends particle spawn packets to any close player that has a charged pneumatic helmet with entity tracker enabled
+     * and dispenser upgrade installed.
      *
      * @param pos the blockpos to indicate
      */
-    private void indicateToListeningPlayers(BlockPos pos) {
+    private void indicateToListeningPlayers(List<BlockPos> pos) {
         for (PlayerEntity player : drone.world().getPlayers()) {
-            if (player.getDistanceSq(pos.getX(), pos.getY(), pos.getZ()) < 1024) {
+            if (player.getDistanceSq(pos.get(0).getX(), pos.get(0).getY(), pos.get(0).getZ()) < 1024) {
                 ItemStack helmet = player.getItemStackFromSlot(EquipmentSlotType.HEAD);
                 if (helmet.getItem() == ModItems.PNEUMATIC_HELMET.get()) {
                     CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
                     if (handler.isArmorReady(EquipmentSlotType.HEAD) && handler.isEntityTrackerEnabled()
                             && handler.getUpgradeCount(EquipmentSlotType.HEAD, EnumUpgrade.ENTITY_TRACKER) > 0
                             && handler.getUpgradeCount(EquipmentSlotType.HEAD, EnumUpgrade.DISPENSER) > 0) {
-                        NetworkHandler.sendToPlayer(new PacketSpawnParticle(new RedstoneParticleData(1.0f, 1.0f, 0.5f, 1.0f), pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 0, 0, 0), (ServerPlayerEntity) player);
+                        NetworkHandler.sendToPlayer(new PacketSpawnIndicatorParticles(pos, progWidget.getColor()), (ServerPlayerEntity) player);
                     }
                 }
             }

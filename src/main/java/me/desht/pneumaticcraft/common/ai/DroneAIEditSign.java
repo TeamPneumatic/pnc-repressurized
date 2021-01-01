@@ -10,7 +10,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.StringTextComponent;
 
 public class DroneAIEditSign extends DroneAIBlockInteraction<ProgWidgetAreaItemBase> {
-
     public DroneAIEditSign(IDroneBase drone, ProgWidgetAreaItemBase widget) {
         super(drone, widget);
     }

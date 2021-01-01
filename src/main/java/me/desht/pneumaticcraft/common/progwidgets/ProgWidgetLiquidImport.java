@@ -9,11 +9,17 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.DyeColor;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.List;
 
-public class ProgWidgetLiquidImport extends ProgWidgetInventoryBase implements ILiquidFiltered {
+public class ProgWidgetLiquidImport extends ProgWidgetInventoryBase implements ILiquidFiltered, IBlockOrdered {
+    private Ordering order = Ordering.HIGH_TO_LOW;
 
     public ProgWidgetLiquidImport() {
         super(ModProgWidgets.LIQUID_IMPORT.get());
@@ -42,5 +48,45 @@ public class ProgWidgetLiquidImport extends ProgWidgetInventoryBase implements I
     @Override
     public DyeColor getColor() {
         return DyeColor.BLUE;
+    }
+
+    @Override
+    public Ordering getOrder() {
+        return order;
+    }
+
+    @Override
+    public void setOrder(Ordering order) {
+        this.order = order;
+    }
+
+    @Override
+    public void getTooltip(List<ITextComponent> curTooltip) {
+        super.getTooltip(curTooltip);
+        curTooltip.add(new StringTextComponent("Order: ").append(new TranslationTextComponent(order.getTranslationKey())));
+    }
+
+    @Override
+    public void writeToNBT(CompoundNBT tag) {
+        super.writeToNBT(tag);
+        tag.putInt("order", order.ordinal());
+    }
+
+    @Override
+    public void readFromNBT(CompoundNBT tag) {
+        super.readFromNBT(tag);
+        order = Ordering.values()[tag.getInt("order")];
+    }
+
+    @Override
+    public void writeToPacket(PacketBuffer buf) {
+        super.writeToPacket(buf);
+        buf.writeByte(order.ordinal());
+    }
+
+    @Override
+    public void readFromPacket(PacketBuffer buf) {
+        super.readFromPacket(buf);
+        order = Ordering.values()[buf.readByte()];
     }
 }

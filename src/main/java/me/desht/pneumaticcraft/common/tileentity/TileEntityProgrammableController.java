@@ -44,6 +44,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -512,7 +514,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
 
     @Override
     public boolean isBlockValidPathfindBlock(BlockPos pos) {
-        return getWorld().isAirBlock(pos);
+        return !getWorld().getBlockState(pos).getCollisionShape(getWorld(), pos, ISelectionContext.dummy()).equals(VoxelShapes.fullCube());
     }
 
     @Override
@@ -668,6 +670,11 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     @Override
     public void addAirToDrone(int air) {
         airHandler.addAir(air);
+    }
+
+    @Override
+    public boolean canMoveIntoLava() {
+        return true;  // since it's not a real drone
     }
 
     private class ProgrammableItemStackHandler extends BaseItemStackHandler {

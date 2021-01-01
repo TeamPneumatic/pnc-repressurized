@@ -50,6 +50,8 @@ public class AirHandlerItemStack implements IAirHandlerItem, ICapabilityProvider
 
     @Override
     public void addAir(int amount) {
+        if (container.getCount() != 1) return;
+
         int currentAir = getAir();
         int newAir = currentAir + amount;
         if (newAir != 0) {

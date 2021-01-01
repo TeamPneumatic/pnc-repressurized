@@ -8,7 +8,6 @@ import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerItem;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.entity_tracker.EntityTrackHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.JetBootsClientHandler;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
@@ -477,6 +476,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
     }
 
     private void tryPressurize(int airAmount, ItemStack destStack) {
+        if (destStack.isEmpty()) return;
         destStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(destHandler -> {
             float pressure = destHandler.getPressure();
             if (pressure < destHandler.maxPressure() && pressure < getArmorPressure(EquipmentSlotType.CHEST)) {
@@ -650,7 +650,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
             JetBootsStateTracker.getTracker(player).setJetBootsState(player, jetBootsEnabled, isJetBootsActive(), isJetBootsBuilderMode());
         } else if (handler instanceof CoreComponentsHandler) {
             armorEnabled = state;
-        } else if (handler instanceof EntityTrackHandler) {
+        } else if (handler instanceof EntityTrackerHandler) {
             entityTrackerEnabled = state;
         } else if (handler instanceof NightVisionHandler) {
             nightVisionEnabled = state;

@@ -27,6 +27,7 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget
         implements IAreaProvider, IEntityProvider, IItemFiltering, IVariableWidget {
     private List<BlockPos> areaListCache;
     private Set<BlockPos> areaSetCache;
+    private AxisAlignedBB areaExtents;
     private Map<String, BlockPos> areaVariableStates;
     protected DroneAIManager aiManager;
     private boolean canCache = true;
@@ -64,13 +65,27 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget
         EntityFilterPair.addErrors(this, curInfo);
     }
 
-    public static ICollisionReader getCache(Collection<BlockPos> area, World world) {
-        if (area.isEmpty()) return world;
-        AxisAlignedBB aabb = getExtents(area);
+//    public static ICollisionReader getCache(Collection<BlockPos> area, World world) {
+//        if (area.isEmpty()) return world;
+//        AxisAlignedBB aabb = getExtents(area);
+//        return new ChunkCache(world, new BlockPos(aabb.minX, aabb.minY, aabb.minZ), new BlockPos(aabb.maxX, aabb.maxY, aabb.maxZ));
+//    }
+
+    public ICollisionReader getChunkCache(World world) {
+        AxisAlignedBB aabb = getAreaExtents();
         return new ChunkCache(world, new BlockPos(aabb.minX, aabb.minY, aabb.minZ), new BlockPos(aabb.maxX, aabb.maxY, aabb.maxZ));
     }
 
-    public static AxisAlignedBB getExtents(Collection<BlockPos> areaSet) {
+    public AxisAlignedBB getAreaExtents() {
+        if (areaExtents == null) {
+            areaExtents = calculateExtents(getCachedAreaSet());
+        }
+        return areaExtents;
+    }
+
+    private static AxisAlignedBB calculateExtents(Collection<BlockPos> areaSet) {
+        if (areaSet.isEmpty()) return new AxisAlignedBB(BlockPos.ZERO, BlockPos.ZERO);
+
         int minX = Integer.MAX_VALUE, maxX = Integer.MIN_VALUE;
         int minY = Integer.MAX_VALUE, maxY = Integer.MIN_VALUE;
         int minZ = Integer.MAX_VALUE, maxZ = Integer.MIN_VALUE;
@@ -112,6 +127,7 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget
     protected synchronized void invalidateAreaCache() {
         areaListCache = null;
         areaSetCache = null;
+        areaExtents = null;
     }
 
     private void initializeVariableCache() {

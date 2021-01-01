@@ -90,6 +90,8 @@ public class NetworkHandler {
 				PacketShowWireframe::toBytes, PacketShowWireframe::new, PacketShowWireframe::handle);
 		registerMessage(PacketSpawnParticle.class,
 				PacketSpawnParticle::toBytes, PacketSpawnParticle::new, PacketSpawnParticle::handle);
+		registerMessage(PacketSpawnIndicatorParticles.class,
+				PacketSpawnIndicatorParticles::toBytes, PacketSpawnIndicatorParticles::new, PacketSpawnIndicatorParticles::handle);
 		registerMessage(PacketUpdateSearchItem.class,
 				PacketUpdateSearchItem::toBytes, PacketUpdateSearchItem::new, PacketUpdateSearchItem::handle);
 		registerMessage(PacketUpdateTextfield.class,

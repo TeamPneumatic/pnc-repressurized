@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerGasLift;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.progwidgets.IBlockOrdered;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -268,7 +269,7 @@ public class TileEntityGasLift extends TileEntityPneumaticBase implements
                 }
             }
         }
-        pumpingLake.sort(new ChunkPositionSorter(getPos().getX() + 0.5, getPos().getY() - currentDepth - 1, getPos().getZ() + 0.5));
+        pumpingLake.sort(new ChunkPositionSorter(getPos().getX() + 0.5, getPos().getY() - currentDepth - 1, getPos().getZ() + 0.5, IBlockOrdered.Ordering.HIGH_TO_LOW));
         Collections.reverse(pumpingLake);
     }
 
