@@ -265,6 +265,7 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
      * @param pos the blockpos to indicate
      */
     private void indicateToListeningPlayers(List<BlockPos> pos) {
+        if (pos.isEmpty()) return;
         for (PlayerEntity player : drone.world().getPlayers()) {
             if (player.getDistanceSq(pos.get(0).getX(), pos.get(0).getY(), pos.get(0).getZ()) < 1024) {
                 ItemStack helmet = player.getItemStackFromSlot(EquipmentSlotType.HEAD);
