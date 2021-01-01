@@ -12,6 +12,14 @@ Changes are in reverse chronological order; newest changes at the top.
 * Quality of Life: when attaching a tube module to a Pressure Tube, you can now sneak to attach to the opposite side of the tube
 * Updated some Patchouli manual information, primarily to clarify drone auto-charging functionality
 * Logistics Drones can now take Inventory Upgrades (this was actually already documented in the manual)
+* Liquid Import progwidget can now have a definable block sort order (like dig/place widgets)
+  * Previously always just used "closest" sort order; "top down" often makes more sense for importing fluids from the world
+* Drone search area highlighting (when Entity Tracker enabled and Dispenser Upgrade inserted) is now colour-coded
+  * Brown for dig/place, blue for fluid import, etc.
+* The Programmable Controller's "minidrone" is now able to path into lava
+  * It was always able to path *through* lava blocks on the way to somewhere else, but can now path *into* them too
+  * This is particularly useful for writing programs to suck up lava lakes from the world which were previously problematic to work with
+  * Note that actual Drones still won't path into lava, only the Programmable Controller
 
 ### Fixes
 * Fixed client crash on player login when ModernUI is installed
@@ -21,6 +29,9 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed certain blocks being wrongly ignored by drone's Dig widget when "Requires Tool" is checked
   * Blocks which are harvestable with a bare hand (e.g. gravel, glowstone...) were being skipped when the drone was carrying a tool which wasn't faster than a bare hand for those blocks
 * Fixed the various PneumaticCraft Reinforced Stone blocks being harvestable without a pickaxe
+* Fixed hacking drones to call them to you not functioning
+* Fixed drones not highlighting their block search area when Entity Tracker enabled and Dispenser Upgrade inserted
+* Fixed bug which could sometimes cause the Chestplate Charging Upgrade to void air
 
 ## 2.8.2-97 (28 Dec 2020)
 
