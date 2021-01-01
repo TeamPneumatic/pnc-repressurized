@@ -195,7 +195,7 @@ public class BlockElevatorFrame extends BlockPneumaticCraft implements IWaterLog
         // caching the elevator base in the frame TE - should be safe from a caching point of view,
         // since if the base (or any frame below us) is broken, all frames above it (including us) will also break
         return PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityElevatorFrame.class)
-                .map(te -> Optional.of(te.getElevatorBase()))
+                .map(te -> Optional.ofNullable(te.getElevatorBase()))
                 .orElse(Optional.empty());
     }
 

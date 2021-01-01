@@ -32,6 +32,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed hacking drones to call them to you not functioning
 * Fixed drones not highlighting their block search area when Entity Tracker enabled and Dispenser Upgrade inserted
 * Fixed bug which could sometimes cause the Chestplate Charging Upgrade to void air
+* Fixed client crash when removing an Elevator Base with Elevator Frames above
 
 ## 2.8.2-97 (28 Dec 2020)
 
