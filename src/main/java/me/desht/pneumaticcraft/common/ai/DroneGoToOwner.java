@@ -4,7 +4,6 @@ import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.math.vector.Vector3d;
-import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 public class DroneGoToOwner extends Goal {
     private final EntityDrone drone;
@@ -31,9 +30,7 @@ public class DroneGoToOwner extends Goal {
     }
 
     private ServerPlayerEntity getOnlineOwner() {
-        for (ServerPlayerEntity player : ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers()) {
-            if (player.getGameProfile().equals(drone.getFakePlayer().getGameProfile())) return player;
-        }
-        return null;
+        if (drone.world.getServer() == null) return null;
+        return drone.world.getServer().getPlayerList().getPlayerByUUID(drone.getOwnerUUID());
     }
 }
