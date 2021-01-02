@@ -65,12 +65,6 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget
         EntityFilterPair.addErrors(this, curInfo);
     }
 
-//    public static ICollisionReader getCache(Collection<BlockPos> area, World world) {
-//        if (area.isEmpty()) return world;
-//        AxisAlignedBB aabb = getExtents(area);
-//        return new ChunkCache(world, new BlockPos(aabb.minX, aabb.minY, aabb.minZ), new BlockPos(aabb.maxX, aabb.maxY, aabb.maxZ));
-//    }
-
     public ICollisionReader getChunkCache(World world) {
         AxisAlignedBB aabb = getAreaExtents();
         return new ChunkCache(world, new BlockPos(aabb.minX, aabb.minY, aabb.minZ), new BlockPos(aabb.maxX, aabb.maxY, aabb.maxZ));
@@ -106,10 +100,12 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget
             if (!canCache || updateVariables()) {
                 areaSetCache = new HashSet<>(areaListCache.size());
                 getArea(areaSetCache);
+                areaExtents = null;
                 areaListCache = new ArrayList<>(areaSetCache.size());
                 areaListCache.addAll(areaSetCache);
             }
         } else {
+            areaExtents = null;
             areaSetCache = new HashSet<>();
             getArea(areaSetCache);
             areaListCache = new ArrayList<>(areaSetCache.size());

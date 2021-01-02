@@ -43,11 +43,11 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
     private ThreadedSorter<BlockPos> sorter;
     private boolean aborted;
     private final int maxLookupsPerSearch;
-
     private boolean searching; //true while the drone is searching for a coordinate, false if traveling/processing a coordinate.
     private int searchIndex; //The current index in the area list the drone is searching at.
     private int totalActions;
     private int maxActions = -1;
+    private final boolean shouldReSort;
 
     /**
      * @param drone the drone
@@ -60,9 +60,15 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
         order = progWidget instanceof IBlockOrdered ? ((IBlockOrdered) progWidget).getOrder() : Ordering.CLOSEST;
         area = progWidget.getCachedAreaList();
         worldCache = progWidget.getChunkCache(drone.world());
+
         AxisAlignedBB extents = progWidget.getAreaExtents();
         // heuristic: use horizontal cross-section size of the area as a guide to the max searched blocks per attempt
-        maxLookupsPerSearch = MathHelper.clamp((int) ((extents.maxX - extents.minX + 3) * (extents.maxZ - extents.minZ + 3)), 30, 500);
+        maxLookupsPerSearch = MathHelper.clamp((int) ((extents.getXSize() + 1) * (extents.getZSize() + 1)), 30, 500);
+        // re-sorting is important for "sparse" areas like a hollow building to avoid the drone constantly criss-crossing
+        // the area, but unnecessary (and can lead to skipped blocks) for solid volumes, such as a quarry area
+        double vol = (extents.getXSize() + 1) * (extents.getYSize() + 1) * (extents.getZSize() + 1);
+        shouldReSort = vol > 100 && area.size() / vol < 0.5;
+
         if (area.size() > 0) {
             minY = (int) extents.minY;
             maxY = (int) extents.maxY;
@@ -84,11 +90,12 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
         } else {
             if (!searching) {
                 searching = true;
-                searchIndex = 0;
-                curPos = null;
                 lastSuccessfulY = curY;
-                if (sorter == null || sorter.isDone())
+                if (sorter == null || sorter.isDone() && shouldReSort) {
+                    curPos = null;
+                    searchIndex = 0;
                     sorter = new ThreadedSorter<>(area, new ChunkPositionSorter(drone, order));
+                }
                 return true;
             } else {
                 return false;
@@ -149,12 +156,12 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
             int searchedBlocks = 0; // tracks the number of inspected blocks; stop searching when LOOKUPS_PER_SEARCH_TICK is reached
             while (curPos == null && curY != lastSuccessfulY && order != Ordering.CLOSEST || firstRun) {
                 firstRun = false;
-                List<BlockPos> indicators = new ArrayList<>();
+                List<BlockPos> inspectedPositions = new ArrayList<>();
                 while (!shouldAbort() && searchIndex < area.size()) {
                     BlockPos pos = area.get(searchIndex);
+                    searchIndex++;
                     if (isYValid(pos.getY()) && !blacklist.contains(pos) && (!respectClaims() || !DroneClaimManager.getInstance(drone.world()).isClaimed(pos))) {
-//                        indicateToListeningPlayers(pos);
-                        indicators.add(pos);
+                        inspectedPositions.add(pos);
                         if (isValidPosition(pos)) {
                             curPos = pos;
                             if (moveToPositions()) {
@@ -174,16 +181,16 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
                         }
                         searchedBlocks++;
                     }
-                    searchIndex++;
                     if (searchedBlocks >= maxLookupsPerSearch) return true;
                 }
-                indicateToListeningPlayers(indicators);
+                indicateToListeningPlayers(inspectedPositions);
                 if (curPos == null) updateY();
             }
             if (!shouldAbort()) addEndingDebugEntry();
             return false;
         } else {
             // found a block to interact with; we're now either moving to it, or we've arrived there
+            // curPos *should* always be non-null here, but just to be defensive...
             if (curPos != null) {
                 if (respectClaims()) {
                     DroneClaimManager.getInstance(drone.world()).claim(curPos);
@@ -193,6 +200,7 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
                     return doBlockInteraction(curPos, dist);
                 }
             }
+            // if we end up here, we're either still travelling (return true) or have nowhere to go (return false)
             return !drone.getPathNavigator().hasNoPath();
         }
     }
