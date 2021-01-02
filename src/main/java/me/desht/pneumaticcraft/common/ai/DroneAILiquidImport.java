@@ -2,7 +2,10 @@ package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.common.progwidgets.ILiquidFiltered;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetInventoryBase;
-import me.desht.pneumaticcraft.common.util.FluidUtils;
+import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetLiquidImport;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.IBucketPickupHandler;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
@@ -30,8 +33,12 @@ public class DroneAILiquidImport<W extends ProgWidgetInventoryBase & ILiquidFilt
         return emptyTank(pos, false) && super.doBlockInteraction(pos, distToBlock);
     }
 
+    private boolean shouldVoidExcess() {
+        return progWidget instanceof ProgWidgetLiquidImport && ((ProgWidgetLiquidImport) progWidget).shouldVoidExcess();
+    }
+
     private boolean emptyTank(BlockPos pos, boolean simulate) {
-        if (drone.getFluidTank().getFluidAmount() == drone.getFluidTank().getCapacity()) {
+        if (!shouldVoidExcess() && drone.getFluidTank().getFluidAmount() == drone.getFluidTank().getCapacity()) {
             drone.addDebugEntry("pneumaticcraft.gui.progWidget.liquidImport.debug.fullDroneTank");
             abort();
             return false;
@@ -53,13 +60,20 @@ public class DroneAILiquidImport<W extends ProgWidgetInventoryBase & ILiquidFilt
             // try to pick up a bucket of fluid from the world
             if (!progWidget.useCount() || getRemainingCount() >= BUCKET_VOLUME) {
                 LazyOptional<IFluidHandler> cap = drone.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY);
-                FluidStack stack = FluidUtils.tryPickupFluid(cap, drone.world(), pos, false, FluidAction.SIMULATE);
-                if (!stack.isEmpty() && stack.getAmount() == BUCKET_VOLUME
-                    && progWidget.isFluidValid(stack.getFluid())
-                    && drone.getFluidTank().fill(stack, FluidAction.SIMULATE) == BUCKET_VOLUME) {
-                    if (!simulate) {
-                        decreaseCount(BUCKET_VOLUME);
-                        FluidUtils.tryPickupFluid(cap, drone.world(), pos, false, FluidAction.EXECUTE);
+                FluidState state = drone.world().getFluidState(pos);
+                BlockState blockState = drone.world().getBlockState(pos);
+                if (state.isSource() && progWidget.isFluidValid(state.getFluid())) {
+                    FluidStack stack = new FluidStack(state.getFluid(), BUCKET_VOLUME);
+                    if (shouldVoidExcess() || drone.getFluidTank().fill(stack, FluidAction.SIMULATE) == BUCKET_VOLUME) {
+                        if (!simulate) {
+                            if (blockState.getBlock() instanceof IBucketPickupHandler) {
+                                ((IBucketPickupHandler) blockState.getBlock()).pickupFluid(drone.world(), pos, blockState);
+                                decreaseCount(BUCKET_VOLUME);
+                                drone.getFluidTank().fill(stack, FluidAction.EXECUTE);
+                                return true;
+//                                FluidUtils.tryPickupFluid(cap, drone.world(), pos, false, FluidAction.EXECUTE);
+                            }
+                        }
                     }
                     return true;
                 }
@@ -71,7 +85,7 @@ public class DroneAILiquidImport<W extends ProgWidgetInventoryBase & ILiquidFilt
 
     private boolean tryImportFluid(IFluidHandler sourceHandler, boolean simulate) {
         FluidStack importedFluid = sourceHandler.drain(Integer.MAX_VALUE, FluidAction.SIMULATE);
-        if (importedFluid != null && progWidget.isFluidValid(importedFluid.getFluid())) {
+        if (!importedFluid.isEmpty() && progWidget.isFluidValid(importedFluid.getFluid())) {
             int filledAmount = drone.getFluidTank().fill(importedFluid, FluidAction.SIMULATE);
             if (filledAmount > 0) {
                 if (progWidget.useCount())
@@ -80,6 +94,8 @@ public class DroneAILiquidImport<W extends ProgWidgetInventoryBase & ILiquidFilt
                     decreaseCount(drone.getFluidTank().fill(sourceHandler.drain(filledAmount, FluidAction.EXECUTE), FluidAction.EXECUTE));
                 }
                 return true;
+            } else {
+                return shouldVoidExcess();
             }
         }
         return false;

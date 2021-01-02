@@ -1095,6 +1095,8 @@
    "pneumaticcraft.gui.progWidget.liquidFilter.noFluid" : "No Fluid",
    "pneumaticcraft.gui.progWidget.liquidImport.debug.emptiedToMax" : "Emptied the tanks as much as possible.",
    "pneumaticcraft.gui.progWidget.liquidImport.debug.fullDroneTank" : "The Drone's tank is full already.",
+   "pneumaticcraft.gui.progWidget.liquidImport.voidExcess" : "Void Excess Fluid",
+   "pneumaticcraft.gui.progWidget.liquidImport.voidExcess.tooltip" : "If the imported fluid does not fit in the drone's tank, void it instead",
    "pneumaticcraft.gui.progWidget.pickup.canSteal" : "Allow item \"stealing\"",
    "pneumaticcraft.gui.progWidget.pickup.canSteal.tooltip" : "When checked, the drone will be able to \"steal\" items normally protected from being picked up, e.g. items on Immersive Engineering Conveyor Belts.",
    "pneumaticcraft.gui.progWidget.place.debug.cantPlaceBlock" : "The block cannot be placed here.",

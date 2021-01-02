@@ -18,8 +18,11 @@ import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.List;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
 public class ProgWidgetLiquidImport extends ProgWidgetInventoryBase implements ILiquidFiltered, IBlockOrdered {
     private Ordering order = Ordering.HIGH_TO_LOW;
+    private boolean voidExcess = false;
 
     public ProgWidgetLiquidImport() {
         super(ModProgWidgets.LIQUID_IMPORT.get());
@@ -60,33 +63,48 @@ public class ProgWidgetLiquidImport extends ProgWidgetInventoryBase implements I
         this.order = order;
     }
 
+    public boolean shouldVoidExcess() {
+        return voidExcess;
+    }
+
+    public void setVoidExcess(boolean voidExcess) {
+        this.voidExcess = voidExcess;
+    }
+
     @Override
     public void getTooltip(List<ITextComponent> curTooltip) {
         super.getTooltip(curTooltip);
         curTooltip.add(new StringTextComponent("Order: ").append(new TranslationTextComponent(order.getTranslationKey())));
+        if (shouldVoidExcess()) {
+            curTooltip.add(xlate("pneumaticcraft.gui.progWidget.liquidImport.voidExcess"));
+        }
     }
 
     @Override
     public void writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
         tag.putInt("order", order.ordinal());
+        tag.putBoolean("voidExcess", voidExcess);
     }
 
     @Override
     public void readFromNBT(CompoundNBT tag) {
         super.readFromNBT(tag);
         order = Ordering.values()[tag.getInt("order")];
+        voidExcess = tag.getBoolean("voidExcess");
     }
 
     @Override
     public void writeToPacket(PacketBuffer buf) {
         super.writeToPacket(buf);
         buf.writeByte(order.ordinal());
+        buf.writeBoolean(voidExcess);
     }
 
     @Override
     public void readFromPacket(PacketBuffer buf) {
         super.readFromPacket(buf);
         order = Ordering.values()[buf.readByte()];
+        voidExcess = buf.readBoolean();
     }
 }
