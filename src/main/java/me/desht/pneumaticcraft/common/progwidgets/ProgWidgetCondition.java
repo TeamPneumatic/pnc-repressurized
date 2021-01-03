@@ -72,9 +72,9 @@ public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implem
         if (evaluator != null) {
             boolean evaluation = evaluate(drone, this);
             if (evaluation) {
-                drone.addDebugEntry("pneumaticcraft.gui.progWidget.condition.evaluatedTrue");
+                drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.condition.evaluatedTrue");
             } else {
-                drone.addDebugEntry("pneumaticcraft.gui.progWidget.condition.evaluatedFalse");
+                drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.condition.evaluatedFalse");
             }
             return ProgWidgetJump.jumpToLabel(drone, allWidgets, this, evaluation);
         } else {

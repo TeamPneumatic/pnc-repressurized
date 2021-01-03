@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.entity.living;
 
-import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import net.minecraft.entity.CreatureEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.DyeColor;
@@ -43,8 +42,6 @@ public abstract class EntityDroneBase extends CreatureEntity {
     public abstract ItemStack getDroneHeldItem();
 
     public abstract  BlockPos getTargetedBlock();
-
-    public abstract IProgWidget getActiveWidget();
 
     public abstract ITextComponent getOwnerName();
 

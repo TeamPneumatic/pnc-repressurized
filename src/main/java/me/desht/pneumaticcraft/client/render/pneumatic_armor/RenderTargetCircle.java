@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.client.render.pneumatic_armor;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.client.render.ModRenderTypes;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
-import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
+import me.desht.pneumaticcraft.common.entity.living.EntityDroneBase;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.entity.Entity;
@@ -88,7 +88,7 @@ public class RenderTargetCircle {
     }
 
     private float[] getCircleColour(Entity entity) {
-        if (entity instanceof EntityDrone) {
+        if (entity instanceof EntityDroneBase) {
             return DRONE;
         } else if (entity instanceof IMob) {
             return HOSTILE;

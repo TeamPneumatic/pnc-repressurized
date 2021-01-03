@@ -1,48 +1,34 @@
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.debug.DroneDebugEntry;
-import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
-import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
-
-import java.util.function.Supplier;
 
 /**
  * Received on: CLIENT
  * Sent by server to add a debug message to a debugged drone.
  */
-public class PacketSendDroneDebugEntry {
-    private DroneDebugEntry entry;
-    private int entityId;
+public class PacketSendDroneDebugEntry extends PacketDroneDebugBase {
+    private final DroneDebugEntry entry;
 
-    public PacketSendDroneDebugEntry() {
-    }
-
-    public PacketSendDroneDebugEntry(DroneDebugEntry entry, EntityDrone drone) {
+    public PacketSendDroneDebugEntry(DroneDebugEntry entry, IDroneBase drone) {
+        super(drone);
         this.entry = entry;
-        entityId = drone.getEntityId();
     }
 
     public PacketSendDroneDebugEntry(PacketBuffer buffer) {
+        super(buffer);
         entry = new DroneDebugEntry(buffer);
-        entityId = buffer.readInt();
     }
 
     public void toBytes(PacketBuffer buf) {
+        super.toBytes(buf);
         entry.toBytes(buf);
-        buf.writeInt(entityId);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            Entity entity = ClientUtils.getClientWorld().getEntityByID(entityId);
-            if (entity instanceof EntityDrone) {
-                EntityDrone drone = (EntityDrone) entity;
-                drone.addDebugEntry(entry);
-            }
-        });
-        ctx.get().setPacketHandled(true);
+    @Override
+    void handle(PlayerEntity player, IDroneBase drone) {
+        drone.getDebugger().addEntry(entry);
     }
 }

@@ -1,57 +1,48 @@
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
+import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.lib.NBTKeys;
-import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
-
-import java.util.function.Supplier;
+import net.minecraft.util.math.BlockPos;
 
 /**
  * Received on: SERVER
- * Sent by client when the drone debug key is pressed (for a valid target)
+ * Sent by client when the drone debug key is pressed, for a valid entity or programmable controller target
  */
-public class PacketUpdateDebuggingDrone {
-
-    private int entityId;
-
-    public PacketUpdateDebuggingDrone() {
-    }
-
+public class PacketUpdateDebuggingDrone extends PacketDroneDebugBase {
     public PacketUpdateDebuggingDrone(int entityId) {
-        this.entityId = entityId;
+        super(entityId, null);
     }
 
-    public PacketUpdateDebuggingDrone(PacketBuffer buffer) {
-        this.entityId = buffer.readInt();
+    public PacketUpdateDebuggingDrone(BlockPos controllerPos) {
+        super(-1, controllerPos);
     }
 
-    public void toBytes(PacketBuffer buf) {
-        buf.writeInt(entityId);
+    public PacketUpdateDebuggingDrone(PacketBuffer buf) {
+        super(buf);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            ServerPlayerEntity player = ctx.get().getSender();
+    @Override
+    void handle(PlayerEntity player, IDroneBase droneBase) {
+        if (player instanceof ServerPlayerEntity) {
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
             if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().droneDebugHandler, false)) {
                 ItemStack stack = player.getItemStackFromSlot(EquipmentSlotType.HEAD);
-                NBTUtils.setInteger(stack, NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE, entityId);
-                if (entityId > 0) {
-                    Entity entity = player.world.getEntityByID(entityId);
-                    if (entity instanceof EntityDrone) {
-                        ((EntityDrone) entity).trackAsDebugged(player);
-                    }
+                if (droneBase == null) {
+                    NBTUtils.removeTag(stack, NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE);
+                    NBTUtils.removeTag(stack, NBTKeys.PNEUMATIC_HELMET_DEBUGGING_PC);
+                } else {
+                    droneBase.storeTrackerData(stack);
+                    droneBase.getDebugger().trackAsDebugged((ServerPlayerEntity) player);
                 }
             }
-        });
-        ctx.get().setPacketHandled(true);
+        }
     }
 }

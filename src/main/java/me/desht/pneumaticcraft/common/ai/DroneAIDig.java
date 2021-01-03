@@ -94,7 +94,7 @@ public class DroneAIDig<W extends ProgWidgetAreaItemBase & IToolUser> extends Dr
             if (!ignoreBlock(block) && isBlockValidForFilter(worldCache, pos, drone, progWidget)) {
                 if (blockState.getBlockHardness(drone.world(), pos) < 0) {
                     addToBlacklist(pos);
-                    drone.addDebugEntry("pneumaticcraft.gui.progWidget.dig.debug.cantDigBlock", pos);
+                    drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.dig.debug.cantDigBlock", pos);
                     drone.setDugBlock(null);
                     return false;
                 }

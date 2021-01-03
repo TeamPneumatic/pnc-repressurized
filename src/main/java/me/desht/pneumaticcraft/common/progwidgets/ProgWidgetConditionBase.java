@@ -62,9 +62,9 @@ public abstract class ProgWidgetConditionBase extends ProgWidget implements IJum
     public IProgWidget getOutputWidget(IDroneBase drone, List<IProgWidget> allWidgets) {
         boolean evaluation = evaluate(drone, this);
         if (evaluation) {
-            drone.addDebugEntry("pneumaticcraft.gui.progWidget.condition.evaluatedTrue");
+            drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.condition.evaluatedTrue");
         } else {
-            drone.addDebugEntry("pneumaticcraft.gui.progWidget.condition.evaluatedFalse");
+            drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.condition.evaluatedFalse");
         }
         return ProgWidgetJump.jumpToLabel(drone, allWidgets, this, evaluation);
     }

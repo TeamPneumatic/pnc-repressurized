@@ -3,6 +3,8 @@ package me.desht.pneumaticcraft.client.render.pneumatic_armor;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.ProgWidgetRenderer;
+import me.desht.pneumaticcraft.common.entity.EntityProgrammableController;
+import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.entity.living.EntityDroneBase;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
@@ -61,8 +63,8 @@ public class RenderDroneAI {
             wireframe.getKey().render(matrixStack, buffer, partialTicks);
         }
 
-        if (ItemPneumaticArmor.isPlayerDebuggingEntity(ClientUtils.getClientPlayer(), drone)) {
-            IProgWidget activeWidget = drone.getActiveWidget();
+        if (ItemPneumaticArmor.isPlayerDebuggingDrone(ClientUtils.getClientPlayer(), drone)) {
+            IProgWidget activeWidget = getActiveWidget(drone);
             if (activeWidget != null) {
                 double x, y, z;
                 if (pos != null) {
@@ -82,6 +84,16 @@ public class RenderDroneAI {
                 ProgWidgetRenderer.renderProgWidget3d(matrixStack, buffer, activeWidget);
                 matrixStack.pop();
             }
+        }
+    }
+
+    private IProgWidget getActiveWidget(EntityDroneBase droneBase) {
+        if (droneBase instanceof EntityDrone) {
+            return ((EntityDrone) droneBase).getActiveWidget();
+        } else if (droneBase instanceof EntityProgrammableController) {
+            return ((EntityProgrammableController) droneBase).getController().getActiveWidget();
+        } else {
+            return null;
         }
     }
 

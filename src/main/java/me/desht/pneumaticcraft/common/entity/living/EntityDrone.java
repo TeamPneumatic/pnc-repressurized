@@ -23,21 +23,19 @@ import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModEntities;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModSounds;
-import me.desht.pneumaticcraft.common.debug.DroneDebugEntry;
+import me.desht.pneumaticcraft.common.debug.DroneDebugger;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsFrame;
 import me.desht.pneumaticcraft.common.item.ItemDrone;
 import me.desht.pneumaticcraft.common.item.ItemGPSTool;
 import me.desht.pneumaticcraft.common.item.ItemGunAmmo;
-import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketSendDroneDebugEntry;
 import me.desht.pneumaticcraft.common.network.PacketShowWireframe;
-import me.desht.pneumaticcraft.common.network.PacketSyncDroneEntityProgWidgets;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetGoToLocation;
 import me.desht.pneumaticcraft.common.tileentity.PneumaticEnergyStorage;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
+import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.common.util.fakeplayer.DroneFakePlayer;
@@ -47,6 +45,7 @@ import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.common.util.upgrade.IUpgradeHolder;
 import me.desht.pneumaticcraft.common.util.upgrade.UpgradeCache;
 import me.desht.pneumaticcraft.lib.Log;
+import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -64,7 +63,6 @@ import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
 import net.minecraft.entity.passive.IFlyingAnimal;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -195,8 +193,7 @@ public class EntityDrone extends EntityDroneBase implements
     private boolean standby; // If true, the drone's propellors stop, the drone will fall down, and won't use pressure.
     private Minigun minigun;
 
-    private final DroneDebugList debugList = new DroneDebugList();
-    private final Set<ServerPlayerEntity> debuggingPlayers = new HashSet<>();  // players who receive debug data
+    private final DroneDebugger debugger = new DroneDebugger(this);
 
     private int securityUpgradeCount; // for liquid immunity: 1 = breathe in water, 2 = temporary air bubble, 3+ = permanent water removal
     private final Map<BlockPos, BlockState> displacedLiquids = new HashMap<>();  // liquid blocks displaced by security upgrade
@@ -417,7 +414,7 @@ public class EntityDrone extends EntityDroneBase implements
             }
 
             if (world.getGameTime() % 20 == 0) {
-                updateDebuggingPlayers();
+                debugger.updateDebuggingPlayers();
             }
 
             FakePlayer fp = getFakePlayer();
@@ -586,22 +583,9 @@ public class EntityDrone extends EntityDroneBase implements
         return new ResourceLocation(dataManager.get(PROGRAM_KEY));
     }
 
-    /**
-     * Get the currently-active programming widget.  Used client-side for debugging and rendering.
-     *
-     * @return the currently-active programming widget
-     */
-    @Override
-    public IProgWidget getActiveWidget() {
-        int index = getActiveWidgetIndex();
-        if (index >= 0 && index < progWidgets.size()) {
-            return progWidgets.get(index);
-        } else {
-            return null;
-        }
-    }
 
-    private int getActiveWidgetIndex() {
+    @Override
+    public int getActiveWidgetIndex() {
         return dataManager.get(ACTIVE_WIDGET);
     }
 
@@ -1331,45 +1315,20 @@ public class EntityDrone extends EntityDroneBase implements
         return dataManager.get(LABEL);
     }
 
-    public DroneDebugEntry getDebugEntry(int widgetID) {
-        return debugList.get(widgetID);
+    @Override
+    public ITextComponent getDroneName() {
+        return getName();
     }
 
     @Override
-    public void addDebugEntry(String message) {
-        addDebugEntry(message, null);
+    public DroneDebugger getDebugger() {
+        return debugger;
     }
 
     @Override
-    public void addDebugEntry(String message, BlockPos pos) {
-        DroneDebugEntry entry = new DroneDebugEntry(message, getActiveWidgetIndex(), pos);
-
-        // add the entry server-side
-        addDebugEntry(entry);
-
-        // add the entry client-side
-        PacketSendDroneDebugEntry packet = new PacketSendDroneDebugEntry(entry, this);
-        for (ServerPlayerEntity player : debuggingPlayers) {
-            NetworkHandler.sendToPlayer(packet, player);
-        }
-    }
-
-    public void addDebugEntry(DroneDebugEntry entry) {
-        debugList.addEntry(entry);
-    }
-
-    public void trackAsDebugged(ServerPlayerEntity player) {
-        NetworkHandler.sendToPlayer(new PacketSyncDroneEntityProgWidgets(this), player);
-
-        for (DroneDebugEntry entry : debugList.getAll()) {
-            NetworkHandler.sendToPlayer(new PacketSendDroneDebugEntry(entry, this), player);
-        }
-
-        debuggingPlayers.add(player);
-    }
-
-    private void updateDebuggingPlayers() {
-        debuggingPlayers.removeIf(player -> !player.isAlive() || !ItemPneumaticArmor.isPlayerDebuggingEntity(player, this));
+    public void storeTrackerData(ItemStack stack) {
+        NBTUtils.setInteger(stack, NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE, getEntityId());
+        NBTUtils.removeTag(stack, NBTKeys.PNEUMATIC_HELMET_DEBUGGING_PC);
     }
 
     @Override
@@ -1380,6 +1339,11 @@ public class EntityDrone extends EntityDroneBase implements
     @Override
     public void onUpgradesChanged() {
         energy.setCapacity(100000 + 100000 * getUpgrades(EnumUpgrade.VOLUME));
+    }
+
+    @Override
+    public boolean isDroneStillValid() {
+        return isAlive();
     }
 
     /**
@@ -1451,29 +1415,6 @@ public class EntityDrone extends EntityDroneBase implements
             if (isFakePlayerReady() && slot == getFakePlayer().inventory.currentItem && PNCConfig.Common.General.dronesRenderHeldItem) {
                 dataManager.set(HELD_ITEM, getStackInSlot(slot));
             }
-        }
-    }
-
-    private class DroneDebugList {
-        private final Map<Integer, DroneDebugEntry> debugEntries = new HashMap<>();
-
-        private DroneDebugList() {
-        }
-
-        void addEntry(DroneDebugEntry entry) {
-            debugEntries.put(EntityDrone.this.getActiveWidgetIndex(), entry);
-        }
-
-        public Collection<DroneDebugEntry> getAll() {
-            return debugEntries.values();
-        }
-
-        public DroneDebugEntry get(int widgetId) {
-            return debugEntries.get(widgetId);
-        }
-
-        public DroneDebugEntry getCurrent() {
-            return debugEntries.get(EntityDrone.this.getActiveWidgetIndex());
         }
     }
 }

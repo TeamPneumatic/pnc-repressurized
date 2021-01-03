@@ -34,13 +34,13 @@ public class DroneAIAttackEntity extends MeleeAttackGoal {
     @Override
     public boolean shouldExecute() {
         if (isRanged && attacker.getSlotForAmmo() < 0) {
-            attacker.addDebugEntry("pneumaticcraft.gui.progWidget.entityAttack.debug.noAmmo");
+            attacker.getDebugger().addEntry("pneumaticcraft.gui.progWidget.entityAttack.debug.noAmmo");
             return false;
         }
 
         LivingEntity entitylivingbase = attacker.getAttackTarget();
         if (entitylivingbase == null) {
-            attacker.addDebugEntry("pneumaticcraft.gui.progWidget.entityAttack.debug.noEntityToAttack");
+            attacker.getDebugger().addEntry("pneumaticcraft.gui.progWidget.entityAttack.debug.noEntityToAttack");
         }
 
         return super.shouldExecute();

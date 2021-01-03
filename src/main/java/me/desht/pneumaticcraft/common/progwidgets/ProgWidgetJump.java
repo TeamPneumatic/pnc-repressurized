@@ -46,7 +46,7 @@ public class ProgWidgetJump extends ProgWidget implements IJump {
             IProgWidget widget = jumpToLabel(drone, allWidgets, jumpedLabel.string);
             if (widget != null) return widget;
         }
-        drone.addDebugEntry("pneumaticcraft.gui.progWidget.jump.nowhereToJump");
+        drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.jump.nowhereToJump");
         return null;
     }
 
@@ -58,7 +58,7 @@ public class ProgWidgetJump extends ProgWidget implements IJump {
             return jumpToLabel(drone, allWidgets, textWidget.string);
         } else {
             IProgWidget widget = conditionWidget.getOutputWidget();
-            if (widget == null) drone.addDebugEntry("pneumaticcraft.gui.progWidget.jump.nowhereToJump");
+            if (widget == null) drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.jump.nowhereToJump");
             return widget;
         }
     }
@@ -75,7 +75,7 @@ public class ProgWidgetJump extends ProgWidget implements IJump {
             }
         }
         if (possibleJumpLocations.size() == 0) {
-            drone.addDebugEntry("pneumaticcraft.gui.progWidget.jump.nowhereToJump");
+            drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.jump.nowhereToJump");
             return null;
         } else {
             return possibleJumpLocations.get(new Random().nextInt(possibleJumpLocations.size()));

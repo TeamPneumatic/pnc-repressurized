@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.entity;
 
 import me.desht.pneumaticcraft.common.entity.living.EntityDroneBase;
-import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammableController;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.ItemStack;
@@ -84,17 +83,20 @@ public class EntityProgrammableController extends EntityDroneBase {
     }
 
     @Override
-    public IProgWidget getActiveWidget() {
-        return null;
-    }
-
-    @Override
     public ITextComponent getOwnerName() {
         return new StringTextComponent(controller.ownerNameClient);
     }
 
     @Override
     public String getLabel() {
-        return controller.label == null ? "<?" : controller.label;
+        return controller.label == null ? "<?>" : controller.label;
+    }
+
+    public BlockPos getControllerPos() {
+        return controller.getPos();
+    }
+
+    public TileEntityProgrammableController getController() {
+        return controller;
     }
 }

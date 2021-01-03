@@ -40,11 +40,11 @@ public class DroneGoToChargingStation extends Goal {
                 for (TileEntityChargingStation station : GlobalTileEntityCacheManager.getInstance().chargingStations) {
                     if (station.getWorld() == drone.world && drone.getDistanceSq(Vector3d.copyCentered(station.getPos())) <= maxDistSq) {
                         if (DroneClaimManager.getInstance(drone.world).isClaimed(station.getPos())) {
-                            drone.addDebugEntry("pneumaticcraft.gui.progWidget.chargingStation.debug.claimed", station.getPos());
+                            drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.chargingStation.debug.claimed", station.getPos());
                         } else if (station.getPressure() <= PneumaticValues.DRONE_LOW_PRESSURE) {
-                            drone.addDebugEntry("pneumaticcraft.gui.progWidget.chargingStation.debug.notEnoughPressure", station.getPos());
+                            drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.chargingStation.debug.notEnoughPressure", station.getPos());
                         } else if (station.getUpgrades(EnumUpgrade.DISPENSER) == 0) {
-                            drone.addDebugEntry("pneumaticcraft.gui.progWidget.chargingStation.debug.noDispenserUpgrades", station.getPos());
+                            drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.chargingStation.debug.noDispenserUpgrades", station.getPos());
                         } else {
                             validChargingStations.add(station);
                         }
@@ -58,7 +58,7 @@ public class DroneGoToChargingStation extends Goal {
         for (TileEntityChargingStation station : validChargingStations) {
             boolean protect = TileEntitySecurityStation.getProtectingSecurityStations(drone.getFakePlayer(), station.getPos(), false, false) > 0;
             if (protect) {
-                drone.addDebugEntry("pneumaticcraft.gui.progWidget.chargingStation.debug.protected", station.getPos());
+                drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.chargingStation.debug.protected", station.getPos());
             } else if (drone.getPathNavigator().moveToXYZ(station.getPos().getX() + 0.5, station.getPos().getY() + 1, station.getPos().getZ() + 0.5)
                     || drone.getPathNavigator().isGoingToTeleport()) {
                 isExecuting = true;
@@ -66,7 +66,7 @@ public class DroneGoToChargingStation extends Goal {
                 DroneClaimManager.getInstance(drone.world).claim(station.getPos());
                 return true;
             } else {
-                drone.addDebugEntry("pneumaticcraft.gui.progWidget.chargingStation.debug.cantNavigate", station.getPos());
+                drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.chargingStation.debug.cantNavigate", station.getPos());
             }
         }
         isExecuting = false;

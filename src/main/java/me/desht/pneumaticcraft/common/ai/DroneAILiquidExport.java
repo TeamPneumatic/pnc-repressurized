@@ -34,7 +34,7 @@ public class DroneAILiquidExport<W extends ProgWidgetInventoryBase & ILiquidFilt
 
     private boolean fillTank(BlockPos pos, boolean simulate) {
         if (drone.getFluidTank().getFluidAmount() == 0) {
-            drone.addDebugEntry("pneumaticcraft.gui.progWidget.liquidExport.debug.emptyDroneTank");
+            drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.liquidExport.debug.emptyDroneTank");
             abort();
             return false;
         } else {
@@ -45,9 +45,9 @@ public class DroneAILiquidExport<W extends ProgWidgetInventoryBase & ILiquidFilt
                     for (Direction side : Direction.VALUES) {
                         if (progWidget.isSideSelected(side) && trySide(te, side, exportedFluid, simulate)) return true;
                     }
-                    drone.addDebugEntry("pneumaticcraft.gui.progWidget.liquidExport.debug.filledToMax", pos);
+                    drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.liquidExport.debug.filledToMax", pos);
                 } else {
-                    drone.addDebugEntry("pneumaticcraft.gui.progWidget.liquidExport.debug.noValidFluid");
+                    drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.liquidExport.debug.noValidFluid");
                 }
             } else if (progWidget.isPlacingFluidBlocks()
                     && (!progWidget.useCount() || getRemainingCount() >= BUCKET_VOLUME)) {

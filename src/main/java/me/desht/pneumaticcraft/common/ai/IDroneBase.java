@@ -2,10 +2,12 @@ package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
+import me.desht.pneumaticcraft.common.debug.DroneDebugger;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
 
 import java.util.List;
 
@@ -29,10 +31,6 @@ public interface IDroneBase extends IDrone {
      */
     void updateLabel();
 
-    void addDebugEntry(String message);
-
-    void addDebugEntry(String message, BlockPos pos);
-
     LogisticsManager getLogisticsManager();
 
     void setLogisticsManager(LogisticsManager logisticsManager);
@@ -46,4 +44,30 @@ public interface IDroneBase extends IDrone {
     default boolean canMoveIntoLava() {
         return false;
     }
+
+    int getActiveWidgetIndex();
+
+    DroneDebugger getDebugger();
+
+    void storeTrackerData(ItemStack stack);
+
+    /**
+     * Get the currently-active programming widget.  Used client-side for debugging and rendering.
+     *
+     * @return the currently-active programming widget
+     */
+    default IProgWidget getActiveWidget() {
+        int index = getActiveWidgetIndex();
+        if (index >= 0 && index < getProgWidgets().size()) {
+            return getProgWidgets().get(index);
+        } else {
+            return null;
+        }
+    }
+
+    String getLabel();
+
+    ITextComponent getDroneName();
+
+    boolean isDroneStillValid();
 }

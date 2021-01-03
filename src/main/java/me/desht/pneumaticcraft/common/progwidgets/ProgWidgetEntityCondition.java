@@ -32,9 +32,9 @@ public class ProgWidgetEntityCondition extends ProgWidgetCondition {
         List<Entity> entities = getValidEntities(drone.world());
         boolean result = getOperator() == Operator.EQ ? entities.size() == getRequiredCount() : entities.size() >= getRequiredCount();
         if (result) {
-            drone.addDebugEntry("pneumaticcraft.gui.progWidget.condition.evaluatedTrue");
+            drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.condition.evaluatedTrue");
         } else {
-            drone.addDebugEntry("pneumaticcraft.gui.progWidget.condition.evaluatedFalse");
+            drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.condition.evaluatedFalse");
         }
         maybeRecordMeasuredVal(drone, entities.size());
         return ProgWidgetJump.jumpToLabel(drone, allWidgets, this, result);

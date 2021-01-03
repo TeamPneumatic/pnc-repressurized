@@ -35,7 +35,7 @@ public class DroneEntityAIPickupItems extends Goal {
         List<Entity> pickableItems = itemPickupWidget.getEntitiesInArea(drone.world(), entity -> entity instanceof ItemEntity && entity.isAlive());
 
         if (pickableItems.isEmpty()) {
-            drone.addDebugEntry("pneumaticcraft.gui.progWidget.itemPickup.debug.noItems");
+            drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.itemPickup.debug.noItems");
             return false;
         }
         pickableItems.sort(theNearestAttackableTargetSorter);
@@ -48,10 +48,10 @@ public class DroneEntityAIPickupItems extends Goal {
                 if (IOHelper.insert(drone, stack, null, true).isEmpty()) {
                     return tryMoveToItem(ent);
                 } else {
-                    drone.addDebugEntry("pneumaticcraft.gui.progWidget.inventoryImport.debug.filledToMax");
+                    drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.inventoryImport.debug.filledToMax");
                 }
             } else {
-                drone.addDebugEntry("pneumaticcraft.gui.progWidget.itemPickup.debug.itemNotValid");
+                drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.itemPickup.debug.itemNotValid");
             }
         }
         return false;

@@ -12,7 +12,9 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.entity_tracker.Enti
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.core.ModSounds;
+import me.desht.pneumaticcraft.common.entity.EntityProgrammableController;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
+import me.desht.pneumaticcraft.common.entity.living.EntityDroneBase;
 import me.desht.pneumaticcraft.common.hacking.HackableHandler;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -81,7 +83,7 @@ public class RenderEntityTarget {
             player.world.playSound(player.getPosX(), player.getPosY(), player.getPosZ(), ModSounds.HUD_ENTITY_LOCK.get(), SoundCategory.PLAYERS, 0.1F, 1.0F, true);
         }
 
-        boolean tagged = ItemPneumaticArmor.isPlayerDebuggingEntity(player, entity);
+        boolean tagged = entity instanceof EntityDroneBase && ItemPneumaticArmor.isPlayerDebuggingDrone(player, (EntityDroneBase) entity);
         circle1.setRenderingAsTagged(tagged);
         circle2.setRenderingAsTagged(tagged);
         circle1.update();
@@ -202,14 +204,19 @@ public class RenderEntityTarget {
     }
 
     public void selectAsDebuggingTarget() {
-        if (isInitialized() && isPlayerLookingAtTarget() && entity instanceof EntityDrone) {
+        if (isInitialized() && isPlayerLookingAtTarget() && entity instanceof EntityDroneBase) {
             DroneDebuggerOptions.clearAreaShowWidgetId();
-            if (ItemPneumaticArmor.isPlayerDebuggingEntity(ClientUtils.getClientPlayer(), entity)) {
+            if (ItemPneumaticArmor.isPlayerDebuggingDrone(ClientUtils.getClientPlayer(), (EntityDroneBase) entity)) {
                 NetworkHandler.sendToServer(new PacketUpdateDebuggingDrone(-1));
                 Minecraft.getInstance().player.playSound(ModSounds.SCI_FI.get(), 1.0f, 2.0f);
             } else {
-                NetworkHandler.sendToServer(new PacketUpdateDebuggingDrone(entity.getEntityId()));
-                Minecraft.getInstance().player.playSound(ModSounds.HUD_ENTITY_LOCK.get(), 1.0f, 2.0f);
+                if (entity instanceof EntityDrone) {
+                    NetworkHandler.sendToServer(new PacketUpdateDebuggingDrone(entity.getEntityId()));
+                    Minecraft.getInstance().player.playSound(ModSounds.HUD_ENTITY_LOCK.get(), 1.0f, 2.0f);
+                } else if (entity instanceof EntityProgrammableController) {
+                    NetworkHandler.sendToServer(new PacketUpdateDebuggingDrone(((EntityProgrammableController) entity).getControllerPos()));
+                    Minecraft.getInstance().player.playSound(ModSounds.HUD_ENTITY_LOCK.get(), 1.0f, 2.0f);
+                }
             }
         }
     }

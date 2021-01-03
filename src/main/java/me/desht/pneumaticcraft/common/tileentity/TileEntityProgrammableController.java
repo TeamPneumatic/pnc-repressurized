@@ -16,6 +16,7 @@ import me.desht.pneumaticcraft.common.ai.LogisticsManager;
 import me.desht.pneumaticcraft.common.core.ModEntities;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
+import me.desht.pneumaticcraft.common.debug.DroneDebugger;
 import me.desht.pneumaticcraft.common.entity.EntityProgrammableController;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsFrame;
 import me.desht.pneumaticcraft.common.inventory.ContainerProgrammableController;
@@ -28,6 +29,7 @@ import me.desht.pneumaticcraft.common.util.fakeplayer.DroneFakePlayer;
 import me.desht.pneumaticcraft.common.util.fakeplayer.DroneItemHandler;
 import me.desht.pneumaticcraft.common.util.fakeplayer.FakeNetHandlerPlayerServer;
 import me.desht.pneumaticcraft.lib.Log;
+import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -39,6 +41,7 @@ import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.NBTUtil;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
@@ -137,6 +140,9 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     // Although this is only used by DroneAILogistics, it is here rather than there so it can persist,
     // for performance reasons; DroneAILogistics is a short-lived object and LogisticsManager is expensive to create
     private LogisticsManager logisticsManager;
+    private final DroneDebugger debugger = new DroneDebugger(this);
+    @DescSynced
+    private int activeWidgetIndex;
 
     public TileEntityProgrammableController() {
         super(ModTileEntities.PROGRAMMABLE_CONTROLLER.get(), 20, 25, 10000, 4);
@@ -196,6 +202,10 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
                 if (!aiManager.isIdling()) addAir(-PneumaticValues.USAGE_PROGRAMMABLE_CONTROLLER);
                 aiManager.onUpdateTasks();
                 maybeChargeHeldItem();
+            }
+
+            if (world.getGameTime() % 20 == 0) {
+                debugger.updateDebuggingPlayers();
             }
         } else {
             if ((drone == null || !drone.isAlive()) && getWorld().isAreaLoaded(new BlockPos(curX, curY, curZ), 1)) {
@@ -565,6 +575,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
 
     @Override
     public void setActiveProgram(IProgWidget widget) {
+        activeWidgetIndex = progWidgets.indexOf(widget);
     }
 
     @Override
@@ -655,14 +666,6 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     }
 
     @Override
-    public void addDebugEntry(String message) {
-    }
-
-    @Override
-    public void addDebugEntry(String message, BlockPos pos) {
-    }
-
-    @Override
     public LogisticsManager getLogisticsManager() {
         return logisticsManager;
     }
@@ -685,6 +688,38 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     @Override
     public boolean canMoveIntoLava() {
         return true;  // since it's not a real drone
+    }
+
+    @Override
+    public int getActiveWidgetIndex() {
+        return activeWidgetIndex;
+    }
+
+    @Override
+    public DroneDebugger getDebugger() {
+        return debugger;
+    }
+
+    @Override
+    public String getLabel() {
+        return label;
+    }
+
+    @Override
+    public ITextComponent getDroneName() {
+        return getDisplayName();
+    }
+
+    @Override
+    public void storeTrackerData(ItemStack stack) {
+        CompoundNBT tag = stack.getOrCreateTag();
+        tag.put(NBTKeys.PNEUMATIC_HELMET_DEBUGGING_PC, NBTUtil.writeBlockPos(getPos()));
+        tag.remove(NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE);
+    }
+
+    @Override
+    public boolean isDroneStillValid() {
+        return !removed;
     }
 
     private class ProgrammableItemStackHandler extends BaseItemStackHandler {

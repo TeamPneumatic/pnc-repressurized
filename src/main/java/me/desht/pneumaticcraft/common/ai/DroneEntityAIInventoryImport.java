@@ -62,10 +62,10 @@ public class DroneEntityAIInventoryImport extends DroneAIImExBase<ProgWidgetInve
                     } else if (removedItems > 0) {
                         return true;
                     } else {
-                        drone.addDebugEntry("pneumaticcraft.gui.progWidget.inventoryImport.debug.filledToMax", pos);
+                        drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.inventoryImport.debug.filledToMax", pos);
                     }
                 } else {
-                    drone.addDebugEntry("pneumaticcraft.gui.progWidget.inventoryImport.debug.stackdoesntPassFilter", pos);
+                    drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.inventoryImport.debug.stackdoesntPassFilter", pos);
                 }
             }
         }

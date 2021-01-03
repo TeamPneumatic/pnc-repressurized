@@ -48,24 +48,24 @@ public class DroneAIPlace<W extends ProgWidgetAreaItemBase & IBlockOrdered /*& I
                 if (droneStack.getItem() instanceof BlockItem && progWidget.isItemValidForFilters(droneStack)) {
                     BlockPos placerPos = findClearSide(pos);
                     if (placerPos == null) {
-                        drone.addDebugEntry("pneumaticcraft.gui.progWidget.place.debug.noClearSides", pos);
+                        drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.place.debug.noClearSides", pos);
                         failedOnPlacement = true;
                         break;
                     }
                     Block placingBlock = ((BlockItem) droneStack.getItem()).getBlock();
                     BlockState state = placingBlock.getStateForPlacement(getPlacementContext(placerPos, pos, droneStack));
                     if (state == null) {
-                        drone.addDebugEntry("pneumaticcraft.gui.progWidget.place.debug.cantPlaceBlock", pos);
+                        drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.place.debug.cantPlaceBlock", pos);
                         failedOnPlacement = true;
                     } else if (worldCache.checkNoEntityCollision(null, state.getShape(drone.world(), pos))) {
                         if (state.isValidPosition(drone.world(), pos)) {
                             return true;
                         } else {
-                            drone.addDebugEntry("pneumaticcraft.gui.progWidget.place.debug.cantPlaceBlock", pos);
+                            drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.place.debug.cantPlaceBlock", pos);
                             failedOnPlacement = true;
                         }
                     } else {
-                        drone.addDebugEntry("pneumaticcraft.gui.progWidget.place.debug.entityInWay", pos);
+                        drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.place.debug.entityInWay", pos);
                         failedOnPlacement = true;
                     }
                 }

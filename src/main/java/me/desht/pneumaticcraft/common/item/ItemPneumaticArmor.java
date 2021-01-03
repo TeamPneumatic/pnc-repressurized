@@ -7,15 +7,21 @@ import me.desht.pneumaticcraft.api.client.IFOVModifierItem;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.ICustomDurabilityBar;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.PneumaticCraftTags;
+import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.capabilities.AirHandlerItemStack;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.entity.EntityProgrammableController;
+import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
+import me.desht.pneumaticcraft.common.entity.living.EntityDroneBase;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.recipes.special.OneProbeCrafting;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammableController;
 import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -38,6 +44,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.NBTUtil;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
@@ -258,10 +266,55 @@ public class ItemPneumaticArmor extends ArmorItem
         return NBTUtils.getString(helmetStack, NBT_ENTITY_FILTER);
     }
 
-    public static boolean isPlayerDebuggingEntity(PlayerEntity player, Entity e) {
+    public static boolean isPlayerDebuggingDrone(PlayerEntity player, EntityDroneBase e) {
         ItemStack helmet = player.getItemStackFromSlot(EquipmentSlotType.HEAD);
-        return helmet.getItem() == ModItems.PNEUMATIC_HELMET.get()
-                && NBTUtils.getInteger(helmet, NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE) == e.getEntityId();
+        if (e instanceof EntityDrone) {
+            return helmet.getItem() == ModItems.PNEUMATIC_HELMET.get()
+                    && NBTUtils.getInteger(helmet, NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE) == e.getEntityId();
+        } else if (e instanceof EntityProgrammableController) {
+            CompoundNBT tag = helmet.getChildTag(NBTKeys.PNEUMATIC_HELMET_DEBUGGING_PC);
+            return tag != null && NBTUtil.readBlockPos(tag).equals(((EntityProgrammableController) e).getControllerPos());
+        } else {
+            return false;
+        }
+    }
+
+    public static boolean isPlayerDebuggingDrone(PlayerEntity player, IDroneBase e) {
+        ItemStack helmet = player.getItemStackFromSlot(EquipmentSlotType.HEAD);
+        if (e instanceof EntityDrone) {
+            return helmet.getItem() == ModItems.PNEUMATIC_HELMET.get()
+                    && NBTUtils.getInteger(helmet, NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE) == ((EntityDrone)e).getEntityId();
+        } else if (e instanceof TileEntityProgrammableController) {
+            CompoundNBT tag = helmet.getChildTag(NBTKeys.PNEUMATIC_HELMET_DEBUGGING_PC);
+            return tag != null && NBTUtil.readBlockPos(tag).equals(((TileEntityProgrammableController) e).getPos());
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Client-side method to get the debugged drone or programmable controller
+     * @return the debugged whatever
+     */
+    public static IDroneBase getDebuggedDrone() {
+        ItemStack helmet = ClientUtils.getClientPlayer().getItemStackFromSlot(EquipmentSlotType.HEAD);
+        if (helmet.getItem() == ModItems.PNEUMATIC_HELMET.get() && helmet.hasTag()) {
+            CompoundNBT tag = helmet.getTag();
+            if (tag.contains(NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE)) {
+                int id = tag.getInt(NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE);
+                if (id > 0) {
+                    Entity e = ClientUtils.getClientWorld().getEntityByID(id);
+                    if (e instanceof IDroneBase) return (IDroneBase) e;
+                }
+            }
+            if (tag.contains(NBTKeys.PNEUMATIC_HELMET_DEBUGGING_PC)) {
+                TileEntity te = ClientUtils.getClientWorld().getTileEntity(NBTUtil.readBlockPos(tag.getCompound(NBTKeys.PNEUMATIC_HELMET_DEBUGGING_PC)));
+                if (te instanceof IDroneBase) {
+                    return (IDroneBase) te;
+                }
+            }
+        }
+        return null;
     }
 
     @Override
