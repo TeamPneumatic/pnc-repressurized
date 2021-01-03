@@ -532,6 +532,7 @@ public class EntityDrone extends EntityDroneBase implements
         return securityUpgradeCount > 0;
     }
 
+    @Override
     public BlockPos getTargetedBlock() {
         BlockPos pos = dataManager.get(TARGET_POS);
         return pos.equals(BlockPos.ZERO) ? null : pos;
@@ -590,6 +591,7 @@ public class EntityDrone extends EntityDroneBase implements
      *
      * @return the currently-active programming widget
      */
+    @Override
     public IProgWidget getActiveWidget() {
         int index = getActiveWidgetIndex();
         if (index >= 0 && index < progWidgets.size()) {
@@ -991,6 +993,7 @@ public class EntityDrone extends EntityDroneBase implements
     }
 
     // computercraft ("getOwnerName" method)
+    @Override
     public ITextComponent getOwnerName() {
         return ownerName;
     }
@@ -1323,6 +1326,7 @@ public class EntityDrone extends EntityDroneBase implements
         dataManager.set(LABEL, getAIManager() != null ? getAIManager().getLabel() : "Main");
     }
 
+    @Override
     public String getLabel() {
         return dataManager.get(LABEL);
     }

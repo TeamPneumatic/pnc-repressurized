@@ -2,7 +2,6 @@ package me.desht.pneumaticcraft.common.event;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.block.IPneumaticWrenchable;
-import me.desht.pneumaticcraft.api.client.pneumatic_helmet.EntityTrackEvent;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.InventoryTrackEvent;
 import me.desht.pneumaticcraft.api.drone.DroneConstructingEvent;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
@@ -14,7 +13,6 @@ import me.desht.pneumaticcraft.common.capabilities.CapabilityHacking;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.entity.EntityProgrammableController;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.hacking.entity.HackableEnderman;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
@@ -252,10 +250,10 @@ public class EventHandlerPneumaticCraft {
         }
     }
 
-    @SubscribeEvent
-    public void onEntityTracking(EntityTrackEvent event) {
-        if (event.trackingEntity instanceof EntityProgrammableController) event.setCanceled(true);
-    }
+//    @SubscribeEvent
+//    public void onEntityTracking(EntityTrackEvent event) {
+//        if (event.trackingEntity instanceof EntityProgrammableController) event.setCanceled(true);
+//    }
 
     @SubscribeEvent
     public void onInventoryTracking(InventoryTrackEvent event) {

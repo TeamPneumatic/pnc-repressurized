@@ -112,7 +112,6 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     private final int[] redstoneLevels = new int[6];
     private final SideConfigurator<IItemHandler> itemHandlerSideConfigurator;
     private CompoundNBT variablesNBT = null;  // pending variable data to add to ai manager
-    private BlockPos lastMeasurement = BlockPos.ZERO;
 
     @DescSynced
     private double targetX, targetY, targetZ;
@@ -127,6 +126,10 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     public boolean isIdle;
     @GuiSynced
     public boolean shouldChargeHeldItem;
+    @DescSynced
+    public String label = "";
+    @DescSynced
+    public String ownerNameClient = "";
 
     private UUID ownerID;
     private ITextComponent ownerName;
@@ -273,6 +276,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     public void setOwner(PlayerEntity ownerID) {
         this.ownerID = ownerID.getUniqueID();
         this.ownerName = ownerID.getName();
+        this.ownerNameClient = this.ownerName.getString();
     }
 
     @Override
@@ -340,6 +344,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
 
         ownerID = tag.contains("ownerID") ? UUID.fromString(tag.getString("ownerID")) : FALLBACK_UUID;
         ownerName = tag.contains("ownerName") ? new StringTextComponent(tag.getString("ownerName")) : new StringTextComponent(FALLBACK_NAME);
+        ownerNameClient = ownerName.getString();
 
         droneItemHandler.setUseableSlots(getUpgrades(EnumUpgrade.INVENTORY) + 1);
         ItemStackHandler tmpInv = new ItemStackHandler();
@@ -458,6 +463,10 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
             targetZ = curZ;
         }
         return new Vector3d(curX, curY, curZ);
+    }
+
+    public BlockPos getTargetPos() {
+        return new BlockPos(targetX, targetY, targetZ);
     }
 
     @Override
@@ -642,6 +651,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
 
     @Override
     public void updateLabel() {
+        label = aiManager != null ? getAIManager().getLabel() : "Main";
     }
 
     @Override
@@ -710,8 +720,6 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
                 aiManager = null;
                 aiManager = getAIManager();
                 aiManager.setWidgets(progWidgets);
-//                getAIManager().clearVariables();
-//                getAIManager().setWidgets(progWidgets);
             }
         }
 

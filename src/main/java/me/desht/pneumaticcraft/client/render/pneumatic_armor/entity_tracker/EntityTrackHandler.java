@@ -17,6 +17,7 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.Ent
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.HackClientHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
+import me.desht.pneumaticcraft.common.entity.living.EntityDroneBase;
 import me.desht.pneumaticcraft.common.hacking.HackableHandler;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -88,8 +89,8 @@ public class EntityTrackHandler {
 
         @Override
         public boolean isApplicable(Entity entity) {
-            if (entity instanceof EntityDrone) {
-                droneAIRenderer = new RenderDroneAI((EntityDrone) entity);
+            if (entity instanceof EntityDroneBase) {
+                droneAIRenderer = new RenderDroneAI((EntityDroneBase) entity);
                 return true;
             } else {
                 return false;
@@ -112,8 +113,8 @@ public class EntityTrackHandler {
 
         @Override
         public void addInfo(Entity entity, List<ITextComponent> curInfo, boolean isLookingAtTarget) {
-            curInfo.add(xlate("pneumaticcraft.entityTracker.info.tamed", ((EntityDrone) entity).ownerName.getString()));
-            curInfo.add(xlate("pneumaticcraft.entityTracker.info.drone.routine", ((EntityDrone) entity).getLabel()));
+            curInfo.add(xlate("pneumaticcraft.entityTracker.info.tamed", ((EntityDroneBase) entity).getOwnerName().getString()));
+            curInfo.add(xlate("pneumaticcraft.entityTracker.info.drone.routine", ((EntityDroneBase) entity).getLabel()));
             PlayerEntity player = ClientUtils.getClientPlayer();
             if (DroneDebugClientHandler.enabledForPlayer(player)) {
                 ITextComponent debugKey = ClientUtils.translateKeyBind(KeyHandler.getInstance().keybindDebuggingDrone);
@@ -124,7 +125,7 @@ public class EntityTrackHandler {
                     if (isLookingAtTarget) {
                         curInfo.add(xlate("pneumaticcraft.entityTracker.info.drone.stopDebugging.key", debugKey).mergeStyle(TextFormatting.GOLD));
                     }
-                } else if (isLookingAtTarget) {
+                } else if (isLookingAtTarget && entity instanceof EntityDrone) {
                     curInfo.add(xlate("pneumaticcraft.entityTracker.info.drone.pressDebugKey", debugKey).mergeStyle(TextFormatting.GOLD));
                 }
             }

@@ -146,6 +146,7 @@
    "entity.pneumaticcraft.logistics_frame_requester" : "Logistics Requester Frame",
    "entity.pneumaticcraft.logistics_frame_storage" : "Logistics Storage Frame",
    "entity.pneumaticcraft.micromissile" : "Micromissile",
+   "entity.pneumaticcraft.programmable_controller" : "Programmable Controller",
    "entity.pneumaticcraft.spawner_agitator" : "Spawner Agitator",
    "entity.pneumaticcraft.transfer_gadget" : "Transfer Gadget",
    "fluid.pneumaticcraft.biodiesel" : "Biodiesel",

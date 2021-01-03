@@ -1,12 +1,15 @@
 package me.desht.pneumaticcraft.common.entity;
 
 import me.desht.pneumaticcraft.common.entity.living.EntityDroneBase;
+import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammableController;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 
 /**
@@ -73,5 +76,25 @@ public class EntityProgrammableController extends EntityDroneBase {
     @Override
     public ItemStack getDroneHeldItem() {
         return controller == null ? ItemStack.EMPTY : controller.getFakePlayer().getHeldItemMainhand();
+    }
+
+    @Override
+    public BlockPos getTargetedBlock() {
+        return controller.getTargetPos();
+    }
+
+    @Override
+    public IProgWidget getActiveWidget() {
+        return null;
+    }
+
+    @Override
+    public ITextComponent getOwnerName() {
+        return new StringTextComponent(controller.ownerNameClient);
+    }
+
+    @Override
+    public String getLabel() {
+        return controller.label == null ? "<?" : controller.label;
     }
 }

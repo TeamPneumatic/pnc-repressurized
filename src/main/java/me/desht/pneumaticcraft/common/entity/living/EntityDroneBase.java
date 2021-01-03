@@ -1,10 +1,12 @@
 package me.desht.pneumaticcraft.common.entity.living;
 
+import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import net.minecraft.entity.CreatureEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
@@ -39,4 +41,12 @@ public abstract class EntityDroneBase extends CreatureEntity {
 
     @Nonnull
     public abstract ItemStack getDroneHeldItem();
+
+    public abstract  BlockPos getTargetedBlock();
+
+    public abstract IProgWidget getActiveWidget();
+
+    public abstract ITextComponent getOwnerName();
+
+    public abstract String getLabel();
 }

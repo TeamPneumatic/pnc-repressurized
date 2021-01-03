@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.client.render.pneumatic_armor;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.ProgWidgetRenderer;
-import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
+import me.desht.pneumaticcraft.common.entity.living.EntityDroneBase;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import net.minecraft.client.Minecraft;
@@ -20,12 +20,12 @@ import java.util.Iterator;
 import java.util.List;
 
 public class RenderDroneAI {
-    private final EntityDrone drone;
+    private final EntityDroneBase drone;
     private final List<Pair<RenderCoordWireframe, Integer>> blackListWireframes = new ArrayList<>();
     private float progress = 0;
     private BlockPos oldPos, pos;
 
-    public RenderDroneAI(EntityDrone drone) {
+    public RenderDroneAI(EntityDroneBase drone) {
         this.drone = drone;
         update();
     }
