@@ -47,7 +47,6 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
     private int searchIndex; //The current index in the area list the drone is searching at.
     private int totalActions;
     private int maxActions = -1;
-    private final boolean shouldReSort;
 
     /**
      * @param drone the drone
@@ -64,10 +63,6 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
         AxisAlignedBB extents = progWidget.getAreaExtents();
         // heuristic: use horizontal cross-section size of the area as a guide to the max searched blocks per attempt
         maxLookupsPerSearch = MathHelper.clamp((int) ((extents.getXSize() + 1) * (extents.getZSize() + 1)), 30, 500);
-        // re-sorting is important for "sparse" areas like a hollow building to avoid the drone constantly criss-crossing
-        // the area, but unnecessary (and can lead to skipped blocks) for solid volumes, such as a quarry area
-        double vol = (extents.getXSize() + 1) * (extents.getYSize() + 1) * (extents.getZSize() + 1);
-        shouldReSort = vol > 100 && area.size() / vol < 0.5;
 
         if (area.size() > 0) {
             minY = (int) extents.minY;
@@ -91,9 +86,9 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
             if (!searching) {
                 searching = true;
                 lastSuccessfulY = curY;
-                if (sorter == null || sorter.isDone() && shouldReSort) {
-                    curPos = null;
-                    searchIndex = 0;
+                curPos = null;
+                searchIndex = 0;
+                if (sorter == null || sorter.isDone()) {
                     sorter = new ThreadedSorter<>(area, new ChunkPositionSorter(drone, order));
                 }
                 return true;
@@ -181,7 +176,7 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
                         }
                         searchedBlocks++;
                     }
-                    if (searchedBlocks >= maxLookupsPerSearch) return true;
+                    if (searchedBlocks >= 30 /*maxLookupsPerSearch*/) return true;
                 }
                 indicateToListeningPlayers(inspectedPositions);
                 if (curPos == null) updateY();
