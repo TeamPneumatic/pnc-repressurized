@@ -21,6 +21,7 @@ import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.util.CountedItemStacks;
 import me.desht.pneumaticcraft.common.util.ItemStackHandlerIterable;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
@@ -88,6 +89,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
 
     private long lastSoundTick;  // to avoid excessive spamming of the pop sound
     private int nParticles;  // client-side: the number of particles to create each tick (dependent on chamber size & pressure)
+    private boolean triedRebuild;
 
     public TileEntityPressureChamberValve() {
         super(ModTileEntities.PRESSURE_CHAMBER_VALVE.get(), PneumaticValues.DANGER_PRESSURE_PRESSURE_CHAMBER, PneumaticValues.MAX_PRESSURE_PRESSURE_CHAMBER, PneumaticValues.VOLUME_PRESSURE_CHAMBER_PER_EMPTY, 4);
@@ -237,6 +239,15 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
         List<IAirHandlerMachine.Connection> l = airHandler.getConnectedAirHandlers(this);
         for (IAirHandlerMachine.Connection c : l) {
             if (c.getDirection() != null) disconnected.clear(c.getDirection().getIndex());
+        }
+
+        // workaround for odd case where multiblock init sometimes fails after reloading
+        // could be caused by something else throwing an exception during NBT loading?
+        if (accessoryValves.isEmpty() && !triedRebuild) {
+            if (checkIfProperlyFormed(world, pos, true)) {
+                Log.warning("Rebuilt damaged pressure chamber multiblock: valve pos = " + pos);
+            }
+            triedRebuild = true;
         }
 
         // retrieve the valve that is controlling the (potential) chamber
@@ -465,37 +476,45 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
     }
 
     public static boolean checkIfProperlyFormed(World world, BlockPos pos) {
+        return checkIfProperlyFormed(world, pos, false);
+    }
+
+    public static boolean checkIfProperlyFormed(World world, BlockPos pos, boolean forceRebuild) {
         for (int i = 3; i < 6; i++) {
-            if (checkForShiftedCubeOfSize(i, world, pos.getX(), pos.getY(), pos.getZ())) {
+            if (checkForShiftedCubeOfSize(i, world, pos, forceRebuild)) {
                 return true;
             }
         }
         return false;
     }
 
-    private static boolean checkForShiftedCubeOfSize(int size, World world, int baseX, int baseY, int baseZ) {
+    private static boolean checkForShiftedCubeOfSize(int size, World world, BlockPos pos, boolean forceRebuild) {
+        int baseX = pos.getX();
+        int baseY = pos.getY();
+        int baseZ = pos.getZ();
+        BlockPos rebuildPos = forceRebuild ? pos : null;
         for (int wallX = 0; wallX < size; wallX++) {
             for (int wallY = 0; wallY < size; wallY++) {
                 // check every possible configuration the block can be in.
-                if (checkForCubeOfSize(size, world, baseX, baseY - wallY, baseZ - wallX)) return true;
-                if (checkForCubeOfSize(size, world, baseX, baseY + wallY, baseZ + wallX)) return true;
-                if (checkForCubeOfSize(size, world, baseX - wallX, baseY - wallY, baseZ)) return true;
-                if (checkForCubeOfSize(size, world, baseX + wallX, baseY + wallY, baseZ)) return true;
-                if (checkForCubeOfSize(size, world, baseX - wallX, baseY, baseZ - wallY)) return true;
-                if (checkForCubeOfSize(size, world, baseX + wallX, baseY, baseZ + wallY)) return true;
+                if (checkForCubeOfSize(size, world, baseX, baseY - wallY, baseZ - wallX, rebuildPos)) return true;
+                if (checkForCubeOfSize(size, world, baseX, baseY + wallY, baseZ + wallX, rebuildPos)) return true;
+                if (checkForCubeOfSize(size, world, baseX - wallX, baseY - wallY, baseZ, rebuildPos)) return true;
+                if (checkForCubeOfSize(size, world, baseX + wallX, baseY + wallY, baseZ, rebuildPos)) return true;
+                if (checkForCubeOfSize(size, world, baseX - wallX, baseY, baseZ - wallY, rebuildPos)) return true;
+                if (checkForCubeOfSize(size, world, baseX + wallX, baseY, baseZ + wallY, rebuildPos)) return true;
 
-                if (checkForCubeOfSize(size, world, baseX - size + 1, baseY - wallY, baseZ - wallX)) return true;
-                if (checkForCubeOfSize(size, world, baseX - size + 1, baseY + wallY, baseZ + wallX)) return true;
-                if (checkForCubeOfSize(size, world, baseX - wallX, baseY - wallY, baseZ - size + 1)) return true;
-                if (checkForCubeOfSize(size, world, baseX + wallX, baseY + wallY, baseZ - size + 1)) return true;
-                if (checkForCubeOfSize(size, world, baseX - wallX, baseY - size + 1, baseZ - wallY)) return true;
-                if (checkForCubeOfSize(size, world, baseX + wallX, baseY - size + 1, baseZ + wallY)) return true;
+                if (checkForCubeOfSize(size, world, baseX - size + 1, baseY - wallY, baseZ - wallX, rebuildPos)) return true;
+                if (checkForCubeOfSize(size, world, baseX - size + 1, baseY + wallY, baseZ + wallX, rebuildPos)) return true;
+                if (checkForCubeOfSize(size, world, baseX - wallX, baseY - wallY, baseZ - size + 1, rebuildPos)) return true;
+                if (checkForCubeOfSize(size, world, baseX + wallX, baseY + wallY, baseZ - size + 1, rebuildPos)) return true;
+                if (checkForCubeOfSize(size, world, baseX - wallX, baseY - size + 1, baseZ - wallY, rebuildPos)) return true;
+                if (checkForCubeOfSize(size, world, baseX + wallX, baseY - size + 1, baseZ + wallY, rebuildPos)) return true;
             }
         }
         return false;
     }
 
-    private static boolean checkForCubeOfSize(int size, World world, int baseX, int baseY, int baseZ) {
+    private static boolean checkForCubeOfSize(int size, World world, int baseX, int baseY, int baseZ, BlockPos rebuildPos) {
         List<TileEntityPressureChamberValve> valveList = new ArrayList<>();
         BlockPos.Mutable mPos = new BlockPos.Mutable();
         for (int x = 0; x < size; x++) {
@@ -528,8 +547,9 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
                     } else {
                         // this is a wall or interface; ensure it doesn't belong to another pressure chamber
                         TileEntity te = world.getTileEntity(mPos);
-                        if (te instanceof TileEntityPressureChamberWall && ((TileEntityPressureChamberWall) te).getCore() != null) {
-                            return false;
+                        if (te instanceof TileEntityPressureChamberWall) {
+                            TileEntity teV = ((TileEntityPressureChamberWall) te).getCore();
+                            if (teV != null && (rebuildPos == null || !rebuildPos.equals(teV.getPos()))) return false;
                         }
                     }
                 }
