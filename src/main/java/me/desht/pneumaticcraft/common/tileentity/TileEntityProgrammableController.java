@@ -350,6 +350,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
         super.read(state, tag);
 
         inventory.deserializeNBT(tag.getCompound("Items"));
+        tank.setCapacity((getUpgrades(EnumUpgrade.INVENTORY) + 1) * 16000);
         tank.readFromNBT(tag.getCompound("tank"));
 
         ownerID = tag.contains("ownerID") ? UUID.fromString(tag.getString("ownerID")) : FALLBACK_UUID;
