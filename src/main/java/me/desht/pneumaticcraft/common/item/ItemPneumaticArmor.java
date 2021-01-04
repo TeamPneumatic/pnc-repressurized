@@ -268,9 +268,9 @@ public class ItemPneumaticArmor extends ArmorItem
 
     public static boolean isPlayerDebuggingDrone(PlayerEntity player, EntityDroneBase e) {
         ItemStack helmet = player.getItemStackFromSlot(EquipmentSlotType.HEAD);
+        if (helmet.getItem() != ModItems.PNEUMATIC_HELMET.get()) return false;
         if (e instanceof EntityDrone) {
-            return helmet.getItem() == ModItems.PNEUMATIC_HELMET.get()
-                    && NBTUtils.getInteger(helmet, NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE) == e.getEntityId();
+            return NBTUtils.getInteger(helmet, NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE) == e.getEntityId();
         } else if (e instanceof EntityProgrammableController) {
             CompoundNBT tag = helmet.getChildTag(NBTKeys.PNEUMATIC_HELMET_DEBUGGING_PC);
             return tag != null && NBTUtil.readBlockPos(tag).equals(((EntityProgrammableController) e).getControllerPos());
@@ -281,9 +281,9 @@ public class ItemPneumaticArmor extends ArmorItem
 
     public static boolean isPlayerDebuggingDrone(PlayerEntity player, IDroneBase e) {
         ItemStack helmet = player.getItemStackFromSlot(EquipmentSlotType.HEAD);
+        if (helmet.getItem() != ModItems.PNEUMATIC_HELMET.get()) return false;
         if (e instanceof EntityDrone) {
-            return helmet.getItem() == ModItems.PNEUMATIC_HELMET.get()
-                    && NBTUtils.getInteger(helmet, NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE) == ((EntityDrone)e).getEntityId();
+            return NBTUtils.getInteger(helmet, NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE) == ((EntityDrone)e).getEntityId();
         } else if (e instanceof TileEntityProgrammableController) {
             CompoundNBT tag = helmet.getChildTag(NBTKeys.PNEUMATIC_HELMET_DEBUGGING_PC);
             return tag != null && NBTUtil.readBlockPos(tag).equals(((TileEntityProgrammableController) e).getPos());

@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
-import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSpawnIndicatorParticles;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
@@ -16,7 +16,6 @@ import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ItemStack;
 import net.minecraft.pathfinding.PathType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -176,7 +175,10 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
                         }
                         searchedBlocks++;
                     }
-                    if (searchedBlocks >= 30 /*maxLookupsPerSearch*/) return true;
+                    if (searchedBlocks >= 30 /*maxLookupsPerSearch*/) {
+                        indicateToListeningPlayers(inspectedPositions);
+                        return true;
+                    }
                 }
                 indicateToListeningPlayers(inspectedPositions);
                 if (curPos == null) updateY();
@@ -270,15 +272,14 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
     private void indicateToListeningPlayers(List<BlockPos> pos) {
         if (pos.isEmpty()) return;
         for (PlayerEntity player : drone.world().getPlayers()) {
-            if (player.getDistanceSq(pos.get(0).getX(), pos.get(0).getY(), pos.get(0).getZ()) < 1024) {
-                ItemStack helmet = player.getItemStackFromSlot(EquipmentSlotType.HEAD);
-                if (helmet.getItem() == ModItems.PNEUMATIC_HELMET.get()) {
-                    CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
-                    if (handler.isArmorReady(EquipmentSlotType.HEAD) && handler.isEntityTrackerEnabled()
-                            && handler.getUpgradeCount(EquipmentSlotType.HEAD, EnumUpgrade.ENTITY_TRACKER) > 0
-                            && handler.getUpgradeCount(EquipmentSlotType.HEAD, EnumUpgrade.DISPENSER) > 0) {
-                        NetworkHandler.sendToPlayer(new PacketSpawnIndicatorParticles(pos, progWidget.getColor()), (ServerPlayerEntity) player);
-                    }
+            if (player.getDistanceSq(pos.get(0).getX(), pos.get(0).getY(), pos.get(0).getZ()) < 1024
+                    && ItemPneumaticArmor.isPlayerDebuggingDrone(player, drone))
+            {
+                CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
+                if (handler.isArmorReady(EquipmentSlotType.HEAD) && handler.isEntityTrackerEnabled()
+                        && handler.getUpgradeCount(EquipmentSlotType.HEAD, EnumUpgrade.ENTITY_TRACKER) > 0
+                        && handler.getUpgradeCount(EquipmentSlotType.HEAD, EnumUpgrade.DISPENSER) > 0) {
+                    NetworkHandler.sendToPlayer(new PacketSpawnIndicatorParticles(pos, progWidget.getColor()), (ServerPlayerEntity) player);
                 }
             }
         }

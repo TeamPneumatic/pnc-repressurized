@@ -8,6 +8,10 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## 2.8.3-?? (unreleased)
 
+### New
+* It is now possible to debug Programmable Controller drone programs in the same way that regular Drones can be debugged
+  * Pneumatic Helmet with Entity Tracker and Dispenser Upgrades: target the Programmable Controller minidrone and press the debug hotkey (default: Y) 
+
 ### Updates
 * Quality of Life: when attaching a tube module to a Pressure Tube, you can now sneak to attach to the opposite side of the tube
 * Updated some Patchouli manual information, primarily to clarify drone auto-charging functionality
@@ -26,13 +30,17 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed Pneumatic Armor not reporting feature on/off status properly to server when armor newly equipped
   * Logging in with armor already equipped worked fine, which is why it took some time to spot this bug...
 * Reset step assist height when Pneumatic Boots are removed
-* Fixed certain blocks being wrongly ignored by drone's Dig widget when "Requires Tool" is checked
+* Fixed certain blocks being wrongly ignored by drone's Dig progwidgets when "Requires Tool" is checked
   * Blocks which are harvestable with a bare hand (e.g. gravel, glowstone...) were being skipped when the drone was carrying a tool which wasn't faster than a bare hand for those blocks
 * Fixed the various PneumaticCraft Reinforced Stone blocks being harvestable without a pickaxe
 * Fixed hacking drones to call them to you not functioning
 * Fixed drones not highlighting their block search area when Entity Tracker enabled and Dispenser Upgrade inserted
 * Fixed bug which could sometimes cause the Chestplate Charging Upgrade to void air
 * Fixed client crash when removing an Elevator Base with Elevator Frames above
+* Fixed Programmable Controller fluid tank ignoring inventory upgrades on world reload
+  * Each inventory upgrade now increases the tank's storage by 16000mB over the base 16000mB
+* Fixed block shape inconsistency between basic and Advanced Liquid Compressors
+  * Was possible to put redstone on top of a basic Liquid Compressor but not the Advanced version 
 
 ## 2.8.2-97 (28 Dec 2020)
 
