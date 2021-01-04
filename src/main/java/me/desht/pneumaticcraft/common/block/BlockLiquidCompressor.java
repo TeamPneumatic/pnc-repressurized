@@ -2,16 +2,11 @@ package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityLiquidCompressor;
-import net.minecraft.block.BlockState;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.world.IBlockReader;
 
 public class BlockLiquidCompressor extends BlockPneumaticCraft {
-
     public BlockLiquidCompressor() {
-        super(ModBlocks.defaultProps());
+        super(ModBlocks.defaultProps().notSolid());
     }
 
     @Override
@@ -22,10 +17,5 @@ public class BlockLiquidCompressor extends BlockPneumaticCraft {
     @Override
     public boolean isRotatable() {
         return true;
-    }
-
-    @Override
-    public VoxelShape getRenderShape(BlockState state, IBlockReader worldIn, BlockPos pos) {
-        return ALMOST_FULL_SHAPE;
     }
 }
