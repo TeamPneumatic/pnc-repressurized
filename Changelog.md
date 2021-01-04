@@ -6,7 +6,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.16.3 / 1.16.4
 
-## 2.8.3-?? (unreleased)
+## 2.9.0-?? (unreleased)
 
 ### New
 * It is now possible to debug Programmable Controller drone programs in the same way that regular Drones can be debugged
@@ -18,8 +18,9 @@ Changes are in reverse chronological order; newest changes at the top.
 * Logistics Drones can now take Inventory Upgrades (this was actually already documented in the manual)
 * Liquid Import progwidget can now have a definable block sort order (like dig/place widgets)
   * Previously always just used "closest" sort order; "top down" often makes more sense for importing fluids from the world
-* Drone search area highlighting (when Entity Tracker enabled and Dispenser Upgrade inserted) is now colour-coded
-  * Brown for dig/place, blue for fluid import, etc.
+* Drone search area highlighting (when Entity Tracker enabled and Dispenser Upgrade inserted) now only displays when player is actually debugging the drone
+  * Particles are now also colour-coded: brown for dig/place, blue for fluid import, etc.
+  * Also greatly reduced the network packet size for sending these particles: less server->client chatter
 * The Programmable Controller's "minidrone" is now able to path into lava
   * It was always able to path *through* lava blocks on the way to somewhere else, but can now path *into* them too
   * This is particularly useful for writing programs to suck up lava lakes from the world which were previously problematic to work with

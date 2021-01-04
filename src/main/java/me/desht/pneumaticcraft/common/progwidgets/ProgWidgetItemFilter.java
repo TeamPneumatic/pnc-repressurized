@@ -156,7 +156,7 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
     public void readFromNBT(CompoundNBT tag) {
         super.readFromNBT(tag);
         filter = ItemStack.read(tag);
-        useItemDurability = tag.getBoolean("useMetadata");
+        useItemDurability = filter.getMaxDamage() > 0 && tag.getBoolean("useMetadata");
         useNBT = tag.getBoolean("useNBT");
         useModSimilarity = tag.getBoolean("useModSimilarity");
         matchBlock = tag.getBoolean("matchBlock");
