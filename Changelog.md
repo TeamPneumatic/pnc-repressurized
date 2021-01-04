@@ -6,7 +6,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.16.3 / 1.16.4
 
-## 2.9.0-?? (unreleased)
+## 2.9.0-111 (4 Jan 2021)
 
 ### New
 * It is now possible to debug Programmable Controller drone programs in the same way that regular Drones can be debugged
@@ -41,7 +41,8 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed Programmable Controller fluid tank ignoring inventory upgrades on world reload
   * Each inventory upgrade now increases the tank's storage by 16000mB over the base 16000mB
 * Fixed block shape inconsistency between basic and Advanced Liquid Compressors
-  * Was possible to put redstone on top of a basic Liquid Compressor but not the Advanced version 
+  * Was possible to put redstone on top of a basic Liquid Compressor but not the Advanced version
+* When pastebin-importing old drone programs from Minecraft 1.12.2 and earlier, ignore item meta being enabled on item filter widgets for items that don't have durability/metadata anymore
 
 ## 2.8.2-97 (28 Dec 2020)
 
