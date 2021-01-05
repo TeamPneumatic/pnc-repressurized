@@ -6,7 +6,7 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.MobEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
@@ -64,11 +64,16 @@ public class PacketPneumaticKick {
         entities.sort(Comparator.comparingDouble(o -> o.getDistanceSq(player)));
 
         Entity target = entities.get(0);
-        if (target instanceof MobEntity) {
-            target.attackEntityFrom(DamageSource.causePlayerDamage(player), 3.0f + upgrades * 0.5f);
+        if (!target.hitByEntity(player)) {
+            if (target instanceof LivingEntity) {
+                target.attackEntityFrom(DamageSource.causePlayerDamage(player), 3.0f + upgrades * 0.5f);
+                ((LivingEntity) target).setJumping(true);
+            }
+            target.setOnGround(false);
+            target.collidedHorizontally = false;
+            target.collidedVertically = false;
+            target.setMotion(target.getMotion().add(lookVec.scale(1.0 + upgrades * 0.5)).add(0, upgrades * 0.1, 0));
         }
-        target.setMotion(target.getMotion().add(lookVec.scale(1.0 + upgrades * 0.5)).add(0, upgrades * 0.1, 0));
-
         player.world.playSound(null, target.getPosX(), target.getPosY(), target.getPosZ(), ModSounds.PUNCH.get(), SoundCategory.PLAYERS, 1f, 1f);
         NetworkHandler.sendToAllTracking(new PacketSetEntityMotion(target, target.getMotion()), target);
         NetworkHandler.sendToAllTracking(new PacketSpawnParticle(ParticleTypes.EXPLOSION, target.getPosX(), target.getPosY(), target.getPosZ(), 1.0D, 0.0D, 0.0D), target);
