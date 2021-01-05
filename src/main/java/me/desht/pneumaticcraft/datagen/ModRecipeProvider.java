@@ -12,6 +12,7 @@ import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModRecipes;
+import me.desht.pneumaticcraft.common.recipes.FluidTagPresentCondition;
 import me.desht.pneumaticcraft.datagen.recipe.*;
 import net.minecraft.block.Blocks;
 import net.minecraft.data.*;
@@ -1363,9 +1364,17 @@ public class ModRecipeProvider extends RecipeProvider {
                 .build(consumer, RL("pneumaticcraft_fuels/ethanol"));
 
         // non-pneumaticcraft fuel compat
-        fuelQuality(FluidIngredient.of(1000, PneumaticCraftTags.Fluids.forgeTag("ethene")), 1800000, 1.25f)
+        ConditionalRecipe.builder()
+                .addCondition(new FluidTagPresentCondition("forge:ethene"))
+                .addRecipe(c -> fuelQuality(
+                        FluidIngredient.of(1000, PneumaticCraftTags.Fluids.forgeTag("ethene")), 1800000, 1.25f
+                ).build(c, RL("pneumaticcraft_fuels/ethylene")))
                 .build(consumer, RL("pneumaticcraft_fuels/ethylene"));
-        fuelQuality(FluidIngredient.of(1000, PneumaticCraftTags.Fluids.forgeTag("hydrogen")), 300000, 1.5f)
+        ConditionalRecipe.builder()
+                .addCondition(new FluidTagPresentCondition("forge:hydrogen"))
+                .addRecipe(c -> fuelQuality(
+                        FluidIngredient.of(1000, PneumaticCraftTags.Fluids.forgeTag("hydrogen")), 300000, 1.5f
+                ).build(c, RL("pneumaticcraft_fuels/hydrogen")))
                 .build(consumer, RL("pneumaticcraft_fuels/hydrogen"));
     }
 

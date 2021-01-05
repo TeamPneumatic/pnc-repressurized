@@ -9,14 +9,15 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ITag;
 import net.minecraftforge.common.Tags;
+import net.minecraftforge.common.data.ExistingFileHelper;
 
 import java.util.Arrays;
 import java.util.function.IntFunction;
 import java.util.function.Supplier;
 
 public class ModBlockTagsProvider extends BlockTagsProvider {
-    public ModBlockTagsProvider(DataGenerator generator) {
-        super(generator, Names.MOD_ID, null);
+    public ModBlockTagsProvider(DataGenerator generator, ExistingFileHelper existingFileHelper) {
+        super(generator, Names.MOD_ID, existingFileHelper);
     }
 
     @Override

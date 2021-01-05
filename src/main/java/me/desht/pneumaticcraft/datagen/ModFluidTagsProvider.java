@@ -7,14 +7,15 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.data.FluidTagsProvider;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.tags.ITag;
+import net.minecraftforge.common.data.ExistingFileHelper;
 
 import java.util.Arrays;
 import java.util.function.IntFunction;
 import java.util.function.Supplier;
 
 public class ModFluidTagsProvider extends FluidTagsProvider {
-    public ModFluidTagsProvider(DataGenerator generatorIn) {
-        super(generatorIn, Names.MOD_ID, null);
+    public ModFluidTagsProvider(DataGenerator generatorIn, ExistingFileHelper existingFileHelper) {
+        super(generatorIn, Names.MOD_ID, existingFileHelper);
     }
 
     @Override

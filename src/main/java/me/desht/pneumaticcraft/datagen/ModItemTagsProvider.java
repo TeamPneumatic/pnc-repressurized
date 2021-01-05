@@ -12,13 +12,14 @@ import net.minecraft.tags.ITag;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.IItemProvider;
 import net.minecraftforge.common.Tags;
+import net.minecraftforge.common.data.ExistingFileHelper;
 
 import java.util.Arrays;
 import java.util.function.Supplier;
 
 public class ModItemTagsProvider extends ItemTagsProvider {
-    public ModItemTagsProvider(DataGenerator generatorIn, BlockTagsProvider blockTagsProvider) {
-        super(generatorIn, blockTagsProvider, Names.MOD_ID, null);
+    public ModItemTagsProvider(DataGenerator generatorIn, BlockTagsProvider blockTagsProvider, ExistingFileHelper existingFileHelper) {
+        super(generatorIn, blockTagsProvider, Names.MOD_ID, existingFileHelper);
     }
 
     @Override

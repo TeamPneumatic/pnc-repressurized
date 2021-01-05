@@ -17,6 +17,8 @@ public class RecipeRegistrationEventHandler {
 
         PneumaticCraftRecipeType.registerRecipeTypes(event.getRegistry());
 
+        CraftingHelper.register(FluidTagPresentCondition.Serializer.INSTANCE);
+
         CraftingHelper.register(StackedIngredient.Serializer.ID, StackedIngredient.Serializer.INSTANCE);
         CraftingHelper.register(FluidIngredient.Serializer.ID, FluidIngredient.Serializer.INSTANCE);
     }
