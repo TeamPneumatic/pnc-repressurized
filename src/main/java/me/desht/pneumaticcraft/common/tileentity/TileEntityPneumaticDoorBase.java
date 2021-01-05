@@ -130,7 +130,7 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
                 int range = TileEntityConstants.RANGE_PNEUMATIC_DOOR_BASE + this.getUpgrades(EnumUpgrade.RANGE);
                 AxisAlignedBB aabb = new AxisAlignedBB(getPos()).grow(range);
                 for (PlayerEntity player : getWorld().getEntitiesWithinAABB(PlayerEntity.class, aabb)) {
-                    if (TileEntitySecurityStation.getProtectingSecurityStations(player, getPos(), false, false) > 0) {
+                    if (TileEntitySecurityStation.isProtectedFromPlayer(player, getPos(), false)) {
                         continue;
                     }
                     if (rsController.getCurrentMode() == RS_MODE_NEAR) {

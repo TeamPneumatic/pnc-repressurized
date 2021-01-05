@@ -1,24 +1,31 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.systems.RenderSystem;
-import me.desht.pneumaticcraft.client.event.ClientTickHandler;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
+import me.desht.pneumaticcraft.client.render.RenderHackSimulation;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.hacking.secstation.HackSimulation;
+import me.desht.pneumaticcraft.common.hacking.secstation.ISimulationController.HackingSide;
 import me.desht.pneumaticcraft.common.inventory.ContainerSecurityStationHacking;
+import me.desht.pneumaticcraft.common.item.ItemNetworkComponent.NetworkComponentType;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketSecurityStationFailedHack;
-import me.desht.pneumaticcraft.common.network.PacketUseItem;
+import me.desht.pneumaticcraft.common.network.PacketGuiButton;
+import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.ClickType;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -28,24 +35,62 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiSecurityStationHacking extends GuiSecurityStationBase<ContainerSecurityStationHacking> {
+public class GuiSecurityStationHacking extends GuiPneumaticContainerBase<ContainerSecurityStationHacking, TileEntitySecurityStation> {
     private WidgetAnimatedStat statusStat;
 
-    private NetworkConnectionBackground playerBackgroundBridges;
-    private NetworkConnectionBackground aiBackgroundBridges;
-    private NetworkConnectionPlayerHandler hackerBridges;
-    private NetworkConnectionAIHandler aiBridges;
+    private RenderHackSimulation hackRenderer;
+    private HackSimulation bgSimulation;
 
     private int stopWorms = 0;
     private int nukeViruses = 0;
 
     private final ItemStack stopWorm = new ItemStack(ModItems.STOP_WORM.get());
     private final ItemStack nukeVirus = new ItemStack(ModItems.NUKE_VIRUS.get());
+    private WidgetButtonExtended nukeVirusButton;
+    private WidgetButtonExtended stopWormButton;
 
     public GuiSecurityStationHacking(ContainerSecurityStationHacking container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
 
         ySize = 238;
+    }
+
+    @Override
+    public void init() {
+        super.init();
+
+        statusStat = addAnimatedStat(xlate("pneumaticcraft.gui.securityStation.status"), new ItemStack(ModBlocks.SECURITY_STATION.get()), 0xFFFFAA00, false);
+
+        addInfoTab(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.info.security_station.hacking"));
+        addAnimatedStat(xlate(ModItems.NUKE_VIRUS.get().getTranslationKey()), new ItemStack(ModItems.NUKE_VIRUS.get()), 0xFF18c9e8, false)
+                .setText(xlate("pneumaticcraft.gui.tab.info.security_station.nukeVirus"));
+        addAnimatedStat(xlate(ModItems.STOP_WORM.get().getTranslationKey()), new ItemStack(ModItems.STOP_WORM.get()), 0xFFc13232, false)
+                .setText(xlate("pneumaticcraft.gui.tab.info.security_station.stopWorm"));
+
+        addButton(nukeVirusButton = new WidgetButtonExtended(guiLeft + 152, guiTop + 95, 18, 18, "")
+                .setRenderStacks(nukeVirus));
+        addButton(stopWormButton = new WidgetButtonExtended(guiLeft + 152, guiTop + 143, 18, 18, "", b -> {
+            if (!te.getSimulationController().getSimulation(HackingSide.AI).isStopWormed()) {
+                PneumaticCraftUtils.consumeInventoryItem(ClientUtils.getClientPlayer().inventory, ModItems.STOP_WORM.get());
+                ClientUtils.getClientPlayer().playSound(SoundEvents.BLOCK_SLIME_BLOCK_BREAK, 1f, 1f);
+            }
+        })).withTag("stop_worm").setRenderStacks(stopWorm);
+
+        initConnectionRendering();
+    }
+
+    @Override
+    protected boolean shouldAddProblemTab() {
+        return false;
+    }
+
+    private void initConnectionRendering() {
+        hackRenderer = new RenderHackSimulation(guiLeft + 16, guiTop + 30, ContainerSecurityStationHacking.NODE_SPACING);
+        bgSimulation = HackSimulation.dummySimulation();
+        bgSimulation.wakeUp();
+        for (int i = 0; i < te.getPrimaryInventory().getSlots(); i++) {
+            bgSimulation.addNode(i, te.getPrimaryInventory().getStackInSlot(i));
+        }
     }
 
     public static void addExtraHackInfoStatic(List<ITextComponent> curInfo) {
@@ -57,36 +102,6 @@ public class GuiSecurityStationHacking extends GuiSecurityStationBase<ContainerS
     @Override
     protected ResourceLocation getGuiTexture() {
         return Textures.GUI_HACKING;
-    }
-
-    @Override
-    public void init() {
-        super.init();
-
-        int xStart = (width - xSize) / 2;
-        int yStart = (height - ySize) / 2;
-
-        statusStat = addAnimatedStat(new StringTextComponent("Security Status"), new ItemStack(ModBlocks.SECURITY_STATION.get()), 0xFFFFAA00, false);
-        addAnimatedStat(new StringTextComponent("pneumaticcraft.gui.tab.info"), Textures.GUI_INFO_LOCATION, 0xFF8888FF, true)
-                .setText(xlate("pneumaticcraft.gui.tab.info.tile.security_station.hacking"));
-        addAnimatedStat(new StringTextComponent("pneumaticcraft.gui.tab.upgrades"), Textures.GUI_UPGRADES_LOCATION, 0xFF0000FF, true)
-                .setText(xlate("pneumaticcraft.gui.tab.upgrades.tile.security_station.hacking"));
-        addAnimatedStat(xlate(ModItems.NUKE_VIRUS.get().getTranslationKey() + ".name"), new ItemStack(ModItems.NUKE_VIRUS.get()), 0xFF18c9e8, false)
-                .setText(xlate("gui.tab.info.tile.security_station.nukeVirus"));
-        addAnimatedStat(xlate(ModItems.STOP_WORM.get().getTranslationKey() + ".name"), new ItemStack(ModItems.STOP_WORM.get()), 0xFFc13232, false)
-                .setText(xlate("gui.tab.info.tile.security_station.stopWorm"));
-
-        if (playerBackgroundBridges == null) {
-            playerBackgroundBridges = new NetworkConnectionBackground(this, te, xStart + 21, yStart + 26, 31, 0xAA4444FF);
-            aiBackgroundBridges = new NetworkConnectionBackground(this, te, xStart + 23, yStart + 27, 31, 0xAA4444FF);
-            hackerBridges = new NetworkConnectionPlayerHandler(this, te, xStart + 21, yStart + 26, 31, 0xFF00FF00);
-            aiBridges = new NetworkConnectionAIHandler(this, te, xStart + 23, yStart + 27, 31, 0xFFFF0000);
-        } else {
-            playerBackgroundBridges = new NetworkConnectionBackground(playerBackgroundBridges, xStart + 21, yStart + 26);
-            aiBackgroundBridges = new NetworkConnectionBackground(aiBackgroundBridges, xStart + 23, yStart + 27);
-            hackerBridges = new NetworkConnectionPlayerHandler(hackerBridges, xStart + 21, yStart + 26);
-            aiBridges = new NetworkConnectionAIHandler(aiBridges, xStart + 23, yStart + 27);
-        }
     }
 
     @Override
@@ -117,112 +132,185 @@ public class GuiSecurityStationHacking extends GuiSecurityStationBase<ContainerS
     @Override
     protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int x, int y) {
         super.drawGuiContainerForegroundLayer(matrixStack, x, y);
-        font.drawString(matrixStack, (aiBridges.isTracing() ? TextFormatting.RED : TextFormatting.GREEN) + "Tracing: " + PneumaticCraftUtils.convertTicksToMinutesAndSeconds(aiBridges.getRemainingTraceTime(), true), 15, 7, 4210752);
+
+        if (te.getSimulationController() != null) {
+            HackSimulation aiSim = te.getSimulationController().getSimulation(HackingSide.AI);
+            HackSimulation playerSim = te.getSimulationController().getSimulation(HackingSide.PLAYER);
+            if (aiSim.isAwake()) {
+                drawCenteredString(matrixStack, font, xlate("pneumaticcraft.gui.tooltip.hacking.aiTracing").mergeStyle(TextFormatting.RED), xSize / 2, 7, 0xFFFFFF);
+            } else {
+                drawCenteredString(matrixStack, font, xlate("pneumaticcraft.gui.tooltip.hacking.detectionChance", te.getDetectionChance()).mergeStyle(TextFormatting.GOLD), xSize / 2, 7, 0xFFFFFF);
+            }
+
+            if (aiSim.isHackComplete()) {
+                ImmutableList.Builder<ITextComponent> builder = ImmutableList.builder();
+                builder.add(xlate("pneumaticcraft.message.securityStation.hackFailed.1").mergeStyle(TextFormatting.RED));
+                if (!te.getSimulationController().isJustTesting()) {
+                    builder.add(StringTextComponent.EMPTY);
+                    builder.add(xlate("pneumaticcraft.message.securityStation.hackFailed.2").mergeStyle(TextFormatting.RED));
+                }
+                GuiUtils.showPopupHelpScreen(matrixStack, this, font, builder.build());
+            } else if (playerSim.isHackComplete()) {
+                ImmutableList.Builder<ITextComponent> builder = ImmutableList.builder();
+                builder.add(xlate("pneumaticcraft.message.securityStation.hackSucceeded.1").mergeStyle(TextFormatting.GREEN));
+                if (!te.getSimulationController().isJustTesting()) {
+                    builder.add(StringTextComponent.EMPTY);
+                    builder.add(xlate("pneumaticcraft.message.securityStation.hackSucceeded.2").mergeStyle(TextFormatting.GREEN));
+                }
+                GuiUtils.showPopupHelpScreen(matrixStack, this, font, builder.build());
+            }
+        }
         renderConsumables(matrixStack);
     }
 
-    private void renderConsumables(MatrixStack matrixStack) {
-        stopWorms = 0;
-        nukeViruses = 0;
-        for (ItemStack stack : playerInventory.mainInventory) {
-            if (stack.getItem() == ModItems.STOP_WORM.get()) stopWorms += stack.getCount();
-            if (stack.getItem() == ModItems.NUKE_VIRUS.get()) nukeViruses += stack.getCount();
-        }
-        GuiUtils.renderItemStack(matrixStack, nukeVirus, 155, 30);
-        GuiUtils.renderItemStack(matrixStack, stopWorm, 155, 55);
-        font.drawString(matrixStack, PneumaticCraftUtils.convertAmountToString(nukeViruses), 155, 45, 0xFFFFFFFF);
-        font.drawString(matrixStack, PneumaticCraftUtils.convertAmountToString(stopWorms), 155, 70, 0xFFFFFFFF);
+    @Override
+    protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int x, int y) {
+        super.drawGuiContainerBackgroundLayer(matrixStack, partialTicks, x, y);
 
+        hackRenderer.render(matrixStack, bgSimulation, 0xFF2222FF);
+        if (te.getSimulationController() != null) {
+            HackSimulation aiSim = te.getSimulationController().getSimulation(HackingSide.AI);
+            if (!aiSim.isStopWormed() || (te.getWorld().getGameTime() & 0xf) < 8) {
+                hackRenderer.render(matrixStack, te.getSimulationController().getSimulation(HackingSide.AI), 0xFFFF0000);
+            }
+            hackRenderer.render(matrixStack, te.getSimulationController().getSimulation(HackingSide.PLAYER), 0xFF00FF00);
+        }
+    }
+
+    private void renderConsumables(MatrixStack matrixStack) {
+        font.drawString(matrixStack, PneumaticCraftUtils.convertAmountToString(nukeViruses), 158, 112, nukeViruses == 0 ? 0xFFFF6060: 0xFFFFFFFF);
+        font.drawString(matrixStack, PneumaticCraftUtils.convertAmountToString(stopWorms), 158, 160, stopWorms == 0 ? 0xFFFF6060: 0xFFFFFFFF);
     }
 
     @Override
     public void tick() {
         super.tick();
 
+        stopWorms = 0;
+        nukeViruses = 0;
+        for (ItemStack stack : playerInventory.mainInventory) {
+            if (stack.getItem() == ModItems.STOP_WORM.get()) stopWorms += stack.getCount();
+            if (stack.getItem() == ModItems.NUKE_VIRUS.get()) nukeViruses += stack.getCount();
+        }
+
+        bgSimulation.tick();
+
         statusStat.setText(getStatusText());
-    }
 
-    @Override
-    protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float opacity, int x, int y) {
-        super.drawGuiContainerBackgroundLayer(matrixStack, opacity, x, y);
-        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+        HackSimulation playerSim = te.getSimulationController() == null ? null : te.getSimulationController().getSimulation(HackingSide.PLAYER);
+        HackSimulation aiSim = te.getSimulationController() == null ? null : te.getSimulationController().getSimulation(HackingSide.AI);
 
-        playerBackgroundBridges.render(matrixStack);
-        aiBackgroundBridges.render(matrixStack);
-        hackerBridges.render(matrixStack);
-        aiBridges.render(matrixStack);
-
-        if (x >= guiLeft + 155 && x <= guiLeft + 171 && y >= guiTop + 30 && y <= guiTop + 50) {
-            List<ITextComponent> text = new ArrayList<>();
-            text.add(new StringTextComponent("Nuke Virus"));
-            if (hasNukeViruses()) {
-                text.add(new StringTextComponent("Middle-click a hackable node to use.").mergeStyle(TextFormatting.GRAY));
-            } else {
-                text.add(new StringTextComponent("You don't have any Nuke Viruses.").mergeStyle(TextFormatting.RED));
-            }
-            drawHoveringString(matrixStack, text, x, y, font);
+        if (aiSim != null && aiSim.isAwake()) {
+            stopWormButton.active = stopWorms > 0;
+            stopWormButton.setTooltipText(stopWorms > 0 ?
+                    xlate("pneumaticcraft.gui.securityStation.stopWorm") :
+                    xlate("pneumaticcraft.gui.securityStation.stopWorm.none").mergeStyle(TextFormatting.GOLD)
+            );
+        } else {
+            stopWormButton.active = false;
+            stopWormButton.setTooltipText(xlate("pneumaticcraft.gui.securityStation.stopWorm.notTracing").mergeStyle(TextFormatting.GOLD));
         }
-        if (x >= guiLeft + 155 && x <= guiLeft + 171 && y >= guiTop + 55 && y <= guiTop + 75) {
-            List<ITextComponent> text = new ArrayList<>();
-            text.add(new StringTextComponent("STOP! Worm"));
-            if (stopWorms > 0) {
-                if (aiBridges.isTracing()) {
-                    text.add(new StringTextComponent("Left-click to use.").mergeStyle(TextFormatting.GRAY));
-                } else {
-                    text.add(new StringTextComponent("STOP! Worms can only be used when being traced.").mergeStyle(TextFormatting.YELLOW));
-                }
-            } else {
-                text.add(new StringTextComponent("You don't have any STOP! Worms.").mergeStyle(TextFormatting.RED));
-            }
-            drawHoveringString(matrixStack, text, x, y, font);
-        }
-    }
 
-    @Override
-    protected void addProblems(List<ITextComponent> text) {
-        super.addProblems(text);
-        if (aiBridges.isTracing()) {
-            text.add(new StringTextComponent("Intrusion detected!").mergeStyle(TextFormatting.GRAY));
-            text.add(new StringTextComponent("Time till trace: " + PneumaticCraftUtils.convertTicksToMinutesAndSeconds(aiBridges.getRemainingTraceTime(), false)).mergeStyle(TextFormatting.BLACK));
+        if (playerSim != null) {
+            nukeVirusButton.active = hasNukeViruses() && playerSim.isNukeVirusReady();
+            if (playerSim.isNukeVirusReady()) {
+                nukeVirusButton.setTooltipText(hasNukeViruses() ?
+                        xlate("pneumaticcraft.gui.securityStation.nukeVirus") :
+                        xlate("pneumaticcraft.gui.securityStation.nukeVirus.none").mergeStyle(TextFormatting.GOLD)
+                );
+            } else {
+                nukeVirusButton.setTooltipText(xlate("pneumaticcraft.gui.securityStation.nukeVirus.coolDown").mergeStyle(TextFormatting.GOLD));
+            }
         }
     }
 
     private List<ITextComponent> getStatusText() {
         List<ITextComponent> text = new ArrayList<>();
-        text.add(new StringTextComponent("Security Level").mergeStyle(TextFormatting.GRAY));
-        text.add(new StringTextComponent("Level " + te.getSecurityLevel()).mergeStyle(TextFormatting.BLACK));
-        text.add(new StringTextComponent("Security Range").mergeStyle(TextFormatting.GRAY));
-        text.add(new StringTextComponent(te.getRange() + "m (square)").mergeStyle(TextFormatting.BLACK));
+        text.add(xlate("pneumaticcraft.gui.tab.status.securityStation.securityLevel").mergeStyle(TextFormatting.WHITE));
+        text.add(new StringTextComponent("L" + te.getSecurityLevel()).mergeStyle(TextFormatting.BLACK));
+        text.add(xlate("pneumaticcraft.gui.tab.status.securityStation.securityRange").mergeStyle(TextFormatting.WHITE));
+        text.add(new StringTextComponent((te.getRange() * 2 + 1) + "m²").mergeStyle(TextFormatting.BLACK));
         return text;
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
-        if (mouseButton == 2) {
-            int mx = (int)mouseX, my = (int)mouseY;
-            hackerBridges.mouseClicked(mx, my, mouseButton, getSlotAtPosition(mx, my));
-            if (aiBridges.isTracing() && mouseX >= guiLeft + 155 && mouseX <= guiLeft + 171 && mouseY >= guiTop + 55 && mouseY <= guiTop + 75) {
-                NetworkHandler.sendToServer(new PacketUseItem(new ItemStack(ModItems.STOP_WORM.get())));
-                PneumaticCraftUtils.consumeInventoryItem(playerInventory, ModItems.STOP_WORM.get());
-                aiBridges.applyStopWorm();
+    protected void handleMouseClick(Slot slotIn, int slotId, int mouseButton, ClickType type) {
+        // slotIn *can* be null here
+        //noinspection ConstantConditions
+        if (slotIn != null && slotIn.getHasStack() && te.getSimulationController() != null) {
+            switch (mouseButton) {
+                case 0:
+                    tryHackSlot(slotId);
+                    break;
+                case 1:
+                    tryFortifySlot(slotId);
+                    break;
+                case 2:
+                    tryNukeVirus(slotId);
+                    break;
             }
+        } else {
+            super.handleMouseClick(slotIn, slotId, mouseButton, type);
         }
-        return super.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
-    public void addExtraHackInfo(List<ITextComponent> currenttip) {
-        int mouseX = (int)minecraft.mouseHelper.getMouseX() * this.width / this.minecraft.getMainWindow().getWidth();
-        int mouseY = this.height - (int)minecraft.mouseHelper.getMouseY() * this.height / this.minecraft.getMainWindow().getHeight() - 1;
-        Slot slot = getSlotAtPosition(mouseX, mouseY);
-        if (slot != null) {
-            if (hackerBridges.slotHacked[slot.slotNumber]) {
-                if (!hackerBridges.slotFortified[slot.slotNumber]) {
-                    currenttip.add(xlate("pneumaticcraft.gui.tooltip.hacking.detectionChance", te.getDetectionChance()).mergeStyle(TextFormatting.RED));
-                    currenttip.add(xlate("pneumaticcraft.gui.tooltip.hacking.rightClickFortify").mergeStyle(TextFormatting.YELLOW));
+    private void tryFortifySlot(int slotId) {
+        HackSimulation playerSim = te.getSimulationController().getSimulation(HackingSide.PLAYER);
+        HackSimulation.Node node = playerSim.getNodeAt(slotId);
+        if (node.isHacked() && !node.isFortified() && node.getFortification() == 0) {
+            playerSim.fortify(slotId);
+            NetworkHandler.sendToServer(new PacketGuiButton("fortify:" + slotId));
+        }
+    }
+
+    private void tryHackSlot(int slotId) {
+        HackSimulation playerSim = te.getSimulationController().getSimulation(HackingSide.PLAYER);
+        HackSimulation.Node node = playerSim.getNodeAt(slotId);
+        if (!node.isHacked() && playerSim.getHackedNeighbour(slotId) >= 0) {
+            playerSim.startHack(slotId);
+            NetworkHandler.sendToServer(new PacketGuiButton("hack:" + slotId));
+        }
+    }
+
+    private void tryNukeVirus(int slotId) {
+        if (hasNukeViruses() && te.getSimulationController() != null) {
+            HackSimulation playerSim = te.getSimulationController().getSimulation(HackingSide.PLAYER);
+            HackSimulation.Node node = playerSim.getNodeAt(slotId);
+            if (!node.isHacked() && playerSim.getHackedNeighbour(slotId) >= 0) {
+                // node must have a hacked neighbour for this to work
+                if (playerSim.initiateNukeVirus(slotId)) {
+                    NetworkHandler.sendToServer(new PacketGuiButton("nuke:" + slotId));
+                    PneumaticCraftUtils.consumeInventoryItem(minecraft.player.inventory, ModItems.NUKE_VIRUS.get());
                 }
-            } else if (hackerBridges.canHackSlot(slot.slotNumber)) {
-                currenttip.add(xlate("pneumaticcraft.gui.tooltip.hacking.detectionChance", te.getDetectionChance()).mergeStyle(TextFormatting.RED));
-                currenttip.add(xlate("pneumaticcraft.gui.tooltip.hacking.leftClickHack").mergeStyle(TextFormatting.GREEN));
+            }
+        }
+    }
+
+    public void addExtraHackInfo(List<ITextComponent> toolTip) {
+        if (hoveredSlot != null && te.getSimulationController() != null) {
+            HackSimulation playerSim = te.getSimulationController().getSimulation(HackingSide.PLAYER);
+            HackSimulation.Node node = playerSim.getNodeAt(hoveredSlot.slotNumber);
+            if (node != null) {
+                if (node.isHacked()) {
+                    if (node.getFortification() == 0) {
+                        toolTip.add(xlate("pneumaticcraft.gui.tooltip.hacking.rightClickFortify").mergeStyle(TextFormatting.DARK_AQUA));
+                    } else if (node.getFortificationProgress() < 1f) {
+                        toolTip.add(xlate("pneumaticcraft.gui.tooltip.hacking.fortifyProgress", (int)(node.getFortificationProgress() * 100)).mergeStyle(TextFormatting.DARK_AQUA));
+                    } else {
+                        toolTip.add(xlate("pneumaticcraft.gui.tooltip.hacking.fortified").mergeStyle(TextFormatting.AQUA));
+                    }
+                } else {
+                    if (playerSim.getHackedNeighbour(hoveredSlot.slotNumber) >= 0) {
+                        if (node.getHackProgress() == 0F) {
+                            toolTip.add(xlate("pneumaticcraft.gui.tooltip.hacking.leftClickHack").mergeStyle(TextFormatting.GREEN));
+                        } else {
+                            toolTip.add(xlate("pneumaticcraft.gui.tooltip.hacking.hackProgress", (int)(node.getHackProgress() * 100)).mergeStyle(TextFormatting.GREEN));
+                        }
+                        if (nukeViruses > 0 && playerSim.isNukeVirusReady() && node.getType() == NetworkComponentType.NETWORK_NODE) {
+                            toolTip.add(xlate("pneumaticcraft.gui.tooltip.hacking.middleClickNuke").mergeStyle(TextFormatting.YELLOW));
+                        }
+                    }
+                }
             }
         }
     }
@@ -230,31 +318,4 @@ public class GuiSecurityStationHacking extends GuiSecurityStationBase<ContainerS
     boolean hasNukeViruses() {
         return nukeViruses > 0;
     }
-
-    void onSlotHack(int slot) {
-        if (Math.random() < te.getDetectionChance() / 100D) {
-            aiBridges.setTracing(true);
-        }
-    }
-
-    void onSlotFortification(int slot) {
-        aiBridges.slotFortified[slot] = true;
-        if (Math.random() < te.getDetectionChance() / 100D) {
-            aiBridges.setTracing(true);
-        }
-    }
-
-    @Override
-    public void onClose() {
-        if (aiBridges.isTracing() && !hackerBridges.hackedSuccessfully)
-            NetworkHandler.sendToServer(new PacketSecurityStationFailedHack(te.getPos()));
-        removeUpdatesOnConnectionHandlers();
-        super.onClose();
-    }
-
-    void removeUpdatesOnConnectionHandlers() {
-        ClientTickHandler.instance().removeUpdatedObject(hackerBridges);
-        ClientTickHandler.instance().removeUpdatedObject(aiBridges);
-    }
-
 }

@@ -347,7 +347,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int mouseButton, double dragX, double dragY) {
         for (IGuiAnimatedStat w : statWidgets) {
-            if (((WidgetAnimatedStat) w).mouseDragged(mouseX, mouseY, mouseButton, dragX, dragY)) {
+            if (w.mouseDragged(mouseX, mouseY, mouseButton, dragX, dragY)) {
                 return true;
             }
         }

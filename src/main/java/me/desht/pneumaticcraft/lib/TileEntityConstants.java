@@ -29,7 +29,7 @@ public class TileEntityConstants {
 
     public static final float NETWORK_NORMAL_BRIDGE_SPEED = 0.02F;//*100 % / tick
     public static final float NETWORK_AI_BRIDGE_SPEED = 0.03F;//*100 % / tick
-    public static final float NETWORK_NOTE_RATING_MULTIPLIER = 1.2F;
+    public static final float NETWORK_NODE_RATING_MULTIPLIER = 1.2F;
     public static final int SECURITY_STATION_MAX_RANGE = 16;
     public static final int SECURITY_STATION_REBOOT_TIME = 1200;//ticks
 

@@ -167,7 +167,7 @@ public class UpgradesDBSetup {
                 .with(EnumUpgrade.DISPENSER, 1)
                 .with(EnumUpgrade.SPEED, 10));
         db.addApplicableUpgrades(ModTileEntities.SECURITY_STATION.get(), new Builder()
-                .with(EnumUpgrade.ENTITY_TRACKER, 4)
+                .with(EnumUpgrade.ENTITY_TRACKER, 12)
                 .with(EnumUpgrade.SECURITY, 64)
                 .with(EnumUpgrade.RANGE, 14));
         db.addApplicableUpgrades(ModTileEntities.AERIAL_INTERFACE.get(), new Builder()

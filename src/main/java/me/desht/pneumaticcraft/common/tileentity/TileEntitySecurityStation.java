@@ -3,52 +3,79 @@ package me.desht.pneumaticcraft.common.tileentity;
 import com.google.common.collect.ImmutableList;
 import com.mojang.authlib.GameProfile;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
-import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
+import me.desht.pneumaticcraft.common.hacking.secstation.HackSimulation;
+import me.desht.pneumaticcraft.common.hacking.secstation.ISimulationController;
+import me.desht.pneumaticcraft.common.hacking.secstation.ISimulationController.HackingSide;
+import me.desht.pneumaticcraft.common.hacking.secstation.SimulationController;
 import me.desht.pneumaticcraft.common.inventory.ContainerSecurityStationHacking;
 import me.desht.pneumaticcraft.common.inventory.ContainerSecurityStationMain;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.item.ItemNetworkComponent;
+import me.desht.pneumaticcraft.common.item.ItemNetworkComponent.NetworkComponentType;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.network.NetworkHandler;
+import me.desht.pneumaticcraft.common.network.PacketPlaySound;
+import me.desht.pneumaticcraft.common.network.PacketSyncHackSimulationInitial;
 import me.desht.pneumaticcraft.common.tileentity.RedstoneController.EmittingRedstoneMode;
 import me.desht.pneumaticcraft.common.tileentity.RedstoneController.RedstoneMode;
 import me.desht.pneumaticcraft.common.util.GlobalTileEntityCacheManager;
+import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
+import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
+import net.minecraft.network.play.server.SSetSlotPacket;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.concurrent.TickDelayedTask;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.event.entity.player.PlayerContainerEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.world.BlockEvent;
+import net.minecraftforge.event.world.ExplosionEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.network.NetworkHooks;
 import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Stream;
 
-public class TileEntitySecurityStation extends TileEntityTickableBase implements
-        IGUITextFieldSensitive, IRedstoneControl<TileEntitySecurityStation>,
-        INamedContainerProvider, IRangedTE
-{
+import static me.desht.pneumaticcraft.common.hacking.secstation.HackSimulation.GRID_SIZE;
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
+public class TileEntitySecurityStation extends TileEntityTickableBase implements
+        IRedstoneControl<TileEntitySecurityStation>, INamedContainerProvider, IRangedTE
+{
     private static final List<RedstoneMode<TileEntitySecurityStation>> REDSTONE_MODES = ImmutableList.of(
             new EmittingRedstoneMode<>("standard.never", new ItemStack(Items.GUNPOWDER), te -> false),
             new EmittingRedstoneMode<>("securityStation.hacked", EnumUpgrade.SECURITY.getItemStack(), TileEntitySecurityStation::isHacked),
@@ -61,22 +88,16 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
 
     private final SecurityStationHandler inventory = new SecurityStationHandler();
     private final LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> inventory);
-
     public final List<GameProfile> hackedUsers = new ArrayList<>(); // Stores all the users that have hacked this Security Station.
     public final List<GameProfile> sharedUsers = new ArrayList<>(); // Stores all the users that have been allowed by the stationOwner.
-
     @GuiSynced
     private int rebootTimer; // When the player decides to reset the station, this variable will hold the remaining reboot time.
     @GuiSynced
-    private String textFieldText = "";
-    @GuiSynced
     public final RedstoneController<TileEntitySecurityStation> rsController = new RedstoneController<>(this, REDSTONE_MODES);
-
-    private int securityRange;
+    private final RangeManager rangeManager = new RangeManager(this, 0x60FF0000);
     private boolean oldRedstoneStatus;
-
     private boolean validNetwork;
-    private boolean showRange;
+    private ISimulationController simulationController = null;
 
     public TileEntitySecurityStation() {
         super(ModTileEntities.SECURITY_STATION.get(), 4);
@@ -101,15 +122,30 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
             if (!getWorld().isRemote) {
                 if (rebootTimer == 0) {
                     hackedUsers.clear();
+                    NetworkHandler.sendToAllTracking(new PacketPlaySound(ModSounds.HUD_ENTITY_LOCK.get(), SoundCategory.BLOCKS, getPos(), 1f, 1f, false), getWorld(), getPos());
                 }
             }
+        } else if (simulationController != null) {
+            // hack in progress
+            simulationController.tick();
+            PlayerEntity hacker = simulationController.getHacker();
+            if (!(hacker.openContainer instanceof ContainerSecurityStationHacking)) {
+                if (simulationController.isSimulationDone()) {
+                    simulationController = null;
+                } else if (simulationController.getSimulation(HackingSide.AI).isAwake() && !simulationController.isJustTesting()) {
+                    // hacker closed the window during hack...
+                    retaliate(hacker);
+                }
+                simulationController = null;
+            }
         }
+
         if (oldRedstoneStatus != rsController.shouldEmit()) {
             oldRedstoneStatus = rsController.shouldEmit();
             updateNeighbours();
         }
 
-        securityRange = Math.min(2 + getUpgrades(EnumUpgrade.RANGE), TileEntityConstants.SECURITY_STATION_MAX_RANGE);
+        rangeManager.setRange(Math.min(2 + getUpgrades(EnumUpgrade.RANGE), TileEntityConstants.SECURITY_STATION_MAX_RANGE));
 
         super.tick();
 
@@ -117,6 +153,7 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
 
     public void rebootStation() {
         rebootTimer = TileEntityConstants.SECURITY_STATION_REBOOT_TIME;
+        NetworkHandler.sendToAllTracking(new PacketPlaySound(ModSounds.MINIGUN_STOP.get(), SoundCategory.BLOCKS, getPos(), 1f, 1f, false), getWorld(), getPos());
     }
 
     public int getRebootTime() {
@@ -132,34 +169,114 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
     public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player) {
         if (rsController.parseRedstoneMode(tag)) return;
 
-        if (tag.equals("reboot")) {
-            rebootStation();
-        } else if (tag.equals("test")) {
-            if (!hasValidNetwork()) {
-                player.sendStatusMessage(new TranslationTextComponent(TextFormatting.GREEN + "This Security Station is out of order: Its network hasn't been properly configured."), false);
-            } else {
-                NetworkHooks.openGui((ServerPlayerEntity) player, new HackingContainerProvider(), getPos());
+        if (player.openContainer instanceof ContainerSecurityStationMain && isPlayerOnWhiteList(player)) {
+            if (tag.equals("reboot")) {
+                rebootStation();
+            } else if (tag.equals("test")) {
+                if (hasValidNetwork()) {
+                    initiateHacking(player);
+                } else {
+                    player.sendStatusMessage(new TranslationTextComponent("pneumaticcraft.message.securityStation.outOfOrder"), false);
+                }
+            } else if (tag.startsWith("remove:")) {
+                String name = tag.split(":", 2)[1];
+                removeTrustedUser(name);
+            } else if (tag.startsWith("add:")) {
+                String name = tag.split(":", 2)[1];
+                addTrustedUser(new GameProfile(null, name));
             }
-        } else if (tag.startsWith("remove:")) {
-            try {
-                int idx = Integer.parseInt(tag.split(":")[1]);
-                sharedUsers.remove(idx);
-            } catch (IllegalArgumentException|ArrayIndexOutOfBoundsException ignored) {
+        } else if (player.openContainer instanceof ContainerSecurityStationHacking && isPlayerHacking(player)) {
+            if (tag.equals("end_test") && simulationController.isJustTesting()) {
+                NetworkHooks.openGui((ServerPlayerEntity) player, this, getPos());
+            } else if (tag.startsWith("nuke:")) {
+                tryNukeVirus(tag, player);
+            } else if (tag.equals("stop_worm")) {
+                tryStopWorm(player);
+            } else if (tag.startsWith("fortify:")) {
+                tryFortify(tag, player);
+            } else if (tag.startsWith("hack:")) {
+                tryHack(tag, player);
             }
         }
         sendDescriptionPacket();
+    }
+
+    private boolean isPlayerHacking(PlayerEntity player) {
+        return simulationController != null
+                && simulationController.getHacker().isAlive()
+                && simulationController.getHacker().equals(player);
+    }
+
+    private void tryHack(String tag, PlayerEntity player) {
+        try {
+            int nodePos = Integer.parseInt(tag.split(":", 2)[1]);
+            HackSimulation playerSim = simulationController.getSimulation(HackingSide.PLAYER);
+            HackSimulation.Node node = playerSim.getNodeAt(nodePos);
+            if (node != null && !node.isHacked() && playerSim.getHackedNeighbour(nodePos) >= 0) {
+                simulationController.getSimulation(HackingSide.PLAYER).startHack(nodePos);
+            }
+        } catch (IllegalArgumentException | IndexOutOfBoundsException e) {
+            Log.warning("security station @ %s: ignoring bad message %s from %s",
+                    PneumaticCraftUtils.posToString(pos), tag, player.getGameProfile().getName());
+        }
+    }
+
+    private void tryFortify(String tag, PlayerEntity player) {
+        try {
+            // fortify is applied to the AI's node to slow it down, but only if the corresponding player node is already hacked
+            int nodePos = Integer.parseInt(tag.split(":", 2)[1]);
+            HackSimulation.Node node = simulationController.getSimulation(HackingSide.PLAYER).getNodeAt(nodePos);
+            if (node != null && node.isHacked()) {
+                simulationController.getSimulation(HackingSide.AI).fortify(nodePos);
+            }
+        } catch (IllegalArgumentException | IndexOutOfBoundsException e) {
+            Log.warning("security station @ %s: ignoring bad message %s from %s",
+                    PneumaticCraftUtils.posToString(pos), tag, player.getGameProfile().getName());
+        }
+    }
+
+    private void tryStopWorm(PlayerEntity player) {
+        if (!simulationController.getSimulation(HackingSide.AI).isStopWormed()) {
+            if (PneumaticCraftUtils.consumeInventoryItem(player.inventory, ModItems.STOP_WORM.get())) {
+                int r = 80 + getWorld().rand.nextInt(40);
+                simulationController.getSimulation(HackingSide.AI).applyStopWorm(r);
+            } else {
+                // client is lying about how many stop worms they have!
+                player.attackEntityFrom(DamageSource.OUT_OF_WORLD, 10000);
+            }
+        }
+    }
+
+    private void tryNukeVirus(String tag, PlayerEntity player) {
+        try {
+            if (PneumaticCraftUtils.consumeInventoryItem(player.inventory, ModItems.NUKE_VIRUS.get())) {
+                int nodePos = Integer.parseInt(tag.split(":", 2)[1]);
+                simulationController.getSimulation(HackingSide.PLAYER).initiateNukeVirus(nodePos);
+            } else {
+                // client is lying about how many nuke viruses they have!
+                player.attackEntityFrom(DamageSource.OUT_OF_WORLD, 10000);
+            }
+        } catch (IllegalArgumentException | IndexOutOfBoundsException e) {
+            Log.warning("security station @ %s: ignoring bad message %s from %s",
+                    PneumaticCraftUtils.posToString(pos), tag, player.getGameProfile().getName());
+        }
     }
 
     public HackingContainerProvider getHackingContainerProvider() {
         return new HackingContainerProvider();
     }
 
-    public void addSharedUser(GameProfile user) {
+    public void addTrustedUser(GameProfile user) {
         for (GameProfile sharedUser : sharedUsers) {
             if (gameProfileEquals(sharedUser, user)) return;
         }
         sharedUsers.add(user);
-        sendDescriptionPacket();
+        if (!world.isRemote) sendDescriptionPacket();
+    }
+
+    private void removeTrustedUser(String name) {
+        sharedUsers.removeIf(prof -> name.equals(prof.getName()));
+        if (!world.isRemote) sendDescriptionPacket();
     }
 
     public void addHacker(GameProfile user) {
@@ -172,7 +289,7 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
             if (gameProfileEquals(sharedUser, user)) return;
         }
         hackedUsers.add(user);
-        sendDescriptionPacket();
+        if (!world.isRemote) sendDescriptionPacket();
     }
 
     private boolean gameProfileEquals(GameProfile profile1, GameProfile profile2) {
@@ -180,16 +297,16 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
     }
 
     public boolean isHacked() {
-        return hackedUsers.size() > 0;
+        return !hackedUsers.isEmpty();
     }
 
     @Override
     public AxisAlignedBB getRenderBoundingBox() {
-        return shouldShowRange() ? getAffectedBoundingBox() : super.getRenderBoundingBox();
+        return rangeManager.shouldShowRange() ? getSecurityCoverage() : super.getRenderBoundingBox();
     }
 
-    public AxisAlignedBB getAffectedBoundingBox(){
-        return new AxisAlignedBB(getPos()).grow(getRange());
+    public AxisAlignedBB getSecurityCoverage() {
+        return rangeManager.getExtents();
     }
 
     @Override
@@ -207,59 +324,46 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
 
         tag.putInt("startupTimer", rebootTimer);
         tag.put("Items", inventory.serializeNBT());
+
         return tag;
     }
 
     @Override
     public void writeToPacket(CompoundNBT tag) {
         super.writeToPacket(tag);
-        ListNBT sharedList = new ListNBT();
-        for (GameProfile sharedUser : sharedUsers) {
-            CompoundNBT tagCompound = new CompoundNBT();
-            tagCompound.putString("name", sharedUser.getName());
-            if (sharedUser.getId() != null)
-                tagCompound.putString("uuid", sharedUser.getId().toString());
-            sharedList.add(tagCompound);
-        }
-        tag.put("SharedUsers", sharedList);
 
-        ListNBT hackedList = new ListNBT();
-        for (GameProfile hackedUser : hackedUsers) {
-            CompoundNBT tagCompound = new CompoundNBT();
-            tagCompound.putString("name", hackedUser.getName());
-            if (hackedUser.getId() != null)
-                tagCompound.putString("uuid", hackedUser.getId().toString());
-            hackedList.add(tagCompound);
-        }
-        tag.put("HackedUsers", hackedList);
+        tag.put("SharedUsers", toNBTList(sharedUsers));
+        tag.put("HackedUsers", toNBTList(hackedUsers));
     }
 
     @Override
     public void readFromPacket(CompoundNBT tag) {
         super.readFromPacket(tag);
+
         sharedUsers.clear();
-        ListNBT sharedList = tag.getList("SharedUsers", 10);
-        for (int i = 0; i < sharedList.size(); ++i) {
-            CompoundNBT tagCompound = sharedList.getCompound(i);
-            sharedUsers.add(new GameProfile(tagCompound.contains("uuid") ? UUID.fromString(tagCompound.getString("uuid")) : null, tagCompound.getString("name")));
-        }
-
+        sharedUsers.addAll(fromNBTList(tag.getList("SharedUsers", Constants.NBT.TAG_COMPOUND)));
         hackedUsers.clear();
-        ListNBT hackedList = tag.getList("HackedUsers", 10);
-        for (int i = 0; i < hackedList.size(); ++i) {
-            CompoundNBT tagCompound = hackedList.getCompound(i);
-            hackedUsers.add(new GameProfile(tagCompound.contains("uuid") ? UUID.fromString(tagCompound.getString("uuid")) : null, tagCompound.getString("name")));
+        hackedUsers.addAll(fromNBTList(tag.getList("HackedUsers", Constants.NBT.TAG_COMPOUND)));
+    }
+
+    private ListNBT toNBTList(Collection<GameProfile> profiles) {
+        ListNBT res = new ListNBT();
+        for (GameProfile profile : profiles) {
+            CompoundNBT tagCompound = new CompoundNBT();
+            tagCompound.putString("name", profile.getName());
+            if (profile.getId() != null) tagCompound.putString("uuid", profile.getId().toString());
+            res.add(tagCompound);
         }
+        return res;
     }
 
-    @Override
-    public void setText(int textFieldID, String text) {
-        textFieldText = text;
-    }
-
-    @Override
-    public String getText(int textFieldID) {
-        return textFieldText;
+    private Collection<GameProfile> fromNBTList(ListNBT list) {
+        ImmutableList.Builder<GameProfile> builder = ImmutableList.builder();
+        for (int i = 0; i < list.size(); ++i) {
+            CompoundNBT tagCompound = list.getCompound(i);
+            builder.add(new GameProfile(tagCompound.contains("uuid") ? UUID.fromString(tagCompound.getString("uuid")) : null, tagCompound.getString("name")));
+        }
+        return builder.build();
     }
 
     /**
@@ -305,7 +409,7 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
      *
      * @param firstSlot slot 1
      * @param secondSlot slot 2
-     * @return true iof the slots are connected
+     * @return true if the slots are connected
      */
     public boolean connects(int firstSlot, int secondSlot) {
         if (firstSlot < 0 || secondSlot < 0 || firstSlot >= INVENTORY_SIZE || secondSlot >= INVENTORY_SIZE || firstSlot == secondSlot
@@ -338,33 +442,57 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
         return new ContainerSecurityStationMain(i, playerInventory, getPos());
     }
 
-    @Override
-    public void toggleShowRange() {
-        showRange = !showRange;
-        if (world.isRemote) {
-            if (showRange) {
-                AreaRenderManager.getInstance().showArea(IRangedTE.getFrame(new AxisAlignedBB(pos).grow(getRange())), 0x60FF0000, this, false);
-            } else {
-                AreaRenderManager.getInstance().removeHandlers(this);
-            }
+    public void initiateHacking(PlayerEntity hacker) {
+        // will only get here if the TE has a valid node network
+        if (simulationController != null) {
+            hacker.sendStatusMessage(xlate("pneumaticcraft.message.securityStation.hackInProgress").mergeStyle(TextFormatting.GOLD), false);
+        } else {
+            simulationController = new SimulationController(this, hacker, isPlayerOnWhiteList(hacker));
+            NetworkHandler.sendToPlayer(new PacketSyncHackSimulationInitial(this), (ServerPlayerEntity) hacker);
+            NetworkHooks.openGui((ServerPlayerEntity) hacker, getHackingContainerProvider(), pos);
         }
     }
 
-    @Override
-    public boolean shouldShowRange() {
-        return showRange;
+    public int findComponent(NetworkComponentType type) {
+        for (int i = 0; i < GRID_SIZE; i++) {
+            if (ItemNetworkComponent.getType(inventory.getStackInSlot(i)) == type) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public ISimulationController getSimulationController() {
+        return simulationController;
+    }
+
+    public void setSimulationController(ISimulationController newController) {
+        // used client-side during network sync
+        this.simulationController = newController;
+    }
+
+    public void retaliate(PlayerEntity hacker) {
+        hacker.attackEntityFrom(DamageSource.OUT_OF_WORLD, hacker.getMaxHealth() - 0.5f);
+        hacker.addPotionEffect(new EffectInstance(Effects.NAUSEA, 100));
+        hacker.addPotionEffect(new EffectInstance(Effects.BLINDNESS, 200));
+        hacker.addPotionEffect(new EffectInstance(Effects.SLOWNESS, 300, 3));
     }
 
     @Override
-    public int getRange() {
-        return securityRange;
+    public RangeManager getRangeManager() {
+        return rangeManager;
     }
 
-    public enum EnumNetworkValidityProblem {
+    public enum EnumNetworkValidityProblem implements ITranslatableEnum {
         NONE,
         NO_SUBROUTINE, NO_IO_PORT, NO_REGISTRY,
         TOO_MANY_SUBROUTINES, TOO_MANY_IO_PORTS, TOO_MANY_REGISTRIES,
-        NO_CONNECTION_SUB_AND_IO_PORT, NO_CONNECTION_IO_PORT_AND_REGISTRY
+        NO_CONNECTION_SUB_AND_IO_PORT, NO_CONNECTION_IO_PORT_AND_REGISTRY;
+
+        @Override
+        public String getTranslationKey() {
+            return "pneumaticcraft.gui.tab.problems.security_station." + toString().toLowerCase(Locale.ROOT);
+        }
     }
 
     /**
@@ -379,7 +507,7 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
         int subroutineSlot = -1;
         for (int i = 0; i < INVENTORY_SIZE; i++) {
             if (!inventory.getStackInSlot(i).isEmpty()) {
-                ItemNetworkComponent.NetworkComponentType type = ItemNetworkComponent.getType(inventory.getStackInSlot(i));
+                NetworkComponentType type = ItemNetworkComponent.getType(inventory.getStackInSlot(i));
                 assert type != null;
                 switch (type) {
                     case DIAGNOSTIC_SUBROUTINE:
@@ -423,11 +551,12 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
     }
 
     public int getDetectionChance() {
-        return Math.min(100, 20 + 20 * getUpgrades(EnumUpgrade.ENTITY_TRACKER));
+        double n = 1.0 - Math.pow(0.7, getUpgrades(EnumUpgrade.ENTITY_TRACKER) + 1);
+        return MathHelper.clamp((int)(n * 100), 0, 100);
     }
 
     public int getSecurityLevel() {
-        return 1 + getUpgrades(EnumUpgrade.SECURITY);
+        return Math.min(64, 1 + getUpgrades(EnumUpgrade.SECURITY));
     }
 
     @Override
@@ -446,39 +575,53 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
     }
 
     /**
-     * Get a count of the number of security stations protecting the given blockpos from the given player.
+     * Get the number of security stations protecting the given blockpos from the given player.
      *
      * @param player the player who is trying to do something with the blockpos in question
      * @param pos the blockpos whose protection is being checked
-     * @param showRangeLines whether to display the stations' range bounding boxes when access is denied
-     * @param placementRange true when trying to place a block, false when trying to interact with a block
+     * @param isPlacingSecurityStation true when trying to place a security station, false otherwise
      * @return the number of security stations which currently prevent access by the player
      */
-    public static int getProtectingSecurityStations(PlayerEntity player, BlockPos pos, boolean showRangeLines, boolean placementRange) {
-        int blockingStations = 0;
-        Iterator<TileEntitySecurityStation> iterator = getSecurityStations(player.getEntityWorld(), pos, placementRange).iterator();
-        for (TileEntitySecurityStation station; iterator.hasNext();) {
-            station = iterator.next();
-            if (!station.doesAllowPlayer(player)) {
-                blockingStations++;
-//                if (showRangeLines) station.showRangeLines();
-            }
-        }
-        return blockingStations;
+    public static int getProtectingSecurityStations(PlayerEntity player, BlockPos pos, boolean isPlacingSecurityStation) {
+        return (int) getSecurityStations(player.getEntityWorld(), pos, isPlacingSecurityStation)
+                .filter(teSS -> !teSS.doesAllowPlayer(player))
+                .count();
     }
 
-    static Stream<TileEntitySecurityStation> getSecurityStations(final World world, final BlockPos pos, final boolean placementRange) {
+    /**
+     * Check if any security station is preventing the given player from interacting with the given blockpos.
+     *
+     * @param player the player who is trying to do something with the blockpos in question
+     * @param pos the blockpos whose protection is being checked
+     * @param isPlacingSecurityStation true when trying to place a security station, false otherwise
+     * @return the number of security stations which currently prevent access by the player
+     */
+    public static boolean isProtectedFromPlayer(PlayerEntity player, BlockPos pos, final boolean isPlacingSecurityStation) {
+        return getSecurityStations(player.getEntityWorld(), pos, isPlacingSecurityStation)
+                .anyMatch(teSS -> !teSS.doesAllowPlayer(player));
+    }
+
+    static Stream<TileEntitySecurityStation> getSecurityStations(final World world, final BlockPos pos, final boolean isPlacingSecurityStation) {
         return GlobalTileEntityCacheManager.getInstance().securityStations.stream()
-                .filter(station -> isValidAndInRange(world, pos, placementRange, station));
+                .filter(station -> isValidAndInRange(world, pos, isPlacingSecurityStation, station));
     }
 
-    private static boolean isValidAndInRange(World world, BlockPos pos, boolean placementRange, TileEntitySecurityStation station) {
-        if (!station.isRemoved() && station.getWorld().getDimensionKey().compareTo(world.getDimensionKey()) == 0 && station.hasValidNetwork()) {
-            AxisAlignedBB aabb = station.getAffectedBoundingBox();
-            if (placementRange) aabb = aabb.grow(16);
-            return aabb.contains(Vector3d.copyCentered(pos));
+    private static boolean isValidAndInRange(World world, BlockPos pos, boolean isPlacingSecurityStation, TileEntitySecurityStation teSS) {
+        if (!teSS.isRemoved() && teSS.getWorld().getDimensionKey().compareTo(world.getDimensionKey()) == 0 && teSS.hasValidNetwork()) {
+            AxisAlignedBB aabb = teSS.getSecurityCoverage();
+            // prevent security stations of different owners from being placed too near each other
+            if (isPlacingSecurityStation) aabb = aabb.grow(16);
+            // can't just use AxisAlignedBB#contains here; it will miss blocks on the positive X/Z edges of the box
+            return aabb.minX <= pos.getX() && aabb.maxX >= pos.getX()
+                    && aabb.minY <= pos.getY() && aabb.maxY >= pos.getY()
+                    && aabb.minZ <= pos.getZ() && aabb.maxZ >= pos.getZ();
         }
         return false;
+    }
+
+    private static boolean isPlayerExempt(PlayerEntity player) {
+        // can player ignore security stations entirely? server ops and creative mode players
+        return player.isCreative() || player.getCommandSource().hasPermissionLevel(2);
     }
 
     private class SecurityStationHandler extends BaseItemStackHandler {
@@ -496,13 +639,89 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
     private class HackingContainerProvider implements INamedContainerProvider {
         @Override
         public ITextComponent getDisplayName() {
-            return getDisplayNameInternal().copyRaw().appendString(" Hacking");
+            return getDisplayNameInternal().copyRaw().appendString(" ").append(xlate("pneumaticcraft.armor.upgrade.hacking"));
         }
 
         @Nullable
         @Override
-        public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-            return new ContainerSecurityStationHacking(i, playerInventory, getPos());
+        public Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity playerEntity) {
+            return new ContainerSecurityStationHacking(windowId, playerInventory, getPos());
+        }
+    }
+
+    @Mod.EventBusSubscriber(modid = Names.MOD_ID)
+    public static class Listener {
+        @SubscribeEvent(priority = EventPriority.HIGHEST)
+        public static void onPlayerInteract(PlayerInteractEvent event) {
+            if (event instanceof PlayerInteractEvent.RightClickEmpty) return;
+
+            PlayerEntity player = event.getPlayer();
+            ItemStack heldItem = player.getHeldItem(event.getHand());
+            BlockState interactedBlockState = event.getWorld().getBlockState(event.getPos());
+            Block interactedBlock = interactedBlockState.getBlock();
+
+            if (!isPlayerExempt(player)) {
+                if (event.getWorld() != null && !event.getWorld().isRemote) {
+                    if (interactedBlock != ModBlocks.SECURITY_STATION.get() || event instanceof PlayerInteractEvent.LeftClickBlock) {
+                        boolean tryingToPlaceSecurityStation = heldItem.getItem() instanceof BlockItem && ((BlockItem) heldItem.getItem()).getBlock() == ModBlocks.SECURITY_STATION.get();
+                        if (TileEntitySecurityStation.isProtectedFromPlayer(player, event.getPos(), tryingToPlaceSecurityStation)) {
+                            event.setCanceled(true);
+                            player.sendStatusMessage(xlate(tryingToPlaceSecurityStation ?
+                                    "pneumaticcraft.message.securityStation.stationPlacementPrevented" :
+                                    "pneumaticcraft.message.securityStation.accessPrevented"
+                            ).mergeStyle(TextFormatting.RED), true);
+                            if (player instanceof ServerPlayerEntity && heldItem.getItem() instanceof BlockItem) {
+                                ((ServerPlayerEntity) player).connection.sendPacket(new SSetSlotPacket(-2, player.inventory.currentItem, heldItem));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        @SubscribeEvent(priority = EventPriority.HIGHEST)
+        public static void onBlockPlace(BlockEvent.EntityPlaceEvent event) {
+            if (event.getEntity() instanceof PlayerEntity) {
+                PlayerEntity player = (PlayerEntity) event.getEntity();
+                if (!isPlayerExempt(player) && event.getWorld() != null && !event.getWorld().isRemote()) {
+                    boolean tryingToPlaceSecurityStation = event.getPlacedBlock().getBlock() == ModBlocks.SECURITY_STATION.get();
+                    if (isProtectedFromPlayer(player, event.getPos(), tryingToPlaceSecurityStation)) {
+                        event.setCanceled(true);
+                        player.sendStatusMessage(xlate(tryingToPlaceSecurityStation ?
+                                "pneumaticcraft.message.securityStation.stationPlacementPrevented" :
+                                "pneumaticcraft.message.securityStation.accessPrevented"
+                        ).mergeStyle(TextFormatting.RED), true);
+                    }
+                }
+            }
+        }
+
+        @SubscribeEvent(priority = EventPriority.HIGHEST)
+        public static void onBlockExplode(ExplosionEvent event) {
+            final PlayerEntity player = getPlayerForExplosion(event);
+            if (player != null && !isPlayerExempt(player) && event.getWorld() != null && !event.getWorld().isRemote) {
+                event.getExplosion().getAffectedBlockPositions().removeIf(pos -> isProtectedFromPlayer(player, pos, false));
+            }
+        }
+
+        private static PlayerEntity getPlayerForExplosion(ExplosionEvent event) {
+            LivingEntity entity = event.getExplosion().getExplosivePlacedBy();
+            return entity instanceof PlayerEntity ? (PlayerEntity) entity : null;
+        }
+
+        @SubscribeEvent
+        public static void onContainerClose(PlayerContainerEvent.Close event) {
+            // reopen the main secstation window if closing a test-mode hacking window
+            if (event.getPlayer() instanceof ServerPlayerEntity && event.getContainer() instanceof ContainerSecurityStationHacking) {
+                TileEntitySecurityStation teSS = ((ContainerSecurityStationHacking) event.getContainer()).te;
+                if (teSS.getSimulationController() != null && teSS.getSimulationController().isJustTesting()) {
+                    ServerPlayerEntity player = (ServerPlayerEntity) event.getPlayer();
+                    if (player.getServer() != null) {
+                        // deferring is important to avoid infinite close/open loop
+                        player.getServer().enqueue(new TickDelayedTask(1, () -> NetworkHooks.openGui(player, teSS, teSS.getPos())));
+                    }
+                }
+            }
         }
     }
 }

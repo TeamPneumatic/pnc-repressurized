@@ -64,7 +64,7 @@ public class PneumaticCraftAPIHandler implements PneumaticRegistry.IPneumaticCra
     @Override
     public int getProtectingSecurityStations(PlayerEntity player, BlockPos pos, boolean showRangeLines) {
         Validate.isTrue(!player.getEntityWorld().isRemote, "This method can only be called from the server side!");
-        return TileEntitySecurityStation.getProtectingSecurityStations(player, pos, showRangeLines, false);
+        return TileEntitySecurityStation.getProtectingSecurityStations(player, pos, false);
     }
 
     @Override

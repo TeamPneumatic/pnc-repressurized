@@ -78,12 +78,8 @@ public class NetworkHandler {
 				PacketPlaySound::toBytes, PacketPlaySound::new, PacketPlaySound::handle);
 		registerMessage(PacketProgrammerUpdate.class,
 				PacketProgrammerUpdate::toBytes, PacketProgrammerUpdate::new, PacketProgrammerUpdate::handle);
-		registerMessage(PacketSecurityStationAddHacker.class,
-				PacketSecurityStationAddHacker::toBytes, PacketSecurityStationAddHacker::new, PacketSecurityStationAddHacker::handle);
-		registerMessage(PacketSecurityStationAddUser.class,
-				PacketSecurityStationAddUser::toBytes, PacketSecurityStationAddUser::new, PacketSecurityStationAddUser::handle);
-		registerMessage(PacketSecurityStationFailedHack.class,
-				PacketSecurityStationFailedHack::toBytes, PacketSecurityStationFailedHack::new, PacketSecurityStationFailedHack::handle);
+//		registerMessage(PacketSecurityStationAddUser.class,
+//				PacketSecurityStationAddUser::toBytes, PacketSecurityStationAddUser::new, PacketSecurityStationAddUser::handle);
 		registerMessage(PacketSendNBTPacket.class,
 				PacketSendNBTPacket::toBytes, PacketSendNBTPacket::new, PacketSendNBTPacket::handle);
 		registerMessage(PacketShowWireframe.class,
@@ -198,6 +194,10 @@ public class NetworkHandler {
 				PacketShiftScrollWheel::toBytes, PacketShiftScrollWheel::new, PacketShiftScrollWheel::handle);
 		registerMessage(PacketBlockDestroyed.class,
 				PacketBlockDestroyed::toBytes, PacketBlockDestroyed::new, PacketBlockDestroyed::handle);
+		registerMessage(PacketSyncHackSimulationInitial.class,
+				PacketSyncHackSimulationInitial::toBytes, PacketSyncHackSimulationInitial::new, PacketSyncHackSimulationInitial::handle);
+		registerMessage(PacketSyncHackSimulationUpdate.class,
+				PacketSyncHackSimulationUpdate::toBytes, PacketSyncHackSimulationUpdate::new, PacketSyncHackSimulationUpdate::handle);
     }
 
 	public static <MSG> void registerMessage(Class<MSG> messageType, BiConsumer<MSG, PacketBuffer> encoder, Function<PacketBuffer, MSG> decoder, BiConsumer<MSG, Supplier<NetworkEvent.Context>> messageConsumer) {

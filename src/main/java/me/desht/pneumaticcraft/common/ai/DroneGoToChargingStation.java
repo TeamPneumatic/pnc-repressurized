@@ -56,8 +56,7 @@ public class DroneGoToChargingStation extends Goal {
         validChargingStations.sort(Comparator.comparingDouble(te -> PneumaticCraftUtils.distBetweenSq(te.getPos(), drone.getPosX(), drone.getPosY(), drone.getPosZ())));
 
         for (TileEntityChargingStation station : validChargingStations) {
-            boolean protect = TileEntitySecurityStation.getProtectingSecurityStations(drone.getFakePlayer(), station.getPos(), false, false) > 0;
-            if (protect) {
+            if (TileEntitySecurityStation.isProtectedFromPlayer(drone.getFakePlayer(), station.getPos(), false)) {
                 drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.chargingStation.debug.protected", station.getPos());
             } else if (drone.getPathNavigator().moveToXYZ(station.getPos().getX() + 0.5, station.getPos().getY() + 1, station.getPos().getZ() + 0.5)
                     || drone.getPathNavigator().isGoingToTeleport()) {

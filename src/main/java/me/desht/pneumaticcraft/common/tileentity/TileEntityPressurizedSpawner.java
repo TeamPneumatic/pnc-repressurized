@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
-import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerPressurizedSpawner;
 import me.desht.pneumaticcraft.common.item.ItemSpawnerCore;
@@ -45,7 +44,7 @@ public class TileEntityPressurizedSpawner extends TileEntityPneumaticBase implem
     private int counter = BASE_SPAWN_INTERVAL;
     @DescSynced
     private boolean running;
-    public boolean showRange;
+    private final RangeManager rangeManager = new RangeManager(this, 0x60400040).withCustomExtents(this::buildCustomExtents);
 
     public TileEntityPressurizedSpawner() {
         super(ModTileEntities.PRESSURIZED_SPAWNER.get(), PneumaticValues.DANGER_PRESSURE_TIER_TWO, PneumaticValues.MAX_PRESSURE_TIER_TWO, PneumaticValues.VOLUME_PRESSURIZED_SPAWNER, 4);
@@ -54,6 +53,8 @@ public class TileEntityPressurizedSpawner extends TileEntityPneumaticBase implem
     @Override
     public void tick() {
         super.tick();
+
+        rangeManager.setRange(2 + getUpgrades(EnumUpgrade.RANGE));
 
         if (!world.isRemote) {
             ItemSpawnerCore.SpawnerCoreStats stats = inventory.getStats();
@@ -82,6 +83,12 @@ public class TileEntityPressurizedSpawner extends TileEntityPneumaticBase implem
         }
     }
 
+    private AxisAlignedBB buildCustomExtents() {
+        // following vanilla spawner behaviour of constrained Y-value (-1 .. +2)
+        AxisAlignedBB aabb = new AxisAlignedBB(getPos(), getPos());
+        return aabb.grow(getRange(), 0, getRange()).expand(0, 2, 0).expand(0, -1, 0);
+    }
+
     private boolean trySpawnSomething(ItemSpawnerCore.SpawnerCoreStats stats) {
         EntityType<?> type = stats.pickEntity(true);
         if (type != null && world instanceof ServerWorld) {
@@ -94,7 +101,7 @@ public class TileEntityPressurizedSpawner extends TileEntityPneumaticBase implem
             if (serverworld.hasNoCollisions(type.getBoundingBoxWithSizeApplied(x, y, z))) {
                 Entity entity = type.create(serverworld);
                 if (entity == null) return false;
-                int entityCount = serverworld.getEntitiesWithinAABB(MobEntity.class, (new AxisAlignedBB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1, pos.getY() + 1, pos.getZ() + 1)).grow(spawnRange)).size();
+                int entityCount = serverworld.getEntitiesWithinAABB(MobEntity.class, rangeManager.getExtents()).size();
                 if (entityCount >= maxNearbyEntities) return false;
                 entity.setLocationAndAngles(x, y, z, world.rand.nextFloat() * 360.0F, 0.0F);
                 if (entity instanceof MobEntity) {
@@ -175,28 +182,11 @@ public class TileEntityPressurizedSpawner extends TileEntityPneumaticBase implem
 
     @Override
     public AxisAlignedBB getRenderBoundingBox() {
-        return showRange ? new AxisAlignedBB(getPos()).grow(getRange()) : super.getRenderBoundingBox();
+        return rangeManager.shouldShowRange() ? rangeManager.getExtents() : super.getRenderBoundingBox();
     }
 
     @Override
-    public void toggleShowRange() {
-        showRange = !showRange;
-        if (world.isRemote) {
-            if (showRange) {
-                AreaRenderManager.getInstance().showArea(IRangedTE.getFrame(new AxisAlignedBB(pos).grow(getRange())), 0x60400040, this, false);
-            } else {
-                AreaRenderManager.getInstance().removeHandlers(this);
-            }
-        }
-    }
-
-    @Override
-    public boolean shouldShowRange() {
-        return showRange;
-    }
-
-    @Override
-    public int getRange() {
-        return 2 + getUpgrades(EnumUpgrade.RANGE);
+    public RangeManager getRangeManager() {
+        return rangeManager;
     }
 }

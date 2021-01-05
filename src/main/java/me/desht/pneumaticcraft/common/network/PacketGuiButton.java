@@ -40,7 +40,7 @@ public class PacketGuiButton {
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             ServerPlayerEntity player = ctx.get().getSender();
-            if (player.openContainer instanceof IGUIButtonSensitive) {
+            if (player != null && player.openContainer instanceof IGUIButtonSensitive) {
                 ((IGUIButtonSensitive) player.openContainer).handleGUIButtonPress(tag, shiftHeld, player);
             }
         });

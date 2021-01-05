@@ -11,6 +11,7 @@ import net.minecraft.util.math.BlockPos;
 import javax.annotation.Nonnull;
 
 public class ContainerSecurityStationHacking extends ContainerPneumaticBase<TileEntitySecurityStation> {
+    public static final int NODE_SPACING = 31;
 
     public ContainerSecurityStationHacking(int i, PlayerInventory playerInventory, PacketBuffer buffer) {
         this(i, playerInventory, getTilePos(buffer));
@@ -22,7 +23,8 @@ public class ContainerSecurityStationHacking extends ContainerPneumaticBase<Tile
         //add the network slots
         for (int i = 0; i < TileEntitySecurityStation.INV_ROWS; i++) {
             for (int j = 0; j < TileEntitySecurityStation.INV_COLS; j++) {
-                addSlot(new SlotUntouchable(te.getPrimaryInventory(), j + i * 5, 13 + j * 31, 18 + i * 31));
+                SlotUntouchable slot = (SlotUntouchable) addSlot(new SlotUntouchable(te.getPrimaryInventory(), j + i * 5, 8 + j * NODE_SPACING, 22 + i * NODE_SPACING));
+                slot.setEnabled(slot.getHasStack());
             }
         }
     }

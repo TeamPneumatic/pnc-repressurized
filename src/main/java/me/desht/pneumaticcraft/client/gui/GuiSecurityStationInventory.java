@@ -2,20 +2,24 @@ package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetRangeToggleButton;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
+import me.desht.pneumaticcraft.client.render.RenderHackSimulation;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.hacking.secstation.HackSimulation;
 import me.desht.pneumaticcraft.common.inventory.ContainerSecurityStationMain;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketSecurityStationAddUser;
-import me.desht.pneumaticcraft.common.network.PacketUpdateTextfield;
+import me.desht.pneumaticcraft.common.network.PacketGuiButton;
+import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
+import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation.EnumNetworkValidityProblem;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.entity.player.PlayerInventory;
@@ -25,21 +29,27 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiSecurityStationInventory extends GuiSecurityStationBase<ContainerSecurityStationMain> {
+public class GuiSecurityStationInventory extends GuiPneumaticContainerBase<ContainerSecurityStationMain, TileEntitySecurityStation> {
     private WidgetAnimatedStat statusStat;
     private WidgetAnimatedStat accessStat;
 
     private WidgetButtonExtended addUserButton;
     private Button rebootButton;
     private WidgetTextField sharedUserTextField;
-    private List<WidgetButtonExtended> removeUserButtons;
-    private NetworkConnectionHandler nodeHandler;
+    private List<WidgetButtonExtended> sharedUserList;
+
+    // for cosmetic purposes only; draws the animated connection lines between nodes
+    private RenderHackSimulation hackRenderer;
+    private HackSimulation hackSimulation;
+    private boolean reInitBG;
 
     public GuiSecurityStationInventory(ContainerSecurityStationMain container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
@@ -51,42 +61,41 @@ public class GuiSecurityStationInventory extends GuiSecurityStationBase<Containe
     public void init() {
         super.init();
 
-        int xStart = (width - xSize) / 2;
-        int yStart = (height - ySize) / 2;
+        statusStat = addAnimatedStat(xlate("pneumaticcraft.gui.securityStation.status"),
+                new ItemStack(ModBlocks.SECURITY_STATION.get()), 0xFFD08000, false);
+        accessStat = addAnimatedStat(xlate("pneumaticcraft.gui.securityStation.sharedUsers"),
+                new ItemStack(Items.PLAYER_HEAD), 0xFF005500, false);
 
-        statusStat = addAnimatedStat(new StringTextComponent("Security Status"), new ItemStack(ModBlocks.SECURITY_STATION.get()), 0xFFFFAA00, false);
-        accessStat = addAnimatedStat(new StringTextComponent("Shared Users"), new ItemStack(Items.PLAYER_HEAD), 0xFF005500, false);
-
-        Rectangle2d accessButtonRectangle = new Rectangle2d(145, 10, 20, 20);
+        Rectangle2d accessButtonRectangle = new Rectangle2d(105, 12, 16, 16);
         addUserButton = getButtonFromRectangle(null, accessButtonRectangle, "+", b -> {
-            if (!sharedUserTextField.getText().equals(""))
-                NetworkHandler.sendToServer(new PacketSecurityStationAddUser(te, sharedUserTextField.getText()));
+            if (!sharedUserTextField.getText().isEmpty()) {
+                NetworkHandler.sendToServer(new PacketGuiButton("add:" + sharedUserTextField.getText()));
+                sharedUserTextField.setText("");
+            }
         });
 
-        rebootButton = new WidgetButtonExtended(xStart + 110, yStart + 20, 60, 20, "Reboot").withTag("reboot");
-        sharedUserTextField = getTextFieldFromRectangle(new Rectangle2d(20, 15, 120, 10));
-        sharedUserTextField.setResponder(s -> {
-            te.setText(0, sharedUserTextField.getText());
-            NetworkHandler.sendToServer(new PacketUpdateTextfield(te, 0));
-        });
+        sharedUserTextField = new WidgetTextField(font, 20, 15, 80, 10);
+
         accessStat.addSubWidget(sharedUserTextField);
         accessStat.addSubWidget(addUserButton);
-        accessStat.setMinimumExpandedDimensions(150, 40);
+        accessStat.setMinimumExpandedDimensions(125, 40);
 
-        addButton(new WidgetButtonExtended(guiLeft + 108, guiTop + 103, 64, 20, xlate("pneumaticcraft.gui.securityStation.test")))
+        addButton(rebootButton = new WidgetButtonExtended(guiLeft + 110, guiTop + 17, 60, 20, xlate("pneumaticcraft.gui.securityStation.reboot")).withTag("reboot"));
+        addButton(new WidgetButtonExtended(guiLeft + 110, guiTop + 107, 60, 20, xlate("pneumaticcraft.gui.securityStation.test")))
                 .withTag("test");
-        addButton(rebootButton);
         addButton(new WidgetRangeToggleButton(guiLeft + 154, guiTop + 130, te));
 
-        updateUserRemoveButtons();
-
-        nodeHandler = new NetworkConnectionBackground(this, te, xStart + 25, yStart + 30, 18, 0xFF2222FF);
+        updateUserList();
+        initConnectionRendering();
     }
 
-    @Override
-    protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int x, int y) {
-        super.drawGuiContainerForegroundLayer(matrixStack, x, y);
-        font.drawString(matrixStack, "Network Layout", 15, 12, 4210752);
+    private void initConnectionRendering() {
+        hackRenderer = new RenderHackSimulation(guiLeft + 25, guiTop + 27, 18);
+        hackSimulation = HackSimulation.dummySimulation();
+        hackSimulation.wakeUp();
+        for (int i = 0; i < te.getPrimaryInventory().getSlots(); i++) {
+            hackSimulation.addNode(i, te.getPrimaryInventory().getStackInSlot(i));
+        }
     }
 
     @Override
@@ -100,100 +109,92 @@ public class GuiSecurityStationInventory extends GuiSecurityStationBase<Containe
     }
 
     @Override
-    protected PointXY getInvNameOffset() {
-        return new PointXY(0, -2);
-    }
-
-    @Override
     protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float opacity, int x, int y) {
         super.drawGuiContainerBackgroundLayer(matrixStack, opacity, x, y);
-        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-        nodeHandler.render(matrixStack);
+        hackRenderer.render(matrixStack, hackSimulation, 0xFF2222FF);
     }
 
     @Override
     public void tick() {
         super.tick();
+
+        if (reInitBG) {
+            initConnectionRendering();
+            reInitBG = false;
+        }
+
+        hackSimulation.tick();
+
         statusStat.setText(getStatusText());
         accessStat.setText(getAccessText());
-        String rebootButtonString;
+        ITextComponent rebootButtonString;
         if (te.getRebootTime() > 0) {
-            rebootButtonString = te.getRebootTime() % 100 < 50 ? "Rebooting.." : PneumaticCraftUtils.convertTicksToMinutesAndSeconds(te.getRebootTime(), false);
+            rebootButtonString = te.getRebootTime() % 100 < 20 ?
+                    xlate("pneumaticcraft.gui.securityStation.rebooting") :
+                    new StringTextComponent(PneumaticCraftUtils.convertTicksToMinutesAndSeconds(te.getRebootTime(), false));
         } else {
-            rebootButtonString = "Reboot";
+            rebootButtonString = xlate("pneumaticcraft.gui.securityStation.reboot").mergeStyle(TextFormatting.RED);
         }
-
-        rebootButton.setMessage(new StringTextComponent(rebootButtonString));
+        rebootButton.setMessage(rebootButtonString);
 
         addUserButton.visible = accessStat.isDoneExpanding();
-        for (Button button : removeUserButtons) {
+        for (WidgetButtonExtended button : sharedUserList) {
             button.active = accessStat.isDoneExpanding();
         }
-        if (removeUserButtons.size() != te.sharedUsers.size()) {
-            updateUserRemoveButtons();
+        if (sharedUserList.size() != te.sharedUsers.size()) {
+            updateUserList();
+        }
+
+        rebootButton.active = te.getRebootTime() == 0;
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (keyCode == GLFW.GLFW_KEY_ENTER && sharedUserTextField.isFocused() && !sharedUserTextField.getText().isEmpty()) {
+            NetworkHandler.sendToServer(new PacketGuiButton("add:" + sharedUserTextField.getText()));
+            sharedUserTextField.setText("");
+            return true;
+        } else {
+            return super.keyPressed(keyCode, scanCode, modifiers);
         }
     }
 
     @Override
     protected void addProblems(List<ITextComponent> text) {
         super.addProblems(text);
+
         if (te.getRebootTime() > 0) {
-            text.add(new StringTextComponent("The Security Station doesn't provide security!").mergeStyle(TextFormatting.GRAY));
-            text.add(new StringTextComponent("The station is rebooting (" + PneumaticCraftUtils.convertTicksToMinutesAndSeconds(te.getRebootTime(), false) + ").").mergeStyle(TextFormatting.BLACK));
+            text.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.security_station.rebooting", PneumaticCraftUtils.convertTicksToMinutesAndSeconds(te.getRebootTime(), false)));
         } else if (te.isHacked()) {
-            text.add(new StringTextComponent("This Station has been hacked!").mergeStyle(TextFormatting.GRAY));
-            text.add(new StringTextComponent("Reboot the station.").mergeStyle(TextFormatting.BLACK));
+            text.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.security_station.hacked"));
         }
         if (!te.hasValidNetwork()) {
-            text.add(new StringTextComponent("Invalid network configuration!").mergeStyle(TextFormatting.GRAY));
-            switch (te.checkForNetworkValidity()) {
-                case NO_SUBROUTINE:
-                    text.add(new StringTextComponent("Add a Diagnostic Subroutine.").mergeStyle(TextFormatting.BLACK));
-                    break;
-                case NO_IO_PORT:
-                    text.add(new StringTextComponent("Add a Network IO Port.").mergeStyle(TextFormatting.BLACK));
-                    break;
-                case NO_REGISTRY:
-                    text.add(new StringTextComponent("Add a Network Registry.").mergeStyle(TextFormatting.BLACK));
-                    break;
-                case TOO_MANY_SUBROUTINES:
-                    text.add(new StringTextComponent("There can only be one Diagnostic Subroutine.").mergeStyle(TextFormatting.BLACK));
-                    break;
-                case TOO_MANY_IO_PORTS:
-                    text.add(new StringTextComponent("There can only be one Network IO Port.").mergeStyle(TextFormatting.BLACK));
-                    break;
-                case TOO_MANY_REGISTRIES:
-                    text.add(new StringTextComponent("There can only be one Network Registry.").mergeStyle(TextFormatting.BLACK));
-                    break;
-                case NO_CONNECTION_SUB_AND_IO_PORT:
-                    text.add(new StringTextComponent("The Diagnostic Subroutine and the Network IO Port need to be connected in the network.").mergeStyle(TextFormatting.BLACK));
-                    break;
-                case NO_CONNECTION_IO_PORT_AND_REGISTRY:
-                    text.add(new StringTextComponent("The Network Registry and the Network IO Port need to be connected in the network.").mergeStyle(TextFormatting.BLACK));
-                    break;
-            }
+            text.add(xlate("pneumaticcraft.gui.tab.problems.security_station.invalidNetwork").mergeStyle(TextFormatting.WHITE));
+            EnumNetworkValidityProblem problem = te.checkForNetworkValidity();
+            if (problem != EnumNetworkValidityProblem.NONE) text.addAll(GuiUtils.xlateAndSplit(problem.getTranslationKey()));
         }
     }
 
     private List<ITextComponent> getStatusText() {
         List<ITextComponent> text = new ArrayList<>();
-        text.add(new StringTextComponent("Protection").mergeStyle(TextFormatting.WHITE));
+        StringTextComponent space = new StringTextComponent("  ");
+        text.add(xlate("pneumaticcraft.gui.tab.status.securityStation.protection").mergeStyle(TextFormatting.WHITE));
         if (te.getRebootTime() > 0) {
-            text.add(new StringTextComponent("No protection because of rebooting!").mergeStyle(TextFormatting.DARK_RED));
+            text.add(new StringTextComponent("  ").append(xlate("pneumaticcraft.gui.securityStation.rebooting")).mergeStyle(TextFormatting.DARK_RED));
         } else if (te.isHacked()) {
-            text.add(new StringTextComponent("Hacked by:").mergeStyle(TextFormatting.DARK_RED));
+            text.add(new StringTextComponent("  ").append(xlate("pneumaticcraft.gui.tab.status.securityStation.hackedBy")).mergeStyle(TextFormatting.DARK_RED));
             for (GameProfile hacker : te.hackedUsers) {
-                text.add(GuiConstants.bullet().appendString(hacker.getName()));
+                text.add(new StringTextComponent("  ").append(GuiConstants.bullet()).appendString(hacker.getName()).mergeStyle(TextFormatting.RED));
             }
         } else {
-            text.add(new StringTextComponent("System secure").mergeStyle(TextFormatting.BLACK));
+            text.add(new StringTextComponent("  ").append(xlate("pneumaticcraft.gui.tab.status.securityStation.secure")).mergeStyle(TextFormatting.GREEN));
         }
-        text.add(new StringTextComponent("Security Level").mergeStyle(TextFormatting.WHITE));
-        text.add(new StringTextComponent("Level " + te.getSecurityLevel()).mergeStyle(TextFormatting.BLACK));
-        text.add(new StringTextComponent("Intruder Detection Chance").mergeStyle(TextFormatting.WHITE));
-        text.add(new StringTextComponent(te.getDetectionChance() + "%").mergeStyle(TextFormatting.BLACK));
-        text.add(new StringTextComponent("Security Range").mergeStyle(TextFormatting.WHITE));
-        text.add(new StringTextComponent((te.getRange() * 2 + 1) + "m²").mergeStyle(TextFormatting.BLACK));
+        text.add(xlate("pneumaticcraft.gui.tab.status.securityStation.securityLevel").mergeStyle(TextFormatting.WHITE));
+        text.add(new StringTextComponent("  ").append(new StringTextComponent("L" + te.getSecurityLevel())).mergeStyle(TextFormatting.BLACK));
+        text.add(xlate("pneumaticcraft.gui.tab.status.securityStation.detectChance").mergeStyle(TextFormatting.WHITE));
+        text.add(new StringTextComponent("  ").append(new StringTextComponent(te.getDetectionChance() + "%")).mergeStyle(TextFormatting.BLACK));
+        text.add(xlate("pneumaticcraft.gui.tab.status.securityStation.securityRange").mergeStyle(TextFormatting.WHITE));
+        text.add(new StringTextComponent("  ").append(new StringTextComponent((te.getRange() * 2 + 1) + "m²")).mergeStyle(TextFormatting.BLACK));
         return text;
     }
 
@@ -201,29 +202,40 @@ public class GuiSecurityStationInventory extends GuiSecurityStationBase<Containe
         List<ITextComponent> textList = new ArrayList<>();
         textList.add(StringTextComponent.EMPTY);
         textList.add(StringTextComponent.EMPTY);
-        for (GameProfile user : te.sharedUsers) {
-            textList.add(GuiConstants.bullet().appendString(user.getName()));
+        boolean first = true;
+        List<String> names = te.sharedUsers.stream().map(GameProfile::getName).sorted().collect(Collectors.toList());
+        for (String name : names) {
+            String str = first ? name + " \u2654" : name;
+            textList.add(GuiConstants.bullet().appendString(str).mergeStyle(first ? TextFormatting.YELLOW : TextFormatting.WHITE));
+            first = false;
         }
         return textList;
     }
 
-    private void updateUserRemoveButtons() {
-        if (removeUserButtons != null) {
-            for (WidgetButtonExtended button : removeUserButtons) {
+    private void updateUserList() {
+        if (sharedUserList != null) {
+            for (WidgetButtonExtended button : sharedUserList) {
                 accessStat.removeSubWidget(button);
             }
         }
-        removeUserButtons = new ArrayList<>();
-        for (int i = 0; i < te.sharedUsers.size(); i++) {
-            Rectangle2d rect = new Rectangle2d(24, 30 + i * 10, font.getStringWidth(te.sharedUsers.get(i).getName()), 8);
-            WidgetButtonExtended button = getInvisibleButtonFromRectangle("remove:" + i, rect, b -> {});
-            button.setInvisibleHoverColor(0x44FF0000);
+        sharedUserList = new ArrayList<>();
+        int n = 0;
+        List<String> names = te.sharedUsers.stream().map(GameProfile::getName).sorted().collect(Collectors.toList());
+        for (String name : names) {
+            Rectangle2d rect = new Rectangle2d(24, 30 + n * (font.FONT_HEIGHT + 1), font.getStringWidth(name), 8);
+            WidgetButtonExtended button = getInvisibleButtonFromRectangle("remove:" + name, rect, b -> {});
+            button.setInvisibleHoverColor(0x80FF0000);
             button.setVisible(false);
             accessStat.addSubWidget(button);
-            removeUserButtons.add(button);
-            if (te.sharedUsers.get(i).getName().equals(minecraft.player.getGameProfile().getName())) {
-                button.visible = false;
-            }
+            sharedUserList.add(button);
+            button.visible = !name.equals(minecraft.player.getGameProfile().getName());
+            n++;
+        }
+    }
+
+    public static void reinitConnectionRendering() {
+        if (Minecraft.getInstance().currentScreen instanceof GuiSecurityStationInventory) {
+            ((GuiSecurityStationInventory) Minecraft.getInstance().currentScreen).reInitBG = true;
         }
     }
 }

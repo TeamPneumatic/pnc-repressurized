@@ -11,7 +11,6 @@ import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleNetworkManager;
 import me.desht.pneumaticcraft.common.capabilities.CapabilityHacking;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
-import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.hacking.entity.HackableEnderman;
@@ -24,7 +23,6 @@ import me.desht.pneumaticcraft.common.recipes.machine.ExplosionCraftingRecipeImp
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefineryController;
-import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
 import me.desht.pneumaticcraft.common.util.DeferredTaskManager;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -40,7 +38,6 @@ import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootPool;
 import net.minecraft.loot.TableLootEntry;
@@ -50,7 +47,6 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
@@ -176,34 +172,6 @@ public class EventHandlerPneumaticCraft {
     }
 
     @SubscribeEvent
-    public void onPlayerClick(PlayerInteractEvent event) {
-        if (event instanceof PlayerInteractEvent.RightClickEmpty) return;
-
-        ItemStack heldItem = event.getPlayer().getHeldItem(event.getHand());
-        BlockState interactedBlockState = event.getWorld().getBlockState(event.getPos());
-        Block interactedBlock = interactedBlockState.getBlock();
-
-        if (!event.getPlayer().isCreative() || !event.getPlayer().getCommandSource().hasPermissionLevel(2)) {
-            if (event.getWorld() != null && !event.getWorld().isRemote) {
-                if (interactedBlock != ModBlocks.SECURITY_STATION.get() || event instanceof PlayerInteractEvent.LeftClickBlock) {
-                    boolean tryingToPlaceSecurityStation = heldItem.getItem() instanceof BlockItem && ((BlockItem) heldItem.getItem()).getBlock() == ModBlocks.SECURITY_STATION.get();
-                    int blockingStations = TileEntitySecurityStation.getProtectingSecurityStations(event.getPlayer(), event.getPos(), true, tryingToPlaceSecurityStation);
-                    if (blockingStations > 0) {
-                        event.setCanceled(true);
-                        event.getPlayer().sendStatusMessage(new TranslationTextComponent(
-                                tryingToPlaceSecurityStation ? "pneumaticcraft.message.securityStation.stationPlacementPrevented" : "pneumaticcraft.message.securityStation.accessPrevented",
-                                blockingStations), false);
-                    }
-                }
-            }
-        }
-
-//        if (!event.isCanceled() && interactedBlock == Blocks.COBBLESTONE) {
-//            AdvancementUtils.checkFor9x9(event.getEntityPlayer(), event.getPos());
-//        }
-    }
-
-    @SubscribeEvent
     public void onModdedWrenchBlock(PlayerInteractEvent.RightClickBlock event) {
         BlockState state = event.getWorld().getBlockState(event.getPos());
         if (!event.isCanceled() && state.getBlock() instanceof IPneumaticWrenchable) {
@@ -250,16 +218,10 @@ public class EventHandlerPneumaticCraft {
         }
     }
 
-//    @SubscribeEvent
-//    public void onEntityTracking(EntityTrackEvent event) {
-//        if (event.trackingEntity instanceof EntityProgrammableController) event.setCanceled(true);
-//    }
-
     @SubscribeEvent
     public void onInventoryTracking(InventoryTrackEvent event) {
         if (event.getTileEntity() instanceof TileEntityProgrammer) event.setCanceled(true);
     }
-
 
     @SubscribeEvent
     public void onLootTableLoad(LootTableLoadEvent event) {

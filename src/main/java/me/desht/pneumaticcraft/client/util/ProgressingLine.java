@@ -1,7 +1,5 @@
 package me.desht.pneumaticcraft.client.util;
 
-import me.desht.pneumaticcraft.client.gui.GuiSecurityStationBase;
-import net.minecraft.inventory.container.Slot;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.math.vector.Vector3f;
 
@@ -91,10 +89,5 @@ public class ProgressingLine {
             return true;
         }
         return false;
-    }
-
-    public int getPointedSlotNumber(GuiSecurityStationBase gui) {
-        Slot slot = gui.getSlotAtPosition((int) endX, (int) endY);
-        return slot != null ? slot.slotNumber : 0;
     }
 }

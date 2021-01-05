@@ -60,20 +60,20 @@ public class ItemRemote extends Item {
         PlayerEntity player = ctx.getPlayer();
         World world = ctx.getWorld();
         BlockPos pos = ctx.getPos();
-        if (!world.isRemote && !player.isSneaking() && isAllowedToEdit(player, remote)) {
-            TileEntity te = world.getTileEntity(pos);
-            if (te instanceof TileEntitySecurityStation) {
+        TileEntity te = world.getTileEntity(pos);
+        if (te instanceof TileEntitySecurityStation) {
+            if (!world.isRemote && player.isSneaking() && isAllowedToEdit(player, remote)) {
                 if (((TileEntitySecurityStation) te).doesAllowPlayer(player)) {
                     GlobalPos gPos = GlobalPosHelper.makeGlobalPos(world, pos);
                     setSecurityStationPos(remote, gPos);
-                    player.sendStatusMessage(xlate("pneumaticcraft.gui.remote.boundSecurityStation", gPos.toString()), true);
+                    player.sendStatusMessage(xlate("pneumaticcraft.gui.remote.boundSecurityStation", GlobalPosHelper.prettyPrint(gPos)), false);
                     return ActionResultType.SUCCESS;
                 } else {
                     player.sendStatusMessage(xlate("pneumaticcraft.gui.remote.cantBindSecurityStation"), true);
                 }
             }
         }
-        return ActionResultType.PASS;
+        return ActionResultType.SUCCESS;
     }
 
     /**
@@ -86,7 +86,7 @@ public class ItemRemote extends Item {
         curInfo.add(xlate("pneumaticcraft.gui.remote.tooltip.sneakRightClickToEdit"));
         GlobalPos gPos = getSecurityStationPos(remote);
         if (gPos != null) {
-            curInfo.add(xlate("pneumaticcraft.gui.remote.tooltip.boundToSecurityStation", gPos.toString()));
+            curInfo.add(xlate("pneumaticcraft.gui.remote.tooltip.boundToSecurityStation", GlobalPosHelper.prettyPrint(gPos)));
         } else {
             curInfo.add(xlate("pneumaticcraft.gui.remote.tooltip.rightClickToBind"));
         }

@@ -7,7 +7,7 @@ import me.desht.pneumaticcraft.common.item.ItemTubeModule;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdatePressureBlock;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
-import me.desht.pneumaticcraft.common.tileentity.IRangedTE;
+import me.desht.pneumaticcraft.common.tileentity.RangeManager;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityHeatSink;
 import me.desht.pneumaticcraft.common.util.EntityFilter;
 import me.desht.pneumaticcraft.common.util.IOHelper;
@@ -49,10 +49,6 @@ public class ModuleAirGrate extends TubeModule {
         super(itemTubeModule);
     }
 
-    public int getGrateRange() {
-        return grateRange;
-    }
-
     @Override
     public double getWidth() {
         return 16D;
@@ -75,7 +71,7 @@ public class ModuleAirGrate extends TubeModule {
                         .ifPresent(h -> NetworkHandler.sendToAllTracking(new PacketUpdatePressureBlock(getTube(), null, h.getSideLeaking(), h.getAir()), getTube()));
             } else {
                 if (showRange) {
-                    AreaRenderManager.getInstance().showArea(IRangedTE.getFrame(getAffectedAABB()), 0x60FFC060, pressureTube, false);
+                    AreaRenderManager.getInstance().showArea(RangeManager.getFrame(getAffectedAABB()), 0x60FFC060, pressureTube, false);
                 }
             }
         }
@@ -85,7 +81,8 @@ public class ModuleAirGrate extends TubeModule {
     }
 
     private AxisAlignedBB getAffectedAABB() {
-        return new AxisAlignedBB(pressureTube.getPos().offset(getDirection(), grateRange + 1)).grow(grateRange);
+        BlockPos pos = pressureTube.getPos().offset(getDirection(), grateRange + 1);
+        return new AxisAlignedBB(pos, pos).grow(grateRange);
     }
 
     private int calculateRange() {
@@ -253,7 +250,7 @@ public class ModuleAirGrate extends TubeModule {
         if (player.world.isRemote && pressureTube != null) {
             showRange = !showRange;
             if (showRange) {
-                AreaRenderManager.getInstance().showArea(IRangedTE.getFrame(getAffectedAABB()), 0x60FFC060, pressureTube, false);
+                AreaRenderManager.getInstance().showArea(RangeManager.getFrame(getAffectedAABB()), 0x60FFC060, pressureTube, false);
             } else {
                 AreaRenderManager.getInstance().removeHandlers(pressureTube);
             }
