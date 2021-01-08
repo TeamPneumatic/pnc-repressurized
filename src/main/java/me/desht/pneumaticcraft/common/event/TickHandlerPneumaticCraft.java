@@ -5,7 +5,6 @@ import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketServerTickTime;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferManager;
-import me.desht.pneumaticcraft.common.util.DeferredTaskManager;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.event.TickEvent;
@@ -40,7 +39,6 @@ public class TickHandlerPneumaticCraft {
             if (ticks % 600 == 0) {
                 AmadronOfferManager.getInstance().tryRestockPlayerOffers();
             }
-            DeferredTaskManager.getInstance().runTasks();
         }
     }
 }

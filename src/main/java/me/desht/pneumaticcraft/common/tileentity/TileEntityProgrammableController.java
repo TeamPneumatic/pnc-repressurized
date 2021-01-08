@@ -526,7 +526,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     @Override
     public DroneFakePlayer getFakePlayer() {
         if (fakePlayer == null) {
-            fakePlayer = new DroneFakePlayer((ServerWorld) getWorld(), new GameProfile(getOwnerUUID(), ownerName + "_drone"), this);
+            fakePlayer = new DroneFakePlayer((ServerWorld) getWorld(), new GameProfile(getOwnerUUID(), ownerName.getString()), this);
             fakePlayer.connection = new FakeNetHandlerPlayerServer(ServerLifecycleHooks.getCurrentServer(), fakePlayer);
         }
         return fakePlayer;

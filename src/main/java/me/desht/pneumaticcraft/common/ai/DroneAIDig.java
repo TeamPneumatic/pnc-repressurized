@@ -15,6 +15,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
 import java.util.List;
 
@@ -98,11 +100,15 @@ public class DroneAIDig<W extends ProgWidgetAreaItemBase & IToolUser> extends Dr
                     drone.setDugBlock(null);
                     return false;
                 }
-                int limit = drone.world().getServer().getBuildLimit();
-                manager.func_225416_a(pos, CPlayerDiggingPacket.Action.START_DESTROY_BLOCK, Direction.DOWN, limit);
-                manager.func_225416_a(pos, CPlayerDiggingPacket.Action.STOP_DESTROY_BLOCK, Direction.DOWN, limit);
-                drone.setDugBlock(pos);
-                return true;
+                PlayerInteractEvent.LeftClickBlock event = new PlayerInteractEvent.LeftClickBlock(drone.getFakePlayer(), pos, Direction.UP);
+                MinecraftForge.EVENT_BUS.post(event);
+                if (!event.isCanceled()) {
+                    int limit = drone.world().getServer().getBuildLimit();
+                    manager.func_225416_a(pos, CPlayerDiggingPacket.Action.START_DESTROY_BLOCK, Direction.DOWN, limit);
+                    manager.func_225416_a(pos, CPlayerDiggingPacket.Action.STOP_DESTROY_BLOCK, Direction.DOWN, limit);
+                    drone.setDugBlock(pos);
+                    return true;
+                }
             }
             drone.setDugBlock(null);
             return false;

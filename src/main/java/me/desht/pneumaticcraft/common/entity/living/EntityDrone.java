@@ -985,6 +985,7 @@ public class EntityDrone extends EntityDroneBase implements
     public UUID getOwnerUUID() {
         if (ownerUUID == null) {
             Log.warning(String.format("Drone with owner '%s' has no UUID! Substituting the Drone's UUID (%s).", ownerName, getUniqueID().toString()));
+            Log.warning("If you use any protection mods, the drone might not be able to operate in protected areas.");
             ownerUUID = getUniqueID();
         }
         return ownerUUID;
@@ -998,7 +999,9 @@ public class EntityDrone extends EntityDroneBase implements
     @Override
     public FakePlayer getFakePlayer() {
         if (fakePlayer == null && !world.isRemote) {
-            fakePlayer = new DroneFakePlayer((ServerWorld) world, new GameProfile(getUniqueID(), ownerName + "_drone"), this);
+            // using the owner's UUID for the fake player should be fine in Forge 35.0.12 and up
+            // see https://github.com/MinecraftForge/MinecraftForge/pull/7454
+            fakePlayer = new DroneFakePlayer((ServerWorld) world, new GameProfile(getOwnerUUID(), ownerName.getString()), this);
             fakePlayer.connection = new FakeNetHandlerPlayerServer(ServerLifecycleHooks.getCurrentServer(), fakePlayer);
         }
         return fakePlayer;

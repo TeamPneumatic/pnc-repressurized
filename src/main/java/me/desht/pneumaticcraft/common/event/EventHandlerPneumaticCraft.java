@@ -23,7 +23,6 @@ import me.desht.pneumaticcraft.common.recipes.machine.ExplosionCraftingRecipeImp
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefineryController;
-import me.desht.pneumaticcraft.common.util.DeferredTaskManager;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Names;
@@ -133,13 +132,7 @@ public class EventHandlerPneumaticCraft {
     public void onEntityJoinWorld(EntityJoinWorldEvent event) {
         if (!event.getWorld().isRemote && event.getEntity() instanceof MobEntity) {
             MobEntity mob = (MobEntity) event.getEntity();
-            // can't just add the goal directly, because it's possible this entity spawned as a result of a running goal
-            // (e.g. see TriggerSkeletonTrapGoal), and that would cause a CME
-            DeferredTaskManager.getInstance().scheduleTask(() -> {
-                if (mob.isAlive()) {
-                    mob.goalSelector.addGoal(Integer.MIN_VALUE, new EntityAINoAIWhenRidingDrone(mob));
-                }
-            });
+            mob.goalSelector.addGoal(Integer.MIN_VALUE, new EntityAINoAIWhenRidingDrone(mob));
         }
     }
 
