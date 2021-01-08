@@ -6,6 +6,22 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.16.3 / 1.16.4
 
+## 2.9.1-?? (unreleased)
+
+Note: this release requires Forge 34.1.36 or later!
+
+### Updates
+* Security Station hacking is now back in game for the first time since 1.12.2!
+  * Nuke Viruses now have a 3 second cooldown when used
+  * General security station GUI cleanup
+  * Entity Tracker upgrades now have diminishing returns in the Security Station for intrusion detection
+  * Up to 12 Entity Tracker upgrades can be installed for 99% detection chance per node hacked
+* Pneumatic Kick upgrade in the Pneumatic Boots now works on players too. Have fun...
+
+### Fixes
+* Drone fake players now use the owner's UUID and name again, which should resolve a lot of issues with protection mods (and the Security Station)
+* Fixed some non-fatal errors in the startup log related to Mekanism fuel entries, when Mekanism isn't installed
+
 ## 2.9.0-111 (4 Jan 2021)
 
 ### New
