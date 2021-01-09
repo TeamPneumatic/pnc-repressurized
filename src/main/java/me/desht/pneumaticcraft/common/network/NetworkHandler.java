@@ -43,7 +43,7 @@ import static me.desht.pneumaticcraft.common.network.ILargePayload.MAX_PAYLOAD_S
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
 public class NetworkHandler {
-    private static final String PROTOCOL_VERSION = "1";
+    private static final String PROTOCOL_VERSION = "2";
     private static final SimpleChannel NETWORK = NetworkRegistry.ChannelBuilder
             .named(RL("main_channel"))
             .clientAcceptedVersions(PROTOCOL_VERSION::equals)
