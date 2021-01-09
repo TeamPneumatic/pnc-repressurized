@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleLogistics;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
@@ -15,13 +14,9 @@ import java.util.function.Supplier;
  * Sent by server when the status or colour of a logistics module is updated
  */
 public class PacketUpdateLogisticsModule extends LocationIntPacket {
-
-    private int side;
-    private int colorIndex;
-    private int status;
-
-    public PacketUpdateLogisticsModule() {
-    }
+    private final int side;
+    private final int colorIndex;
+    private final int status;
 
     public PacketUpdateLogisticsModule(ModuleLogistics logisticsModule, int action) {
         super(logisticsModule.getTube().getPos());
@@ -50,15 +45,12 @@ public class PacketUpdateLogisticsModule extends LocationIntPacket {
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            TileEntityPressureTube te = TileEntityPressureTube.getTube(ClientUtils.getClientTE(pos));
-            if (te != null) {
-                TubeModule module = te.getModule(Direction.byIndex(side));
-                if (module instanceof ModuleLogistics) {
-                    ((ModuleLogistics) module).onUpdatePacket(status, colorIndex);
-                }
+        ctx.get().enqueueWork(() -> PacketUtil.getTE(ctx.get().getSender(), pos, TileEntityPressureTube.class).ifPresent(te -> {
+            TubeModule module = te.getModule(Direction.byIndex(side));
+            if (module instanceof ModuleLogistics) {
+                ((ModuleLogistics) module).onUpdatePacket(status, colorIndex);
             }
-        });
+        }));
         ctx.get().setPacketHandled(true);
     }
 }

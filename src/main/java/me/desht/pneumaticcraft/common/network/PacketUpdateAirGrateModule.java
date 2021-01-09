@@ -10,10 +10,7 @@ import net.minecraft.network.PacketBuffer;
  * Update the entity filter of an air grate module
  */
 public class PacketUpdateAirGrateModule extends PacketUpdateTubeModule {
-    private String entityFilter;
-
-    public PacketUpdateAirGrateModule() {
-    }
+    private final String entityFilter;
 
     public PacketUpdateAirGrateModule(TubeModule module, String entityFilter) {
         super(module);

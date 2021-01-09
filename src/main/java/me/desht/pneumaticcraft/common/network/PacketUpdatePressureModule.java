@@ -5,13 +5,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 
 public class PacketUpdatePressureModule extends PacketUpdateTubeModule {
-
-    private float lower;
-    private float higher;
-    private boolean advanced;
-
-    public PacketUpdatePressureModule() {
-    }
+    private final float lower;
+    private final float higher;
+    private final boolean advanced;
 
     public PacketUpdatePressureModule(TubeModule module) {
         super(module);
@@ -40,6 +36,5 @@ public class PacketUpdatePressureModule extends PacketUpdateTubeModule {
         module.lowerBound = lower;
         module.higherBound = higher;
         module.advancedConfig = advanced;
-//        module.sendDescriptionPacket();
     }
 }

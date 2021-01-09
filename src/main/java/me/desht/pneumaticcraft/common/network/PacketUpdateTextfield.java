@@ -12,11 +12,8 @@ import java.util.function.Supplier;
  * Sent by client GUI's to update a IGUITextFieldSensitive tile entity server-side
  */
 public class PacketUpdateTextfield {
-    private int textFieldID;
-    private String text;
-
-    public PacketUpdateTextfield() {
-    }
+    private final int textFieldID;
+    private final String text;
 
     public PacketUpdateTextfield(TileEntity te, int textfieldID) {
         textFieldID = textfieldID;

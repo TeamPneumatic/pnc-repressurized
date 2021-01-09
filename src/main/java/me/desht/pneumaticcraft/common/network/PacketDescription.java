@@ -22,12 +22,9 @@ import java.util.function.Supplier;
  * This is the primary mechanism for syncing tile entity data to clients when it changes.
  */
 public class PacketDescription extends LocationIntPacket {
-    private boolean fullSync;
+    private final boolean fullSync;
     private final List<IndexedField> fields = new ArrayList<>();
-    private CompoundNBT extraData;
-
-    public PacketDescription() {
-    }
+    private final CompoundNBT extraData;
 
     public PacketDescription(IDescSynced te, boolean fullSync) {
         super(te.getPosition());
@@ -123,6 +120,7 @@ public class PacketDescription extends LocationIntPacket {
     public PacketDescription(CompoundNBT compound) {
         super(new BlockPos(compound.getInt("x"), compound.getInt("y"), compound.getInt("z")));
 
+        fullSync = true;
         CompoundNBT subTag = compound.getCompound(Names.MOD_ID);
         int fieldCount = subTag.getInt("Length");
         ListNBT list = subTag.getList("Data", Constants.NBT.TAG_COMPOUND);

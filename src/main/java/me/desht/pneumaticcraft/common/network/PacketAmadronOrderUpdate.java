@@ -12,17 +12,14 @@ import java.util.function.Supplier;
  * Sent from client when an offer widget is clicked in the Amadron GUI to update the server-side container
  */
 public class PacketAmadronOrderUpdate {
-
-    private int orderId, mouseButton;
-    private boolean sneaking;
+    private final int orderId;
+    private final int mouseButton;
+    private final boolean sneaking;
 
     public PacketAmadronOrderUpdate(int orderId, int mouseButton, boolean sneaking) {
         this.orderId = orderId;
         this.mouseButton = mouseButton;
         this.sneaking = sneaking;
-    }
-
-    public PacketAmadronOrderUpdate() {
     }
 
     public PacketAmadronOrderUpdate(PacketBuffer buffer) {

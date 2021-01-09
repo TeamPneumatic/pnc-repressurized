@@ -15,7 +15,7 @@ import java.util.function.Supplier;
  * {@link me.desht.pneumaticcraft.common.item.IShiftScrollable} interface.
  */
 public class PacketShiftScrollWheel {
-    private boolean forward = true;
+    private final boolean forward;
 
     public PacketShiftScrollWheel(boolean forward) {
         this.forward = forward;

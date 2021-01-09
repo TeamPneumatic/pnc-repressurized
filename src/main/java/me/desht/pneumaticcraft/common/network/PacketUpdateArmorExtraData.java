@@ -39,12 +39,8 @@ public class PacketUpdateArmorExtraData {
         addKey(EquipmentSlotType.FEET, ItemPneumaticArmor.NBT_JET_BOOTS_POWER, NBT.TAG_INT);
     }
 
-    private EquipmentSlotType slot;
-    private CompoundNBT data;
-
-    public PacketUpdateArmorExtraData() {
-        // empty
-    }
+    private final EquipmentSlotType slot;
+    private final CompoundNBT data;
 
     public PacketUpdateArmorExtraData(EquipmentSlotType slot, CompoundNBT data) {
         this.slot = slot;

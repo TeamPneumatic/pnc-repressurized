@@ -15,15 +15,11 @@ import java.util.function.Supplier;
  * Sent by server to sync up the settings of a redstone module
  */
 public class PacketSyncRedstoneModuleToClient extends LocationIntPacket {
-    private ModuleRedstone.EnumRedstoneDirection dir;
-    private int outputLevel;
-    private int inputLevel;
-    private int channel;
-    private byte side;
-
-    @SuppressWarnings("unused")
-    public PacketSyncRedstoneModuleToClient() {
-    }
+    private final ModuleRedstone.EnumRedstoneDirection dir;
+    private final int outputLevel;
+    private final int inputLevel;
+    private final int channel;
+    private final byte side;
 
     public PacketSyncRedstoneModuleToClient(ModuleRedstone module) {
         super(module.getTube().getPos());

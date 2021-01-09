@@ -18,10 +18,7 @@ import java.util.function.Supplier;
  * Sent by server when an entity hack completes
  */
 public class PacketHackingEntityFinish {
-    private int entityId;
-
-    public PacketHackingEntityFinish() {
-    }
+    private final int entityId;
 
     public PacketHackingEntityFinish(Entity entity) {
         entityId = entity.getEntityId();

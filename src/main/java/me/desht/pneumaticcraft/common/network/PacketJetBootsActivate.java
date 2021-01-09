@@ -16,10 +16,7 @@ import java.util.function.Supplier;
  * Jump key is pressed or released.
  */
 public class PacketJetBootsActivate {
-    private boolean state;
-
-    public PacketJetBootsActivate() {
-    }
+    private final boolean state;
 
     public PacketJetBootsActivate(boolean state) {
         this.state = state;

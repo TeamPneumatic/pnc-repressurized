@@ -17,12 +17,9 @@ import java.util.function.Supplier;
  * Send when the GPS Tool GUI is closed, to update the held GPS tool settings
  */
 public class PacketChangeGPSToolCoordinate extends LocationIntPacket {
-    private Hand hand;
-    private String variable;
-    private int index;
-
-    public PacketChangeGPSToolCoordinate() {
-    }
+    private final Hand hand;
+    private final String variable;
+    private final int index;
 
     public PacketChangeGPSToolCoordinate(BlockPos pos, Hand hand, String variable, int index) {
         super(pos);

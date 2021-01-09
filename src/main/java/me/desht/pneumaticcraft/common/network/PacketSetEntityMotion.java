@@ -14,10 +14,7 @@ import java.util.function.Supplier;
  * Sent by server when an immediate update is needed to a client-side entity's motion
  */
 public class PacketSetEntityMotion extends LocationDoublePacket {
-    private int entityId;
-
-    public PacketSetEntityMotion() {
-    }
+    private final int entityId;
 
     public PacketSetEntityMotion(Entity entity, Vector3d motion) {
         super(motion);

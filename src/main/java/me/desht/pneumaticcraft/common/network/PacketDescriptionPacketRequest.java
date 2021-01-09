@@ -16,10 +16,6 @@ import java.util.function.Supplier;
  * TODO: replace with a more formal data request protocol
  */
 public class PacketDescriptionPacketRequest extends LocationIntPacket {
-
-    public PacketDescriptionPacketRequest() {
-    }
-
     public PacketDescriptionPacketRequest(BlockPos pos) {
         super(pos);
     }

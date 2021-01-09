@@ -10,11 +10,7 @@ import net.minecraftforge.fml.network.NetworkEvent;
 import java.util.function.Supplier;
 
 public class PacketShowWireframe extends LocationIntPacket {
-
-    private int entityId;
-
-    public PacketShowWireframe() {
-    }
+    private final int entityId;
 
     public PacketShowWireframe(EntityDrone entity, BlockPos pos) {
         super(pos);

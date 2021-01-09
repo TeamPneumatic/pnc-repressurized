@@ -2,13 +2,13 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
@@ -16,20 +16,15 @@ import java.util.function.Supplier;
  * Sent by server to play a sound at a specific location
  */
 public class PacketPlaySound extends LocationDoublePacket {
-    private SoundEvent soundEvent;
-    private SoundCategory category;
-    private float volume;
-    private float pitch;
-    private boolean distanceDelay;
-    private ResourceLocation soundName;
-
-    public PacketPlaySound() {
-    }
+    private final SoundEvent soundEvent;
+    private final SoundCategory category;
+    private final float volume;
+    private final float pitch;
+    private final boolean distanceDelay;
 
     public PacketPlaySound(SoundEvent soundEvent, SoundCategory category, double x, double y, double z, float volume, float pitch, boolean distanceDelay) {
         super(x, y, z);
         this.soundEvent = soundEvent;
-        this.soundName = soundEvent.getRegistryName();
         this.category = category;
         this.volume = volume;
         this.pitch = pitch;
@@ -52,7 +47,7 @@ public class PacketPlaySound extends LocationDoublePacket {
     @Override
     public void toBytes(PacketBuffer buffer) {
         super.toBytes(buffer);
-        buffer.writeResourceLocation(soundName);
+        buffer.writeResourceLocation(Objects.requireNonNull(soundEvent.getRegistryName()));
         buffer.writeInt(category.ordinal());
         buffer.writeFloat(volume);
         buffer.writeFloat(pitch);

@@ -66,8 +66,6 @@ public class NetworkHandler {
 				PacketChangeGPSToolCoordinate::toBytes, PacketChangeGPSToolCoordinate::new, PacketChangeGPSToolCoordinate::handle);
 		registerMessage(PacketUpdateGPSAreaTool.class,
 				PacketUpdateGPSAreaTool::toBytes, PacketUpdateGPSAreaTool::new, PacketUpdateGPSAreaTool::handle);
-		registerMessage(PacketCoordTrackUpdate.class,
-				PacketCoordTrackUpdate::toBytes, PacketCoordTrackUpdate::new, PacketCoordTrackUpdate::handle);
 		registerMessage(PacketDescription.class,
 				PacketDescription::toBytes, PacketDescription::new, PacketDescription::process);
 		registerMessage(PacketDescriptionPacketRequest.class,
@@ -90,8 +88,6 @@ public class NetworkHandler {
 				PacketUpdateSearchItem::toBytes, PacketUpdateSearchItem::new, PacketUpdateSearchItem::handle);
 		registerMessage(PacketUpdateTextfield.class,
 				PacketUpdateTextfield::toBytes, PacketUpdateTextfield::new, PacketUpdateTextfield::handle);
-		registerMessage(PacketUseItem.class,
-				PacketUseItem::toBytes, PacketUseItem::new, PacketUseItem::handle);
 		registerMessage(PacketUpdatePressureModule.class,
 				PacketUpdatePressureModule::toBytes, PacketUpdatePressureModule::new, PacketUpdatePressureModule::handle);
 		registerMessage(PacketUpdateAirGrateModule.class,
@@ -124,8 +120,6 @@ public class NetworkHandler {
 				PacketSyncRedstoneModuleToClient::toBytes, PacketSyncRedstoneModuleToClient::new, PacketSyncRedstoneModuleToClient::handle);
 		registerMessage(PacketSyncRedstoneModuleToServer.class,
 				PacketSyncRedstoneModuleToServer::toBytes, PacketSyncRedstoneModuleToServer::new, PacketSyncRedstoneModuleToServer::handle);
-		registerMessage(PacketCommandGetGlobalVariableOutput.class,
-				PacketCommandGetGlobalVariableOutput::toBytes, PacketCommandGetGlobalVariableOutput::new, PacketCommandGetGlobalVariableOutput::handle);
 		registerMessage(PacketNotifyVariablesRemote.class,
 				PacketNotifyVariablesRemote::toBytes, PacketNotifyVariablesRemote::new, PacketNotifyVariablesRemote::handle);
 		registerMessage(PacketHackingBlockStart.class,

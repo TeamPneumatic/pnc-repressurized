@@ -16,26 +16,26 @@ import java.util.function.Supplier;
  */
 public class PacketPlayMovingSound {
     enum SourceType { ENTITY, STATIC_POS}
-    private MovingSounds.Sound sound;
 
-    private int entityId;
-    private SourceType sourceType;
-    private BlockPos pos;
-
-    public PacketPlayMovingSound() {
-    }
+    private final MovingSounds.Sound sound;
+    private final BlockPos pos;
+    private final int entityId;
+    private final SourceType sourceType;
 
     public PacketPlayMovingSound(MovingSounds.Sound sound, Object soundSource) {
         this.sound = sound;
         if (soundSource instanceof Entity) {
             this.sourceType = SourceType.ENTITY;
             this.entityId = ((Entity) soundSource).getEntityId();
+            this.pos = null;
         } else if (soundSource instanceof TileEntity) {
             this.sourceType = SourceType.STATIC_POS;
             this.pos = ((TileEntity) soundSource).getPos();
+            this.entityId = -1;
         } else if (soundSource instanceof BlockPos) {
             this.sourceType = SourceType.STATIC_POS;
             this.pos = new BlockPos((BlockPos) soundSource);
+            this.entityId = -1;
         } else {
             throw new IllegalArgumentException("invalid sound source: " + soundSource);
         }
@@ -46,8 +46,12 @@ public class PacketPlayMovingSound {
         sourceType = SourceType.values()[buffer.readByte()];
         if (sourceType == SourceType.ENTITY) {
             entityId = buffer.readInt();
+            pos = null;
         } else if (sourceType == SourceType.STATIC_POS) {
             pos = buffer.readBlockPos();
+            entityId = -1;
+        } else {
+            throw new IllegalArgumentException("invalid sound source: " + sourceType);
         }
     }
 

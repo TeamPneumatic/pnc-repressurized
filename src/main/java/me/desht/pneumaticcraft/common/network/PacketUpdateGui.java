@@ -16,12 +16,9 @@ import java.util.function.Supplier;
  * in this packet, via {@link ContainerPneumaticBase#detectAndSendChanges()}.
  */
 public class PacketUpdateGui {
-    private int syncId;
-    private Object value;
-    private byte type;
-
-    public PacketUpdateGui() {
-    }
+    private final int syncId;
+    private final Object value;
+    private final byte type;
 
     public PacketUpdateGui(int syncId, SyncedField<?> syncField) {
         this.syncId = syncId;
@@ -44,9 +41,9 @@ public class PacketUpdateGui {
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             if (Minecraft.getInstance().currentScreen instanceof ContainerScreen) {
-                Container container = ((ContainerScreen) Minecraft.getInstance().currentScreen).getContainer();
+                Container container = ((ContainerScreen<?>) Minecraft.getInstance().currentScreen).getContainer();
                 if (container instanceof ContainerPneumaticBase) {
-                    ((ContainerPneumaticBase) container).updateField(syncId, value);
+                    ((ContainerPneumaticBase<?>) container).updateField(syncId, value);
                 }
             }
         });

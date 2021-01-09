@@ -14,11 +14,8 @@ import java.util.function.Supplier;
  * Sent by client when logistics module colour is updated via GUI
  */
 public class PacketTubeModuleColor extends LocationIntPacket {
-    private int ourColor;
-    private Direction side;
-
-    public PacketTubeModuleColor() {
-    }
+    private final int ourColor;
+    private final Direction side;
 
     public PacketTubeModuleColor(TubeModule module) {
         super(module.getTube().getPos());

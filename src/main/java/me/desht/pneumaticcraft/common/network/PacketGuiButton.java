@@ -12,11 +12,8 @@ import java.util.function.Supplier;
  * Sent when a GUI button is clicked.
  */
 public class PacketGuiButton {
-    private String tag;
-    private boolean shiftHeld;
-
-    public PacketGuiButton() {
-    }
+    private final String tag;
+    private final boolean shiftHeld;
 
     public PacketGuiButton(String tag) {
         this(tag, false);

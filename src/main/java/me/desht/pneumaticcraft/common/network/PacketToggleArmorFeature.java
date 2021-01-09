@@ -15,12 +15,9 @@ import java.util.function.Supplier;
  * Sent by client to switch an armor module on or off
  */
 public class PacketToggleArmorFeature {
-    private byte featureIndex;
-    private boolean state;
-    private EquipmentSlotType slot;
-
-    public PacketToggleArmorFeature() {
-    }
+    private final byte featureIndex;
+    private final boolean state;
+    private final EquipmentSlotType slot;
 
     public PacketToggleArmorFeature(EquipmentSlotType slot, byte featureIndex, boolean state) {
         this.featureIndex = featureIndex;

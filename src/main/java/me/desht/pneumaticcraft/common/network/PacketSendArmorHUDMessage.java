@@ -14,16 +14,13 @@ import java.util.function.Supplier;
  * Sent by server to get a message displayed on the Pneumatic Armor HUD
  */
 public class PacketSendArmorHUDMessage {
-    private ITextComponent message;
-    private int duration;
-    private int color;
+    private final ITextComponent message;
+    private final int duration;
+    private final int color;
 
-    public PacketSendArmorHUDMessage() {
-    }
-
-    public PacketSendArmorHUDMessage(ITextComponent message, int duration) {
-        this(message, duration, 0x7000FF00);
-    }
+//    public PacketSendArmorHUDMessage(ITextComponent message, int duration) {
+//        this(message, duration, 0x7000FF00);
+//    }
 
     public PacketSendArmorHUDMessage(ITextComponent message, int duration, int color) {
         this.message = message;

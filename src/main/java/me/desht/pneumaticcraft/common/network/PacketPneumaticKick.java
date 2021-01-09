@@ -28,14 +28,13 @@ import java.util.function.Supplier;
  */
 public class PacketPneumaticKick {
     public PacketPneumaticKick() {
+    }
+
+    public PacketPneumaticKick(@SuppressWarnings("unused") PacketBuffer buffer) {
         // empty
     }
 
-    PacketPneumaticKick(PacketBuffer buffer) {
-        // empty
-    }
-
-    public void toBytes(PacketBuffer buf) {
+    public void toBytes(@SuppressWarnings("unused") PacketBuffer buf) {
         // empty
     }
 

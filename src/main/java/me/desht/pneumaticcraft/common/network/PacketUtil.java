@@ -30,7 +30,8 @@ public class PacketUtil {
     /**
      * Get the relevant target tile entity for packet purposes.  When the packet is
      * being received on the server, the player's open container is used to determine
-     * the TE; don't trust a blockpos that the client sent.
+     * the TE; don't trust a blockpos that the client sent, although we'll check the
+     * sent blockpos is the same as the TE's actual blockpos.
      *
      * @param player the player, will be null if packet is being received on client
      * @param pos the blockpos, ignored if packet is being received on server
@@ -40,6 +41,7 @@ public class PacketUtil {
     @Nonnull
     public static <T extends TileEntity> Optional<T> getTE(PlayerEntity player, BlockPos pos, Class<T> cls) {
         if (player == null) {
+            // client-side: we trust the blockpos the server sends
             World w = ClientUtils.getClientWorld();
             if (w != null) {
                 return PneumaticCraftUtils.getTileEntityAt(w, pos, cls);
@@ -49,7 +51,7 @@ public class PacketUtil {
             // instead get the TE from the player's open container
             if (player.openContainer instanceof ContainerPneumaticBase) {
                 TileEntity te = ((ContainerPneumaticBase<?>) player.openContainer).te;
-                if (te != null && cls.isAssignableFrom(te.getClass())) {
+                if (te != null && cls.isAssignableFrom(te.getClass()) && (pos == null || te.getPos().equals(pos))) {
                     //noinspection unchecked
                     return Optional.of((T) te);
                 }

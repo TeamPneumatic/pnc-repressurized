@@ -14,10 +14,10 @@ public class PacketClearRecipeCache {
     public PacketClearRecipeCache() {
     }
 
-    public void toBytes(PacketBuffer buf) {
+    public PacketClearRecipeCache(@SuppressWarnings("unused") PacketBuffer buffer) {
     }
 
-    public PacketClearRecipeCache(PacketBuffer buffer) {
+    public void toBytes(@SuppressWarnings("unused") PacketBuffer buf) {
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {

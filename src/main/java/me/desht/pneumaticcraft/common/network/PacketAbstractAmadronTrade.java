@@ -6,9 +6,6 @@ import net.minecraft.network.PacketBuffer;
 public abstract class PacketAbstractAmadronTrade {
     private AmadronPlayerOffer offer;
 
-    public PacketAbstractAmadronTrade() {
-    }
-
     public PacketAbstractAmadronTrade(AmadronPlayerOffer offer) {
         this.offer = offer;
     }

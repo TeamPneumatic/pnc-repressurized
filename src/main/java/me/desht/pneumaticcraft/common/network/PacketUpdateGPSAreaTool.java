@@ -10,16 +10,17 @@ import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
+/**
+ * Received on: SERVER
+ * Sent by client from area tool GUI to update stored settings
+ */
 public class PacketUpdateGPSAreaTool {
     private CompoundNBT areaWidgetData;
     private Hand hand;
 
-    public PacketUpdateGPSAreaTool() {
-    }
-
     public PacketUpdateGPSAreaTool(ProgWidgetArea area, Hand hand) {
         this.hand = hand;
-        areaWidgetData = new CompoundNBT();
+        this.areaWidgetData = new CompoundNBT();
         area.writeToNBT(areaWidgetData);
     }
 
@@ -43,9 +44,11 @@ public class PacketUpdateGPSAreaTool {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            ItemStack stack = ctx.get().getSender().getHeldItem(hand);
-            if (stack.getItem() == ModItems.GPS_AREA_TOOL.get()) {
-                stack.setTag(areaWidgetData);
+            if (ctx.get().getSender() != null) {
+                ItemStack stack = ctx.get().getSender().getHeldItem(hand);
+                if (stack.getItem() == ModItems.GPS_AREA_TOOL.get()) {
+                    stack.setTag(areaWidgetData);
+                }
             }
         });
         ctx.get().setPacketHandled(true);

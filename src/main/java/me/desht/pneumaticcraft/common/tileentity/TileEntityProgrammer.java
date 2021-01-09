@@ -28,7 +28,6 @@ import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
-import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
@@ -176,31 +175,6 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
     public CompoundNBT writeProgWidgetsToNBT(CompoundNBT tag) {
         putWidgetsToNBT(progWidgets, tag);
         return tag;
-    }
-
-    public static List<IProgWidget> readWidgetsFromPacket(PacketBuffer buf) {
-        List<IProgWidget> widgets = new ArrayList<>();
-        int nWidgets = buf.readVarInt();
-        for (int i = 0; i < nWidgets; i++) {
-            try {
-                IProgWidget widget = ProgWidget.fromPacket(buf);
-                if (!widget.isAvailable()) {
-                    Log.warning("ignoring unavailable widget type " + widget.getTypeID().toString());
-                } else {
-                    widgets.add(widget);
-                }
-            } catch (IllegalStateException e) {
-                Log.warning(e.getMessage());
-            }
-        }
-        return widgets;
-    }
-
-    public void writeProgWidgetsToPacket(PacketBuffer buf) {
-        buf.writeVarInt(progWidgets.size());
-        for (IProgWidget progWidget : progWidgets) {
-            progWidget.writeToPacket(buf);
-        }
     }
 
     public static List<IProgWidget> getWidgetsFromNBT(CompoundNBT tag) {

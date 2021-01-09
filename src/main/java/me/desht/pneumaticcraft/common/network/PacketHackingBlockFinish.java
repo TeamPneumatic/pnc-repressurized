@@ -18,10 +18,6 @@ import java.util.function.Supplier;
  * Sent by server when a block hack has completed.
  */
 public class PacketHackingBlockFinish extends LocationIntPacket {
-
-    public PacketHackingBlockFinish() {
-    }
-
     public PacketHackingBlockFinish(WorldAndCoord gPos) {
         super(gPos.pos);
     }

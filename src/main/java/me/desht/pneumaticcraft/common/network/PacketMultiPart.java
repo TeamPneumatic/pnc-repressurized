@@ -10,10 +10,7 @@ import java.util.function.Supplier;
  * Part of a multipart mesage from client (whole message too big to send at once)
  */
 public class PacketMultiPart {
-    private byte[] payload;
-
-    public PacketMultiPart() {
-    }
+    private final byte[] payload;
 
     PacketMultiPart(byte[] payload) {
         this.payload = payload;

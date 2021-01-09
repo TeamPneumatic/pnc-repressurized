@@ -20,12 +20,9 @@ import java.util.function.Supplier;
 public class PacketUpdatePressureBlock extends LocationIntPacket {
     private static final byte NO_DIRECTION = 127;
 
-    private Direction leakDir;
-    private Direction handlerDir;
-    private int currentAir;
-
-    public PacketUpdatePressureBlock() {
-    }
+    private final Direction leakDir;
+    private final Direction handlerDir;
+    private final int currentAir;
 
     public PacketUpdatePressureBlock(TileEntity te, Direction handlerDir, Direction leakDir, int currentAir) {
         super(te.getPos());

@@ -11,10 +11,6 @@ import java.util.function.Supplier;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class PacketAmadronTradeRemoved extends PacketAbstractAmadronTrade {
-
-    public PacketAmadronTradeRemoved() {
-    }
-
     public PacketAmadronTradeRemoved(AmadronPlayerOffer offer) {
         super(offer);
     }

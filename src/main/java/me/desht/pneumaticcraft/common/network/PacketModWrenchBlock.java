@@ -19,13 +19,9 @@ import java.util.function.Supplier;
  * Sent from client when trying to rotate a block with a wrench other than PneumaticCraft's own wrench
  */
 public class PacketModWrenchBlock extends LocationIntPacket {
-    private Direction side;
-    private Hand hand;
-    private int entityID;
-
-    @SuppressWarnings("unused")
-    public PacketModWrenchBlock() {
-    }
+    private final Direction side;
+    private final Hand hand;
+    private final int entityID;
 
     public PacketModWrenchBlock(BlockPos pos, Direction side, Hand hand) {
         super(pos);

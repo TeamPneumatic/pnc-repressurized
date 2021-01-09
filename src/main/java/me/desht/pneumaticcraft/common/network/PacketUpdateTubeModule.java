@@ -15,10 +15,7 @@ import java.util.function.Supplier;
  * Sent by client when tube module settings are updated via GUI.
  */
 public abstract class PacketUpdateTubeModule extends LocationIntPacket {
-    private Direction moduleSide;
-
-    public PacketUpdateTubeModule() {
-    }
+    private final Direction moduleSide;
 
     public PacketUpdateTubeModule(TubeModule module) {
         super(module.getTube().getPos());
@@ -37,7 +34,7 @@ public abstract class PacketUpdateTubeModule extends LocationIntPacket {
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> PneumaticCraftUtils.getTileEntityAt(ctx.get().getSender().getServerWorld(), pos, TileEntityPressureTube.class).ifPresent(te -> {
+        ctx.get().enqueueWork(() -> PacketUtil.getTE(ctx.get().getSender(), pos, TileEntityPressureTube.class).ifPresent(te -> {
             TubeModule tm = te.getModule(moduleSide);
             if (tm != null) {
                 PlayerEntity player = ctx.get().getSender();

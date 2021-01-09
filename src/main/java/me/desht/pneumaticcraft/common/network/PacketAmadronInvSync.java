@@ -20,9 +20,6 @@ public class PacketAmadronInvSync {
 
     private final List<ItemStack> items = new ArrayList<>(INV_SIZE);
 
-    public PacketAmadronInvSync() {
-    }
-
     public PacketAmadronInvSync(List<ItemStack> items) {
         Validate.isTrue(items.size() == INV_SIZE,
                 "invalid list size: expected " + INV_SIZE + ", got " + items.size());

@@ -17,11 +17,8 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
  * these notifications.
  */
 public class PacketAmadronTradeNotifyDeal extends PacketAbstractAmadronTrade {
-    private int offerAmount;
-    private String buyingPlayer;
-
-    public PacketAmadronTradeNotifyDeal() {
-    }
+    private final int offerAmount;
+    private final String buyingPlayer;
 
     public PacketAmadronTradeNotifyDeal(AmadronPlayerOffer offer, int offerAmount, String buyingPlayer) {
         super(offer);

@@ -19,10 +19,7 @@ import java.util.function.Supplier;
  * Sent by client when player initiates an entity hack, and by server to confirm initiation
  */
 public class PacketHackingEntityStart {
-    private int entityId;
-
-    public PacketHackingEntityStart() {
-    }
+    private final int entityId;
 
     public PacketHackingEntityStart(Entity entity) {
         entityId = entity.getEntityId();

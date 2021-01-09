@@ -11,11 +11,11 @@ public class PacketLeftClickEmpty {
     public PacketLeftClickEmpty() {
     }
 
-    public PacketLeftClickEmpty(PacketBuffer buf) {
+    public PacketLeftClickEmpty(@SuppressWarnings("unused") PacketBuffer buf) {
         // nothing
     }
 
-    public void toBytes(PacketBuffer buf) {
+    public void toBytes(@SuppressWarnings("unused") PacketBuffer buf) {
         // nothing
     }
 

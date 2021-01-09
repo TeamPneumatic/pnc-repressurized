@@ -21,9 +21,6 @@ import java.util.function.Supplier;
  * Received on: CLIENT
  */
 public class PacketDebugBlock extends LocationIntPacket {
-    public PacketDebugBlock() {
-    }
-
     public PacketDebugBlock(BlockPos pos) {
         super(pos);
     }

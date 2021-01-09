@@ -24,11 +24,7 @@ import java.util.function.Supplier;
 public class PacketChestplateLauncher {
     private static final float SCALE_FACTOR = 0.7f;
 
-    private float amount;
-
-    public PacketChestplateLauncher() {
-        // empty
-    }
+    private final float amount;
 
     public PacketChestplateLauncher(float amount) {
         this.amount = amount;

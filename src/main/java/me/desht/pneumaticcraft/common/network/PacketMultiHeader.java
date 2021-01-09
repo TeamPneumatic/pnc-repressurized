@@ -19,13 +19,9 @@ import java.util.function.Supplier;
  * First part of a following multi-part message from the client
  */
 public class PacketMultiHeader {
-    private int length;
-    private String className;
+    private final int length;
+    private final String className;
     private static final Map<UUID, PayloadBuffer> payloadBuffers = new HashMap<>();
-
-    public PacketMultiHeader() {
-        // empty
-    }
 
     PacketMultiHeader(int length, String className) {
         this.length = length;

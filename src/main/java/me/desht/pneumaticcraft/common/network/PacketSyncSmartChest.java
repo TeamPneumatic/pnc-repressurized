@@ -17,11 +17,8 @@ import java.util.function.Supplier;
  * Sent by client GUI to sync changed filter settings to server
  */
 public class PacketSyncSmartChest extends LocationIntPacket {
-    private int lastSlot;
-    private List<Pair<Integer, ItemStack>> filter;
-
-    public PacketSyncSmartChest() {
-    }
+    private final int lastSlot;
+    private final List<Pair<Integer, ItemStack>> filter;
 
     public PacketSyncSmartChest(TileEntitySmartChest te) {
         super(te.getPos());

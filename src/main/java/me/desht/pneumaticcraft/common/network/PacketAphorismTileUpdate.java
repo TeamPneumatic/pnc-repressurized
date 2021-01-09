@@ -18,13 +18,10 @@ import java.util.function.Supplier;
 public class PacketAphorismTileUpdate extends LocationIntPacket {
 
     private static final int MAX_LENGTH = 1024;
-    private String[] text;
-    private int textRotation;
-    private byte margin;
-    private boolean invis;
-
-    public PacketAphorismTileUpdate() {
-    }
+    private final String[] text;
+    private final int textRotation;
+    private final byte margin;
+    private final boolean invis;
 
     public PacketAphorismTileUpdate(PacketBuffer buffer) {
         super(buffer);

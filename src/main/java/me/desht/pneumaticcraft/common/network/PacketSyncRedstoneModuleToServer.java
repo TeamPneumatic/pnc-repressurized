@@ -16,17 +16,13 @@ import java.util.function.Supplier;
  * Sent by client to update server-side settings when redstone module GUI is closed
  */
 public class PacketSyncRedstoneModuleToServer extends LocationIntPacket {
-    private byte side;
-    private byte op;
-    private byte ourColor;
-    private byte otherColor;
-    private byte constantVal;
-    private boolean invert;
-    private boolean input;
-
-    @SuppressWarnings("unused")
-    public PacketSyncRedstoneModuleToServer() {
-    }
+    private final byte side;
+    private final byte op;
+    private final byte ourColor;
+    private final byte otherColor;
+    private final byte constantVal;
+    private final boolean invert;
+    private final boolean input;
 
     public PacketSyncRedstoneModuleToServer(ModuleRedstone module) {
         super(module.getTube().getPos());
@@ -45,7 +41,12 @@ public class PacketSyncRedstoneModuleToServer extends LocationIntPacket {
         side = buffer.readByte();
         input = buffer.readBoolean();
         ourColor = buffer.readByte();
-        if (!input) {
+        if (input) {
+            op = 0;
+            otherColor = 0;
+            constantVal = 0;
+            invert = false;
+        } else {
             op = buffer.readByte();
             otherColor = buffer.readByte();
             constantVal = buffer.readByte();

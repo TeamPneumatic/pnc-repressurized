@@ -15,11 +15,7 @@ import java.util.function.Supplier;
  * TODO: should be possible to include this data in the open gui message?
  */
 public class PacketNotifyVariablesRemote {
-    private String[] variables;
-
-    public PacketNotifyVariablesRemote() {
-
-    }
+    private final String[] variables;
 
     public PacketNotifyVariablesRemote(String[] variables) {
         this.variables = variables;

@@ -12,15 +12,11 @@ import java.util.function.Supplier;
 
 /**
  * Received on: SERVER
- * Sent by client to update the layout of a Remote item
+ * Sent by client to update the layout of a Remote item from the Remote GUI
  */
 public class PacketUpdateRemoteLayout {
-
-    private CompoundNBT layout;
-    private Hand hand;
-
-    public PacketUpdateRemoteLayout() {
-    }
+    private final CompoundNBT layout;
+    private final Hand hand;
 
     public PacketUpdateRemoteLayout(CompoundNBT layout, Hand hand) {
         this.layout = layout;

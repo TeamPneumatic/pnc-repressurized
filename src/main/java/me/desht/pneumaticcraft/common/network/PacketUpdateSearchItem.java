@@ -20,11 +20,7 @@ import java.util.function.Supplier;
  * Sent by client to update the searched item (Pneumatic Helmet search upgrade)
  */
 public class PacketUpdateSearchItem {
-
-    private ResourceLocation itemId;
-
-    public PacketUpdateSearchItem() {
-    }
+    private final ResourceLocation itemId;
 
     public PacketUpdateSearchItem(Item item) {
         itemId = item.getRegistryName();

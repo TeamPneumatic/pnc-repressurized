@@ -13,10 +13,7 @@ import java.util.function.Supplier;
  * Sync's global variable data between server and client
  */
 public class PacketSetGlobalVariable extends LocationIntPacket {
-    private String varName;
-
-    public PacketSetGlobalVariable() {
-    }
+    private final String varName;
 
     public PacketSetGlobalVariable(String varName, BlockPos value) {
         super(value);

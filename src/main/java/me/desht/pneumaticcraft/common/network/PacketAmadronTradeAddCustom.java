@@ -20,11 +20,6 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
  * Sent by server to all clients to notify them of a trade addition
  */
 public class PacketAmadronTradeAddCustom extends PacketAbstractAmadronTrade {
-
-    @SuppressWarnings("unused")
-    public PacketAmadronTradeAddCustom() {
-    }
-
     public PacketAmadronTradeAddCustom(AmadronPlayerOffer offer) {
         super(offer);
     }

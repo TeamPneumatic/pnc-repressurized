@@ -15,12 +15,8 @@ import java.util.function.Supplier;
  * Allows us to play particles, do rotations, etc. with minimum traffic.
  */
 public class PacketJetBootsStateSync {
-    private UUID playerId;
-    private JetBootsStateTracker.JetBootsState state;
-
-    public PacketJetBootsStateSync() {
-        // empty
-    }
+    private final UUID playerId;
+    private final JetBootsStateTracker.JetBootsState state;
 
     public PacketJetBootsStateSync(PlayerEntity player, JetBootsStateTracker.JetBootsState state) {
         this.playerId = player.getUniqueID();

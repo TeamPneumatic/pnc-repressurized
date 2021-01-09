@@ -15,10 +15,7 @@ import java.util.function.Supplier;
  * Sent by server to make a tile entity render its area of effect
  */
 public class PacketShowArea extends LocationIntPacket {
-    private BlockPos[] area;
-
-    public PacketShowArea() {
-    }
+    private final BlockPos[] area;
 
     public PacketShowArea(BlockPos pos, BlockPos... area) {
         super(pos);

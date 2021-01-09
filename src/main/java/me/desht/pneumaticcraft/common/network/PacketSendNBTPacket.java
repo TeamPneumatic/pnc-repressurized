@@ -2,7 +2,6 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker.TrackerBlacklistManager;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
@@ -15,36 +14,32 @@ import java.util.function.Supplier;
  * Sent by server to give a clientside TE a copy of its NBT data
  */
 public class PacketSendNBTPacket extends LocationIntPacket {
-
-    private CompoundNBT tag;
-
-    public PacketSendNBTPacket() {
-    }
+    private final CompoundNBT tag;
 
     public PacketSendNBTPacket(TileEntity te) {
         super(te.getPos());
-        tag = new CompoundNBT();
-        te.write(tag);
+
+        tag = te.write(new CompoundNBT());
     }
 
     public PacketSendNBTPacket(PacketBuffer buffer) {
         super(buffer);
-        try {
-            tag = new PacketBuffer(buffer).readCompoundTag();
-        } catch (Exception e) {
-            Log.error("An exception occured when trying to decode a Send NBT Packet.");
-            e.printStackTrace();
-        }
+        tag = buffer.readCompoundTag();
+//        try {
+//        } catch (Exception e) {
+//            Log.error("An exception occurred when trying to decode a Send NBT Packet.");
+//            e.printStackTrace();
+//        }
     }
 
     public void toBytes(PacketBuffer buffer) {
         super.toBytes(buffer);
-        try {
-            buffer.writeCompoundTag(tag);
-        } catch (Exception e) {
-            Log.error("An exception occured when trying to encode a Send NBT Packet.");
-            e.printStackTrace();
-        }
+        buffer.writeCompoundTag(tag);
+//        try {
+//        } catch (Exception e) {
+//            Log.error("An exception occurred when trying to encode a Send NBT Packet.");
+//            e.printStackTrace();
+//        }
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {

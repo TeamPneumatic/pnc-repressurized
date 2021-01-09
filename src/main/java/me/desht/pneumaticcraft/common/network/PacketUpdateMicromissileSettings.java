@@ -23,18 +23,14 @@ import java.util.function.Supplier;
  * Sent by client GUI to update (and maybe save as default) the configuration settings of a Micromissile item.
  */
 public class PacketUpdateMicromissileSettings {
-    private float topSpeed;
-    private float accel;
-    private float damage;
-    private PointXY point;
-    private String entityFilter;
-    private FireMode fireMode;
-    private boolean saveDefault;
-    private Hand hand;
-
-    public PacketUpdateMicromissileSettings() {
-        // empty
-    }
+    private final float topSpeed;
+    private final float accel;
+    private final float damage;
+    private final PointXY point;
+    private final String entityFilter;
+    private final FireMode fireMode;
+    private final boolean saveDefault;
+    private final Hand hand;
 
     public PacketUpdateMicromissileSettings(float topSpeed, float accel, float damage, PointXY point, String entityFilter, FireMode fireMode, boolean saveDefault, Hand hand) {
         this.topSpeed = topSpeed;

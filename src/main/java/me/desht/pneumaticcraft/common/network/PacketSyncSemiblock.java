@@ -20,11 +20,8 @@ import java.util.function.Supplier;
  * <p>Sent by client to send updated settings from GUI code</p>
  */
 public class PacketSyncSemiblock {
-    private int entityID;  // -1 indicates no entity, sync'ing to item in hand
-    private PacketBuffer payload;
-
-    public PacketSyncSemiblock() {
-    }
+    private final int entityID;  // -1 indicates no entity, sync'ing to item in hand
+    private final PacketBuffer payload;
 
     public PacketSyncSemiblock(ISemiBlock semiBlock) {
         this.entityID = semiBlock.getTrackingId();

@@ -12,11 +12,9 @@ import java.util.function.Supplier;
  * as possible
  */
 public class PacketServerTickTime {
-    private double tickTime;
     public static double tickTimeMultiplier = 1;
 
-    public PacketServerTickTime() {
-    }
+    private final double tickTime;
 
     public PacketServerTickTime(double tickTime) {
         this.tickTime = tickTime;

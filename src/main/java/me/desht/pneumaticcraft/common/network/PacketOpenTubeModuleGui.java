@@ -16,11 +16,7 @@ import java.util.function.Supplier;
  * Sent by server when it needs the client to open a (containerless) module GUI
  */
 public class PacketOpenTubeModuleGui extends LocationIntPacket {
-    private ResourceLocation moduleType;
-
-    public PacketOpenTubeModuleGui() {
-        // empty
-    }
+    private final ResourceLocation moduleType;
 
     public PacketOpenTubeModuleGui(ResourceLocation type, BlockPos pos) {
         super(pos);

@@ -20,10 +20,6 @@ import java.util.function.Supplier;
  * Sent by client when player initiates a hack, and from server back to client to confirm initiation
  */
 public class PacketHackingBlockStart extends LocationIntPacket {
-
-    public PacketHackingBlockStart() {
-    }
-
     public PacketHackingBlockStart(BlockPos pos) {
         super(pos);
     }

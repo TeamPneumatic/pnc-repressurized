@@ -15,12 +15,8 @@ import java.util.function.Supplier;
  * Sent by server to get the client to spawn a new client-side ring entity
  */
 public class PacketSpawnRing extends LocationDoublePacket {
-
-    private int[] colors;
-    private int targetEntityId;
-
-    public PacketSpawnRing() {
-    }
+    private final int[] colors;
+    private final int targetEntityId;
 
     public PacketSpawnRing(double x, double y, double z, Entity targetEntity, int... colors) {
         super(x, y, z);

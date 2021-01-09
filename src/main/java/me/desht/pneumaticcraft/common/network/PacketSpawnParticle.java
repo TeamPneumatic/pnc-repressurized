@@ -8,6 +8,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import java.util.Objects;
 import java.util.function.Supplier;
 
 /**
@@ -15,29 +16,23 @@ import java.util.function.Supplier;
  * Sent by server to spawn a particle (with support for multiple particles in an random area around the target point)
  */
 public class PacketSpawnParticle extends LocationDoublePacket {
-
-    private IParticleData particle;
-    private double dx;
-    private double dy;
-    private double dz;
-    private int numParticles;
-    private double rx, ry, rz;
-
-    public PacketSpawnParticle() {
-    }
+    private final IParticleData particle;
+    private final double dx;
+    private final double dy;
+    private final double dz;
+    private final int numParticles;
+    private final double rx, ry, rz;
 
     public PacketSpawnParticle(IParticleData particle, double x, double y, double z, double dx, double dy, double dz) {
+        this(particle, x, y, z, dx, dy, dz, 1, 0, 0, 0);
+    }
+
+    public PacketSpawnParticle(IParticleData particle, double x, double y, double z, double dx, double dy, double dz, int numParticles, double rx, double ry, double rz) {
         super(x, y, z);
         this.particle = particle;
         this.dx = dx;
         this.dy = dy;
         this.dz = dz;
-        this.numParticles = 1;
-        this.rx = this.ry = this.rz = 0d;
-    }
-
-    public PacketSpawnParticle(IParticleData particle, double x, double y, double z, double dx, double dy, double dz, int numParticles, double rx, double ry, double rz) {
-        this(particle, x, y, z, dx, dy, dz);
         this.numParticles = numParticles;
         this.rx = rx;
         this.ry = ry;
@@ -56,6 +51,8 @@ public class PacketSpawnParticle extends LocationDoublePacket {
             rx = buffer.readDouble();
             ry = buffer.readDouble();
             rz = buffer.readDouble();
+        } else {
+            rx = ry = rz = 0;
         }
         particle = readParticle(type, buffer);
     }
@@ -68,7 +65,7 @@ public class PacketSpawnParticle extends LocationDoublePacket {
     public void toBytes(PacketBuffer buffer) {
         super.toBytes(buffer);
 
-        buffer.writeResourceLocation(particle.getType().getRegistryName());
+        buffer.writeResourceLocation(Objects.requireNonNull(particle.getType().getRegistryName()));
         buffer.writeDouble(dx);
         buffer.writeDouble(dy);
         buffer.writeDouble(dz);
