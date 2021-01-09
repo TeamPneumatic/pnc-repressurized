@@ -9,8 +9,14 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.text.TextFormatting;
+import org.apache.commons.lang3.tuple.Pair;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -76,6 +82,30 @@ public class SimulationController implements ISimulationController {
     public boolean isJustTesting() {
         return justTesting;
     }
+
+    @Override
+    public void toBytes(PacketBuffer buffer) {
+        buffer.writeBlockPos(te.getPos());
+
+        playerSimulation.writeToNetwork(buffer);
+        aiSimulation.writeToNetwork(buffer);
+
+        List<Pair<Integer, ItemStack>> nodes = new ArrayList<>();
+        for (int i = 0; i < te.getPrimaryInventory().getSlots(); i++) {
+            ItemStack stack = te.getPrimaryInventory().getStackInSlot(i);
+            if (!stack.isEmpty()) {
+                nodes.add(Pair.of(i, stack));
+            }
+        }
+        buffer.writeVarInt(nodes.size());
+        nodes.forEach(pair -> {
+            buffer.writeVarInt(pair.getLeft());
+            buffer.writeItemStack(pair.getRight());
+        });
+
+        buffer.writeBoolean(justTesting);
+    }
+
 
     @Override
     public void onNodeHacked(HackSimulation hackSimulation, int pos) {

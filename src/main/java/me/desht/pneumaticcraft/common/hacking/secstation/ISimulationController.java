@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.hacking.secstation;
 
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.PacketBuffer;
 
 public interface ISimulationController {
     /**
@@ -64,6 +65,13 @@ public interface ISimulationController {
      * @return true if just testing, false otherwise
      */
     boolean isJustTesting();
+
+    /**
+     * Serialize the simulation controller for sync to client on open of hacking GUI
+     *
+     * @param buf packet buffer
+     */
+    void toBytes(PacketBuffer buf);
 
     enum HackingSide {
         PLAYER,

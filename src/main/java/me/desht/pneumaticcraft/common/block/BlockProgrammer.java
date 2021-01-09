@@ -45,6 +45,7 @@ public class BlockProgrammer extends BlockPneumaticCraft {
     @Override
     public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
         if (!world.isRemote && !player.isSneaking()) {
+            // FIXME this should be sync'd via the container as part of the openGui() call
             PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityProgrammer.class)
                     .ifPresent(te -> NetworkHandler.sendToPlayer(new PacketProgrammerUpdate(te), (ServerPlayerEntity) player));
         }

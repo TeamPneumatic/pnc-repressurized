@@ -19,7 +19,6 @@ import me.desht.pneumaticcraft.common.item.ItemNetworkComponent.NetworkComponent
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
-import me.desht.pneumaticcraft.common.network.PacketSyncHackSimulationInitial;
 import me.desht.pneumaticcraft.common.tileentity.RedstoneController.EmittingRedstoneMode;
 import me.desht.pneumaticcraft.common.tileentity.RedstoneController.RedstoneMode;
 import me.desht.pneumaticcraft.common.util.GlobalTileEntityCacheManager;
@@ -448,8 +447,7 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
             hacker.sendStatusMessage(xlate("pneumaticcraft.message.securityStation.hackInProgress").mergeStyle(TextFormatting.GOLD), false);
         } else {
             simulationController = new SimulationController(this, hacker, isPlayerOnWhiteList(hacker));
-            NetworkHandler.sendToPlayer(new PacketSyncHackSimulationInitial(this), (ServerPlayerEntity) hacker);
-            NetworkHooks.openGui((ServerPlayerEntity) hacker, getHackingContainerProvider(), pos);
+            NetworkHooks.openGui((ServerPlayerEntity) hacker, getHackingContainerProvider(), buf -> simulationController.toBytes(buf));
         }
     }
 

@@ -78,8 +78,6 @@ public class NetworkHandler {
 				PacketPlaySound::toBytes, PacketPlaySound::new, PacketPlaySound::handle);
 		registerMessage(PacketProgrammerUpdate.class,
 				PacketProgrammerUpdate::toBytes, PacketProgrammerUpdate::new, PacketProgrammerUpdate::handle);
-//		registerMessage(PacketSecurityStationAddUser.class,
-//				PacketSecurityStationAddUser::toBytes, PacketSecurityStationAddUser::new, PacketSecurityStationAddUser::handle);
 		registerMessage(PacketSendNBTPacket.class,
 				PacketSendNBTPacket::toBytes, PacketSendNBTPacket::new, PacketSendNBTPacket::handle);
 		registerMessage(PacketShowWireframe.class,
@@ -194,8 +192,6 @@ public class NetworkHandler {
 				PacketShiftScrollWheel::toBytes, PacketShiftScrollWheel::new, PacketShiftScrollWheel::handle);
 		registerMessage(PacketBlockDestroyed.class,
 				PacketBlockDestroyed::toBytes, PacketBlockDestroyed::new, PacketBlockDestroyed::handle);
-		registerMessage(PacketSyncHackSimulationInitial.class,
-				PacketSyncHackSimulationInitial::toBytes, PacketSyncHackSimulationInitial::new, PacketSyncHackSimulationInitial::handle);
 		registerMessage(PacketSyncHackSimulationUpdate.class,
 				PacketSyncHackSimulationUpdate::toBytes, PacketSyncHackSimulationUpdate::new, PacketSyncHackSimulationUpdate::handle);
     }
