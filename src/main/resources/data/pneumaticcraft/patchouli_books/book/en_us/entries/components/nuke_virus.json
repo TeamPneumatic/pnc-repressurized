@@ -11,7 +11,7 @@
     {
       "type": "spotlight",
       "item": "pneumaticcraft:nuke_virus",
-      "text": "Applying a $(thing)Nuke Virus/$ to a node while hacking will nuke the node, hacking it instantly."
+      "text": "Applying a $(thing)Nuke Virus/$ to a node while hacking will nuke the node, hacking it instantly. Note that the Nuke Virus has a 3-second cooldown between repeated uses."
     }
   ]
 }

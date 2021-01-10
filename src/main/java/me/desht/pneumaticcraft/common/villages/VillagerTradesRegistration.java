@@ -88,14 +88,6 @@ public class VillagerTradesRegistration {
                         .setEmeraldPriceFor(6, 12, ModItems.PNEUMATIC_CYLINDER.get(), 1)
                         .build()
                 );
-                trades.get(3).add(new RandomTradeBuilder(8, 10, 0.05F)
-                        .setEmeraldPriceFor(1, 5, ModItems.NUKE_VIRUS.get(), 1)
-                        .build()
-                );
-                trades.get(3).add(new RandomTradeBuilder(8, 10, 0.05F)
-                        .setEmeraldPriceFor(1, 5, ModItems.STOP_WORM.get(), 1)
-                        .build()
-                );
                 trades.get(3).add(new RandomTradeBuilder(12, 10, 0.05F)
                         .setEmeraldPriceFor(8, 16, ModItems.GUN_AMMO.get(), 1)
                         .build()
@@ -122,6 +114,14 @@ public class VillagerTradesRegistration {
                 );
                 trades.get(4).add(new RandomTradeBuilder(8, 15, 0.05F)
                         .setEmeraldPriceFor(25, 40, ModItems.PROGRAMMING_PUZZLE.get(), 16)
+                        .build()
+                );
+                trades.get(5).add(new RandomTradeBuilder(2, 10, 0.05F)
+                        .setEmeraldPriceFor(11, 25, ModItems.NUKE_VIRUS.get(), 1)
+                        .build()
+                );
+                trades.get(5).add(new RandomTradeBuilder(2, 10, 0.05F)
+                        .setEmeraldPriceFor(11, 25, ModItems.STOP_WORM.get(), 1)
                         .build()
                 );
                 trades.get(5).add(new RandomTradeBuilder(6, 15, 0.05F)

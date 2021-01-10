@@ -16,10 +16,13 @@ Note: this release requires Forge 34.1.36 or later!
   * General security station GUI cleanup
   * Entity Tracker upgrades now have diminishing returns in the Security Station for intrusion detection
   * Up to 12 Entity Tracker upgrades can be installed for 99% detection chance per node hacked
+  * The Security Station no longer informs potential hackers how many Security Upgrades they need
+  * The Security Station now deals a small amount of non-resistible damage to potential hackers who lack the correct number of Security Upgrades
+  * Nuke Viruses and STOP! Worms are now level 5 villager trades, with fewer available, and cost more than they used to (they were too easily obtained before)
 * Pneumatic Kick upgrade in the Pneumatic Boots now works on players too. Have fun...
 
 ### Fixes
-* Drone fake players now use the owner's UUID and name again, which should resolve a lot of issues with protection mods (and the Security Station)
+* Drone fake players now use the owner's UUID and name again, which should resolve a lot of issues with protection mods such as FTB Chunks (and the Security Station) preventing drones from operating in the protected area
 * Fixed some non-fatal errors in the startup log related to Mekanism fuel entries, when Mekanism isn't installed
 
 ## 2.9.0-111 (4 Jan 2021)
