@@ -4,6 +4,8 @@ import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.util.Direction;
 
 public interface ISidedWidget {
+    boolean[] ALL_SIDES = new boolean[] { true, true, true, true, true, true };
+
     void setSides(boolean[] sides);
 
     boolean[] getSides();

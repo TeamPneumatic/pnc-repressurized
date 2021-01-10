@@ -30,7 +30,9 @@ public class ProgrammedDroneUtils {
         // Program the drone
         DroneProgramBuilder builder = new DroneProgramBuilder();
         builder.add(new ProgWidgetStart());
-        builder.add(new ProgWidgetInventoryExport(), ProgWidgetArea.fromPosition(pos));
+        ProgWidgetInventoryExport inventoryExport = new ProgWidgetInventoryExport();
+        inventoryExport.setSides(ISidedWidget.ALL_SIDES);
+        builder.add(inventoryExport, ProgWidgetArea.fromPosition(pos));
         ProgWidgetArea area = ProgWidgetArea.fromPosition(pos);
         if (drone.isBlockValidPathfindBlock(pos)) {
             for (int i = 0; i < 5 && drone.isBlockValidPathfindBlock(new BlockPos(area.x1, area.y1, area.z1)); i++) {
@@ -66,7 +68,9 @@ public class ProgrammedDroneUtils {
         // Program the drone
         DroneProgramBuilder builder = new DroneProgramBuilder();
         builder.add(new ProgWidgetStart());
-        builder.add(new ProgWidgetLiquidExport(), ProgWidgetArea.fromPosition(pos));
+        ProgWidgetLiquidExport liquidExport = new ProgWidgetLiquidExport();
+        liquidExport.setSides(ISidedWidget.ALL_SIDES);
+        builder.add(liquidExport, ProgWidgetArea.fromPosition(pos));
         builder.add(new ProgWidgetGoToLocation(), ProgWidgetArea.fromPosition(drone.getPosition()));
         builder.add(new ProgWidgetSuicide());
         drone.progWidgets.addAll(builder.build());
