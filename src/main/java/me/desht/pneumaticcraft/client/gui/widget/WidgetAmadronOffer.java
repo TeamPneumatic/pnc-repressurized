@@ -12,6 +12,7 @@ import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.renderer.Rectangle2d;
+import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -58,14 +59,15 @@ public class WidgetAmadronOffer extends Widget implements ITooltipProvider {
                 RenderSystem.color4f(1f, canBuy ? 1f : 0.4f, canBuy ? 1f : 0.4f, canBuy ? 0.75f : 1f);
                 AbstractGui.blit(matrixStack, x, y, 0, 0, width, height, 256, 256);
             }
-            fr.drawString(matrixStack, offer.getVendor(), x + 2, y + 2, 0xFF000000);
-            boolean playerOffer = offer instanceof AmadronPlayerOffer;
+            IReorderingProcessor r = fr.trimStringToWidth(new StringTextComponent(offer.getVendor()).mergeStyle(canBuy ? TextFormatting.BLACK : TextFormatting.DARK_GRAY), 73).get(0);
+            fr.func_238422_b_(matrixStack, r, x + 2, y + 2, 0xFF000000);
             if (shoppingAmount > 0) {
-                fr.drawString(matrixStack,TextFormatting.BLACK.toString() + shoppingAmount, x + 36 - fr.getStringWidth("" + shoppingAmount) / 2f, y + (playerOffer ? 15 : 20), 0xFF000000);
+                String str = "" + shoppingAmount;
+                fr.drawString(matrixStack,str, x + 36 - fr.getStringWidth(str) / 2f, y + (offer.getMaxStock() > 0 ? 15 : 20), 0xFF000000);
             }
-            if (playerOffer) {
-                AmadronPlayerOffer custom = (AmadronPlayerOffer) offer;
-                fr.drawString(matrixStack,TextFormatting.DARK_BLUE.toString() + custom.getStock(), x + 36 - fr.getStringWidth("" + custom.getStock()) / 2f, y + 25, 0xFF000000);
+            if (offer.getStock() >= 0) {
+                String str = TextFormatting.DARK_BLUE.toString() + offer.getStock();
+                fr.drawString(matrixStack,str, x + 36 - fr.getStringWidth(str) / 2f, y + 25, 0xFF000000);
             }
         }
     }

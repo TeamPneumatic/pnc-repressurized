@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
 import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
 import me.desht.pneumaticcraft.common.core.ModRecipes;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
+import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.network.PacketBuffer;
@@ -18,7 +19,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class AmadronOffer extends AmadronRecipe {
@@ -26,13 +26,26 @@ public class AmadronOffer extends AmadronRecipe {
     protected final AmadronTradeResource output;
     private final boolean isStaticOffer;
     private final int tradeLevel;  // determines rarity of periodic offers (1 = common, 5 = very rare)
+    final int maxStock; // max number of trades available; negative number indicates unlimited trades (or a player trade)
+    int inStock; // current number of trades available; gets reset to max when offer is shuffled in (except for player trades)
+    private boolean isVillagerTrade = false;
 
-    public AmadronOffer(ResourceLocation id, @Nonnull AmadronTradeResource input, @Nonnull AmadronTradeResource output, boolean isStaticOffer, int tradeLevel) {
+    public AmadronOffer(ResourceLocation id, @Nonnull AmadronTradeResource input, @Nonnull AmadronTradeResource output, boolean isStaticOffer, int tradeLevel, int maxStock, int inStock) {
         super(id);
         this.input = input.validate();
         this.output = output.validate();
         this.isStaticOffer = isStaticOffer;
         this.tradeLevel = tradeLevel;
+        this.maxStock = maxStock;
+        this.inStock = inStock;
+    }
+
+    public AmadronOffer(ResourceLocation id, @Nonnull AmadronTradeResource input, @Nonnull AmadronTradeResource output, boolean isStaticOffer, int tradeLevel, int maxStock) {
+        this(id, input, output, isStaticOffer, tradeLevel, maxStock, maxStock);
+    }
+
+    public AmadronOffer(ResourceLocation id, @Nonnull AmadronTradeResource input, @Nonnull AmadronTradeResource output, boolean isStaticOffer, int tradeLevel) {
+        this(id, input, output, isStaticOffer, tradeLevel, -1);
     }
 
     @Override
@@ -54,17 +67,40 @@ public class AmadronOffer extends AmadronRecipe {
         return tradeLevel;
     }
 
+    public AmadronOffer setVillagerTrade() {
+        isVillagerTrade = true;
+        return this;
+    }
+
     public boolean equivalentTo(AmadronPlayerOffer offer) {
         return input.equivalentTo(offer.getInput()) && output.equivalentTo(offer.getOutput());
     }
 
     @Override
     public String getVendor() {
-        return xlate("pneumaticcraft.gui.amadron").getString();
+        return xlate(isVillagerTrade ? "pneumaticcraft.gui.amadron.villager" : "pneumaticcraft.gui.amadron").getString();
     }
 
+    @Override
     public int getStock() {
-        return -1;
+        return inStock;
+    }
+
+    public void setStock(int inStock) {
+        this.inStock = inStock;
+    }
+
+    public void addStock(int stockIncr) {
+        inStock += stockIncr;
+        if (inStock < 0) {
+            Log.warning("in-stock for " + this + " dropped to " + inStock + "? shouldn't happen!");
+            inStock = 0;
+        }
+    }
+
+    public AmadronOffer resetStock() {
+        inStock = maxStock;
+        return this;
     }
 
     public boolean passesQuery(String query) {
@@ -82,44 +118,47 @@ public class AmadronOffer extends AmadronRecipe {
         input.writeToBuf(buf);
         output.writeToBuf(buf);
         buf.writeBoolean(isStaticOffer);
-        buf.writeVarInt(tradeLevel);
+        buf.writeByte(tradeLevel);
+        buf.writeVarInt(maxStock);
+        buf.writeVarInt(inStock);
     }
 
     public static AmadronOffer offerFromBuf(ResourceLocation id, PacketBuffer buf) {
-        return new AmadronOffer(id,
+        AmadronOffer offer = new AmadronOffer(id,
                 AmadronTradeResource.fromPacketBuf(buf),
                 AmadronTradeResource.fromPacketBuf(buf),
                 buf.readBoolean(),
+                buf.readByte(),
+                buf.readVarInt(),
                 buf.readVarInt()
         );
+        return offer;
     }
 
-    public JsonObject toJson() {
-        JsonObject object = new JsonObject();
+    public JsonObject toJson(JsonObject json) {
+        json.addProperty("id", getId().toString());
+        json.add("input", input.toJson());
+        json.add("output", output.toJson());
+        json.addProperty("static", isStaticOffer);
+        json.addProperty("level", tradeLevel);
+        if (maxStock > 0) json.addProperty("maxStock", maxStock);
 
-        object.addProperty("id", getId().toString());
-        object.add("input", input.toJson());
-        object.add("output", output.toJson());
-        object.addProperty("static", isStaticOffer);
-        object.addProperty("level", tradeLevel);
-
-        return object;
+        return json;
     }
-
-    private static final String AMADRON_TYPE = RL("amadron").toString();
 
     public static AmadronOffer fromJson(ResourceLocation id, JsonObject json) throws CommandSyntaxException {
         return new AmadronOffer(id,
                 AmadronTradeResource.fromJson(json.getAsJsonObject("input")),
                 AmadronTradeResource.fromJson(json.getAsJsonObject("output")),
                 JSONUtils.getBoolean(json, "static", true),
-                JSONUtils.getInt(json, "level", 1)
+                JSONUtils.getInt(json, "level", 1),
+                JSONUtils.getInt(json, "maxStock", -1)
         );
     }
 
     @Override
     public String toString() {
-        return String.format("[id = %s, in = %s, out = %s]", getId().toString(), input.toString(), output.toString());
+        return String.format("[id = %s, in = %s, out = %s, level = %d, max = %d]", getId().toString(), input.toString(), output.toString(), tradeLevel, maxStock);
     }
 
     @Override
@@ -146,6 +185,10 @@ public class AmadronOffer extends AmadronRecipe {
         return PneumaticCraftRecipeType.AMADRON_OFFERS;
     }
 
+    public int getMaxStock() {
+        return maxStock;
+    }
+
     public static class Serializer<T extends AmadronRecipe> extends ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<T> {
         private final IFactory<T> factory;
 
@@ -156,11 +199,13 @@ public class AmadronOffer extends AmadronRecipe {
         @Override
         public T read(ResourceLocation recipeId, JsonObject json) {
             try {
+                int max = JSONUtils.getInt(json, "maxStock", -1);
                 return factory.create(recipeId,
                         AmadronTradeResource.fromJson(json.getAsJsonObject("input")),
                         AmadronTradeResource.fromJson(json.getAsJsonObject("output")),
                         JSONUtils.getBoolean(json, "static", true),
-                        JSONUtils.getInt(json, "level", 1)
+                        JSONUtils.getInt(json, "level", 1),
+                        max, max
                 );
             } catch (CommandSyntaxException e) {
                 throw new JsonSyntaxException(e.getMessage());
@@ -174,6 +219,8 @@ public class AmadronOffer extends AmadronRecipe {
                     AmadronTradeResource.fromPacketBuf(buffer),
                     AmadronTradeResource.fromPacketBuf(buffer),
                     buffer.readBoolean(),
+                    buffer.readByte(),
+                    buffer.readVarInt(),
                     buffer.readVarInt()
             );
         }
@@ -184,7 +231,7 @@ public class AmadronOffer extends AmadronRecipe {
         }
 
         public interface IFactory<T extends AmadronRecipe> {
-            T create(ResourceLocation id, AmadronTradeResource input, AmadronTradeResource output, boolean isStaticOffer, int level);
+            T create(ResourceLocation id, AmadronTradeResource input, AmadronTradeResource output, boolean isStaticOffer, int level, int maxStock, int inStock);
         }
     }
 }

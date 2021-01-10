@@ -20,6 +20,12 @@ Note: this release requires Forge 34.1.36 or later!
   * The Security Station now deals a small amount of non-resistible damage to potential hackers who lack the correct number of Security Upgrades
   * Nuke Viruses and STOP! Worms are now level 5 villager trades, with fewer available, and cost more than they used to (they were too easily obtained before)
 * Pneumatic Kick upgrade in the Pneumatic Boots now works on players too. Have fun...
+* Amadron offers can now have a maximum stock, i.e. the maximum number of times an offer can be bought before it becomes unavailable
+  * This is shown as a blue number on the offer in the Amadron Tablet GUI (via the same mechanism that player->player trades use)
+  * Random villager trades are now all limited by this maximum (to the same number they would be if you bought directly from the villager)
+  * All core Amadron trades (e.g. PCB Blueprint or Emeralds to Lubricant) remain unlimited and can be bought as many times as you want
+  * Limited trades are refreshed once per Minecraft day (when trades are reshuffled)
+  * Custom trades (loaded from datapack) can take advantage of this with the "maxStock" JSON field. Set to -1 or omit entirely for unlimited trades.
 
 ### Fixes
 * Drone fake players now use the owner's UUID and name again, which should resolve a lot of issues with protection mods such as FTB Chunks (and the Security Station) preventing drones from operating in the protected area

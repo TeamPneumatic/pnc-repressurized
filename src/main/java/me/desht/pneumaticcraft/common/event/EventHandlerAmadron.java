@@ -7,6 +7,8 @@ import me.desht.pneumaticcraft.common.config.subconfig.AmadronPlayerOffers;
 import me.desht.pneumaticcraft.common.entity.living.EntityAmadrone;
 import me.desht.pneumaticcraft.common.entity.living.EntityAmadrone.AmadronAction;
 import me.desht.pneumaticcraft.common.item.ItemAmadronTablet;
+import me.desht.pneumaticcraft.common.network.NetworkHandler;
+import me.desht.pneumaticcraft.common.network.PacketAmadronStockUpdate;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
@@ -59,6 +61,9 @@ public class EventHandlerAmadron {
         if (playerOffer == null) {
             // A normal (non-player) trade; just deliver the result
             doDelivery(drone, offer);
+            if (offer.getStock() > 0) {
+                offer.addStock(-drone.getOfferTimes());
+            }
         } else {
             if (drone.getAmadronAction() == AmadronAction.TAKING_PAYMENT && offer instanceof AmadronPlayerOffer) {
                 // Drone has just taken payment for player offer
@@ -74,6 +79,9 @@ public class EventHandlerAmadron {
                 playerOffer.addStock(drone.getOfferTimes());
                 AmadronPlayerOffers.save();
             }
+        }
+        if (offer.getMaxStock() > 0) {
+            NetworkHandler.sendNonLocal(new PacketAmadronStockUpdate(offer.getId(), offer.getStock()));
         }
     }
 

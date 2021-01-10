@@ -51,7 +51,7 @@ public class AmadronPlayerOffers extends AuxConfigJson {
     protected void writeToJson(JsonObject json) {
         JsonArray array = new JsonArray();
         for (AmadronPlayerOffer offer : playerOffers.values()) {
-            array.add(offer.toJson());
+            array.add(offer.toJson(new JsonObject()));
         }
         json.addProperty("description", DESC);
         json.add("offers", array);

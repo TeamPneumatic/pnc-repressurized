@@ -103,11 +103,22 @@ public enum AmadronOfferManager {
 
     /**
      * Called client-side (from PacketSyncAmadronOffers) to sync up the active offer list.
+     * @param newOffers the new offers
      */
-    public void syncOffers(Collection<AmadronOffer> newStaticOffers) {
+    public void syncOffers(Collection<AmadronOffer> newOffers) {
         activeOffers.clear();
-        newStaticOffers.forEach(offer -> addOffer(activeOffers, offer));
+        newOffers.forEach(offer -> addOffer(activeOffers, offer));
         Log.info("Received " + activeOffers.size() + " active Amadron offers from server");
+    }
+
+    /**
+     * Called client-side (from PacketAmadronUpdateStock) to update stock levels of an offer that someone just purchased.
+     * @param id offer ID, must be in the active offers list
+     * @param stock new stock level
+     */
+    public void updateStock(ResourceLocation id, int stock) {
+        AmadronOffer offer = activeOffers.get(id);
+        if (offer != null) offer.setStock(stock);
     }
 
     public int countOffers(String playerId) {
@@ -200,6 +211,8 @@ public enum AmadronOfferManager {
         // finally, player->player trades
         addPlayerOffers();
 
+        activeOffers.values().forEach(AmadronOffer::resetStock);
+
         // send active list to all clients (but not the local player for an integrated server)
         NetworkHandler.sendNonLocal(new PacketSyncAmadronOffers());
         Log.info(activeOffers.size() + " active Amadron offers to sync to clients");
@@ -275,8 +288,9 @@ public enum AmadronOfferManager {
                                 AmadronTradeResource.of(offer.getBuyingStackFirst()),
                                 AmadronTradeResource.of(offer.getSellingStack()),
                                 false,
-                                level
-                        ));
+                                level,
+                                offer.getMaxUses()
+                        ).setVillagerTrade());
                         validSet.add(profession);
                     } catch (NullPointerException ignored) {
                         // some offers need a non-null entity; all we can do is ignore those
@@ -312,6 +326,7 @@ public enum AmadronOfferManager {
             rebuildRequired = false;
         }
     }
+
 
     @Mod.EventBusSubscriber(modid = Names.MOD_ID)
     public static class EventListener {

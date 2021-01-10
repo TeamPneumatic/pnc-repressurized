@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.datagen.recipe;
 import com.google.gson.JsonObject;
 import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
 import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipeTypes;
+import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
 import net.minecraft.util.ResourceLocation;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
@@ -12,13 +13,19 @@ public class AmadronRecipeBuilder extends PneumaticCraftRecipeBuilder<AmadronRec
     private final AmadronTradeResource output;
     private final boolean isStatic;
     private final int level;
+    private final int maxStock;
 
-    public AmadronRecipeBuilder(AmadronTradeResource input, AmadronTradeResource output, boolean isStatic, int level) {
+    public AmadronRecipeBuilder(AmadronTradeResource input, AmadronTradeResource output, boolean isStatic, int level, int maxStock) {
         super(RL(PneumaticCraftRecipeTypes.AMADRON_OFFERS));
         this.input = input;
         this.output = output;
         this.isStatic = isStatic;
         this.level = level;
+        this.maxStock = maxStock;
+    }
+
+    public AmadronRecipeBuilder(AmadronTradeResource input, AmadronTradeResource output, boolean isStatic, int level) {
+        this(input, output, isStatic, level, -1);
     }
 
     @Override
@@ -33,11 +40,7 @@ public class AmadronRecipeBuilder extends PneumaticCraftRecipeBuilder<AmadronRec
 
         @Override
         public void serialize(JsonObject json) {
-            json.addProperty("static", isStatic);
-            json.add("input", input.toJson());
-            json.add("output", output.toJson());
-            json.addProperty("static", isStatic);
-            json.addProperty("level", level);
+            new AmadronOffer(getID(), input, output, isStatic, level, maxStock).toJson(json);
         }
     }
 }

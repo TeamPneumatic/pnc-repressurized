@@ -1558,8 +1558,8 @@ public class ModRecipeProvider extends RecipeProvider {
                 .addCriterion(Criteria.has(ModItems.AMADRON_TABLET.get()));
     }
 
-    private AmadronRecipeBuilder amadronPeriodic(AmadronTradeResource in, AmadronTradeResource out, int tradeLevel) {
-        return new AmadronRecipeBuilder(in, out, false, tradeLevel)
+    private AmadronRecipeBuilder amadronPeriodic(AmadronTradeResource in, AmadronTradeResource out, int tradeLevel, int maxStock) {
+        return new AmadronRecipeBuilder(in, out, false, tradeLevel, maxStock)
                 .addCriterion(Criteria.has(ModItems.AMADRON_TABLET.get()));
     }
 

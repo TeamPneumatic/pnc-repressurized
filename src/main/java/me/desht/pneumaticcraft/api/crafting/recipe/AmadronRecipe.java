@@ -21,4 +21,6 @@ public abstract class AmadronRecipe extends PneumaticCraftRecipe {
     public abstract boolean isStaticOffer();
 
     public abstract int getTradeLevel();
+
+    public abstract int getStock();
 }

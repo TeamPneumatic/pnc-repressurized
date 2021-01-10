@@ -11,7 +11,6 @@ import me.desht.pneumaticcraft.common.network.PacketUtil;
 import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -34,7 +33,6 @@ public class AmadronPlayerOffer extends AmadronOffer {
     private String offeringPlayerId;
     private GlobalPos providingPos;
     private GlobalPos returningPos;
-    private int inStock;
     private int pendingPayments;
     private TileEntity cachedInput, cachedOutput;
 
@@ -43,9 +41,10 @@ public class AmadronPlayerOffer extends AmadronOffer {
     }
 
     public AmadronPlayerOffer(ResourceLocation id, AmadronTradeResource input, AmadronTradeResource output, String playerName, String playerId) {
-        super(id, input, output, true, 0);
+        super(id, input, output, true, 0, -1);
         offeringPlayerName = playerName;
         offeringPlayerId = playerId;
+        inStock = 0;
     }
 
     public AmadronPlayerOffer setProvidingPosition(GlobalPos pos) {
@@ -81,19 +80,6 @@ public class AmadronPlayerOffer extends AmadronOffer {
     public void updatePlayerId() {
         PlayerEntity player = PneumaticCraftUtils.getPlayerFromName(offeringPlayerName);
         if (player != null) offeringPlayerId = player.getGameProfile().getId().toString();
-    }
-
-    public void addStock(int stock) {
-        inStock += stock;
-        if (inStock < 0) {
-            Log.warning("in-stock for " + this + " dropped to " + inStock + "? shouldn't happen!");
-            inStock = 0;
-        }
-    }
-
-    @Override
-    public int getStock() {
-        return inStock;
     }
 
     public void addPayment(int payment) {
@@ -242,8 +228,8 @@ public class AmadronPlayerOffer extends AmadronOffer {
     }
 
     @Override
-    public JsonObject toJson() {
-        JsonObject json = super.toJson();
+    public JsonObject toJson(JsonObject json) {
+        super.toJson(json);
         json.addProperty("offeringPlayerName", offeringPlayerName);
         json.addProperty("offeringPlayerId", offeringPlayerId);
         json.addProperty("inStock", inStock);

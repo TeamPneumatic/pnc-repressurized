@@ -106,6 +106,8 @@ public class NetworkHandler {
 				PacketSyncAmadronOffers::toBytes, PacketSyncAmadronOffers::new, PacketSyncAmadronOffers::handle);
 		registerMessage(PacketAmadronOrderUpdate.class,
 				PacketAmadronOrderUpdate::toBytes, PacketAmadronOrderUpdate::new, PacketAmadronOrderUpdate::handle);
+		registerMessage(PacketAmadronStockUpdate.class,
+				PacketAmadronStockUpdate::toBytes, PacketAmadronStockUpdate::new, PacketAmadronStockUpdate::handle);
 		registerMessage(PacketAmadronTradeAddCustom.class,
 				PacketAmadronTradeAddCustom::toBytes, PacketAmadronTradeAddCustom::new, PacketAmadronTradeAddCustom::handle);
 		registerMessage(PacketAmadronTradeNotifyDeal.class,

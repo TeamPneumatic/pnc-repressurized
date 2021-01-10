@@ -18,6 +18,7 @@ import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
+import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.entity.player.PlayerEntity;
@@ -67,7 +68,7 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
     @GuiSynced
     private boolean basketEmpty = true;
 
-    public enum EnumProblemState {
+    public enum EnumProblemState implements ITranslatableEnum {
         NO_PROBLEMS("noProblems"),
         NO_ITEM_PROVIDER("noItemProvider"),
         NO_FLUID_PROVIDER("noFluidProvider"),
@@ -75,7 +76,8 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
         NOT_ENOUGH_FLUID_SPACE("notEnoughFluidSpace"),
         NOT_ENOUGH_ITEMS("notEnoughItems") /*not a ChickenBones reference*/,
         NOT_ENOUGH_FLUID("notEnoughFluid"),
-        OUT_OF_STOCK("outOfStock");
+        OUT_OF_STOCK("outOfStock"),
+        NOT_ENOUGH_STOCK("notEnoughStock");
 
         private final String locKey;
 
@@ -83,6 +85,7 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
             this.locKey = locKey;
         }
 
+        @Override
         public String getTranslationKey() {
             return "pneumaticcraft.gui.tab.problems.amadron." + locKey;
         }
@@ -334,7 +337,7 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
 
         if (offer.getStock() >= 0 && wantedTradeCount > offer.getStock()) {
             wantedTradeCount = offer.getStock();
-            problem = EnumProblemState.OUT_OF_STOCK;
+            problem = offer.getStock() == 0 ? EnumProblemState.OUT_OF_STOCK : EnumProblemState.NOT_ENOUGH_STOCK;
         }
 
         // check there's enough of the required item/fluid in the input inventory/tank
