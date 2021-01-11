@@ -30,6 +30,12 @@ Note: this release requires Forge 34.1.36 or later!
 ### Fixes
 * Drone fake players now use the owner's UUID and name again, which should resolve a lot of issues with protection mods such as FTB Chunks (and the Security Station) preventing drones from operating in the protected area
 * Fixed some non-fatal errors in the startup log related to Mekanism fuel entries, when Mekanism isn't installed
+* Fixed global variables not being properly sync'd and updated for GPS Tool & GPS Area Tools
+* Cull area rendering for GPS Area Tools with very huge areas (>10000 blockpos), to prevent killing client framerate
+* Fixed Jet Boots HUD always showing 0 speed for the player
+* Fixed client crash when trying to open "Condition: Item Filter" widget manual entry from the Programmer GUI
+* Amadrones will now try all sides of the target inventory/tank when delivering items, not just the top
+  * Prevents loss of goods (fluids especially) if there's any block on top the target inventory/tank
 
 ## 2.9.0-111 (4 Jan 2021)
 

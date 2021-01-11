@@ -251,20 +251,23 @@ public class EventHandlerPneumaticCraft {
     @SubscribeEvent
     public void onEquipmentChanged(LivingEquipmentChangeEvent event) {
         if (event.getEntityLiving() instanceof ServerPlayerEntity) {
-            if (event.getSlot() == EquipmentSlotType.MAINHAND) {
+            ServerPlayerEntity player = (ServerPlayerEntity) event.getEntityLiving();
+            if (event.getSlot().getSlotType() == EquipmentSlotType.Group.HAND && event.getTo().getItem() instanceof IPositionProvider) {
+                // sync any variable values in this position provider item to the client for rendering purposes
+                ((IPositionProvider) event.getTo().getItem()).syncVariables(player, event.getTo());
+            } else if (event.getSlot() == EquipmentSlotType.MAINHAND) {
                 // tag the minigun with the player's entity ID - it's sync'd to clients
                 // so other clients will know who's wielding it, and render appropriately
                 // See RenderItemMinigun#renderByItem()
                 if (event.getTo().getItem() == ModItems.MINIGUN.get()) {
                     NBTUtils.initNBTTagCompound(event.getTo());
-                    event.getTo().getTag().putInt("owningPlayerId", event.getEntityLiving().getEntityId());
+                    event.getTo().getTag().putInt("owningPlayerId", player.getEntityId());
                 } else if (event.getFrom().getItem() == ModItems.MINIGUN.get()) {
                     NBTUtils.initNBTTagCompound(event.getFrom());
                     event.getFrom().getTag().remove("owningPlayerId");
                 }
             } else if (event.getSlot().getSlotType() == EquipmentSlotType.Group.ARMOR) {
                 // trigger the "compressed iron man" advancement if wearing a full suit
-                ServerPlayerEntity player = (ServerPlayerEntity) event.getEntityLiving();
                 for (ItemStack stack : player.getArmorInventoryList()) {
                     if (!(stack.getItem() instanceof ItemPneumaticArmor)) {
                         return;
@@ -278,7 +281,7 @@ public class EventHandlerPneumaticCraft {
     @SubscribeEvent
     public void entityMounting(EntityMountEvent event) {
         if (event.isMounting()) {
-            // prevent minecarts which have just been dropped by drones from immediately picking up the drone
+            // prevent minecarts/boats which have just been dropped by drones from immediately picking up the drone
             if (event.getEntityMounting() instanceof EntityDrone
                     && (event.getEntityBeingMounted() instanceof AbstractMinecartEntity || event.getEntityBeingMounted() instanceof BoatEntity)) {
                 if (!event.getEntityBeingMounted().isOnGround()) {
@@ -302,13 +305,4 @@ public class EventHandlerPneumaticCraft {
         PneumaticHelmetRegistry.getInstance().resolveBlockTags(event.getTagManager().getBlockTags());
     }
 
-    @SubscribeEvent
-    public void onEquipped(LivingEquipmentChangeEvent event) {
-        if (event.getSlot().getSlotType() == EquipmentSlotType.Group.HAND && event.getEntityLiving() instanceof ServerPlayerEntity) {
-            ItemStack stack = event.getEntityLiving().getItemStackFromSlot(event.getSlot());
-            if (stack.getItem() instanceof IPositionProvider) {
-                ((IPositionProvider) stack.getItem()).syncVariables((ServerPlayerEntity) event.getEntityLiving(), stack);
-            }
-        }
-    }
 }
