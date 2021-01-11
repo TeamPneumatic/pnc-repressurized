@@ -39,6 +39,7 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
     private String l1, l2, l3, r1, r2, r3;
     private int widestR;
     private boolean drawShovel;
+    private double prevX, prevY, prevZ;
 
     private IGuiAnimatedStat jbStat;
 
@@ -60,9 +61,12 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
 
         PlayerEntity player = armorHandler.getPlayer();
         if (jbStat.isStatOpen()) {
-            double mx = player.getPosX() - player.prevPosX;
-            double my = player.getPosY() - player.prevPosY;
-            double mz = player.getPosZ() - player.prevPosZ;
+            double mx = player.getPosX() - prevX;
+            double my = player.getPosY() - prevY;
+            double mz = player.getPosZ() - prevZ;
+            prevX = player.getPosX();
+            prevY = player.getPosY();
+            prevZ = player.getPosZ();
             double v = Math.sqrt(mx * mx + my * my + mz * mz);
             double vg = Math.sqrt(mx * mx + mz * mz);
             int heading = MathHelper.floor((double)(player.rotationYaw * 8.0F / 360.0F) + 0.5D) & 0x7;
@@ -113,6 +117,12 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
     @Override
     public IGuiAnimatedStat getAnimatedStat() {
         if (jbStat == null) {
+            PlayerEntity player = Minecraft.getInstance().player;
+            if (player != null) {
+                prevX = player.getPosX();
+                prevY = player.getPosY();
+                prevZ = player.getPosZ();
+            }
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer();
             int n = Math.max(1, handler.getUpgradeCount(EquipmentSlotType.FEET, EnumUpgrade.JET_BOOTS));
             ItemStack stack = new ItemStack(EnumUpgrade.JET_BOOTS.getItem(n));
