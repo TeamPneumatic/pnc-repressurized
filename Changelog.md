@@ -6,9 +6,9 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.16.3 / 1.16.4
 
-## 2.9.1-?? (unreleased)
+## 2.9.1-115 (11 Jan 2021)
 
-Note: this release requires Forge 34.1.36 or later!
+**IMPORTANT**: this release requires Forge 35.1.34 or later!
 
 ### Updates
 * Security Station hacking is now back in game for the first time since 1.12.2!
@@ -19,7 +19,6 @@ Note: this release requires Forge 34.1.36 or later!
   * The Security Station no longer informs potential hackers how many Security Upgrades they need
   * The Security Station now deals a small amount of non-resistible damage to potential hackers who lack the correct number of Security Upgrades
   * Nuke Viruses and STOP! Worms are now level 5 villager trades, with fewer available, and cost more than they used to (they were too easily obtained before)
-* Pneumatic Kick upgrade in the Pneumatic Boots now works on players too. Have fun...
 * Amadron offers can now have a maximum stock, i.e. the maximum number of times an offer can be bought before it becomes unavailable
   * This is shown as a blue number on the offer in the Amadron Tablet GUI (via the same mechanism that player->player trades use)
   * Random villager trades are now all limited by this maximum (to the same number they would be if you bought directly from the villager)
@@ -28,13 +27,14 @@ Note: this release requires Forge 34.1.36 or later!
   * Custom trades (loaded from datapack) can take advantage of this with the "maxStock" JSON field. Set to -1 or omit entirely for unlimited trades.
 
 ### Fixes
+* Pneumatic Kick upgrade in the Pneumatic Boots now works on players too. Have fun...
 * Drone fake players now use the owner's UUID and name again, which should resolve a lot of issues with protection mods such as FTB Chunks (and the Security Station) preventing drones from operating in the protected area
 * Fixed some non-fatal errors in the startup log related to Mekanism fuel entries, when Mekanism isn't installed
 * Fixed global variables not being properly sync'd and updated for GPS Tool & GPS Area Tools
 * Cull area rendering for GPS Area Tools with very huge areas (>10000 blockpos), to prevent killing client framerate
 * Fixed Jet Boots HUD always showing 0 speed for the player
 * Fixed client crash when trying to open "Condition: Item Filter" widget manual entry from the Programmer GUI
-* Amadrones will now try all sides of the target inventory/tank when delivering items, not just the top
+* Amadrones will now try all sides of the target inventory/tank when delivering goods, not just the top
   * Prevents loss of goods (fluids especially) if there's any block on top the target inventory/tank
 
 ## 2.9.0-111 (4 Jan 2021)
