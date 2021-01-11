@@ -26,7 +26,6 @@ public class GuiGPSTool extends GuiPneumaticScreenBase {
     protected final Hand hand;
     private final BlockPos oldGPSLoc;
     private String oldVarName;
-//    private final int index;
 
     protected GuiGPSTool(ITextComponent title, Hand hand, BlockPos gpsLoc, String oldVarName) {
         super(title);
@@ -83,7 +82,7 @@ public class GuiGPSTool extends GuiPneumaticScreenBase {
         addButton(variableField);
 
         ITextComponent var = xlate("pneumaticcraft.gui.progWidget.coordinate.variable").appendString(" #");
-        addButton(new WidgetLabel(xMiddle - 62 - font.getStringPropertyWidth(var), yMiddle + 61, var, 0xc0c0c0));
+        addButton(new WidgetLabel(variableField.x - 1 - font.getStringPropertyWidth(var), yMiddle + 61, var, 0xc0c0c0));
     }
 
     private void updateTextField(int idx, int amount) {

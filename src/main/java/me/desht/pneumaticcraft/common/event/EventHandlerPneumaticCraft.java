@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.block.IPneumaticWrenchable;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.InventoryTrackEvent;
 import me.desht.pneumaticcraft.api.drone.DroneConstructingEvent;
+import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.ai.EntityAINoAIWhenRidingDrone;
@@ -299,5 +300,15 @@ public class EventHandlerPneumaticCraft {
     @SubscribeEvent
     public void onTagsUpdated(TagsUpdatedEvent event) {
         PneumaticHelmetRegistry.getInstance().resolveBlockTags(event.getTagManager().getBlockTags());
+    }
+
+    @SubscribeEvent
+    public void onEquipped(LivingEquipmentChangeEvent event) {
+        if (event.getSlot().getSlotType() == EquipmentSlotType.Group.HAND && event.getEntityLiving() instanceof ServerPlayerEntity) {
+            ItemStack stack = event.getEntityLiving().getItemStackFromSlot(event.getSlot());
+            if (stack.getItem() instanceof IPositionProvider) {
+                ((IPositionProvider) stack.getItem()).syncVariables((ServerPlayerEntity) event.getEntityLiving(), stack);
+            }
+        }
     }
 }

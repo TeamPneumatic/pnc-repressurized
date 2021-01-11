@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.gui.GuiRemote;
+import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
@@ -17,7 +18,7 @@ public class PacketSetGlobalVariable extends LocationIntPacket {
 
     public PacketSetGlobalVariable(String varName, BlockPos value) {
         super(value);
-        this.varName = varName;
+        this.varName = varName.startsWith("#") ? varName.substring(1) : varName;
     }
 
     public PacketSetGlobalVariable(String varName, int value) {
@@ -43,6 +44,7 @@ public class PacketSetGlobalVariable extends LocationIntPacket {
             GlobalVariableManager.getInstance().set(varName, pos);
             if (ctx.get().getSender() == null) {
                 GuiRemote.maybeHandleVariableChange(varName);
+                AreaRenderManager.getInstance().clearPosProviderCache();
             }
         });
         ctx.get().setPacketHandled(true);

@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.variables;
 
+import me.desht.pneumaticcraft.common.progwidgets.IVariableProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
@@ -12,6 +13,7 @@ import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.thread.EffectiveSide;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
+import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -20,7 +22,7 @@ import java.util.Set;
 /**
  * Manages global variables. These are prefixed with '#'.
  */
-public class GlobalVariableManager extends WorldSavedData {
+public class GlobalVariableManager extends WorldSavedData implements IVariableProvider {
     public static final int MAX_VARIABLE_LEN = 64;
 
     private static final String DATA_KEY = "PneumaticCraftGlobalVariables";
@@ -157,4 +159,24 @@ public class GlobalVariableManager extends WorldSavedData {
         return varNames.toArray(new String[0]);
     }
 
+    @Override
+    public boolean hasCoordinate(String varName) {
+        return globalVars.containsKey(varName);
+    }
+
+    @Override
+    public BlockPos getCoordinate(String varName) {
+        return getPos(varName);
+    }
+
+    @Override
+    public boolean hasStack(String varName) {
+        return globalItemVars.containsKey(varName);
+    }
+
+    @Nonnull
+    @Override
+    public ItemStack getStack(String varName) {
+        return getItem(varName);
+    }
 }

@@ -11,7 +11,9 @@ import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachineFactory;
 import me.desht.pneumaticcraft.api.universal_sensor.ISensorRegistry;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.fluid.Fluid;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -97,6 +99,15 @@ public final class PneumaticRegistry {
          * @return a resource location
          */
         ResourceLocation RL(String path);
+
+        /**
+         * Sync a global variable from server to client for the given player. Primarily intended for use by
+         * {@link me.desht.pneumaticcraft.api.item.IPositionProvider#syncVariables(ServerPlayerEntity, ItemStack)}
+         *
+         * @param player the player to sync to
+         * @param varName the global variable name (with or without the leading '#')
+         */
+        void syncGlobalVariable(ServerPlayerEntity player, String varName);
     }
 
 }

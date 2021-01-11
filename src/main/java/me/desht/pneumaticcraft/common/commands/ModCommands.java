@@ -108,7 +108,7 @@ public class ModCommands {
         if (varName.startsWith("#")) varName = varName.substring(1);
         BlockPos pos = GlobalVariableManager.getInstance().getPos(varName);
         ItemStack stack = GlobalVariableManager.getInstance().getItem(varName);
-        source.sendFeedback(xlate("pneumaticcraft.command.getGlobalVariable.output", varName, pos.toString(), stack.getDisplayName().getString()), false);
+        source.sendFeedback(xlate("pneumaticcraft.command.getGlobalVariable.output", varName, PneumaticCraftUtils.posToString(pos), stack.getDisplayName().getString()), false);
         return 1;
     }
 
@@ -116,7 +116,7 @@ public class ModCommands {
         CommandSource source = ctx.getSource();
         if (varName.startsWith("#")) varName = varName.substring(1);
         GlobalVariableManager.getInstance().set(varName, pos);
-        source.sendFeedback(xlate("pneumaticcraft.command.setGlobalVariable.output", varName, pos.toString()), false);
+        source.sendFeedback(xlate("pneumaticcraft.command.setGlobalVariable.output", varName, PneumaticCraftUtils.posToString(pos)), false);
         return 1;
     }
 }

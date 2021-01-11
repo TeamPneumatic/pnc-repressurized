@@ -32,17 +32,17 @@
     {
       "type": "text",
       "title": "Button Widget",
-      "text": "The Button widget sets the value of the linked variable when pressed.$(li)$(thing)Variable Name/$ - the linked global variable.$(li)$(thing)Setting Value/$ - the X/Y/Z values to assign to the linked variable when the button is pressed.$(li)$(thing)Width/Height/$ - dimensions of the button."
+      "text": "The Button widget sets the value of the linked variable when pressed.$(li)$(thing)Variable Name/$ - the linked $(l:programming/variables#global)global variable/$.$(li)$(thing)Setting Value/$ - the X/Y/Z values to assign to the linked variable when the button is pressed.$(li)$(thing)Width/Height/$ - dimensions of the button."
     },
     {
       "type": "text",
       "title": "Checkbox Widget",
-      "text": "The Checkbox widget sets the X value of the linked variable to 1 when checked, and to 0 otherwise.$(li)$(thing)Variable Name/$ - the linked global variable."
+      "text": "The Checkbox widget sets the X value of the linked variable to 1 when checked, and to 0 otherwise.$(li)$(thing)Variable Name/$ - the linked $(l:programming/variables#global)global variable/$."
     },
     {
       "type": "text",
       "title": "Dropdown Widget",
-      "text": "The Dropdown widget sets the X value of the linked variable to the index of the selected element.$(li)$(thing)Drop-down Elements/$ - a comma-separated list of text labels.$(li)$(thing)Variable Name/$ - the linked global variable.$(li)$(thing)Sorted/$ - if checked, the elements in the list will be alphabetically sorted. Otherwise, the elements will appear in the order you provided."
+      "text": "The Dropdown widget sets the X value of the linked variable to the index of the selected element.$(li)$(thing)Drop-down Elements/$ - a comma-separated list of text labels.$(li)$(thing)Variable Name/$ - the linked $(l:programming/variables#global)global variable/$.$(li)$(thing)Sorted/$ - if checked, the elements in the list will be alphabetically sorted. Otherwise, the elements will appear in the order you provided."
     },
     {
       "type": "text",

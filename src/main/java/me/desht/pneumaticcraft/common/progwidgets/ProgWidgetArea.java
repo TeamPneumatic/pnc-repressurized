@@ -429,4 +429,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         variables.add(coord2Variable);
     }
 
+    public void setVariableProvider(IVariableProvider provider) {
+        this.variableProvider = provider;
+    }
 }

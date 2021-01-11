@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.item;
 
+import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.client.gui.GuiGPSTool;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
@@ -10,6 +11,7 @@ import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
@@ -101,7 +103,7 @@ public class ItemGPSTool extends Item implements IPositionProvider {
     public static void setGPSLocation(ItemStack gpsTool, BlockPos pos) {
         gpsTool.getOrCreateTag().put("Pos", net.minecraft.nbt.NBTUtil.writeBlockPos(pos));
         String var = getVariable(gpsTool);
-        if (!var.equals("")) GlobalVariableManager.getInstance().set(var, pos);
+        if (!var.isEmpty()) GlobalVariableManager.getInstance().set(var, pos);
     }
 
     public static void setVariable(ItemStack gpsTool, String variable) {
@@ -120,5 +122,11 @@ public class ItemGPSTool extends Item implements IPositionProvider {
     @Override
     public int getRenderColor(int index) {
         return 0x90FFFF00;
+    }
+
+    @Override
+    public void syncVariables(ServerPlayerEntity player, ItemStack stack) {
+        String varName = getVariable(stack);
+        if (!varName.isEmpty()) PneumaticRegistry.getInstance().syncGlobalVariable(player, varName);
     }
 }

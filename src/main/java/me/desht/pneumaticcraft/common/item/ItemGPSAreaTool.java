@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.item;
 
 import com.google.common.collect.ImmutableList;
+import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.client.gui.areatool.GuiGPSAreaTool;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
@@ -61,7 +62,7 @@ public class ItemGPSAreaTool extends Item implements IPositionProvider {
     }
 
 
-    public static void setGPSPosAndNotify(PlayerEntity player, BlockPos pos, Hand hand, int index){
+    public static void setGPSPosAndNotify(PlayerEntity player, BlockPos pos, Hand hand, int index) {
         ItemStack stack = player.getHeldItem(hand);
         setGPSLocation(stack, pos, index);
         if (!player.world.isRemote) {
@@ -113,6 +114,7 @@ public class ItemGPSAreaTool extends Item implements IPositionProvider {
         Validate.isTrue(stack.getItem() instanceof ItemGPSAreaTool);
         ProgWidgetArea area = new ProgWidgetArea();
         if (stack.hasTag()) {
+            area.setVariableProvider(GlobalVariableManager.getInstance());  // allows client to read vars for rendering purposes
             area.readFromNBT(stack.getTag());
         }
         return area;
@@ -144,6 +146,8 @@ public class ItemGPSAreaTool extends Item implements IPositionProvider {
             area.setP2(pos);
         }
         NBTUtils.initNBTTagCompound(gpsTool);
+        String var = getVariable(gpsTool, index);
+        if (!var.equals("")) GlobalVariableManager.getInstance().set(var, pos);
         area.writeToNBT(gpsTool.getTag());
     }
 
@@ -161,6 +165,14 @@ public class ItemGPSAreaTool extends Item implements IPositionProvider {
     public static String getVariable(ItemStack gpsTool, int index) {
         ProgWidgetArea area = getArea(gpsTool);
         return index == 0 ? area.getCoord1Variable() : area.getCoord2Variable();
+    }
+
+    @Override
+    public void syncVariables(ServerPlayerEntity player, ItemStack stack) {
+        String v1 = getVariable(stack, 0);
+        if (!v1.isEmpty()) PneumaticRegistry.getInstance().syncGlobalVariable(player, v1);
+        String v2 = getVariable(stack, 1);
+        if (!v1.isEmpty()) PneumaticRegistry.getInstance().syncGlobalVariable(player, v2);
     }
 
     @Override
@@ -183,9 +195,9 @@ public class ItemGPSAreaTool extends Item implements IPositionProvider {
     public int getRenderColor(int index) {
         return 0x60FFFF00;
     }
-    
+
     @Override
-    public boolean disableDepthTest(){
+    public boolean disableDepthTest() {
         return false;
     }
 

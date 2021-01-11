@@ -20,6 +20,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.TickEvent;
@@ -28,8 +29,12 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
 public enum AreaRenderManager {
     INSTANCE;
+
+    private static final int MAX_DISPLAYED_POS = 15000;
 
     private final Map<BlockPos, AreaRenderer> showHandlers = new HashMap<>();
     private World world;
@@ -129,8 +134,13 @@ public enum AreaRenderManager {
                 lastItemHashCode = thisHash;
                 IPositionProvider positionProvider = (IPositionProvider) curItem.getItem();
                 List<BlockPos> posList = positionProvider.getStoredPositions(player.getEntityWorld(), curItem);
+                if (posList.size() > MAX_DISPLAYED_POS) {
+                    posList.sort(Comparator.comparingDouble(blockPos -> blockPos.distanceSq(player.getPosition())));
+                    player.sendStatusMessage(xlate("pneumaticcraft.message.gps_tool.culledRenderArea", posList.size()).mergeStyle(TextFormatting.GOLD), false);
+                }
                 Int2ObjectMap<Set<BlockPos>> colorsToPositions = new Int2ObjectOpenHashMap<>();
-                for (int i = 0; i < posList.size(); i++) {
+                int n = Math.min(posList.size(), MAX_DISPLAYED_POS);
+                for (int i = 0; i < n; i++) {
                     int renderColor = positionProvider.getRenderColor(i);
                     if (posList.get(i) != null && renderColor != 0) {
                         Set<BlockPos> positionsForColor = colorsToPositions.get(renderColor);
@@ -189,5 +199,10 @@ public enum AreaRenderManager {
 
     public void removeHandlers(TileEntity te) {
         showHandlers.remove(new BlockPos(te.getPos().getX(), te.getPos().getY(), te.getPos().getZ()));
+    }
+
+    public void clearPosProviderCache() {
+        // called on global variable sync, force a recalc of any cached position provider data
+        lastItemHashCode = 0;
     }
 }

@@ -30,7 +30,7 @@
       "type": "text",
       "anchor": "global",
       "title": "Global Variables",
-      "text": "$(thing)Global variables/$ are prefixed with '#'. Normal variables are unique per $(l:tools/drone)Drone/$; they can't be shared. Global variables are variables that $(italic)are/$ shared. $(p)This allows Drones to communicate with each other. Additionally, the $(l:machines/universal_sensor)Universal Sensor/$ can look for global variables, and emit a $(#f00)redstone signal/$ based on them, and the $(l:tools/remote)Remote/$ can display and modify them."
+      "text": "$(thing)Global variables/$ are prefixed with '#'. Normal variables are unique per $(l:tools/drone)Drone/$; they can't be shared. Global variables, however, $(italic)can/$ be shared. This allows Drones to communicate with each other.$(p)Additionally, $(l:tools/gps_tool)GPS Tools/$ can link to and modify them, the $(l:machines/universal_sensor)Universal Sensor/$ can emit a $(#f00)redstone signal/$ based on them, and the $(l:tools/remote)Remote/$ can display and modify them."
     },
     {
       "type": "text",

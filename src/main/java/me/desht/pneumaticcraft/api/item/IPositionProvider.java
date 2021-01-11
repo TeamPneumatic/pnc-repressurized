@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.api.item;
 
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -50,4 +51,15 @@ public interface IPositionProvider {
         return getStoredPositions(world, stack);
     }
 
+    /**
+     * If the item stores any global variables which the client needs to know about (e.g. for area rendering), implement
+     * this method to sync their values to the client. This method is only called server-side, of course.
+     * See {@link me.desht.pneumaticcraft.api.PneumaticRegistry.IPneumaticCraftInterface#syncGlobalVariable(ServerPlayerEntity, String)}}
+     * for a convenience method to send the necessary sync packet.
+     *
+     * @param player the player to sync to
+     * @param stack the itemstack
+     */
+    default void syncVariables(ServerPlayerEntity player, ItemStack stack) {
+    }
 }
