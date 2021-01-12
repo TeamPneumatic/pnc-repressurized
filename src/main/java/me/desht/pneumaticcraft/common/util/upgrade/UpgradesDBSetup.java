@@ -25,6 +25,7 @@ public class UpgradesDBSetup {
             .with(EnumUpgrade.SPEED, 10)
             .with(EnumUpgrade.MINIGUN, 1)
             .with(EnumUpgrade.MAGNET, 6)
+            .with(EnumUpgrade.ARMOR, 15)
             .with(EnumUpgrade.RANGE, 16);
     
     private static final Builder BASIC_DRONE_UPGRADES = new Builder()
@@ -36,6 +37,7 @@ public class UpgradesDBSetup {
 
     private static final Builder GUARD_DRONE_UPGRADES = new Builder(BASIC_DRONE_UPGRADES)
             .with(EnumUpgrade.MINIGUN, 1)
+            .with(EnumUpgrade.ARMOR, 15)
             .with(EnumUpgrade.RANGE, 16);
 
     private static final Builder COLLECTOR_DRONE_UPGRADES = new Builder(BASIC_DRONE_UPGRADES)

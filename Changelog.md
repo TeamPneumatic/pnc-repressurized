@@ -6,6 +6,17 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.16.3 / 1.16.4
 
+## 2.9.2-?? (unreleased)
+
+### Updates
+* Drones (and Guard Drones, but not other basic drones) can now take up to 15 Armor Upgrades
+  * Each Armor Upgrade gives the Drone one point of armor, so 15 is equivalent to a full suit of Iron armor
+  * However, any Armor Upgrades over 6 will apply a small movement speed penalty to the Drone, so you will need to balance protection vs. movement
+
+### Fixes
+* Fixed mobs not properly targeting Drones for retaliation when attacked by them
+* Fixed Drone's targeting laser rendering too low on the Y axis
+
 ## 2.9.1-115 (11 Jan 2021)
 
 **IMPORTANT**: this release requires Forge 35.1.34 or later!

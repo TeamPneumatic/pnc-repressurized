@@ -486,6 +486,9 @@ public class EntityDrone extends EntityDroneBase implements
         }
         setPathPriority(PathNodeType.WATER, securityUpgradeCount > 0 ? 0.0f : -1.0f);
         speed = 0.15 + Math.min(10, getUpgrades(EnumUpgrade.SPEED)) * 0.015;
+        if (getUpgrades(EnumUpgrade.ARMOR) > 6) {
+            speed -= 0.01 * (getUpgrades(EnumUpgrade.ARMOR) - 6);
+        }
         healingInterval = getUpgrades(EnumUpgrade.ITEM_LIFE) > 0 ? 100 / getUpgrades(EnumUpgrade.ITEM_LIFE) : 0;
         if (!world.isRemote) {
             droneItemHandler.setFakePlayerReady();
@@ -661,8 +664,8 @@ public class EntityDrone extends EntityDroneBase implements
                 targetEntity = null;
             }
             if (targetEntity != null) {
-                if (targetLine == null) targetLine = new ProgressingLine(0, -getHeight() / 2, 0, 0, 0, 0);
-                if (oldTargetLine == null) oldTargetLine = new ProgressingLine(0, -getHeight() / 2, 0, 0, 0, 0);
+                if (targetLine == null) targetLine = new ProgressingLine(0, getHeight() / 2, 0, 0, 0, 0);
+                if (oldTargetLine == null) oldTargetLine = new ProgressingLine(0, getHeight() / 2, 0, 0, 0, 0);
 
                 targetLine.endX = (float) (targetEntity.getPosX() - getPosX());
                 targetLine.endY = (float) (targetEntity.getPosY() + targetEntity.getHeight() / 2 - getPosY());
@@ -672,7 +675,7 @@ public class EntityDrone extends EntityDroneBase implements
                 oldTargetLine.endZ = (float) (targetEntity.prevPosZ - prevPosZ);
 
                 oldTargetLine.setProgress(targetLine.getProgress());
-                targetLine.incProgressByDistance(0.3D);
+                targetLine.incProgressByDistance(0.2D);
                 ignoreFrustumCheck = true; //don't stop rendering the drone when it goes out of the camera frustrum, as we need to render the target lines as well.
             } else {
                 targetLine = oldTargetLine = null;
@@ -1019,8 +1022,19 @@ public class EntityDrone extends EntityDroneBase implements
     @Override
     public boolean attackEntityAsMob(Entity entity) {
         getFakePlayer().attackTargetEntityWithCurrentItem(entity);
+        if (entity instanceof LivingEntity) {
+            LivingEntity livingEntity = (LivingEntity) entity;
+            if (livingEntity.isAlive() && livingEntity.getRevengeTarget() == getFakePlayer()) {
+                livingEntity.setRevengeTarget(this);
+            }
+        }
         getAirHandler().addAir(-PneumaticValues.DRONE_USAGE_ATTACK);
         return true;
+    }
+
+    @Override
+    public int getTotalArmorValue() {
+        return getUpgrades(EnumUpgrade.ARMOR);
     }
 
     @Override
