@@ -76,7 +76,7 @@ public class ModuleAirGrate extends TubeModule {
             }
         }
 
-        coolHeatSinks();
+        if (!world.isRemote) coolHeatSinks();
         pushEntities(world, pos, new Vector3d(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D));
     }
 
