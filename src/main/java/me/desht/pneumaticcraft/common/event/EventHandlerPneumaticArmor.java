@@ -4,16 +4,19 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.common.PneumaticCraftTags;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.item.ItemMinigun;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
+import me.desht.pneumaticcraft.common.network.PacketJetBootsStateSync;
 import me.desht.pneumaticcraft.common.network.PacketSendArmorHUDMessage;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
+import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker.JetBootsState;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -269,7 +272,7 @@ public class EventHandlerPneumaticArmor {
             JetBootsStateTracker tracker = JetBootsStateTracker.getTracker(event.player);
             for (PlayerEntity player : event.player.world.getPlayers()) {
                 if (!player.isOnGround() && isPneumaticArmorPiece(player, EquipmentSlotType.FEET)) {
-                    JetBootsStateTracker.JetBootsState state = tracker.getJetBootsState(player);
+                    JetBootsState state = tracker.getJetBootsState(player);
                     if (state != null && state.isEnabled()) {
                         int nParticles = state.isActive() ? 5 : 1;
                         Vector3d jetVec = state.shouldRotatePlayer() ? player.getLookVec().scale(-0.5) : IDLE_VEC;
@@ -303,6 +306,21 @@ public class EventHandlerPneumaticArmor {
             event.setOutput(repairedItem);
             event.setCost(Math.max(1, ingotsToUse / 2));
             event.setMaterialCost(ingotsToUse);
+        }
+    }
+
+    @SubscribeEvent
+    public void onPlayerTrack(PlayerEvent.StartTracking event) {
+        // keep other players up to date with the state of each player's jetboots activity
+        if (event.getPlayer() instanceof ServerPlayerEntity && event.getTarget() instanceof ServerPlayerEntity) {
+            ServerPlayerEntity trackedPlayer = (ServerPlayerEntity) event.getTarget();
+            if (trackedPlayer.getItemStackFromSlot(EquipmentSlotType.FEET).getItem() == ModItems.PNEUMATIC_BOOTS.get()) {
+                CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(trackedPlayer);
+                if (handler.getUpgradeCount(EquipmentSlotType.FEET, EnumUpgrade.JET_BOOTS) > 0) {
+                    JetBootsState state = JetBootsStateTracker.getServerTracker().getJetBootsState(trackedPlayer);
+                    NetworkHandler.sendToPlayer(new PacketJetBootsStateSync(trackedPlayer, state), (ServerPlayerEntity) event.getPlayer());
+                }
+            }
         }
     }
 }

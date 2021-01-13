@@ -19,7 +19,6 @@ import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketModWrenchBlock;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
-import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
 import me.desht.pneumaticcraft.common.recipes.machine.ExplosionCraftingRecipeImpl;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
@@ -288,15 +287,6 @@ public class EventHandlerPneumaticCraft {
                     event.setCanceled(true);
                 }
             }
-        }
-    }
-
-    @SubscribeEvent
-    public void playerJoinedWorld(EntityJoinWorldEvent event) {
-        if (event.getEntity() instanceof ServerPlayerEntity) {
-            ServerPlayerEntity player = (ServerPlayerEntity) event.getEntity();
-
-            JetBootsStateTracker.getTracker(player).informOtherPlayers(player);
         }
     }
 
