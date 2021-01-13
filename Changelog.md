@@ -6,7 +6,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.16.3 / 1.16.4
 
-## 2.9.2-?? (unreleased)
+## 2.9.2-116 (13 Jan 2021)
 
 ### Updates
 * Drones (and Guard Drones, but not other basic drones) can now take up to 15 Armor Upgrades
@@ -18,6 +18,7 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed mobs not properly targeting Drones for retaliation when attacked by them
 * Fixed Drone's targeting laser rendering too low on the Y axis
 * Fixed Vacuum Pump GUI showing wrong vacuum pressure when Volume Upgrades are installed (display bug only: actual pressure was OK)
+* Fixed Liquid Hopper ignoring "leave 1000mB" mode when ejecting fluid via Dispenser Upgrade
 
 ## 2.9.1-115 (11 Jan 2021)
 
