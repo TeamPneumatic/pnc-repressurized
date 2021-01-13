@@ -32,6 +32,9 @@ public class PacketUtil {
      * being received on the server, the player's open container is used to determine
      * the TE; don't trust a blockpos that the client sent, although we'll check the
      * sent blockpos is the same as the TE's actual blockpos.
+     * <p>
+     * Important: <strong>cannot</strong> be used to sync changes after the server-side
+     * container could be closed, i.e. don't use this in packets sent from a GUI {@code onClose()} method.
      *
      * @param player the player, will be null if packet is being received on client
      * @param pos the blockpos, ignored if packet is being received on server

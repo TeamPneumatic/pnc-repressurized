@@ -34,15 +34,17 @@ public abstract class PacketUpdateTubeModule extends LocationIntPacket {
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> PacketUtil.getTE(ctx.get().getSender(), pos, TileEntityPressureTube.class).ifPresent(te -> {
-            TubeModule tm = te.getModule(moduleSide);
-            if (tm != null) {
-                PlayerEntity player = ctx.get().getSender();
-                if (PneumaticCraftUtils.canPlayerReach(player, te.getPos())) {
-                    onModuleUpdate(tm, player);
-                }
+        ctx.get().enqueueWork(() -> {
+            PlayerEntity player = ctx.get().getSender();
+            if (player != null) {
+                PneumaticCraftUtils.getTileEntityAt(player.getEntityWorld(), pos, TileEntityPressureTube.class).ifPresent(te -> {
+                    TubeModule tm = te.getModule(moduleSide);
+                    if (tm != null && PneumaticCraftUtils.canPlayerReach(player, te.getPos())) {
+                        onModuleUpdate(tm, player);
+                    }
+                });
             }
-        }));
+        });
         ctx.get().setPacketHandled(true);
     }
 
