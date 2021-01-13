@@ -26,10 +26,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.FluidActionResult;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.IFluidTank;
+import net.minecraftforge.fluids.*;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
@@ -121,7 +118,8 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper<TileEntityL
         }
 
         // try to pour fluid into the world
-        if (PNCConfig.Common.Machines.liquidHopperDispenser && getUpgrades(EnumUpgrade.DISPENSER) > 0) {
+        if (PNCConfig.Common.Machines.liquidHopperDispenser && getUpgrades(EnumUpgrade.DISPENSER) > 0
+                && tank.getFluidAmount() >= leaveMaterialCount + FluidAttributes.BUCKET_VOLUME) {
             return FluidUtils.tryPourOutFluid(outputCap, world, getPos().offset(dir), false, false, FluidAction.EXECUTE);
         }
 
@@ -161,7 +159,7 @@ public class TileEntityLiquidHopper extends TileEntityAbstractHopper<TileEntityL
             if (e.isAlive() && e instanceof ItemEntity) {
                 ItemEntity entity = (ItemEntity) e;
                 // special case: buckets can only drain 1000 mB at a time
-                int max = entity.getItem().getItem() instanceof BucketItem ? 1000 : maxItems * 100;
+                int max = entity.getItem().getItem() instanceof BucketItem ? FluidAttributes.BUCKET_VOLUME : maxItems * 100;
                 FluidActionResult res = FluidUtil.tryEmptyContainer(entity.getItem(), tank, max, null, true);
                 if (res.success) {
                     entity.setItem(res.result);
