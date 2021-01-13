@@ -14,8 +14,10 @@ Changes are in reverse chronological order; newest changes at the top.
   * However, any Armor Upgrades over 6 will apply a small movement speed penalty to the Drone, so you will need to balance protection vs. movement
 
 ### Fixes
+* Fixed changes to pressure levels in Pressure Gauge Module GUI not being properly sync'd to server
 * Fixed mobs not properly targeting Drones for retaliation when attacked by them
 * Fixed Drone's targeting laser rendering too low on the Y axis
+* Fixed Vacuum Pump GUI showing wrong vacuum pressure when Volume Upgrades are installed (display bug only: actual pressure was OK)
 
 ## 2.9.1-115 (11 Jan 2021)
 
