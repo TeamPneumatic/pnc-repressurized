@@ -100,6 +100,10 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
             if (shouldAddSideConfigTabs()) {
                 addSideConfiguratorTabs();
             }
+            if (te instanceof TileEntityPneumaticBase) {
+                // ensure all handlers are known, so we can get their upgrades right
+                ((TileEntityPneumaticBase) te).initializeHullAirHandlers();
+            }
         }
     }
 

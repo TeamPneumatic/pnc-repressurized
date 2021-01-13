@@ -78,8 +78,6 @@ public class GuiVacuumPump extends GuiPneumaticContainerBase<ContainerVacuumPump
         int upgrades = te.getUpgrades(EnumUpgrade.VOLUME);
         pressureStatText.add(xlate("pneumaticcraft.gui.tooltip.baseVolume",
                 String.format("%,d", PneumaticValues.VOLUME_VACUUM_PUMP)));
-        pressureStatText.add(xlate("pneumaticcraft.gui.tooltip.effectiveVolume",
-                String.format("%,d", volume)));
         if (volume > inputAirHandler.getBaseVolume()) {
             pressureStatText.add(new StringTextComponent(GuiConstants.TRIANGLE_RIGHT + " " + upgrades + " x ")
                     .append(EnumUpgrade.VOLUME.getItemStack().getDisplayName())
