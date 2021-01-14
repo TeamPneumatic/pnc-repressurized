@@ -20,17 +20,17 @@ import java.util.function.BiPredicate;
  * @author MineMaarten, desht
  */
 public interface IHeatExchangerLogic extends INBTSerializable<CompoundNBT> {
-
     /**
-     * Call this to tick this logic, and make the heat disperse itself.
+     * Call this to tick this logic, and make the heat disperse itself. In general this should be called each tick
+     * by the owning tile entity's {@code tick()} method, on the server side only.
      */
     void tick();
 
     /**
-     * When called (preferably on tile entity load and neighbor block updates), this will add all heat
+     * When called (ideally on tile entity first tick and neighbor block updates), this will add all heat
      * exchanging neighbor tile entities as connected heat exchangers (i.e. tile entities who provide the
-     * {@link IHeatExchangerLogic} capability on that side).  It will also account for neighbouring blocks with heat
-     * properties, like Magma or Lava.
+     * {@link IHeatExchangerLogic} capability on that side).  It will also account for neighbouring blocks with
+     * special heat properties, like Magma or Lava.
      * <p>
      * You don't need to call this method if this heat exchanger is not connected to the outside world (e.g.
      * the connecting heat exchanger inside a Vortex Tube).
@@ -54,15 +54,22 @@ public interface IHeatExchangerLogic extends INBTSerializable<CompoundNBT> {
     void initializeAmbientTemperature(World world, BlockPos pos);
 
     /**
-     * When called, this will connect these two heat exchangers. You should only call this on one of the two heat
-     * exchangers.
+     * When called, this will create a thermal connection between this heat exchanger and the given one. This should
+     * be used when your TE contains more than one heat exchanger and you need a thermal connection between them;
+     * an example is the Vortex Tube.
+     * <p>
+     * You don't need to call this method if your TE just has one heat exchanger to
+     * expose to the world; in that case {@link #initializeAsHull(World, BlockPos, BiPredicate, Direction...)} will
+     * handle all that's needed.
+     * <p>
+     * You should only call this method on one of the two heat exchangers.
      *
      * @param exchanger the other heat exchanger
      */
     void addConnectedExchanger(IHeatExchangerLogic exchanger);
 
     /**
-     * Disconnect a connected heat exchanger.
+     * Disconnect a connected heat exchanger which was connected via {@link #addConnectedExchanger(IHeatExchangerLogic)}
      *
      * @param exchanger the other heat exchanger
      */

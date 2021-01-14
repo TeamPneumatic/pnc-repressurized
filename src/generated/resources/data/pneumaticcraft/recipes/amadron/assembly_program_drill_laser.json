@@ -1,6 +1,6 @@
 {
   "type": "pneumaticcraft:amadron",
-  "static": true,
+  "id": "pneumaticcraft:amadron/assembly_program_drill_laser",
   "input": {
     "type": "ITEM",
     "id": "minecraft:emerald",
@@ -11,5 +11,6 @@
     "id": "pneumaticcraft:assembly_program_drill_laser",
     "amount": 1
   },
+  "static": true,
   "level": 0
 }

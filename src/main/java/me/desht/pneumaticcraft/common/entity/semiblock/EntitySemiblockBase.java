@@ -11,6 +11,7 @@ import me.desht.pneumaticcraft.common.tileentity.IGUIButtonSensitive;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -49,6 +50,7 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
     private AxisAlignedBB blockBounds;
     private BlockPos blockPos;
     private Vector3d dropOffset = Vector3d.ZERO;
+    private Block lastBlock;  // to detect if the underlying block has changed
 
     EntitySemiblockBase(EntityType<?> entityTypeIn, World worldIn) {
         super(entityTypeIn, worldIn);
@@ -88,6 +90,8 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
             // add a small outset so the entity covers the block and becomes interactable
             setBoundingBox(getBlockBounds().offset(blockPos));//.grow(0.01));
             // a semiblock entity doesn't move once added to world
+
+            lastBlock = getBlockState().getBlock();
         }
 
         if (this.getTimeSinceHit() > 0) {
@@ -99,6 +103,13 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
 
         if (!world.isRemote && isAlive() && !canStay()) {
             remove();
+        }
+
+        Block curBlock = getBlockState().getBlock();
+        if (curBlock != lastBlock) {
+            cachedTE = null;
+            blockBounds = null;
+            lastBlock = curBlock;
         }
     }
 

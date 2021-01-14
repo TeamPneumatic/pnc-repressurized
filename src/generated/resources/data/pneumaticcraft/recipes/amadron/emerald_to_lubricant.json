@@ -1,6 +1,6 @@
 {
   "type": "pneumaticcraft:amadron",
-  "static": true,
+  "id": "pneumaticcraft:amadron/emerald_to_lubricant",
   "input": {
     "type": "ITEM",
     "id": "minecraft:emerald",
@@ -11,5 +11,6 @@
     "id": "pneumaticcraft:lubricant",
     "amount": 1000
   },
+  "static": true,
   "level": 0
 }

@@ -782,6 +782,7 @@ public class PneumaticCraftUtils {
     }
 
     public static boolean canPlayerReach(PlayerEntity player, BlockPos pos) {
+        if (player == null) return false;
         ModifiableAttributeInstance attr = player.getAttribute(ForgeMod.REACH_DISTANCE.get());
         double dist = attr != null ? player.getAttribute(ForgeMod.REACH_DISTANCE.get()).getValue() + 1 : 4.5;
         return player.getDistanceSq(Vector3d.copyCentered(pos)) <= dist * dist;

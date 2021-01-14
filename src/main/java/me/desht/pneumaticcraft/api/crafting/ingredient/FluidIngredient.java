@@ -84,7 +84,7 @@ public class FluidIngredient extends Ingredient {
 
     @Override
     public boolean test(@Nullable ItemStack stack) {
-        return stack == null ? false : FluidUtil.getFluidContained(stack).map(this::testFluid).orElse(false);
+        return stack != null && FluidUtil.getFluidContained(stack).map(this::testFluid).orElse(false);
     }
 
     @Override

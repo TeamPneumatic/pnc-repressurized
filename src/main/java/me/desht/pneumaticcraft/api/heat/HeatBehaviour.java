@@ -112,7 +112,7 @@ public abstract class HeatBehaviour<T extends TileEntity> implements INBTSeriali
     @Override
     public boolean equals(Object o) {
         if (o instanceof HeatBehaviour) {
-            HeatBehaviour behaviour = (HeatBehaviour) o;
+            HeatBehaviour<?> behaviour = (HeatBehaviour<?>) o;
             return behaviour.getId().equals(getId()) && behaviour.getPos().equals(getPos());
         } else {
             return false;

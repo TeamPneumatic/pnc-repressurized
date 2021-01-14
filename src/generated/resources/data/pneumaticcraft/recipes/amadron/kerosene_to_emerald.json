@@ -1,6 +1,6 @@
 {
   "type": "pneumaticcraft:amadron",
-  "static": true,
+  "id": "pneumaticcraft:amadron/kerosene_to_emerald",
   "input": {
     "type": "FLUID",
     "id": "pneumaticcraft:kerosene",
@@ -11,5 +11,6 @@
     "id": "minecraft:emerald",
     "amount": 1
   },
+  "static": true,
   "level": 0
 }

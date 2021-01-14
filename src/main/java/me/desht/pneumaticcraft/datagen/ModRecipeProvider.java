@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
 import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
+import me.desht.pneumaticcraft.api.crafting.ingredient.NoNBTIngredient;
 import me.desht.pneumaticcraft.api.crafting.ingredient.StackedIngredient;
 import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe.AssemblyProgramType;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
@@ -679,6 +680,12 @@ public class ModRecipeProvider extends RecipeProvider {
                 'C', Tags.Items.CHESTS_WOODEN
         ).build(consumer);
 
+        shaped(ModItems.REINFORCED_CHEST_KIT.get(), ModBlocks.REINFORCED_CHEST.get(),
+                " C/S ",
+                'C', new NoNBTIngredient(ModBlocks.REINFORCED_CHEST.get()),
+                'S', Items.STICK
+        ).build(consumer);
+
         shaped(ModItems.REMOTE.get(), ModItems.TRANSISTOR.get(),
                 " I /TGT/TDT",
                 'I', ModItems.NETWORK_IO_PORT.get(),
@@ -716,6 +723,12 @@ public class ModRecipeProvider extends RecipeProvider {
                 'M', ModItems.MINIGUN.get(),
                 'P', PneumaticCraftTags.Items.PLASTIC_SHEETS,
                 'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON
+        ).build(consumer);
+
+        shaped(ModItems.SMART_CHEST_KIT.get(), ModBlocks.SMART_CHEST.get(),
+                " C/S ",
+                'C', new NoNBTIngredient(ModBlocks.SMART_CHEST.get()),
+                'S', Items.STICK
         ).build(consumer);
 
         shaped(ModItems.SOURDOUGH.get(), 8, ModItems.WHEAT_FLOUR.get(),

@@ -1,6 +1,6 @@
 {
   "type": "pneumaticcraft:amadron",
-  "static": true,
+  "id": "pneumaticcraft:amadron/pcb_blueprint",
   "input": {
     "type": "ITEM",
     "id": "minecraft:emerald",
@@ -11,5 +11,6 @@
     "id": "pneumaticcraft:pcb_blueprint",
     "amount": 1
   },
+  "static": true,
   "level": 0
 }
