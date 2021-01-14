@@ -18,6 +18,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraftforge.common.util.Constants;
 
 import java.util.Comparator;
 import java.util.List;
@@ -149,7 +150,7 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
         tag.putByte("outputLevel", (byte) outputLevel);
         tag.putString("op", operation.toString());
         tag.putByte("color2", (byte) otherColor);
-        tag.putByte("const", (byte) constantVal);
+        tag.putInt("const", (byte) constantVal);
         tag.putBoolean("invert", inverted);
         tag.putLong("prevLevels", encodeLevels(prevLevels));
     }
@@ -168,7 +169,12 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
             operation = Operation.PASSTHROUGH;
         }
         otherColor = tag.getByte("color2");
-        constantVal = tag.getByte("const");
+        if (tag.contains("const", Constants.NBT.TAG_BYTE)) {
+            // TODO: remove legacy code in 1.17
+            constantVal = tag.getByte("const");
+        } else {
+            constantVal = tag.getInt("const");
+        }
         inverted = tag.getBoolean("invert");
         decodeLevels(tag.getLong("prevLevels"), prevLevels);
     }

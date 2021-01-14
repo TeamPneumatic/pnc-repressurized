@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.common.block.tubes.ModuleRedstone;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleRedstone.EnumRedstoneDirection;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
@@ -20,7 +21,7 @@ public class PacketSyncRedstoneModuleToServer extends LocationIntPacket {
     private final byte op;
     private final byte ourColor;
     private final byte otherColor;
-    private final byte constantVal;
+    private final int constantVal;
     private final boolean invert;
     private final boolean input;
 
@@ -32,7 +33,7 @@ public class PacketSyncRedstoneModuleToServer extends LocationIntPacket {
         this.op = (byte) module.getOperation().ordinal();
         this.ourColor = (byte) module.getColorChannel();
         this.otherColor = (byte) module.getOtherColor();
-        this.constantVal = (byte) module.getConstantVal();
+        this.constantVal = module.getConstantVal();
         this.invert = module.isInverted();
     }
 
@@ -49,7 +50,7 @@ public class PacketSyncRedstoneModuleToServer extends LocationIntPacket {
         } else {
             op = buffer.readByte();
             otherColor = buffer.readByte();
-            constantVal = buffer.readByte();
+            constantVal = buffer.readVarInt();
             invert = buffer.readBoolean();
         }
     }
@@ -63,28 +64,30 @@ public class PacketSyncRedstoneModuleToServer extends LocationIntPacket {
         if (!input) {
             buf.writeByte(op);
             buf.writeByte(otherColor);
-            buf.writeByte(constantVal);
+            buf.writeVarInt(constantVal);
             buf.writeBoolean(invert);
         }
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            TileEntity te = ctx.get().getSender().world.getTileEntity(pos);
-            if (te instanceof TileEntityPressureTube) {
-                TubeModule tm = ((TileEntityPressureTube) te).getModule(Direction.byIndex(side));
-                if (tm instanceof ModuleRedstone) {
-                    ModuleRedstone mr = (ModuleRedstone) tm;
-                    EnumRedstoneDirection prev = mr.getRedstoneDirection();
-                    mr.setRedstoneDirection(input ? EnumRedstoneDirection.INPUT : EnumRedstoneDirection.OUTPUT);
-                    mr.setColorChannel(ourColor);
-                    if (!input) {
-                        mr.setInverted(invert);
-                        mr.setOperation(ModuleRedstone.Operation.values()[op], otherColor, constantVal);
-                    }
-                    if (prev != mr.getRedstoneDirection()) {
-                        TileEntityPressureTube pressureTube = mr.getTube();
-                        pressureTube.getWorld().notifyNeighborsOfStateChange(pressureTube.getPos(), pressureTube.getWorld().getBlockState(pressureTube.getPos()).getBlock());
+            if (PneumaticCraftUtils.canPlayerReach(ctx.get().getSender(), pos)) {
+                TileEntity te = ctx.get().getSender().world.getTileEntity(pos);
+                if (te instanceof TileEntityPressureTube) {
+                    TubeModule tm = ((TileEntityPressureTube) te).getModule(Direction.byIndex(side));
+                    if (tm instanceof ModuleRedstone) {
+                        ModuleRedstone mr = (ModuleRedstone) tm;
+                        EnumRedstoneDirection prev = mr.getRedstoneDirection();
+                        mr.setRedstoneDirection(input ? EnumRedstoneDirection.INPUT : EnumRedstoneDirection.OUTPUT);
+                        mr.setColorChannel(ourColor);
+                        if (!input) {
+                            mr.setInverted(invert);
+                            mr.setOperation(ModuleRedstone.Operation.values()[op], otherColor, constantVal);
+                        }
+                        if (prev != mr.getRedstoneDirection()) {
+                            TileEntityPressureTube pressureTube = mr.getTube();
+                            pressureTube.getWorld().notifyNeighborsOfStateChange(pressureTube.getPos(), pressureTube.getWorld().getBlockState(pressureTube.getPos()).getBlock());
+                        }
                     }
                 }
             }
