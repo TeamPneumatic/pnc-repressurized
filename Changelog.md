@@ -6,6 +6,19 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.16.3 / 1.16.4
 
+## 2.9.3-?? (unreleased)
+
+### Updates
+
+* Added Reinforced and Smart Chest Upgrade Kit items
+  * Use these convenience items to upgrade a wooden chest to a Reinforced or Smart Chest, or a Reinforced Chest to Smart Chest
+  * Operates in-place, no need to remove and re-add any items in the chest
+  
+### Fixes
+
+* Fixed Pressure Tube shape not always updating properly after a tube module is added or removed
+* Fixed Redstone Module clock mode tick lengths > 127 not working
+
 ## 2.9.2-116 (13 Jan 2021)
 
 ### Updates
