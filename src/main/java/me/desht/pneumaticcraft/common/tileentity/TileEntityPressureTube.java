@@ -105,7 +105,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     public void readFromPacket(CompoundNBT tag) {
         super.readFromPacket(tag);
 
-        cachedTubeShape = null;
+        clearCachedShape();
         Arrays.fill(modules, null);
         ListNBT moduleList = tag.getList("modules", Constants.NBT.TAG_COMPOUND);
         for (int i = 0; i < moduleList.size(); i++) {
@@ -223,7 +223,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
                 inLineModuleDir = null;
             }
         }
-        cachedTubeShape = null;
+        clearCachedShape();
         modules[side.getIndex()] = module;
         if (getWorld() != null && !getWorld().isRemote) {
             world.setBlockState(getPos(), BlockPressureTube.recalculateState(world, pos, getBlockState()), Constants.BlockFlags.DEFAULT);
