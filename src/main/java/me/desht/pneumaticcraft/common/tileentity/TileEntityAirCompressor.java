@@ -19,7 +19,6 @@ import net.minecraft.particles.ParticleTypes;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.items.IItemHandler;
@@ -61,10 +60,6 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
         return new ContainerAirCompressor(i, playerInventory, getPos());
-    }
-    @Override
-    public ITextComponent getDisplayName() {
-        return getDisplayNameInternal();
     }
 
     public boolean isActive() {

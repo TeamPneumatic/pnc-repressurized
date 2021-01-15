@@ -21,7 +21,6 @@ import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
@@ -336,11 +335,6 @@ public class TileEntityRefineryController extends TileEntityTickableBase
     @Override
     public Map<String, FluidTank> getSerializableTanks() {
         return ImmutableMap.of("OilTank", inputTank);
-    }
-
-    @Override
-    public ITextComponent getDisplayName() {
-        return getDisplayNameInternal();
     }
 
     @Nullable

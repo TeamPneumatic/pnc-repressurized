@@ -165,6 +165,9 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
 
         TileEntity te = world.getTileEntity(pos);
         if (te != null) {
+            if (stack.hasDisplayName() && te instanceof TileEntityBase) {
+                ((TileEntityBase) te).setCustomName(stack.getDisplayName());
+            }
             te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY)
                     .ifPresent(logic -> logic.setTemperature(HeatExchangerLogicAmbient.atPosition(world, pos).getAmbientTemperature()));
         }

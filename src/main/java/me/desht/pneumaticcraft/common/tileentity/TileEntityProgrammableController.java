@@ -299,11 +299,6 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
         return getRotation();
     }
 
-    @Override
-    public ITextComponent getDisplayName() {
-        return getDisplayNameInternal();
-    }
-
     @Nullable
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {

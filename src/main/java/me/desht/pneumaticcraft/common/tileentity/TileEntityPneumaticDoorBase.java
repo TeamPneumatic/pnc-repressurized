@@ -24,7 +24,6 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.IFormattableTextComponent;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nullable;
@@ -256,11 +255,6 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
     @Override
     public IFormattableTextComponent getRedstoneTabTitle() {
         return xlate("pneumaticcraft.gui.tab.redstoneBehaviour.pneumaticDoor.openWhen");
-    }
-
-    @Override
-    public ITextComponent getDisplayName() {
-        return getDisplayNameInternal();
     }
 
     @Nullable

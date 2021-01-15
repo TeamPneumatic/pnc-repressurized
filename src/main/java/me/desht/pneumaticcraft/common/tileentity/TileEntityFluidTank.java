@@ -21,7 +21,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
@@ -126,11 +125,6 @@ public abstract class TileEntityFluidTank extends TileEntityTickableBase
 
     public SmartSyncTank getTank() {
         return tank;
-    }
-
-    @Override
-    public ITextComponent getDisplayName() {
-        return getDisplayNameInternal();
     }
 
     @Nullable

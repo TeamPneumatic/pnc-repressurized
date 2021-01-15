@@ -36,7 +36,6 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.IFormattableTextComponent;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -659,11 +658,6 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
     @Override
     public IFormattableTextComponent getRedstoneTabTitle() {
         return xlate("pneumaticcraft.gui.tab.redstoneBehaviour.elevator.controlBy");
-    }
-
-    @Override
-    public ITextComponent getDisplayName() {
-        return getDisplayNameInternal();
     }
 
     @Nullable

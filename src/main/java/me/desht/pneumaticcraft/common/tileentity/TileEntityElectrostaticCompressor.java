@@ -28,7 +28,6 @@ import net.minecraft.util.EntityPredicates;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.items.IItemHandler;
@@ -192,11 +191,6 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase
 
     private static boolean isValidGridBlock(Block block) {
         return block == Blocks.IRON_BARS || block == CHISELED_BARS;
-    }
-
-    @Override
-    public ITextComponent getDisplayName() {
-        return getDisplayNameInternal();
     }
 
     @Nullable

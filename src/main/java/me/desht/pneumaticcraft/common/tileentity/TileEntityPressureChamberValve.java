@@ -40,7 +40,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.items.IItemHandler;
@@ -641,11 +640,6 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
     public int getDefaultVolume() {
         int vol = super.getDefaultVolume();
         return multiBlockSize > 3 ? vol * IntMath.pow(multiBlockSize - 2, 3) : vol;
-    }
-
-    @Override
-    public ITextComponent getDisplayName() {
-        return getDisplayNameInternal();
     }
 
     @Nullable

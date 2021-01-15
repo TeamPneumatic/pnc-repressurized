@@ -29,7 +29,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
@@ -281,11 +280,6 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
     @Override
     public Map<String, FluidTank> getSerializableTanks() {
         return ImmutableMap.of("InputTank", inputTank, "OutputTank", outputTank);
-    }
-
-    @Override
-    public ITextComponent getDisplayName() {
-        return getDisplayNameInternal();
     }
 
     @Nullable

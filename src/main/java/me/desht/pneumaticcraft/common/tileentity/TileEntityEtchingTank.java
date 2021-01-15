@@ -22,7 +22,6 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
@@ -144,11 +143,6 @@ public class TileEntityEtchingTank extends TileEntityTickableBase
     @Override
     protected LazyOptional<IItemHandler> getInventoryCap() {
         return itemCap;
-    }
-
-    @Override
-    public ITextComponent getDisplayName() {
-        return getDisplayNameInternal();
     }
 
     public OutputItemHandler getOutputHandler() {

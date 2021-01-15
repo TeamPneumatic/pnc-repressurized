@@ -17,7 +17,6 @@ import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 
@@ -192,11 +191,6 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase
     @Override
     public RedstoneController<TileEntityThermalCompressor> getRedstoneController() {
         return rsController;
-    }
-
-    @Override
-    public ITextComponent getDisplayName() {
-        return getDisplayNameInternal();
     }
 
     @Nullable

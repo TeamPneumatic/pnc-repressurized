@@ -9,7 +9,6 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nullable;
@@ -65,8 +64,4 @@ public class TileEntityCreativeCompressor extends TileEntityPneumaticBase implem
         return new ContainerCreativeCompressor(i, playerInventory, getPos());
     }
 
-    @Override
-    public ITextComponent getDisplayName() {
-        return getDisplayNameInternal();
-    }
 }

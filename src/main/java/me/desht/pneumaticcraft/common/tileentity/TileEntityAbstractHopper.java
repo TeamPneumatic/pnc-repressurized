@@ -15,7 +15,6 @@ import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.EntityPredicates;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.text.ITextComponent;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -184,11 +183,6 @@ public abstract class TileEntityAbstractHopper<T extends TileEntity & IRedstoneC
     public boolean shouldPreserveStateOnBreak() {
         // always preserve state, since we can't sneak-wrench this machine (sneak-wrench rotates output)
         return true;
-    }
-
-    @Override
-    public ITextComponent getDisplayName() {
-        return getDisplayNameInternal();
     }
 
     List<ItemEntity> getNeighborItems(AxisAlignedBB aabb) {

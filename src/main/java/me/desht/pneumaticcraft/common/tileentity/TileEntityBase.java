@@ -20,13 +20,13 @@ import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
+import net.minecraft.util.INameable;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
@@ -35,6 +35,7 @@ import net.minecraft.world.IWorld;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelDataMap;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
@@ -48,7 +49,8 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.BiPredicate;
 
-public abstract class TileEntityBase extends TileEntity implements IGUIButtonSensitive, IDescSynced, IUpgradeAcceptor, IUpgradeHolder, ILuaMethodProvider {
+public abstract class TileEntityBase extends TileEntity
+        implements INameable, IGUIButtonSensitive, IDescSynced, IUpgradeAcceptor, IUpgradeHolder, ILuaMethodProvider {
     private final UpgradeCache upgradeCache = new UpgradeCache(this);
 
     @GuiSynced
@@ -62,6 +64,7 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
     private float actualSpeedMult = PneumaticValues.DEF_SPEED_UPGRADE_MULTIPLIER;
     private float actualUsageMult = PneumaticValues.DEF_SPEED_UPGRADE_USAGE_MULTIPLIER;
     private final LuaMethodRegistry luaMethodRegistry = new LuaMethodRegistry(this);
+    private ITextComponent customName = null;
 
     // tracks which synced fields have changed and need to be synced on the next tick
     private BitSet fieldsToSync;
@@ -81,16 +84,28 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
         return getBlockTranslationKey();
     }
 
-    public String getBlockTranslationKey() {
+    private String getBlockTranslationKey() {
         return "block.pneumaticcraft." + getType().getRegistryName().getPath();
     }
 
-    /**
-     * Call this from {@link INamedContainerProvider#getDisplayName()}
-     * @return display name for this TE's GUI
-     */
-    ITextComponent getDisplayNameInternal() {
-        return new TranslationTextComponent(getBlockTranslationKey());
+    @Override
+    public ITextComponent getName() {
+        return customName == null ? new TranslationTextComponent(getBlockTranslationKey()) : customName;
+    }
+
+    @Nullable
+    @Override
+    public ITextComponent getCustomName() {
+        return customName;
+    }
+
+    public void setCustomName(ITextComponent customName) {
+        this.customName = customName;
+    }
+
+    @Override
+    public ITextComponent getDisplayName() {
+        return getName();
     }
 
     // server side, chunk sending
@@ -252,6 +267,10 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
     public CompoundNBT write(CompoundNBT tag) {
         super.write(tag);
 
+        if (customName != null) {
+            tag.putString("CustomName", ITextComponent.Serializer.toJson(customName));
+        }
+
         if (getUpgradeHandler().getSlots() > 0) {
             tag.put(NBTKeys.NBT_UPGRADE_INVENTORY, getUpgradeHandler().serializeNBT());
         }
@@ -273,6 +292,10 @@ public abstract class TileEntityBase extends TileEntity implements IGUIButtonSen
     @Override
     public void read(BlockState state, CompoundNBT tag) {
         super.read(state, tag);
+
+        if (tag.contains("CustomName", Constants.NBT.TAG_STRING)) {
+            customName = ITextComponent.Serializer.getComponentFromJson(tag.getString("CustomName"));
+        }
 
         if (tag.contains(NBTKeys.NBT_UPGRADE_INVENTORY) && getUpgradeHandler() != null) {
             getUpgradeHandler().deserializeNBT(tag.getCompound(NBTKeys.NBT_UPGRADE_INVENTORY));

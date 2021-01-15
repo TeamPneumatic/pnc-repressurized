@@ -147,11 +147,6 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements
         return rsController;
     }
 
-    @Override
-    public ITextComponent getDisplayName() {
-        return getDisplayNameInternal();
-    }
-
     @Nullable
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {

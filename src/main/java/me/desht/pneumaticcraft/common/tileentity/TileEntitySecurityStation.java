@@ -430,11 +430,6 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
         return validNetwork;
     }
 
-    @Override
-    public ITextComponent getDisplayName() {
-        return getDisplayNameInternal();
-    }
-
     @Nullable
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
@@ -637,7 +632,7 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
     private class HackingContainerProvider implements INamedContainerProvider {
         @Override
         public ITextComponent getDisplayName() {
-            return getDisplayNameInternal().copyRaw().appendString(" ").append(xlate("pneumaticcraft.armor.upgrade.hacking"));
+            return getName().copyRaw().appendString(" ").append(xlate("pneumaticcraft.armor.upgrade.hacking"));
         }
 
         @Nullable
