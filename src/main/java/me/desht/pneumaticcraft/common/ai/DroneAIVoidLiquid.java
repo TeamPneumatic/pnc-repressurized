@@ -1,15 +1,15 @@
 package me.desht.pneumaticcraft.common.ai;
 
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetVoidLiquid;
+import me.desht.pneumaticcraft.common.progwidgets.ILiquidFiltered;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 
 public class DroneAIVoidLiquid extends Goal {
     private final IDroneBase drone;
-    private final ProgWidgetVoidLiquid widget;
+    private final ILiquidFiltered widget;
 
-    public DroneAIVoidLiquid(IDroneBase drone, ProgWidgetVoidLiquid widget) {
+    public DroneAIVoidLiquid(IDroneBase drone, ILiquidFiltered widget) {
         this.drone = drone;
         this.widget = widget;
     }

@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.ai;
 
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetVoidItem;
+import me.desht.pneumaticcraft.common.progwidgets.IItemFiltering;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.item.ItemStack;
@@ -10,9 +10,9 @@ import net.minecraft.world.server.ServerWorld;
 
 public class DroneAIVoidItem extends Goal {
     private final IDroneBase drone;
-    private final ProgWidgetVoidItem widget;
+    private final IItemFiltering widget;
 
-    public DroneAIVoidItem(IDroneBase drone, ProgWidgetVoidItem widget) {
+    public DroneAIVoidItem(IDroneBase drone, IItemFiltering widget) {
         this.drone = drone;
         this.widget = widget;
     }

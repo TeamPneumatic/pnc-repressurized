@@ -12,6 +12,7 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketShowArea;
 import me.desht.pneumaticcraft.common.network.PacketSpawnRing;
 import me.desht.pneumaticcraft.common.progwidgets.IBlockOrdered.Ordering;
+import me.desht.pneumaticcraft.common.progwidgets.IBlockRightClicker;
 import me.desht.pneumaticcraft.common.progwidgets.ICondition;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidget;
@@ -520,6 +521,27 @@ public class TileEntityDroneInterface extends TileEntity implements ITickableTil
             public Object[] call(Object[] args) {
                 requireArgs(args, 1, "<boolean> is_sneaking");
                 getWidget().setSneaking((Boolean) args[0]);
+                messageToDrone(0xFFFFFFFF);
+                return null;
+            }
+        });
+
+        registry.registerLuaMethod(new LuaMethod("setCanSteal") {
+            @Override
+            public Object[] call(Object[] args) {
+                requireArgs(args, 1, "<boolean> can_steal");
+                getWidget().setCanSteal((Boolean) args[0]);
+                messageToDrone(0xFFFFFFFF);
+                return null;
+            }
+        });
+
+        registry.registerLuaMethod(new LuaMethod("setRightClickType") {
+            @Override
+            public Object[] call(Object[] args) {
+                requireArgs(args, 1, "<string> 'click_item' or 'click_block'");
+                String val = ((String) args[0]).toUpperCase(Locale.ROOT);
+                getWidget().setClickType(IBlockRightClicker.RightClickType.valueOf(val));
                 messageToDrone(0xFFFFFFFF);
                 return null;
             }

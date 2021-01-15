@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.common.progwidgets.IBlockRightClicker;
 import me.desht.pneumaticcraft.common.progwidgets.ISidedWidget;
-import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetBlockRightClick;
+import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetAreaItemBase;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.block.Block;
@@ -33,20 +33,26 @@ import net.minecraftforge.eventbus.api.Event;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetBlockRightClick> {
+public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetAreaItemBase> {
     private final List<BlockPos> visitedPositions = new ArrayList<>();
+    private final IBlockRightClicker.RightClickType clickType;
 
-    public DroneAIRightClickBlock(IDroneBase drone, ProgWidgetBlockRightClick widget) {
+    public DroneAIRightClickBlock(IDroneBase drone, ProgWidgetAreaItemBase widget) {
         super(drone, widget);
 
-        drone.getFakePlayer().setSneaking(((IBlockRightClicker) widget).isSneaking());
+        if (widget instanceof IBlockRightClicker) {
+            drone.getFakePlayer().setSneaking(((IBlockRightClicker) widget).isSneaking());
+            clickType = ((IBlockRightClicker)widget).getClickType();
+        } else {
+            throw new IllegalArgumentException("expecting a widget implementing IBlockRightClicker!");
+        }
     }
 
     @Override
     protected boolean isValidPosition(BlockPos pos) {
         if (visitedPositions.contains(pos)) return false;
         if (progWidget.isItemFilterEmpty()) return true;
-        switch (progWidget.getClickType()) {
+        switch (clickType) {
             case CLICK_ITEM: return progWidget.isItemValidForFilters(drone.getFakePlayer().getHeldItemMainhand());
             case CLICK_BLOCK: return DroneAIDig.isBlockValidForFilter(drone.world(), pos, drone, progWidget);
         }
@@ -72,7 +78,7 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetBl
 
     private void rightClick(BlockPos pos) {
         Direction faceDir = ISidedWidget.getDirForSides(((ISidedWidget) progWidget).getSides());
-        if (progWidget.getClickType() == IBlockRightClicker.RightClickType.CLICK_ITEM) {
+        if (clickType == IBlockRightClicker.RightClickType.CLICK_ITEM) {
             rightClickItem(drone.getFakePlayer(), pos, faceDir);
         } else {
             rightClickBlock(drone.getFakePlayer(), pos, faceDir);

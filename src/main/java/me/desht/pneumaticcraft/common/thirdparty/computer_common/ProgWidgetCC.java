@@ -30,7 +30,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import java.util.*;
 import java.util.function.Predicate;
 
-public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrdered, IGotoWidget,
+public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrdered, IGotoWidget, IItemPickupWidget,
         IEntityProvider, ITextWidget, ICondition, IItemDropper, ILiquidFiltered, IRedstoneEmissionWidget,
         IRenamingWidget, ICraftingWidget, IMaxActions, IBlockRightClicker, ILiquidExport, ISignEditWidget, IToolUser {
     private Ordering order = Ordering.CLOSEST;
@@ -59,6 +59,7 @@ public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrder
     private boolean pickupDelay;
     private RightClickType clickType = RightClickType.CLICK_ITEM;
     private String measureVar = "";
+    private boolean canSteal;
 
     public ProgWidgetCC() {
         super(ModProgWidgets.COMPUTER_CONTROL.get());
@@ -486,6 +487,10 @@ public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrder
         return clickType;
     }
 
+    public void setClickType(RightClickType clickType) {
+        this.clickType = clickType;
+    }
+
     @Override
     public void setPlaceFluidBlocks(boolean placeFluidBlocks) {
         this.placeFluidBlocks = placeFluidBlocks;
@@ -509,5 +514,15 @@ public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrder
     @Override
     public void setRequiresTool(boolean requiresTool){
         this.requiresTool = requiresTool;
+    }
+
+    @Override
+    public boolean canSteal() {
+        return canSteal;
+    }
+
+    @Override
+    public void setCanSteal(boolean canSteal) {
+        this.canSteal = canSteal;
     }
 }

@@ -25,7 +25,7 @@ public class ProgWidgetPlace extends ProgWidgetDigAndPlace {
 
     @Override
     public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
-        return setupMaxActions(new DroneAIPlace<>(drone, (ProgWidgetPlace) widget), (IMaxActions) widget);
+        return setupMaxActions(new DroneAIPlace<>(drone, (ProgWidgetAreaItemBase) widget), (IMaxActions) widget);
     }
 
     @Override

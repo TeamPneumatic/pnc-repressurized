@@ -107,7 +107,7 @@ public class GuiUnitProgrammer extends Screen {
                     addMessages(tooltip, widgetWarnings.get(idx), "pneumaticcraft.gui.programmer.warnings", TextFormatting.YELLOW);
                 addAdditionalInfoToTooltip(progWidget, tooltip);
                 if (!tooltip.isEmpty()) {
-                    renderTooltip(matrixStack, GuiUtils.wrapTextComponentList(tooltip, areaWidth / 2, font), x - guiLeft, y - guiTop);
+                    renderTooltip(matrixStack, GuiUtils.wrapTextComponentList(tooltip, areaWidth, font), x - guiLeft, y - guiTop);
                 }
             }
         }
@@ -138,6 +138,9 @@ public class GuiUnitProgrammer extends Screen {
             tooltip.add(new StringTextComponent("Right-click for options").mergeStyle(TextFormatting.GOLD));
         }
         ThirdPartyManager.instance().getDocsProvider().addTooltip(tooltip, false);
+        if (Minecraft.getInstance().gameSettings.advancedItemTooltips) {
+            tooltip.add(new StringTextComponent(widget.getType().getRegistryName().toString()).mergeStyle(TextFormatting.DARK_GRAY));
+        }
     }
 
     @Override

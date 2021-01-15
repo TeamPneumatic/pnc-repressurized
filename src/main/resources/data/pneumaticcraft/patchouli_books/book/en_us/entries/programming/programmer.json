@@ -46,6 +46,12 @@
     },
     {
       "type": "text",
+      "anchor": "ids",
+      "title": "Progwidget IDs",
+      "text": "If you toggle on extended tooltip information with $(thing)F3+H/$, you will notice that the tooltip for each programming widget also includes the internal widget ID at the end. This is primarily of benefit if you intend to do any drone programming with the $(l:machines/drone_interface)Drone Interface/$ - the $(thing)setAction()/$ Lua method in the Drone Interface takes these IDs (the $(thing)pneumaticcraft:/$ prefix is optional) as a parameter."
+    },
+    {
+      "type": "text",
       "title": "Sharing Programs",
       "text": "If you want to share your programs with other players, you have a couple of options:$(p)$(li)You can use the $(thing)Pastebin/$ button to export your program to $(l:https://pastebin.com)pastebin.com/$$(li)The $(thing)Pastebin/$ GUI also allows writing the program to the clipboard for copying & pasting$(li)You can save your program to a $(l:tools/drone)Drone/$ or $(l:components/network_components)Network Storage/Network API/$ and give the item to another player on your server."
     },

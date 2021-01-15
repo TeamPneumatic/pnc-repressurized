@@ -9,16 +9,22 @@ Changes are in reverse chronological order; newest changes at the top.
 ## 2.9.3-?? (unreleased)
 
 ### Updates
-
 * Added Reinforced and Smart Chest Upgrade Kit items
   * Use these convenience items to upgrade a wooden chest to a Reinforced or Smart Chest, or a Reinforced Chest to Smart Chest
   * Operates in-place, no need to remove and re-add any items in the chest
+* When extended tooltips are active (use F3+H), the Programmer GUI now shows the progwidget ID for programming widgets in their tooltips
+  * This is useful if you plan to do any Drone programming with Computercraft and the Drone Interface
+  * The progwidget ID corresponds directly to the action used in the Drone Interface's Lua setAction() method (the "pneumaticcraft:" prefix can be omitted)
+* Added two new Lua methods to the Drone Interface
+  * setCanSteal() - used by the "pickup_item" action, controls if the Drone may steal items off e.g. Immersive Engineering conveyors
+  * setRightClickType() - used by the "block_right_click" action, controls if the Drone should be using an item or activating a block
   
 ### Fixes
-
 * Fixed Pressure Tube shape not always updating properly after a tube module is added or removed
 * Fixed Redstone Module clock mode tick lengths > 127 not working
-
+* Fixed Computer Control (Drone Interface) not working with several programming widgets (Block Right Click, Pickup Items, Place, Void Item, Void Liquid) 
+  * Also cleaned up the Patchouli manual entry for the Drone Interface quite a bit
+  
 ## 2.9.2-116 (13 Jan 2021)
 
 ### Updates

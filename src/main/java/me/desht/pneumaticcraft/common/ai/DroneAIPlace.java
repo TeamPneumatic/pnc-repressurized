@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.ai;
 
-import me.desht.pneumaticcraft.common.progwidgets.IBlockOrdered;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetAreaItemBase;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.Block;
@@ -21,7 +20,7 @@ import net.minecraft.util.math.vector.Vector3d;
 
 import javax.annotation.Nullable;
 
-public class DroneAIPlace<W extends ProgWidgetAreaItemBase & IBlockOrdered /*& ISidedWidget*/> extends DroneAIBlockInteraction<W> {
+public class DroneAIPlace<W extends ProgWidgetAreaItemBase /*& IBlockOrdered & ISidedWidget*/> extends DroneAIBlockInteraction<W> {
     /**
      * @param drone the drone
      * @param widget needs to implement IBlockOrdered as well as ProgWidgetAreaItemBase

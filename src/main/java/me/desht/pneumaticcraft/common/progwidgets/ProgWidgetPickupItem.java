@@ -10,7 +10,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 
-public class ProgWidgetPickupItem extends ProgWidgetAreaItemBase {
+public class ProgWidgetPickupItem extends ProgWidgetAreaItemBase implements IItemPickupWidget {
     private boolean canSteal = false;
 
     public ProgWidgetPickupItem() {
@@ -24,7 +24,7 @@ public class ProgWidgetPickupItem extends ProgWidgetAreaItemBase {
 
     @Override
     public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
-        return new DroneEntityAIPickupItems(drone, (ProgWidgetPickupItem) widget);
+        return new DroneEntityAIPickupItems(drone, (ProgWidgetAreaItemBase) widget);
     }
 
     @Override
@@ -32,14 +32,12 @@ public class ProgWidgetPickupItem extends ProgWidgetAreaItemBase {
         return DyeColor.PINK;
     }
 
-    /**
-     * Should this widget ignore PreventRemoteMovement tags on item entities?
-     * @return true if items can be "stolen" e.g. off conveyor belts, false to keep the drone honest
-     */
+    @Override
     public boolean canSteal() {
         return canSteal;
     }
 
+    @Override
     public void setCanSteal(boolean canSteal) {
         this.canSteal = canSteal;
     }

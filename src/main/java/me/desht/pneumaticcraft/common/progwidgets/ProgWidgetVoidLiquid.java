@@ -21,7 +21,7 @@ public class ProgWidgetVoidLiquid extends ProgWidget implements ILiquidFiltered 
 
     @Override
     public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
-        return new DroneAIVoidLiquid(drone, (ProgWidgetVoidLiquid) widget);
+        return new DroneAIVoidLiquid(drone, (ILiquidFiltered) widget);
     }
 
     @Override

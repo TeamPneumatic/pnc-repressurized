@@ -14,14 +14,14 @@ import net.minecraft.util.ResourceLocation;
 import javax.annotation.Nonnull;
 import java.util.List;
 
-public class ProgWidgetVoidItem extends ProgWidget {
+public class ProgWidgetVoidItem extends ProgWidget implements IItemFiltering {
     public ProgWidgetVoidItem() {
         super(ModProgWidgets.VOID_ITEM.get());
     }
 
     @Override
     public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
-        return new DroneAIVoidItem(drone, (ProgWidgetVoidItem) widget);
+        return new DroneAIVoidItem(drone, (IItemFiltering) widget);
     }
 
     @Override
@@ -55,6 +55,7 @@ public class ProgWidgetVoidItem extends ProgWidget {
         return WidgetDifficulty.EASY;
     }
 
+    @Override
     public boolean isItemValidForFilters(ItemStack item) {
         return ProgWidgetItemFilter.isItemValidForFilters(item,
                 ProgWidget.getConnectedWidgetList(this, 0, ModProgWidgets.ITEM_FILTER.get()),

@@ -419,6 +419,9 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
                 List<ITextComponent> tooltip = new ArrayList<>();
                 widget.getTooltip(tooltip);
                 ThirdPartyManager.instance().getDocsProvider().addTooltip(tooltip, showingAllWidgets);
+                if (Minecraft.getInstance().gameSettings.advancedItemTooltips) {
+                    tooltip.add(new StringTextComponent(widget.getType().getRegistryName().toString()).mergeStyle(TextFormatting.DARK_GRAY));
+                }
                 if (!tooltip.isEmpty()) {
                     drawHoveringString(matrixStack, tooltip, x - guiLeft, y - guiTop, font);
                 }
