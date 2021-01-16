@@ -12,6 +12,7 @@ import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.semiblock.SemiblockEvent;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.ProgressingLine;
 import me.desht.pneumaticcraft.common.DamageSourcePneumaticCraft.DamageSourceDroneOverload;
 import me.desht.pneumaticcraft.common.DroneRegistry;
@@ -437,19 +438,18 @@ public class EntityDrone extends EntityDroneBase implements
                 laserExtension = Math.max(0, laserExtension - LASER_EXTEND_SPEED);
             }
 
-            if (isAccelerating() && rand.nextBoolean()) {
+            if (isAccelerating() && ClientUtils.shouldPlayDroneParticles()) {
                 int x = (int) Math.floor(getPosX());
                 int y = (int) Math.floor(getPosY() - 1);
                 int z = (int) Math.floor(getPosZ());
                 BlockPos pos = new BlockPos(x, y, z);
                 BlockState state = null;
-                for (int i = 0; i < 3; i++) {
+                for (int i = 0; i < 3; i++, y--) {
                     state = world.getBlockState(pos);
                     if (state.getMaterial() != Material.AIR) break;
-                    y--;
                 }
 
-                if (state.getMaterial() != Material.AIR && world.rand.nextBoolean()) {
+                if (state.getMaterial() != Material.AIR /*&& world.rand.nextBoolean()*/) {
                     Vector3d vec = new Vector3d(getPosY() - y, 0, 0);
                     vec = vec.rotateYaw((float) (rand.nextFloat() * Math.PI * 2));
                     IParticleData data = new BlockParticleData(ParticleTypes.BLOCK, state);

@@ -43,6 +43,7 @@ import org.lwjgl.glfw.GLFW;
 import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 /**
@@ -254,6 +255,15 @@ public class ClientUtils {
             if (I18n.hasKey(k)) {
                 tooltip.addAll(GuiUtils.xlateAndSplit(k).stream().map(s -> s.deepCopy().mergeStyle(TextFormatting.GRAY)).collect(Collectors.toList()));
             }
+        }
+    }
+
+    public static boolean shouldPlayDroneParticles() {
+        Random r = Minecraft.getInstance().world.rand;
+        switch (Minecraft.getInstance().gameSettings.particles) {
+            case ALL: return r.nextInt(3) == 0;
+            case DECREASED: return r.nextInt(12) == 0;
+            case MINIMAL: default: return false;
         }
     }
 }
