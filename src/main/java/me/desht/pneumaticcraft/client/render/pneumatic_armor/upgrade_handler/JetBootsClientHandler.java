@@ -111,6 +111,9 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
             if (drawShovel) {
                 GuiUtils.renderItemStack(matrixStack, new ItemStack(Items.DIAMOND_PICKAXE), xr - 30, jbStat.getBaseY());
             }
+            if (Minecraft.getInstance().player.isElytraFlying()) {
+                GuiUtils.renderItemStack(matrixStack, new ItemStack(Items.ELYTRA), xr - 46, jbStat.getBaseY());
+            }
         }
     }
 

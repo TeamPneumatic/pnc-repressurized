@@ -18,7 +18,11 @@ Changes are in reverse chronological order; newest changes at the top.
 * Added two new Lua methods to the Drone Interface
   * setCanSteal() - used by the "pickup_item" action, controls if the Drone may steal items off e.g. Immersive Engineering conveyors
   * setRightClickType() - used by the "block_right_click" action, controls if the Drone should be using an item or activating a block
-  
+* Jet Boots and Elytra now play more nicely together
+  * When player is Elytra-flying, switched-on Jet Boots won't fire, or use any air, unless player is actively thrusting (holding down Space bar)
+  * Allows players to glide with Elytra and fire Jet Boots for occasional thrust or altitude boost, a nice air saver
+  * Jet Boots HUD now shows an informational Elytra icon if player is Elytra-flying
+
 ### Fixes
 * Fixed PneumaticCraft blocks not remembering custom names assigned in an Anvil when the block is placed down & broken again
 * Fixed Pressure Tube shape not always updating properly after a tube module is added or removed

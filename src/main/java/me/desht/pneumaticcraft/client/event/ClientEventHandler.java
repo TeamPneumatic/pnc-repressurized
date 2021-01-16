@@ -285,6 +285,7 @@ public class ClientEventHandler {
     @SubscribeEvent
     public static void playerPreRotateEvent(RenderPlayerEvent.Pre event) {
         PlayerEntity player = event.getPlayer();
+        if (player.isElytraFlying()) return;
         JetBootsStateTracker tracker = JetBootsStateTracker.getTracker(player);
         JetBootsStateTracker.JetBootsState state = tracker.getJetBootsState(player);
         if (state != null && state.shouldRotatePlayer()) {
@@ -298,6 +299,7 @@ public class ClientEventHandler {
     @SubscribeEvent
     public static void playerPostRotateEvent(RenderPlayerEvent.Post event) {
         PlayerEntity player = event.getPlayer();
+        if (player.isElytraFlying()) return;
         JetBootsStateTracker tracker = JetBootsStateTracker.getTracker(player);
         JetBootsStateTracker.JetBootsState state = tracker.getJetBootsState(player);
         if (state != null && state.shouldRotatePlayer()) {

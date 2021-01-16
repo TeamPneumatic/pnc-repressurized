@@ -420,7 +420,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
                 }
                 if (player.isInWater()) jetbootsAirUsage *= 4;
                 jetBootsActiveTicks++;
-            } else if (isJetBootsEnabled() && !player.isOnGround()) {
+            } else if (isJetBootsEnabled() && !player.isOnGround() && !player.isElytraFlying()) {
                 // jetboots not firing, but enabled - slowly descend (or hover if enough upgrades)
                 setYMotion(player, player.isSneaking() ? -0.45 : -0.1 + 0.02 * jetbootsCount);
                 player.fallDistance = 0;

@@ -273,7 +273,7 @@ public class EventHandlerPneumaticArmor {
             for (PlayerEntity player : event.player.world.getPlayers()) {
                 if (!player.isOnGround() && isPneumaticArmorPiece(player, EquipmentSlotType.FEET)) {
                     JetBootsState state = tracker.getJetBootsState(player);
-                    if (state != null && state.isEnabled()) {
+                    if (state != null && state.isEnabled() && (!player.isElytraFlying() || state.isActive())) {
                         int nParticles = state.isActive() ? 5 : 1;
                         Vector3d jetVec = state.shouldRotatePlayer() ? player.getLookVec().scale(-0.5) : IDLE_VEC;
                         Vector3d feet = getFeetPos(player, state.shouldRotatePlayer());
