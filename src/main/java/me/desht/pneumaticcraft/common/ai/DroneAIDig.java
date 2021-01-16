@@ -28,16 +28,19 @@ public class DroneAIDig<W extends ProgWidgetAreaItemBase & IToolUser> extends Dr
     @Override
     protected boolean isValidPosition(BlockPos pos) {
         BlockState blockState = worldCache.getBlockState(pos);
-        Block block = blockState.getBlock();
-        if (!worldCache.getBlockState(pos).isAir(worldCache, pos) && !ignoreBlock(block) && !pos.equals(drone.getControllerPos())) {
-            for (ItemStack droppedStack : getDrops(worldCache, pos, drone)) {
-                if (progWidget.isItemValidForFilters(droppedStack, blockState)) {
-                    return swapBestItemToFirstSlot(pos) || !progWidget.requiresTool();
+        if (!ignoreBlock(blockState) && !pos.equals(drone.getControllerPos())) {
+            List<ItemStack> drops = getDrops(worldCache, pos, drone);
+            if (drops.isEmpty()) {
+                // for those blocks which drop no items at all, try a by-block check
+                return progWidget.isItemValidForFilters(ItemStack.EMPTY, blockState)
+                        && (swapBestItemToFirstSlot(pos) || !progWidget.requiresTool());
+            } else {
+                // match by dropped items as normal
+                for (ItemStack droppedStack : drops) {
+                    if (progWidget.isItemValidForFilters(droppedStack, blockState)) {
+                        return swapBestItemToFirstSlot(pos) || !progWidget.requiresTool();
+                    }
                 }
-            }
-            if (progWidget.isItemValidForFilters(ItemStack.EMPTY, blockState)) {
-                // try a by-block check
-                return swapBestItemToFirstSlot(pos) || !progWidget.requiresTool();
             }
         }
         return false;
@@ -93,7 +96,7 @@ public class DroneAIDig<W extends ProgWidgetAreaItemBase & IToolUser> extends Dr
         if (!manager.isDestroyingBlock || !manager.receivedFinishDiggingPacket) { //is not destroying and is not acknowledged.
             BlockState blockState = worldCache.getBlockState(pos);
             Block block = blockState.getBlock();
-            if (!ignoreBlock(block) && isBlockValidForFilter(worldCache, pos, drone, progWidget)) {
+            if (!ignoreBlock(blockState) && isBlockValidForFilter(worldCache, pos, drone, progWidget)) {
                 if (blockState.getBlockHardness(drone.world(), pos) < 0) {
                     addToBlacklist(pos);
                     drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.dig.debug.cantDigBlock", pos);
@@ -143,7 +146,7 @@ public class DroneAIDig<W extends ProgWidgetAreaItemBase & IToolUser> extends Dr
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    private static boolean ignoreBlock(Block block) {
-        return PneumaticCraftUtils.isBlockLiquid(block);
+    private static boolean ignoreBlock(BlockState state) {
+        return state.isAir() || PneumaticCraftUtils.isBlockLiquid(state.getBlock());
     }
 }
