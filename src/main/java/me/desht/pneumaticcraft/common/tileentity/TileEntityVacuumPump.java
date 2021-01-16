@@ -55,6 +55,7 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
         if (cap == PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY) {
+            if (world == null) return LazyOptional.empty();
             if (side == getVacuumSide()) {
                 return PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY.orEmpty(cap, vacuumCap);
             } else if (side != getInputSide() && side != null) {

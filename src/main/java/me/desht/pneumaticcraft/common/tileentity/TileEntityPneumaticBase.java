@@ -96,8 +96,8 @@ public abstract class TileEntityPneumaticBase extends TileEntityTickableBase {
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (cap == PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY) {
-            return side == null || canConnectPneumatic(side) ?
+        if (cap == PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY ) {
+            return world != null && (side == null || canConnectPneumatic(side)) ?
                     PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY.orEmpty(cap, airHandlerCap) :
                     LazyOptional.empty();
         } else {
