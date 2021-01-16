@@ -20,15 +20,18 @@ Changes are in reverse chronological order; newest changes at the top.
   * setRightClickType() - used by the "block_right_click" action, controls if the Drone should be using an item or activating a block
   
 ### Fixes
+* Fixed PneumaticCraft blocks not remembering custom names assigned in an Anvil when the block is placed down & broken again
 * Fixed Pressure Tube shape not always updating properly after a tube module is added or removed
 * Fixed Redstone Module clock mode tick lengths > 127 not working
 * Fixed Computer Control (Drone Interface) not working with several programming widgets (Block Right Click, Pickup Items, Place, Void Item, Void Liquid) 
   * Also cleaned up the Patchouli manual entry for the Drone Interface quite a bit
-* Fixed Block Tracker causing client crash when looking at (vanilla) mob spawners with an Enderman spawn egg loaded
+* Fixed Block Tracker causing client crash when looking at (vanilla) mob spawners with an Enderman (or any angerable creature) spawn egg loaded
   * Probably caused by https://bugs.mojang.com/browse/MC-189565 but I've added some extra validation to prevent an outright crash
 * Hopefully fix worldgen-related crash caused by other worldgen intersecting PneumaticCraft villager houses
   * Couldn't reproduce myself, but some extra validation has been added
 * Fixed logic error in Drone Dig widget item filtering causing blacklisted items to be ignored
+* Fixed Programmer GUI inventory slots getting messed up after closing an item or inventory search window
+  * e.g. right click an Item Filter widget then press "Search Items...", then go back to the main Programmer GUI
 
 ## 2.9.2-116 (13 Jan 2021)
 
