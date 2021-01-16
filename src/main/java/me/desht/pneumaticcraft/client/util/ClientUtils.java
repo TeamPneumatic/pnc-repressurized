@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.util;
 
+import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetOptionBase;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.EntityTrackerClientHandler;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
@@ -8,6 +9,7 @@ import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.FirstPersonRenderer;
 import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.client.renderer.WorldRenderer;
@@ -78,9 +80,32 @@ public class ClientUtils {
         return InputMappings.isKeyDown(Minecraft.getInstance().getMainWindow().getHandle(), keyCode);
     }
 
+    /**
+     * Open a container-based GUI client-side. This is a cheeky hack, but appears to work. However, it is important
+     * to call {@link ClientUtils#closeContainerGui(Screen)} from the opened GUI's {@code onClose()} method to restore
+     * the player's openContainer to the correct container. Therefore the GUI being opened should remember the previous
+     * open GUI, and call {@link ClientUtils#closeContainerGui(Screen)} with that GUI as an argument.
+     *
+     * @param type the container type to open
+     * @param displayString container's display name
+     */
     public static void openContainerGui(ContainerType<? extends Container> type, ITextComponent displayString) {
-        // This windowId = -1 hack is ugly but appears to work...
         ScreenManager.openScreen(type, Minecraft.getInstance(), -1, displayString);
+    }
+
+    /**
+     * Close a container-based GUI, and restore the player's openContainer. See {@link ClientUtils#openContainerGui(ContainerType, ITextComponent)}
+     *
+     * @param parentScreen the previous-opened GUI, which will be re-opened
+     */
+    public static void closeContainerGui(Screen parentScreen) {
+        Minecraft mc = Minecraft.getInstance();
+        mc.displayGuiScreen(parentScreen);
+        if (parentScreen instanceof ContainerScreen) {
+            mc.player.openContainer = ((ContainerScreen<?>) parentScreen).getContainer();
+        } else if (parentScreen instanceof GuiProgWidgetOptionBase) {
+            mc.player.openContainer = ((GuiProgWidgetOptionBase<?>) parentScreen).getProgrammerContainer();
+        }
     }
 
     /**

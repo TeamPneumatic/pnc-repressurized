@@ -59,10 +59,7 @@ public class GuiInventorySearcher extends ContainerScreen<ContainerInventorySear
     public void closeScreen() {
         minecraft.keyboardListener.enableRepeatEvents(false);
         if (parentScreen != null) {
-            minecraft.displayGuiScreen(parentScreen);
-            if (parentScreen instanceof ContainerScreen) {
-                minecraft.player.openContainer = ((ContainerScreen) parentScreen).getContainer();
-            }
+            ClientUtils.closeContainerGui(parentScreen);
         } else {
             super.closeScreen();
         }

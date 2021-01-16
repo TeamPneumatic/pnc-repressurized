@@ -8,6 +8,7 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketProgrammerUpdate;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.inventory.container.Container;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -64,5 +65,9 @@ public abstract class GuiProgWidgetOptionBase<P extends IProgWidget> extends Gui
     @Override
     public boolean isPauseScreen() {
         return PNCConfig.Client.programmerGuiPauses;
+    }
+
+    public Container getProgrammerContainer() {
+        return guiProgrammer.getContainer();
     }
 }

@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.client.gui;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiArmorMainScreen;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.ContainerItemSearcher;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -130,10 +131,7 @@ public class GuiItemSearcher extends ContainerScreen<ContainerItemSearcher> {
     public void closeScreen() {
         minecraft.keyboardListener.enableRepeatEvents(false);
         if (parentScreen != null) {
-            minecraft.displayGuiScreen(parentScreen);
-            if (parentScreen instanceof ContainerScreen) {
-                minecraft.player.openContainer = ((ContainerScreen<?>) parentScreen).getContainer();
-            }
+            ClientUtils.closeContainerGui(parentScreen);
         } else {
             super.closeScreen();
         }
