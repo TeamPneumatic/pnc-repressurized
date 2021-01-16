@@ -24,7 +24,12 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed Redstone Module clock mode tick lengths > 127 not working
 * Fixed Computer Control (Drone Interface) not working with several programming widgets (Block Right Click, Pickup Items, Place, Void Item, Void Liquid) 
   * Also cleaned up the Patchouli manual entry for the Drone Interface quite a bit
-  
+* Fixed Block Tracker causing client crash when looking at (vanilla) mob spawners with an Enderman spawn egg loaded
+  * Probably caused by https://bugs.mojang.com/browse/MC-189565 but I've added some extra validation to prevent an outright crash
+* Hopefully fix worldgen-related crash caused by other worldgen intersecting PneumaticCraft villager houses
+  * Couldn't reproduce myself, but some extra validation has been added
+* Fixed logic error in Drone Dig widget item filtering causing blacklisted items to be ignored
+
 ## 2.9.2-116 (13 Jan 2021)
 
 ### Updates
