@@ -15,6 +15,7 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraft.world.spawner.AbstractSpawner;
@@ -48,6 +49,12 @@ public class BlockTrackEntryMobSpawner implements IBlockTrackEntry {
         if (te instanceof MobSpawnerTileEntity) {
             AbstractSpawner spawner = ((MobSpawnerTileEntity) te).getSpawnerBaseLogic();
             Entity e = spawner.getCachedEntity();
+            if (e == null) {
+                // seems to happen with enderman spawners, possibly related to EndermanEntity#readAdditional() doing a bad world cast
+                // certainly spams a lot a vanilla-related errors
+                infoList.add(new StringTextComponent("<ERROR> Missing entity?"));
+                return;
+            }
             infoList.add(xlate("pneumaticcraft.blockTracker.info.spawner.type", e.getName().getString()));
             if (Reflections.isActivated(spawner) || hasAgitator(world, pos)) {
                 infoList.add(xlate("pneumaticcraft.blockTracker.info.spawner.time",
