@@ -50,6 +50,9 @@ public abstract class GuiProgWidgetOptionBase<P extends IProgWidget> extends Gui
 
     @Override
     public void onClose() {
+        // Important: when overriding this in subclasses, copy any update gui data into the
+        // progwidget BEFORE calling super.close() !
+
         if (guiProgrammer != null) {
             NetworkHandler.sendToServer(new PacketProgrammerUpdate(guiProgrammer.te));
         } else {

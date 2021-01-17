@@ -55,7 +55,7 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
         if (variable.equals("") && filter == null) {
             curInfo.add(xlate("pneumaticcraft.gui.progWidget.itemFilter.error.noFilter"));
         }
-        if (matchBlock && !(filter.getItem() instanceof BlockItem)) {
+        if (matchBlock && !(filter.getItem() instanceof BlockItem) && variable.isEmpty()) {
             curInfo.add(xlate("pneumaticcraft.gui.progWidget.itemFilter.error.notBlock"));
         }
     }
@@ -96,7 +96,10 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
     @Override
     public void getTooltip(List<ITextComponent> curTooltip) {
         super.getTooltip(curTooltip);
-        if (!filter.isEmpty()) {
+
+        if (!variable.isEmpty()) {
+            curTooltip.add(xlate("pneumaticcraft.gui.progWidget.coordinate.variable").appendString(": ").append(varAsTextComponent(variable)).mergeStyle(TextFormatting.AQUA));
+        } else if (!filter.isEmpty()) {
             curTooltip.add(xlate("pneumaticcraft.gui.progWidget.itemFilter.filterLabel").mergeStyle(TextFormatting.AQUA)
                     .appendString(": ").append(filter.getDisplayName()));
             if (filter.getItem() == ModItems.TAG_FILTER.get()) {
@@ -104,18 +107,18 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
                         .map(s -> GuiConstants.bullet().append(new StringTextComponent(s.toString()).mergeStyle(TextFormatting.YELLOW)))
                         .collect(Collectors.toList()));
             }
-            if (useModSimilarity) {
-                curTooltip.add(xlate("pneumaticcraft.gui.progWidget.itemFilter.matchMod", ModNameCache.getModName(filter.getItem()))
-                        .mergeStyle(TextFormatting.DARK_AQUA));
-            } else if (matchBlock) {
-                curTooltip.add(xlate("pneumaticcraft.gui.progWidget.itemFilter.matchBlock")
-                        .mergeStyle(TextFormatting.DARK_AQUA));
-            } else {
-                curTooltip.add(xlate("pneumaticcraft.gui.progWidget.itemFilter." + (useItemDurability ? "useDurability" : "ignoreDurability"))
-                        .mergeStyle(TextFormatting.DARK_AQUA));
-                curTooltip.add(xlate("pneumaticcraft.gui.progWidget.itemFilter." + (useNBT ? "useNBT" : "ignoreNBT"))
-                        .mergeStyle(TextFormatting.DARK_AQUA));
-            }
+        }
+        if (useModSimilarity) {
+            curTooltip.add(xlate("pneumaticcraft.gui.progWidget.itemFilter.matchMod", ModNameCache.getModName(filter.getItem()))
+                    .mergeStyle(TextFormatting.DARK_AQUA));
+        } else if (matchBlock) {
+            curTooltip.add(xlate("pneumaticcraft.gui.progWidget.itemFilter.matchBlock")
+                    .mergeStyle(TextFormatting.DARK_AQUA));
+        } else {
+            curTooltip.add(xlate("pneumaticcraft.gui.progWidget.itemFilter." + (useItemDurability ? "useDurability" : "ignoreDurability"))
+                    .mergeStyle(TextFormatting.DARK_AQUA));
+            curTooltip.add(xlate("pneumaticcraft.gui.progWidget.itemFilter." + (useNBT ? "useNBT" : "ignoreNBT"))
+                    .mergeStyle(TextFormatting.DARK_AQUA));
         }
     }
 

@@ -4,9 +4,11 @@ This is an overview of significant new features and fixes by release.  See https
 
 Changes are in reverse chronological order; newest changes at the top.
 
-## Minecraft 1.16.3 / 1.16.4
+## Minecraft 1.16.3 / 1.16.4 / 1.16.5
 
-## 2.9.3-?? (unreleased)
+Note: PNC:R 2.9.3 has been successfully tested with Forge 36.0.0 on Minecraft 1.16.5.  Older recent versions will probably also work, but haven't been tested.
+
+## 2.9.3-120 (17 Jan 2020)
 
 ### Updates
 * Added Reinforced and Smart Chest Upgrade Kit items
@@ -22,6 +24,9 @@ Changes are in reverse chronological order; newest changes at the top.
   * When player is Elytra-flying, switched-on Jet Boots won't fire, or use any air, unless player is actively thrusting (holding down Space bar)
   * Allows players to glide with Elytra and fire Jet Boots for occasional thrust or altitude boost, a nice air saver
   * Jet Boots HUD now shows an informational Elytra icon if player is Elytra-flying
+* Item Filter progwidget GUI improvements
+  * Add radio boxes to choose filtering by item (the default) or by variable
+  * Cleaner GUI layout: only show GUI controls relevant to the current mode (item or variable)
 
 ### Fixes
 * Fixed PneumaticCraft blocks not remembering custom names assigned in an Anvil when the block is placed down & broken again
@@ -29,13 +34,14 @@ Changes are in reverse chronological order; newest changes at the top.
 * Fixed Redstone Module clock mode tick lengths > 127 not working
 * Fixed Computer Control (Drone Interface) not working with several programming widgets (Block Right Click, Pickup Items, Place, Void Item, Void Liquid) 
   * Also cleaned up the Patchouli manual entry for the Drone Interface quite a bit
-* Fixed Block Tracker causing client crash when looking at (vanilla) mob spawners with an Enderman (or any angerable creature) spawn egg loaded
-  * Probably caused by https://bugs.mojang.com/browse/MC-189565 but I've added some extra validation to prevent an outright crash
+* Fixed Block Tracker causing client crash when tracking vanilla mob spawners with an Enderman (or any angerable creature) spawn egg loaded
+  * Caused by https://bugs.mojang.com/browse/MC-189565 but I've added some extra validation to prevent an outright crash
 * Hopefully fix worldgen-related crash caused by other worldgen intersecting PneumaticCraft villager houses
   * Couldn't reproduce myself, but some extra validation has been added
 * Fixed logic error in Drone Dig widget item filtering causing blacklisted items to be ignored
 * Fixed Programmer GUI inventory slots getting messed up after closing an item or inventory search window
   * e.g. right click an Item Filter widget then press "Search Items...", then go back to the main Programmer GUI
+* Fixed Item Filter progwidget GUI not properly sync'ing variable names when GUI closed
 
 ## 2.9.2-116 (13 Jan 2021)
 

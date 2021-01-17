@@ -12,7 +12,7 @@ public class ProgWidgetItemFilterGhost implements IGhostIngredientHandler<GuiPro
     @Override
     public <I> List<Target<I>> getTargets(GuiProgWidgetItemFilter gui, I ingredient, boolean doStart) {
         //noinspection unchecked
-        return Collections.singletonList((Target<I>) new ItemTarget(gui));
+        return gui.itemX >= 0 ? Collections.singletonList((Target<I>) new ItemTarget(gui)) : Collections.emptyList();
     }
 
     @Override
@@ -25,7 +25,7 @@ public class ProgWidgetItemFilterGhost implements IGhostIngredientHandler<GuiPro
 
         ItemTarget(GuiProgWidgetItemFilter gui) {
             this.gui = gui;
-            this.area = new Rectangle2d(gui.guiLeft + 50, gui.guiTop + 52, 16, 16);
+            this.area = new Rectangle2d(gui.guiLeft + gui.itemX + 1, gui.guiTop + 52, 16, 16);
         }
 
         @Override
