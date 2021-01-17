@@ -8,12 +8,15 @@ import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.entity.living.EntityDroneBase;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.entity.IEntityRenderer;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.vector.Matrix4f;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.math.vector.Vector3f;
 
 public class DroneDigLaserLayer extends LayerRenderer<EntityDroneBase, ModelDrone> {
@@ -30,9 +33,18 @@ public class DroneDigLaserLayer extends LayerRenderer<EntityDroneBase, ModelDron
             matrixStackIn.push();
             matrixStackIn.rotate(Vector3f.XP.rotationDegrees(180));
             matrixStackIn.translate(0, -1, 0);
-            renderLaser(matrixStackIn, bufferIn, partialTicks, entityIn,
-                    0, -entityIn.getLaserOffsetY(), 0,
-                    diggingPos.getX() + 0.5 - entityIn.getPosX(), diggingPos.getY() + 0.45 - entityIn.getPosY(), diggingPos.getZ() + 0.5 - entityIn.getPosZ());
+            BlockState state = entityIn.getEntityWorld().getBlockState(diggingPos);
+            VoxelShape shape = state.getShape(entityIn.getEntityWorld(), diggingPos);
+            if (shape.isEmpty()) {
+                renderLaser(matrixStackIn, bufferIn, partialTicks, entityIn,
+                        0, -entityIn.getLaserOffsetY(), 0,
+                        diggingPos.getX() + 0.5 - entityIn.getPosX(), diggingPos.getY() + 0.45 - entityIn.getPosY(), diggingPos.getZ() + 0.5 - entityIn.getPosZ());
+            } else {
+                Vector3d vec = shape.getBoundingBox().getCenter().add(Vector3d.copy(diggingPos));
+                renderLaser(matrixStackIn, bufferIn, partialTicks, entityIn,
+                        0, -entityIn.getLaserOffsetY(), 0,
+                        vec.getX() - entityIn.getPosX(), vec.getY() - entityIn.getPosY(), vec.getZ() - entityIn.getPosZ());
+            }
             matrixStackIn.pop();
         }
     }
@@ -87,9 +99,9 @@ public class DroneDigLaserLayer extends LayerRenderer<EntityDroneBase, ModelDron
     }
 
     private void renderQuad(Matrix4f posMat, IVertexBuilder builder, int[] cols) {
-        builder.pos(posMat,-0.5f, 0f, 0f).color(cols[1], cols[2], cols[3], cols[0]).tex(0, 0).lightmap(0x00F00F0).endVertex();
-        builder.pos(posMat,-0.5f, 1f, 0f).color(cols[1], cols[2], cols[3], cols[0]).tex(0, 1).lightmap(0x00F00F0).endVertex();
-        builder.pos(posMat, 0.5f, 1f, 0f).color(cols[1], cols[2], cols[3], cols[0]).tex(1, 1).lightmap(0x00F00F0).endVertex();
-        builder.pos(posMat, 0.5f, 0f, 0f).color(cols[1], cols[2], cols[3], cols[0]).tex(1, 0).lightmap(0x00F00F0).endVertex();
+        builder.pos(posMat,-0.5f, 0f, 0f).color(cols[1], cols[2], cols[3], cols[0]).tex(0, 0).lightmap(RenderUtils.FULL_BRIGHT).endVertex();
+        builder.pos(posMat,-0.5f, 1f, 0f).color(cols[1], cols[2], cols[3], cols[0]).tex(0, 1).lightmap(RenderUtils.FULL_BRIGHT).endVertex();
+        builder.pos(posMat, 0.5f, 1f, 0f).color(cols[1], cols[2], cols[3], cols[0]).tex(1, 1).lightmap(RenderUtils.FULL_BRIGHT).endVertex();
+        builder.pos(posMat, 0.5f, 0f, 0f).color(cols[1], cols[2], cols[3], cols[0]).tex(1, 0).lightmap(RenderUtils.FULL_BRIGHT).endVertex();
     }
 }
