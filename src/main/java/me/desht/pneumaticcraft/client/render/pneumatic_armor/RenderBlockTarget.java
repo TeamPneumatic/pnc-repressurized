@@ -185,7 +185,7 @@ public class RenderBlockTarget {
             } else if (ticksExisted < -30) {
                 matrixStack.scale(1.5F, 1.5F, 1.5F);
                 stat.renderStat(matrixStack, buffer, partialTicks);
-                RenderUtils.renderString3d("Lost Target!", 0, 0, 0xFFFF0000, matrixStack, buffer, false, true);
+                RenderUtils.renderString3d(I18n.format("pneumaticcraft.blockTracker.info.lostTarget"), 0, -ticksExisted / 2.5f, 0xFFFF0000, matrixStack, buffer, false, true);
             }
         }
 

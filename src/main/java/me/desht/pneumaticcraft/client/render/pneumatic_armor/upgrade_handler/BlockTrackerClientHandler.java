@@ -61,6 +61,7 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
     @Override
     public void tickClient(ICommonArmorHandler armorHandler) {
         int blockTrackRange = BLOCK_TRACKING_RANGE + Math.min(armorHandler.getUpgradeCount(EquipmentSlotType.HEAD, EnumUpgrade.RANGE), 5) * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE;
+        int blockTrackRangeSq = blockTrackRange * blockTrackRange;
 
         long now = System.nanoTime();
 
@@ -102,7 +103,7 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
                         // we already have a tracker active for this pos
                         blockTarget.ticksExisted = Math.abs(blockTarget.ticksExisted); // cancel possible "lost target" status
                         blockTarget.setTileEntity(te);
-                    } else {
+                    } else if (pos.distanceSq(player.getPosition()) < blockTrackRangeSq) {
                         // no tracker currently active - add one
                         RenderBlockTarget target = addBlockTarget(new RenderBlockTarget(world, player, pos.toImmutable(), te, this));
                         target.maybeRefreshFromServer(entries);
@@ -242,18 +243,21 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
      */
     private void processTrackerEntries(PlayerEntity player, int blockTrackRange) {
         List<RenderBlockTarget> toRemove = new ArrayList<>();
+        int rangeSq = (blockTrackRange + 5) * (blockTrackRange + 5);
+        int incr = CommonArmorHandler.getHandlerForPlayer(player).getSpeedFromUpgrades(EquipmentSlotType.HEAD);
         for (RenderBlockTarget blockTarget : blockTargets.values()) {
             boolean wasNegative = blockTarget.ticksExisted < 0;
-            blockTarget.ticksExisted += CommonArmorHandler.getHandlerForPlayer(player).getSpeedFromUpgrades(EquipmentSlotType.HEAD);
+            blockTarget.ticksExisted += incr;
             if (blockTarget.ticksExisted >= 0 && wasNegative) {
                 blockTarget.ticksExisted = -1;
             }
 
             blockTarget.tick();
 
-            if (blockTarget.getDistanceToEntity(player) > blockTrackRange + 5 || !blockTarget.isTargetStillValid()) {
+            BlockPos pos = blockTarget.getPos();
+            if (player.getDistanceSq(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D) > rangeSq || !blockTarget.isTargetStillValid()) {
                 if (blockTarget.ticksExisted > 0) {
-                    blockTarget.ticksExisted = -60;
+                    blockTarget.ticksExisted = -100;
                 } else if (blockTarget.ticksExisted == -1) {
                     toRemove.add(blockTarget);
                 }

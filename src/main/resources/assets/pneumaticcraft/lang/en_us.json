@@ -677,6 +677,7 @@
    "pneumaticcraft.blockTracker.info.fluids.tankFull" : "Tank %d: %d/%dmB %s",
    "pneumaticcraft.blockTracker.info.hydraulicraft" : "Hydraulicraft Power Block",
    "pneumaticcraft.blockTracker.info.ic2" : "IC2 Power Block",
+   "pneumaticcraft.blockTracker.info.lostTarget" : "Lost Target!",
    "pneumaticcraft.blockTracker.info.noTrackedBlocks" : "Tracking no Blocks",
    "pneumaticcraft.blockTracker.info.peripheral.availableMethods" : "Available Methods:",
    "pneumaticcraft.blockTracker.info.peripheral.title" : "ComputerCraft Peripheral",
