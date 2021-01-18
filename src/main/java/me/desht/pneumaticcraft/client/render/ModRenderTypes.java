@@ -75,7 +75,7 @@ public class ModRenderTypes extends RenderType {
                         .shadeModel(SHADE_ENABLED)
                         .diffuseLighting(DIFFUSE_LIGHTING_ENABLED)
                         .lightmap(LIGHTMAP_ENABLED)
-                        .cull(CULL_ENABLED)
+                        .cull(CULL_DISABLED)
                         .depthTest(disableDepthTest ? DEPTH_ALWAYS : DEPTH_LEQUAL)
                         .writeMask(disableDepthTest ? COLOR_WRITE : COLOR_DEPTH_WRITE)
                         .build(false)
