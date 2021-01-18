@@ -17,6 +17,7 @@ import me.desht.pneumaticcraft.common.network.PacketHackingBlockStart;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -218,7 +219,8 @@ public class RenderBlockTarget {
         }
         matrixStack.push();
         matrixStack.translate(-0.5, -0.5, -0.5);
-        RenderUtils.renderFrame(matrixStack, buffer, aabb, 1/64f, 0.25f, 0.75f, 0.75f, alpha, RenderUtils.FULL_BRIGHT, true);
+        RenderType type = RenderUtils.renderFrame(matrixStack, buffer, aabb, 1/64f, 0.25f, 0.75f, 0.75f, alpha, RenderUtils.FULL_BRIGHT, true);
+        RenderUtils.finishBuffer(buffer, type);
         matrixStack.pop();
     }
 

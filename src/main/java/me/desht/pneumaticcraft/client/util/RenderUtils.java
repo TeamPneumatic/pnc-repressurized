@@ -93,7 +93,8 @@ public class RenderUtils {
 //        GlStateManager.enableTexture();
 //    }
 
-    public static void renderFrame(MatrixStack matrixStack, IRenderTypeBuffer buffer, AxisAlignedBB aabb, float fw, float r, float g, float b, float a, int packedLightIn, boolean disableDepthTest) {
+    public static RenderType renderFrame(MatrixStack matrixStack, IRenderTypeBuffer buffer, AxisAlignedBB aabb, float fw, float r, float g, float b, float a, int packedLightIn, boolean disableDepthTest) {
+        RenderType type = ModRenderTypes.getBlockFrame(disableDepthTest);
         IVertexBuilder builder = buffer.getBuffer(ModRenderTypes.getBlockFrame(disableDepthTest));
         Matrix4f posMat = matrixStack.getLast().getMatrix();
 
@@ -111,6 +112,8 @@ public class RenderUtils {
         renderOffsetAABB(posMat, builder, new AxisAlignedBB(aabb.maxX - fw, aabb.minY - fw, aabb.minZ - fw, aabb.maxX + fw, aabb.maxY + fw, aabb.minZ + fw), r, g, b, a, packedLightIn);
         renderOffsetAABB(posMat, builder, new AxisAlignedBB(aabb.minX - fw, aabb.minY - fw, aabb.maxZ - fw, aabb.minX + fw, aabb.maxY + fw, aabb.maxZ + fw), r, g, b, a, packedLightIn);
         renderOffsetAABB(posMat, builder, new AxisAlignedBB(aabb.maxX - fw, aabb.minY - fw, aabb.maxZ - fw, aabb.maxX + fw, aabb.maxY + fw, aabb.maxZ + fw), r, g, b, a, packedLightIn);
+
+        return type;
     }
 
     private static void renderOffsetAABB(Matrix4f posMat, IVertexBuilder builder, AxisAlignedBB aabb, float r, float g, float b, float a, int packedLightIn) {
