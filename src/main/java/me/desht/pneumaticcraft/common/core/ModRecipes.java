@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.core;
 
 import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipeTypes;
 import me.desht.pneumaticcraft.api.crafting.ShapedPressurizableRecipe;
+import me.desht.pneumaticcraft.api.crafting.ShapedRecipeNoMirror;
 import me.desht.pneumaticcraft.api.crafting.recipe.*;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
 import me.desht.pneumaticcraft.common.recipes.machine.*;
@@ -72,6 +73,9 @@ public class ModRecipes {
             = RECIPES.register("drone_color_crafting", () -> new SpecialRecipeSerializer<>(DroneColorCrafting::new));
     public static final RegistryObject<SpecialRecipeSerializer<PatchouliBookCrafting>> PATCHOULI_BOOK_CRAFTING
             = RECIPES.register("patchouli_book_crafting", () -> new SpecialRecipeSerializer<>(PatchouliBookCrafting::new));
+
     public static final RegistryObject<ShapedPressurizableRecipe.Serializer> CRAFTING_SHAPED_PRESSURIZABLE
             = RECIPES.register("crafting_shaped_pressurizable", ShapedPressurizableRecipe.Serializer::new);
+    public static final RegistryObject<ShapedRecipeNoMirror.Serializer> CRAFTING_SHAPED_NO_MIRROR
+            = RECIPES.register("crafting_shaped_no_mirror", ShapedRecipeNoMirror.Serializer::new);
 }

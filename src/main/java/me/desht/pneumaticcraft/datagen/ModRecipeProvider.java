@@ -151,7 +151,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON
         ).build(consumer);
 
-        shaped(ModBlocks.ASSEMBLY_IO_UNIT_IMPORT.get(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
+        shapedNoMirror(ModBlocks.ASSEMBLY_IO_UNIT_IMPORT.get(), ModItems.PRINTED_CIRCUIT_BOARD.get(), 1,
                 "HCC/  C/IBI",
                 'H', Blocks.HOPPER,
                 'C', ModItems.PNEUMATIC_CYLINDER.get(),
@@ -159,7 +159,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON
         ).build(consumer);
 
-        shaped(ModBlocks.ASSEMBLY_IO_UNIT_EXPORT.get(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
+        shapedNoMirror(ModBlocks.ASSEMBLY_IO_UNIT_EXPORT.get(), ModItems.PRINTED_CIRCUIT_BOARD.get(), 1,
                 "CCH/C  /IBI",
                 'H', Blocks.HOPPER,
                 'C', ModItems.PNEUMATIC_CYLINDER.get(),
@@ -1443,48 +1443,39 @@ public class ModRecipeProvider extends RecipeProvider {
         );
     }
 
-    private <T extends IItemProvider & IForgeRegistryEntry<?>> ShapedPressurizableRecipeBuilder shapedPressure(T result, T required, String pattern, Object... keys) {
-        ShapedPressurizableRecipeBuilder b = ShapedPressurizableRecipeBuilder.shapedRecipe(result);
-        Arrays.stream(pattern.split("/")).forEach(b::patternLine);
+    private <T extends IItemProvider & IForgeRegistryEntry<?>, U extends ShapedRecipeBuilder> U genericShaped(U builder, T result, T required, String pattern, Object... keys) {
+        Arrays.stream(pattern.split("/")).forEach(builder::patternLine);
         for (int i = 0; i < keys.length; i += 2) {
             Object v = keys[i + 1];
             if (v instanceof ITag<?>) {
                 //noinspection unchecked
-                b.key((Character) keys[i], (ITag<Item>) v);
+                builder.key((Character) keys[i], (ITag<Item>) v);
             } else if (v instanceof IItemProvider) {
-                b.key((Character) keys[i], (IItemProvider) v);
+                builder.key((Character) keys[i], (IItemProvider) v);
             } else if (v instanceof Ingredient) {
-                b.key((Character) keys[i], (Ingredient) v);
+                builder.key((Character) keys[i], (Ingredient) v);
             } else {
                 throw new IllegalArgumentException("bad type for recipe ingredient " + v);
             }
         }
-        b.addCriterion("has_" + safeName(required), hasItem(required));
-        return b;
+        builder.addCriterion("has_" + safeName(required), hasItem(required));
+        return builder;
+    }
+
+    private <T extends IItemProvider & IForgeRegistryEntry<?>> ShapedPressurizableRecipeBuilder shapedPressure(T result, T required, String pattern, Object... keys) {
+        return genericShaped(ShapedPressurizableRecipeBuilder.shapedRecipe(result), result, required, pattern, keys);
+    }
+
+    private <T extends IItemProvider & IForgeRegistryEntry<?>> ShapedNoMirrorRecipeBuilder shapedNoMirror(T result, T required, int count, String pattern, Object... keys) {
+        return genericShaped(ShapedNoMirrorRecipeBuilder.shapedRecipe(result, count), result, required, pattern, keys);
+    }
+
+    private <T extends IItemProvider & IForgeRegistryEntry<?>> ShapedRecipeBuilder shaped(T result, int count, T required, String pattern, Object... keys) {
+        return genericShaped(ShapedRecipeBuilder.shapedRecipe(result, count), result, required, pattern, keys);
     }
 
     private <T extends IItemProvider & IForgeRegistryEntry<?>> ShapedRecipeBuilder shaped(T result, T required, String pattern, Object... keys) {
         return shaped(result, 1, required, pattern, keys);
-    }
-
-    private <T extends IItemProvider & IForgeRegistryEntry<?>> ShapedRecipeBuilder shaped(T result, int count, T required, String pattern, Object... keys) {
-        ShapedRecipeBuilder b = ShapedRecipeBuilder.shapedRecipe(result, count);
-        Arrays.stream(pattern.split("/")).forEach(b::patternLine);
-        for (int i = 0; i < keys.length; i += 2) {
-            Object v = keys[i + 1];
-            if (v instanceof ITag<?>) {
-                //noinspection unchecked
-                b.key((Character) keys[i], (ITag<Item>) v);
-            } else if (v instanceof IItemProvider) {
-                b.key((Character) keys[i], (IItemProvider) v);
-            } else if (v instanceof Ingredient) {
-                b.key((Character) keys[i], (Ingredient) v);
-            } else {
-                throw new IllegalArgumentException("bad type for recipe ingredient " + v);
-            }
-        }
-        b.addCriterion("has_" + safeName(required), hasItem(required));
-        return b;
     }
 
     private ShapedRecipeBuilder plasticBrick(DyeColor color, ITag<Item> dyeIngredient) {
