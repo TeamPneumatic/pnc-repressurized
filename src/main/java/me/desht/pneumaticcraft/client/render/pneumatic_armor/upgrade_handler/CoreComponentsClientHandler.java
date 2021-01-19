@@ -128,6 +128,7 @@ public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.Abst
     @Override
     public IGuiAnimatedStat getAnimatedStat() {
         if (powerStat == null) {
+            forceUpdatePressureStat = true;
             powerStat = new WidgetAnimatedStat(null, StringTextComponent.EMPTY, WidgetAnimatedStat.StatIcon.NONE,0x3000AA00, null, ArmorHUDLayout.INSTANCE.powerStat);
             powerStat.setLineSpacing(15);
             powerStat.setSubwidgetRenderOffsets(-18, 0);  // ensure armor icons are rendered in the right place
