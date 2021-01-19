@@ -60,6 +60,7 @@ public class PNCConfig {
             public static Set<ResourceLocation> vacuumTrapBlacklist;
             public static Set<String> oilWorldGenCategoryBlacklist;
             public static int surfaceOilGenerationChance;
+            public static boolean droneDebuggerPathParticles;
         }
 
         public static class Machines {

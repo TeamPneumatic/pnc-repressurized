@@ -9,6 +9,7 @@ import java.util.List;
 
 public class CommonConfig {
     public static class General {
+        ForgeConfigSpec.BooleanValue droneDebuggerPathParticles;
         ForgeConfigSpec.IntValue oilGenerationChance;
         ForgeConfigSpec.IntValue surfaceOilGenerationChance;
         ForgeConfigSpec.BooleanValue enableDungeonLoot;
@@ -203,12 +204,16 @@ public class CommonConfig {
                 .define("use_up_dyes_when_coloring", false);
         general.dronesRenderHeldItem = builder
                 .comment("Drones render their held item (the item in slot 0 of their inventory) ?  Note: this is in common config since if enabled, server needs to sync the item data to the client.")
-                .translation("pneumaticcraft.config.client.general.drones_render_held_item")
+                .translation("pneumaticcraft.config.common.general.drones_render_held_item")
                 .define("drones_render_held_item", true);
         general.dronesCanImportXPOrbs = builder
                 .comment("Are drones allowed to import Experience Orbs and convert them to Memory Essence fluid?")
-                .translation("pneumaticcraft.config.client.general.drones_can_import_xp_orbs")
+                .translation("pneumaticcraft.config.common.general.drones_can_import_xp_orbs")
                 .define("drones_can_import_xp_orbs", true);
+        general.droneDebuggerPathParticles = builder
+                .comment("Show particle trail indicating the currently-debugged drone's planned path")
+                .translation("pneumaticcraft.config.common.general.drone_debugger_path_particles")
+                .define("drone_debugger_path_particles", true);
         general.vacuumTrapBlacklist = builder
                 .comment("Blacklisted entity ID's, which the Vacuum Trap will not try to absorb. Note that players, tamed entities, boss entities, and PneumaticCraft drones may never be absorbed, regardless of config settings.")
                 .translation("pneumaticcraft.config.common.general.vacuum_trap_blacklist")
