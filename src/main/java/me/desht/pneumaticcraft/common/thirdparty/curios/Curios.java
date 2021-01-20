@@ -15,6 +15,7 @@ import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.type.capability.ICuriosItemHandler;
 import top.theillusivec4.curios.api.type.inventory.ICurioStacksHandler;
 
+import javax.annotation.Nonnull;
 import java.util.Map;
 import java.util.function.Predicate;
 
@@ -85,7 +86,7 @@ public class Curios implements IThirdParty {
         }).orElse(NONE);
     }
 
-    public static IItemHandler makeCombinedInvWrapper(PlayerEntity player) {
+    public static IItemHandler makeCombinedInvWrapper(@Nonnull PlayerEntity player) {
         return CuriosApi.getCuriosHelper().getCuriosHandler(player)
                 .map(handler -> new CombinedInvWrapper(handler.getCurios().values().stream()
                         .map(ICurioStacksHandler::getStacks)

@@ -59,6 +59,7 @@ public abstract class TileEntityPneumaticBase extends TileEntityTickableBase {
     public void tick() {
         super.tick();
 
+        // note: needs to tick client-side too (for handling leak particles & sounds)
         airHandlerMap.keySet().forEach(handler -> handler.tick(this));
     }
 
