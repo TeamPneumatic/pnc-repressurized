@@ -216,7 +216,6 @@ public enum HUDHandler implements IKeyListener {
         // render every pending message
         pendingMessages.forEach(message -> message.renderMessage(matrixStack, partialTicks));
 
-        RenderSystem.disableBlend();
         matrixStack.pop();
 
         RenderSystem.color4f(1, 1, 1, 1);
@@ -230,6 +229,8 @@ public enum HUDHandler implements IKeyListener {
                 }
             }
         }
+
+        RenderSystem.enableBlend(); // without this, nether portal overlay rendering will be broken
     }
 
     @SubscribeEvent
