@@ -6,8 +6,27 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.16.3 / 1.16.4 / 1.16.5
 
-Note: PNC:R 2.9.3 has been successfully tested with Forge 36.0.0 on Minecraft 1.16.5.  Older recent versions will probably also work, but haven't been tested.
+Note: PNC:R 2.9.3 and later have been successfully tested with Forge 36.0.0 on Minecraft 1.16.5.  Older recent versions will probably also work, but haven't been tested.
 
+## 2.9.4-?? (unreleased)
+
+### Updates
+* Harvesting Drones (and the Harvesting progwidget) now know about Sweet Berries and Kelp
+  * For Sweet Berry Harvesting Drones, Magnet and Item Life upgrades are strongly recommended due to the thorny nature of the bushes
+  * For Kelp Harvesting Drones, one (and only one) Security Upgrade is vital for the Drone to operate underwater
+  * Note: avoid using Lily Pads around Drones which need to fly in and out of water; it confuses their pathfinding badly
+* Poisonous Potatoes and Sweet Berries can now be used in the Thermopneumatic Processing Plant to make Ethanol
+* Drone debugger now highlights the planned path for a debugged Drone when it's moving, as a trail of particles
+  * Can be disabled in config: `drone_debugger_path_particles` in pneumaticcraft-common.toml
+
+### Fixes
+* Fixed Block Tracker block highlight frames not always rendering behind solid blocks
+* Fixed Pneumatic Armor pressure window not properly opening when Pneumatic Helmet first equipped
+* Fixed shaped recipe for Assembly IO Import Unit producing an Assembly IO Export Unit
+* Fix enchantments getting lost when using Pressure Chamber to transfer enchantments from Enchanted Book to enchantable item
+  * If the book had multiple enchantments, some of which were applicable to the item, and some not, the inapplicable enchantments would be lost
+  * Now any such enchantments stay on the book
+  
 ## 2.9.3-120 (17 Jan 2020)
 
 ### Updates
