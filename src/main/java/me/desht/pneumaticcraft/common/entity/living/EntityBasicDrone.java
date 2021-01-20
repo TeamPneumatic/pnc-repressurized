@@ -31,13 +31,6 @@ abstract class EntityBasicDrone extends EntityDrone {
             builder.add(new ProgWidgetStandby());
         }
     }
-
-//    void addBasicProgram(BlockPos pos, List<IProgWidget> widgets, IProgWidget mainProgram) {
-//        DroneProgramBuilder builder = new DroneProgramBuilder();
-//        builder.add(new ProgWidgetStart());
-//        builder.add(mainProgram, standard16x16x16Area(pos));
-//        widgets.addAll(builder.build());
-//    }
     
     static ProgWidgetArea standard16x16x16Area(BlockPos centerPos){
         return ProgWidgetArea.fromPositions(centerPos.add(-16, -16, -16), centerPos.add(16, 16, 16));

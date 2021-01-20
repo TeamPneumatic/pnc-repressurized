@@ -3,10 +3,7 @@ package me.desht.pneumaticcraft.common.core;
 import me.desht.pneumaticcraft.api.harvesting.HarvestHandler;
 import me.desht.pneumaticcraft.common.harvesting.*;
 import me.desht.pneumaticcraft.lib.Names;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.CocoaBlock;
-import net.minecraft.block.NetherWartBlock;
+import net.minecraft.block.*;
 import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.RegistryObject;
@@ -26,9 +23,16 @@ public class ModHarvestHandlers {
     public static final RegistryObject<HarvestHandler> CROPS = register("crops", HarvestHandlerCrops::new);
     public static final RegistryObject<HarvestHandler> NETHER_WART = register("nether_wart", () -> new HarvestHandlerCropLike(state ->
             state.getBlock() == Blocks.NETHER_WART, NetherWartBlock.AGE, stack -> stack.getItem() == Items.NETHER_WART));
+    public static final RegistryObject<HarvestHandler> SWEET_BERRIES = register("sweet_berries", () -> new HarvestHandlerCropLike(state ->
+            state.getBlock() == Blocks.SWEET_BERRY_BUSH, SweetBerryBushBlock.AGE, stack -> stack.getItem() == Items.SWEET_BERRIES) {
+        @Override
+        protected BlockState withMinAge(BlockState state) {
+            return state.with(SweetBerryBushBlock.AGE, 1);
+        }
+    });
     public static final RegistryObject<HarvestHandler> COCOA = register("cocoa_beans", () -> new HarvestHandlerCropLike(state ->
                 state.getBlock() == Blocks.COCOA, CocoaBlock.AGE, stack -> stack.getItem() == Items.COCOA_BEANS));
-    public static final RegistryObject<HarvestHandler> CACTUS = register("cactus_like", () -> new HarvestHandlerCactusLike(state -> state.getBlock() == Blocks.CACTUS || state.getBlock() == Blocks.SUGAR_CANE));
+    public static final RegistryObject<HarvestHandler> CACTUS = register("cactus_like", () -> new HarvestHandlerCactusLike(state -> state.getBlock() == Blocks.CACTUS || state.getBlock() == Blocks.SUGAR_CANE || state.getBlock() == Blocks.KELP_PLANT));
     public static final RegistryObject<HarvestHandler> PUMPKIN = register("pumpkin_like", () -> new HarvestHandler.SimpleHarvestHandler(Blocks.PUMPKIN, Blocks.MELON));
     public static final RegistryObject<HarvestHandler> LEAVES = register("leaves", HarvestHandlerLeaves::new);
     public static final RegistryObject<HarvestHandler> TREES = register("trees", HarvestHandlerTree::new);
