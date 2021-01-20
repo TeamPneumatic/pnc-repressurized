@@ -21,6 +21,7 @@ import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.util.CountedItemStacks;
 import me.desht.pneumaticcraft.common.util.ItemStackHandlerIterable;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.util.SizeLimitedItemHandlerWrapper;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
@@ -134,12 +135,15 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
                 isSufficientPressureInChamber = false;
                 recipePressure = Float.MAX_VALUE;
                 applicableRecipes.clear();
-                PneumaticCraftRecipeType.PRESSURE_CHAMBER.stream(world).forEach(recipe -> {
-                    Collection<Integer> slots = recipe.findIngredients(itemsInChamber);
-                    if (!slots.isEmpty()) {
-                        applicableRecipes.add(new ApplicableRecipe(recipe, slots));
-                    }
-                });
+                final SizeLimitedItemHandlerWrapper h = new SizeLimitedItemHandlerWrapper(itemsInChamber);
+                if (h.getSlots() > 0) {
+                    PneumaticCraftRecipeType.PRESSURE_CHAMBER.stream(world).forEach(recipe -> {
+                        Collection<Integer> slots = recipe.findIngredients(h);
+                        if (!slots.isEmpty()) {
+                            applicableRecipes.add(new ApplicableRecipe(recipe, slots));
+                        }
+                    });
+                }
                 isValidRecipeInChamber = !applicableRecipes.isEmpty();
                 // if we can't find a valid recipe, try coalescing itemstack in the chamber
                 // it's possible we have the right ingredients, but split across stacks

@@ -285,9 +285,6 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
                 ItemStack excess = IOHelper.insert(te, currentStack, Direction.UP, false);
                 itemHandler.setStackInSlot(0, excess);
                 currentStack = itemHandler.getStackInSlot(0);
-//                if (currentStack.isEmpty() || startSize != currentStack.getCount())
-//                    sendDescriptionPacket(); // TODO - is this still needed? Shouldn't @DescSynced on inventory take care of this?
-
                 if (!currentStack.isEmpty() && startSize == currentStack.getCount())
                     repeatDropOffSearch(); // target-inventory full or unavailable
             }
