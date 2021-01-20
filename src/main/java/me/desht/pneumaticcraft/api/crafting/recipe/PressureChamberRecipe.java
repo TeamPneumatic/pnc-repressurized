@@ -24,10 +24,12 @@ public abstract class PressureChamberRecipe extends PneumaticCraftRecipe {
     public abstract float getCraftingPressure();
 
     /**
-     * Try to find the ingredients for this recipe in the given item handler, which is all of the items currently in the
-     * pressure chamber. Returns a collection of slot indices into the item handler, which should be passed promptly to
-     * {@link #craftRecipe(IItemHandler, List)} and <strong>not cached across ticks</strong>, since the item handler
-     * could change in the meantime.
+     * When called (by the pressure chamber TE when it detects a change in the chamber contents), try to find the
+     * ingredients for this recipe in the given item handler, which represents all of the items currently in the
+     * pressure chamber. You must return a collection of slot indices into the item handler which contain the matching
+     * ingredients; those indics will be passed promptly to {@link #craftRecipe(IItemHandler, List)} by the pressure
+     * chamber. <strong>Do not cache this list across ticks</strong>, since the chamber contents are quite likely to
+     * change in the meantime.
      *
      * @param chamberHandler what's currently in the pressure chamber
      * @return if this recipe is valid, a list of slots in the item handler where the ingredients can be found; otherwise, an empty list

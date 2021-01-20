@@ -339,6 +339,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
      * @return true if all can be (were) inserted, false if not
      */
     private boolean giveOutput(NonNullList<ItemStack> stacks, boolean simulate) {
+        if (stacks.isEmpty()) return false;
         for (ItemStack stack : stacks) {
             stack = stack.copy();
             ItemStack result = ItemHandlerHelper.insertItem(craftedItems, stack, simulate);
