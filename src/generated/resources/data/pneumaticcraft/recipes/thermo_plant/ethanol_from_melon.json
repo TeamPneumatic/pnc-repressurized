@@ -16,6 +16,6 @@
     "min_temp": 303,
     "max_temp": 333
   },
-  "speed": 0.5,
+  "speed": 0.4,
   "exothermic": true
 }

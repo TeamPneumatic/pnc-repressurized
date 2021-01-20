@@ -1236,17 +1236,25 @@ public class ModRecipeProvider extends RecipeProvider {
                 TemperatureRange.of(303, 333), 0f, 0.5f, true
         ).build(consumer, RL("thermo_plant/ethanol_from_sugar"));
         thermoPlant(FluidIngredient.of(100, PneumaticCraftTags.Fluids.YEAST_CULTURE), Ingredient.fromTag(Tags.Items.CROPS_POTATO),
-                new FluidStack(ModFluids.ETHANOL.get(), 50), ItemStack.EMPTY,
+                new FluidStack(ModFluids.ETHANOL.get(), 25), ItemStack.EMPTY,
                 TemperatureRange.of(303, 333), 0f, 0.25f, true
         ).build(consumer, RL("thermo_plant/ethanol_from_potato"));
+        thermoPlant(FluidIngredient.of(100, PneumaticCraftTags.Fluids.YEAST_CULTURE), Ingredient.fromItems(Items.POISONOUS_POTATO),
+                new FluidStack(ModFluids.ETHANOL.get(), 50), ItemStack.EMPTY,
+                TemperatureRange.of(303, 333), 0f, 0.25f, true
+        ).build(consumer, RL("thermo_plant/ethanol_from_poisonous_potato"));
         thermoPlant(FluidIngredient.of(100, PneumaticCraftTags.Fluids.YEAST_CULTURE), Ingredient.fromItems(Items.APPLE),
                 new FluidStack(ModFluids.ETHANOL.get(), 50), ItemStack.EMPTY,
                 TemperatureRange.of(303, 333), 0f, 0.25f, true
         ).build(consumer, RL("thermo_plant/ethanol_from_apple"));
         thermoPlant(FluidIngredient.of(100, PneumaticCraftTags.Fluids.YEAST_CULTURE), Ingredient.fromItems(Items.MELON_SLICE),
                 new FluidStack(ModFluids.ETHANOL.get(), 10), ItemStack.EMPTY,
-                TemperatureRange.of(303, 333), 0f, 0.5f, true
+                TemperatureRange.of(303, 333), 0f, 0.4f, true
         ).build(consumer, RL("thermo_plant/ethanol_from_melon"));
+        thermoPlant(FluidIngredient.of(100, PneumaticCraftTags.Fluids.YEAST_CULTURE), Ingredient.fromItems(Items.SWEET_BERRIES),
+                new FluidStack(ModFluids.ETHANOL.get(), 20), ItemStack.EMPTY,
+                TemperatureRange.of(303, 333), 0f, 0.4f, true
+        ).build(consumer, RL("thermo_plant/ethanol_from_sweet_berries"));
         thermoPlant(FluidIngredient.EMPTY, Ingredient.fromTag(Tags.Items.SEEDS),
                 new FluidStack(ModFluids.VEGETABLE_OIL.get(), 50), ItemStack.EMPTY,
                 TemperatureRange.any(), 2f, 0.5f, false

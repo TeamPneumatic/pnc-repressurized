@@ -1,7 +1,7 @@
 {
   "type": "pneumaticcraft:thermo_plant",
   "item_input": {
-    "tag": "forge:crops/potato"
+    "item": "minecraft:sweet_berries"
   },
   "fluid_input": {
     "type": "pneumaticcraft:fluid",
@@ -10,12 +10,12 @@
   },
   "fluid_output": {
     "fluid": "pneumaticcraft:ethanol",
-    "amount": 25
+    "amount": 20
   },
   "temperature": {
     "min_temp": 303,
     "max_temp": 333
   },
-  "speed": 0.25,
+  "speed": 0.4,
   "exothermic": true
 }

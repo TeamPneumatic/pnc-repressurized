@@ -1,7 +1,7 @@
 {
   "type": "pneumaticcraft:thermo_plant",
   "item_input": {
-    "tag": "forge:crops/potato"
+    "item": "minecraft:poisonous_potato"
   },
   "fluid_input": {
     "type": "pneumaticcraft:fluid",
@@ -10,7 +10,7 @@
   },
   "fluid_output": {
     "fluid": "pneumaticcraft:ethanol",
-    "amount": 25
+    "amount": 50
   },
   "temperature": {
     "min_temp": 303,
