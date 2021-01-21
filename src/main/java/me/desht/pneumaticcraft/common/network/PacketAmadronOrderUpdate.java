@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.network;
 
+import me.desht.pneumaticcraft.client.gui.GuiAmadron;
 import me.desht.pneumaticcraft.common.inventory.ContainerAmadron;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
@@ -8,8 +9,9 @@ import net.minecraftforge.fml.network.NetworkEvent;
 import java.util.function.Supplier;
 
 /**
- * Received on: SERVER
+ * Received on: BOTH
  * Sent from client when an offer widget is clicked in the Amadron GUI to update the server-side container
+ * Sent from server to confirm an update and tell the client GUI to update its basket tooltip
  */
 public class PacketAmadronOrderUpdate {
     private final int orderId;
@@ -37,8 +39,13 @@ public class PacketAmadronOrderUpdate {
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             ServerPlayerEntity player = ctx.get().getSender();
-            if (player.openContainer instanceof ContainerAmadron) {
-                ((ContainerAmadron) player.openContainer).clickOffer(orderId, mouseButton, sneaking, player);
+            if (player == null) {
+                GuiAmadron.updateBasketTooltip();
+            } else {
+                if (player.openContainer instanceof ContainerAmadron) {
+                    ((ContainerAmadron) player.openContainer).clickOffer(orderId, mouseButton, sneaking, player);
+                    NetworkHandler.sendToPlayer(this, player);
+                }
             }
         });
         ctx.get().setPacketHandled(true);

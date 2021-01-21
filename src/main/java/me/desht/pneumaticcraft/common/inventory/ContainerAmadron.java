@@ -77,7 +77,9 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
         NOT_ENOUGH_ITEMS("notEnoughItems") /*not a ChickenBones reference*/,
         NOT_ENOUGH_FLUID("notEnoughFluid"),
         OUT_OF_STOCK("outOfStock"),
-        NOT_ENOUGH_STOCK("notEnoughStock");
+        NOT_ENOUGH_STOCK("notEnoughStock"),
+        TOO_MANY_ITEMS("tooManyItems"),
+        TOO_MUCH_FLUID("tooMuchFluid");
 
         private final String locKey;
 
@@ -110,10 +112,11 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
         PlayerEntity player = invPlayer.player;
         if (!player.world.isRemote) {
             Map<ResourceLocation, Integer> liveIndex = new HashMap<>(); // map offer id -> index into the live offer list
-            LazyOptional<IItemHandler> itemCap = ItemAmadronTablet.getItemCapability(player.getHeldItem(hand));
-            LazyOptional<IFluidHandler> fluidCap = ItemAmadronTablet.getFluidCapability(player.getHeldItem(hand));
+//            LazyOptional<IItemHandler> itemCap = ItemAmadronTablet.getItemCapability(player.getHeldItem(hand));
+//            LazyOptional<IFluidHandler> fluidCap = ItemAmadronTablet.getFluidCapability(player.getHeldItem(hand));
             for (int i = 0; i < activeOffers.size(); i++) {
-                int amount = capShoppingAmount(activeOffers.get(i), 1, itemCap, fluidCap);
+//                int amount = capShoppingAmount(activeOffers.get(i), 1, itemCap, fluidCap);
+                int amount = capShoppingAmount(i, 1, player);
                 buyableOffers[i] = amount > 0;
                 liveIndex.put(activeOffers.get(i).getId(), i);
             }
@@ -127,7 +130,7 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
                         int index = getCartSlot(offerId);
                         if (index >= 0) {
                             shoppingItems[index] = offerId;
-                            shoppingAmounts[index] = count;
+                            shoppingAmounts[index] = capShoppingAmount(offerId, count, player);
                         }
                     }
                 });
@@ -141,6 +144,31 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
 
     public ContainerAmadron(int windowId, PlayerInventory playerInventory, PacketBuffer buffer) {
         this(windowId, playerInventory, buffer.readBoolean() ? Hand.MAIN_HAND : Hand.OFF_HAND);
+    }
+
+    private void validatePurchasesCanFit() {
+        int totalStacks = 0;
+        int totalMb = 0;
+        for (int i = 0; i < shoppingItems.length; i++) {
+            if (shoppingItems[i] >= 0 && shoppingItems[i] < activeOffers.size()) {
+                AmadronOffer offer = activeOffers.get(shoppingItems[i]);
+                AmadronTradeResource out = offer.getOutput();
+                switch (out.getType()) {
+                    case ITEM:
+                        totalStacks += (((out.getAmount() * shoppingAmounts[i]) - 1) / out.getItem().getMaxStackSize()) + 1;
+                        break;
+                    case FLUID:
+                        totalMb += out.getAmount() * shoppingAmounts[i];
+                        break;
+                }
+            }
+        }
+        // an Amadrone has 35 inv upgrades, allowing 36 stacks of items and 576000mB of fluid to be carried
+        if (totalStacks > 36) {
+            problemState = EnumProblemState.TOO_MANY_ITEMS;
+        } else if (totalMb > 576000) {
+            problemState = EnumProblemState.TOO_MUCH_FLUID;
+        }
     }
 
     public boolean isBasketEmpty() {
@@ -229,6 +257,8 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
                 shoppingAmounts[cartSlot] = capShoppingAmount(offerId, shoppingAmounts[cartSlot], player);
                 shoppingItems[cartSlot] = shoppingAmounts[cartSlot] > 0 ? offerId : -1;
             }
+
+            validatePurchasesCanFit();
         }
         basketEmpty = Arrays.stream(shoppingAmounts).noneMatch(shoppingAmount -> shoppingAmount > 0);
     }

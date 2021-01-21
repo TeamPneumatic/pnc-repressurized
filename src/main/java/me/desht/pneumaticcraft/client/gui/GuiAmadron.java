@@ -11,9 +11,11 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketAmadronInvSync;
 import me.desht.pneumaticcraft.common.network.PacketAmadronOrderUpdate;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
+import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
@@ -22,6 +24,7 @@ import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.glfw.GLFW;
 
@@ -47,6 +50,12 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
         ySize = 202;
     }
 
+    public static void updateBasketTooltip() {
+        if (Minecraft.getInstance().currentScreen instanceof GuiAmadron) {
+            ((GuiAmadron) Minecraft.getInstance().currentScreen).updateOrderButtonTooltip();
+        }
+    }
+
     @Override
     public void init() {
         super.init();
@@ -70,9 +79,9 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
         addButton(scrollbar = new WidgetVerticalScrollbar(guiLeft + 156, guiTop + 54, 142).setStates(1).setListening(true));
 
         orderButton = new WidgetButtonExtended(guiLeft + 52, guiTop + 16, 72, 20, xlate("pneumaticcraft.gui.amadron.button.order"))
-                .withTag("order")
-                .setTooltipText(xlate("pneumaticcraft.gui.amadron.button.order.tooltip"));
+                .withTag("order");
         addButton(orderButton);
+        updateOrderButtonTooltip();
 
         addTradeButton = new WidgetButtonExtended(16, 26, 20, 20)
                 .withTag("addPlayerTrade")
@@ -122,12 +131,32 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
             problemTab.openStat();
         }
         hadProblem = container.problemState != EnumProblemState.NO_PROBLEMS;
-        orderButton.active = !container.isBasketEmpty();
         addTradeButton.active = container.currentOffers < container.maxOffers;
         ITextComponent text = xlate("pneumaticcraft.gui.amadron.button.addTrade.tooltip.offerCount",
                 container.currentOffers,
                 container.maxOffers == Integer.MAX_VALUE ? GuiConstants.INFINITY : container.maxOffers);
         customTradesTab.setText(text);
+
+        orderButton.active = !container.isBasketEmpty() && container.problemState == EnumProblemState.NO_PROBLEMS;
+    }
+
+    private void updateOrderButtonTooltip() {
+        ImmutableList.Builder<ITextComponent> builder = ImmutableList.builder();
+        builder.add(xlate("pneumaticcraft.gui.amadron.button.order.tooltip"));
+        if (!container.isBasketEmpty()) {
+            builder.add(StringTextComponent.EMPTY);
+            builder.add(xlate("pneumaticcraft.gui.amadron.basket").mergeStyle(TextFormatting.AQUA, TextFormatting.UNDERLINE));
+            for (AmadronOffer offer : AmadronOfferManager.getInstance().getActiveOffers()) {
+                int nOrders = container.getShoppingCartAmount(offer);
+                if (nOrders > 0) {
+                    String in = (offer.getInput().getAmount() * nOrders) + " x " + offer.getInput().getName();
+                    String out = (offer.getOutput().getAmount() * nOrders) + " x " + offer.getOutput().getName();
+                    builder.add(new StringTextComponent(GuiConstants.BULLET + " " + TextFormatting.YELLOW + out));
+                    builder.add(new StringTextComponent(TextFormatting.GOLD + "   for " + TextFormatting.YELLOW + in));
+                }
+            }
+        }
+        orderButton.setTooltipText(builder.build());
     }
 
     @Override

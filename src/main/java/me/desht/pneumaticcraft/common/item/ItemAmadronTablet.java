@@ -103,7 +103,10 @@ public class ItemAmadronTablet extends ItemPressurizable implements IPositionPro
         GlobalPos pos = getItemProvidingLocation(tablet);
         if (pos != null) {
             TileEntity te = GlobalPosHelper.getTileEntity(pos);
-            return IOHelper.getInventoryForTE(te);
+            for (Direction dir : Direction.VALUES) {
+                LazyOptional<IItemHandler> lazy = IOHelper.getInventoryForTE(te, dir);
+                if (lazy.isPresent()) return lazy;
+            }
         }
         return LazyOptional.empty();
     }
@@ -122,7 +125,10 @@ public class ItemAmadronTablet extends ItemPressurizable implements IPositionPro
         GlobalPos pos = getFluidProvidingLocation(tablet);
         if (pos != null) {
             TileEntity te = GlobalPosHelper.getTileEntity(pos);
-            return IOHelper.getFluidHandlerForTE(te);
+            for (Direction dir : Direction.VALUES) {
+                LazyOptional<IFluidHandler> lazy = IOHelper.getFluidHandlerForTE(te, dir);
+                if (lazy.isPresent()) return lazy;
+            }
         }
         return LazyOptional.empty();
     }
