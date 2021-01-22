@@ -31,7 +31,6 @@ import me.desht.pneumaticcraft.common.item.ItemJackHammer;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.progwidgets.*;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
-import me.desht.pneumaticcraft.common.util.DramaSplash;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -90,7 +89,7 @@ public class ClientSetup {
 
         EntityTrackHandler.init();
 //        GuiArmorMainScreen.initHelmetCoreComponents();
-        DramaSplash.getInstance();
+//        DramaSplash.getInstance();
     }
 
     private static void registerItemModelProperties() {

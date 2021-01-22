@@ -12,8 +12,8 @@ import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketAphorismTileUpdate;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAphorismTile;
-import me.desht.pneumaticcraft.common.util.DramaSplash;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.util.drama.DramaGenerator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.item.ItemStack;
@@ -46,7 +46,7 @@ public class GuiAphorismTile extends Screen implements Slider.ISlider {
         textLines = tile.getTextLines();
         tile.needMaxLineWidthRecalc();
         if (PNCConfig.Client.aphorismDrama && placing && textLines.length == 1 && textLines[0].equals("")) {
-            List<String> l = PneumaticCraftUtils.splitString(DramaSplash.getInstance().getSplash(), 20);
+            List<String> l = PneumaticCraftUtils.splitString(DramaGenerator.generateDrama(), 20);
             tile.setTextLines(l.toArray(new String[0]));
             textLines = tile.getTextLines();
             NetworkHandler.sendToServer(new PacketAphorismTileUpdate(tile));
