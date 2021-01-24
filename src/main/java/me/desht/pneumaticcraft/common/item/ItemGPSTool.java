@@ -20,10 +20,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.util.text.*;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
@@ -63,8 +60,11 @@ public class ItemGPSTool extends Item implements IPositionProvider {
         ClientUtils.addGuiContextSensitiveTooltip(stack, infoList);
         BlockPos pos = getGPSLocation(stack);
         if (pos != null) {
+            IFormattableTextComponent blockName = worldIn.isAreaLoaded(pos, 0) ?
+                    new StringTextComponent(" (").append(worldIn.getBlockState(pos).getBlock().getTranslatedName()).appendString(")") :
+                    StringTextComponent.EMPTY.copyRaw();
             String str = String.format("[%d, %d, %d]", pos.getX(), pos.getY(), pos.getZ());
-            infoList.add(new StringTextComponent(str).mergeStyle(TextFormatting.GREEN));
+            infoList.add(new StringTextComponent(str).mergeStyle(TextFormatting.YELLOW).append(blockName.mergeStyle(TextFormatting.GREEN)));
         }
         String varName = getVariable(stack);
         if (!varName.isEmpty()) {

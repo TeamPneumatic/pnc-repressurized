@@ -22,6 +22,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -66,15 +67,20 @@ public class ItemGPSAreaTool extends Item implements IPositionProvider {
         ItemStack stack = player.getHeldItem(hand);
         setGPSLocation(stack, pos, index);
         if (!player.world.isRemote) {
-            player.sendStatusMessage(new StringTextComponent(TextFormatting.AQUA + String.format("[%s] %s", stack.getDisplayName().getString(), getMessageText(pos, index))), false);
+            player.sendStatusMessage(new StringTextComponent(TextFormatting.AQUA + String.format("[%s] ", stack.getDisplayName().getString()))
+                    .append(getMessageText(player.world, pos, index)), false);
             if (player instanceof ServerPlayerEntity)
                 ((ServerPlayerEntity) player).connection.sendPacket(new SHeldItemChangePacket(player.inventory.currentItem));
         }
     }
 
-    private static String getMessageText(BlockPos pos, int index) {
+    private static ITextComponent getMessageText(World worldIn, BlockPos pos, int index) {
+        IFormattableTextComponent blockName = worldIn.isAreaLoaded(pos, 0) ?
+                new StringTextComponent(" (").append(worldIn.getBlockState(pos).getBlock().getTranslatedName()).appendString(")") :
+                StringTextComponent.EMPTY.copyRaw();
         String str = String.format("P%d%s: [%d, %d, %d]", index + 1, TextFormatting.YELLOW.toString(), pos.getX(), pos.getY(), pos.getZ());
-        return (index == 0 ? TextFormatting.RED.toString() : TextFormatting.GREEN.toString()) + str;
+        return new StringTextComponent(str).mergeStyle(index == 0 ? TextFormatting.RED : TextFormatting.GREEN).append(blockName.mergeStyle(TextFormatting.GREEN));
+//        return (index == 0 ? TextFormatting.RED.toString() : TextFormatting.GREEN.toString()) + str;
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -84,15 +90,19 @@ public class ItemGPSAreaTool extends Item implements IPositionProvider {
 
         if (worldIn != null) {
             ClientUtils.addGuiContextSensitiveTooltip(stack, infoList);
+            int nPos = 0;
             for (int index = 0; index < 2; index++) {
                 BlockPos pos = getGPSLocation(worldIn, stack, index);
-                infoList.add(new StringTextComponent(getMessageText(pos, index)).mergeStyle(index == 0 ? TextFormatting.RED : TextFormatting.GREEN));
+                if (!pos.equals(BlockPos.ZERO)) {
+                    infoList.add(getMessageText(worldIn, pos, index));//.mergeStyle(index == 0 ? TextFormatting.RED : TextFormatting.GREEN));
+                    nPos++;
+                }
                 String varName = getVariable(stack, index);
                 if (!varName.isEmpty()) {
                     infoList.add(xlate("pneumaticcraft.gui.tooltip.gpsTool.variable", varName));
                 }
             }
-            getArea(stack).addAreaTypeTooltip(infoList);
+            if (nPos > 0) getArea(stack).addAreaTypeTooltip(infoList);
         }
     }
 
@@ -124,7 +134,7 @@ public class ItemGPSAreaTool extends Item implements IPositionProvider {
         ProgWidgetArea area = getArea(gpsTool);
 
         String var = getVariable(gpsTool, index);
-        if (!var.equals("") && !world.isRemote) {
+        if (!var.isEmpty() && !world.isRemote) {
             BlockPos pos = GlobalVariableManager.getInstance().getPos(var);
             setGPSLocation(gpsTool, pos, index);
         }

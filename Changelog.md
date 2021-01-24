@@ -32,6 +32,7 @@ Note: PNC:R 2.9.3 and later have been successfully tested with Forge 36.0.0 on M
   * GUI now shows an error if you try to order too much at once; split your order into multiple orders
 * Fixed Amadron tablet not working with Mekanism (and possibly other) fluid tanks
   * Technical detail: no longer checks for a fluid or item capability on the `null` face, but instead tries each face of the block to find a valid fluid or item capability
+* Fixed Amadron "Add Trade" sub-gui only being openable once (until main Amadron GUI is closed)
 * Fixed intermittent Aerial Interface CME crashes when changing dimension
   * Aerial Interface player tracking should be much more reliable overall now
 * Fixed Nether Portal screen overlay (when player is standing in portal) rendering completely solid when Pneumatic Helmet equipped, effectively blinding the player  

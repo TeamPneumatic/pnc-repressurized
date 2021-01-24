@@ -19,6 +19,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
 import java.util.*;
@@ -135,12 +136,12 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     }
 
     public void addAreaTypeTooltip(List<ITextComponent> curTooltip) {
-        curTooltip.add(xlate("pneumaticcraft.gui.progWidget.area.type").append(xlate(type.getTranslationKey())));
+        curTooltip.add(xlate("pneumaticcraft.gui.progWidget.area.type").append(xlate(type.getTranslationKey()).mergeStyle(TextFormatting.YELLOW)));
 
         List<AreaTypeWidget> widgets = new ArrayList<>();
         type.addUIWidgets(widgets);
         for (AreaTypeWidget widget : widgets) {
-            curTooltip.add(xlate(widget.title).appendString(" ").appendString(widget.getCurValue()));
+            curTooltip.add(xlate(widget.title).appendString(" ").append(new StringTextComponent(widget.getCurValue()).mergeStyle(TextFormatting.YELLOW)));
         }
     }
 
