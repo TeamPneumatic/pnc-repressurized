@@ -595,4 +595,11 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
     protected boolean shouldParseVariablesInTooltips() {
         return false;
     }
+
+    /**
+     * Called when the client has received a PacketUpdateGui to sync something from the server-side container
+     */
+    public void onGuiUpdate() {
+        // nothing; override in subclasses
+    }
 }

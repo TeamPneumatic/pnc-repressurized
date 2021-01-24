@@ -88,8 +88,6 @@ public class ClientSetup {
         registerTubeModuleFactories();
 
         EntityTrackHandler.init();
-//        GuiArmorMainScreen.initHelmetCoreComponents();
-//        DramaSplash.getInstance();
     }
 
     private static void registerItemModelProperties() {

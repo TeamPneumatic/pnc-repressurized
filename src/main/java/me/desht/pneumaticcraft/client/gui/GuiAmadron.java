@@ -15,7 +15,6 @@ import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
@@ -43,17 +42,12 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
     private WidgetButtonExtended orderButton;
     private WidgetButtonExtended addTradeButton;
     private WidgetAnimatedStat customTradesTab;
+    private boolean needTooltipUpdate = true;
 
     public GuiAmadron(ContainerAmadron container, PlayerInventory inv, @SuppressWarnings("unused") ITextComponent displayString) {
         super(container, inv, new StringTextComponent(""));
         xSize = 176;
         ySize = 202;
-    }
-
-    public static void updateBasketTooltip() {
-        if (Minecraft.getInstance().currentScreen instanceof GuiAmadron) {
-            ((GuiAmadron) Minecraft.getInstance().currentScreen).updateOrderButtonTooltip();
-        }
     }
 
     @Override
@@ -138,6 +132,11 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
         customTradesTab.setText(text);
 
         orderButton.active = !container.isBasketEmpty() && container.problemState == EnumProblemState.NO_PROBLEMS;
+
+        if (needTooltipUpdate) {
+            updateOrderButtonTooltip();
+            needTooltipUpdate = false;
+        }
     }
 
     private void updateOrderButtonTooltip() {
@@ -237,6 +236,11 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
         if (container.problemState != EnumProblemState.NO_PROBLEMS) {
             curInfo.addAll(GuiUtils.xlateAndSplit(container.problemState.getTranslationKey()));
         }
+    }
+
+    @Override
+    public void onGuiUpdate() {
+        needTooltipUpdate = true;
     }
 
     static class WidgetAmadronOfferAdjustable extends WidgetAmadronOffer {

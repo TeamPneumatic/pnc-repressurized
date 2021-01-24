@@ -164,6 +164,7 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadr
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
             onClose();
+            return true;
         } else if (keyCode == GLFW.GLFW_KEY_TAB) {
             WidgetTextFieldNumber amountIn = amountFields[INPUT_SLOT];
             WidgetTextFieldNumber amountOut = amountFields[OUTPUT_SLOT];
