@@ -146,7 +146,7 @@ public enum HUDHandler implements IKeyListener {
         boolean anyArmorInInit = false;
         for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
             ItemStack armorStack = player.getItemStackFromSlot(slot);
-            if (armorStack.getItem() instanceof ItemPneumaticArmor && !comHudHandler.isArmorReady(slot)) {
+            if (armorStack.getItem() instanceof ItemPneumaticArmor && comHudHandler.getArmorPressure(slot) >= 0.0001f && !comHudHandler.isArmorReady(slot)) {
                 anyArmorInInit = true;
                 break;
             }
