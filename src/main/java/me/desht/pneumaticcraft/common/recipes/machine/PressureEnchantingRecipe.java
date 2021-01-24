@@ -70,24 +70,25 @@ public class PressureEnchantingRecipe extends PressureChamberRecipeImpl {
         ItemStack enchantedBook = chamberHandler.getStackInSlot(ingredientSlots.get(0));
         ItemStack enchantable = chamberHandler.getStackInSlot(ingredientSlots.get(1)).copy();
 
-        Map<Enchantment, Integer> bookMap = EnchantmentHelper.getEnchantments(enchantedBook);
+        Map<Enchantment, Integer> bookEnchantments = EnchantmentHelper.getEnchantments(enchantedBook);
+        Set<Enchantment> itemEnchantments = EnchantmentHelper.getEnchantments(enchantable).keySet();
         List<Enchantment> toTransfer = new ArrayList<>();
-        bookMap.forEach((enchantment, level) -> {
-            if (enchantment.canApply(enchantable)) {
+        bookEnchantments.forEach((enchantment, level) -> {
+            if (enchantment.canApply(enchantable) && itemEnchantments.stream().allMatch(e -> e.isCompatibleWith(enchantment))) {
                 enchantable.addEnchantment(enchantment, level);
                 toTransfer.add(enchantment);
             }
         });
         if (toTransfer.isEmpty()) return NonNullList.create(); // no enchantments could be transferred
-        toTransfer.forEach(bookMap::remove);
+        toTransfer.forEach(bookEnchantments::remove);
         ItemStack newBook;
-        if (bookMap.isEmpty()) {
+        if (bookEnchantments.isEmpty()) {
             // all of the enchantments could transfer
             newBook = new ItemStack(Items.BOOK);
         } else {
             // some of the enchantments could transfer
             newBook = new ItemStack(Items.ENCHANTED_BOOK);
-            bookMap.forEach(newBook::addEnchantment);
+            bookEnchantments.forEach(newBook::addEnchantment);
         }
 
         chamberHandler.extractItem(ingredientSlots.get(0), 1, false);
