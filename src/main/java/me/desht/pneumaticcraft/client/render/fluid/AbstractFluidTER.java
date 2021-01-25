@@ -15,6 +15,7 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraftforge.fluids.IFluidTank;
 
@@ -27,7 +28,7 @@ public abstract class AbstractFluidTER<T extends TileEntityBase> extends TileEnt
 
     @Override
     public void render(T te, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLightIn, int combinedOverlayIn) {
-        if (te.getWorld().isAreaLoaded(te.getPos(), 0)) {
+        if (te.getWorld().getChunkProvider().isChunkLoaded(new ChunkPos(te.getPos()))) {
             IVertexBuilder builder = buffer.getBuffer(RenderType.getEntityTranslucentCull(AtlasTexture.LOCATION_BLOCKS_TEXTURE));
 
             Matrix4f posMat = matrixStack.getLast().getMatrix();

@@ -20,6 +20,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.text.*;
 import net.minecraft.world.World;
 
@@ -60,7 +61,7 @@ public class ItemGPSTool extends Item implements IPositionProvider {
         ClientUtils.addGuiContextSensitiveTooltip(stack, infoList);
         BlockPos pos = getGPSLocation(stack);
         if (pos != null) {
-            IFormattableTextComponent blockName = worldIn.isAreaLoaded(pos, 0) ?
+            IFormattableTextComponent blockName = worldIn.getChunkProvider().isChunkLoaded(new ChunkPos(pos)) ?
                     new StringTextComponent(" (").append(worldIn.getBlockState(pos).getBlock().getTranslatedName()).appendString(")") :
                     StringTextComponent.EMPTY.copyRaw();
             String str = String.format("[%d, %d, %d]", pos.getX(), pos.getY(), pos.getZ());

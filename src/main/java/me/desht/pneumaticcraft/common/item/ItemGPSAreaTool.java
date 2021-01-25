@@ -22,6 +22,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -75,7 +76,7 @@ public class ItemGPSAreaTool extends Item implements IPositionProvider {
     }
 
     private static ITextComponent getMessageText(World worldIn, BlockPos pos, int index) {
-        IFormattableTextComponent blockName = worldIn.isAreaLoaded(pos, 0) ?
+        IFormattableTextComponent blockName = worldIn.getChunkProvider().isChunkLoaded(new ChunkPos(pos)) ?
                 new StringTextComponent(" (").append(worldIn.getBlockState(pos).getBlock().getTranslatedName()).appendString(")") :
                 StringTextComponent.EMPTY.copyRaw();
         String str = String.format("P%d%s: [%d, %d, %d]", index + 1, TextFormatting.YELLOW.toString(), pos.getX(), pos.getY(), pos.getZ());

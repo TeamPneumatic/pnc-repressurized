@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.util.math.ChunkPos;
 
 public abstract class AbstractTileModelRenderer<T extends TileEntityBase> extends TileEntityRenderer<T> {
     AbstractTileModelRenderer(TileEntityRendererDispatcher dispatcher) {
@@ -21,7 +22,7 @@ public abstract class AbstractTileModelRenderer<T extends TileEntityBase> extend
     public void render(T te, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer iRenderTypeBuffer, int combinedLightIn, int combinedOverlayIn) {
         // boilerplate translation code, common to all our model-rendering TERs, is done here
 
-        if (!shouldRender(te) || !te.getWorld().isAreaLoaded(te.getPos(), 0)) return;
+        if (!shouldRender(te) || !te.getWorld().getChunkProvider().isChunkLoaded(new ChunkPos(te.getPos()))) return;
 
         matrixStack.push();
 
