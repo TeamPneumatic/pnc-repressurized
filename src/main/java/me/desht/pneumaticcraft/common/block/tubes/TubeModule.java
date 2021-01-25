@@ -157,7 +157,7 @@ public abstract class TubeModule {
         return 0;
     }
 
-    void updateNeighbors() {
+    public void updateNeighbors() {
         pressureTube.getWorld().notifyNeighborsOfStateChange(pressureTube.getPos(), pressureTube.getWorld().getBlockState(pressureTube.getPos()).getBlock());
     }
 

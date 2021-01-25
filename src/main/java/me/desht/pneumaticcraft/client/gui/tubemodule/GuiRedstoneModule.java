@@ -44,6 +44,12 @@ public class GuiRedstoneModule extends GuiTubeModule<ModuleRedstone> {
         ySize = module.getRedstoneDirection() == EnumRedstoneDirection.OUTPUT ? 202 : 57;
     }
 
+    private GuiRedstoneModule(ModuleRedstone module) {
+        super(module);
+
+        ySize = module.getRedstoneDirection() == EnumRedstoneDirection.OUTPUT ? 202 : 57;
+    }
+
     @Override
     protected ResourceLocation getTexture() {
         return output ? Textures.GUI_WIDGET_OPTIONS : Textures.GUI_MODULE_SIMPLE;
@@ -196,7 +202,7 @@ public class GuiRedstoneModule extends GuiTubeModule<ModuleRedstone> {
 
         // close and re-open... will call onClose() to sync the settings
         onClose();
-        minecraft.displayGuiScreen(new GuiRedstoneModule(module.getTube().getPos()));
+        minecraft.displayGuiScreen(new GuiRedstoneModule(module));
         minecraft.player.playSound(ModSounds.INTERFACE_DOOR.get(), 0.7f, 2f);
     }
 
