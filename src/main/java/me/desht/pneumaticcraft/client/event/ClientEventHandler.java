@@ -49,7 +49,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.HandSide;
 import net.minecraft.util.math.vector.Matrix4f;
-import net.minecraft.util.math.vector.Quaternion;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.*;
@@ -285,44 +284,12 @@ public class ClientEventHandler {
     @SubscribeEvent
     public static void playerPreRotateEvent(RenderPlayerEvent.Pre event) {
         PlayerEntity player = event.getPlayer();
-        if (player.isElytraFlying()) return;
-        JetBootsStateTracker tracker = JetBootsStateTracker.getTracker(player);
-        JetBootsStateTracker.JetBootsState state = tracker.getJetBootsState(player);
-        if (state != null && state.shouldRotatePlayer()) {
-            MatrixStack matrixStack = event.getMatrixStack();
-            matrixStack.push();
-            matrixStack.rotate(makeQuaternion(player));
-            player.limbSwingAmount = player.prevLimbSwingAmount = 0F;
+        if (!player.isElytraFlying()) {
+            JetBootsStateTracker.JetBootsState state = JetBootsStateTracker.getClientTracker().getJetBootsState(player);
+            if (state != null && state.shouldRotatePlayer()) {
+                player.limbSwing = player.limbSwingAmount = 0F;
+            }
         }
-    }
-
-    @SubscribeEvent
-    public static void playerPostRotateEvent(RenderPlayerEvent.Post event) {
-        PlayerEntity player = event.getPlayer();
-        if (player.isElytraFlying()) return;
-        JetBootsStateTracker tracker = JetBootsStateTracker.getTracker(player);
-        JetBootsStateTracker.JetBootsState state = tracker.getJetBootsState(player);
-        if (state != null && state.shouldRotatePlayer()) {
-            event.getMatrixStack().pop();
-        }
-    }
-
-    private static Quaternion makeQuaternion(PlayerEntity player) {
-        Vector3d forward = player.getLookVec();
-
-        double dot = new Vector3d(0, 1, 0).dotProduct(forward);
-        if (Math.abs(dot + 1) < 0.000001) {
-            return new Quaternion(0F, 1F, 0F, (float)Math.PI);
-        }
-        if (Math.abs (dot - 1) < 0.000001) {
-            return new Quaternion(0, 0, 0, 1); //identity
-        }
-
-        Vector3d rotAxis = new Vector3d(0, 1, 0).crossProduct(forward).normalize();
-
-        double a2 = Math.acos(dot) * .5f;
-        float s = (float) Math.sin(a2);
-        return new Quaternion((float) rotAxis.x * s, (float) rotAxis.y * s, (float) rotAxis.z * s, (float) Math.cos(a2));
     }
 
     @SubscribeEvent

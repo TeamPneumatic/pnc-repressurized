@@ -27,6 +27,7 @@ import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.Pose;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
 import net.minecraft.entity.item.ExperienceOrbEntity;
@@ -734,6 +735,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
             jetBootsActiveTicks = 0;
         }
         this.jetBootsActive = jetBootsActive;
+        this.player.setForcedPose(jetBootsActive && !jetBootsBuilderMode ? Pose.FALL_FLYING : null);
         JetBootsStateTracker.getTracker(player).setJetBootsState(player, isJetBootsEnabled(), jetBootsActive, isJetBootsBuilderMode());
     }
 

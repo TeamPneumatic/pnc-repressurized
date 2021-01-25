@@ -256,4 +256,14 @@ public class ClientUtils {
             }
         }
     }
+
+    /**
+     * Get the render distance based on current game settings
+     *
+     * @return the squared render distance, in blocks
+     */
+    public static int getRenderDistanceThresholdSq() {
+        int d = Minecraft.getInstance().gameSettings.renderDistanceChunks * 16;
+        return d * d;
+    }
 }

@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.event;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModSounds;
@@ -21,6 +22,7 @@ import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FlowingFluidBlock;
+import net.minecraft.entity.Pose;
 import net.minecraft.entity.monster.GuardianEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -69,7 +71,7 @@ public class EventHandlerPneumaticArmor {
                     CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
                     if (handler.isArmorReady(EquipmentSlotType.HEAD) && handler.getArmorPressure(EquipmentSlotType.HEAD) > 0 && handler.isEntityTrackerEnabled()) {
                         NetworkHandler.sendToPlayer(new PacketSendArmorHUDMessage(
-                                xlate("pneumaticcraft.armor.message.targetWarning", event.getEntityLiving().getName().getString()),
+                                        xlate("pneumaticcraft.armor.message.targetWarning", event.getEntityLiving().getName().getString()),
                                         60, 0x70FF4000),
                                 player
                         );
@@ -264,33 +266,30 @@ public class EventHandlerPneumaticArmor {
     private static final Vector3d IDLE_VEC = new Vector3d(0, -0.5, -0);
 
     /**
-     * Client side: play particles for all known players (including us) with active jet boots either idling or firing
+     * Client-side: play particles for all (close enough) player entities with enabled jet boots, including the actual player.
      */
     @SubscribeEvent
-    public void playJetbootsParticles(TickEvent.PlayerTickEvent event) {
+    public void handleJetbootsParticlesAndPose(TickEvent.PlayerTickEvent event) {
         if (event.phase == TickEvent.Phase.END && event.player.world.isRemote) {
-            JetBootsStateTracker tracker = JetBootsStateTracker.getTracker(event.player);
+            JetBootsStateTracker tracker = JetBootsStateTracker.getClientTracker();
+            int distThresholdSq = ClientUtils.getRenderDistanceThresholdSq();
             for (PlayerEntity player : event.player.world.getPlayers()) {
                 if (!player.isOnGround() && isPneumaticArmorPiece(player, EquipmentSlotType.FEET)) {
                     JetBootsState state = tracker.getJetBootsState(player);
-                    if (state != null && state.isEnabled() && (!player.isElytraFlying() || state.isActive())) {
-                        int nParticles = state.isActive() ? 5 : 1;
+                    if (state != null && state.isEnabled() && (!player.isElytraFlying() || state.isActive()) && player.getDistanceSq(event.player) < distThresholdSq) {
+                        int nParticles = state.isActive() ? 3 : 1;
                         Vector3d jetVec = state.shouldRotatePlayer() ? player.getLookVec().scale(-0.5) : IDLE_VEC;
-                        Vector3d feet = getFeetPos(player, state.shouldRotatePlayer());
+                        Vector3d feet = state.shouldRotatePlayer() ? player.getPositionVec().add(player.getLookVec().scale(-2)) : player.getPositionVec();
                         for (int i = 0; i < nParticles; i++) {
                             player.world.addParticle(AirParticleData.DENSE, feet.x, feet.y, feet.z, jetVec.x, jetVec.y, jetVec.z);
+                        }
+                        if (player.getEntityId() != event.player.getEntityId() && state.shouldRotatePlayer()) {
+                            player.setPose(Pose.FALL_FLYING);
                         }
                     }
                 }
             }
         }
-    }
-
-    private Vector3d getFeetPos(PlayerEntity player, boolean rotated) {
-        if (!rotated) return player.getPositionVec();
-
-        double midY = (player.getPosY() + player.getEyePosition(1.0f).y) / 2;
-        return player.getPositionVec().add(player.getLookVec().scale(player.getPosY() - midY));
     }
 
     @SubscribeEvent
