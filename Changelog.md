@@ -6,9 +6,9 @@ Changes are in reverse chronological order; newest changes at the top.
 
 ## Minecraft 1.16.3 / 1.16.4 / 1.16.5
 
-Note: PNC:R 2.9.3 and later have been successfully tested with Forge 36.0.0 on Minecraft 1.16.5.  Older (but recent) versions will probably also work on MC 1.16.5, but haven't been tested.
+Note: PNC:R 2.9.3 and later have been successfully tested on Minecraft 1.16.5.  Older (but recent) versions will probably also work on MC 1.16.5, but haven't been tested.
 
-## 2.9.4-?? (unreleased)
+## 2.9.4-126 (26 Jan 2021)
 
 ### Updates
 * Harvesting Drones (and the Harvesting progwidget) now know about Sweet Berries and Kelp
@@ -20,14 +20,14 @@ Note: PNC:R 2.9.3 and later have been successfully tested with Forge 36.0.0 on M
 * Drone debugger now highlights the planned path for a debugged Drone when it's moving, as a trail of particles
   * Can be disabled in config: `drone_debugger_path_particles` in pneumaticcraft-common.toml
 * Amadron Tablet: the Order button now shows a summary of items/fluids in basket in its tooltip
-* Redid Jetboots flying animations/player pose
-  * Noticeable in multiplayer or singleplayer with external camera view
+* Reworked Jetboots flying animations/player pose a bit
   * Player now animates into & out of flying pose much more smoothly
-  * Player has better vertical positioning and hitbox when flying (now possible, if not easy, to fly through 1-block high gaps)
+  * Player has better vertical positioning and hitbox when flying (now possible, if not necessarily easy, to fly through 1-block high gaps)
+  * Most noticeable in multiplayer, or singleplayer with external camera view
 * GPS and GPS Area Tools tooltip now show the blockname(s) for the block(s) at the selected position(s)
   * Only if those positions are actually chunkloaded, and remember that the GPS/GPS Area Tools aren't dimension-aware, so it's the block in the current world, not the world in which the tool was originally clicked
 * New food item: Salmon Tempura
-  * Equivalent in food value to Cod n' Chips (i.e. very good)
+  * Equivalent in food value to Cod n' Chips (i.e. very nutritious)
   * A good alternative if you're in an area with abundant Salmon but no Cod...
   * See JEI for how to make it!
 
