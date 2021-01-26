@@ -20,14 +20,25 @@ Note: PNC:R 2.9.3 and later have been successfully tested with Forge 36.0.0 on M
 * Drone debugger now highlights the planned path for a debugged Drone when it's moving, as a trail of particles
   * Can be disabled in config: `drone_debugger_path_particles` in pneumaticcraft-common.toml
 * Amadron Tablet: the Order button now shows a summary of items/fluids in basket in its tooltip
+* Redid Jetboots flying animations/player pose
+  * Noticeable in multiplayer or singleplayer with external camera view
+  * Player now animates into & out of flying pose much more smoothly
+  * Player has better vertical positioning and hitbox when flying (now possible, if not easy, to fly through 1-block high gaps)
+* GPS and GPS Area Tools tooltip now show the blockname(s) for the block(s) at the selected position(s)
+  * Only if those positions are actually chunkloaded, and remember that the GPS/GPS Area Tools aren't dimension-aware, so it's the block in the current world, not the world in which the tool was originally clicked
+* New food item: Salmon Tempura
+  * Equivalent in food value to Cod n' Chips (i.e. very good)
+  * A good alternative if you're in an area with abundant Salmon but no Cod...
+  * See JEI for how to make it!
 
 ### Fixes
 * Fixed Block Tracker block highlight frames sometimes not rendering behind solid blocks
-* Fixed Pneumatic Armor pressure window not properly opening when Pneumatic Helmet first equipped
+* Fixed Pneumatic Armor pressure display panel not fully opening when Pneumatic Helmet first equipped
 * Fixed shaped recipe for Assembly IO Import Unit producing an Assembly IO Export Unit
 * Fix enchantments getting lost when using Pressure Chamber to transfer enchantments from Enchanted Book to enchantable item
   * If the book had multiple enchantments, some of which were applicable to the item, and some not, the inapplicable enchantments would be lost forever
   * Now any such enchantments stay on the book
+  * Also fixed Pressure Chamber enchanting being able to add conflicting enchantments to an item (e.g. both Sharpness and Smite)
 * Fixed Amadron allowing orders too big for a single Amadrone to carry (>36 itemstacks or >576 buckets of fluid)
   * GUI now shows an error if you try to order too much at once; split your order into multiple orders
 * Fixed Amadron tablet not working with Mekanism (and possibly other) fluid tanks
@@ -36,6 +47,8 @@ Note: PNC:R 2.9.3 and later have been successfully tested with Forge 36.0.0 on M
 * Fixed intermittent Aerial Interface CME crashes when changing dimension
   * Aerial Interface player tracking should be much more reliable overall now
 * Fixed Nether Portal screen overlay (when player is standing in portal) rendering completely solid when Pneumatic Helmet equipped, effectively blinding the player  
+* Fixed Pneumatic Armor initialisation progress bars not going away (and "low pressure" message spam) if player wearing any armor pieces with 0 pressure
+* Fixed (hopefully) client crash when toggling Redstone Module input/output mode from GUI, when using Vivecraft (VR)
 
 ## 2.9.3-120 (17 Jan 2020)
 
