@@ -20,7 +20,7 @@
     {
       "type": "smelting",
       "title": "Recycling Failed PCB's",
-      "recipe": "pneumaticcraft:empty_pcb_from_failed_pcb",
+      "recipe": "pneumaticcraft:empty_pcb",
       "text": "The etching process has a chance of failure if the $(item)Empty PCB/$ was not 100% exposed in the $(l:manufacturing/uv_light_box)UV Light Box/$; you can recycle $(item)Failed PCB's/$ in a $(item)Blast Furnace/$."
     },
     {

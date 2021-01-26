@@ -25,6 +25,8 @@ public class ProcessorThermoPlant implements IComponentProcessor {
 
     @Override
     public IVariable process(String s) {
+        if (recipe == null) return null;
+
         switch (s) {
             case "header":
                 return IVariable.wrap(header.isEmpty() ? defaultHeader() : header);

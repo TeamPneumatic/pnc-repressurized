@@ -13,18 +13,22 @@ import vazkii.patchouli.api.IVariableProvider;
 @SuppressWarnings("unused")
 public class ProcessorPressureChamber implements IComponentProcessor {
     private PressureChamberRecipe recipe = null;
+    private String header = null;
 
     @Override
     public void setup(IVariableProvider iVariableProvider) {
         ResourceLocation recipeId = new ResourceLocation(iVariableProvider.get("recipe").asString());
         this.recipe = PneumaticCraftRecipeType.PRESSURE_CHAMBER.getRecipe(Minecraft.getInstance().world, recipeId);
+        this.header = iVariableProvider.has("header") ? iVariableProvider.get("header").asString() : "";
     }
 
     @Override
     public IVariable process(String s) {
         if (recipe == null) return null;
 
-        if (s.startsWith("input")) {
+        if (s.equals("header")) {
+            return IVariable.wrap(header.isEmpty() ? defaultHeader() : header);
+        } else if (s.startsWith("input")) {
             int index = Integer.parseInt(s.substring(5)) - 1;
             if (index >= 0 && index < recipe.getInputsForDisplay().size()) {
                 return Patchouli.Util.getStacks(recipe.getInputsForDisplay().get(index));
@@ -40,5 +44,14 @@ public class ProcessorPressureChamber implements IComponentProcessor {
         }
 
         return null;
+    }
+
+    private String defaultHeader() {
+        // note: only returns first item. use a custom "header" if needed
+        if (!recipe.getResultsForDisplay().isEmpty()) {
+            return recipe.getResultsForDisplay().get(0).getDisplayName().getString();
+        } else {
+            return "";
+        }
     }
 }

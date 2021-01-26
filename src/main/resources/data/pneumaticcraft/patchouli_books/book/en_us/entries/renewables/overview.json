@@ -1,5 +1,5 @@
 {
-  "name": "Overview",
+  "name": "Biodiesel Overview",
   "icon": "minecraft:book",
   "category": "renewables",
   "priority": "true",
@@ -32,7 +32,7 @@
     {
       "type": "spotlight",
       "item": "pneumaticcraft:biodiesel_bucket",
-      "text": "Step 3: Combine your $(thing)Ethanol/$ and $(thing)Vegetable Oil/$ in a $(l:manufacturing/fluid_mixer)Fluid Mixer/$."
+      "text": "Step 4: Combine your $(thing)Ethanol/$ and $(thing)Vegetable Oil/$ in a $(l:manufacturing/fluid_mixer)Fluid Mixer/$. Congratulations, you have made some renewable fuel!"
     }
   ]
 }

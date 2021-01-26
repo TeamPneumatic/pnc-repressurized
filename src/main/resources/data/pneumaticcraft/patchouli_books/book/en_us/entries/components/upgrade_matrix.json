@@ -9,9 +9,8 @@
       "text": "The $(item)Upgrade Matrix/$ can be used in place of $(item)Lapis Lazuli/$ for the crafting of any $(l:base_concepts/upgrades)upgrades/$. The advantage of using Upgrade Matrices is greatly decreased Lapis usage, which may be a boon if you have limited Lapis and many upgrades to craft."
     },
     {
-      "type": "spotlight",
-      "item": "pneumaticcraft:upgrade_matrix",
-      "text": "One Lapis and one bucket of water will make four Upgrade Matrices in a $(item)Thermopneumatic Processing Plant/$ with 2 bar of pressure (assuming default recipes are in place)."
+      "type": "pneumaticcraft:thermo_plant",
+      "recipe": "pneumaticcraft:thermo_plant/upgrade_matrix"
     }
   ]
 }

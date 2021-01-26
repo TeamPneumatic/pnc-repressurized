@@ -96,7 +96,7 @@
     },
     {
       "title": "evaluateCondition()",
-      "text": "$(#800)evaluateCondition()/$$(p)Returns true/false. Used in $(l:programming/conditions)conditions/$ only. Will return true/false depending on whether or not the condition is satisfied. Drone Conditions can be checked right after setting $(#800)setAction()/, but non-Drone conditions require that you wait until $(#800)isActionDone()/ returns true before the result of $(#800)evaluateCondition()/$ is useful.",
+      "text": "$(#800)evaluateCondition()/$$(p)Returns true/false. Used in $(l:programming/conditions)conditions/$ only. Will return true/false depending on whether or not the condition is satisfied. Drone Conditions can be checked right after setting $(#800)setAction()/$, but non-Drone conditions require that you wait until $(#800)isActionDone()/$ returns true before the result of $(#800)evaluateCondition()/$ is useful.",
       "type": "text"
     },
     {
