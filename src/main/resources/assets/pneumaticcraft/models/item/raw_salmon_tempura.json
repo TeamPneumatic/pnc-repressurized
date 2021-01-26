@@ -1,0 +1,6 @@
+{
+   "textures" : {
+      "layer0" : "pneumaticcraft:item/raw_salmon_tempura"
+   },
+   "parent" : "item/generated"
+}

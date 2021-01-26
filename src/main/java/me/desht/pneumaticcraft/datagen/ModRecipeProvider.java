@@ -637,6 +637,10 @@ public class ModRecipeProvider extends RecipeProvider {
                 'C', ModItems.PRINTED_CIRCUIT_BOARD.get()
         ).build(consumer);
 
+        shapeless(ModItems.RAW_SALMON_TEMPURA.get(), ModItems.SOURDOUGH.get(),
+                Items.SALMON, ModItems.SOURDOUGH.get()
+        ).build(consumer);
+
         shaped(ModItems.REDSTONE_MODULE.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
                 " R /TDT",
                 'R', Tags.Items.DUSTS_REDSTONE,
@@ -1279,6 +1283,10 @@ public class ModRecipeProvider extends RecipeProvider {
                 FluidStack.EMPTY, new ItemStack(ModItems.CHIPS.get(), 4),
                 TemperatureRange.min(423), 0f, 1.0f, false
         ).build(consumer, RL("thermo_plant/chips"));
+        thermoPlant(FluidIngredient.of(100, PneumaticCraftTags.Fluids.PLANT_OIL), Ingredient.fromItems(ModItems.RAW_SALMON_TEMPURA.get()),
+                FluidStack.EMPTY, new ItemStack(ModItems.SALMON_TEMPURA.get(), 1),
+                TemperatureRange.min(423), 0f, 1.0f, false
+        ).build(consumer, RL("thermo_plant/salmon_tempura"));
         thermoPlant(FluidIngredient.of(4000, ModFluids.MEMORY_ESSENCE.get()), Ingredient.fromItems(ModItems.SPAWNER_CORE_SHELL.get()),
                 FluidStack.EMPTY, new ItemStack(ModItems.SPAWNER_CORE.get()),
                 TemperatureRange.any(), 3f, 0.5f, false

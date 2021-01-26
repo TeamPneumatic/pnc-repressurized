@@ -1,0 +1,18 @@
+{
+  "type": "pneumaticcraft:thermo_plant",
+  "item_input": {
+    "item": "pneumaticcraft:raw_salmon_tempura"
+  },
+  "fluid_input": {
+    "type": "pneumaticcraft:fluid",
+    "tag": "forge:plantoil",
+    "amount": 100
+  },
+  "item_output": {
+    "item": "pneumaticcraft:salmon_tempura"
+  },
+  "temperature": {
+    "min_temp": 423
+  },
+  "exothermic": false
+}

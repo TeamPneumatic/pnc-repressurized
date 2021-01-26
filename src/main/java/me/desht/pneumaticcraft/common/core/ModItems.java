@@ -48,10 +48,12 @@ public class ModItems {
     public static final RegistryObject<Item> SPAWNER_CORE_SHELL = register("spawner_core_shell");
     public static final RegistryObject<Item> REINFORCED_CHEST_KIT = register("reinforced_chest_kit", ItemChestUpgradeKit.ItemReinforcedChestKit::new);
     public static final RegistryObject<Item> SMART_CHEST_KIT = register("smart_chest_kit", ItemChestUpgradeKit.ItemSmartChestKit::new);
+    public static final RegistryObject<Item> RAW_SALMON_TEMPURA = register("raw_salmon_tempura");
 
     public static final RegistryObject<Item> SOURDOUGH_BREAD = registerFood("sourdough_bread", ModFoods.SOURDOUGH);
     public static final RegistryObject<Item> CHIPS = registerFood("chips", ModFoods.CHIPS);
     public static final RegistryObject<Item> COD_N_CHIPS = registerFood("cod_n_chips", ModFoods.COD_N_CHIPS);
+    public static final RegistryObject<Item> SALMON_TEMPURA = registerFood("salmon_tempura", ModFoods.SALMON_TEMPURA);
 
     public static final RegistryObject<ItemGPSTool> GPS_TOOL = register("gps_tool", ItemGPSTool::new);
     public static final RegistryObject<ItemGPSAreaTool> GPS_AREA_TOOL = register("gps_area_tool", ItemGPSAreaTool::new);

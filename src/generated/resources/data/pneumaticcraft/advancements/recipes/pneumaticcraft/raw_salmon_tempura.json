@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "pneumaticcraft:raw_salmon_tempura"
+    ]
+  },
+  "criteria": {
+    "has_sourdough": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:sourdough"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "pneumaticcraft:raw_salmon_tempura"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_sourdough",
+      "has_the_recipe"
+    ]
+  ]
+}
