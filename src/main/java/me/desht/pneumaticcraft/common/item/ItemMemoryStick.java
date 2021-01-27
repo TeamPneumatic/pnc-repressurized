@@ -10,6 +10,7 @@ import me.desht.pneumaticcraft.common.network.PacketLeftClickEmpty;
 import me.desht.pneumaticcraft.common.thirdparty.curios.Curios;
 import me.desht.pneumaticcraft.common.util.EnchantmentUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -204,7 +205,7 @@ public class ItemMemoryStick extends Item implements ColorHandlers.ITintableItem
         Listener.memoryStickCache.computeIfAbsent(entityIn.getUniqueID(), k -> new HashSet<>()).add(locator);
     }
 
-    @Mod.EventBusSubscriber
+    @Mod.EventBusSubscriber(modid = Names.MOD_ID)
     public static class Listener {
         private static final Map<UUID, Long> lastEvent = new HashMap<>();
         private static final Map<UUID, Set<MemoryStickLocator>> memoryStickCache = new HashMap<>();

@@ -14,7 +14,7 @@ import net.minecraftforge.fml.common.Mod;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
-@Mod.EventBusSubscriber
+@Mod.EventBusSubscriber(modid = Names.MOD_ID)
 public class Mekanism implements IThirdParty {
     @CapabilityInject(IHeatHandler.class)
     public static final Capability<IHeatHandler> CAPABILITY_HEAT_HANDLER = null;

@@ -13,6 +13,7 @@ import me.desht.pneumaticcraft.common.network.PacketToggleArmorFeatureBulk;
 import me.desht.pneumaticcraft.common.network.PacketToggleArmorFeatureBulk.FeatureSetting;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
+import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.settings.KeyBinding;
@@ -226,7 +227,7 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
         return upgradeID;
     }
 
-    @Mod.EventBusSubscriber(Dist.CLIENT)
+    @Mod.EventBusSubscriber(modid = Names.MOD_ID, value = Dist.CLIENT)
     public static class KeyDispatcher {
         // maps upgrade ID to keybind widget
         private static final Map<ResourceLocation, WidgetKeybindCheckBox> id2checkBox = new HashMap<>();

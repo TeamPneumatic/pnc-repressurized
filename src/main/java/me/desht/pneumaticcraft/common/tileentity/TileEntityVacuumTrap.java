@@ -252,7 +252,7 @@ public class TileEntityVacuumTrap extends TileEntityPneumaticBase implements IMi
         }
     }
 
-    @Mod.EventBusSubscriber
+    @Mod.EventBusSubscriber(modid = Names.MOD_ID)
     public static class Listener {
         @SubscribeEvent
         public static void onMobSpawn(LivingSpawnEvent.SpecialSpawn event) {

@@ -136,7 +136,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         return getHandlerForPlayer(ClientUtils.getClientPlayer());
     }
 
-    @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE)
+    @Mod.EventBusSubscriber(modid = Names.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
     public static class Listeners {
         @SubscribeEvent
         public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
@@ -161,7 +161,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         }
     }
 
-    @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
+    @Mod.EventBusSubscriber(modid = Names.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
     public static class ClientListeners {
         @SubscribeEvent
         public static void onClientDisconnect(ClientPlayerNetworkEvent.LoggedOutEvent event) {

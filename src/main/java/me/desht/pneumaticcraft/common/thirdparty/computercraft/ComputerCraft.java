@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.ComputerEventManager;
 import me.desht.pneumaticcraft.common.tileentity.ILuaMethodProvider;
+import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -14,7 +15,7 @@ import net.minecraftforge.fml.common.Mod;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
-@Mod.EventBusSubscriber
+@Mod.EventBusSubscriber(modid = Names.MOD_ID)
 public class ComputerCraft implements IThirdParty {
     @CapabilityInject(IPeripheral.class)
     public static final Capability<IPeripheral> PERIPHERAL_CAPABILITY = null;

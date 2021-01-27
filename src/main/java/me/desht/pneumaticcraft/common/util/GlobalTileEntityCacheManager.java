@@ -6,15 +6,17 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntitySecurityStation;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUniversalSensor;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.world.IWorld;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.thread.EffectiveSide;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.WeakHashMap;
 import java.util.stream.Stream;
 
 /**
@@ -23,7 +25,7 @@ import java.util.stream.Stream;
  *
  * @author MineMaarten
  */
-@EventBusSubscriber(modid = Names.MOD_ID)
+@Mod.EventBusSubscriber(modid = Names.MOD_ID)
 public class GlobalTileEntityCacheManager{
     private static final GlobalTileEntityCacheManager CLIENT_INSTANCE = new GlobalTileEntityCacheManager();
     private static final GlobalTileEntityCacheManager SERVER_INSTANCE = new GlobalTileEntityCacheManager();
@@ -37,7 +39,7 @@ public class GlobalTileEntityCacheManager{
         getInstance().removeFromWorld(event.getWorld());
     }
 
-    private final Map<TileEntityType<? extends TileEntity>, GlobalTileEntityCache<? extends TileEntity>> cacheMap = new HashMap<>();
+//    private final Map<TileEntityType<? extends TileEntity>, GlobalTileEntityCache<? extends TileEntity>> cacheMap = new HashMap<>();
 
     public final GlobalTileEntityCache<TileEntityUniversalSensor> universalSensors = new GlobalTileEntityCache<>();
     public final GlobalTileEntityCache<TileEntityChargingStation> chargingStations = new GlobalTileEntityCache<>();

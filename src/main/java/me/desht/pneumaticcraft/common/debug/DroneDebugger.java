@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSendDroneDebugEntry;
 import me.desht.pneumaticcraft.common.network.PacketSyncDroneEntityProgWidgets;
+import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.play.server.SSpawnParticlePacket;
 import net.minecraft.particles.IParticleData;
@@ -98,7 +99,7 @@ public class DroneDebugger {
 
     }
 
-    @Mod.EventBusSubscriber
+    @Mod.EventBusSubscriber(modid = Names.MOD_ID)
     public static class Listener {
         // with thanks to @Zorn_Taov for this code, slightly adapted for drone debugger integration by desht...
         @SubscribeEvent

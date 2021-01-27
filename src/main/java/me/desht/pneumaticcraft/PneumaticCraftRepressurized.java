@@ -178,7 +178,7 @@ public class PneumaticCraftRepressurized {
         AuxConfigHandler.clearPerWorldConfigs();
     }
 
-    @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
+    @Mod.EventBusSubscriber(modid = Names.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
     public static class DataGenerators {
         @SubscribeEvent
         public static void gatherData(GatherDataEvent event) {
