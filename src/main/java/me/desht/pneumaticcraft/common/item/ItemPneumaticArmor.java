@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.api.client.IFOVModifierItem;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.ICustomDurabilityBar;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
+import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
@@ -38,10 +39,7 @@ import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.ArmorItem;
-import net.minecraft.item.IArmorMaterial;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import net.minecraft.item.*;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.NBTUtil;
@@ -72,8 +70,9 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 //        @Optional.Interface(iface = "thaumcraft.api.items.IVisDiscountGear", modid = ModIds.THAUMCRAFT),
 //        @Optional.Interface(iface = "thaumcraft.api.items.IRevealer", modid = ModIds.THAUMCRAFT)
 //})
-public class ItemPneumaticArmor extends ArmorItem
-        implements IChargeableContainerProvider, IUpgradeAcceptor, IFOVModifierItem, ICustomDurabilityBar, IPressurizableItem
+public class ItemPneumaticArmor extends ArmorItem implements
+        IChargeableContainerProvider, IUpgradeAcceptor, IFOVModifierItem, ICustomDurabilityBar, IPressurizableItem,
+        IDyeableArmorItem, ColorHandlers.ITintableItem
         /*, IVisDiscountGear, IGoggles, IRevealer,*/
 {
     private static final UUID[] PNEUMATIC_ARMOR_MODIFIERS = new UUID[] {
@@ -141,7 +140,9 @@ public class ItemPneumaticArmor extends ArmorItem
     @Nullable
     @Override
     public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlotType slot, String type) {
-        return slot == EquipmentSlotType.LEGS ? Textures.ARMOR_PNEUMATIC + "_2.png" : Textures.ARMOR_PNEUMATIC + "_1.png";
+        String s = slot == EquipmentSlotType.LEGS ? Textures.ARMOR_PNEUMATIC + "_2" : Textures.ARMOR_PNEUMATIC + "_1";
+        return type == null ? s + ".png" : s + "_" + type + ".png";
+//        return slot == EquipmentSlotType.LEGS ? Textures.ARMOR_PNEUMATIC + "_2.png" : Textures.ARMOR_PNEUMATIC + "_1.png";
     }
 
     @Override
@@ -349,6 +350,17 @@ public class ItemPneumaticArmor extends ArmorItem
         return stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
                 .map(h -> h.getPressure() / h.maxPressure())
                 .orElseThrow(RuntimeException::new);
+    }
+
+    @Override
+    public int getTintColor(ItemStack stack, int tintIndex) {
+        return tintIndex == 0 ? getColor(stack) : 0xFFFFFFFF;
+    }
+
+    public int getColor(ItemStack stack) {
+        // default IDyeableArmor gives undyed items a leather-brown colour... override for compressed-iron-grey
+        CompoundNBT nbt = stack.getChildTag("display");
+        return nbt != null && nbt.contains("color", Constants.NBT.TAG_ANY_NUMERIC) ? nbt.getInt("color") : 0xFF969696;
     }
 
     /*------- Thaumcraft -------- */

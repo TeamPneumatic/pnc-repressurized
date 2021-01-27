@@ -24,6 +24,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,6 +36,7 @@ public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.Abst
 
     private final float[] lastPressure = new float[] { -1, -1, -1, -1 };
     private WidgetAnimatedStat powerStat;
+    private final List<WidgetButtonExtended> pressureButtons = new ArrayList<>();
     public IGuiAnimatedStat testMessageStat;
     private boolean showPressureNumerically;  // false for numeric readout, true for horizontal bars
     private boolean forceUpdatePressureStat = true;
@@ -47,10 +49,13 @@ public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.Abst
     public void tickClient(ICommonArmorHandler armorHandler) {
         boolean needUpdate = forceUpdatePressureStat;
         for (int i = 0; i < 4; i++) {
-            if (lastPressure[i] != armorHandler.getArmorPressure(ArmorUpgradeRegistry.ARMOR_SLOTS[i])) {
-                lastPressure[i] = armorHandler.getArmorPressure(ArmorUpgradeRegistry.ARMOR_SLOTS[i]);
+            EquipmentSlotType slot = ArmorUpgradeRegistry.ARMOR_SLOTS[i];
+            if (lastPressure[i] != armorHandler.getArmorPressure(slot)) {
+                lastPressure[i] = armorHandler.getArmorPressure(slot);
                 needUpdate = true;
             }
+            ItemStack stack = armorHandler.getPlayer().getItemStackFromSlot(slot);
+            pressureButtons.get(i).setRenderStacks(stack.getItem() instanceof ItemPneumaticArmor ? stack : GuiArmorMainScreen.ARMOR_STACKS[i]);
         }
         if (needUpdate) {
             List<ITextComponent> l = Arrays.stream(ArmorUpgradeRegistry.ARMOR_SLOTS)
@@ -130,14 +135,16 @@ public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.Abst
         if (powerStat == null) {
             forceUpdatePressureStat = true;
             powerStat = new WidgetAnimatedStat(null, StringTextComponent.EMPTY, WidgetAnimatedStat.StatIcon.NONE,0x3000AA00, null, ArmorHUDLayout.INSTANCE.powerStat);
-            powerStat.setLineSpacing(15);
+            powerStat.setLineSpacing(14);
             powerStat.setSubwidgetRenderOffsets(-18, 0);  // ensure armor icons are rendered in the right place
+            pressureButtons.clear();
             for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
-                WidgetButtonExtended pressureButton = new WidgetButtonExtended(0, 5 + (3 - slot.getIndex()) * 15, 18, 18, StringTextComponent.EMPTY) ;
+                WidgetButtonExtended pressureButton = new WidgetButtonExtended(0, 5 + (3 - slot.getIndex()) * 14, 18, 18, StringTextComponent.EMPTY) ;
                 ItemStack stack = GuiArmorMainScreen.ARMOR_STACKS[slot.getIndex()];
                 pressureButton.setVisible(false);
                 pressureButton.setRenderStacks(stack);
                 powerStat.addSubWidget(pressureButton);
+                pressureButtons.add(pressureButton);
             }
             powerStat.setMinimumContractedDimensions(0, 0);
             powerStat.setAutoLineWrap(false);

@@ -1,6 +1,7 @@
 {
    "parent" : "item/generated",
    "textures" : {
-      "layer0" : "pneumaticcraft:item/pneumatic_helmet"
+      "layer0" : "pneumaticcraft:item/pneumatic_helmet",
+      "layer1" : "pneumaticcraft:item/pneumatic_helmet_overlay"
    }
 }
