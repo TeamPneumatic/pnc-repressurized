@@ -14,15 +14,12 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.function.BiPredicate;
 
 public class HeatExchangerLogicTicking implements IHeatExchangerLogic {
-    private final List<IHeatExchangerLogic> hullExchangers = new ArrayList<>();
-    private final List<IHeatExchangerLogic> connectedExchangers = new ArrayList<>();
+    private final Set<IHeatExchangerLogic> hullExchangers = Collections.newSetFromMap(new IdentityHashMap<>());
+    private final Set<IHeatExchangerLogic> connectedExchangers = Collections.newSetFromMap(new IdentityHashMap<>());
     private List<HeatBehaviour<?>> behaviours = new ArrayList<>();
     private List<HeatBehaviour<?>> newBehaviours; // required to prevent CME problems
     private double ambientTemperature = -1;

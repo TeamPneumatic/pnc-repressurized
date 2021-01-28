@@ -181,7 +181,7 @@ public class ModuleAirGrate extends TubeModule {
     }
 
     private void coolHeatSinks() {
-        if (grateRange > 2) {
+        if (grateRange >= 2) {
             int curTeIndex = (int) (pressureTube.getWorld().getGameTime() % 27);
             BlockPos curPos = pressureTube.getPos().offset(dir, 2).add(-1 + curTeIndex % 3, -1 + curTeIndex / 3 % 3, -1 + curTeIndex / 9 % 3);
             TileEntity te = pressureTube.getWorld().getTileEntity(curPos);
@@ -193,8 +193,9 @@ public class ModuleAirGrate extends TubeModule {
                 if (heatSink.isRemoved()) {
                     iterator.remove();
                 } else {
-                    for (int i = 0; i < 4; i++)
+                    for (int i = 0; i < 4; i++) {
                         heatSink.onFannedByAirGrate();
+                    }
                 }
             }
         }
