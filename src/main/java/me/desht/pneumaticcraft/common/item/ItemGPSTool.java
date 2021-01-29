@@ -61,8 +61,9 @@ public class ItemGPSTool extends Item implements IPositionProvider {
         ClientUtils.addGuiContextSensitiveTooltip(stack, infoList);
         BlockPos pos = getGPSLocation(stack);
         if (pos != null) {
+            ITextComponent translated = new TranslationTextComponent(worldIn.getBlockState(pos).getBlock().getTranslationKey());
             IFormattableTextComponent blockName = worldIn.getChunkProvider().isChunkLoaded(new ChunkPos(pos)) ?
-                    new StringTextComponent(" (").append(worldIn.getBlockState(pos).getBlock().getTranslatedName()).appendString(")") :
+                    new StringTextComponent(" (").append(translated).appendString(")") :
                     StringTextComponent.EMPTY.copyRaw();
             String str = String.format("[%d, %d, %d]", pos.getX(), pos.getY(), pos.getZ());
             infoList.add(new StringTextComponent(str).mergeStyle(TextFormatting.YELLOW).append(blockName.mergeStyle(TextFormatting.GREEN)));
