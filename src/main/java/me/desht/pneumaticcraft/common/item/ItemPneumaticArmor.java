@@ -9,7 +9,6 @@ import me.desht.pneumaticcraft.api.item.ICustomDurabilityBar;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.capabilities.AirHandlerItemStack;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
@@ -40,13 +39,10 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.*;
-import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.NBTUtil;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.math.MathHelper;
@@ -82,7 +78,7 @@ public class ItemPneumaticArmor extends ArmorItem implements
             UUID.fromString("e836e6c9-355e-49f2-87fc-331fadfdd642")
     };
 
-    private static final IArmorMaterial COMPRESSED_IRON_MATERIAL = new CompressedArmorMaterial();
+    private static final IArmorMaterial PNEUMATIC_ARMOR_MATERIAL = new CompressedIronArmorMaterial(0.2f);
 
     private static final int[] ARMOR_VOLUMES = new int[] {
             PneumaticValues.PNEUMATIC_BOOTS_VOLUME,
@@ -99,10 +95,9 @@ public class ItemPneumaticArmor extends ArmorItem implements
     public static final String NBT_SPEED_BOOST = "speedBoost";
     public static final String NBT_BUILDER_MODE = "JetBootsBuilderMode";
     public static final String NBT_JET_BOOTS_POWER = "JetBootsPower";
-    private static final String NBT_SYNCED_AIR = "SyncedAir";
 
     public ItemPneumaticArmor(EquipmentSlotType equipmentSlotIn) {
-        super(COMPRESSED_IRON_MATERIAL, equipmentSlotIn, ModItems.defaultProps());
+        super(PNEUMATIC_ARMOR_MATERIAL, equipmentSlotIn, ModItems.defaultProps());
     }
 
     @Nullable
@@ -387,49 +382,4 @@ public class ItemPneumaticArmor extends ArmorItem implements
 //        return armorType == EquipmentSlotType.HEAD && hasThaumcraftUpgradeAndPressure(itemstack);
 //    }
 
-    private static class CompressedArmorMaterial implements IArmorMaterial {
-        static final int[] DMG_REDUCTION = new int[]{2, 5, 6, 2};
-        private static final int[] MAX_DAMAGE_ARRAY = new int[]{13, 15, 16, 11};
-
-        @Override
-        public int getDurability(EquipmentSlotType equipmentSlotType) {
-            return PneumaticValues.PNEUMATIC_ARMOR_DURABILITY_BASE * MAX_DAMAGE_ARRAY[equipmentSlotType.getIndex()];
-        }
-
-        @Override
-        public int getDamageReductionAmount(EquipmentSlotType equipmentSlotType) {
-            return DMG_REDUCTION[equipmentSlotType.getIndex()];
-        }
-
-        @Override
-        public int getEnchantability() {
-            return 9;
-        }
-
-        @Override
-        public SoundEvent getSoundEvent() {
-            return SoundEvents.ITEM_ARMOR_EQUIP_IRON;
-        }
-
-        @Override
-        public Ingredient getRepairMaterial() {
-            return Ingredient.fromTag(PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON);
-        }
-
-        @Override
-        public String getName() {
-            return "compressed_iron";
-        }
-
-        @Override
-        public float getToughness() {
-            return 1.0f;
-        }
-
-        @Override
-        public float getKnockbackResistance() {
-            // TODO: upgrades to improve knockback resistance ?
-            return 0;
-        }
-    }
 }

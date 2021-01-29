@@ -224,6 +224,27 @@ public class ModRecipeProvider extends RecipeProvider {
                 'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON
         ).build(consumer, RL("compressed_iron_block_from_ingot"));
 
+        shaped(ModItems.COMPRESSED_IRON_BOOTS.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
+                "ILI/I I",
+                'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
+                'L', Items.LEATHER_BOOTS
+        ).build(consumer);
+        shaped(ModItems.COMPRESSED_IRON_CHESTPLATE.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
+                "ILI/III/III",
+                'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
+                'L', Items.LEATHER_CHESTPLATE
+        ).build(consumer);
+        shaped(ModItems.COMPRESSED_IRON_HELMET.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
+                "III/ILI",
+                'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
+                'L', Items.LEATHER_HELMET
+        ).build(consumer);
+        shaped(ModItems.COMPRESSED_IRON_LEGGINGS.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
+                "III/ILI/I I",
+                'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
+                'L', Items.LEATHER_LEGGINGS
+        ).build(consumer);
+
         shaped(ModItems.COMPRESSED_IRON_GEAR.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
                 " C /CIC/ C ",
                 'C', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
@@ -489,25 +510,25 @@ public class ModRecipeProvider extends RecipeProvider {
                 "CPC/CAC",
                 'C', ModItems.AIR_CANISTER.get(),
                 'P', ModItems.PRINTED_CIRCUIT_BOARD.get(),
-                'A', Items.LEATHER_BOOTS
+                'A', ModItems.COMPRESSED_IRON_BOOTS.get()
         ).build(consumer);
         shapedPressure(ModItems.PNEUMATIC_CHESTPLATE.get(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
                 "CPC/CAC/CCC",
                 'C', ModItems.AIR_CANISTER.get(),
                 'P', ModItems.PRINTED_CIRCUIT_BOARD.get(),
-                'A', Items.LEATHER_CHESTPLATE
+                'A', ModItems.COMPRESSED_IRON_CHESTPLATE.get()
         ).build(consumer);
         shapedPressure(ModItems.PNEUMATIC_HELMET.get(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
                 "CPC/CAC/CCC",
                 'C', ModItems.AIR_CANISTER.get(),
                 'P', ModItems.PRINTED_CIRCUIT_BOARD.get(),
-                'A', Items.LEATHER_HELMET
+                'A', ModItems.COMPRESSED_IRON_HELMET.get()
         ).build(consumer);
         shapedPressure(ModItems.PNEUMATIC_LEGGINGS.get(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
                 "CPC/CAC/I I",
                 'C', ModItems.AIR_CANISTER.get(),
                 'P', ModItems.PRINTED_CIRCUIT_BOARD.get(),
-                'A', Items.LEATHER_LEGGINGS,
+                'A', ModItems.COMPRESSED_IRON_LEGGINGS.get(),
                 'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON
         ).build(consumer);
 

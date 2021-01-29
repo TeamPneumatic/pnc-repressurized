@@ -13,7 +13,7 @@
       "item": "pneumaticcraft:printed_circuit_board"
     },
     "A": {
-      "item": "minecraft:leather_leggings"
+      "item": "pneumaticcraft:compressed_iron_leggings"
     },
     "I": {
       "tag": "forge:ingots/compressed_iron"

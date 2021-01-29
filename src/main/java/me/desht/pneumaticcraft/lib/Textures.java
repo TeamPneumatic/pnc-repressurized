@@ -14,7 +14,9 @@ public class Textures {
     private static final String PROG_WIDGET_LOCATION = ICON_LOCATION + "textures/progwidgets/";
 
     public static final String PRESSURE_GLASS_LOCATION = ICON_LOCATION + "block/pressure_chamber/windows/";
+
     public static final String ARMOR_PNEUMATIC = ARMOR_LOCATION + "pneumatic";
+    public static final String ARMOR_COMPRESSED_IRON = ARMOR_LOCATION + "compressed_iron";
 
     // Entity & TESR model textures
     public static final ResourceLocation MODEL_AIR_CANNON = modelTexture("air_cannon.png");

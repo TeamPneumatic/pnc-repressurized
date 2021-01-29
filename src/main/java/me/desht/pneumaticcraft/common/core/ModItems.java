@@ -87,6 +87,15 @@ public class ModItems {
     public static final RegistryObject<ItemJackHammer> JACKHAMMER = register("jackhammer",
             ItemJackHammer::new);
 
+    public static final RegistryObject<Item> COMPRESSED_IRON_HELMET = register("compressed_iron_helmet",
+            () -> new ItemCompressedIronArmor(EquipmentSlotType.HEAD));
+    public static final RegistryObject<Item> COMPRESSED_IRON_CHESTPLATE = register("compressed_iron_chestplate",
+            () -> new ItemCompressedIronArmor(EquipmentSlotType.CHEST));
+    public static final RegistryObject<Item> COMPRESSED_IRON_LEGGINGS = register("compressed_iron_leggings",
+            () -> new ItemCompressedIronArmor(EquipmentSlotType.LEGS));
+    public static final RegistryObject<Item> COMPRESSED_IRON_BOOTS = register("compressed_iron_boots",
+            () -> new ItemCompressedIronArmor(EquipmentSlotType.FEET));
+
     public static final RegistryObject<ItemPneumaticArmor> PNEUMATIC_HELMET = register("pneumatic_helmet",
             () -> new ItemPneumaticArmor(EquipmentSlotType.HEAD));
     public static final RegistryObject<ItemPneumaticArmor> PNEUMATIC_CHESTPLATE = register("pneumatic_chestplate",
