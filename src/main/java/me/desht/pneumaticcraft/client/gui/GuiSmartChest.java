@@ -15,6 +15,7 @@ import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.ContainerSmartChest;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncSmartChest;
+import me.desht.pneumaticcraft.common.tileentity.RangeManager;
 import me.desht.pneumaticcraft.common.tileentity.SideConfigurator.RelativeFace;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySmartChest;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySmartChest.PushPullMode;
@@ -28,6 +29,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
 import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
@@ -84,17 +86,11 @@ public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest
                 for (RelativeFace face : RelativeFace.values()) {
                     if (te.getPushPullMode(face) == PushPullMode.PULL) {
                         Direction dir = te.getAbsoluteFacing(face, te.getRotation());
-                        BlockPos p = te.getPos().offset(dir, range + 1);
-                        for (int x = -range; x <= range; x++) {
-                            for (int y = -range; y <= range; y++) {
-                                for (int z = -range; z <= range; z++) {
-                                    posSet.add(p.add(x, y, z));
-                                }
-                            }
-                        }
+                        BlockPos pos = te.getPos().offset(dir, range + 1);
+                        posSet.addAll(RangeManager.getFrame(new AxisAlignedBB(pos, pos).grow(range)));
                     }
                 }
-                AreaRenderManager.getInstance().showArea(posSet, 0x6000FFFF, te);
+                AreaRenderManager.getInstance().showArea(posSet, 0x4000FFFF, te, false);
             }
         }
     }
@@ -112,10 +108,10 @@ public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest
         if (te.getUpgrades(EnumUpgrade.MAGNET) > 0) {
             showRangeButton.setVisible(true);
             if (AreaRenderManager.getInstance().isShowing(te)) {
-                showRangeButton.setMessage(new StringTextComponent("A").mergeStyle(TextFormatting.AQUA));
+                showRangeButton.setMessage(new StringTextComponent("R").mergeStyle(TextFormatting.AQUA));
                 showRangeButton.setTooltipText(xlate("pneumaticcraft.gui.programmer.button.stopShowingArea"));
             } else {
-                showRangeButton.setMessage(new StringTextComponent("A").mergeStyle(TextFormatting.GRAY));
+                showRangeButton.setMessage(new StringTextComponent("R").mergeStyle(TextFormatting.GRAY));
                 showRangeButton.setTooltipText(xlate("pneumaticcraft.gui.programmer.button.showArea"));
             }
         } else {
@@ -243,7 +239,7 @@ public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest
                 String label = "[" + stack.getCount() + "]";
                 matrixStack.translate(0, 0, 300);
                 if (!container.inventorySlots.get(slot).getHasStack()) {
-                    fill(matrixStack, sx, sy, sx + 16, sy + 16, 0x8080D080);
+                    fill(matrixStack, sx, sy, sx + 16, sy + 16, 0x6080D080);
                 }
                 matrixStack.scale(0.5f, 0.5f, 0.5f);
                 font.drawStringWithShadow(matrixStack, label, 2 * (sx + 16 - font.getStringWidth(label) / 2f), 2 * (sy + 1), 0xFFFFFFA0);

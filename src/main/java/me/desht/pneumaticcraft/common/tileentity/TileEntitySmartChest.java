@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerSmartChest;
 import me.desht.pneumaticcraft.common.inventory.handler.ComparatorItemStackHandler;
+import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
@@ -172,12 +173,14 @@ public class TileEntitySmartChest extends TileEntityTickableBase
     private boolean tryMagnet(Direction dir) {
         if (getUpgrades(EnumUpgrade.MAGNET) > 0) {
             int range = getUpgrades(EnumUpgrade.RANGE);
-            AxisAlignedBB aabb = new AxisAlignedBB(pos.offset(dir, range + 2)).grow(range + 1);
-            List<ItemEntity> items = world.getEntitiesWithinAABB(ItemEntity.class, aabb, e -> !e.cannotPickup());
+            BlockPos centrePos = pos.offset(dir, range + 2);
+            AxisAlignedBB aabb = new AxisAlignedBB(centrePos).grow(range + 1);
+            List<ItemEntity> items = world.getEntitiesWithinAABB(ItemEntity.class, aabb,
+                    item -> item != null && item.isAlive() && !item.cannotPickup() && !ItemRegistry.getInstance().shouldSuppressMagnet(item));
             boolean didWork = false;
             for (ItemEntity item : items) {
                 ItemStack stack = item.getItem();
-                ItemStack excess = ItemHandlerHelper.insertItem(inventory, stack, false);
+                ItemStack excess = ItemHandlerHelper.insertItemStacked(inventory, stack, false);
                 if (excess.isEmpty()) {
                     item.remove();
                 } else {
