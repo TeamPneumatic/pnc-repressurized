@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetAreaItemBase;
+import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -79,17 +80,21 @@ public class DroneAIPlace<W extends ProgWidgetAreaItemBase /*& IBlockOrdered & I
         if (distToBlock < 2) {
             for (int slot = 0; slot < drone.getInv().getSlots(); slot++) {
                 ItemStack droneStack = drone.getInv().getStackInSlot(slot);
-                if (droneStack.getItem() instanceof BlockItem && progWidget.isItemValidForFilters(droneStack)) {
+                if (droneStack.getItem() instanceof BlockItem && progWidget.isItemValidForFilters(droneStack) && worldCache.getBlockState(pos).getMaterial().isReplaceable()) {
                     BlockItem blockItem = (BlockItem) droneStack.getItem();
                     BlockItemUseContext ctx = getPlacementContext(pos, pos, droneStack);
-                    ActionResultType res = blockItem.tryPlace(ctx);
-                    if (res == ActionResultType.SUCCESS) {
-                        drone.addAirToDrone(-PneumaticValues.DRONE_USAGE_PLACE);
-                        if (slot == 0 && drone.getInv().getStackInSlot(slot).isEmpty()) {
-                            // kludge to force update of visible held item
-                            drone.getInv().setStackInSlot(slot, ItemStack.EMPTY);
+                    if (progWidget.getCachedAreaSet().contains(ctx.getPos())) {
+                        ActionResultType res = blockItem.tryPlace(ctx);
+                        if (res.isSuccessOrConsume()) {
+                            drone.addAirToDrone(-PneumaticValues.DRONE_USAGE_PLACE);
+                            if (slot == 0 && drone.getInv().getStackInSlot(slot).isEmpty()) {
+                                // kludge to force update of visible held item
+                                drone.getInv().setStackInSlot(slot, ItemStack.EMPTY);
+                            }
+                            return false;
                         }
-                        return false;
+                    } else {
+                        Log.warning("oops?");
                     }
                 }
             }
