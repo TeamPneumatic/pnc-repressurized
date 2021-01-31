@@ -8,6 +8,31 @@ Changes are in reverse chronological order; newest changes at the top.
 
 Note: PNC:R 2.9.3 and later have been successfully tested on Minecraft 1.16.5.  Older (but recent) versions will probably also work on MC 1.16.5, but haven't been tested.
 
+## 2.9.6-?? (unreleased)
+
+### Updates
+* Added Compressed Iron armor set - early game armor which is a bit better than Iron armor
+  * Made with Compressed Iron Ingots and Leather armor pieces
+* Pneumatic Armor recipes now require the corresponding Compressed Iron piece instead of Leather  
+* Added Russian (ru_ru) translations.  Thanks to @shikhtv for these.
+* Air Grate needs a little less pressure to fan Heat Sinks now.
+  * 0.6 bar is sufficient to fan Heat Sinks two blocks away (i.e. one block of space between Air Grate and Heat Sinks)
+
+### Fixes
+* Fixed drone Place Block progwidget sometimes placing blocks outside the specified area
+* Fixed done Block Right Click progwidget not honouring the "Side" setting
+  * This is noticeable e.g. if you use the drone to sneak-right-click a Sign or Aphorism Tile onto the side of block
+* Fixed drone's held item not syncing to the client when it becomes empty
+* Fixed drone block placement not using air as it should (100mL per block placed)
+* Fixed potential item dupe issue in Smart Chest with Magnet upgrade
+  * Smart Chest magnet functionality now also respects Botania's Solegnolia and items on conveyor belts (e.g. Immersive Engineering)
+
+  
+## 2.9.5-128 (26 Jan 2021)
+
+### Fixes
+* Hotfix: fixed crash on dedicated server with GPS and GPS Area Tools due to bug introduced in 2.9.4
+
 ## 2.9.4-126 (26 Jan 2021)
 
 ### Updates
