@@ -190,6 +190,8 @@ public class NetworkHandler {
 				PacketBlockDestroyed::toBytes, PacketBlockDestroyed::new, PacketBlockDestroyed::handle);
 		registerMessage(PacketSyncHackSimulationUpdate.class,
 				PacketSyncHackSimulationUpdate::toBytes, PacketSyncHackSimulationUpdate::new, PacketSyncHackSimulationUpdate::handle);
+		registerMessage(PacketUpdateArmorColors.class,
+				PacketUpdateArmorColors::toBytes, PacketUpdateArmorColors::new, PacketUpdateArmorColors::handle);
     }
 
 	public static <MSG> void registerMessage(Class<MSG> messageType, BiConsumer<MSG, PacketBuffer> encoder, Function<PacketBuffer, MSG> decoder, BiConsumer<MSG, Supplier<NetworkEvent.Context>> messageConsumer) {

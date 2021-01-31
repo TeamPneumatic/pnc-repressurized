@@ -55,7 +55,7 @@ public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.Abst
                 needUpdate = true;
             }
             ItemStack stack = armorHandler.getPlayer().getItemStackFromSlot(slot);
-            pressureButtons.get(i).setRenderStacks(stack.getItem() instanceof ItemPneumaticArmor ? stack : GuiArmorMainScreen.ARMOR_STACKS[i]);
+            pressureButtons.get(i).setRenderStacks(stack.getItem() instanceof ItemPneumaticArmor ? stack : ItemStack.EMPTY);
         }
         if (needUpdate) {
             List<ITextComponent> l = Arrays.stream(ArmorUpgradeRegistry.ARMOR_SLOTS)

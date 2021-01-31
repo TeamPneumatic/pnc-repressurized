@@ -349,13 +349,31 @@ public class ItemPneumaticArmor extends ArmorItem implements
 
     @Override
     public int getTintColor(ItemStack stack, int tintIndex) {
-        return tintIndex == 0 ? getColor(stack) : 0xFFFFFFFF;
+        switch (tintIndex) {
+            case 0: return getColor(stack);
+            case 1: return getSecondaryColor(stack);
+            default: return 0xFFFFFFFF;
+        }
     }
 
     public int getColor(ItemStack stack) {
         // default IDyeableArmor gives undyed items a leather-brown colour... override for compressed-iron-grey
         CompoundNBT nbt = stack.getChildTag("display");
         return nbt != null && nbt.contains("color", Constants.NBT.TAG_ANY_NUMERIC) ? nbt.getInt("color") : 0xFF969696;
+    }
+
+    /**
+     * Get the overlay colour
+     * @param stack the armor piece
+     * @return the overlay colour in ARGB format
+     */
+    public int getSecondaryColor(ItemStack stack) {
+        CompoundNBT nbt = stack.getChildTag("display");
+        return nbt != null && nbt.contains("color2", Constants.NBT.TAG_ANY_NUMERIC) ? nbt.getInt("color2") : 0xFFC0C0C0;
+    }
+
+    public void setSecondaryColor(ItemStack stack, int color) {
+        stack.getOrCreateChildTag("display").putInt("color2", color);
     }
 
     /*------- Thaumcraft -------- */

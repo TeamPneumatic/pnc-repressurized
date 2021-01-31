@@ -2,6 +2,7 @@
   "parent" : "item/generated",
   "textures" : {
     "layer0" : "pneumaticcraft:item/pneumatic_chestplate",
-    "layer1" : "pneumaticcraft:item/pneumatic_chestplate_overlay"
+    "layer1" : "pneumaticcraft:item/pneumatic_chestplate_overlay",
+    "layer2" : "pneumaticcraft:item/pneumatic_chestplate_overlay_2"
   }
 }

@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.client.gui.pneumatic_armor.option_screens;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.client.KeyHandler;
+import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiArmorColors;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiMoveStat;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.KeybindingButton;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
@@ -38,6 +39,9 @@ public class CoreComponentsOptions extends IOptionPage.SimpleToggleableOptions<C
             Minecraft.getInstance().displayGuiScreen(
                     new GuiMoveStat(getClientUpgradeHandler(), ArmorHUDLayout.LayoutTypes.MESSAGE, getClientUpgradeHandler().testMessageStat));
         }));
+
+        gui.addWidget(new WidgetButtonExtended(30, 194, 150, 20,
+                xlate("pneumaticcraft.armor.gui.misc.colors"), b -> Minecraft.getInstance().displayGuiScreen(new GuiArmorColors())));
 
         gui.addWidget(new WidgetCheckBox(5, 45, 0xFFFFFFFF, xlate("pneumaticcraft.armor.gui.misc.showPressureNumerically"), b -> {
             getClientUpgradeHandler().setShowPressureNumerically(b.checked);

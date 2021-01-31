@@ -206,4 +206,9 @@ public class ModRenderTypes extends RenderType {
                     .texture(NO_TEXTURE)
                     .build(false)
     );
+
+    public static RenderType getArmorTranslucentNoCull(ResourceLocation rl) {
+        RenderType.State state = RenderType.State.getBuilder().texture(new RenderState.TextureState(rl, false, false)).transparency(TRANSLUCENT_TRANSPARENCY).diffuseLighting(DIFFUSE_LIGHTING_ENABLED).alpha(DEFAULT_ALPHA).cull(CULL_DISABLED).lightmap(LIGHTMAP_ENABLED).overlay(OVERLAY_ENABLED).layer(field_239235_M_).build(true);
+        return makeType("armor_translucent_no_cull", DefaultVertexFormats.ENTITY, GL11.GL_QUADS, 256, true, false, state);
+    }
 }

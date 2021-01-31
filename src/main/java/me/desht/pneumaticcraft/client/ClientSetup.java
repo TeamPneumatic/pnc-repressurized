@@ -16,6 +16,7 @@ import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
 import me.desht.pneumaticcraft.client.render.entity.*;
 import me.desht.pneumaticcraft.client.render.entity.drone.RenderDrone;
 import me.desht.pneumaticcraft.client.render.fluid.*;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticArmorLayer;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.entity_tracker.EntityTrackHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.*;
@@ -37,6 +38,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
+import net.minecraft.client.renderer.entity.*;
+import net.minecraft.client.renderer.entity.model.ArmorStandArmorModel;
+import net.minecraft.client.renderer.entity.model.BipedModel;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemModelsProperties;
 import net.minecraft.util.math.MathHelper;
@@ -47,6 +52,8 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+
+import java.util.Map;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
@@ -79,6 +86,7 @@ public class ClientSetup {
     public static void initLate() {
         // stuff to do on the main thread
         setBlockRenderLayers();
+        addCustomArmorLayer();
         registerItemModelProperties();
         registerArmorClientUpgradeHandlers();
         registerTileEntityRenderers();
@@ -88,6 +96,21 @@ public class ClientSetup {
         registerTubeModuleFactories();
 
         EntityTrackHandler.init();
+    }
+
+    private static void addCustomArmorLayer() {
+        Map<String, PlayerRenderer> skinMap = Minecraft.getInstance().getRenderManager().getSkinMap();
+        PlayerRenderer render;
+        render = skinMap.get("default");
+        render.addLayer(new PneumaticArmorLayer<>(render, new BipedModel<>(0.5F), new BipedModel<>(1.0F)));
+        render = skinMap.get("slim");
+        render.addLayer(new PneumaticArmorLayer<>(render, new BipedModel<>(0.5F), new BipedModel<>(1.0F)));
+
+        EntityRenderer<?> r = Minecraft.getInstance().getRenderManager().renderers.get(EntityType.ARMOR_STAND);
+        if (r instanceof ArmorStandRenderer) {
+            ArmorStandRenderer ar = (ArmorStandRenderer) r;
+            ar.addLayer(new PneumaticArmorLayer<>(ar, new ArmorStandArmorModel(0.5F), new ArmorStandArmorModel(1.0F)));
+        }
     }
 
     private static void registerItemModelProperties() {
