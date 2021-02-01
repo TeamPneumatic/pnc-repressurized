@@ -91,7 +91,7 @@ public class DroneAIDig<W extends ProgWidgetAreaItemBase & IToolUser> extends Dr
     }
 
     @Override
-    protected boolean doBlockInteraction(BlockPos pos, double distToBlock) {
+    protected boolean doBlockInteraction(BlockPos pos, double squareDistToBlock) {
         PlayerInteractionManager manager = drone.getFakePlayer().interactionManager;
         if (!manager.isDestroyingBlock || !manager.receivedFinishDiggingPacket) { //is not destroying and is not acknowledged.
             BlockState blockState = worldCache.getBlockState(pos);

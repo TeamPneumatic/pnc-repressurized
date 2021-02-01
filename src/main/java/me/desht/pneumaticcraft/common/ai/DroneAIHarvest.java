@@ -61,7 +61,7 @@ public class DroneAIHarvest<W extends ProgWidgetAreaItemBase & IToolUser> extend
     }
 
     @Override
-    protected boolean doBlockInteraction(BlockPos pos, double distToBlock) {
+    protected boolean doBlockInteraction(BlockPos pos, double squareDistToBlock) {
         getApplicableHandler(pos).ifPresent(applicableHandler -> {
             BlockState state = worldCache.getBlockState(pos);
             if (applicableHandler.canHarvest(drone.world(), worldCache, pos, state, drone)) {

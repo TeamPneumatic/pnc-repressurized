@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.common.progwidgets.IBlockRightClicker;
-import me.desht.pneumaticcraft.common.progwidgets.ISidedWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetAreaItemBase;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetBlockRightClick;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -17,7 +16,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -67,7 +65,7 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetAr
     }
 
     @Override
-    protected boolean doBlockInteraction(BlockPos pos, double distToBlock) {
+    protected boolean doBlockInteraction(BlockPos pos, double squareDistToBlock) {
         visitedPositions.add(pos);
         rightClick(pos);
         if (drone.getFakePlayer().getHeldItemMainhand().getCount() <= 0) {
@@ -81,15 +79,14 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetAr
     }
 
     private void rightClick(BlockPos pos) {
-        Direction faceDir = ISidedWidget.getDirForSides(((ISidedWidget) progWidget).getSides());
         if (clickType == IBlockRightClicker.RightClickType.CLICK_ITEM) {
-            rightClickItem(drone.getFakePlayer(), pos, faceDir);
+            rightClickItem(drone.getFakePlayer(), pos);
         } else {
-            rightClickBlock(drone.getFakePlayer(), pos, faceDir);
+            rightClickBlock(drone.getFakePlayer(), pos);
         }
     }
 
-    private void rightClickItem(FakePlayer fakePlayer, BlockPos pos, Direction faceDir) {
+    private void rightClickItem(FakePlayer fakePlayer, BlockPos pos) {
         // if necessary, find a filter-matching item in the inventory, and swap it into slot 0 (drone's held item)
         if (!progWidget.isItemValidForFilters(drone.getInv().getStackInSlot(0)) && !trySwapItem()) return;
 
@@ -99,7 +96,7 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetAr
         // this is adapted from PlayerInteractionManager#processRightClickBlock()
         try {
             BlockRayTraceResult brtr = doTrace(world, pos, fakePlayer);
-            if (brtr == null || brtr.getFace() != faceDir) return;
+            if (brtr == null) return;
 
             PlayerInteractEvent.RightClickBlock event = ForgeHooks.onRightClickBlock(fakePlayer, Hand.MAIN_HAND, pos, brtr);
             if (event.isCanceled() || event.getUseItem() == Event.Result.DENY) {
@@ -146,7 +143,29 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetAr
                 }
             }
         } catch (Throwable e) {
-            Log.error("DroneAIBlockInteract crashed! Stacktrace: ");
+            // crash could happen in right-click logic of item, which could be from any mod...
+            Log.error("DroneAIRightClickBlock crashed! Stacktrace: ");
+            e.printStackTrace();
+        }
+    }
+
+    private void rightClickBlock(FakePlayer fakePlayer, BlockPos pos) {
+        World world = fakePlayer.getEntityWorld();
+        BlockState state = world.getBlockState(pos);
+        BlockRayTraceResult brtr = doTrace(world, pos, fakePlayer);
+        if (brtr == null) return;
+        PlayerInteractEvent.RightClickBlock event = ForgeHooks.onRightClickBlock(fakePlayer, Hand.MAIN_HAND, pos, brtr);
+
+        try {
+            if (!event.isCanceled() && event.getUseItem() != Event.Result.DENY && event.getUseBlock() != Event.Result.DENY) {
+                ActionResultType res = state.onBlockActivated(world, fakePlayer, Hand.MAIN_HAND, brtr);
+                if (res.isSuccessOrConsume()) {
+                    world.notifyBlockUpdate(pos, state, state, Constants.BlockFlags.DEFAULT);
+                }
+            }
+        } catch (Throwable e) {
+            // crash could happen in activated logic of block, which could be from any mod...
+            Log.error("DroneAIRightClickBlock crashed! Stacktrace: ");
             e.printStackTrace();
         }
     }
@@ -161,21 +180,6 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetAr
             }
         }
         return false;
-    }
-
-    private void rightClickBlock(FakePlayer fakePlayer, BlockPos pos, Direction faceDir) {
-        World world = fakePlayer.getEntityWorld();
-        BlockState state = world.getBlockState(pos);
-        BlockRayTraceResult brtr = doTrace(world, pos, fakePlayer);
-        if (brtr == null || brtr.getFace() != faceDir) return;
-        PlayerInteractEvent.RightClickBlock event = ForgeHooks.onRightClickBlock(fakePlayer, Hand.MAIN_HAND, pos, brtr);
-
-        if (!event.isCanceled() && event.getUseItem() != Event.Result.DENY && event.getUseBlock() != Event.Result.DENY) {
-            ActionResultType res = state.onBlockActivated(world, fakePlayer, Hand.MAIN_HAND, brtr);
-            if (res.isSuccessOrConsume()) {
-                world.notifyBlockUpdate(pos, state, state, Constants.BlockFlags.DEFAULT);
-            }
-        }
     }
 
     private BlockRayTraceResult doTrace(World world, BlockPos pos, FakePlayer fakePlayer) {

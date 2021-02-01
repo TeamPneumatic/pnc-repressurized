@@ -32,7 +32,7 @@ public abstract class DroneAIImExBase<W extends ProgWidgetInventoryBase>
     }
 
     @Override
-    protected boolean doBlockInteraction(BlockPos pos, double distToBlock) {
+    protected boolean doBlockInteraction(BlockPos pos, double squareDistToBlock) {
         return !useCount() || transportCount > 0;
     }
 

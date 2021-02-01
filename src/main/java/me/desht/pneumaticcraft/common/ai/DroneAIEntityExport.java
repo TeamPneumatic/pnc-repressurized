@@ -29,7 +29,7 @@ public class DroneAIEntityExport<W extends ProgWidgetAreaItemBase> extends Drone
     }
 
     @Override
-    protected boolean doBlockInteraction(BlockPos pos, double distToBlock) {
+    protected boolean doBlockInteraction(BlockPos pos, double squareDistToBlock) {
         drone.setCarryingEntity(null);
         return false;
     }

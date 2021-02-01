@@ -29,8 +29,8 @@ public class DroneAILiquidImport<W extends ProgWidgetInventoryBase & ILiquidFilt
     }
 
     @Override
-    protected boolean doBlockInteraction(BlockPos pos, double distToBlock) {
-        return emptyTank(pos, false) && super.doBlockInteraction(pos, distToBlock);
+    protected boolean doBlockInteraction(BlockPos pos, double squareDistToBlock) {
+        return emptyTank(pos, false) && super.doBlockInteraction(pos, squareDistToBlock);
     }
 
     private boolean shouldVoidExcess() {

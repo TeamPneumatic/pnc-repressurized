@@ -57,7 +57,7 @@ public class DroneAIExternalProgram extends DroneAIBlockInteraction<ProgWidgetEx
     }
 
     @Override
-    protected boolean doBlockInteraction(BlockPos pos, double distToBlock) {
+    protected boolean doBlockInteraction(BlockPos pos, double squareDistToBlock) {
         return IOHelper.getInventoryForTE(drone.world().getTileEntity(pos)).map(this::handleInv).orElse(false);
     }
 

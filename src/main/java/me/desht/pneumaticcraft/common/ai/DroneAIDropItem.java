@@ -40,7 +40,7 @@ public class DroneAIDropItem<W extends ProgWidgetInventoryBase & IItemDropper> e
     }
 
     @Override
-    protected boolean doBlockInteraction(BlockPos pos, double distToBlock) {
+    protected boolean doBlockInteraction(BlockPos pos, double squareDistToBlock) {
         visitedPositions.add(pos);
         for (int i = 0; i < drone.getInv().getSlots(); i++) {
             ItemStack stack = drone.getInv().getStackInSlot(i);

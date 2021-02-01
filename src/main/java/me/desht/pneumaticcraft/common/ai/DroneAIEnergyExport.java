@@ -13,8 +13,8 @@ public class DroneAIEnergyExport extends DroneAIImExBase<ProgWidgetInventoryBase
     }
 
     @Override
-    protected boolean doBlockInteraction(BlockPos pos, double distToBlock) {
-        return exportEnergy(pos, false) && super.doBlockInteraction(pos, distToBlock);
+    protected boolean doBlockInteraction(BlockPos pos, double squareDistToBlock) {
+        return exportEnergy(pos, false) && super.doBlockInteraction(pos, squareDistToBlock);
     }
 
     @Override

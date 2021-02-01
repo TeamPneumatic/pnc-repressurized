@@ -33,7 +33,7 @@ public class DroneAIEditSign extends DroneAIBlockInteraction<ProgWidgetAreaItemB
     }
 
     @Override
-    protected boolean doBlockInteraction(BlockPos pos, double distToBlock) {
+    protected boolean doBlockInteraction(BlockPos pos, double squareDistToBlock) {
         return false;
     }
 }

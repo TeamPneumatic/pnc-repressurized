@@ -75,8 +75,8 @@ public class DroneAIPlace<W extends ProgWidgetAreaItemBase /*& IBlockOrdered & I
     }
 
     @Override
-    protected boolean doBlockInteraction(BlockPos pos, double distToBlock) {
-        if (distToBlock < 2) {
+    protected boolean doBlockInteraction(BlockPos pos, double squareDistToBlock) {
+        if (squareDistToBlock < 2 * 2) {
             for (int slot = 0; slot < drone.getInv().getSlots(); slot++) {
                 ItemStack droneStack = drone.getInv().getStackInSlot(slot);
                 if (droneStack.getItem() instanceof BlockItem && progWidget.isItemValidForFilters(droneStack) && worldCache.getBlockState(pos).getMaterial().isReplaceable()) {

@@ -20,8 +20,8 @@ public class DroneEntityAIInventoryExport extends DroneAIImExBase<ProgWidgetInve
     }
 
     @Override
-    protected boolean doBlockInteraction(BlockPos pos, double distToBlock) {
-        return export(pos, false) && super.doBlockInteraction(pos, distToBlock);
+    protected boolean doBlockInteraction(BlockPos pos, double squareDistToBlock) {
+        return export(pos, false) && super.doBlockInteraction(pos, squareDistToBlock);
     }
 
     private boolean export(BlockPos pos, boolean simulate) {

@@ -21,7 +21,7 @@ public class DroneAIForEachCoordinate extends DroneAIBlockInteraction<ProgWidget
     }
 
     @Override
-    protected boolean doBlockInteraction(BlockPos pos, double distToBlock) {
+    protected boolean doBlockInteraction(BlockPos pos, double squareDistToBlock) {
         return false;
     }
 

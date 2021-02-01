@@ -132,10 +132,10 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
      * instead move on to the next progwidget.
      *
      * @param pos the block pos to work on
-     * @param distToBlock distance from the drone to the block
+     * @param squareDistToBlock squared distance from the drone to the block
      * @return false if we're done and should stop trying, true to try again next time
      */
-    protected abstract boolean doBlockInteraction(BlockPos pos, double distToBlock);
+    protected abstract boolean doBlockInteraction(BlockPos pos, double squareDistToBlock);
 
     /**
      * Returns whether an in-progress EntityAIBase should continue executing
@@ -192,9 +192,9 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
                 if (respectClaims()) {
                     DroneClaimManager.getInstance(drone.world()).claim(curPos);
                 }
-                double dist = drone.getDronePos().distanceTo(Vector3d.copyCentered(curPos));
-                if (!moveToPositions() || dist < (moveIntoBlock() ? 1 : 2)) {
-                    return doBlockInteraction(curPos, dist);
+                double distSq = drone.getDronePos().squareDistanceTo(Vector3d.copyCentered(curPos));
+                if (!moveToPositions() || distSq < (moveIntoBlock() ? 1 : 4)) {  // 1 or 2 blocks
+                    return doBlockInteraction(curPos, distSq);
                 }
             }
             // if we end up here, we're either still travelling (return true) or have nowhere to go (return false)

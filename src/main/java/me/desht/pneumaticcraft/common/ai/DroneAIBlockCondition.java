@@ -48,7 +48,7 @@ public abstract class DroneAIBlockCondition extends DroneAIBlockInteraction<Prog
     protected abstract boolean evaluate(BlockPos pos);
 
     @Override
-    protected boolean doBlockInteraction(BlockPos pos, double distToBlock) {
+    protected boolean doBlockInteraction(BlockPos pos, double squareDistToBlock) {
         return false;
     }
 
