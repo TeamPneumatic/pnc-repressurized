@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
-import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSpawnIndicatorParticles;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
@@ -13,14 +12,12 @@ import me.desht.pneumaticcraft.common.util.ThreadedSorter;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.pathfinding.PathType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.ICollisionReader;
 
@@ -29,21 +26,23 @@ import java.util.EnumSet;
 import java.util.List;
 
 public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> extends Goal {
+    private static final int MAX_LOOKUPS_PER_SEARCH = 30;
+    private static final int DRONE_DEBUG_PARTICLE_RANGE_SQ = 32 * 32;
+
     protected final IDroneBase drone;
     protected final W progWidget;
     private final Ordering order;
     private BlockPos curPos;
     private final List<BlockPos> area;
     final ICollisionReader worldCache;
-    private final List<BlockPos> blacklist = new ArrayList<>();//a list of position which weren't allowed to be digged in the past.
+    private final List<BlockPos> blacklist = new ArrayList<>(); //a list of position which weren't allowed to be dug in the past.
     private int curY;
     private int lastSuccessfulY;
     private int minY, maxY;
     private ThreadedSorter<BlockPos> sorter;
     private boolean aborted;
-    private final int maxLookupsPerSearch;
-    private boolean searching; //true while the drone is searching for a coordinate, false if traveling/processing a coordinate.
-    private int searchIndex; //The current index in the area list the drone is searching at.
+    private boolean searching; // True while the drone is searching for a coordinate, false if traveling to or processing a coordinate.
+    private int searchIndex;   // The current index in the area list the drone is searching at.
     private int totalActions;
     private int maxActions = -1;
 
@@ -60,9 +59,6 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
         worldCache = progWidget.getChunkCache(drone.world());
 
         AxisAlignedBB extents = progWidget.getAreaExtents();
-        // heuristic: use horizontal cross-section size of the area as a guide to the max searched blocks per attempt
-        maxLookupsPerSearch = MathHelper.clamp((int) ((extents.getXSize() + 1) * (extents.getZSize() + 1)), 30, 500);
-
         if (area.size() > 0) {
             minY = (int) extents.minY;
             maxY = (int) extents.maxY;
@@ -147,7 +143,7 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
             if (!sorter.isDone()) return true; // wait until the area is sorted according to the given ordering
 
             boolean firstRun = true;
-            int searchedBlocks = 0; // tracks the number of inspected blocks; stop searching when LOOKUPS_PER_SEARCH_TICK is reached
+            int searchedBlocks = 0; // tracks the number of inspected blocks; stop searching when MAX_LOOKUPS_PER_SEARCH is reached
             while (curPos == null && curY != lastSuccessfulY && order != Ordering.CLOSEST || firstRun) {
                 firstRun = false;
                 List<BlockPos> inspectedPositions = new ArrayList<>();
@@ -155,7 +151,7 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
                     BlockPos pos = area.get(searchIndex);
                     searchIndex++;
                     if (isYValid(pos.getY()) && !blacklist.contains(pos) && (!respectClaims() || !DroneClaimManager.getInstance(drone.world()).isClaimed(pos))) {
-                        inspectedPositions.add(pos);
+                        if (!drone.getDebugger().getDebuggingPlayers().isEmpty()) inspectedPositions.add(pos);
                         if (isValidPosition(pos)) {
                             curPos = pos;
                             if (moveToPositions()) {
@@ -175,7 +171,7 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
                         }
                         searchedBlocks++;
                     }
-                    if (searchedBlocks >= 30 /*maxLookupsPerSearch*/) {
+                    if (searchedBlocks >= MAX_LOOKUPS_PER_SEARCH) {
                         indicateToListeningPlayers(inspectedPositions);
                         return true;
                     }
@@ -270,16 +266,15 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
      * @param pos the blockpos to indicate
      */
     private void indicateToListeningPlayers(List<BlockPos> pos) {
-        if (pos.isEmpty()) return;
-        for (PlayerEntity player : drone.world().getPlayers()) {
-            if (player.getDistanceSq(pos.get(0).getX(), pos.get(0).getY(), pos.get(0).getZ()) < 1024
-                    && ItemPneumaticArmor.isPlayerDebuggingDrone(player, drone))
-            {
-                CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
-                if (handler.isArmorReady(EquipmentSlotType.HEAD) && handler.isEntityTrackerEnabled()
-                        && handler.getUpgradeCount(EquipmentSlotType.HEAD, EnumUpgrade.ENTITY_TRACKER) > 0
-                        && handler.getUpgradeCount(EquipmentSlotType.HEAD, EnumUpgrade.DISPENSER) > 0) {
-                    NetworkHandler.sendToPlayer(new PacketSpawnIndicatorParticles(pos, progWidget.getColor()), (ServerPlayerEntity) player);
+        if (!pos.isEmpty()) {
+            for (ServerPlayerEntity player : drone.getDebugger().getDebuggingPlayers()) {
+                if (player.getDistanceSq(pos.get(0).getX(), pos.get(0).getY(), pos.get(0).getZ()) < DRONE_DEBUG_PARTICLE_RANGE_SQ) {
+                    CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
+                    if (handler.isArmorReady(EquipmentSlotType.HEAD) && handler.isEntityTrackerEnabled()
+                            && handler.getUpgradeCount(EquipmentSlotType.HEAD, EnumUpgrade.ENTITY_TRACKER) > 0
+                            && handler.getUpgradeCount(EquipmentSlotType.HEAD, EnumUpgrade.DISPENSER) > 0) {
+                        NetworkHandler.sendToPlayer(new PacketSpawnIndicatorParticles(pos, progWidget.getColor()), player);
+                    }
                 }
             }
         }

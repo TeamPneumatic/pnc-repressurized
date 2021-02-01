@@ -71,6 +71,10 @@ public class DroneDebugger {
         debuggingPlayers.removeIf(player -> !player.isAlive() || !ItemPneumaticArmor.isPlayerDebuggingDrone(player, drone));
     }
 
+    public Collection<ServerPlayerEntity> getDebuggingPlayers() {
+        return debuggingPlayers;
+    }
+
     private int getActiveWidgetIndex() {
         return drone.getActiveWidgetIndex();
     }
