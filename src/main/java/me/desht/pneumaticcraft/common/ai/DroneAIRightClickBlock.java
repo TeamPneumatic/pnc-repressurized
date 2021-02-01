@@ -54,13 +54,16 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetAr
         if (visitedPositions.contains(pos)) return false;
         if (progWidget.isItemFilterEmpty()) return true;
         switch (clickType) {
-            case CLICK_ITEM: return progWidget.isItemValidForFilters(drone.getFakePlayer().getHeldItemMainhand());
-            case CLICK_BLOCK: return DroneAIDig.isBlockValidForFilter(drone.world(), pos, drone, progWidget);
+            case CLICK_ITEM:
+                for (int i = 0; i < drone.getInv().getSlots(); i++) {
+                    if (progWidget.isItemValidForFilters(drone.getInv().getStackInSlot(i))) return true;
+                }
+                return false;
+            case CLICK_BLOCK:
+                return DroneAIDig.isBlockValidForFilter(drone.world(), pos, drone, progWidget);
         }
         return false;
 
-//        return !visitedPositions.contains(pos) &&
-//                (progWidget.isItemFilterEmpty() || DroneAIDig.isBlockValidForFilter(drone.world(), pos, drone, progWidget));
     }
 
     @Override
@@ -87,18 +90,21 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetAr
     }
 
     private void rightClickItem(FakePlayer fakePlayer, BlockPos pos, Direction faceDir) {
+        // if necessary, find a filter-matching item in the inventory, and swap it into slot 0 (drone's held item)
+        if (!progWidget.isItemValidForFilters(drone.getInv().getStackInSlot(0)) && !trySwapItem()) return;
+
         ItemStack stack = fakePlayer.getHeldItemMainhand();
         World world = fakePlayer.getEntityWorld();
 
         // this is adapted from PlayerInteractionManager#processRightClickBlock()
         try {
-            PlayerInteractEvent.RightClickBlock event = ForgeHooks.onRightClickBlock(fakePlayer, Hand.MAIN_HAND, pos, faceDir);
+            BlockRayTraceResult brtr = doTrace(world, pos, fakePlayer);
+            if (brtr == null || brtr.getFace() != faceDir) return;
+
+            PlayerInteractEvent.RightClickBlock event = ForgeHooks.onRightClickBlock(fakePlayer, Hand.MAIN_HAND, pos, brtr);
             if (event.isCanceled() || event.getUseItem() == Event.Result.DENY) {
                 return;
             }
-
-            BlockRayTraceResult brtr = doTrace(world, pos, fakePlayer);
-            if (brtr == null) return;
 
             ActionResultType ret = stack.onItemUseFirst(new ItemUseContext(fakePlayer, Hand.MAIN_HAND, brtr));
             if (ret != ActionResultType.PASS) return;
@@ -145,18 +151,29 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetAr
         }
     }
 
+    private boolean trySwapItem() {
+        for (int i = 1; i < drone.getInv().getSlots(); i++) {
+            if (progWidget.isItemValidForFilters(drone.getInv().getStackInSlot(i))) {
+                ItemStack tmp = drone.getInv().getStackInSlot(i);
+                drone.getInv().setStackInSlot(i, drone.getInv().getStackInSlot(0));
+                drone.getInv().setStackInSlot(0, tmp);
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void rightClickBlock(FakePlayer fakePlayer, BlockPos pos, Direction faceDir) {
-        PlayerInteractEvent.RightClickBlock event = ForgeHooks.onRightClickBlock(fakePlayer, Hand.MAIN_HAND, pos, faceDir);
+        World world = fakePlayer.getEntityWorld();
+        BlockState state = world.getBlockState(pos);
+        BlockRayTraceResult brtr = doTrace(world, pos, fakePlayer);
+        if (brtr == null || brtr.getFace() != faceDir) return;
+        PlayerInteractEvent.RightClickBlock event = ForgeHooks.onRightClickBlock(fakePlayer, Hand.MAIN_HAND, pos, brtr);
 
         if (!event.isCanceled() && event.getUseItem() != Event.Result.DENY && event.getUseBlock() != Event.Result.DENY) {
-            World world = fakePlayer.getEntityWorld();
-            BlockState state = world.getBlockState(pos);
-            BlockRayTraceResult brtr = doTrace(world, pos, fakePlayer);
-            if (brtr != null) {
-                ActionResultType res = state.onBlockActivated(world, fakePlayer, Hand.MAIN_HAND, brtr);
-                if (res.isSuccessOrConsume()) {
-                    world.notifyBlockUpdate(pos, state, state, Constants.BlockFlags.DEFAULT);
-                }
+            ActionResultType res = state.onBlockActivated(world, fakePlayer, Hand.MAIN_HAND, brtr);
+            if (res.isSuccessOrConsume()) {
+                world.notifyBlockUpdate(pos, state, state, Constants.BlockFlags.DEFAULT);
             }
         }
     }
@@ -166,7 +183,7 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetAr
         List<AxisAlignedBB> l = state.getShape(world, pos).toBoundingBoxList();
         Vector3d targetVec = l.isEmpty() ? Vector3d.copyCentered(pos) : l.get(0).getCenter().add(Vector3d.copy(pos));
         fakePlayer.lookAt(EntityAnchorArgument.Type.FEET, targetVec);
-        BlockRayTraceResult brtr = drone.world().rayTraceBlocks(new RayTraceContext(drone.getDronePos(), targetVec, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.SOURCE_ONLY, fakePlayer));
+        BlockRayTraceResult brtr = drone.world().rayTraceBlocks(new RayTraceContext(drone.getDronePos(), targetVec, RayTraceContext.BlockMode.OUTLINE, RayTraceContext.FluidMode.SOURCE_ONLY, fakePlayer));
         if (!brtr.getPos().equals(pos) || brtr.getFace() != ((ProgWidgetBlockRightClick) progWidget).getClickSide()) return null;
         return brtr;
     }
