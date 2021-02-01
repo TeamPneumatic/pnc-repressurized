@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetAreaItemBase;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.material.Material;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootContext;
 import net.minecraft.loot.LootParameters;
@@ -19,6 +20,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
 import java.util.List;
+import java.util.Objects;
 
 public class DroneAIDig<W extends ProgWidgetAreaItemBase & IToolUser> extends DroneAIBlockInteraction<W> {
     public DroneAIDig(IDroneBase drone, W widget) {
@@ -95,7 +97,6 @@ public class DroneAIDig<W extends ProgWidgetAreaItemBase & IToolUser> extends Dr
         PlayerInteractionManager manager = drone.getFakePlayer().interactionManager;
         if (!manager.isDestroyingBlock || !manager.receivedFinishDiggingPacket) { //is not destroying and is not acknowledged.
             BlockState blockState = worldCache.getBlockState(pos);
-            Block block = blockState.getBlock();
             if (!ignoreBlock(blockState) && isBlockValidForFilter(worldCache, pos, drone, progWidget)) {
                 if (blockState.getBlockHardness(drone.world(), pos) < 0) {
                     addToBlacklist(pos);
@@ -106,7 +107,7 @@ public class DroneAIDig<W extends ProgWidgetAreaItemBase & IToolUser> extends Dr
                 PlayerInteractEvent.LeftClickBlock event = new PlayerInteractEvent.LeftClickBlock(drone.getFakePlayer(), pos, Direction.UP);
                 MinecraftForge.EVENT_BUS.post(event);
                 if (!event.isCanceled()) {
-                    int limit = drone.world().getServer().getBuildLimit();
+                    int limit = Objects.requireNonNull(drone.world().getServer()).getBuildLimit();
                     manager.func_225416_a(pos, CPlayerDiggingPacket.Action.START_DESTROY_BLOCK, Direction.DOWN, limit);
                     manager.func_225416_a(pos, CPlayerDiggingPacket.Action.STOP_DESTROY_BLOCK, Direction.DOWN, limit);
                     drone.setDugBlock(pos);
@@ -147,6 +148,6 @@ public class DroneAIDig<W extends ProgWidgetAreaItemBase & IToolUser> extends Dr
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     private static boolean ignoreBlock(BlockState state) {
-        return state.isAir() || PneumaticCraftUtils.isBlockLiquid(state.getBlock());
+        return state.getMaterial() == Material.AIR || PneumaticCraftUtils.isBlockLiquid(state.getBlock());
     }
 }
