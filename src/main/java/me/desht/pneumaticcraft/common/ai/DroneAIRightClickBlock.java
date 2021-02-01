@@ -16,6 +16,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -186,9 +187,12 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetAr
         BlockState state = world.getBlockState(pos);
         List<AxisAlignedBB> l = state.getShape(world, pos).toBoundingBoxList();
         Vector3d targetVec = l.isEmpty() ? Vector3d.copyCentered(pos) : l.get(0).getCenter().add(Vector3d.copy(pos));
+        Direction side = ((ProgWidgetBlockRightClick) progWidget).getClickSide();
+        Vector3d posVec = targetVec.add(side.getXOffset(), side.getYOffset(), side.getZOffset());
+        fakePlayer.setPosition(posVec.x, posVec.y, posVec.z);
         fakePlayer.lookAt(EntityAnchorArgument.Type.FEET, targetVec);
-        BlockRayTraceResult brtr = drone.world().rayTraceBlocks(new RayTraceContext(drone.getDronePos(), targetVec, RayTraceContext.BlockMode.OUTLINE, RayTraceContext.FluidMode.SOURCE_ONLY, fakePlayer));
-        if (!brtr.getPos().equals(pos) || brtr.getFace() != ((ProgWidgetBlockRightClick) progWidget).getClickSide()) return null;
+        BlockRayTraceResult brtr = drone.world().rayTraceBlocks(new RayTraceContext(posVec, targetVec, RayTraceContext.BlockMode.OUTLINE, RayTraceContext.FluidMode.SOURCE_ONLY, fakePlayer));
+        if (!brtr.getPos().equals(pos) || brtr.getFace() != side) return null;
         return brtr;
     }
 }
