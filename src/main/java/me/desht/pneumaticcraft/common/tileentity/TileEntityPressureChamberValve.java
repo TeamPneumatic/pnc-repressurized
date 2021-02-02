@@ -91,6 +91,11 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
     private int nParticles;  // client-side: the number of particles to create each tick (dependent on chamber size & pressure)
     private boolean triedRebuild;
 
+    // Used to short-term track the base volume after multiblock is broken
+    // Does not get persisted in any way: only intended to allow a pressure chamber to be broken and quickly
+    // reformed without losing all the air that was in it
+    private int savedVolume = 0;
+
     public TileEntityPressureChamberValve() {
         super(ModTileEntities.PRESSURE_CHAMBER_VALVE.get(), PneumaticValues.DANGER_PRESSURE_PRESSURE_CHAMBER, PneumaticValues.MAX_PRESSURE_PRESSURE_CHAMBER, PneumaticValues.VOLUME_PRESSURE_CHAMBER_PER_EMPTY, 4);
         accessoryValves = new ArrayList<>();
@@ -366,9 +371,6 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
         super.read(state, tag);
 
         setupMultiBlock(tag.getInt("multiBlockSize"), tag.getInt("multiBlockX"), tag.getInt("multiBlockY"), tag.getInt("multiBlockZ"));
-//        isSufficientPressureInChamber = tag.getBoolean("sufPressure");
-//        isValidRecipeInChamber = tag.getBoolean("validRecipe");
-//        recipePressure = tag.getFloat("recipePressure");
         ItemStackHandler handler = new ItemStackHandler();
         handler.deserializeNBT(tag.getCompound("itemsInChamber"));
         for (int i = 0; i < handler.getSlots() && i < CHAMBER_INV_SIZE; i++) {
@@ -443,6 +445,8 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
         }
         if (accessoryValves != null) {
             for (TileEntityPressureChamberValve valve : accessoryValves) {
+                // remember the pre-break volume so we can restore pressure properly when re-forming
+                savedVolume = valve.airHandler.getVolume();
                 float p = valve.getPressure();
                 valve.setupMultiBlock(0, 0, 0, 0);
                 // the base volume has suddenly dropped; remove excess air to keep pressure constant and avoid big bang
@@ -569,6 +573,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
         valveList.forEach(valve -> valve.accessoryValves = new ArrayList<>(valveList));
 
         // set the multi-block coords in the primary valve only
+        int vol = primaryValve.airHandler.getBaseVolume();
         primaryValve.setupMultiBlock(size, baseX, baseY, baseZ);
 
         // note the core valve in every wall & interface so right clicking & block break work as expected
@@ -598,6 +603,14 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
                     }
                 }
             }
+        }
+
+        if (primaryValve.savedVolume != 0) {
+            // restore pressure based on previous saved volume
+            int mul = primaryValve.savedVolume / vol;
+            int newAir = primaryValve.airHandler.getAir() * mul;
+            primaryValve.addAir(newAir - primaryValve.airHandler.getAir());
+            primaryValve.savedVolume = 0;
         }
 
         // pick up any loose items into the chamber inventory
