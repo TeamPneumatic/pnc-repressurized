@@ -47,15 +47,15 @@ public abstract class PressureChamberRecipe extends PneumaticCraftRecipe {
      * JEI, Patchouli, or any other recipe display mod.
      * <p>
      * This is also used for testing insertability into the Pressure Chamber's output, so the number of item stacks
-     * returned must at least be the same as the number of item stacks in the actual crafted output, even if the results
+     * returned must be exactly the same as the number of item stacks in the actual crafted output, even if the results
      * aren't exactly the same as an actual craft of the recipe.
      */
     public abstract NonNullList<ItemStack> getResultsForDisplay();
 
     /**
-     * Check if the given item is a valid input item for this recipe.  This should also true even if the number of items
-     * in the passed item stack is smaller than the number required by the recipe; this is testing for item type, not
-     * item count.
+     * Check if the given item is a valid input item for this recipe.  This should also be true even if the number of
+     * items in the passed item stack is smaller than the number required by the recipe; this is testing for item type,
+     * not item count.
      *
      * @param stack item stack to check
      * @return true if this is a valid item, false otherwise

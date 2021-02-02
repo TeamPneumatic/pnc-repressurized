@@ -7,6 +7,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 
+import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
@@ -47,4 +48,15 @@ public interface IItemRegistry {
      * @param suppressor a suppressor object
      */
     void registerMagnetSuppressor(IMagnetSuppressor suppressor);
+
+    /**
+     * Convenience method to check if an item matches a given filter item
+     * @param filterStack the item to check against
+     * @param stack the item being checked
+     * @param checkDurability true if item durability should be taken into account
+     * @param checkNBT true if item NBT should be taken into account
+     * @param checkModSimilarity true to just match by the two items' mod IDs
+     * @return true if the item passes the filter test, false otherwise
+     */
+    boolean doesItemMatchFilter(@Nonnull ItemStack filterStack, @Nonnull ItemStack stack, boolean checkDurability, boolean checkNBT, boolean checkModSimilarity);
 }

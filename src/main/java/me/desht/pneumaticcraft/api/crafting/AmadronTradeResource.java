@@ -3,7 +3,8 @@ package me.desht.pneumaticcraft.api.crafting;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.api.PneumaticRegistry;
+import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -251,8 +252,9 @@ public class AmadronTradeResource {
      */
     private static int countItemsInHandler(ItemStack item, LazyOptional<IItemHandler> lazy) {
         boolean matchNBT = item.hasTag();
+        IItemRegistry registry = PneumaticRegistry.getInstance().getItemRegistry();
         return lazy.map(handler -> IntStream.range(0, handler.getSlots())
-                .filter(i -> PneumaticCraftUtils.doesItemMatchFilter(item, handler.getStackInSlot(i), false, matchNBT, false))
+                .filter(i -> registry.doesItemMatchFilter(item, handler.getStackInSlot(i), false, matchNBT, false))
                 .map(i -> handler.getStackInSlot(i).getCount())
                 .sum()
         ).orElse(0);

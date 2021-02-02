@@ -1,9 +1,11 @@
 package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.item.*;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.GuiConstants;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import org.apache.commons.lang3.Validate;
@@ -56,6 +58,11 @@ public class ItemRegistry implements IItemRegistry {
     @Override
     public void registerMagnetSuppressor(IMagnetSuppressor suppressor) {
         magnetSuppressors.add(suppressor);
+    }
+
+    @Override
+    public boolean doesItemMatchFilter(@Nonnull ItemStack filterStack, @Nonnull ItemStack stack, boolean checkDurability, boolean checkNBT, boolean checkModSimilarity) {
+        return PneumaticCraftUtils.doesItemMatchFilter(filterStack, stack, checkDurability, checkNBT, checkModSimilarity);
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
