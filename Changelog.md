@@ -26,7 +26,10 @@ Note: PNC:R 2.9.3 and later have been successfully tested on Minecraft 1.16.5.  
 * Fixed drone block placement not using air as it should (100mL per block placed)
 * Fixed potential item dupe issue in Smart Chest with Magnet upgrade
   * Smart Chest magnet functionality now also respects Botania's Solegnolia and items on conveyor belts (e.g. Immersive Engineering)
-
+* Fixed larger (4x4x4 and 5x5x5) pressure chambers losing almost all their pressure if briefly broken and reformed
+  * A little pressure is still lost due to leaks, but reforming the chamber quickly now preserves most of the pressure
+* Aerial Interface and Omnidirectional Hoppers with Entity Tracker now respect items with Curse of Binding enchant on them
+  * No more easy removal of cursed items, sorry!
   
 ## 2.9.5-128 (26 Jan 2021)
 
