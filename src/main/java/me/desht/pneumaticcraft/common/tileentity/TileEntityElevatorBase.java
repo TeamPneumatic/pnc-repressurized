@@ -163,9 +163,9 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
         if (extension > targetExtension) {
             float chargingSlowdown = 1.0f - chargingUpgrades * 0.1f;
             if (extension > targetExtension + TileEntityConstants.ELEVATOR_SLOW_EXTENSION) {
-                extension -= TileEntityConstants.ELEVATOR_SPEED_FAST * syncedSpeedMult * chargingSlowdown;
+                extension -= TileEntityConstants.ELEVATOR_SPEED_FAST * speedMultiplier * chargingSlowdown;
             } else {
-                extension -= TileEntityConstants.ELEVATOR_SPEED_SLOW * syncedSpeedMult * chargingSlowdown;
+                extension -= TileEntityConstants.ELEVATOR_SPEED_SLOW * speedMultiplier * chargingSlowdown;
             }
             if (extension < targetExtension) {
                 extension = targetExtension;
