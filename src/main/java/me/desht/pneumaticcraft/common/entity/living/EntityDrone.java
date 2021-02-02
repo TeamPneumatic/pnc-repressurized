@@ -1362,6 +1362,11 @@ public class EntityDrone extends EntityDroneBase implements
         return isAlive();
     }
 
+    @Override
+    public void suicide() {
+        attackEntityFrom(new DamageSourceDroneOverload("suicide"), 2000.0F);
+    }
+
     /**
      * Add an initial program to a drone that's about to be placed. This is called right before the entity is spawned.
      * Programmable drones don't do anything here (program is created by the programmer and stored in item NBT), but

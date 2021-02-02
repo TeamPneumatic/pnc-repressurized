@@ -70,4 +70,6 @@ public interface IDroneBase extends IDrone {
     ITextComponent getDroneName();
 
     boolean isDroneStillValid();
+
+    void suicide();
 }

@@ -2,10 +2,8 @@ package me.desht.pneumaticcraft.common.progwidgets;
 
 import me.desht.pneumaticcraft.api.drone.DroneSuicideEvent;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
-import me.desht.pneumaticcraft.common.DamageSourcePneumaticCraft.DamageSourceDroneOverload;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
-import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.item.DyeColor;
@@ -63,20 +61,20 @@ public class ProgWidgetSuicide extends ProgWidget {
 
     @Override
     public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
-        return new DroneAISuicide((EntityDrone) drone);
+        return new DroneAISuicide(drone);
     }
 
     private static class DroneAISuicide extends Goal {
-        private final EntityDrone drone;
+        private final IDroneBase drone;
 
-        DroneAISuicide(EntityDrone drone) {
+        DroneAISuicide(IDroneBase drone) {
             this.drone = drone;
         }
 
         @Override
         public boolean shouldExecute() {
             MinecraftForge.EVENT_BUS.post(new DroneSuicideEvent(drone));
-            drone.attackEntityFrom(new DamageSourceDroneOverload("suicide"), 2000.0F);
+            drone.suicide();
             return false;
         }
     }

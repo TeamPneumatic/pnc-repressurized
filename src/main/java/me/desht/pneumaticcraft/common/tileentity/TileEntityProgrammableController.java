@@ -15,6 +15,7 @@ import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.ai.LogisticsManager;
 import me.desht.pneumaticcraft.common.core.ModEntities;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.debug.DroneDebugger;
 import me.desht.pneumaticcraft.common.entity.EntityProgrammableController;
@@ -24,6 +25,7 @@ import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.tileentity.SideConfigurator.RelativeFace;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.fakeplayer.DroneFakePlayer;
 import me.desht.pneumaticcraft.common.util.fakeplayer.DroneItemHandler;
@@ -65,10 +67,7 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemStackHandler;
+import net.minecraftforge.items.*;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -88,7 +87,6 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
             RL("entity_attack"),
             RL("drone_condition_entity"),
             RL("standby"),
-            RL("suicide"),
             RL("teleport"),
             RL("entity_export"),
             RL("entity_import")
@@ -716,6 +714,35 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     @Override
     public boolean isDroneStillValid() {
         return !removed;
+    }
+
+    @Override
+    public void suicide() {
+        // insert the programmable item (drone or api) into a chest on a "programmable" side
+        // or failing that, drop it in-world on top of the PC
+        ItemStack stack = inventory.extractItem(0, 1, false);
+        if (stack.getCount() == 1) {
+            boolean inserted = findEjectionDest()
+                    .map(h -> ItemHandlerHelper.insertItem(h, stack, false).isEmpty())
+                    .orElse(false);
+            if (!inserted) PneumaticCraftUtils.dropItemOnGround(stack, world, pos.up());
+            world.playSound(null, pos, ModSounds.DRONE_DEATH.get(), SoundCategory.BLOCKS, 1f, 1f);
+        }
+    }
+
+    private LazyOptional<IItemHandler> findEjectionDest() {
+        Direction dir = null;
+        for (Direction d : Direction.VALUES) {
+            if (getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, d).map(h -> h == inventory).orElse(false)) {
+                dir = d;
+                break;
+            }
+        }
+        if (dir != null) {
+            TileEntity te = world.getTileEntity(pos.offset(dir));
+            return IOHelper.getInventoryForTE(te, dir.getOpposite());
+        }
+        return LazyOptional.empty();
     }
 
     private class ProgrammableItemStackHandler extends BaseItemStackHandler {
