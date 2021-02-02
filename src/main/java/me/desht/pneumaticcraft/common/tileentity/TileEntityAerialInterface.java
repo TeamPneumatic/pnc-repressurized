@@ -18,6 +18,8 @@ import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.fluid.Fluid;
@@ -450,6 +452,15 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
         @Override
         protected IItemHandler getInvWrapper(PlayerEntity player) {
             return getCachedHandler(player, PlayerArmorInvWrapper::new);
+        }
+
+        @Nonnull
+        @Override
+        public ItemStack extractItem(int slot, int amount, boolean simulate) {
+            ItemStack stack = getStackInSlot(slot);
+            return EnchantmentHelper.getEnchantmentLevel(Enchantments.BINDING_CURSE, stack) > 0 ?
+                    ItemStack.EMPTY :
+                    super.extractItem(slot, amount, simulate);
         }
     }
 

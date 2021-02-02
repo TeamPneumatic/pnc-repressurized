@@ -11,6 +11,8 @@ import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -131,7 +133,7 @@ public class TileEntityOmnidirectionalHopper extends TileEntityAbstractHopper<Ti
         // Suck from input inventory
         LazyOptional<IItemHandler> cap = IOHelper.getInventoryForTE(getCachedNeighbor(inputDir), inputDir.getOpposite());
         if (cap.isPresent()) {
-            int imported = cap.map(otherHandler -> importFromInventory(otherHandler, maxItems)).orElse(0);
+            int imported = cap.map(otherHandler -> importFromInventory(otherHandler, maxItems, false)).orElse(0);
             return imported > 0;
         } else if (getUpgrades(EnumUpgrade.ENTITY_TRACKER) > 0 && tryEntityImport(maxItems) > 0) {
             return true;
@@ -165,18 +167,22 @@ public class TileEntityOmnidirectionalHopper extends TileEntityAbstractHopper<Ti
         for (Entity e : cachedInputEntities) {
             if (!e.isAlive()) continue;
             final int r = remaining;
-            int imported = e.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir).map(h -> importFromInventory(h, r)).orElse(0);
+            boolean playerArmor = e instanceof PlayerEntity && dir.getAxis().isHorizontal();
+            int imported = e.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir).map(h -> importFromInventory(h, r, playerArmor)).orElse(0);
             remaining -= imported;
             if (remaining <= 0) return maxItems - remaining;
         }
         return 0;
     }
 
-    private int importFromInventory(IItemHandler inv, int maxItems) {
+    private int importFromInventory(IItemHandler inv, int maxItems, boolean playerArmor) {
         int remaining = maxItems;
         for (int i = 0; i < inv.getSlots(); i++) {
             if (inv.getStackInSlot(i).isEmpty()) continue;
             ItemStack toExtract = inv.extractItem(i, remaining, true);
+            if (playerArmor && EnchantmentHelper.getEnchantmentLevel(Enchantments.BINDING_CURSE, toExtract) > 0) {
+                continue;
+            }
             ItemStack excess = ItemHandlerHelper.insertItemStacked(itemHandler, toExtract, false);
             int transferred = toExtract.getCount() - excess.getCount();
             if (transferred > 0) {
