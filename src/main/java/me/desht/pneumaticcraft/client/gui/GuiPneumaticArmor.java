@@ -40,7 +40,7 @@ public class GuiPneumaticArmor extends GuiChargingUpgradeManager {
     public void init() {
         super.init();
         addAnimatedStat(xlate("pneumaticcraft.gui.tab.info"), Textures.GUI_INFO_LOCATION, 0xFF8888FF, true)
-                .setText(xlate("gui.tab.info.item." + registryName));
+                .setText(xlate("pneumaticcraft.gui.tab.info.item." + registryName));
         statusStat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.status"), itemStack, 0xFFFFAA00, false);
 
         addUpgradeTabs(itemStack.getItem(), "armor." + equipmentSlot.toString().toLowerCase(Locale.ROOT), "armor.generic");

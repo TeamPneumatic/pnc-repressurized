@@ -4,6 +4,8 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.gui.IGuiEventListener;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.Rectangle2d;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
 import java.util.List;
@@ -252,4 +254,16 @@ public interface IGuiAnimatedStat extends ITickableWidget, IGuiEventListener {
      * @param reservedLines number of text lines to reserve
      */
     void setReservedLines(int reservedLines);
+
+    /**
+     * Set the texture to use for the stat's icon
+     * @param texture resource location of a texture image, which should be 16x16 exactly
+     */
+    void setTexture(ResourceLocation texture);
+
+    /**
+     * Set the texture to use for the stat's icon
+     * @param itemStack an item to use for the texture
+     */
+    void setTexture(ItemStack itemStack);
 }

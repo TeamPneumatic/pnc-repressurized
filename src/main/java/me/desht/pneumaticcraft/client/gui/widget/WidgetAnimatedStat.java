@@ -759,10 +759,12 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
         this.lineSpacing = lineSpacing;
     }
 
+    @Override
     public void setTexture(ResourceLocation texture) {
         this.statIcon = StatIcon.of(texture);
     }
 
+    @Override
     public void setTexture(ItemStack itemStack) {
         this.statIcon = StatIcon.of(itemStack);
     }

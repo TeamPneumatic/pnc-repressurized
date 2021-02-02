@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
+import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer2D;
@@ -13,6 +14,7 @@ import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.Textures;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
@@ -24,14 +26,18 @@ import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public abstract class GuiChargingUpgradeManager extends GuiPneumaticContainerBase<ContainerChargingStationUpgradeManager,TileEntityChargingStation> {
+    private static final long TIER_CYCLE_TIME = 20L;
 
     protected final ItemStack itemStack;
     private Button guiBackButton;
+    private final Map<EnumUpgrade, IGuiAnimatedStat> cycleTabs = new HashMap<>();
 
     GuiChargingUpgradeManager(ContainerChargingStationUpgradeManager container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
@@ -116,6 +122,21 @@ public abstract class GuiChargingUpgradeManager extends GuiPneumaticContainerBas
         }
     }
 
+    @Override
+    public void tick() {
+        super.tick();
+
+        long gameTime = Minecraft.getInstance().world.getGameTime();
+        if (gameTime % TIER_CYCLE_TIME == 0) {
+            cycleTabs.forEach((upgrade, tab) -> {
+                long tier = gameTime % (TIER_CYCLE_TIME * upgrade.getMaxTier()) / TIER_CYCLE_TIME;
+                ItemStack stack = new ItemStack(upgrade.getItem((int) tier + 1));
+                tab.setTitle(stack.getDisplayName());
+                tab.setTexture(stack);
+            });
+        }
+    }
+
     void addUpgradeTabs(Item item, String... what) {
         boolean leftSided = true;
         for (EnumUpgrade upgrade : EnumUpgrade.values()) {
@@ -132,7 +153,9 @@ public abstract class GuiChargingUpgradeManager extends GuiPneumaticContainerBas
                             break;
                         }
                     }
-                    addAnimatedStat(upgradeStack.getDisplayName(), upgradeStack, 0xFF244BB3, leftSided).setText(text).setForegroundColor(0xFF000000);
+                    IGuiAnimatedStat stat = addAnimatedStat(upgradeStack.getDisplayName(), upgradeStack, 0xFF244BB3, leftSided).setText(text);
+                    stat.setForegroundColor(0xFF000000);
+                    if (upgrade.getMaxTier() > 1) cycleTabs.put(upgrade, stat);
                     leftSided = !leftSided;
                 }
             }
