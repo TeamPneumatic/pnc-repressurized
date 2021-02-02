@@ -22,7 +22,7 @@ public class MovingSoundJetBoots extends TickableSound {
         this.repeat = true;
         this.repeatDelay = 0;
         this.targetPitch = 0.7F;
-        this.pitch = 0.4F;
+        this.pitch = 0.5F;
         this.handler = CommonArmorHandler.getHandlerForPlayer(player);
         this.volume = volumeFromConfig();
     }
@@ -51,10 +51,10 @@ public class MovingSoundJetBoots extends TickableSound {
         } else {
             if (handler.isJetBootsActive()) {
                 double vel = player.getMotion().length();
-                targetPitch = 0.7F + (float) vel / 15;
+                targetPitch = 0.9F + (float) vel / 15;
                 volume = volumeFromConfig() + (float) vel / 15;
             } else {
-                targetPitch = 0.5F;
+                targetPitch = 0.9F;
                 volume = volumeFromConfig() * 0.8F;
             }
         }
