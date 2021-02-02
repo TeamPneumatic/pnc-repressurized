@@ -188,10 +188,12 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetAr
         List<AxisAlignedBB> l = state.getShape(world, pos).toBoundingBoxList();
         Vector3d targetVec = l.isEmpty() ? Vector3d.copyCentered(pos) : l.get(0).getCenter().add(Vector3d.copy(pos));
         Direction side = ((ProgWidgetBlockRightClick) progWidget).getClickSide();
+        Vector3d saved = new Vector3d(fakePlayer.getPosX(), fakePlayer.getPosY(), fakePlayer.getPosZ());
         Vector3d posVec = targetVec.add(side.getXOffset(), side.getYOffset(), side.getZOffset());
         fakePlayer.setPosition(posVec.x, posVec.y, posVec.z);
         fakePlayer.lookAt(EntityAnchorArgument.Type.FEET, targetVec);
         BlockRayTraceResult brtr = drone.world().rayTraceBlocks(new RayTraceContext(posVec, targetVec, RayTraceContext.BlockMode.OUTLINE, RayTraceContext.FluidMode.SOURCE_ONLY, fakePlayer));
+        fakePlayer.setPosition(saved.x, saved.y, saved.z);
         if (!brtr.getPos().equals(pos) || brtr.getFace() != side) return null;
         return brtr;
     }
