@@ -585,6 +585,7 @@
    "pneumaticcraft.armor.gui.misc.colors": "Colors...",
    "pneumaticcraft.armor.gui.misc.colors.copyTooltip": "Copy selected color to the other armor pieces.",
    "pneumaticcraft.armor.gui.misc.colors.resetTooltip": "Reset to previous colors. Hold Shift for a full factory reset.",
+   "pneumaticcraft.armor.gui.misc.colors.showEnchantGlint": "Show Enchantment Glint?",
    "pneumaticcraft.armor.gui.misc.copy": "Copy",
    "pneumaticcraft.armor.gui.misc.moveStatScreen": "Move Stat Screen...",
    "pneumaticcraft.armor.gui.misc.movePressureScreen": "Move Pressure Screen...",

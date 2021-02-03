@@ -39,6 +39,7 @@ public class ConfigHelper {
         PNCConfig.Client.Armor.xRayEnabled = client.armor.xRayEnabled.get();
         PNCConfig.Client.Armor.pathUpdateSetting = client.armor.pathUpdateSetting.get();
         PNCConfig.Client.Armor.showPressureNumerically = client.armor.showPressureNumerically.get();
+        PNCConfig.Client.Armor.showEnchantGlint = client.armor.showEnchantGlint.get();
 
         PNCConfig.Client.Sound.elevatorVolumeRunning = client.sound.elevatorVolumeRunning.get();
         PNCConfig.Client.Sound.elevatorVolumeStartStop = client.sound.elevatorVolumeStartStop.get();
@@ -211,5 +212,10 @@ public class ConfigHelper {
 
     public static int getOilLakeChance() {
         return ConfigHolder.common.general.oilGenerationChance.get();
+    }
+
+    public static void setShowEnchantGlint(boolean show) {
+        setValueAndSave(clientConfig, "armor.show_enchant_glint", show);
+        refreshClient(clientConfig);
     }
 }

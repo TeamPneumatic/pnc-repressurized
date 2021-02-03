@@ -3,6 +3,9 @@ package me.desht.pneumaticcraft.client.gui.pneumatic_armor;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticScreenBase;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
+import me.desht.pneumaticcraft.common.config.ConfigHelper;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -88,6 +91,10 @@ public class GuiArmorColors extends GuiPneumaticScreenBase implements Slider.ISl
 
         addButton(new WidgetButtonExtended(85, 125, 40, 20, xlate("pneumaticcraft.armor.gui.misc.copy"),
                 b -> copyColorsToOtherPieces()).setTooltipKey("pneumaticcraft.armor.gui.misc.colors.copyTooltip"));
+
+        ITextComponent txt = xlate("pneumaticcraft.armor.gui.misc.colors.showEnchantGlint");
+        addButton(new WidgetCheckBox(width - font.getStringPropertyWidth(txt) - 40, height - font.FONT_HEIGHT - 10, 0xFFFFFFFF, txt,
+                b -> ConfigHelper.setShowEnchantGlint(b.checked)).setChecked(PNCConfig.Client.Armor.showEnchantGlint));
     }
 
     private void setCurrentColor(int newCol) {

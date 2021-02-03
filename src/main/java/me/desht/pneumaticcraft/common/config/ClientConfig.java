@@ -29,6 +29,7 @@ public class ClientConfig {
         ForgeConfigSpec.BooleanValue xRayEnabled;
         ForgeConfigSpec.EnumValue<PathUpdateSetting> pathUpdateSetting;
         ForgeConfigSpec.BooleanValue showPressureNumerically;
+        ForgeConfigSpec.BooleanValue showEnchantGlint;
     }
 
     public static class Sound {
@@ -121,6 +122,10 @@ public class ClientConfig {
                 .comment("True: show pressure as numbers.  False: show pressure as horizontal bar.")
                 .translation("pneumaticcraft.config.client.armor.show_pressure_numerically")
                 .define("show_pressure_numerically", true);
+        armor.showEnchantGlint = builder
+                .comment("Should enchantment glint be shown on Pneumatic Armor pieces? Disable if you don't like the enchantment glint messing up your carefully chosen colour scheme...")
+                .translation("pneumaticcraft.config.client.armor.show_enchant_glint")
+                .define("show_enchant_glint", true);
         builder.pop();
 
         builder.push("sound");

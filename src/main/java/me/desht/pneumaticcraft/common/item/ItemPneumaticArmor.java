@@ -183,6 +183,11 @@ public class ItemPneumaticArmor extends ArmorItem implements
     }
 
     @Override
+    public boolean hasEffect(ItemStack stack) {
+        return PNCConfig.Client.Armor.showEnchantGlint && super.hasEffect(stack);
+    }
+
+    @Override
     public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlotType equipmentSlot, ItemStack stack) {
         Multimap<Attribute, AttributeModifier> multimap = HashMultimap.create(super.getAttributeModifiers(equipmentSlot, stack));
 
