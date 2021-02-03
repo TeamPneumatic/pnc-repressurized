@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.client.gui.GuiSecurityStationHacking;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
@@ -45,6 +46,12 @@ public class ItemNetworkComponent extends Item implements IProgrammable {
         if (worldIn != null && worldIn.isRemote) {
             GuiSecurityStationHacking.addExtraHackInfoStatic(curInfo);
         }
+    }
+
+    @Override
+    public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entity) {
+        if (!entity.getEntityWorld().isRemote && canProgram(stack) && stack.hasTag() && stack.getTag().contains(IProgrammable.NBT_WIDGETS)) entity.setNoDespawn();
+        return false;
     }
 
     @Override

@@ -15,6 +15,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.ILivingEntityData;
 import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.INamedContainerProvider;
@@ -61,6 +62,12 @@ public class ItemDrone extends ItemPressurizable implements IChargeableContainer
             iStack.shrink(1);
         }
         return ActionResultType.SUCCESS;
+    }
+
+    @Override
+    public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entity) {
+        if (!entity.getEntityWorld().isRemote && stack.hasTag() && stack.getTag().contains(IProgrammable.NBT_WIDGETS)) entity.setNoDespawn();
+        return false;
     }
 
     @Override
