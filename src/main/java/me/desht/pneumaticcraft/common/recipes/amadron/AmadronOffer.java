@@ -13,6 +13,8 @@ import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nonnull;
@@ -99,7 +101,8 @@ public class AmadronOffer extends AmadronRecipe {
     }
 
     public AmadronOffer resetStock() {
-        inStock = maxStock;
+        // negative maxStock indicates either unlimited trades or a player trade, so leave stock levels alone
+        if (maxStock > 0) inStock = maxStock;
         return this;
     }
 
@@ -158,7 +161,15 @@ public class AmadronOffer extends AmadronRecipe {
 
     @Override
     public String toString() {
-        return String.format("[id = %s, in = %s, out = %s, level = %d, max = %d]", getId().toString(), input.toString(), output.toString(), tradeLevel, maxStock);
+        return String.format("[id = %s, in = %s, out = %s, level = %d, maxStock = %d]", getId().toString(), input.toString(), output.toString(), tradeLevel, maxStock);
+    }
+
+    /**
+     * Get a player-friendly description of the offer
+     * @return a description string
+     */
+    public ITextComponent getDescription() {
+        return new StringTextComponent(String.format("[%s -> %s]", input.toString(), output.toString()));
     }
 
     @Override

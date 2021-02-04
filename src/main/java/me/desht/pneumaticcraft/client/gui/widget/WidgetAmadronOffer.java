@@ -63,7 +63,7 @@ public class WidgetAmadronOffer extends Widget implements ITooltipProvider {
             fr.func_238422_b_(matrixStack, r, x + 2, y + 2, 0xFF000000);
             if (shoppingAmount > 0) {
                 String str = "" + shoppingAmount;
-                fr.drawString(matrixStack,str, x + 36 - fr.getStringWidth(str) / 2f, y + (offer.getMaxStock() > 0 ? 15 : 20), 0xFF000000);
+                fr.drawString(matrixStack,str, x + 36 - fr.getStringWidth(str) / 2f, y + (offer.getStock() >= 0 ? 15 : 20), 0xFF000000);
             }
             if (offer.getStock() >= 0) {
                 String str = TextFormatting.DARK_BLUE.toString() + offer.getStock();

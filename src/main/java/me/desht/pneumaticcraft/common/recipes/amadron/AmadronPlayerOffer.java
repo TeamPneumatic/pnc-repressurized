@@ -24,23 +24,24 @@ import net.minecraftforge.items.ItemHandlerHelper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Extended Amadron offer used for player-player trading.
  */
 public class AmadronPlayerOffer extends AmadronOffer {
     private final String offeringPlayerName;
-    private String offeringPlayerId;
+    private UUID offeringPlayerId;
     private GlobalPos providingPos;
     private GlobalPos returningPos;
     private int pendingPayments;
     private TileEntity cachedInput, cachedOutput;
 
     public AmadronPlayerOffer(ResourceLocation id, AmadronTradeResource input, AmadronTradeResource output, PlayerEntity offeringPlayer) {
-        this(id, input, output, offeringPlayer.getGameProfile().getName(), offeringPlayer.getGameProfile().getId().toString());
+        this(id, input, output, offeringPlayer.getGameProfile().getName(), offeringPlayer.getGameProfile().getId());
     }
 
-    public AmadronPlayerOffer(ResourceLocation id, AmadronTradeResource input, AmadronTradeResource output, String playerName, String playerId) {
+    public AmadronPlayerOffer(ResourceLocation id, AmadronTradeResource input, AmadronTradeResource output, String playerName, UUID playerId) {
         super(id, input, output, true, 0, -1);
         offeringPlayerName = playerName;
         offeringPlayerId = playerId;
@@ -79,7 +80,7 @@ public class AmadronPlayerOffer extends AmadronOffer {
 
     public void updatePlayerId() {
         PlayerEntity player = PneumaticCraftUtils.getPlayerFromName(offeringPlayerName);
-        if (player != null) offeringPlayerId = player.getGameProfile().getId().toString();
+        if (player != null) offeringPlayerId = player.getGameProfile().getId();
     }
 
     public void addPayment(int payment) {
@@ -91,7 +92,7 @@ public class AmadronPlayerOffer extends AmadronOffer {
         return offeringPlayerName;
     }
 
-    public String getPlayerId() {
+    public UUID getPlayerId() {
         return offeringPlayerId;
     }
 
@@ -198,7 +199,7 @@ public class AmadronPlayerOffer extends AmadronOffer {
         input.writeToBuf(buf);
         output.writeToBuf(buf);
         buf.writeString(offeringPlayerName);
-        buf.writeString(offeringPlayerId);
+        buf.writeUniqueId(offeringPlayerId);
         buf.writeBoolean(providingPos != null);
         if (providingPos != null) {
             PacketUtil.writeGlobalPos(buf, providingPos);
@@ -214,7 +215,7 @@ public class AmadronPlayerOffer extends AmadronOffer {
     public static AmadronPlayerOffer playerOfferFromBuf(ResourceLocation id, PacketBuffer buf) {
         AmadronPlayerOffer offer = new AmadronPlayerOffer(id,
                 AmadronTradeResource.fromPacketBuf(buf), AmadronTradeResource.fromPacketBuf(buf),
-                buf.readString(100), buf.readString(100)
+                buf.readString(100), buf.readUniqueId()
         );
         if (buf.readBoolean()) {
             offer.setProvidingPosition(PacketUtil.readGlobalPos(buf));
@@ -231,7 +232,7 @@ public class AmadronPlayerOffer extends AmadronOffer {
     public JsonObject toJson(JsonObject json) {
         super.toJson(json);
         json.addProperty("offeringPlayerName", offeringPlayerName);
-        json.addProperty("offeringPlayerId", offeringPlayerId);
+        json.addProperty("offeringPlayerId", offeringPlayerId.toString());
         json.addProperty("inStock", inStock);
         json.addProperty("pendingPayments", pendingPayments);
         if (providingPos != null) {
@@ -246,7 +247,7 @@ public class AmadronPlayerOffer extends AmadronOffer {
     public static AmadronPlayerOffer fromJson(JsonObject json) throws CommandSyntaxException {
         AmadronOffer offer = AmadronOffer.fromJson(new ResourceLocation(JSONUtils.getString(json, "id")), json);
         AmadronPlayerOffer custom = new AmadronPlayerOffer(offer.getId(), offer.input, offer.output,
-                json.get("offeringPlayerName").getAsString(), json.get("offeringPlayerId").getAsString());
+                json.get("offeringPlayerName").getAsString(), UUID.fromString(json.get("offeringPlayerId").getAsString()));
         custom.inStock = json.get("inStock").getAsInt();
         custom.pendingPayments = json.get("pendingPayments").getAsInt();
         if (json.has("providingPos")) {
@@ -297,6 +298,6 @@ public class AmadronPlayerOffer extends AmadronOffer {
      * @return true if the offer is a player offer created by the player, false otherwise
      */
     public static boolean isPlayerOffer(AmadronOffer offer, PlayerEntity player) {
-        return offer instanceof AmadronPlayerOffer && ((AmadronPlayerOffer) offer).getPlayerId().equals(player.getUniqueID().toString());
+        return offer instanceof AmadronPlayerOffer && ((AmadronPlayerOffer) offer).getPlayerId().equals(player.getUniqueID());
     }
 }

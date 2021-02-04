@@ -12,14 +12,19 @@ import me.desht.pneumaticcraft.common.network.PacketAmadronStockUpdate;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.GlobalPos;
+import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class EventHandlerAmadron {
     @SubscribeEvent
@@ -65,10 +70,9 @@ public class EventHandlerAmadron {
                 offer.addStock(-drone.getOfferTimes());
             }
         } else {
-            if (drone.getAmadronAction() == AmadronAction.TAKING_PAYMENT && offer instanceof AmadronPlayerOffer) {
+            if (drone.getAmadronAction() == AmadronAction.TAKING_PAYMENT) {
                 // Drone has just taken payment for player offer
                 // Add a pending payment, and remove Amadron stock
-                playerOffer = (AmadronPlayerOffer) offer;
                 playerOffer.addPayment(drone.getOfferTimes());
                 playerOffer.addStock(-drone.getOfferTimes());
                 playerOffer.onTrade(drone.getOfferTimes(), drone.getBuyingPlayer());
@@ -77,11 +81,23 @@ public class EventHandlerAmadron {
             } else if (drone.getAmadronAction() == AmadronAction.RESTOCKING) {
                 // Drone is restocking Amadron - add stock
                 playerOffer.addStock(drone.getOfferTimes());
+                notifyRestock(event.drone.world(), playerOffer);
                 AmadronPlayerOffers.save();
             }
         }
         if (offer.getMaxStock() > 0) {
             NetworkHandler.sendNonLocal(new PacketAmadronStockUpdate(offer.getId(), offer.getStock()));
+        }
+    }
+
+    private void notifyRestock(World world, AmadronPlayerOffer playerOffer) {
+        MinecraftServer server = world.getServer();
+        if (server != null) {
+            ServerPlayerEntity player = server.getPlayerList().getPlayerByUUID(playerOffer.getPlayerId());
+            if (player != null) {
+                player.sendStatusMessage(xlate("pneumaticcraft.message.amadron.amadronRestocked",
+                        playerOffer.getDescription(), playerOffer.getStock()), false);
+            }
         }
     }
 

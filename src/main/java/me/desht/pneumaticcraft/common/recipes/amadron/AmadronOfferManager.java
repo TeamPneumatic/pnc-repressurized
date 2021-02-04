@@ -121,7 +121,7 @@ public enum AmadronOfferManager {
         if (offer != null) offer.setStock(stock);
     }
 
-    public int countOffers(String playerId) {
+    public int countOffers(UUID playerId) {
         int count = 0;
         for (AmadronOffer offer : activeOffers.values()) {
             if (offer instanceof AmadronPlayerOffer && ((AmadronPlayerOffer) offer).getPlayerId().equals(playerId))
@@ -149,7 +149,7 @@ public enum AmadronOfferManager {
                     break;
             }
             if (possiblePickups > 0) {
-                EntityAmadrone drone = ContainerAmadron.retrieveOrderItems(offer.getReversedOffer(), possiblePickups,
+                EntityAmadrone drone = ContainerAmadron.retrieveOrderItems(null, offer.getReversedOffer(), possiblePickups,
                         offer.getProvidingPos(), offer.getProvidingPos());
                 if (drone != null) {
                     drone.setHandlingOffer(reversed.getId(), possiblePickups, ItemStack.EMPTY,
