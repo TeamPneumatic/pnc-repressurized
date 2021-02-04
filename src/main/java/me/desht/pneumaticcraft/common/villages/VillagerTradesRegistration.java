@@ -70,19 +70,19 @@ public class VillagerTradesRegistration {
                         .setEmeraldPriceFor(3, 4, ModItems.TURBINE_BLADE.get(), 3)
                         .build()
                 );
-                trades.get(3).add(new RandomTradeBuilder(8, 15, 0.05F)
+                trades.get(3).add(new RandomTradeBuilder(4, 15, 0.05F)
                         .setEmeraldPriceFor(10, 20, ModItems.LOGISTICS_DRONE.get(), 1)
                         .build()
                 );
-                trades.get(3).add(new RandomTradeBuilder(8, 15, 0.05F)
+                trades.get(3).add(new RandomTradeBuilder(4, 15, 0.05F)
                         .setEmeraldPriceFor(10, 20, ModItems.HARVESTING_DRONE.get(), 1)
                         .build()
                 );
-                trades.get(3).add(new RandomTradeBuilder(8, 15, 0.05F)
+                trades.get(3).add(new RandomTradeBuilder(4, 15, 0.05F)
                         .setEmeraldPriceFor(10, 20, ModItems.COLLECTOR_DRONE.get(), 1)
                         .build()
                 );
-                trades.get(3).add(new RandomTradeBuilder(8, 15, 0.05F)
+                trades.get(3).add(new RandomTradeBuilder(4, 15, 0.05F)
                         .setEmeraldPriceFor(10, 20, ModItems.GUARD_DRONE.get(), 1)
                         .build()
                 );
@@ -94,23 +94,23 @@ public class VillagerTradesRegistration {
                         .setEmeraldPriceFor(8, 16, ModItems.GUN_AMMO.get(), 1)
                         .build()
                 );
-                trades.get(4).add(new RandomTradeBuilder(12, 12, 0.05F)
+                trades.get(4).add(new RandomTradeBuilder(6, 12, 0.05F)
                         .setEmeraldPriceFor(10, 20, ModItems.GUN_AMMO_FREEZING.get(), 1)
                         .build()
                 );
-                trades.get(4).add(new RandomTradeBuilder(12, 12, 0.05F)
+                trades.get(4).add(new RandomTradeBuilder(6, 12, 0.05F)
                         .setEmeraldPriceFor(10, 20, ModItems.GUN_AMMO_WEIGHTED.get(), 1)
                         .build()
                 );
-                trades.get(4).add(new RandomTradeBuilder(12, 12, 0.05F)
+                trades.get(4).add(new RandomTradeBuilder(6, 12, 0.05F)
                         .setEmeraldPriceFor(10, 20, ModItems.GUN_AMMO_AP.get(), 1)
                         .build()
                 );
-                trades.get(4).add(new RandomTradeBuilder(12, 12, 0.05F)
+                trades.get(4).add(new RandomTradeBuilder(6, 12, 0.05F)
                         .setEmeraldPriceFor(10, 20, ModItems.GUN_AMMO_EXPLOSIVE.get(), 1)
                         .build()
                 );
-                trades.get(4).add(new RandomTradeBuilder(12, 12, 0.05F)
+                trades.get(4).add(new RandomTradeBuilder(6, 12, 0.05F)
                         .setEmeraldPriceFor(10, 20, ModItems.GUN_AMMO_INCENDIARY.get(), 1)
                         .build()
                 );
@@ -130,11 +130,11 @@ public class VillagerTradesRegistration {
                         .setEmeraldPriceFor(25, 40, ModItems.PRINTED_CIRCUIT_BOARD.get(), 1)
                         .build()
                 );
-                trades.get(5).add(new RandomTradeBuilder(12, 15, 0.05F)
+                trades.get(5).add(new RandomTradeBuilder(3, 15, 0.05F)
                         .setEmeraldPriceFor(15, 35, ModItems.MICROMISSILES.get(), 1)
                         .build()
                 );
-                trades.get(5).add(new RandomTradeBuilder(8, 15, 0.05F)
+                trades.get(5).add(new RandomTradeBuilder(4, 15, 0.05F)
                         .setEmeraldPriceFor(30, 40, ModItems.DRONE.get(), 1)
                         .build()
                 );
