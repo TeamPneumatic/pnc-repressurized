@@ -370,6 +370,9 @@ public class ModRecipeProvider extends RecipeProvider {
                 'D', Tags.Items.GEMS_DIAMOND
         ).build(consumer);
 
+        shapeless(ModItems.GPS_TOOL.get(), 2, ModItems.PLASTIC.get(),
+                ModItems.GPS_AREA_TOOL.get()).build(consumer, RL("gps_tool_from_gps_area_tool"));
+
         shapeless(ModItems.GPS_AREA_TOOL.get(), ModItems.PLASTIC.get(),
                 ModItems.GPS_TOOL.get(), ModItems.GPS_TOOL.get()).build(consumer);
 
