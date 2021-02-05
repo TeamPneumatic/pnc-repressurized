@@ -9,6 +9,7 @@ import me.desht.pneumaticcraft.client.gui.pneumatic_armor.KeybindingButton;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.CoreComponentsClientHandler;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import net.minecraft.client.Minecraft;
@@ -34,7 +35,7 @@ public class CoreComponentsOptions extends IOptionPage.SimpleToggleableOptions<C
         gui.addWidget(new WidgetButtonExtended(30, 150, 150, 20,
                 xlate("pneumaticcraft.armor.gui.misc.moveMessageScreen"), b -> {
             getClientUpgradeHandler().testMessageStat = new WidgetAnimatedStat(null, new StringTextComponent("Test Message, keep in mind messages can be long!"),
-                    WidgetAnimatedStat.StatIcon.NONE, 0x7000AA00, null, ArmorHUDLayout.INSTANCE.messageStat);
+                    WidgetAnimatedStat.StatIcon.NONE, HUDHandler.getInstance().getStatOverlayColor(), null, ArmorHUDLayout.INSTANCE.messageStat);
             getClientUpgradeHandler().testMessageStat.openStat();
             Minecraft.getInstance().displayGuiScreen(
                     new GuiMoveStat(getClientUpgradeHandler(), ArmorHUDLayout.LayoutTypes.MESSAGE, getClientUpgradeHandler().testMessageStat));

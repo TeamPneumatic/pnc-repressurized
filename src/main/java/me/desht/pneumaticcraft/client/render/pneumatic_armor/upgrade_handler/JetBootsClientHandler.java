@@ -9,6 +9,7 @@ import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.option_screens.JetBootsOptions;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
@@ -131,7 +132,7 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
             ItemStack stack = new ItemStack(EnumUpgrade.JET_BOOTS.getItem(n));
             jbStat = new WidgetAnimatedStat(null, xlate(ArmorUpgradeRegistry.getStringKey(getCommonHandler().getID())),
                     WidgetAnimatedStat.StatIcon.of(stack),
-                    0x3000AA00, null, ArmorHUDLayout.INSTANCE.jetBootsStat);
+                    HUDHandler.getInstance().getStatOverlayColor(), null, ArmorHUDLayout.INSTANCE.jetBootsStat);
             jbStat.setMinimumContractedDimensions(0, 0);
             jbStat.setMinimumExpandedDimensions(120, 42);
         }

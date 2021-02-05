@@ -1,5 +1,5 @@
 {
-  "name": "Armor Overview",
+  "name": "Pneumatic Armor Overview",
   "icon": "minecraft:written_book",
   "category": "armor",
   "priority": "true",
@@ -26,6 +26,11 @@
       "text": "When you equip an armor piece, it will $(thing)boot up/$ within a few seconds. You can press $(thing)$(k:pneumaticcraft.armor.options)/$ to open a GUI, which allows you to configure installed upgrades and adjust the armor HUD. With more upgrades installed, more options will appear in the GUI.$(p)Note that all upgrades can be toggled on/off via the GUI checkboxes, and you can even bind a key to each checkbox to quickly toggle features when outside the GUI."
     },
     {
+      "type": "text",
+      "title": "Coloring",
+      "text": "Every armor piece is dynamically re-colorable from the default grey texture; each piece has a $(thing)primary/$ and $(thing)secondary/$ color which can be adjusted independently, and the Helmet $(thing)eyepiece/$ can also have its own color.$(p)To adjust colors, just use the $(bold)Colors.../$ screen from the main armor GUI screen. No special upgrades are needed for this; it's builtin functionality!"
+    },
+    {
       "type": "spotlight",
       "item": "pneumaticcraft:speed_upgrade",
       "text": "$(l:base_concepts/upgrades#speed)Speed Upgrades/$ reduce the startup time of each armor piece. In addition, they reduce the $(l:armor/pneumatic_helmet)Helmet/$ lock-on time for $(l:base_concepts/upgrades#entity_tracker)Entity Tracker/$ and $(l:base_concepts/upgrades#block_tracker)Block Tracker/$, and increase the $(l:armor/pneumatic_leggings)Leggings/$ run speed, but at an $(l:base_concepts/pressure)air cost/$."
@@ -33,12 +38,12 @@
     {
       "type": "spotlight",
       "item": "pneumaticcraft:volume_upgrade",
-      "text": "$(l:base_concepts/upgrades#volume)Volume Upgrades/$ increase the $(l:base_concepts/pressure)air storage capacity/$ of each armor piece, making them take longer to charge, but slower to lose pressure when in use. The only effective limit to the number of upgrades is the number of available upgrade slots in the armor piece."
+      "text": "$(l:base_concepts/upgrades#volume)Volume Upgrades/$ increase the $(l:base_concepts/pressure)air storage capacity/$ of each armor piece, making them take longer to charge, but slower to lose pressure when in use. Volume Upgrades are limited to 25, and there are diminishing returns as you add more and more upgrades."
     },
     {
       "type": "spotlight",
       "item": "pneumaticcraft:armor_upgrade",
-      "text": "$(l:base_concepts/upgrades#armor)Armor Upgrades/$ increase the protection and toughness of each armor piece. With 2 upgrades installed, each piece is as good as the corresponding $(thing)Diamond Armor/$ piece.  With the maximum 6 upgrades, the protection is thus superior to $(thing)Diamond Armor/$."
+      "text": "$(l:base_concepts/upgrades#armor)Armor Upgrades/$ increase the protection and toughness of each armor piece. With 2 upgrades installed, each piece is as good as the corresponding $(thing)Diamond Armor/$ piece.  With the maximum 4 upgrades, the protection is thus superior to $(thing)Diamond Armor/$."
     },
     {
       "type": "spotlight",

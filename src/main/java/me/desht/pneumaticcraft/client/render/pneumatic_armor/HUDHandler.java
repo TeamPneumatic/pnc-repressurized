@@ -9,6 +9,7 @@ import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.client.IKeyListener;
 import me.desht.pneumaticcraft.client.KeyHandler;
+import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiArmorColors;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiArmorMainScreen;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetKeybindCheckBox;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
@@ -288,9 +289,10 @@ public enum HUDHandler implements IKeyListener {
         boolean armorEnabled = WidgetKeybindCheckBox.getCoreComponents().checked;
         List<IArmorUpgradeHandler> upgradeHandlers = ArmorUpgradeRegistry.getInstance().getHandlersForSlot(slot);
 
+        ItemStack armorStack = player.getItemStackFromSlot(slot);
         int ticksSinceEquipped = commonArmorHandler.getTicksSinceEquipped(slot);
         int startupTime = commonArmorHandler.getStartupTime(slot);
-        ITextComponent itemName = player.getItemStackFromSlot(slot).getDisplayName();
+        ITextComponent itemName = armorStack.getDisplayName();
 
         if (ticksSinceEquipped > startupTime && armorEnabled) {
             // After full init: tick the client handler for each installed upgrade and open/close stat windows as needed
@@ -315,7 +317,7 @@ public enum HUDHandler implements IKeyListener {
             playArmorInitSound(player, ModSounds.HUD_INIT_COMPLETE.get(), 1.0F);
             addMessage(new ArmorMessage(xlate("pneumaticcraft.armor.message.initComplete", itemName), 50, 0x7000AA00));
         } else if (ticksSinceEquipped == 0 && WidgetKeybindCheckBox.getCoreComponents().checked) {
-            // tick 0: inform the server which upgrades are enabled
+            // tick 0: cache colours & inform the server which upgrades are enabled
             for (IArmorUpgradeClientHandler handler : ArmorUpgradeClientRegistry.getInstance().getHandlersForSlot(slot)) {
                 handler.reset();
             }
@@ -422,5 +424,19 @@ public enum HUDHandler implements IKeyListener {
                 lastScaledHeight = mw.getScaledHeight();
             }
         }
+    }
+
+    public int getStatOverlayColor() {
+        // based on the eyepiece color but with the alpha locked to 3/16
+        ItemStack stack = Minecraft.getInstance().player.getItemStackFromSlot(EquipmentSlotType.HEAD);
+        int eyepieceColor = stack.getItem() instanceof ItemPneumaticArmor ?
+                ((ItemPneumaticArmor) stack.getItem()).getEyepieceColor(stack) :
+                GuiArmorColors.SelectorType.EYEPIECE.getDefaultColor();
+        return (eyepieceColor & 0x00FFFFFF) | 0x30000000;
+    }
+
+    public void updateOverlayColors(EquipmentSlotType slot) {
+        int color = getStatOverlayColor();
+        ArmorUpgradeClientRegistry.getInstance().getHandlersForSlot(slot).forEach(clientHandler -> clientHandler.setOverlayColor(color));
     }
 }

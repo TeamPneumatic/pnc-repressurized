@@ -10,6 +10,7 @@ import me.desht.pneumaticcraft.client.gui.pneumatic_armor.option_screens.BlockTr
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetKeybindCheckBox;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderBlockTarget;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker.BlockTrackEntryList;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
@@ -327,7 +328,7 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
         if (blockTrackInfo == null) {
             WidgetAnimatedStat.StatIcon icon = WidgetAnimatedStat.StatIcon.of(EnumUpgrade.BLOCK_TRACKER.getItemStack());
             blockTrackInfo = new WidgetAnimatedStat(null, xlate("pneumaticcraft.blockTracker.info.trackedBlocks"),
-                    icon, 0x3000AA00, null, ArmorHUDLayout.INSTANCE.blockTrackerStat);
+                    icon, HUDHandler.getInstance().getStatOverlayColor(), null, ArmorHUDLayout.INSTANCE.blockTrackerStat);
             blockTrackInfo.setMinimumContractedDimensions(0, 0);
             blockTrackInfo.setAutoLineWrap(false);
         }
@@ -370,5 +371,12 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
     @Override
     public String getSubKeybindCategory() {
         return Names.PNEUMATIC_KEYBINDING_CATEGORY_BLOCK_TRACKER;
+    }
+
+    @Override
+    public void setOverlayColor(int color) {
+        super.setOverlayColor(color);
+
+        blockTargets.values().forEach(target -> target.updateColor(color));
     }
 }

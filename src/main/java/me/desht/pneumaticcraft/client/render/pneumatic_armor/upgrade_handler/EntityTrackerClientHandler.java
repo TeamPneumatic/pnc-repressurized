@@ -165,7 +165,7 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
         if (entityTrackInfo == null) {
             WidgetAnimatedStat.StatIcon icon = WidgetAnimatedStat.StatIcon.of(EnumUpgrade.ENTITY_TRACKER.getItemStack());
             entityTrackInfo = new WidgetAnimatedStat(null, xlate("pneumaticcraft.entityTracker.info.trackedEntities"), icon,
-                     0x3000AA00, null, ArmorHUDLayout.INSTANCE.entityTrackerStat);
+                    HUDHandler.getInstance().getStatOverlayColor(), null, ArmorHUDLayout.INSTANCE.entityTrackerStat);
             entityTrackInfo.setMinimumContractedDimensions(0, 0);
             entityTrackInfo.setAutoLineWrap(false);
         }
@@ -217,5 +217,12 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
     @Override
     public void onResolutionChanged() {
         entityTrackInfo = null;
+    }
+
+    @Override
+    public void setOverlayColor(int color) {
+        super.setOverlayColor(color);
+
+        targets.values().forEach(target -> target.updateColor(color));
     }
 }

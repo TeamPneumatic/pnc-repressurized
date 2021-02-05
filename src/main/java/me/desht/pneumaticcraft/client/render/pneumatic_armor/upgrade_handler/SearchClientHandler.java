@@ -12,6 +12,7 @@ import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.option_screens.SearchOptions;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.render.ModRenderTypes;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderSearchItemBlock;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
@@ -212,7 +213,7 @@ public class SearchClientHandler extends IArmorUpgradeClientHandler.AbstractHand
         if (searchInfo == null) {
             WidgetAnimatedStat.StatIcon icon = WidgetAnimatedStat.StatIcon.of(EnumUpgrade.SEARCH.getItemStack());
             searchInfo = new WidgetAnimatedStat(null, xlate("pneumaticcraft.armor.gui.search.searchingFor"), icon,
-                    0x3000AA00, null, ArmorHUDLayout.INSTANCE.itemSearchStat);
+                    HUDHandler.getInstance().getStatOverlayColor(), null, ArmorHUDLayout.INSTANCE.itemSearchStat);
             searchInfo.setMinimumContractedDimensions(0, 0);
         }
         return searchInfo;

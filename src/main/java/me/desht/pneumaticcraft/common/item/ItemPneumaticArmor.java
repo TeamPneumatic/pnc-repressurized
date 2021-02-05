@@ -357,6 +357,7 @@ public class ItemPneumaticArmor extends ArmorItem implements
         switch (tintIndex) {
             case 0: return getColor(stack);
             case 1: return getSecondaryColor(stack);
+            case 2: return stack.getItem() == ModItems.PNEUMATIC_HELMET.get() ? getEyepieceColor(stack) : 0xFFFFFFFF;
             default: return 0xFFFFFFFF;
         }
     }
@@ -379,6 +380,15 @@ public class ItemPneumaticArmor extends ArmorItem implements
 
     public void setSecondaryColor(ItemStack stack, int color) {
         stack.getOrCreateChildTag("display").putInt("color2", color);
+    }
+
+    public int getEyepieceColor(ItemStack stack) {
+        CompoundNBT nbt = stack.getChildTag("display");
+        return nbt != null && nbt.contains("color_eye", Constants.NBT.TAG_ANY_NUMERIC) ? nbt.getInt("color_eye") : 0xFF00AA00;
+    }
+
+    public void setEyepieceColor(ItemStack stack, int color) {
+        stack.getOrCreateChildTag("display").putInt("color_eye", color);
     }
 
     /*------- Thaumcraft -------- */

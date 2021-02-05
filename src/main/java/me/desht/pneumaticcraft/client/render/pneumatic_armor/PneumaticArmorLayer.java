@@ -46,12 +46,21 @@ public class PneumaticArmorLayer<T extends LivingEntity, M extends BipedModel<T>
                 this.getEntityModel().setModelAttributes(model);
                 this.setModelSlotVisible(model, slot);
                 boolean glint = stack.hasEffect();
-                int i = ((ItemPneumaticArmor) stack.getItem()).getSecondaryColor(stack);
-                float r = (float)(i >> 16 & 255) / 255.0F;
-                float g = (float)(i >> 8 & 255) / 255.0F;
-                float b = (float)(i & 255) / 255.0F;
-                this.doRender(matrixStack, buffer, light, glint, model, r, g, b, slot, ExtraLayer.SECONDARY_COLOR);
-                this.doRender(matrixStack, buffer, RenderUtils.FULL_BRIGHT, glint, model, 1f, 1f, 1f, slot, ExtraLayer.TRANSLUCENT);
+
+                // secondary texture layer in all slots
+                float[] secondary = RenderUtils.decomposeColorF(((ItemPneumaticArmor) stack.getItem()).getSecondaryColor(stack));
+                this.doRender(matrixStack, buffer, light, glint, model, secondary[1], secondary[2], secondary[3], slot, ExtraLayer.SECONDARY_COLOR);
+
+                if (slot == EquipmentSlotType.CHEST) {
+                    // currently just the chestpiece "core" - untinted
+                    this.doRender(matrixStack, buffer, RenderUtils.FULL_BRIGHT, glint, model, 1f, 1f, 1f, slot, ExtraLayer.TRANSLUCENT);
+                }
+
+                if (slot == EquipmentSlotType.HEAD) {
+                    // eyepiece in head slot only
+                    float[] eyepiece = RenderUtils.decomposeColorF(((ItemPneumaticArmor) stack.getItem()).getEyepieceColor(stack));
+                    this.doRender(matrixStack, buffer, RenderUtils.FULL_BRIGHT, false, model, eyepiece[1], eyepiece[2], eyepiece[3], slot, ExtraLayer.EYEPIECE);
+                }
             }
         }
     }
@@ -87,7 +96,8 @@ public class PneumaticArmorLayer<T extends LivingEntity, M extends BipedModel<T>
 
     enum ExtraLayer {
         SECONDARY_COLOR("overlay", false),
-        TRANSLUCENT("translucent", true);
+        TRANSLUCENT("translucent", true),
+        EYEPIECE("eyepiece", true);
 
         private final ResourceLocation rl1, rl2;
         private final boolean translucent;

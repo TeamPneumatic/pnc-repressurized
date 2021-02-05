@@ -17,6 +17,7 @@ import java.util.function.Supplier;
  */
 public class PacketUpdateArmorColors {
     private final int[][] cols = new int[4][2];
+    private final int eyepiece;
 
     public PacketUpdateArmorColors() {
         for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
@@ -26,6 +27,12 @@ public class PacketUpdateArmorColors {
                 cols[slot.getIndex()][1] = ((ItemPneumaticArmor) stack.getItem()).getSecondaryColor(stack);
             }
         }
+        ItemStack stack = ClientUtils.getClientPlayer().getItemStackFromSlot(EquipmentSlotType.HEAD);
+        if (stack.getItem() instanceof ItemPneumaticArmor) {
+            eyepiece = ((ItemPneumaticArmor) stack.getItem()).getEyepieceColor(stack);
+        } else {
+            eyepiece = 0;
+        }
     }
 
     public PacketUpdateArmorColors(PacketBuffer buffer) {
@@ -33,6 +40,7 @@ public class PacketUpdateArmorColors {
             cols[i][0] = buffer.readInt();
             cols[i][1] = buffer.readInt();
         }
+        eyepiece = buffer.readInt();
     }
 
     public void toBytes(PacketBuffer buffer) {
@@ -40,6 +48,7 @@ public class PacketUpdateArmorColors {
             buffer.writeInt(cols[i][0]);
             buffer.writeInt(cols[i][1]);
         }
+        buffer.writeInt(eyepiece);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
@@ -52,6 +61,10 @@ public class PacketUpdateArmorColors {
                         ((ItemPneumaticArmor) stack.getItem()).setColor(stack, cols[slot.getIndex()][0]);
                         ((ItemPneumaticArmor) stack.getItem()).setSecondaryColor(stack, cols[slot.getIndex()][1]);
                     }
+                }
+                ItemStack stack = player.getItemStackFromSlot(EquipmentSlotType.HEAD);
+                if (stack.getItem() instanceof ItemPneumaticArmor) {
+                    ((ItemPneumaticArmor) stack.getItem()).setEyepieceColor(stack, eyepiece);
                 }
             }
         });

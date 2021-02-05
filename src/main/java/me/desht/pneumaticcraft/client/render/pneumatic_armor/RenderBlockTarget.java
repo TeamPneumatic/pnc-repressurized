@@ -65,7 +65,7 @@ public class RenderBlockTarget {
         if (!stack.isEmpty()) {
             title = stack.getDisplayName();
         }
-        stat = new WidgetAnimatedStat(null, title, WidgetAnimatedStat.StatIcon.of(stack), 20, -20, 0x4000AA00, null, false);
+        stat = new WidgetAnimatedStat(null, title, WidgetAnimatedStat.StatIcon.of(stack), 20, -20, HUDHandler.getInstance().getStatOverlayColor(), null, false);
         stat.setMinimumContractedDimensions(0, 0);
         stat.setAutoLineWrap(false);
     }
@@ -257,5 +257,9 @@ public class RenderBlockTarget {
             return stat.mouseScrolled(event.getMouseX(), event.getMouseY(), event.getScrollDelta());
         }
         return false;
+    }
+
+    public void updateColor(int color) {
+        if (stat != null) stat.setBackgroundColor(color);
     }
 }

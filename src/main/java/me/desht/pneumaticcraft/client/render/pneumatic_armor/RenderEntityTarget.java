@@ -57,7 +57,7 @@ public class RenderEntityTarget {
         circle2 = new RenderTargetCircle(entity);
 
         stat = new WidgetAnimatedStat(null, entity.getDisplayName(), StatIcon.NONE,
-                20, -20, 0x3000AA00, null, false);
+                20, -20, HUDHandler.getInstance().getStatOverlayColor(), null, false);
         stat.setMinimumContractedDimensions(0, 0);
         stat.setAutoLineWrap(false);
     }
@@ -234,5 +234,9 @@ public class RenderEntityTarget {
             return stat.mouseScrolled(event.getMouseX(), event.getMouseY(), event.getScrollDelta());
         }
         return false;
+    }
+
+    public void updateColor(int color) {
+        if (stat != null) stat.setBackgroundColor(color);
     }
 }

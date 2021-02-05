@@ -8,19 +8,36 @@ Changes are in reverse chronological order; newest changes at the top.
 
 Note: PNC:R 2.9.3 and later have been successfully tested on Minecraft 1.16.5.  Older (but recent) versions will probably also work on MC 1.16.5, but haven't been tested.
 
-## 2.9.6-?? (unreleased)
+## 2.10.0-?? (unreleased)
+
+### New
+* Pneumatic Armor has had a little re-texture (no fancy models, sorry!)
+  * It is now possible to dynamically re-colour primary and secondary colours for each armor piece, independently
+  * Eyepiece can also be independently coloured, and this colour is also used to recolour the HUD overlay panels from the default green  
+  * Access this through the armor GUI, "Core Components" page, new "Colors..." button
+  * Builtin behaviour, no special upgrades needed for this
+  * Also added a config option (accessible via the Colors gui) to disable showing the enchantment glint for enchanted Pneumatic Armor pieces
+  * Only applies to Pneumatic Armor, not other armor pieces; use this if you don't want the glint to overwhelm your carefully-chosen colour scheme...
+* Added Compressed Iron armor set - early game armor which is a little better than Iron armor
+  * Same protection as Iron, but higher durability, toughness, and adds a little knockback resistance
+  * Made with Compressed Iron Ingots and Leather armor pieces
+  * Pneumatic Armor recipes now require the corresponding Compressed Iron Armor piece instead of Leather Armor piece
+* Added Russian (ru_ru) translations.  Thanks to @shikhtv for these.
 
 ### Updates
-* Added Compressed Iron armor set - early game armor which is a bit better than Iron armor
-  * Made with Compressed Iron Ingots and Leather armor pieces
-* Pneumatic Armor recipes now require the corresponding Compressed Iron piece instead of Leather  
-* Added Russian (ru_ru) translations.  Thanks to @shikhtv for these.
 * Air Grate needs a little less pressure to fan Heat Sinks now.
   * 0.6 bar is sufficient to fan Heat Sinks two blocks away (i.e. one block of space between Air Grate and Heat Sinks)
+* When Amadron restocks player-player offers that you have available, it now will inform you of the fact, and how many offers you now have in stock
+* Reduced the max stock for some high-value PneumaticCraft Villager trades (affects both direct villager trading and Amadron)
+* Drone and Network API items which have a program saved on them no longer despawn when in item entity form in the world
+  * Avoids loss of potentially valuable Drones with big programs on them
+* The Programmable Controller is now allowed to use the Suicide progwidget in its programs
+  * This ejects the Network API or Drone item from its programmable slot into an adjacent chest or (failing that) into the world as an item, terminating the program
+  * Chests will be checked for on any face of the Programmable Controller marked as "Programmable Slot" in the side configuration tab
 
 ### Fixes
 * Fixed drone Place Block progwidget sometimes placing blocks outside the specified area
-* Fixed done Block Right Click progwidget not honouring the "Side" setting
+* Fixed drone Block Right Click progwidget not honouring the "Side" setting
   * This is noticeable e.g. if you use the drone to sneak-right-click a Sign or Aphorism Tile onto the side of block
 * Fixed drone's held item not syncing to the client when it becomes empty
 * Fixed drone block placement not using air as it should (100mL per block placed)
@@ -30,7 +47,8 @@ Note: PNC:R 2.9.3 and later have been successfully tested on Minecraft 1.16.5.  
   * A little pressure is still lost due to leaks, but reforming the chamber quickly now preserves most of the pressure
 * Aerial Interface and Omnidirectional Hoppers with Entity Tracker now respect items with Curse of Binding enchant on them
   * No more easy removal of cursed items, sorry!
-  
+* Fix potential Amadron exploit by badly-behaved clients being able to order more of an item than currently in stock
+
 ## 2.9.5-128 (26 Jan 2021)
 
 ### Fixes

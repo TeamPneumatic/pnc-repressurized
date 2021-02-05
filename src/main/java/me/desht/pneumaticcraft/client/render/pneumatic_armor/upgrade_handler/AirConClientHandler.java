@@ -8,6 +8,7 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.option_screens.AirConditionerOptions;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import net.minecraft.util.math.MathHelper;
@@ -57,7 +58,7 @@ public class AirConClientHandler extends IArmorUpgradeClientHandler.SimpleToggle
     public IGuiAnimatedStat getAnimatedStat() {
         if (acStat == null) {
             acStat = new WidgetAnimatedStat(null, StringTextComponent.EMPTY, WidgetAnimatedStat.StatIcon.NONE,
-                    0x3000AA00, null, ArmorHUDLayout.INSTANCE.airConStat);
+                    HUDHandler.getInstance().getStatOverlayColor(), null, ArmorHUDLayout.INSTANCE.airConStat);
             acStat.setMinimumContractedDimensions(0, 0);
         }
         return acStat;

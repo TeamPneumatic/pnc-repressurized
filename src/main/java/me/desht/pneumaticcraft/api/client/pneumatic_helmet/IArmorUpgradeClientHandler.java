@@ -145,6 +145,18 @@ public interface IArmorUpgradeClientHandler {
     }
 
     /**
+     * Called when the player alters their eyepiece color in the Pneumatic Armor GUI "Colors..." screen to re-color any
+     * stat this client handler displays.  The default implementation works for most cases, but if your handler displays
+     * extra stats (like the Entity or Block tracker does), override this method to re-color them too.
+     *
+     * @param color the new color for the stat display, as chosen by the player
+     */
+    default void setOverlayColor(int color) {
+        IGuiAnimatedStat stat = getAnimatedStat();
+        if (stat != null) stat.setBackgroundColor(color);
+    }
+
+    /**
      * Convenience class which allows a reference to the common upgrade handler to be passed in and retrieved.
      */
     abstract class AbstractHandler implements IArmorUpgradeClientHandler {

@@ -71,7 +71,7 @@ public class GuiMoveStat extends GuiPneumaticScreenBase {
         CoreComponentsClientHandler mainOptions = HUDHandler.getInstance().getSpecificRenderer(CoreComponentsClientHandler.class);
         if (movedStat != mainOptions.testMessageStat) {
             mainOptions.testMessageStat = new WidgetAnimatedStat(null, new StringTextComponent("Test Message, keep in mind messages can be long!"),
-                    WidgetAnimatedStat.StatIcon.NONE, 0x7000AA00, null, ArmorHUDLayout.INSTANCE.messageStat);
+                    WidgetAnimatedStat.StatIcon.NONE, HUDHandler.getInstance().getStatOverlayColor(), null, ArmorHUDLayout.INSTANCE.messageStat);
             mainOptions.testMessageStat.openStat();
             otherStats.add(mainOptions.testMessageStat);
         }
