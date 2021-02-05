@@ -4,16 +4,14 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
 import me.desht.pneumaticcraft.common.DroneRegistry;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.config.subconfig.AmadronPlayerOffers;
 import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.entity.living.EntityAmadrone;
 import me.desht.pneumaticcraft.common.entity.living.EntityAmadrone.AmadronAction;
 import me.desht.pneumaticcraft.common.item.ItemAmadronTablet;
-import me.desht.pneumaticcraft.common.network.GuiSynced;
-import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketAmadronTradeRemoved;
-import me.desht.pneumaticcraft.common.network.PacketPlaySound;
+import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
@@ -319,17 +317,11 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
     }
 
     public static EntityAmadrone retrieveOrderItems(PlayerEntity orderingPlayer, AmadronOffer offer, int times, GlobalPos itemGPos, GlobalPos liquidGPos) {
+        boolean isAmadronRestock = orderingPlayer == null;
         if (offer.getInput().getType() == AmadronTradeResource.Type.ITEM) {
             if (itemGPos == null) return null;
-            // an orderingPlayer of null indicates that Amadron is taking items to restock; no stock check needed in that case
-            if (orderingPlayer != null && offer.getStock() >= 0 && times > offer.getStock()) {
-                // shouldn't happen normally, but could as result of a player trying to spoof the system
-                // by bypassing stock checks in the Amadron GUI (hacked client)
-                // https://github.com/TeamPneumatic/pnc-repressurized/issues/736
-                Log.warning("ignoring suspicious order from player [%s] for %d x %s - only %d in stock right now!",
-                        orderingPlayer.getName().getString(), times, offer, offer.getStock());
-                return null;
-            }
+            if (!validateStockLevel(orderingPlayer, offer, times, isAmadronRestock)) return null;
+
             ItemStack queryingItems = offer.getInput().getItem();
             int amount = queryingItems.getCount() * times;
             NonNullList<ItemStack> stacks = NonNullList.create();
@@ -344,15 +336,44 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
                 Log.error(String.format("retrieveOrderItems: got empty itemstack list for offer %d x %s @ %s", times, queryingItems.toString(), itemGPos.toString()));
                 return null;
             }
+
+            reduceStockLevel(offer, times, isAmadronRestock);
             return (EntityAmadrone) DroneRegistry.getInstance().retrieveItemsAmazonStyle(itemGPos, stacks.toArray(new ItemStack[0]));
         } else if (offer.getInput().getType() == AmadronTradeResource.Type.FLUID) {
             if (liquidGPos == null) return null;
+            if (!validateStockLevel(orderingPlayer, offer, times, isAmadronRestock)) return null;
+
             FluidStack queryingFluid = offer.getInput().getFluid().copy();
             queryingFluid.setAmount(queryingFluid.getAmount() * times);
+
+            reduceStockLevel(offer, times, isAmadronRestock);
             return (EntityAmadrone) DroneRegistry.getInstance().retrieveFluidAmazonStyle(liquidGPos, queryingFluid);
         } else {
             return null;
         }
+    }
+
+    private static void reduceStockLevel(AmadronOffer offer, int times, boolean isAmadronRestock) {
+        // Reduce stock here; if the order fails (e.g. player takes items out of the chest before the Amadron can get them),
+        // we'll restore the stock level, in EventHandlerAmadron#onAmadronFailure().
+        if (!isAmadronRestock && (offer instanceof AmadronPlayerOffer || offer.getMaxStock() >= 0)) {
+            offer.addStock(-times);
+            if (offer instanceof AmadronPlayerOffer) AmadronPlayerOffers.save();
+            NetworkHandler.sendNonLocal(new PacketAmadronStockUpdate(offer.getId(), offer.getStock()));
+        }
+    }
+
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    public static boolean validateStockLevel(PlayerEntity orderingPlayer, AmadronOffer offer, int times, boolean isAmadronRestock) {
+        if (!isAmadronRestock && offer.getStock() >= 0 && times > offer.getStock()) {
+            // shouldn't happen normally, but could as result of a player trying to spoof the system
+            // by bypassing stock checks in the Amadron GUI (hacked client)
+            // https://github.com/TeamPneumatic/pnc-repressurized/issues/736
+            Log.warning("ignoring suspicious order from player [%s] for %d x %s - only %d in stock right now!",
+                    orderingPlayer.getName().getString(), times, offer, offer.getStock());
+            return false;
+        }
+        return true;
     }
 
     private int capShoppingAmount(int offerId, int wantedAmount, PlayerEntity player) {

@@ -27,7 +27,11 @@ Note: PNC:R 2.9.3 and later have been successfully tested on Minecraft 1.16.5.  
 ### Updates
 * Air Grate needs a little less pressure to fan Heat Sinks now.
   * 0.6 bar is sufficient to fan Heat Sinks two blocks away (i.e. one block of space between Air Grate and Heat Sinks)
-* When Amadron restocks player-player offers that you have available, it now will inform you of the fact, and how many offers you now have in stock
+* When Amadron restocks a player offer that you created, it now will inform you of the fact, and how many of that offer you now have in stock
+* Amadron stock levels are now reduced as soon as an order is placed (for orders with a max stock level)
+  * Previously, stock levels weren't updated until the trade was complete
+  * This could lead to orders being lost if multiple players placed an order at the same time, or one player placed multiple orders in rapid succession
+  * Reduced stock levels are restored if the order fails for any reason (e.g. player places order then removes payment before Amadrone can collect it)
 * Reduced the max stock for some high-value PneumaticCraft Villager trades (affects both direct villager trading and Amadron)
 * Drone and Network API items which have a program saved on them no longer despawn when in item entity form in the world
   * Avoids loss of potentially valuable Drones with big programs on them
@@ -44,10 +48,10 @@ Note: PNC:R 2.9.3 and later have been successfully tested on Minecraft 1.16.5.  
 * Fixed potential item dupe issue in Smart Chest with Magnet upgrade
   * Smart Chest magnet functionality now also respects Botania's Solegnolia and items on conveyor belts (e.g. Immersive Engineering)
 * Fixed larger (4x4x4 and 5x5x5) pressure chambers losing almost all their pressure if briefly broken and reformed
-  * A little pressure is still lost due to leaks, but reforming the chamber quickly now preserves most of the pressure
+  * A little pressure is still lost due to normal leakage, but reforming the chamber quickly now preserves most of the pressure
 * Aerial Interface and Omnidirectional Hoppers with Entity Tracker now respect items with Curse of Binding enchant on them
   * No more easy removal of cursed items, sorry!
-* Fix potential Amadron exploit by badly-behaved clients being able to order more of an item than currently in stock
+* Fixed potential Amadron exploit by badly-behaved clients being able to order more of an item than currently in stock
 
 ## 2.9.5-128 (26 Jan 2021)
 

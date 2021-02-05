@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
 /**
  * Extended Amadron offer used for player-player trading.
  */
@@ -101,6 +103,13 @@ public class AmadronPlayerOffer extends AmadronOffer {
         PlayerEntity player = PneumaticCraftUtils.getPlayerFromId(offeringPlayerId);
         if (player != null && PNCConfig.Common.Amadron.notifyOfDealMade) {
             NetworkHandler.sendToPlayer(new PacketAmadronTradeNotifyDeal(this, tradingAmount, buyingPlayer), (ServerPlayerEntity) player);
+        }
+    }
+
+    public void notifyRestock() {
+        PlayerEntity player = PneumaticCraftUtils.getPlayerFromId(getPlayerId());
+        if (player != null) {
+            player.sendStatusMessage(xlate("pneumaticcraft.message.amadron.amadronRestocked", getDescription(), getStock()), false);
         }
     }
 
@@ -300,4 +309,5 @@ public class AmadronPlayerOffer extends AmadronOffer {
     public static boolean isPlayerOffer(AmadronOffer offer, PlayerEntity player) {
         return offer instanceof AmadronPlayerOffer && ((AmadronPlayerOffer) offer).getPlayerId().equals(player.getUniqueID());
     }
+
 }
