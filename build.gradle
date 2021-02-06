@@ -207,30 +207,22 @@ dependencies {
     runtimeOnly fg.deobf("vazkii.botania:Botania:${botania_version}")
     compileOnly fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}:api")
     runtimeOnly fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}")
-    compile fg.deobf("org.squiddev:cc-tweaked-1.16.4:${cc_tweaked_version}")
-    compile fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:${immersive_engineering_version}")
-    compile fg.deobf("curse.maven:mekanism:${mekanism_curse_id}")
-    compile fg.deobf("curse.maven:hwyla:${hwyla_curse_id}")
+    compileOnly fg.deobf("org.squiddev:cc-tweaked-1.16.4:${cc_tweaked_version}")
+    compileOnly fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:${immersive_engineering_version}")
+    runtimeOnly fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:${immersive_engineering_version}")
+    compileOnly fg.deobf("curse.maven:mekanism:${mekanism_curse_id}")
+    runtimeOnly fg.deobf("curse.maven:mekanism:${mekanism_curse_id}")
+    compileOnly fg.deobf("curse.maven:hwyla:${hwyla_curse_id}")
+    runtimeOnly fg.deobf("curse.maven:hwyla:${hwyla_curse_id}")
     compileOnly fg.deobf("appeng:appliedenergistics2:${ae2_version}:api")
-//    runtimeOnly fg.deobf("curse.maven:modernui:3158102")
-//    runtimeOnly fg.deobf("appeng:appliedenergistics2:${ae2_version}")
 
-//    compile fg.deobf("curse.maven:ae2:${ae2_curse_id}")
-//    compileOnly fg.deobf("mcp.mobius.waila:Hwyla:${hwyla_version}:api")
-//    runtimeOnly fg.deobf("mcp.mobius.waila:Hwyla:${hwyla_version}")
-//    compileOnly "cofh:RedstoneFlux:1.12-${redstone_flux_version}:universal"
-//    compileOnly "cofh:CoFHCore:1.12.2-${cofhcore_version}:deobf"
+//    runtimeOnly fg.deobf("curse.maven:modernui:3158102")
 //    compileOnly "li.cil.oc:OpenComputers:MC1.12.2-${oc_version}:api"
 //    compileOnly "CraftTweaker2:CraftTweaker2-API:${crafttweaker_version}"
 //    compileOnly fg.deobf("com.blamejared.crafttweaker:CraftTweaker-1.14.4:${crafttweaker_version}")
-//    compileOnly "CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-${crafttweaker_version}"
-//    compileOnly "igwmod:IGW-Mod-1.12.2:${igwmod_version}:universal"  // using universal instead of userdev for now
 //    compileOnly "net.industrial-craft:industrialcraft-2:2.8.27-ex112:api"
 //    compileOnly "thaumcraft:Thaumcraft:${thaumcraft_version}"
 //    compileOnly "team.chisel.ctm:CTM:${ctm_version}:api"
-//    compileOnly("appeng:appliedenergistics2:${ae2_version}:api")
-//    //compileOnly "elucent:albedo:${albedo_version}"
-//    compileOnly "com.azanor.baubles:Baubles:${baubles_version}"
 //    compileOnly "com.github.glitchfiend.biomesoplenty:ToughAsNails:${tan_version}:universal"
 }
 

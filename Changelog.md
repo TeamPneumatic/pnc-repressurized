@@ -8,7 +8,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 Note: PNC:R 2.9.3 and later have been successfully tested on Minecraft 1.16.5.  Older (but recent) versions will probably also work on MC 1.16.5, but haven't been tested.
 
-## 2.10.0-?? (unreleased)
+## 2.10.0-134 (6 Feb 2021)
 
 ### New
 * Pneumatic Armor has had a little re-texture (no fancy models, sorry!)
@@ -27,6 +27,7 @@ Note: PNC:R 2.9.3 and later have been successfully tested on Minecraft 1.16.5.  
 ### Updates
 * Air Grate needs a little less pressure to fan Heat Sinks now.
   * 0.6 bar is sufficient to fan Heat Sinks two blocks away (i.e. one block of space between Air Grate and Heat Sinks)
+  * Air Grate range display is now handled via "R" range button in GUI instead of right-clicking the module
 * When Amadron restocks a player offer that you created, it now will inform you of the fact, and how many of that offer you now have in stock
 * Amadron stock levels are now reduced as soon as an order is placed (for orders with a max stock level)
   * Previously, stock levels weren't updated until the trade was complete
