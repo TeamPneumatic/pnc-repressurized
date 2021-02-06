@@ -30,7 +30,7 @@ public class PacketUpdateAirGrateModule extends PacketUpdateTubeModule {
 
     @Override
     protected void onModuleUpdate(TubeModule module, PlayerEntity player) {
-        if (module instanceof ModuleAirGrate) {
+        if (module instanceof ModuleAirGrate && module.isUpgraded()) {
             ((ModuleAirGrate) module).setEntityFilter(entityFilter);
         }
     }

@@ -19,7 +19,6 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.text.StringTextComponent;
@@ -38,12 +37,7 @@ public class GuiPressureModule extends GuiTubeModule<TubeModule> {
     private Rectangle2d lowerBoundArea, higherBoundArea;
     private boolean grabLower, grabHigher;
 
-    public GuiPressureModule(BlockPos pos) {
-        super(pos);
-        ySize = 191;
-    }
-
-    GuiPressureModule(TubeModule module) {
+    public GuiPressureModule(TubeModule module) {
         super(module);
         ySize = 191;
     }
@@ -105,8 +99,6 @@ public class GuiPressureModule extends GuiTubeModule<TubeModule> {
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         super.render(matrixStack, mouseX, mouseY, partialTicks);
 
-        RenderSystem.disableLighting();
-
         minecraft.getTextureManager().bindTexture(getTexture());
         int scrollbarLowerBoundX = (int) (guiLeft + 16 + (158 - 11) * (module.lowerBound / (TubeModule.MAX_VALUE + 1)));
         int scrollbarHigherBoundX = (int) (guiLeft + 16 + (158 - 11) * (module.higherBound / (TubeModule.MAX_VALUE + 1)));
@@ -116,9 +108,7 @@ public class GuiPressureModule extends GuiTubeModule<TubeModule> {
 
         renderGraph(matrixStack);
 
-        /*
-         * Draw the current redstone strength
-         */
+        // current redstone input, if applicable
         if (module instanceof TubeModuleRedstoneReceiving) {
             module.onNeighborBlockUpdate();
             hLine(matrixStack, graphLeft + 4, graphRight, graphHighY + (graphLowY - graphHighY) * (15 - ((TubeModuleRedstoneReceiving) module).getReceivingRedstoneLevel()) / 15, 0xFFFF0000);
@@ -127,15 +117,12 @@ public class GuiPressureModule extends GuiTubeModule<TubeModule> {
             font.drawString(matrixStack, status, guiLeft + xSize / 2f - font.getStringWidth(status) / 2f, guiTop + 175, 0xFF404040);
         }
 
-        /*
-         * Draw the data in the graph 
-         */
+        // the actual graph data
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
         bufferBuilder.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION_COLOR);
         RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         RenderSystem.disableTexture();
-        RenderSystem.color4f(0, 0, 0, 1.0f);
         Matrix4f posMat = matrixStack.getLast().getMatrix();
         for (int i = 0; i < 16; i++) {
             float y = graphHighY + (graphLowY - graphHighY) * (15 - i) / 15f;
@@ -149,23 +136,23 @@ public class GuiPressureModule extends GuiTubeModule<TubeModule> {
     }
 
     private void renderGraph(MatrixStack matrixStack) {
-        vLine(matrixStack, graphLeft, graphHighY, graphLowY, 0xFF000000);
+        vLine(matrixStack, graphLeft, graphHighY, graphLowY, 0xFF303030);
         for (int i = 0; i < 16; i++) {
             boolean longer = i % 5 == 0;
             if (longer) {
-                font.drawString(matrixStack, i + "", graphLeft - 5 - font.getStringWidth(i + ""), graphHighY + (graphLowY - graphHighY) * (15 - i) / 15f - 3, 0xFF000000);
-                hLine(matrixStack, graphLeft + 4, graphRight, graphHighY + (graphLowY - graphHighY) * (15 - i) / 15, i == 0 ? 0xFF000000 : 0x33000000);
+                font.drawString(matrixStack, i + "", graphLeft - 5 - font.getStringWidth(i + ""), graphHighY + (graphLowY - graphHighY) * (15 - i) / 15f - 3, 0xFF303030);
+                hLine(matrixStack, graphLeft + 4, graphRight, graphHighY + (graphLowY - graphHighY) * (15 - i) / 15, i == 0 ? 0xFF303030 : 0x33000000);
 
             }
-            hLine(matrixStack, graphLeft - (longer ? 5 : 3), graphLeft + 3, graphHighY + (graphLowY - graphHighY) * (15 - i) / 15, 0xFF000000);
+            hLine(matrixStack, graphLeft - (longer ? 5 : 3), graphLeft + 3, graphHighY + (graphLowY - graphHighY) * (15 - i) / 15, 0xFF303030);
         }
         for (int i = 0; i < 31; i++) {
             boolean longer = i % 5 == 0;
             if (longer) {
-                font.drawString(matrixStack, i + "", graphLeft + (graphRight - graphLeft) * i / 30f - font.getStringWidth(i + "") / 2f + 1, graphLowY + 6, 0xFF000000);
+                font.drawString(matrixStack, i + "", graphLeft + (graphRight - graphLeft) * i / 30f - font.getStringWidth(i + "") / 2f + 1, graphLowY + 6, 0xFF303030);
                 vLine(matrixStack, graphLeft + (graphRight - graphLeft) * i / 30, graphHighY, graphLowY - 2, 0x33000000);
             }
-            vLine(matrixStack, graphLeft + (graphRight - graphLeft) * i / 30, graphLowY - 3, graphLowY + (longer ? 5 : 3), 0xFF000000);
+            vLine(matrixStack, graphLeft + (graphRight - graphLeft) * i / 30, graphLowY - 3, graphLowY + (longer ? 5 : 3), 0xFF303030);
         }
     }
 

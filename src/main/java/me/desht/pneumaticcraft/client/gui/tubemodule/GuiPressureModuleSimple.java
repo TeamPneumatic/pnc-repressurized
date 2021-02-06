@@ -9,7 +9,6 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdatePressureModule;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import org.lwjgl.glfw.GLFW;
@@ -19,12 +18,6 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class GuiPressureModuleSimple extends GuiTubeModule<TubeModule> {
     private WidgetTextFieldNumber thresholdField;
     private WidgetButtonExtended moreOrLessButton;
-
-    GuiPressureModuleSimple(BlockPos pos) {
-        super(pos);
-
-        ySize = 57;
-    }
 
     GuiPressureModuleSimple(TubeModule module) {
         super(module);

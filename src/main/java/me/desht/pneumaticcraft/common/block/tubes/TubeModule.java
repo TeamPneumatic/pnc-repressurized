@@ -1,13 +1,11 @@
 package me.desht.pneumaticcraft.common.block.tubes;
 
+import me.desht.pneumaticcraft.client.gui.tubemodule.GuiTubeModule;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ItemTubeModule;
-import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketOpenTubeModuleGui;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -195,8 +193,8 @@ public abstract class TubeModule {
     }
 
     public boolean onActivated(PlayerEntity player, Hand hand) {
-        if (!player.world.isRemote && hasGui()) {
-            NetworkHandler.sendToPlayer(new PacketOpenTubeModuleGui(getType(), pressureTube.getPos()), (ServerPlayerEntity) player);
+        if (player.world.isRemote && hasGui()) {
+            GuiTubeModule.openGuiForModule(this);
         }
         return true;
     }

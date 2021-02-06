@@ -3,19 +3,12 @@ package me.desht.pneumaticcraft.client.gui.tubemodule;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.client.TubeModuleClientRegistry;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticScreenBase;
-import me.desht.pneumaticcraft.common.block.BlockPressureTube;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
 
 public abstract class GuiTubeModule<M extends TubeModule> extends GuiPneumaticScreenBase {
     protected final M module;
-
-    GuiTubeModule(BlockPos modulePos) {
-        this((M) BlockPressureTube.getFocusedModule(Minecraft.getInstance().world, modulePos, Minecraft.getInstance().player));
-    }
 
     GuiTubeModule(M module) {
         super(new ItemStack(module.getItem()).getDisplayName());
@@ -35,7 +28,7 @@ public abstract class GuiTubeModule<M extends TubeModule> extends GuiPneumaticSc
         return false;
     }
 
-    public static void openGuiForType(ResourceLocation moduleType, BlockPos modulePos) {
-        Minecraft.getInstance().displayGuiScreen(TubeModuleClientRegistry.createGUI(moduleType, modulePos));
+    public static void openGuiForModule(TubeModule module) {
+        Minecraft.getInstance().displayGuiScreen(TubeModuleClientRegistry.createGUI(module));
     }
 }

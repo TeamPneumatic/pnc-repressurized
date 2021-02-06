@@ -142,8 +142,6 @@ public class NetworkHandler {
 				PacketSendDroneDebugEntry::toBytes, PacketSendDroneDebugEntry::new, PacketSendDroneDebugEntry::handle);
 		registerMessage(PacketSyncDroneEntityProgWidgets.class,
 				PacketSyncDroneEntityProgWidgets::toBytes, PacketSyncDroneEntityProgWidgets::new, PacketSyncDroneEntityProgWidgets::handle);
-		registerMessage(PacketOpenTubeModuleGui.class,
-				PacketOpenTubeModuleGui::toBytes, PacketOpenTubeModuleGui::new, PacketOpenTubeModuleGui::handle);
 		registerMessage(PacketSpawnRing.class,
 				PacketSpawnRing::toBytes, PacketSpawnRing::new, PacketSpawnRing::handle);
 		registerMessage(PacketShowArea.class,

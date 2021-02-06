@@ -7,54 +7,76 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleAirGrate;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateAirGrateModule;
 import me.desht.pneumaticcraft.common.util.EntityFilter;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.glfw.GLFW;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
-
 public class GuiAirGrateModule extends GuiTubeModule<ModuleAirGrate> {
     private int sendTimer = 0;
     private WidgetButtonExtended warningButton;
+    private WidgetButtonExtended rangeButton;
+    private TextFieldWidget textfield;
 
-    public GuiAirGrateModule(BlockPos pos) {
-        super(pos);
+    public GuiAirGrateModule(ModuleAirGrate module) {
+        super(module);
 
         ySize = 57;
     }
-
-    private TextFieldWidget textfield;
 
     @Override
     public void init() {
         super.init();
 
-        addLabel(title, guiLeft + xSize / 2, guiTop + 5, WidgetLabel.Alignment.CENTRE);
-        WidgetLabel label = addLabel(xlate("pneumaticcraft.gui.entityFilter"), guiLeft + 10, guiTop + 30);
-        addLabel(xlate("pneumaticcraft.gui.holdF1forHelp"), guiLeft + xSize / 2, guiTop + ySize + 5, WidgetLabel.Alignment.CENTRE)
-                .setColor(0xFFC0C0C0);
+        addLabel(this.title, this.guiLeft + this.xSize / 2, this.guiTop + 5, WidgetLabel.Alignment.CENTRE);
 
-        int tx = 12 + label.getWidth();
-        textfield = new WidgetTextField(font, guiLeft + tx, guiTop + 29, xSize - tx - 10, 10);
+        WidgetLabel filterLabel = addLabel(PneumaticCraftUtils.xlate("pneumaticcraft.gui.entityFilter"), this.guiLeft + 10, this.guiTop + 21);
+        filterLabel.visible = this.module.isUpgraded();
+
+        WidgetLabel helpLabel = addLabel(PneumaticCraftUtils.xlate("pneumaticcraft.gui.holdF1forHelp"), this.guiLeft + this.xSize / 2, this.guiTop + this.ySize + 5, WidgetLabel.Alignment.CENTRE)
+                .setColor(0xC0C0C0);
+        helpLabel.visible = this.module.isUpgraded();
+
+        WidgetButtonExtended advPCB = new WidgetButtonExtended(this.guiLeft + 10, this.guiTop + 21, 20, 20, StringTextComponent.EMPTY)
+                .setRenderStacks(new ItemStack(ModItems.ADVANCED_PCB.get()))
+                .setTooltipKey("pneumaticcraft.gui.redstoneModule.addAdvancedPCB").setVisible(false);
+        advPCB.visible = !module.isUpgraded();
+        addButton(advPCB);
+
+        int tx = 12 + filterLabel.getWidth();
+        textfield = new WidgetTextField(font, guiLeft + tx, guiTop + 20, xSize - tx - 10, 10);
         textfield.setText(module.getEntityFilterString());
         textfield.setResponder(s -> sendTimer = 5);
         textfield.setFocused2(true);
+        textfield.setVisible(module.isUpgraded());
         setListener(textfield);
         addButton(textfield);
 
-        warningButton = new WidgetButtonExtended(guiLeft + 152, guiTop + 20, 20, 20, StringTextComponent.EMPTY);
-        warningButton.setVisible(false);
-        warningButton.setRenderedIcon(Textures.GUI_PROBLEMS_TEXTURE);
+        warningButton = new WidgetButtonExtended(guiLeft + 152, guiTop + 20, 20, 20, StringTextComponent.EMPTY)
+                .setVisible(false)
+                .setRenderedIcon(Textures.GUI_PROBLEMS_TEXTURE);
         addButton(warningButton);
 
+        rangeButton = new WidgetButtonExtended(this.guiLeft + this.xSize - 20, this.guiTop + this.ySize - 20, 16, 16, (ITextComponent)getRangeButtonText(), b -> {
+            module.setShowRange(!this.module.isShowRange());
+            rangeButton.setMessage(getRangeButtonText());
+        });
+        addButton(rangeButton);
+
         validateEntityFilter(textfield.getText());
+    }
+
+    private ITextComponent getRangeButtonText() {
+        return new StringTextComponent((this.module.isShowRange() ? TextFormatting.AQUA : TextFormatting.DARK_GRAY) + "R");
     }
 
     private void validateEntityFilter(String filter) {
@@ -74,7 +96,7 @@ public class GuiAirGrateModule extends GuiTubeModule<ModuleAirGrate> {
 
         if (!textfield.isFocused()) textfield.setText(module.getEntityFilterString());
 
-        if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {
+        if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1) && module.isUpgraded()) {
             GuiUtils.showPopupHelpScreen(matrixStack, this, font,
                     GuiUtils.xlateAndSplit("pneumaticcraft.gui.entityFilter.helpText"));
         }

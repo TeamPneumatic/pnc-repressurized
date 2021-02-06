@@ -15,7 +15,6 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.item.DyeColor;
 import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 
@@ -38,13 +37,7 @@ public class GuiRedstoneModule extends GuiTubeModule<ModuleRedstone> {
     private boolean output;
     private final List<IReorderingProcessor> lowerText = new ArrayList<>();
 
-    public GuiRedstoneModule(BlockPos modulePos) {
-        super(modulePos);
-
-        ySize = module.getRedstoneDirection() == EnumRedstoneDirection.OUTPUT ? 202 : 57;
-    }
-
-    private GuiRedstoneModule(ModuleRedstone module) {
+    public GuiRedstoneModule(ModuleRedstone module) {
         super(module);
 
         ySize = module.getRedstoneDirection() == EnumRedstoneDirection.OUTPUT ? 202 : 57;

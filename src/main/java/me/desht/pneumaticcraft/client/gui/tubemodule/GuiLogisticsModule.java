@@ -8,15 +8,14 @@ import me.desht.pneumaticcraft.common.network.PacketTubeModuleColor;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.item.DyeColor;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiLogisticsModule extends GuiTubeModule<ModuleLogistics> {
     private int ourColor;
 
-    public GuiLogisticsModule(BlockPos modulePos) {
-        super(modulePos);
+    public GuiLogisticsModule(ModuleLogistics module) {
+        super(module);
 
         ySize = 57;
     }

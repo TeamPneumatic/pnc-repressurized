@@ -21,7 +21,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -39,7 +38,7 @@ public class ModuleAirGrate extends TubeModule {
     private int grateRange;
     private boolean vacuum;
     private final Set<TileEntityHeatSink> heatSinks = new HashSet<>();
-    public boolean showRange;
+    private boolean showRange;
     private EntityFilter entityFilter = null;
     private TileEntity adjacentInsertionTE = null;
     private Direction adjacentInsertionSide;
@@ -230,7 +229,7 @@ public class ModuleAirGrate extends TubeModule {
 
     @Override
     public boolean hasGui() {
-        return upgraded;
+        return true;
     }
 
     @Override
@@ -247,20 +246,20 @@ public class ModuleAirGrate extends TubeModule {
     }
 
     @Override
-    public boolean onActivated(PlayerEntity player, Hand hand) {
-        if (player.world.isRemote && pressureTube != null) {
-            showRange = !showRange;
-            if (showRange) {
-                AreaRenderManager.getInstance().showArea(RangeManager.getFrame(getAffectedAABB()), 0x60FFC060, pressureTube, false);
-            } else {
-                AreaRenderManager.getInstance().removeHandlers(pressureTube);
-            }
-        }
-        return super.onActivated(player, hand);
-    }
-
-    @Override
     public void onPlaced() {
         showRange = true;
+    }
+
+    public boolean isShowRange() {
+        return showRange;
+    }
+
+    public void setShowRange(boolean showRange) {
+        this.showRange = showRange;
+        if (showRange) {
+            AreaRenderManager.getInstance().showArea(RangeManager.getFrame(getAffectedAABB()), 0x60FFC060, pressureTube, false);
+        } else {
+            AreaRenderManager.getInstance().removeHandlers(pressureTube);
+        }
     }
 }

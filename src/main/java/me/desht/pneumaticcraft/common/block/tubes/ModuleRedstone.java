@@ -3,13 +3,11 @@ package me.desht.pneumaticcraft.common.block.tubes;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.item.ItemTubeModule;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketOpenTubeModuleGui;
 import me.desht.pneumaticcraft.common.network.PacketSyncRedstoneModuleToClient;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -283,11 +281,9 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
                 NetworkHandler.sendToAllTracking(new PacketSyncRedstoneModuleToClient(this), getTube());
             }
             return true;
-        } else if (!getTube().getWorld().isRemote) {
-            NetworkHandler.sendToPlayer(new PacketOpenTubeModuleGui(getType(), pressureTube.getPos()), (ServerPlayerEntity) player);
-            return true;
+        } else {
+            return super.onActivated(player, hand);
         }
-        return false;
     }
 
     private boolean updateInputLevel() {
