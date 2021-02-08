@@ -343,12 +343,14 @@ public class EntityDrone extends EntityDroneBase implements
         buffer.writeLong(ownerUUID.getMostSignificantBits());
         buffer.writeLong(ownerUUID.getLeastSignificantBits());
         buffer.writeTextComponent(ownerName);
+        buffer.writeVarInt(getUpgrades(EnumUpgrade.SECURITY));
     }
 
     @Override
     public void readSpawnData(PacketBuffer buffer) {
         ownerUUID = new UUID(buffer.readLong(), buffer.readLong());
         ownerName = buffer.readTextComponent();
+        securityUpgradeCount = buffer.readVarInt();
     }
 
     /**
@@ -479,23 +481,27 @@ public class EntityDrone extends EntityDroneBase implements
     }
 
     private void onFirstTick() {
-        securityUpgradeCount = getUpgrades(EnumUpgrade.SECURITY);
-        if (securityUpgradeCount > 0) {
-            ((EntityPathNavigateDrone) getPathNavigator()).pathThroughLiquid = true;
-        }
-        setPathPriority(PathNodeType.WATER, securityUpgradeCount > 0 ? 0.0f : -1.0f);
-        speed = 0.15 + Math.min(10, getUpgrades(EnumUpgrade.SPEED)) * 0.015;
-        if (getUpgrades(EnumUpgrade.ARMOR) > 6) {
-            speed -= 0.01 * (getUpgrades(EnumUpgrade.ARMOR) - 6);
-        }
-        healingInterval = getUpgrades(EnumUpgrade.ITEM_LIFE) > 0 ? 100 / getUpgrades(EnumUpgrade.ITEM_LIFE) : 0;
         if (!world.isRemote) {
-            droneItemHandler.setFakePlayerReady();
-            setHasMinigun(getUpgrades(EnumUpgrade.MINIGUN) > 0);
             MinecraftForge.EVENT_BUS.register(this);
+
+            speed = 0.15 + Math.min(10, getUpgrades(EnumUpgrade.SPEED)) * 0.015;
+            if (getUpgrades(EnumUpgrade.ARMOR) > 6) {
+                speed -= 0.01 * (getUpgrades(EnumUpgrade.ARMOR) - 6);
+            }
+
+            healingInterval = getUpgrades(EnumUpgrade.ITEM_LIFE) > 0 ? 100 / getUpgrades(EnumUpgrade.ITEM_LIFE) : 0;
+
+            securityUpgradeCount = getUpgrades(EnumUpgrade.SECURITY);
+            setPathPriority(PathNodeType.WATER, securityUpgradeCount > 0 ? 0.0f : -1.0f);
+
+            energy.setCapacity(100000 + 100000 * getUpgrades(EnumUpgrade.VOLUME));
+
+            setHasMinigun(getUpgrades(EnumUpgrade.MINIGUN) > 0);
+
+            droneItemHandler.setFakePlayerReady();
+
             aiManager.setWidgets(progWidgets);
         }
-        energy.setCapacity(100000 + 100000 * getUpgrades(EnumUpgrade.VOLUME));
     }
 
     private void handleRedstoneEmission() {
@@ -519,7 +525,7 @@ public class EntityDrone extends EntityDroneBase implements
                     if (PneumaticCraftUtils.isBlockLiquid(world.getBlockState(new BlockPos(x, y, z)).getBlock())) {
                         BlockPos pos = new BlockPos(x, y, z);
                         if (securityUpgradeCount == 2) displacedLiquids.put(pos, world.getBlockState(pos));
-                        world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
+                        world.setBlockState(pos, Blocks.AIR.getDefaultState(), Constants.BlockFlags.BLOCK_UPDATE);
                     }
                 }
             }
@@ -678,7 +684,7 @@ public class EntityDrone extends EntityDroneBase implements
                 ignoreFrustumCheck = true; //don't stop rendering the drone when it goes out of the camera frustrum, as we need to render the target lines as well.
             } else {
                 targetLine = oldTargetLine = null;
-                ignoreFrustumCheck = false; //don't stop rendering the drone when it goes out of the camera frustrum, as we need to render the target lines as well.
+                ignoreFrustumCheck = false;
             }
         }
         if (getRidingEntity() == null && isAccelerating()) {
@@ -699,12 +705,13 @@ public class EntityDrone extends EntityDroneBase implements
         return oldTargetLine;
     }
 
-    public double getRange() {
-        return 75;
-    }
+//    public double getRange() {
+//        return 75;
+//    }
 
     @Override
     public ActionResultType func_230254_b_(PlayerEntity player, Hand hand) {
+        // func_230254_b_ = onEntityRightClick() ?
         if (!getOwnerUUID().equals(player.getUniqueID())) return ActionResultType.PASS;
 
         ItemStack stack = player.getHeldItem(hand);
@@ -752,7 +759,7 @@ public class EntityDrone extends EntityDroneBase implements
     }
 
     /**
-     * Called when a drone is hit by a Pneumatic Wrench.
+     * Called when a drone is right-clicked by a Pneumatic Wrench.
      */
     @Override
     public boolean onWrenched(World world, PlayerEntity player, BlockPos pos, Direction side, Hand hand) {
@@ -776,7 +783,7 @@ public class EntityDrone extends EntityDroneBase implements
             BlockPos pos = entry.getKey();
             if (!distCheck || pos.distanceSq(getPosX(), getPosY(), getPosZ(), true) > 1) {
                 if (world.isAirBlock(pos) || PneumaticCraftUtils.isBlockLiquid(world.getBlockState(pos).getBlock())) {
-                    world.setBlockState(pos, entry.getValue(), 2);
+                    world.setBlockState(pos, entry.getValue(), Constants.BlockFlags.BLOCK_UPDATE);
                 }
                 iter.remove();
             }
@@ -791,11 +798,6 @@ public class EntityDrone extends EntityDroneBase implements
             restoreFluidBlocks(false);
         }
         return entity;
-    }
-
-    @Override
-    protected void dropSpecialItems(DamageSource source, int looting, boolean recentlyHitIn) {
-        super.dropSpecialItems(source, looting, recentlyHitIn);
     }
 
     @Override
@@ -1360,11 +1362,6 @@ public class EntityDrone extends EntityDroneBase implements
     @Override
     public boolean isDroneStillValid() {
         return isAlive();
-    }
-
-    @Override
-    public void suicide() {
-        attackEntityFrom(new DamageSourceDroneOverload("suicide"), 2000.0F);
     }
 
     /**

@@ -635,6 +635,16 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
 
     @Override
     public void overload(String msgKey, Object... params) {
+        // insert the programmable item (drone or api) into a chest on a "programmable" side
+        // or failing that, drop it in-world on top of the PC
+        ItemStack stack = inventory.extractItem(0, 1, false);
+        if (stack.getCount() == 1) {
+            boolean inserted = findEjectionDest()
+                    .map(h -> ItemHandlerHelper.insertItem(h, stack, false).isEmpty())
+                    .orElse(false);
+            if (!inserted) PneumaticCraftUtils.dropItemOnGround(stack, world, pos.up());
+            world.playSound(null, pos, ModSounds.DRONE_DEATH.get(), SoundCategory.BLOCKS, 1f, 1f);
+        }
         NetworkHandler.sendToAllTracking(new PacketSpawnParticle(ParticleTypes.SMOKE,
                 getPos().getX() - 0.5, getPos().getY() + 1, getPos().getZ() - 0.5,
                 0, 0, 0, 10, 1, 1, 1), this);
@@ -715,20 +725,6 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     @Override
     public boolean isDroneStillValid() {
         return !removed;
-    }
-
-    @Override
-    public void suicide() {
-        // insert the programmable item (drone or api) into a chest on a "programmable" side
-        // or failing that, drop it in-world on top of the PC
-        ItemStack stack = inventory.extractItem(0, 1, false);
-        if (stack.getCount() == 1) {
-            boolean inserted = findEjectionDest()
-                    .map(h -> ItemHandlerHelper.insertItem(h, stack, false).isEmpty())
-                    .orElse(false);
-            if (!inserted) PneumaticCraftUtils.dropItemOnGround(stack, world, pos.up());
-            world.playSound(null, pos, ModSounds.DRONE_DEATH.get(), SoundCategory.BLOCKS, 1f, 1f);
-        }
     }
 
     private LazyOptional<IItemHandler> findEjectionDest() {

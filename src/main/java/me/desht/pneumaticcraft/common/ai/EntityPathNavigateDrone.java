@@ -28,7 +28,6 @@ import java.util.Random;
 public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPathNavigator {
 
     private final EntityDrone pathfindingEntity;
-    public boolean pathThroughLiquid;
     private boolean forceTeleport;
     private int teleportCounter = -1;
     private BlockPos telPos;

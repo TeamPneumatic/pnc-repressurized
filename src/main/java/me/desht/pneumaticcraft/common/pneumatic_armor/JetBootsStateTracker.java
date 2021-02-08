@@ -64,31 +64,6 @@ public class JetBootsStateTracker {
         return stateMap.getOrDefault(player.getUniqueID(), new JetBootsState(false, false, false));
     }
 
-//    /**
-//     * Called when a player logs in, server-side.  Inform other players of this player's jet boots state, and inform the
-//     * new player of existing players' jet boot states.
-//     * @param newPlayer new player who has just logged in
-//     */
-//    public void informOtherPlayers(ServerPlayerEntity newPlayer) {
-//        JetBootsStateTracker tracker = JetBootsStateTracker.getTracker(newPlayer);
-//
-//        // inform the new player
-//        for (PlayerEntity player : newPlayer.getEntityWorld().getPlayers()) {
-//            if (player.getEntityId() != newPlayer.getEntityId() && isPneumaticArmorPiece(newPlayer, EquipmentSlotType.FEET)) {
-//                JetBootsStateTracker.JetBootsState state = tracker.getJetBootsState(player);
-//                if (state != null) {
-//                    NetworkHandler.sendToPlayer(new PacketJetBootsStateSync(player, state), newPlayer);
-//                }
-//            }
-//        }
-//
-//        // inform other players
-//        if (isPneumaticArmorPiece(newPlayer, EquipmentSlotType.FEET)) {
-//            JetBootsStateTracker.JetBootsState state = tracker.getJetBootsState(newPlayer);
-//            if (state != null) NetworkHandler.sendToDimension(new PacketJetBootsStateSync(newPlayer, state), newPlayer.getEntityWorld().getDimensionKey());
-//        }
-//    }
-
     public static class JetBootsState {
         private boolean enabled;  // switched on
         private boolean active;   // actively firing (player holding Jump key)
