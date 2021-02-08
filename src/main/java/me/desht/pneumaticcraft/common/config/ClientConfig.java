@@ -18,6 +18,7 @@ public class ClientConfig {
         ForgeConfigSpec.BooleanValue tubeModuleRedstoneParticles;
         ForgeConfigSpec.BooleanValue guiRemoteGridSnap;
         ForgeConfigSpec.BooleanValue programmerGuiPauses;
+        ForgeConfigSpec.BooleanValue notifyAmadronOfferUpdates;
     }
 
     public static class Armor {
@@ -83,10 +84,13 @@ public class ClientConfig {
                 .translation("pneumaticcraft.config.client.general.gui_remote_grid_snap")
                 .define("gui_remote_grid_snap", true);
         general.programmerGuiPauses = builder
-                .comment("Should the SSP game pause when the Programmer GUI is open (does not apply in SMP)" +
-                        "?")
+                .comment("Should the SSP game pause when the Programmer GUI is open (does not apply in SMP)?")
                 .translation("pneumaticcraft.config.client.general.programmer_gui_pauses")
                 .define("programmer_gui_pauses", false);
+        general.notifyAmadronOfferUpdates = builder
+                .comment("Should players holding an Amadron Tablet get a notification message when offers are shuffled periodically?")
+                .translation("pneumaticcraft.config.client.general.notify_amadron_offer_updates")
+                .define("notify_amadron_offer_updates", true);
         builder.pop();
 
         builder.push("armor");

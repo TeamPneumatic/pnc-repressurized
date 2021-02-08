@@ -20,6 +20,7 @@ public class PNCConfig {
         public static boolean tubeModuleRedstoneParticles;
         public static boolean guiRemoteGridSnap;
         public static boolean programmerGuiPauses;
+        public static boolean notifyAmadronOfferUpdates;
 
         public static class Armor {
             public static int blockTrackerMaxTimePerTick;

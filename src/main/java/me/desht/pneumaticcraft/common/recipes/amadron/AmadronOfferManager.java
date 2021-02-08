@@ -1,10 +1,12 @@
 package me.desht.pneumaticcraft.common.recipes.amadron;
 
 import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.config.subconfig.AmadronPlayerOffers;
 import me.desht.pneumaticcraft.common.entity.living.EntityAmadrone;
 import me.desht.pneumaticcraft.common.inventory.ContainerAmadron;
+import me.desht.pneumaticcraft.common.item.ItemAmadronTablet;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSyncAmadronOffers;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
@@ -13,18 +15,26 @@ import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.entity.merchant.villager.VillagerProfession;
 import net.minecraft.entity.merchant.villager.VillagerTrades;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.MerchantOffer;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.server.ServerLifecycleHooks;
+import net.minecraftforge.items.wrapper.CombinedInvWrapper;
+import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
+import net.minecraftforge.items.wrapper.PlayerOffhandInvWrapper;
 
 import java.util.*;
 import java.util.stream.IntStream;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public enum AmadronOfferManager {
     INSTANCE;
@@ -70,7 +80,7 @@ public enum AmadronOfferManager {
         addOffer(activeOffers, offer);
         addOffer(allOffers, offer);
         addOffer(allOffers, offer.getReversedOffer());
-        NetworkHandler.sendNonLocal(new PacketSyncAmadronOffers());
+        NetworkHandler.sendNonLocal(new PacketSyncAmadronOffers(true));
         saveAll();
         return true;
     }
@@ -80,7 +90,7 @@ public enum AmadronOfferManager {
             activeOffers.remove(offer.getId());
             allOffers.remove(offer.getId());
             allOffers.remove(AmadronPlayerOffer.getReversedId(offer.getId()));
-            NetworkHandler.sendNonLocal(new PacketSyncAmadronOffers());
+            NetworkHandler.sendNonLocal(new PacketSyncAmadronOffers(true));
             saveAll();
             return true;
         } else {
@@ -104,11 +114,38 @@ public enum AmadronOfferManager {
     /**
      * Called client-side (from PacketSyncAmadronOffers) to sync up the active offer list.
      * @param newOffers the new offers
+     * @param notifyPlayer
      */
-    public void syncOffers(Collection<AmadronOffer> newOffers) {
+    public void syncOffers(Collection<AmadronOffer> newOffers, boolean notifyPlayer) {
         activeOffers.clear();
         newOffers.forEach(offer -> addOffer(activeOffers, offer));
+
         Log.info("Received " + activeOffers.size() + " active Amadron offers from server");
+        if (notifyPlayer && PNCConfig.Client.notifyAmadronOfferUpdates) {
+            maybeNotifyPlayerOfUpdates(ClientUtils.getClientPlayer());
+        }
+    }
+
+    private void maybeNotifyPlayerOfUpdates(PlayerEntity player) {
+        CombinedInvWrapper inv = new CombinedInvWrapper(new PlayerMainInvWrapper(player.inventory), new PlayerOffhandInvWrapper(player.inventory));
+        for (int i = 0; i < inv.getSlots(); i++) {
+            if (inv.getStackInSlot(i).getItem() instanceof ItemAmadronTablet) {
+                player.sendStatusMessage(xlate("pneumaticcraft.message.amadron.offersUpdated"), false);
+                break;
+            }
+        }
+    }
+
+    void maybeNotifyLocalPlayerOfUpdates() {
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+        if (server != null && !server.isDedicatedServer()) {
+            for (PlayerEntity player : server.getPlayerList().getPlayers()) {
+                if (server.isServerOwner(player.getGameProfile())) {
+                    maybeNotifyPlayerOfUpdates(player);
+                    break;
+                }
+            }
+        }
     }
 
     /**
@@ -216,7 +253,8 @@ public enum AmadronOfferManager {
         activeOffers.values().forEach(AmadronOffer::resetStock);
 
         // send active list to all clients (but not the local player for an integrated server)
-        NetworkHandler.sendNonLocal(new PacketSyncAmadronOffers());
+        NetworkHandler.sendNonLocal(new PacketSyncAmadronOffers(true));
+        maybeNotifyLocalPlayerOfUpdates();
         Log.info(activeOffers.size() + " active Amadron offers to sync to clients");
     }
 
@@ -334,7 +372,7 @@ public enum AmadronOfferManager {
     public static class EventListener {
         @SubscribeEvent
         public static void serverLogin(PlayerEvent.PlayerLoggedInEvent evt) {
-            NetworkHandler.sendNonLocal((ServerPlayerEntity) evt.getPlayer(), new PacketSyncAmadronOffers());
+            NetworkHandler.sendNonLocal((ServerPlayerEntity) evt.getPlayer(), new PacketSyncAmadronOffers(false));
         }
     }
 }

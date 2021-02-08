@@ -1701,6 +1701,7 @@
    "pneumaticcraft.message.amadron.amadronRestocked" : "§e[Amadron]§b Restocked your offer §6%s§b - you now have §6%d§b trades in stock.",
    "pneumaticcraft.message.amadron.duplicateOffer" : "§e[Amadron]§c Can't add trade: Trade is invalid or has already been added!",
    "pneumaticcraft.message.amadron.duplicateReversedOffer" : "§e[Amadron]§c Can't add trade: You already have a trade in the opposite direction!",
+   "pneumaticcraft.message.amadron.offersUpdated" : "§e[Amadron] §bNew daily offers are now available!",
    "pneumaticcraft.message.amadron.playerAddedTrade" : "§e[Amadron] §6%s§b is now selling §6%s§b for §6%s§b.",
    "pneumaticcraft.message.amadron.playerBought" : "§e[Amadron] §6%s§b bought from you §6%d§b order(s) of: §6%s§b for §6%s§b.",
    "pneumaticcraft.message.amadron.playerRemovedTrade" : "§e[Amadron] §6%s§c is no longer selling §6%s§c for §6%s§c.",

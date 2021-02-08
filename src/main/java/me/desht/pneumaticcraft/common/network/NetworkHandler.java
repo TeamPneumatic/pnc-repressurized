@@ -272,7 +272,7 @@ public class NetworkHandler {
 				NetworkHandler.sendToAll(packet);
 			} else {
 				for (ServerPlayerEntity player : server.getPlayerList().getPlayers()) {
-					if (!player.getGameProfile().getName().equals(player.server.getServerOwner())) {
+					if (!player.server.isServerOwner(player.getGameProfile())) {
 						sendToPlayer(packet, player);
 					}
 				}
@@ -286,7 +286,7 @@ public class NetworkHandler {
 	 * @param packet the packet to send
 	 */
 	public static void sendNonLocal(ServerPlayerEntity player, Object packet) {
-		if (player.server.isDedicatedServer() || !player.getGameProfile().getName().equals(player.server.getServerOwner())) {
+		if (!player.server.isServerOwner(player.getGameProfile())) {
 			sendToPlayer(packet, player);
 		}
 	}

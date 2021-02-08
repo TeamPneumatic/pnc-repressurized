@@ -17,12 +17,15 @@ import java.util.function.Supplier;
  */
 public class PacketSyncAmadronOffers {
     private final Collection<AmadronOffer> activeOffers;
+    private final boolean notifyPlayer;
 
-    public PacketSyncAmadronOffers() {
+    public PacketSyncAmadronOffers(boolean notifyPlayer) {
+        this.notifyPlayer = notifyPlayer;
         this.activeOffers = AmadronOfferManager.getInstance().getActiveOffers();
     }
 
     public PacketSyncAmadronOffers(PacketBuffer buf) {
+        this.notifyPlayer = buf.readBoolean();
         this.activeOffers = new ArrayList<>();
         int offerCount = buf.readVarInt();
         for (int i = 0; i < offerCount; i++) {
@@ -35,6 +38,7 @@ public class PacketSyncAmadronOffers {
     }
 
     public void toBytes(PacketBuffer buf) {
+        buf.writeBoolean(notifyPlayer);
         buf.writeVarInt(activeOffers.size());
         for (AmadronOffer offer : activeOffers) {
             buf.writeBoolean(offer instanceof AmadronPlayerOffer);
@@ -44,7 +48,7 @@ public class PacketSyncAmadronOffers {
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> AmadronOfferManager.getInstance().syncOffers(activeOffers));
+        ctx.get().enqueueWork(() -> AmadronOfferManager.getInstance().syncOffers(activeOffers, notifyPlayer));
         ctx.get().setPacketHandled(true);
     }
 
