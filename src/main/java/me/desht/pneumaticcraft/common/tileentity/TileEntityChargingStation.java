@@ -182,7 +182,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player) {
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayerEntity player) {
         if (rsController.parseRedstoneMode(tag))
             return;
 

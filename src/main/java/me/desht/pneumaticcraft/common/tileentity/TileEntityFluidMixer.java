@@ -253,7 +253,7 @@ public class TileEntityFluidMixer extends TileEntityPneumaticBase implements
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player) {
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayerEntity player) {
         if (rsController.parseRedstoneMode(tag))
             return;
 

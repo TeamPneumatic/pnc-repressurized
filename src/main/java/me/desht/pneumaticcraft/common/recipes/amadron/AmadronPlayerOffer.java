@@ -106,6 +106,11 @@ public class AmadronPlayerOffer extends AmadronOffer {
         }
     }
 
+    @Override
+    public boolean isRemovableBy(PlayerEntity player) {
+        return getPlayerId().equals(player.getUniqueID());
+    }
+
     public void notifyRestock() {
         PlayerEntity player = PneumaticCraftUtils.getPlayerFromId(getPlayerId());
         if (player != null) {

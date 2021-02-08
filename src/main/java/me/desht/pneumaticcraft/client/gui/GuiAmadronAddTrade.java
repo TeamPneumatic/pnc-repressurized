@@ -260,7 +260,6 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadr
                 .setProvidingPosition(getPosition(INPUT_SLOT))
                 .setReturningPosition(getPosition(OUTPUT_SLOT));
         NetworkHandler.sendToServer(new PacketAmadronTradeAddCustom(trade));
-        minecraft.player.closeScreen();
     }
 
     private GlobalPos getPosition(int slot) {

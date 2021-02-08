@@ -15,6 +15,7 @@ import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -273,7 +274,7 @@ public class TileEntityGasLift extends TileEntityPneumaticBase implements
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player) {
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayerEntity player) {
         if (rsController.parseRedstoneMode(tag))
             return;
 

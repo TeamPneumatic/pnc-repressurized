@@ -7,7 +7,7 @@ import me.desht.pneumaticcraft.common.network.GuiSynced;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
@@ -144,7 +144,7 @@ public abstract class TileEntityAbstractHopper<T extends TileEntity & IRedstoneC
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player) {
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayerEntity player) {
         if (getRedstoneController().parseRedstoneMode(tag))
             return;
 

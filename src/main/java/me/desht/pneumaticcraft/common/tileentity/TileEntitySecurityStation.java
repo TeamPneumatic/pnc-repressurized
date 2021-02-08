@@ -165,7 +165,7 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player) {
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayerEntity player) {
         if (rsController.parseRedstoneMode(tag)) return;
 
         if (player.openContainer instanceof ContainerSecurityStationMain && isPlayerOnWhiteList(player)) {

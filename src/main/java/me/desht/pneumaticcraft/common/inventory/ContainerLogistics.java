@@ -10,6 +10,7 @@ import me.desht.pneumaticcraft.lib.NBTKeys;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
@@ -77,7 +78,7 @@ public class ContainerLogistics extends ContainerPneumaticBase<TileEntityBase> i
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player) {
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayerEntity player) {
         super.handleGUIButtonPress(tag, shiftHeld, player);
         if (logistics != null) {
             logistics.handleGUIButtonPress(tag, shiftHeld, player);

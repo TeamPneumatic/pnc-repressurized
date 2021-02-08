@@ -85,7 +85,7 @@ public class EventHandlerAmadron {
             } else if (drone.getAmadronAction() == AmadronAction.RESTOCKING) {
                 // Drone is restocking Amadron - add stock
                 playerOffer.addStock(drone.getOfferTimes());
-                NetworkHandler.sendNonLocal(new PacketAmadronStockUpdate(offer.getId(), offer.getStock()));
+                NetworkHandler.sendNonLocal(new PacketAmadronStockUpdate(playerOffer.getId(), playerOffer.getStock()));
                 AmadronPlayerOffers.save();
                 playerOffer.notifyRestock();
             }

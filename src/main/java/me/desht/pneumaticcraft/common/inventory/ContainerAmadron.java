@@ -132,7 +132,7 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
             }
 
             basketEmpty = Arrays.stream(shoppingAmounts).noneMatch(shoppingAmount -> shoppingAmount > 0);
-            currentOffers = AmadronOfferManager.getInstance().countOffers(player.getGameProfile().getId());
+            currentOffers = AmadronOfferManager.getInstance().countPlayerOffers(player.getGameProfile().getId());
             maxOffers = PneumaticCraftUtils.isPlayerOp(player) ? Integer.MAX_VALUE : PNCConfig.Common.Amadron.maxTradesPerPlayer;
         }
     }
@@ -229,14 +229,8 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
                     // sneak-left-click: halve amount
                     shoppingAmounts[cartSlot] /= 2;
                 } else {
-                    // sneak-right-click
-                    AmadronOffer offer = activeOffers.get(offerId);
-                    if (offer instanceof AmadronPlayerOffer) {
-                        removeCustomOffer(player, (AmadronPlayerOffer) offer);
-                    } else {
-                        shoppingAmounts[cartSlot] *= 2;
-                        if (shoppingAmounts[cartSlot] == 0) shoppingAmounts[cartSlot] = 1;
-                    }
+                    shoppingAmounts[cartSlot] *= 2;
+                    if (shoppingAmounts[cartSlot] == 0) shoppingAmounts[cartSlot] = 1;
                 }
             } else {
                 // left or right-click
@@ -258,29 +252,22 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
         basketEmpty = Arrays.stream(shoppingAmounts).noneMatch(shoppingAmount -> shoppingAmount > 0);
     }
 
-    private void removeCustomOffer(ServerPlayerEntity player, AmadronPlayerOffer offer) {
-        if (offer.getPlayerId().equals(player.getGameProfile().getId())) {
-            if (AmadronOfferManager.getInstance().removePlayerOffer(offer)) {
-                if (PNCConfig.Common.Amadron.notifyOfTradeRemoval) {
-                    NetworkHandler.sendToAll(new PacketAmadronTradeRemoved(offer));
-                }
-                offer.returnStock();
-                player.closeScreen();
-            }
-        }
-    }
-
     @Override
-    public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player) {
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayerEntity player) {
         super.handleGUIButtonPress(tag, shiftHeld, player);
         if (tag.equals("order")) {
             takeOrder(player);
         } else if (tag.equals("addPlayerTrade")) {
             openTradeGui(player);
+        } else if (tag.startsWith("remove:") && shiftHeld) {
+            AmadronOffer offer = AmadronOfferManager.getInstance().getOffer(new ResourceLocation(tag.substring(7)));
+            if (offer instanceof AmadronPlayerOffer) {
+                removeCustomOffer(player, (AmadronPlayerOffer) offer);
+            }
         }
     }
 
-    private void takeOrder(PlayerEntity player) {
+    private void takeOrder(ServerPlayerEntity player) {
         boolean placed = false;
         for (int i = 0; i < shoppingItems.length; i++) {
             if (shoppingItems[i] >= 0) {
@@ -293,8 +280,8 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
                     placed = true;
                 }
             }
-            if (placed && player instanceof ServerPlayerEntity) {
-                NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.CHIRP.get(), SoundCategory.PLAYERS, player.getPosX(), player.getPosY(), player.getPosZ(), 0.2f, 1.0f, false), (ServerPlayerEntity) player);
+            if (placed) {
+                NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.CHIRP.get(), SoundCategory.PLAYERS, player.getPosX(), player.getPosY(), player.getPosZ(), 0.2f, 1.0f, false), player);
             }
         }
         Arrays.fill(shoppingAmounts, 0);
@@ -302,8 +289,8 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
         basketEmpty = true;
     }
 
-    private void openTradeGui(PlayerEntity player) {
-        NetworkHooks.openGui((ServerPlayerEntity) player, new INamedContainerProvider() {
+    private void openTradeGui(ServerPlayerEntity player) {
+        NetworkHooks.openGui(player, new INamedContainerProvider() {
             @Override
             public ITextComponent getDisplayName() {
                 return StringTextComponent.EMPTY;
@@ -314,6 +301,18 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
                 return new ContainerAmadronAddTrade(windowId, playerInventory);
             }
         });
+    }
+
+    private void removeCustomOffer(ServerPlayerEntity player, AmadronPlayerOffer offer) {
+        if (offer.getPlayerId().equals(player.getGameProfile().getId())) {
+            if (AmadronOfferManager.getInstance().removePlayerOffer(offer)) {
+                if (PNCConfig.Common.Amadron.notifyOfTradeRemoval) {
+                    NetworkHandler.sendToAll(new PacketAmadronTradeRemoved(offer));
+                }
+                offer.returnStock();
+                ItemAmadronTablet.openGui(player, hand);
+            }
+        }
     }
 
     public static EntityAmadrone retrieveOrderItems(PlayerEntity orderingPlayer, AmadronOffer offer, int times, GlobalPos itemGPos, GlobalPos liquidGPos) {
@@ -384,16 +383,16 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
     }
 
     private int capShoppingAmount(AmadronOffer offer, int wantedAmount,
-                                         LazyOptional<IItemHandler> itemCap,
-                                         LazyOptional<IFluidHandler> fluidCap) {
+                                  LazyOptional<IItemHandler> itemCap,
+                                  LazyOptional<IFluidHandler> fluidCap) {
         return capShoppingAmount(offer, wantedAmount, itemCap, itemCap, fluidCap, fluidCap);
     }
 
     private int capShoppingAmount(AmadronOffer offer, int wantedTradeCount,
-                                         LazyOptional<IItemHandler> itemCapIn,
-                                         LazyOptional<IItemHandler> itemCapOut,
-                                         LazyOptional<IFluidHandler> fluidCapIn,
-                                         LazyOptional<IFluidHandler> fluidCapOut) {
+                                  LazyOptional<IItemHandler> itemCapIn,
+                                  LazyOptional<IItemHandler> itemCapOut,
+                                  LazyOptional<IFluidHandler> fluidCapIn,
+                                  LazyOptional<IFluidHandler> fluidCapOut) {
         EnumProblemState problem = null;
 
         // check there's enough of the wanted item in stock

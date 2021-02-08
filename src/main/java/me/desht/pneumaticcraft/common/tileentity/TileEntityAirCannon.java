@@ -517,7 +517,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player) {
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayerEntity player) {
         if (rsController.parseRedstoneMode(tag)) {
             if (rsController.getCurrentMode() == 2 && getUpgrades(EnumUpgrade.BLOCK_TRACKER) == 0) {
                 rsController.setCurrentMode(0);

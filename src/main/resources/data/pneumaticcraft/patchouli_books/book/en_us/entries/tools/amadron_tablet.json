@@ -31,7 +31,7 @@
     },
     {
       "type": "text",
-      "text": "By $(thing)sneak-right-clicking/$ your own trade in the Amadron GUI, the trade will be removed, and Amadron will attempt to return your resources to the inventory/tank that provided it. $(p)$(bold)Warning:/$ Amadron take no responsibility for resources lost in the event of a problem returning them!"
+      "text": "By $(thing)shift-clicking/$ the $(#F00)x/$ button on one of your own trades in the Amadron GUI, the trade will be removed, and Amadron will attempt to return your resources to the inventory/tank that provided it. $(p)$(bold)Warning:/$ Amadron take no responsibility for resources lost in the event of a problem returning them!"
     },
     {
       "type": "crafting",

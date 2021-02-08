@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.common.item.ItemTagFilter;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.Item;
@@ -47,7 +48,7 @@ public class TileEntityTagWorkbench extends TileEntityDisplayTable implements IN
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player) {
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayerEntity player) {
         if (tag.startsWith("write:")) {
             String[] data = tag.substring(6).split(",");
             if (data.length == 0) return;

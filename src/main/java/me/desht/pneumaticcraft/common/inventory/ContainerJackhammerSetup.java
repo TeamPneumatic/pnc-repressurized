@@ -8,6 +8,7 @@ import me.desht.pneumaticcraft.common.item.ItemJackHammer.DigMode;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.Hand;
@@ -55,7 +56,7 @@ public class ContainerJackhammerSetup extends ContainerPneumaticBase<TileEntityB
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player) {
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayerEntity player) {
         ItemStack hammerStack = player.getHeldItem(hand);
         if (tag.startsWith("digmode:") && hammerStack.getItem() instanceof ItemJackHammer) {
             try {

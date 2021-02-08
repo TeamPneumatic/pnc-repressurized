@@ -4,8 +4,9 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
+import me.desht.pneumaticcraft.common.network.NetworkHandler;
+import me.desht.pneumaticcraft.common.network.PacketGuiButton;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
-import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
@@ -39,6 +40,14 @@ public class WidgetAmadronOffer extends Widget implements ITooltipProvider {
         if (offer.getOutput().getType() == AmadronTradeResource.Type.FLUID) {
             subWidgets.add(new WidgetFluidStack(x + 51, y + 15, offer.getOutput().getFluid(), null));
         }
+        if (offer.isRemovableBy(Minecraft.getInstance().player)) {
+            List<ITextComponent> l = new ArrayList<>();
+            l.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.amadron.amadronWidget.sneakRightClickToRemove"));
+            l.add(StringTextComponent.EMPTY);
+            subWidgets.add(new WidgetButtonExtended(x + 57, y + 1, 11, 11, new StringTextComponent(TextFormatting.RED + "x"),
+                    b -> NetworkHandler.sendToServer(new PacketGuiButton("remove:" + offer.getId())))
+                    .setTooltipText(l));
+        }
         tooltipRectangles[0] = new Rectangle2d(x + 5, y + 14, 18, 18);
         tooltipRectangles[1] = new Rectangle2d(x + 50, y + 14, 18, 18);
     }
@@ -48,6 +57,11 @@ public class WidgetAmadronOffer extends Widget implements ITooltipProvider {
         super.render(matrixStack, mouseX, mouseY, partialTicks);
 
         subWidgets.forEach(w -> w.render(matrixStack, mouseX, mouseY, partialTicks));
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        return subWidgets.stream().anyMatch(w -> w.mouseClicked(mouseX, mouseY, button));
     }
 
     @Override
@@ -84,7 +98,6 @@ public class WidgetAmadronOffer extends Widget implements ITooltipProvider {
 
     @Override
     public void addTooltip(double mouseX, double mouseY, List<ITextComponent> curTip, boolean shiftPressed) {
-        int l = curTip.size();
         for (Widget widget : subWidgets) {
             if (widget.isHovered() && widget instanceof ITooltipProvider) {
                 ((ITooltipProvider) widget).addTooltip(mouseX, mouseY, curTip, shiftPressed);
@@ -100,12 +113,9 @@ public class WidgetAmadronOffer extends Widget implements ITooltipProvider {
             curTip.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.vendor", offer.getVendor()));
             curTip.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.selling", offer.getOutput().toString()));
             curTip.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.buying", offer.getInput().toString()));
-            curTip.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.inBasket", shoppingAmount));
             if (offer.getStock() >= 0) curTip.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.stock", offer.getStock()));
-            if (AmadronPlayerOffer.isPlayerOffer(offer, Minecraft.getInstance().player)) {
-                curTip.add(StringTextComponent.EMPTY);
-                curTip.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.amadron.amadronWidget.sneakRightClickToRemove"));
-            }
+            curTip.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.inBasket", shoppingAmount));
+
             if (Minecraft.getInstance().gameSettings.advancedItemTooltips) {
                 curTip.add(new StringTextComponent(offer.getId().toString()).mergeStyle(TextFormatting.DARK_GRAY));
             }

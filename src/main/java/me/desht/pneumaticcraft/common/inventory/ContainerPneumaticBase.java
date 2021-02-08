@@ -335,7 +335,7 @@ public class ContainerPneumaticBase<T extends TileEntityBase> extends Container 
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity player) {
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayerEntity player) {
         if (te != null) {
             te.handleGUIButtonPress(tag, shiftHeld, player);
         }

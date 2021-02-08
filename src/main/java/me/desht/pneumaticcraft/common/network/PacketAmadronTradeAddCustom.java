@@ -2,11 +2,14 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.ContainerAmadronAddTrade;
+import me.desht.pneumaticcraft.common.item.ItemAmadronTablet;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.Hand;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.fml.network.NetworkEvent;
 
@@ -49,6 +52,11 @@ public class PacketAmadronTradeAddCustom extends PacketAbstractAmadronTrade {
             } else if (AmadronOfferManager.getInstance().addPlayerOffer(offer)) {
                 if (PNCConfig.Common.Amadron.notifyOfTradeAddition) {
                     NetworkHandler.sendToAll(this);
+                }
+                if (player.getHeldItemMainhand().getItem() == ModItems.AMADRON_TABLET.get()) {
+                    ItemAmadronTablet.openGui(player, Hand.MAIN_HAND);
+                } else if (player.getHeldItemOffhand().getItem() == ModItems.AMADRON_TABLET.get()) {
+                    ItemAmadronTablet.openGui(player, Hand.OFF_HAND);
                 }
             } else {
                 player.sendStatusMessage(xlate("pneumaticcraft.message.amadron.duplicateOffer"), false);

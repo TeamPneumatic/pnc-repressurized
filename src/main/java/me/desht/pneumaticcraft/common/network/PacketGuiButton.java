@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.network;
 
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.tileentity.IGUIButtonSensitive;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
@@ -16,12 +17,8 @@ public class PacketGuiButton {
     private final boolean shiftHeld;
 
     public PacketGuiButton(String tag) {
-        this(tag, false);
-    }
-
-    public PacketGuiButton(String tag, boolean shiftHeld) {
         this.tag = tag;
-        this.shiftHeld = shiftHeld;
+        this.shiftHeld = ClientUtils.hasShiftDown();
     }
 
     public PacketGuiButton(PacketBuffer buffer) {

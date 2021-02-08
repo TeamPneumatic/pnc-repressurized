@@ -8,6 +8,7 @@ import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
 import me.desht.pneumaticcraft.common.core.ModRecipes;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.lib.Log;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.network.PacketBuffer;
@@ -114,6 +115,10 @@ public class AmadronOffer extends AmadronRecipe {
     }
 
     public void onTrade(int tradingAmount, String buyingPlayer) {
+    }
+
+    public boolean isRemovableBy(PlayerEntity player) {
+        return false;
     }
 
     @Override

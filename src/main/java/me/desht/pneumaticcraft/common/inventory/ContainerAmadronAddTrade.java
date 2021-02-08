@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.common.tileentity.IGUIButtonSensitive;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.Hand;
@@ -60,7 +61,7 @@ public class ContainerAmadronAddTrade extends ContainerPneumaticBase<TileEntityB
     }
 
     @Override
-    public void handleGUIButtonPress(String tag, boolean shiftHeld, PlayerEntity playerIn) {
+    public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayerEntity playerIn) {
        if (tag.equals("showAmadron")) {
            ItemAmadronTablet.openGui(playerIn, getHand(playerIn));
        }

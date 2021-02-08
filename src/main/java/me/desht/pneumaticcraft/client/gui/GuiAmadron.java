@@ -43,6 +43,7 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
     private WidgetButtonExtended addTradeButton;
     private WidgetAnimatedStat customTradesTab;
     private boolean needTooltipUpdate = true;
+    private int problemTimer = 0;
 
     public GuiAmadron(ContainerAmadron container, PlayerInventory inv, @SuppressWarnings("unused") ITextComponent displayString) {
         super(container, inv, new StringTextComponent(""));
@@ -136,6 +137,14 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
         if (needTooltipUpdate) {
             updateOrderButtonTooltip();
             needTooltipUpdate = false;
+        }
+
+        // since amadron problems cap the order, the order amount stays valid
+        // so the problem report should time out after a few seconds
+        if (problemTimer == 0 && container.problemState != EnumProblemState.NO_PROBLEMS) {
+            problemTimer = 70;
+        } else if (problemTimer > 0) {
+            if (--problemTimer <= 0) container.problemState = EnumProblemState.NO_PROBLEMS;
         }
     }
 
@@ -253,6 +262,7 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
+            if (super.mouseClicked(mouseX, mouseY, mouseButton)) return true;
             if (clicked(mouseX, mouseY)) {
                 NetworkHandler.sendToServer(new PacketAmadronOrderUpdate(offerId, mouseButton, Screen.hasShiftDown()));
                 return true;

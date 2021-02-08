@@ -118,10 +118,12 @@ public enum AmadronOfferManager {
      */
     public void updateStock(ResourceLocation id, int stock) {
         AmadronOffer offer = activeOffers.get(id);
-        if (offer != null) offer.setStock(stock);
+        if (offer != null) {
+            offer.setStock(stock);
+        }
     }
 
-    public int countOffers(UUID playerId) {
+    public int countPlayerOffers(UUID playerId) {
         int count = 0;
         for (AmadronOffer offer : activeOffers.values()) {
             if (offer instanceof AmadronPlayerOffer && ((AmadronPlayerOffer) offer).getPlayerId().equals(playerId))
