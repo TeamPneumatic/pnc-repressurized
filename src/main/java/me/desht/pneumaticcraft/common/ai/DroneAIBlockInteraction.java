@@ -223,7 +223,9 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
     }
 
     private boolean blockAllowsMovement(ICollisionReader world, BlockPos pos, BlockState state) {
-        return state.getBlock() instanceof FlowingFluidBlock ? drone.canMoveIntoLava() : world.getBlockState(pos).allowsMovement(world, pos, PathType.AIR);
+        return state.getBlock() instanceof FlowingFluidBlock ?
+                drone.canMoveIntoFluid(((FlowingFluidBlock) state.getBlock()).getFluid()) :
+                world.getBlockState(pos).allowsMovement(world, pos, PathType.AIR);
     }
 
     private boolean movedToBlockOK(BlockPos pos) {

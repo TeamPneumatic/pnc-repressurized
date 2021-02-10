@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.util;
 
+import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -34,7 +35,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -294,11 +294,11 @@ public class GuiUtils {
     }
 
     public static List<IReorderingProcessor> wrapTextComponentList(List<ITextComponent> text, int maxWidth, FontRenderer font) {
-        List<IReorderingProcessor> res = new ArrayList<>();
+        ImmutableList.Builder<IReorderingProcessor> builder = ImmutableList.builder();
         for (ITextComponent line : text) {
-            res.addAll(RenderComponentsUtil.func_238505_a_(line, maxWidth, font));
+            builder.addAll(RenderComponentsUtil.func_238505_a_(line, maxWidth, font));
         }
-        return res;
+        return builder.build();
     }
 
     public static List<ITextComponent> xlateAndSplit(String key, Object... params) {

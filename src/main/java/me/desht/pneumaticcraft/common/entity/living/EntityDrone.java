@@ -63,6 +63,7 @@ import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
 import net.minecraft.entity.passive.IFlyingAnimal;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -1362,6 +1363,15 @@ public class EntityDrone extends EntityDroneBase implements
     @Override
     public boolean isDroneStillValid() {
         return isAlive();
+    }
+
+    @Override
+    public boolean canMoveIntoFluid(Fluid fluid) {
+        if (fluid.getAttributes().getTemperature() > 373) {
+            return false;
+        } else {
+            return canBreatheUnderwater();
+        }
     }
 
     /**

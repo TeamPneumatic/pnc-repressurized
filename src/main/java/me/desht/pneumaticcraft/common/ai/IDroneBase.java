@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.debug.DroneDebugger;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
@@ -41,10 +42,6 @@ public interface IDroneBase extends IDrone {
 
     default void onVariableChanged(String varname, boolean isCoordinate) { }
 
-    default boolean canMoveIntoLava() {
-        return false;
-    }
-
     int getActiveWidgetIndex();
 
     DroneDebugger getDebugger();
@@ -70,4 +67,6 @@ public interface IDroneBase extends IDrone {
     ITextComponent getDroneName();
 
     boolean isDroneStillValid();
+
+    boolean canMoveIntoFluid(Fluid fluid);
 }
