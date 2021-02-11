@@ -53,6 +53,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.BlockSnapshot;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.entity.player.PlayerContainerEvent;
@@ -646,27 +647,25 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
     public static class Listener {
         @SubscribeEvent(priority = EventPriority.HIGHEST)
         public static void onPlayerInteract(PlayerInteractEvent event) {
-            if (event instanceof PlayerInteractEvent.RightClickEmpty) return;
+            if (event instanceof PlayerInteractEvent.RightClickEmpty || event.getWorld().isRemote) return;
 
             PlayerEntity player = event.getPlayer();
+            if (isPlayerExempt(player)) return;
+
             ItemStack heldItem = player.getHeldItem(event.getHand());
             BlockState interactedBlockState = event.getWorld().getBlockState(event.getPos());
             Block interactedBlock = interactedBlockState.getBlock();
 
-            if (!isPlayerExempt(player)) {
-                if (event.getWorld() != null && !event.getWorld().isRemote) {
-                    if (interactedBlock != ModBlocks.SECURITY_STATION.get() || event instanceof PlayerInteractEvent.LeftClickBlock) {
-                        boolean tryingToPlaceSecurityStation = heldItem.getItem() instanceof BlockItem && ((BlockItem) heldItem.getItem()).getBlock() == ModBlocks.SECURITY_STATION.get();
-                        if (TileEntitySecurityStation.isProtectedFromPlayer(player, event.getPos(), tryingToPlaceSecurityStation)) {
-                            event.setCanceled(true);
-                            player.sendStatusMessage(xlate(tryingToPlaceSecurityStation ?
-                                    "pneumaticcraft.message.securityStation.stationPlacementPrevented" :
-                                    "pneumaticcraft.message.securityStation.accessPrevented"
-                            ).mergeStyle(TextFormatting.RED), true);
-                            if (player instanceof ServerPlayerEntity && heldItem.getItem() instanceof BlockItem) {
-                                ((ServerPlayerEntity) player).connection.sendPacket(new SSetSlotPacket(-2, player.inventory.currentItem, heldItem));
-                            }
-                        }
+            if (interactedBlock != ModBlocks.SECURITY_STATION.get() || event instanceof PlayerInteractEvent.LeftClickBlock) {
+                boolean tryingToPlaceSecurityStation = heldItem.getItem() instanceof BlockItem && ((BlockItem) heldItem.getItem()).getBlock() == ModBlocks.SECURITY_STATION.get();
+                if (TileEntitySecurityStation.isProtectedFromPlayer(player, event.getPos(), tryingToPlaceSecurityStation)) {
+                    event.setCanceled(true);
+                    player.sendStatusMessage(xlate(tryingToPlaceSecurityStation ?
+                            "pneumaticcraft.message.securityStation.stationPlacementPrevented" :
+                            "pneumaticcraft.message.securityStation.accessPrevented"
+                    ).mergeStyle(TextFormatting.RED), true);
+                    if (player instanceof ServerPlayerEntity && heldItem.getItem() instanceof BlockItem) {
+                        ((ServerPlayerEntity) player).connection.sendPacket(new SSetSlotPacket(-2, player.inventory.currentItem, heldItem));
                     }
                 }
             }
@@ -674,18 +673,28 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
 
         @SubscribeEvent(priority = EventPriority.HIGHEST)
         public static void onBlockPlace(BlockEvent.EntityPlaceEvent event) {
-            if (event.getEntity() instanceof PlayerEntity) {
+            if (event.getEntity() instanceof PlayerEntity && !event.getWorld().isRemote()) {
                 PlayerEntity player = (PlayerEntity) event.getEntity();
-                if (!isPlayerExempt(player) && event.getWorld() != null && !event.getWorld().isRemote()) {
-                    boolean tryingToPlaceSecurityStation = event.getPlacedBlock().getBlock() == ModBlocks.SECURITY_STATION.get();
-                    if (isProtectedFromPlayer(player, event.getPos(), tryingToPlaceSecurityStation)) {
-                        event.setCanceled(true);
-                        player.sendStatusMessage(xlate(tryingToPlaceSecurityStation ?
-                                "pneumaticcraft.message.securityStation.stationPlacementPrevented" :
-                                "pneumaticcraft.message.securityStation.accessPrevented"
-                        ).mergeStyle(TextFormatting.RED), true);
+                if (!isPlayerExempt(player)) {
+                    if (event instanceof BlockEvent.EntityMultiPlaceEvent) {
+                        for (BlockSnapshot snapshot : ((BlockEvent.EntityMultiPlaceEvent) event).getReplacedBlockSnapshots()) {
+                            if (isPlacementPrevented(event, player, snapshot.getPos())) return;
+                        }
+                    } else {
+                        isPlacementPrevented(event, player, event.getPos());
                     }
                 }
+            }
+        }
+
+        @SubscribeEvent(priority = EventPriority.HIGHEST)
+        public static void onBlockBreak(BlockEvent.BreakEvent event) {
+            // Note: the PlayerInteractEvent handler will handle real player (or even drone) interaction, but direct
+            // block breaking by fake players from other mods will need to go through here to be safely caught
+            PlayerEntity player = event.getPlayer();
+            if (!isPlayerExempt(player) && isProtectedFromPlayer(player, event.getPos(), false)) {
+                event.setCanceled(true);
+                player.sendStatusMessage(xlate("pneumaticcraft.message.securityStation.accessPrevented").mergeStyle(TextFormatting.RED), true);
             }
         }
 
@@ -695,6 +704,19 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
             if (player != null && !isPlayerExempt(player) && event.getWorld() != null && !event.getWorld().isRemote) {
                 event.getExplosion().getAffectedBlockPositions().removeIf(pos -> isProtectedFromPlayer(player, pos, false));
             }
+        }
+
+        private static boolean isPlacementPrevented(BlockEvent.EntityPlaceEvent event, PlayerEntity player, BlockPos pos) {
+            boolean tryingToPlaceSecurityStation = event.getPlacedBlock().getBlock() == ModBlocks.SECURITY_STATION.get();
+            if (isProtectedFromPlayer(player, pos, tryingToPlaceSecurityStation)) {
+                event.setCanceled(true);
+                player.sendStatusMessage(xlate(tryingToPlaceSecurityStation ?
+                        "pneumaticcraft.message.securityStation.stationPlacementPrevented" :
+                        "pneumaticcraft.message.securityStation.accessPrevented"
+                ).mergeStyle(TextFormatting.RED), true);
+                return true;
+            }
+            return false;
         }
 
         private static PlayerEntity getPlayerForExplosion(ExplosionEvent event) {
