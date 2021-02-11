@@ -101,6 +101,12 @@ public class GuiMoveStat extends GuiPneumaticScreenBase {
         if (movedStat.getBounds().contains((int)mouseX, (int)mouseY)) {
             if (mouseButton == 2) {
                 movedStat.setLeftSided(!movedStat.isLeftSided());
+                // prevent stat from going off-screen where players can't interact with it
+                if (movedStat.isLeftSided() && movedStat.getBaseX() < 10) {
+                    movedStat.setBaseX(10);
+                } else if (!movedStat.isLeftSided() && movedStat.getBaseX() > width - 10) {
+                    movedStat.setBaseX(width - 10);
+                }
                 save();
             } else if (mouseButton < 2) {
                 clicked = true;
