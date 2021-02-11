@@ -6,11 +6,11 @@
   "pages": [
     {
       "type": "text",
-      "text": "The Drone will $(thing)right-click/$ with the item in its first inventory slot, for every block position in its connected $(l:programming/area)Area/$ widget. This could be used to hoe the ground, place seeds, apply bonemeal, throw a potion, deploy a drone, rotate blocks with a wrench... the possibilities are endless. You can filter which blocks should be $(thing)right-clicked/$ by adding an $(l:programming/item_filter)Item Filter/$ widget which specifies the block."
+      "text": "The Drone will $(thing)right-click/$ with the item in its first inventory slot, for every block position in its connected $(l:programming/area)Area/$ widget. This could be used to hoe the ground, place seeds, apply bonemeal, throw a potion, deploy a drone, rotate blocks with a wrench... the possibilities are endless."
     },
     {
       "type": "text",
-      "text": "This widget operates in one of two modes, selectable via the widget GUI in the Programmer:$(li)Item Mode - use the $(thing)held item's/$ right-click logic, e.g. use a $(item)Flint & Steel/$ on some block$(li)Block Mode - activate the $(thing)block's/$ right-click logic, e.g. flip a $(item)Lever/$"
+      "text": "This widget operates in one of two modes, selectable via the widget GUI in the Programmer:$(li)Item Mode - use the $(thing)held item's/$ right-click logic, e.g. use a $(item)Flint & Steel/$ on some block$(li)Block Mode - activate the $(thing)block's/$ right-click logic, e.g. flip a $(item)Lever/$$(p)In $(thing)Item Mode/$, any attached filters apply to the $(italic)item/$ being used; in $(thing)Block Mode/$, filters apply to the $(italic)block/$ being activated."
     },
     {
       "type": "text",
