@@ -38,8 +38,11 @@ public class PressureDisenchantingRecipe extends PressureChamberRecipeImpl {
             ItemStack stack = chamberHandler.getStackInSlot(i);
             if (stack.getItem() == Items.BOOK) {
                 bookSlot = i;
-            } else if (stack.getItem() != Items.ENCHANTED_BOOK && EnchantmentHelper.getEnchantments(stack).size() > 0) {
-                itemSlot = i;
+            } else {
+                int minEnchantments = stack.getItem() == Items.ENCHANTED_BOOK ? 2 : 1;
+                if (EnchantmentHelper.getEnchantments(stack).size() >= minEnchantments) {
+                    itemSlot = i;
+                }
             }
             if (bookSlot >= 0 && itemSlot >= 0) return ImmutableList.of(bookSlot, itemSlot);
         }
@@ -59,6 +62,10 @@ public class PressureDisenchantingRecipe extends PressureChamberRecipeImpl {
         Enchantment strippedEnchantment = l.get(new Random().nextInt(l.size()));
         int level = enchantments.get(strippedEnchantment);
         enchantments.remove(strippedEnchantment);
+        // Workaround for setEnchantments on an Enchanted Book merging enchantments instead of setting them
+        if (enchantedStack.getItem() == Items.ENCHANTED_BOOK) {
+            enchantedStack = new ItemStack(Items.ENCHANTED_BOOK);
+        }
         EnchantmentHelper.setEnchantments(enchantments, enchantedStack);
 
         // ...and create an enchanted book with it
