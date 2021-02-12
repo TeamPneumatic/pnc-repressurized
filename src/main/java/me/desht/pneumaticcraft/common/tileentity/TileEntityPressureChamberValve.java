@@ -300,7 +300,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
             if (pressureOK) {
                 // let's craft! (although if the output handler is full, we won't...)
                 isSufficientPressureInChamber = true;
-                if (giveOutput(recipe.getResultsForDisplay(), true) && giveOutput(recipe.craftRecipe(itemsInChamber, applicableRecipe.slots), false)) {
+                if (giveOutput(recipe.craftRecipe(itemsInChamber, applicableRecipe.slots, true), true) && giveOutput(recipe.craftRecipe(itemsInChamber, applicableRecipe.slots, false), false)) {
                     if (getWorld().getGameTime() - lastSoundTick > 5) {
                         getWorld().playSound(null, getPos(), SoundEvents.ENTITY_CHICKEN_EGG, SoundCategory.BLOCKS, 0.7f, 0.8f);
                         lastSoundTick = getWorld().getGameTime();

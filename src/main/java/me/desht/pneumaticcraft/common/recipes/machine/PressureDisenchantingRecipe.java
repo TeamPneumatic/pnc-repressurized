@@ -50,9 +50,9 @@ public class PressureDisenchantingRecipe extends PressureChamberRecipeImpl {
     }
 
     @Override
-    public NonNullList<ItemStack> craftRecipe(@Nonnull IItemHandler chamberHandler, List<Integer> ingredientSlots) {
-        ItemStack book = chamberHandler.extractItem(ingredientSlots.get(0), 1, false);
-        ItemStack enchantedStack = chamberHandler.extractItem(ingredientSlots.get(1), 1, false);
+    public NonNullList<ItemStack> craftRecipe(@Nonnull IItemHandler chamberHandler, List<Integer> ingredientSlots, boolean simulate) {
+        ItemStack book = chamberHandler.extractItem(ingredientSlots.get(0), 1, simulate);
+        ItemStack enchantedStack = chamberHandler.extractItem(ingredientSlots.get(1), 1, simulate);
 
         if (book.isEmpty() || enchantedStack.isEmpty()) return NonNullList.create();
 
@@ -79,16 +79,21 @@ public class PressureDisenchantingRecipe extends PressureChamberRecipeImpl {
     public List<Ingredient> getInputsForDisplay() {
         ItemStack pick = new ItemStack(Items.DIAMOND_PICKAXE);
         pick.addEnchantment(Enchantments.FORTUNE, 1);
+        ItemStack enchantedBook = new ItemStack(Items.ENCHANTED_BOOK);
+        enchantedBook.addEnchantment(Enchantments.FORTUNE, 1);
+        enchantedBook.addEnchantment(Enchantments.EFFICIENCY, 1);
 
-        return ImmutableList.of(Ingredient.fromStacks(pick), Ingredient.fromItems(Items.BOOK));
+        return ImmutableList.of(Ingredient.fromStacks(pick, enchantedBook), Ingredient.fromItems(Items.BOOK));
     }
 
     @Override
-    public NonNullList<ItemStack> getResultsForDisplay() {
+    public List<? extends List<ItemStack>> getResultsForDisplay() {
         ItemStack pick = new ItemStack(Items.DIAMOND_PICKAXE);
-        ItemStack book = new ItemStack(Items.ENCHANTED_BOOK);
-        book.addEnchantment(Enchantments.FORTUNE, 1);
-        return NonNullList.from(ItemStack.EMPTY, pick, book);
+        ItemStack enchantedBook = new ItemStack(Items.ENCHANTED_BOOK);
+        enchantedBook.addEnchantment(Enchantments.EFFICIENCY, 1);
+        ItemStack resultBook = new ItemStack(Items.ENCHANTED_BOOK);
+        resultBook.addEnchantment(Enchantments.FORTUNE, 1);
+        return ImmutableList.of(ImmutableList.of(pick, enchantedBook), ImmutableList.of(resultBook));
     }
 
     @Override

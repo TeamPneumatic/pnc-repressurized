@@ -13,15 +13,14 @@ import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.gui.ITickTimer;
 import mezz.jei.api.gui.drawable.IDrawable;
 import mezz.jei.api.ingredients.IIngredients;
+import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -61,25 +60,64 @@ public class JEIPressureChamberRecipeCategory implements IRecipeCategory<Pressur
         return icon;
     }
 
+    /**
+     * Looks for the slot that has more than one stack and has a match for the given item ignoring NBT.
+     *
+     * @return -1 iff no match was found in a slot with more than one stack or the index of the stack otherwise.
+     */
+    protected static int getMatchingCycleIndex(List<List<ItemStack>> slots, ItemStack value) {
+        for (List<ItemStack> stacks : slots) {
+            if (stacks.size() > 1) {
+                for (int i = 0; i < stacks.size(); i++) {
+                    if (value.isItemEqual(stacks.get(i))) {
+                        return i;
+                    }
+                }
+            }
+        }
+        return -1;
+    }
+
     @Override
     public void setIngredients(PressureChamberRecipe recipe, IIngredients ingredients) {
         ingredients.setInputIngredients(recipe.getInputsForDisplay());
-        ingredients.setOutputs(VanillaTypes.ITEM, recipe.getResultsForDisplay());
+        // Needs a List<List<T>> instead of List<? extends List<T>>
+        List<List<ItemStack>> results = recipe.getResultsForDisplay().stream()
+                .map(list -> (List<ItemStack>) list)
+                .collect(ImmutableList.toImmutableList());
+        ingredients.setOutputLists(VanillaTypes.ITEM, results);
     }
 
     @Override
     public void setRecipe(IRecipeLayout recipeLayout, PressureChamberRecipe recipe, IIngredients ingredients) {
-        List<Ingredient> inputs = recipe.getInputsForDisplay();
+        List<List<ItemStack>> inputs = ingredients.getInputs(VanillaTypes.ITEM);
+        List<List<ItemStack>> outputs = ingredients.getOutputs(VanillaTypes.ITEM);
+        int cycleIndex = -1;
+        IFocus<ItemStack> focus = recipeLayout.getFocus(VanillaTypes.ITEM);
+        if (focus != null) {
+            if (focus.getMode() == IFocus.Mode.INPUT) {
+                cycleIndex = getMatchingCycleIndex(inputs, focus.getValue());
+            } else if (focus.getMode() == IFocus.Mode.OUTPUT) {
+                cycleIndex = getMatchingCycleIndex(outputs, focus.getValue());
+            }
+        }
         for (int i = 0; i < inputs.size(); i++) {
             int posX = 18 + i % 3 * 17;
             int posY = 78 - i / 3 * 17;
             recipeLayout.getItemStacks().init(i, true, posX, posY);
-            recipeLayout.getItemStacks().set(i, Arrays.asList(inputs.get(i).getMatchingStacks()));
+            List<ItemStack> stacks = inputs.get(i);
+            if (cycleIndex >= 0 && cycleIndex < stacks.size()) {
+                stacks = ImmutableList.of(stacks.get(cycleIndex));
+            }
+            recipeLayout.getItemStacks().set(i, stacks);
         }
-        for (int i = 0; i < recipe.getResultsForDisplay().size(); i++) {
-            ItemStack stack = recipe.getResultsForDisplay().get(i);
+        for (int i = 0; i < outputs.size(); i++) {
+            List<ItemStack> stacks = outputs.get(i);
+            if (cycleIndex >= 0 && cycleIndex < stacks.size()) {
+                stacks = ImmutableList.of(stacks.get(cycleIndex));
+            }
             recipeLayout.getItemStacks().init(inputs.size() + i, false, 100 + i % 3 * 18, 58 + i / 3 * 18);
-            recipeLayout.getItemStacks().set(inputs.size() + i, stack);
+            recipeLayout.getItemStacks().set(inputs.size() + i, stacks);
         }
         recipeLayout.getItemStacks().addTooltipCallback((slotIndex, input, ingredient, tooltip) -> {
             String tooltipKey = recipe.getTooltipKey(input, slotIndex);

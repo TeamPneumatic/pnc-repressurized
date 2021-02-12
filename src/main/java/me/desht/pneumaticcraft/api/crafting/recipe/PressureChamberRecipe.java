@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.api.crafting.recipe;
 
+import com.google.common.collect.ImmutableList;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.NonNullList;
@@ -27,7 +28,7 @@ public abstract class PressureChamberRecipe extends PneumaticCraftRecipe {
      * When called (by the pressure chamber TE when it detects a change in the chamber contents), try to find the
      * ingredients for this recipe in the given item handler, which represents all of the items currently in the
      * pressure chamber. You must return a collection of slot indices into the item handler which contain the matching
-     * ingredients; those indics will be passed promptly to {@link #craftRecipe(IItemHandler, List)} by the pressure
+     * ingredients; those indices will be passed promptly to {@link #craftRecipe(IItemHandler, List, boolean)} by the pressure
      * chamber. <strong>Do not cache this list across ticks</strong>, since the chamber contents are quite likely to
      * change in the meantime.
      *
@@ -43,14 +44,26 @@ public abstract class PressureChamberRecipe extends PneumaticCraftRecipe {
     public abstract List<Ingredient> getInputsForDisplay();
 
     /**
-     * Get the output of this recipe, without crafting it.  This is intended for recipe display purposes by
+     * Implement if no output slots display more than one stack.
+     *
+     * @see PressureChamberRecipe#getResultsForDisplay()
+     */
+    protected List<ItemStack> getSingleResultsForDisplay() {
+        return ImmutableList.of();
+    }
+
+    /**
+     * Get the output of this recipe, without crafting it. This is intended for recipe display purposes by
      * JEI, Patchouli, or any other recipe display mod.
      * <p>
-     * This is also used for testing insertability into the Pressure Chamber's output, so the number of item stacks
-     * returned must be exactly the same as the number of item stacks in the actual crafted output, even if the results
-     * aren't exactly the same as an actual craft of the recipe.
+     * If overriding and no output slots display more than one stack then can override
+     * {@link PressureChamberRecipe#getSingleResultsForDisplay()} instead.
      */
-    public abstract NonNullList<ItemStack> getResultsForDisplay();
+    public List<? extends List<ItemStack>> getResultsForDisplay() {
+        return getSingleResultsForDisplay().stream()
+                .map(ImmutableList::of)
+                .collect(ImmutableList.toImmutableList());
+    }
 
     /**
      * Check if the given item is a valid input item for this recipe.  This should also be true even if the number of
@@ -70,12 +83,13 @@ public abstract class PressureChamberRecipe extends PneumaticCraftRecipe {
      * The implementation must also return the list of crafted items, for the Pressure Chamber to insert into its
      * output item handler.
      *
-     * @param chamberHandler items in the pressure chamber; should be modified to remove recipe input items.
+     * @param chamberHandler  items in the pressure chamber; should be modified to remove recipe input items.
      * @param ingredientSlots slots in the chamber handler where the ingredients can be found, as returned from {@link #findIngredients(IItemHandler)}
+     * @param simulate        pass on to uses of {@code chamberHandler}
      * @return the resulting items; these do not have to be copies, since the Pressure Chamber itself will insert copies of these items
      */
     @Nonnull
-    public abstract NonNullList<ItemStack> craftRecipe(@Nonnull IItemHandler chamberHandler, List<Integer> ingredientSlots);
+    public abstract NonNullList<ItemStack> craftRecipe(@Nonnull IItemHandler chamberHandler, List<Integer> ingredientSlots, boolean simulate);
 
     /**
      * Return a translation key for a supplementary tooltip to be displayed on the ingredient or resulting item.  For
