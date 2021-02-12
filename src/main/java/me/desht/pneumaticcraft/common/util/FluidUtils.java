@@ -242,11 +242,10 @@ public class FluidUtils {
         boolean isNotSolid = !material.isSolid();
 
         // if not force-placing then block must be:
-        // - a waterloggable block, or
+        // - a waterloggable block (which is NOT currently waterlogged), or
         // - a replaceable block, NOT including fluid source blocks
-        if (!force && !(blockstate.getBlock() instanceof ILiquidContainer) && (isSourceFluidBlock(world, pos) || !isReplaceable)) {
+        if (!force && (isSourceFluidBlock(world, pos) || !isReplaceable && !(blockstate.getBlock() instanceof ILiquidContainer)))
             return false;
-        }
 
         boolean didWork = fluidCap.map(handler -> {
             FluidStack toPlace = handler.drain(BUCKET_VOLUME, IFluidHandler.FluidAction.SIMULATE);

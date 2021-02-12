@@ -18,6 +18,8 @@ import static net.minecraftforge.fluids.FluidAttributes.BUCKET_VOLUME;
 
 public class DroneAILiquidExport<W extends ProgWidgetInventoryBase & ILiquidFiltered & ILiquidExport> extends DroneAIImExBase<W> {
 
+    private enum FillStatus { OK, NO_HANDLER, NO_SPACE }
+
     public DroneAILiquidExport(IDroneBase drone, W widget) {
         super(drone, widget);
     }
@@ -42,15 +44,25 @@ public class DroneAILiquidExport<W extends ProgWidgetInventoryBase & ILiquidFilt
             if (te != null) {
                 FluidStack exportedFluid = drone.getFluidTank().drain(Integer.MAX_VALUE, FluidAction.SIMULATE);
                 if (!exportedFluid.isEmpty() && progWidget.isFluidValid(exportedFluid.getFluid())) {
+                    FillStatus status = FillStatus.NO_HANDLER;
                     for (Direction side : Direction.VALUES) {
-                        if (progWidget.isSideSelected(side) && trySide(te, side, exportedFluid, simulate)) return true;
+                        if (progWidget.isSideSelected(side)) {
+                            status = trySide(te, side, exportedFluid, simulate);
+                            if (status == FillStatus.OK) return true;
+                        }
                     }
-                    drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.liquidExport.debug.filledToMax", pos);
+                    if (status == FillStatus.NO_SPACE) {
+                        drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.liquidExport.debug.filledToMax", pos);
+                        return false;
+                    }
                 } else {
                     drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.liquidExport.debug.noValidFluid");
+                    return false;
                 }
-            } else if (progWidget.isPlacingFluidBlocks()
-                    && (!progWidget.useCount() || getRemainingCount() >= BUCKET_VOLUME)) {
+            }
+            // drop through to here if there was no TE or a TE had no valid fluid handler
+
+            if (progWidget.isPlacingFluidBlocks() && (!progWidget.useCount() || getRemainingCount() >= BUCKET_VOLUME)) {
                 LazyOptional<IFluidHandler> cap = drone.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY);
                 if (FluidUtils.tryPourOutFluid(cap, drone.world(), pos, false, false, simulate ? FluidAction.SIMULATE : FluidAction.EXECUTE)) {
                     if (!simulate) {
@@ -63,7 +75,7 @@ public class DroneAILiquidExport<W extends ProgWidgetInventoryBase & ILiquidFilt
         }
     }
 
-    private boolean trySide(TileEntity te, Direction side, FluidStack fluidToExport, boolean simulate) {
+    private FillStatus trySide(TileEntity te, Direction side, FluidStack fluidToExport, boolean simulate) {
         return te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, side).map(fluidHandler -> {
             int filledAmount = fluidHandler.fill(fluidToExport, FluidAction.SIMULATE);
             if (filledAmount > 0) {
@@ -73,9 +85,9 @@ public class DroneAILiquidExport<W extends ProgWidgetInventoryBase & ILiquidFilt
                 if (!simulate) {
                     decreaseCount(fluidHandler.fill(drone.getFluidTank().drain(filledAmount, FluidAction.EXECUTE), FluidAction.EXECUTE));
                 }
-                return true;
+                return FillStatus.OK;
             }
-            return false;
-        }).orElse(false);
+            return FillStatus.NO_SPACE;
+        }).orElse(FillStatus.NO_HANDLER);
     }
 }
