@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.recipes.machine;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import me.desht.pneumaticcraft.common.core.ModRecipes;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -87,13 +88,21 @@ public class PressureDisenchantingRecipe extends PressureChamberRecipeImpl {
     }
 
     @Override
-    public List<? extends List<ItemStack>> getResultsForDisplay() {
+    public List<List<ItemStack>> getResultsForDisplay() {
         ItemStack pick = new ItemStack(Items.DIAMOND_PICKAXE);
         ItemStack enchantedBook = new ItemStack(Items.ENCHANTED_BOOK);
         enchantedBook.addEnchantment(Enchantments.EFFICIENCY, 1);
         ItemStack resultBook = new ItemStack(Items.ENCHANTED_BOOK);
         resultBook.addEnchantment(Enchantments.FORTUNE, 1);
         return ImmutableList.of(ImmutableList.of(pick, enchantedBook), ImmutableList.of(resultBook));
+    }
+
+    @Override
+    public List<Set<RecipeSlot>> getSyncGroupsForDisplay() {
+        return ImmutableList.of(ImmutableSet.of(
+                new RecipeSlot(true, 0),
+                new RecipeSlot(false, 0)
+        ));
     }
 
     @Override
