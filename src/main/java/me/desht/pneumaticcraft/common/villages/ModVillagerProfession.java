@@ -10,7 +10,7 @@ import net.minecraft.village.PointOfInterestType;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Supplier;
 
 /**
@@ -28,7 +28,7 @@ public class ModVillagerProfession extends VillagerProfession {
     @Nullable
     @Override
     public SoundEvent getSound() {
-        int n = new Random().nextInt(soundEventSuppliers.size());
+        int n = ThreadLocalRandom.current().nextInt(soundEventSuppliers.size());
         return soundEventSuppliers.get(n).get();
     }
 }

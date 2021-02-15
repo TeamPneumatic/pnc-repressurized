@@ -32,6 +32,7 @@ import net.minecraftforge.items.wrapper.PlayerMainInvWrapper;
 import net.minecraftforge.items.wrapper.PlayerOffhandInvWrapper;
 
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -224,7 +225,7 @@ public enum AmadronOfferManager {
             addOffer(allOffers, offer);
         });
 
-        Random rand = new Random();
+        Random rand = ThreadLocalRandom.current();
 
         // random periodic trades
         int s1 = allOffers.size();
@@ -317,7 +318,7 @@ public enum AmadronOfferManager {
         // this only needs to be done once, on first load
         if (villagerTrades.isEmpty()) {
             Set<VillagerProfession> validSet = new HashSet<>();
-            Random rand = new Random();
+            Random rand = ThreadLocalRandom.current();
             VillagerTrades.VILLAGER_DEFAULT_TRADES.forEach((profession, tradeMap) -> tradeMap.forEach((level, trades) -> {
                 IntStream.range(0, trades.length).forEach(i -> {
                     try {

@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class ExplosionCraftingRecipeImpl extends ExplosionCraftingRecipe {
     private static final NonNullList<ItemStack> EMPTY_RESULT = NonNullList.create();
@@ -79,7 +80,7 @@ public class ExplosionCraftingRecipeImpl extends ExplosionCraftingRecipe {
      * @return a list of output items
      */
     private static NonNullList<ItemStack> createOutput(ExplosionCraftingRecipe recipe, ItemStack stack) {
-        Random rand = new Random();
+        Random rand = ThreadLocalRandom.current();
         int lossRate = recipe.getLossRate();
 
         NonNullList<ItemStack> res = NonNullList.create();

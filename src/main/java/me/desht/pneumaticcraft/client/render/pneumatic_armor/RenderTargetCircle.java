@@ -13,6 +13,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3f;
 
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class RenderTargetCircle {
     private static final float[] DRONE = { 1f, 1f, 0f };
@@ -29,7 +30,7 @@ public class RenderTargetCircle {
     private final float[] cols = new float[4];
 
     RenderTargetCircle(Entity entity) {
-        rand = new Random();
+        rand = ThreadLocalRandom.current();
         System.arraycopy(getCircleColour(entity), 0, cols, 0, 3);
         cols[3] = 0.5f; // alpha
     }

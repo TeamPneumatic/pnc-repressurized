@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.lib.Log;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,7 +18,7 @@ public class DramaGenerator {
     private static final Map<String,Shuffler> shufflers = new HashMap<>();
 
     public static String generateDrama() {
-        Random r = new Random();
+        Random r = ThreadLocalRandom.current();
 
         shufflers.clear();
 

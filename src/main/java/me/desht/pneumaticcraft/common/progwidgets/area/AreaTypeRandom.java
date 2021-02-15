@@ -7,6 +7,7 @@ import net.minecraft.util.math.BlockPos;
 
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 
 public class AreaTypeRandom extends AreaType {
@@ -31,7 +32,7 @@ public class AreaTypeRandom extends AreaType {
             // If we pick >= than there are blocks, just pick all blocks
             BlockPos.getAllInBox(minX, minY, minZ, maxX, maxY, maxZ).forEach(pos -> areaAdder.accept(pos.toImmutable()));
         } else {
-            Random rand = new Random();
+            Random rand = ThreadLocalRandom.current();
             for (int i = 0; i < pickedAmount; i++) {
                 int x = minX + rand.nextInt(maxX - minX);
                 int y = minY + rand.nextInt(maxY - minY);

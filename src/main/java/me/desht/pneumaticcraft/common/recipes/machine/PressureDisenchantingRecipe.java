@@ -17,6 +17,7 @@ import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
@@ -56,7 +57,7 @@ public class PressureDisenchantingRecipe extends PressureChamberRecipeImpl {
         // take a random enchantment off the enchanted item...
         Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(enchantedStack);
         List<Enchantment> l = new ArrayList<>(enchantments.keySet());
-        Enchantment strippedEnchantment = l.get(new Random().nextInt(l.size()));
+        Enchantment strippedEnchantment = l.get(ThreadLocalRandom.current().nextInt(l.size()));
         int level = enchantments.get(strippedEnchantment);
         enchantments.remove(strippedEnchantment);
         EnchantmentHelper.setEnchantments(enchantments, enchantedStack);

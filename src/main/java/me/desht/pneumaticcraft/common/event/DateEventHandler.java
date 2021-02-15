@@ -1,10 +1,8 @@
 package me.desht.pneumaticcraft.common.event;
 
 import java.util.Calendar;
-import java.util.Random;
 
 public class DateEventHandler {
-    private static final Random rand = new Random();
     private static boolean initialized;
     private static boolean isIronManEvent;
 

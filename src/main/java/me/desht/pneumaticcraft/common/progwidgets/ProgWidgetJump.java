@@ -12,7 +12,7 @@ import net.minecraft.util.text.ITextComponent;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -78,7 +78,7 @@ public class ProgWidgetJump extends ProgWidget implements IJump {
             drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.jump.nowhereToJump");
             return null;
         } else {
-            return possibleJumpLocations.get(new Random().nextInt(possibleJumpLocations.size()));
+            return possibleJumpLocations.get(ThreadLocalRandom.current().nextInt(possibleJumpLocations.size()));
         }
 
     }

@@ -24,6 +24,7 @@ import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nonnull;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public abstract class Minigun {
     public static final float MAX_GUN_SPEED = 0.4f;
@@ -35,7 +36,7 @@ public abstract class Minigun {
     private float minigunSpeed;
     private int minigunTriggerTimeOut;
     private int minigunSoundCounter = -1;
-    private final Random rand = new Random();
+    private final Random rand = ThreadLocalRandom.current();
     private float minigunRotation, oldMinigunRotation;
     public float minigunYaw, oldMinigunYaw;
     public float minigunPitch, oldMinigunPitch;

@@ -28,6 +28,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.BiConsumer;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -186,7 +187,7 @@ public class ItemSpawnerCore extends Item implements ColorHandlers.ITintableItem
             List<WeightedEntity> weightedEntities = new ArrayList<>();
             entityCounts.forEach((type, amount) -> weightedEntities.add(new WeightedEntity(type, amount)));
             if (includeUnused) weightedEntities.add(new WeightedEntity(null, unused));
-            return WeightedRandom.getRandomItem(new Random(), weightedEntities).type;
+            return WeightedRandom.getRandomItem(ThreadLocalRandom.current(), weightedEntities).type;
         }
 
         private static class WeightedEntity extends WeightedRandom.Item {

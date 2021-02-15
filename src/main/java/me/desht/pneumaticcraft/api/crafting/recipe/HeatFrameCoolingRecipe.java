@@ -6,7 +6,7 @@ import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public abstract class HeatFrameCoolingRecipe extends PneumaticCraftRecipe {
     protected HeatFrameCoolingRecipe(ResourceLocation id) {
@@ -75,7 +75,7 @@ public abstract class HeatFrameCoolingRecipe extends PneumaticCraftRecipe {
         if (delta < 0) return 1;
         float mul = 1 + Math.min(getBonusLimit(), getBonusMultiplier() * delta);
         int result = (int) mul;
-        if (new Random().nextFloat() < mul - result) result++;
+        if (ThreadLocalRandom.current().nextFloat() < mul - result) result++;
         return result;
     }
 }
