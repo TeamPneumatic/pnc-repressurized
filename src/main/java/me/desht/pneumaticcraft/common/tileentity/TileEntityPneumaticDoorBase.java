@@ -8,6 +8,7 @@ import me.desht.pneumaticcraft.common.inventory.ContainerPneumaticDoorBase;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.tileentity.RedstoneController.ReceivingRedstoneMode;
 import me.desht.pneumaticcraft.common.tileentity.RedstoneController.RedstoneMode;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
 import net.minecraft.block.BlockState;
@@ -69,6 +70,8 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
     public final RedstoneController<TileEntityPneumaticDoorBase> rsController = new RedstoneController<>(this, REDSTONE_MODES);
     @DescSynced
     private float speedMultiplier;
+    @GuiSynced
+    private boolean passSignal;
 
     public TileEntityPneumaticDoorBase() {
         super(ModTileEntities.PNEUMATIC_DOOR_BASE.get(), PneumaticValues.DANGER_PRESSURE_PNEUMATIC_DOOR, PneumaticValues.MAX_PRESSURE_PNEUMATIC_DOOR, PneumaticValues.VOLUME_PNEUMATIC_DOOR, 4);
@@ -112,7 +115,7 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
             }
             if (progress < targetProgress) progress = targetProgress;
         }
-        if (!getWorld().isRemote) {
+        if (!getWorld().isRemote && !PneumaticCraftUtils.areFloatsEqual(oldProgress, progress)) {
             addAir((int) (-Math.abs(oldProgress - progress) * PneumaticValues.USAGE_PNEUMATIC_DOOR * (getSpeedUsageMultiplierFromUpgrades() / speedMultiplier)));
         }
         door = getDoor();
@@ -178,16 +181,15 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
     }
 
     private TileEntityPneumaticDoor getDoor() {
-        TileEntity te = getWorld().getTileEntity(getPos().offset(getRotation()).add(0, -1, 0));
-        if (te instanceof TileEntityPneumaticDoor) {
-            TileEntityPneumaticDoor teDoor = (TileEntityPneumaticDoor) te;
+        return PneumaticCraftUtils.getTileEntityAt(getWorld(), getPos().offset(getRotation()).down(), TileEntityPneumaticDoor.class).map(teDoor -> {
             if (getRotation().rotateY() == teDoor.getRotation() && !teDoor.rightGoing) {
-                return (TileEntityPneumaticDoor) te;
+                return teDoor;
             } else if (getRotation().rotateYCCW() == teDoor.getRotation() && teDoor.rightGoing) {
-                return (TileEntityPneumaticDoor) te;
+                return teDoor;
+            } else {
+                return null;
             }
-        }
-        return null;
+        }).orElse(null);
     }
 
     @Override
@@ -197,6 +199,7 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
         progress = tag.getFloat("extension");
         opening = tag.getBoolean("opening");
         rightGoing = tag.getBoolean("rightGoing");
+        passSignal = tag.getBoolean("passSignal");
     }
 
     @Override
@@ -205,6 +208,7 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
         tag.putFloat("extension", progress);
         tag.putBoolean("opening", opening);
         tag.putBoolean("rightGoing", rightGoing);
+        tag.putBoolean("passSignal", passSignal);
         return tag;
     }
 
@@ -224,7 +228,13 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
 
     @Override
     public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayerEntity player) {
-        rsController.parseRedstoneMode(tag);
+        if (rsController.parseRedstoneMode(tag)) return;
+
+        if (tag.equals("pass_signal")) {
+            passSignal = !passSignal;
+            updateNeighbours();
+            markDirty();
+        }
     }
 
     @Override
@@ -262,5 +272,9 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
         return new ContainerPneumaticDoorBase(i, playerInventory, getPos());
+    }
+
+    public boolean shouldPassSignalToDoor() {
+        return passSignal;
     }
 }

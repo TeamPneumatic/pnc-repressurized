@@ -34,17 +34,18 @@ public class BlockPneumaticDoorBase extends BlockPneumaticCraftCamo {
     @Override
     public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity entity, ItemStack stack) {
         super.onBlockPlacedBy(world, pos, state, entity, stack);
-        TileEntityPneumaticDoorBase doorBase = (TileEntityPneumaticDoorBase) world.getTileEntity(pos);
-        updateDoorSide(doorBase);
+        PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityPneumaticDoorBase.class).ifPresent(this::updateDoorSide);
     }
 
     @Override
     public void neighborChanged(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
         PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityPneumaticDoorBase.class).ifPresent(teDoorBase -> {
             updateDoorSide(teDoorBase);
-            Direction dir = teDoorBase.getRotation();
-            if (world.getBlockState(pos.offset(dir)).getBlock() == ModBlocks.PNEUMATIC_DOOR.get()) {
-                ModBlocks.PNEUMATIC_DOOR.get().neighborChanged(world.getBlockState(pos.offset(dir)), world, pos, block, pos.offset(dir), isMoving);
+            teDoorBase.onNeighborBlockUpdate();
+            BlockPos doorPos = pos.offset(teDoorBase.getRotation());
+            BlockState doorState = world.getBlockState(doorPos);
+            if (doorState.getBlock() instanceof BlockPneumaticDoor) {
+                doorState.neighborChanged(world, doorPos, doorState.getBlock(), pos, false);
             }
         });
     }
@@ -79,5 +80,12 @@ public class BlockPneumaticDoorBase extends BlockPneumaticCraftCamo {
     @Override
     public VoxelShape getUncamouflagedShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext ctx) {
         return VoxelShapes.fullCube();
+    }
+
+    @Override
+    public int getWeakPower(BlockState blockState, IBlockReader blockAccess, BlockPos pos, Direction side) {
+        return PneumaticCraftUtils.getTileEntityAt(blockAccess, pos, TileEntityPneumaticDoorBase.class)
+                .map(te -> te.shouldPassSignalToDoor() && side == te.getRotation().getOpposite() ? te.getCurrentRedstonePower() : 0)
+                .orElse(0);
     }
 }

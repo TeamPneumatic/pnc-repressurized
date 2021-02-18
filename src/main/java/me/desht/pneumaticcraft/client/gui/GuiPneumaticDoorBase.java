@@ -1,15 +1,46 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
+import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.ContainerPneumaticDoorBase;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticDoorBase;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
 public class GuiPneumaticDoorBase extends GuiPneumaticContainerBase<ContainerPneumaticDoorBase,TileEntityPneumaticDoorBase> {
+    WidgetAnimatedStat passRedstoneTab;
+
     public GuiPneumaticDoorBase(ContainerPneumaticDoorBase container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
+    }
+
+    @Override
+    public void init() {
+        super.init();
+
+        passRedstoneTab = addAnimatedStat(xlate("pneumaticcraft.gui.tab.pneumaticDoorBaseRedstone.title"),
+                new ItemStack(ModBlocks.PNEUMATIC_DOOR.get()), 0xFFFFAA00, false);
+        WidgetCheckBox cb;
+        passRedstoneTab.addSubWidget(cb = new WidgetCheckBox(5, 20, 0x404040, xlate("pneumaticcraft.gui.tab.pneumaticDoorBaseRedstone.text"))
+                .setChecked(te.shouldPassSignalToDoor())
+                .setTooltip(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.pneumaticDoorBaseRedstone.tooltip"))
+                .withTag("pass_signal"));
+        passRedstoneTab.setMinimumExpandedDimensions(cb.getWidth(), 40);
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+
+        int mode = te.getRedstoneController().getCurrentMode();
+        passRedstoneTab.visible = mode == TileEntityPneumaticDoorBase.RS_MODE_WOODEN_DOOR || mode == TileEntityPneumaticDoorBase.RS_MODE_IRON_DOOR;
     }
 
     @Override

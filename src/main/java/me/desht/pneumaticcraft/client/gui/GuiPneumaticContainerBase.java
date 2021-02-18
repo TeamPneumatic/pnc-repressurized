@@ -171,11 +171,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
 
     private WidgetButtonExtended createRedstoneModeButton(int x, int idx, RedstoneController.RedstoneMode<?> mode) {
         WidgetButtonExtended b = new WidgetButtonExtended(x, 24, 20, 20, StringTextComponent.EMPTY).withTag("redstone:" + idx);
-        if (mode.getTexture() != null) {
-            b.setRenderedIcon(mode.getTexture());
-        } else if (!mode.getStackIcon().isEmpty()) {
-            b.setRenderStacks(mode.getStackIcon());
-        }
+        mode.getTexture().ifLeft(b::setRenderStacks).ifRight(b::setRenderedIcon);
         b.setTooltipKey(mode.getTranslationKey());
         return b;
     }

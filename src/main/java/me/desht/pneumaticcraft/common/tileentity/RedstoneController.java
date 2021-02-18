@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.datafixers.util.Either;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.NBTKeys;
@@ -130,36 +131,30 @@ public class RedstoneController<T extends TileEntity & IRedstoneControl<T>> {
 
     public static abstract class RedstoneMode<T extends TileEntity & IRedstoneControl<T>> {
         private final String id;
-        private final ItemStack stackIcon;
-        private final ResourceLocation texture;
+        private final Either<ItemStack,ResourceLocation> texture;
         private final Predicate<T> runPredicate;
         private final Predicate<T> emissionPredicate;
 
-        public RedstoneMode(String id, ResourceLocation texture, Predicate<T> runPredicate, Predicate<T> emissionPredicate) {
-            this.id = id;
-            this.texture = texture;
-            this.runPredicate = runPredicate;
-            this.emissionPredicate = emissionPredicate;
-            this.stackIcon = ItemStack.EMPTY;
+        public RedstoneMode(String id, ItemStack stackIcon, Predicate<T> runPredicate, Predicate<T> emissionPredicate) {
+            this(id, Either.left(stackIcon), runPredicate, emissionPredicate);
         }
 
-        public RedstoneMode(String id, ItemStack stackIcon, Predicate<T> runPredicate, Predicate<T> emissionPredicate) {
+        public RedstoneMode(String id, ResourceLocation texture, Predicate<T> runPredicate, Predicate<T> emissionPredicate) {
+            this(id, Either.right(texture), runPredicate, emissionPredicate);
+        }
+
+        private RedstoneMode(String id, Either<ItemStack,ResourceLocation> texture, Predicate<T> runPredicate, Predicate<T> emissionPredicate) {
             this.id = id;
-            this.stackIcon = stackIcon;
             this.runPredicate = runPredicate;
             this.emissionPredicate = emissionPredicate;
-            this.texture = null;
+            this.texture = texture;
         }
 
         public String getId() {
             return id;
         }
 
-        public ItemStack getStackIcon() {
-            return stackIcon;
-        }
-
-        public ResourceLocation getTexture() {
+        public Either<ItemStack,ResourceLocation> getTexture() {
             return texture;
         }
 
