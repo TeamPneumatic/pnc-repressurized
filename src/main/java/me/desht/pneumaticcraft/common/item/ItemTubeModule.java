@@ -45,7 +45,7 @@ public class ItemTubeModule extends Item {
 
     @Override
     public ActionResultType onItemUse(ItemUseContext context) {
-        if (context.getPlayer().isCrouching()) {
+        if (context.getPlayer() != null && context.getPlayer().isCrouching()) {
             // sneak-click module to attach it to opposite side of tube, if possible
             BlockState state = context.getWorld().getBlockState(context.getPos());
             if (state.getBlock() instanceof BlockPressureTube) {
