@@ -4,6 +4,7 @@ import net.minecraft.util.text.ITextComponent;
 
 import java.util.List;
 
+@FunctionalInterface
 public interface ITooltipProvider {
     void addTooltip(double mouseX, double mouseY, List<ITextComponent> curTip, boolean shift);
 }

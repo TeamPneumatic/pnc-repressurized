@@ -39,7 +39,13 @@ public class MovingSoundJetBoots extends TickableSound {
                         || (!handler.isJetBootsActive() && (player.isOnGround() || player.isElytraFlying())))) {
             endTimer = END_TICKS;
         }
-        if (endTimer <= END_TICKS) endTimer--;
+        if (endTimer <= END_TICKS) {
+            if (player.isOnGround() || !handler.isJetBootsActive()) {
+                endTimer--;
+            } else {
+                endTimer = Integer.MAX_VALUE;
+            }
+        }
 
         x = (float) player.getPosX();
         y = (float) player.getPosY();

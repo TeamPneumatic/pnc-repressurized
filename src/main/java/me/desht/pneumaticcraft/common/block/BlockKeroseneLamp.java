@@ -5,7 +5,6 @@ import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ICustomTooltipName;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityKeroseneLamp;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.BlockItem;
@@ -61,8 +60,7 @@ public class BlockKeroseneLamp extends BlockPneumaticCraft {
         Direction connectedDir = Direction.DOWN;
         for (Direction d : Direction.VALUES) {
             BlockPos neighborPos = pos.offset(d);
-            BlockState neighborState = world.getBlockState(neighborPos);
-            if (PneumaticCraftUtils.blockHasSolidSide(neighborState, world, neighborPos, d.getOpposite())) {
+            if (Block.hasEnoughSolidSide(world, neighborPos, d.getOpposite())) {
                 connectedDir = d;
                 break;
             }

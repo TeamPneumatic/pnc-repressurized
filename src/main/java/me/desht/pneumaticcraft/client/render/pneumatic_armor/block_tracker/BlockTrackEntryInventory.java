@@ -76,7 +76,7 @@ public class BlockTrackEntryInventory implements IBlockTrackEntry {
                 } else {
                     infoList.add(new StringTextComponent("Contents:"));
                     List<ITextComponent> l = new ArrayList<>();
-                    PneumaticCraftUtils.sortCombineItemStacksAndToString(l, inventoryStacks);
+                    PneumaticCraftUtils.summariseItemStacks(l, inventoryStacks);
                     infoList.addAll(l);
                 }
             });

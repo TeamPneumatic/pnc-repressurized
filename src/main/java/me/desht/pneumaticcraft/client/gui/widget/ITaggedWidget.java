@@ -5,6 +5,7 @@ package me.desht.pneumaticcraft.client.gui.widget;
  * The open container must implement {@link me.desht.pneumaticcraft.common.tileentity.IGUIButtonSensitive} to
  * process the received packet.
  */
+@FunctionalInterface
 public interface ITaggedWidget {
     /**
      * Get the data to send to the server.  This is just some arbitrary string data which will be processed by the

@@ -116,12 +116,10 @@ public class BlockPneumaticDoor extends BlockPneumaticCraft {
 
     @Override
     public boolean isValidPosition(BlockState state, IWorldReader world, BlockPos pos) {
-        BlockPos down = pos.down();
-        BlockState belowState = world.getBlockState(down);
         if (state.get(TOP_DOOR)) {
-            return belowState.getBlock() == this;
+            return world.getBlockState(pos.down()).getBlock() == this;
         } else {
-            return PneumaticCraftUtils.blockHasSolidSide(belowState, world, down, Direction.UP);
+            return world.isAirBlock(pos.up());// && Block.hasEnoughSolidSide(world, pos.down(), Direction.UP);
         }
     }
 
@@ -130,9 +128,7 @@ public class BlockPneumaticDoor extends BlockPneumaticCraft {
         super.onBlockPlacedBy(world, pos, state, par5EntityLiving, par6ItemStack);
 
         world.setBlockState(pos.offset(Direction.UP), world.getBlockState(pos).with(TOP_DOOR, true), Constants.BlockFlags.DEFAULT);
-        TileEntity te = world.getTileEntity(pos);
-        if (te instanceof TileEntityPneumaticDoor) {
-            TileEntityPneumaticDoor teDoor = (TileEntityPneumaticDoor) te;
+        PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityPneumaticDoor.class).ifPresent(teDoor -> {
             BlockPos top = pos.up();
             if (world.getBlockState(top.offset(getRotation(state).rotateYCCW())).getBlock() == ModBlocks.PNEUMATIC_DOOR_BASE.get()) {
                 teDoor.rightGoing = true;
@@ -144,7 +140,7 @@ public class BlockPneumaticDoor extends BlockPneumaticCraft {
                 ((TileEntityPneumaticDoor) topHalf).rightGoing = teDoor.rightGoing;
                 ((TileEntityPneumaticDoor) topHalf).color = teDoor.color;
             }
-        }
+        });
     }
 
     @Override

@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.client.gui.widget;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.datafixers.util.Either;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticContainerBase;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticScreenBase;
@@ -25,9 +26,9 @@ import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ICharacterConsumer;
+import net.minecraft.util.IItemProvider;
 import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
@@ -39,7 +40,6 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
@@ -326,22 +326,17 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
     private void addOrRemoveScrollbar() {
         if (reorderingProcessors.size() > getVisibleLines()) {
             if (subWidgets.contains(scrollBar)) return;
+            // need to add a scrollbar
             curScroll = 0;
             int scrollbarHeight = getVisibleLines() * lineSpacing - TOP_MARGIN_HEIGHT;
             int yOffset = reservedLines > 0 ? reservedLines * Minecraft.getInstance().fontRenderer.FONT_HEIGHT : 0;
             addSubWidget(scrollBar = new WidgetVerticalScrollbar(leftSided ? -16 : 2, TOP_MARGIN_HEIGHT + yOffset, scrollbarHeight)
                     .setStates(reorderingProcessors.size() - getVisibleLines())
                     .setListening(true));
-        } else {
-            Iterator<Widget> iterator = subWidgets.iterator();
-            while (iterator.hasNext()) {
-                Widget widget = iterator.next();
-                if (widget == scrollBar) {
-                    iterator.remove();
-                    curScroll = 0;
-                    scrollBar = null;
-                }
-            }
+        } else if (subWidgets.removeIf(w -> w == scrollBar)) {
+            // removing existing scrollbar
+            curScroll = 0;
+            scrollBar = null;
         }
     }
 
@@ -564,7 +559,7 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
         // no subwidget drawing in 3d rendering
 
         if (renderHeight > 16 && renderWidth > 16 && statIcon != null) {
-            statIcon.render3d(matrixStack, buffer, renderBaseX, renderEffectiveY, leftSided);
+            statIcon.render3d(matrixStack, buffer, renderBaseX, renderEffectiveY);
         }
     }
 
@@ -770,49 +765,43 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
     }
 
     public static class StatIcon {
-        public static final StatIcon NONE = new StatIcon(ItemStack.EMPTY, null);
+        public static final StatIcon NONE = StatIcon.of(ItemStack.EMPTY);
 
-        private final ItemStack stack;
-        private final ResourceLocation texture;
+        private final Either<ItemStack,ResourceLocation> texture;
 
-        private StatIcon(ItemStack stack, ResourceLocation texture) {
-            this.stack = stack;
+        private StatIcon(Either<ItemStack,ResourceLocation> texture) {
             this.texture = texture;
         }
 
         public static StatIcon of(ItemStack stack) {
-            return new StatIcon(stack, null);
+            return new StatIcon(Either.left(stack));
         }
 
-        public static StatIcon of(Item item) {
-            return new StatIcon(new ItemStack(item, 1), null);
+        public static StatIcon of(IItemProvider item) {
+            return new StatIcon(Either.left(new ItemStack(item, 1)));
         }
 
         public static StatIcon of(ResourceLocation texture) {
-            return new StatIcon(ItemStack.EMPTY, texture);
+            return new StatIcon(Either.right(texture));
         }
 
         void render(MatrixStack matrixStack, int x, int y, boolean leftSided) {
             RenderSystem.color4f(1, 1, 1, 1);
             RenderSystem.enableBlend();
             RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-            if (texture != null) {
-                GuiUtils.drawTexture(matrixStack, texture, x - (leftSided ? 16 : 0), y);
-            } else if (!stack.isEmpty()) {
-                GuiUtils.renderItemStack(matrixStack, stack, x - (leftSided ? 16 : 0), y);
-            }
+            texture.ifLeft(stack ->  GuiUtils.renderItemStack(matrixStack, stack, x - (leftSided ? 16 : 0), y))
+                    .ifRight(resLoc -> GuiUtils.drawTexture(matrixStack, resLoc, x - (leftSided ? 16 : 0), y));
             RenderSystem.disableBlend();
         }
 
-        public void render3d(MatrixStack matrixStack, IRenderTypeBuffer buffer, int x, int y, boolean leftSided) {
-            if (texture != null) {
-                RenderUtils.renderWithTypeAndFinish(matrixStack, buffer, ModRenderTypes.getTextureRenderColored(texture),
-                        (posMat, builder) -> RenderUtils.drawTexture(matrixStack, builder, x, y, RenderUtils.FULL_BRIGHT));
-            } else {
+        public void render3d(MatrixStack matrixStack, IRenderTypeBuffer buffer, int x, int y) {
+            texture.ifLeft(stack -> {
                 ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
                 IBakedModel ibakedmodel = itemRenderer.getItemModelWithOverrides(stack, ClientUtils.getClientWorld(), null);
                 itemRenderer.renderItem(stack, ItemCameraTransforms.TransformType.FIXED, true, matrixStack, buffer, RenderUtils.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, ibakedmodel);
-            }
+            }).ifRight(resLoc ->
+                    RenderUtils.renderWithTypeAndFinish(matrixStack, buffer, ModRenderTypes.getTextureRenderColored(resLoc),
+                            (posMat, builder) -> RenderUtils.drawTexture(matrixStack, builder, x, y, RenderUtils.FULL_BRIGHT)));
         }
     }
 

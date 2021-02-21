@@ -11,6 +11,7 @@ import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.item.ItemTubeModule;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.util.RayTraceUtils;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
@@ -280,12 +281,10 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
         return renderBoundingBox != null ? renderBoundingBox : new AxisAlignedBB(getPos());
     }
 
-
-
     @Override
     public void printManometerMessage(PlayerEntity player, List<ITextComponent> text) {
-        RayTraceResult mop = PneumaticCraftUtils.getEntityLookedObject(player);
-        if (mop != null && mop.hitInfo instanceof Direction) {
+        RayTraceResult mop = RayTraceUtils.getEntityLookedObject(player, PneumaticCraftUtils.getPlayerReachDistance(player));
+        if (mop.hitInfo instanceof Direction) {
             TubeModule tm = getModule((Direction) mop.hitInfo);
             if (tm != null) tm.addInfo(text);
         }

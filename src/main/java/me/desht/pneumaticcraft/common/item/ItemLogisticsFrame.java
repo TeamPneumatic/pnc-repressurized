@@ -26,7 +26,6 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.network.NetworkHooks;
 import net.minecraftforge.items.ItemStackHandler;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -43,7 +42,6 @@ public abstract class ItemLogisticsFrame extends ItemSemiBlock implements ColorH
                     return stack.getDisplayName();
                 }
 
-                @Nullable
                 @Override
                 public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
                     return new ContainerLogistics(getContainerType(), i, playerInventory, -1);
@@ -90,7 +88,7 @@ public abstract class ItemLogisticsFrame extends ItemSemiBlock implements ColorH
                     stacks[i] = handler.getStackInSlot(i);
                 }
                 int l = curInfo.size();
-                PneumaticCraftUtils.sortCombineItemStacksAndToString(curInfo, stacks, TextFormatting.YELLOW.toString() + GuiConstants.BULLET + " ");
+                PneumaticCraftUtils.summariseItemStacks(curInfo, stacks, TextFormatting.YELLOW.toString() + GuiConstants.BULLET + " ");
                 if (curInfo.size() == l) curInfo.add(bullet().mergeStyle(TextFormatting.YELLOW).append(xlate("pneumaticcraft.gui.misc.no_items").mergeStyle(TextFormatting.GOLD, TextFormatting.ITALIC)));
                 l = curInfo.size();
 

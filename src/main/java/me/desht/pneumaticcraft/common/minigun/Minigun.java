@@ -10,6 +10,7 @@ import me.desht.pneumaticcraft.common.item.ItemGunAmmo;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.util.RayTraceUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -215,7 +216,7 @@ public abstract class Minigun {
                 RayTraceResult rtr = null;
                 ItemGunAmmo ammoItem = (ItemGunAmmo) ammoStack.getItem();
                 if (!requiresTarget) {
-                    rtr = PneumaticCraftUtils.getMouseOverServer(player, getRange());
+                    rtr = RayTraceUtils.getMouseOverServer(player, getRange());
                     target = rtr instanceof EntityRayTraceResult ? ((EntityRayTraceResult) rtr).getEntity() : null;
                 }
                 airCapability.ifPresent(airHandler -> {

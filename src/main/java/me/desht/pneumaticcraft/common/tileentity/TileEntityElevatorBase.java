@@ -259,17 +259,23 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
     private void updateRedstoneInputLevel() {
         if (multiElevators == null) return;
 
-        int maxRedstone = 0;
-        for (TileEntityElevatorBase base : multiElevators) {
-            int i = 0;
-            while (getWorld().getBlockState(base.getPos().add(0, i, 0)).getBlock() == ModBlocks.ELEVATOR_BASE.get()) {
-                maxRedstone = Math.max(maxRedstone, PneumaticCraftUtils.getRedstoneLevel(getWorld(), base.getPos().add(0, i, 0)));
-                i--;
-            }
-        }
+        int maxRedstone = getMaxRedstone();
         for (TileEntityElevatorBase base : multiElevators) {
             base.redstoneInputLevel = maxRedstone;
         }
+    }
+
+    private int getMaxRedstone() {
+        int maxRedstone = 0;
+        for (TileEntityElevatorBase base : multiElevators) {
+            BlockPos.Mutable pos1 = base.getPos().toMutable();
+            while (getWorld().getBlockState(pos1).getBlock() == ModBlocks.ELEVATOR_BASE.get()) {
+                maxRedstone = Math.max(maxRedstone, getWorld().getRedstonePowerFromNeighbors(pos1));
+                if (maxRedstone == 15) return 15;
+                pos1.move(Direction.DOWN);
+            }
+        }
+        return maxRedstone;
     }
 
     public float getMaxElevatorHeight() {

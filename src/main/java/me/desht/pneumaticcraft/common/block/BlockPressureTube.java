@@ -10,6 +10,7 @@ import me.desht.pneumaticcraft.common.item.ItemTubeModule;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAdvancedPressureTube;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.util.RayTraceUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -295,7 +296,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
      * @return a tube module, or null if no module is focused
      */
     public static TubeModule getFocusedModule(World world, BlockPos pos, PlayerEntity player) {
-        Pair<Vector3d, Vector3d> vecs = PneumaticCraftUtils.getStartAndEndLookVec(player);
+        Pair<Vector3d, Vector3d> vecs = RayTraceUtils.getStartAndEndLookVec(player, PneumaticCraftUtils.getPlayerReachDistance(player));
         BlockState state = world.getBlockState(pos);
         BlockRayTraceResult rayTraceResult = doTrace(state, world, pos, vecs.getLeft(), vecs.getRight());
         TubeHitInfo tubeHitInfo = getHitInfo(rayTraceResult);
@@ -324,7 +325,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
      * @return (true, side) if it's the side of the tube core, or (false, side) if it's a tube arm
      */
     private static Pair<Boolean, Direction> getLookedTube(IBlockReader world, BlockPos pos, PlayerEntity player) {
-        Pair<Vector3d, Vector3d> vecs = PneumaticCraftUtils.getStartAndEndLookVec(player);
+        Pair<Vector3d, Vector3d> vecs = RayTraceUtils.getStartAndEndLookVec(player, PneumaticCraftUtils.getPlayerReachDistance(player));
         BlockState state = world.getBlockState(pos);
         BlockRayTraceResult rayTraceResult = doTrace(state, world, pos, vecs.getLeft(), vecs.getRight());
         TubeHitInfo tubeHitInfo = getHitInfo(rayTraceResult);
@@ -392,7 +393,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
 
     @Override
     public ItemStack getPickBlock(BlockState state, RayTraceResult target, IBlockReader world, BlockPos pos, PlayerEntity player) {
-        Pair<Vector3d, Vector3d> vecs = PneumaticCraftUtils.getStartAndEndLookVec(player);
+        Pair<Vector3d, Vector3d> vecs = RayTraceUtils.getStartAndEndLookVec(player, PneumaticCraftUtils.getPlayerReachDistance(player));
         BlockRayTraceResult rayTraceResult = doTrace(state, world, pos, vecs.getLeft(), vecs.getRight());
         TubeHitInfo tubeHitInfo = getHitInfo(rayTraceResult);
         if (tubeHitInfo.type == TubeHitInfo.PartType.TUBE) {

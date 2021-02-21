@@ -17,6 +17,7 @@ import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.NBTKeys;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -128,8 +129,7 @@ public class TileEntitySmartChest extends TileEntityTickableBase
 
     private boolean tryDispense(Direction dir) {
         if (getUpgrades(EnumUpgrade.DISPENSER) > 0) {
-            BlockState state = world.getBlockState(pos.offset(dir));
-            if (!PneumaticCraftUtils.blockHasSolidSide(state, world, pos, dir.getOpposite())) {
+            if (!Block.hasEnoughSolidSide(world, pos, dir.getOpposite())) {
                 ItemStack toPush = findNextItem(inventory, pushSlots, dir.ordinal());
                 if (!toPush.isEmpty()) {
                     ItemStack pushed = inventory.extractItem(pushSlots[dir.ordinal()], toPush.getCount(), false);

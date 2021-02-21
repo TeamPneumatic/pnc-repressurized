@@ -16,10 +16,7 @@ import me.desht.pneumaticcraft.common.item.ItemDrillBit.DrillBitType;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
-import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
-import me.desht.pneumaticcraft.common.util.NBTUtils;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
+import me.desht.pneumaticcraft.common.util.*;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -167,7 +164,7 @@ public class ItemJackHammer extends ItemPressurizable
             ServerPlayerEntity serverPlayer = (ServerPlayerEntity) player;
             World world = serverPlayer.getEntityWorld();
 
-            RayTraceResult brtr = PneumaticCraftUtils.getEntityLookedObject(player);
+            RayTraceResult brtr = RayTraceUtils.getEntityLookedObject(player, PneumaticCraftUtils.getPlayerReachDistance(player));
             if (brtr instanceof BlockRayTraceResult) {
                 itemstack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(airHandler -> {
                     DigMode digMode = ItemJackHammer.getDigMode(itemstack);

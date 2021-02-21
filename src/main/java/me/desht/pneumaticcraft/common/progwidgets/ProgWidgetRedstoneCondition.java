@@ -5,7 +5,6 @@ import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.DroneAIBlockCondition;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -33,7 +32,7 @@ public class ProgWidgetRedstoneCondition extends ProgWidgetCondition {
         return new DroneAIBlockCondition(drone, (ProgWidgetAreaItemBase) widget) {
             @Override
             protected boolean evaluate(BlockPos pos) {
-                int redstoneLevel = PneumaticCraftUtils.getRedstoneLevel(drone.world(), pos);
+                int redstoneLevel = drone.world().getRedstonePowerFromNeighbors(pos);
                 int requiredRedstone = ((ICondition) progWidget).getRequiredCount();
                 maybeRecordMeasuredVal(drone, redstoneLevel);
                 return ((ICondition) progWidget).getOperator().evaluate(redstoneLevel, requiredRedstone);

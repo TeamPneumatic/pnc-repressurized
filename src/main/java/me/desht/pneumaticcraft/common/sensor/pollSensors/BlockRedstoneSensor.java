@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.common.sensor.pollSensors;
 import com.google.common.collect.ImmutableSet;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.universal_sensor.IBlockAndCoordinatePollSensor;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -34,8 +33,8 @@ public class BlockRedstoneSensor implements IBlockAndCoordinatePollSensor {
     @Override
     public int getRedstoneValue(World world, BlockPos pos, int sensorRange, String textBoxText, Set<BlockPos> positions) {
         int redstonePower = 0;
-        for (BlockPos p : positions) {
-            redstonePower = Math.max(redstonePower, PneumaticCraftUtils.getRedstoneLevel(world, p));
+        for (BlockPos pos1 : positions) {
+            redstonePower = Math.max(redstonePower, world.getRedstonePowerFromNeighbors(pos1));
             if (redstonePower == 15) return 15;
         }
         return redstonePower;

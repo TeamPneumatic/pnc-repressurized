@@ -6,7 +6,7 @@ import me.desht.pneumaticcraft.common.config.subconfig.MicromissileDefaults;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.entity.projectile.EntityMicromissile;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.util.RayTraceUtils;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.util.ITooltipFlag;
@@ -93,7 +93,7 @@ public class ItemMicromissiles extends Item {
         playerIn.getCooldownTracker().setCooldown(this, PNCConfig.Common.Micromissiles.launchCooldown);
 
         if (!worldIn.isRemote) {
-            RayTraceResult res = PneumaticCraftUtils.getMouseOverServer(playerIn, 100);
+            RayTraceResult res = RayTraceUtils.getMouseOverServer(playerIn, 100);
             if (res instanceof EntityRayTraceResult) {
                 EntityRayTraceResult ertr = (EntityRayTraceResult) res;
                 if (missile.isValidTarget(ertr.getEntity())) {

@@ -12,6 +12,7 @@ import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
@@ -140,10 +141,9 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
         }
     }
 
-    private Direction anyClearDirection(World w, BlockPos pos) {
+    private Direction anyClearDirection(World world, BlockPos pos) {
         for (Direction d : Direction.VALUES) {
-            BlockPos pos2 = pos.offset(d);
-            if (!PneumaticCraftUtils.blockHasSolidSide(w.getBlockState(pos2), w, pos2, d.getOpposite())) return d;
+            if (!Block.hasEnoughSolidSide(world, pos.offset(d), d.getOpposite())) return d;
         }
         return Direction.UP; // arbitrary
     }

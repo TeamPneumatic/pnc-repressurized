@@ -28,7 +28,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.*;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.math.vector.Vector3i;
 import net.minecraft.util.text.ITextComponent;
@@ -48,8 +48,6 @@ import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 import java.io.BufferedReader;
@@ -57,6 +55,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.net.URL;
+import java.text.NumberFormat;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -204,16 +203,18 @@ public class PneumaticCraftUtils {
     }
 
     /**
-     * Takes in any integer, and converts it into a string with a additional postfix if needed. 2300 will convert into 2k for instance.
+     * Takes in any integer, and converts it into a string with a additional postfix if needed. 23000 will convert into 23k for instance.
      *
      * @param amount an integer quantity
      * @return a formatted string representation
      */
     public static String convertAmountToString(int amount) {
-        if (amount < 1000) {
-            return amount + "";
+        if (amount < 10_000) {
+            return NumberFormat.getNumberInstance(Locale.getDefault()).format(amount);
+        } else if (amount < 1_000_000) {
+            return amount / 1_000 + "K";
         } else {
-            return amount / 1000 + "k";
+            return amount / 1_000_000 + "M";
         }
     }
 
@@ -254,41 +255,11 @@ public class PneumaticCraftUtils {
      * used to compare two floats which are tested for having (almost) the same value
      */
     public static boolean areFloatsEqual(float f1, float f2) {
-        return areFloatsEqual(f1, f2, 0.001F);
+        return areFloatsEqual(f1, f2, 0.0001F);
     }
 
     public static boolean areFloatsEqual(float f1, float f2, float maxDifference) {
         return Math.abs(f1 - f2) < maxDifference;
-    }
-
-    private static void quickSort(ItemStack[] stacks, int begin, int end) {
-        if (begin < end) {
-            int partitionIndex = _partition(stacks, begin, end);
-
-            quickSort(stacks, begin, partitionIndex-1);
-            quickSort(stacks, partitionIndex+1, end);
-        }
-    }
-
-    private static int _partition(ItemStack[] arr, int begin, int end) {
-        ItemStack pivot = arr[end];
-        int i = begin - 1;
-
-        for (int j = begin; j < end; j++) {
-            if (arr[j].getDisplayName().getString().compareToIgnoreCase(pivot.getDisplayName().getString()) <= 0) {
-                i++;
-
-                ItemStack swapTemp = arr[i];
-                arr[i] = arr[j];
-                arr[j] = swapTemp;
-            }
-        }
-
-        ItemStack swapTemp = arr[i + 1];
-        arr[i + 1] = arr[end];
-        arr[end] = swapTemp;
-
-        return i + 1;
     }
 
     /**
@@ -298,8 +269,8 @@ public class PneumaticCraftUtils {
      * @param textList string list to add information to
      * @param originalStacks array of item stacks to sort & combine
      */
-    public static void sortCombineItemStacksAndToString(List<ITextComponent> textList, ItemStack[] originalStacks) {
-        sortCombineItemStacksAndToString(textList, originalStacks, GuiConstants.bullet().getString());
+    public static void summariseItemStacks(List<ITextComponent> textList, ItemStack[] originalStacks) {
+        summariseItemStacks(textList, originalStacks, GuiConstants.bullet().getString());
     }
 
     /**
@@ -310,9 +281,10 @@ public class PneumaticCraftUtils {
      * @param originalStacks array of item stacks to sort & combine
      * @param prefix prefix string to prepend to each line of output
      */
-    public static void sortCombineItemStacksAndToString(List<ITextComponent> textList, ItemStack[] originalStacks, String prefix) {
+    public static void summariseItemStacks(List<ITextComponent> textList, ItemStack[] originalStacks, String prefix) {
         ItemStack[] stacks = Arrays.copyOf(originalStacks, originalStacks.length);
-        quickSort(stacks, 0, stacks.length - 1);
+
+        Arrays.sort(stacks, (o1, o2) -> o1.getDisplayName().getString().compareToIgnoreCase(o2.getDisplayName().getString()));
 
         int itemCount = 0;
         ItemStack prevItemStack = ItemStack.EMPTY;
@@ -324,7 +296,7 @@ public class PneumaticCraftUtils {
                         addText(textList, prefix  + PneumaticCraftUtils.convertAmountToString(itemCount) + " x " + prevItemStack.getDisplayName().getString());
                     }
                     if (prevInventoryItems != null) {
-                        sortCombineItemStacksAndToString(textList, prevInventoryItems.toArray(new ItemStack[0]), prefix + GuiConstants.ARROW_DOWN_RIGHT + " ");
+                        summariseItemStacks(textList, prevInventoryItems.toArray(new ItemStack[0]), prefix + GuiConstants.ARROW_DOWN_RIGHT + " ");
                     }
                     prevItemStack = stack;
                     itemCount = stack.getCount();
@@ -336,10 +308,12 @@ public class PneumaticCraftUtils {
         }
         if (itemCount > 0 && !prevItemStack.isEmpty()) {
             addText(textList,prefix + PneumaticCraftUtils.convertAmountToString(itemCount) + " x " + prevItemStack.getDisplayName().getString());
-            if (prevInventoryItems != null) {
-                sortCombineItemStacksAndToString(textList, prevInventoryItems.toArray(new ItemStack[0]), prefix + GuiConstants.ARROW_DOWN_RIGHT + " ");
-            }
+            summariseItemStacks(textList, prevInventoryItems.toArray(new ItemStack[0]), prefix + GuiConstants.ARROW_DOWN_RIGHT + " ");
         }
+    }
+
+    private static void addText(List<ITextComponent> l, String s) {
+        l.add(new StringTextComponent(s));
     }
 
     /**
@@ -374,18 +348,6 @@ public class PneumaticCraftUtils {
     }
 
     /**
-     * Returns the redstone level at the given position. Use this when you don't care what side(s) the signal is
-     * coming from, just the level of the signal at the position.
-     *
-     * @param world the world
-     * @param pos the position to check
-     * @return the redstone level
-     */
-    public static int getRedstoneLevel(World world, BlockPos pos) {
-        return world != null ? world.getRedstonePowerFromNeighbors(pos) : 0;
-    }
-
-    /**
      * Retrieve a web page from the given URL.
      *
      * @param urlString the URL
@@ -405,32 +367,6 @@ public class PneumaticCraftUtils {
         return all.toString();
     }
 
-    public static RayTraceResult getEntityLookedObject(LivingEntity entity) {
-        return getEntityLookedObject(entity, 4.5F);
-    }
-
-    public static RayTraceResult getEntityLookedObject(LivingEntity entity, float maxDistance) {
-        Pair<Vector3d, Vector3d> vecs = getStartAndEndLookVec(entity, maxDistance);
-        RayTraceContext ctx = new RayTraceContext(vecs.getLeft(), vecs.getRight(), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, entity);
-        return entity.world.rayTraceBlocks(ctx);
-    }
-
-    public static Pair<Vector3d, Vector3d> getStartAndEndLookVec(LivingEntity entity) {
-        return getStartAndEndLookVec(entity, 4.5F);
-    }
-
-    public static Pair<Vector3d, Vector3d> getStartAndEndLookVec(LivingEntity entity, float maxDistance) {
-        Vector3d entityVec;
-        if (entity.world.isRemote && entity instanceof PlayerEntity) {
-            entityVec = new Vector3d(entity.getPosX(), entity.getPosY() + 1.6200000000000001D, entity.getPosZ());
-        } else {
-            entityVec = new Vector3d(entity.getPosX(), entity.getPosY() + entity.getEyeHeight() - (entity.isSneaking() ? 0.08 : 0), entity.getPosZ());
-        }
-        Vector3d entityLookVec = entity.getLook(1.0F);
-        Vector3d maxDistVec = entityVec.add(entityLookVec.scale(maxDistance));
-        return new ImmutablePair<>(entityVec, maxDistVec);
-    }
-
     public static double distBetween(double x1, double y1, double z1, double x2, double y2, double z2) {
         return Math.sqrt(distBetweenSq(x1, y1, z1, x2, y2, z2));
     }
@@ -438,7 +374,7 @@ public class PneumaticCraftUtils {
     public static double distBetweenSq(double x1, double y1, double z1, double x2, double y2, double z2) {
         return Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2) + Math.pow(z1 - z2, 2);
     }
-    
+
     public static double distBetweenSq(Vector3i pos, double x, double y, double z) {
         return distBetweenSq(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, x, y, z);
     }
@@ -521,10 +457,6 @@ public class PneumaticCraftUtils {
         stack.setCount(0);
     }
 
-    public static PlayerEntity getPlayerFromId(String uuid) {
-        return ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByUUID(UUID.fromString(uuid));
-    }
-
     public static PlayerEntity getPlayerFromId(UUID uuid) {
         return ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByUUID(uuid);
     }
@@ -535,63 +467,6 @@ public class PneumaticCraftUtils {
 
     public static boolean isPlayerOp(PlayerEntity player) {
         return player.hasPermissionLevel(2);
-    }
-
-    private static RayTraceResult raytraceEntityBlocks(LivingEntity entity, double range) {
-        Pair<Vector3d, Vector3d> startAndEnd = getStartAndEndLookVec(entity, (float) range);
-        RayTraceContext ctx = new RayTraceContext(startAndEnd.getLeft(), startAndEnd.getRight(), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, entity);
-        return entity.world.rayTraceBlocks(ctx);
-    }
-
-    public static RayTraceResult getMouseOverServer(LivingEntity lookingEntity, double range) {
-        RayTraceResult result = raytraceEntityBlocks(lookingEntity, range);
-        double rangeSq = range * range;
-        Pair<Vector3d, Vector3d> startAndEnd = getStartAndEndLookVec(lookingEntity, (float) range);
-        Vector3d eyePos = startAndEnd.getLeft();
-
-        if (result.getType() != RayTraceResult.Type.MISS) {
-            rangeSq = result.getHitVec().squareDistanceTo(eyePos);
-        }
-
-        double rangeSq2 = rangeSq;
-        Vector3d hitVec = null;
-        Entity focusedEntity = null;
-
-        Vector3d lookVec = lookingEntity.getLookVec().scale(range + 1);
-        AxisAlignedBB box = lookingEntity.getBoundingBox().grow(lookVec.x, lookVec.y, lookVec.z);
-
-        for (Entity entity : lookingEntity.world.getEntitiesInAABBexcluding(lookingEntity, box, Entity::canBeCollidedWith)) {
-            AxisAlignedBB aabb = entity.getBoundingBox().grow(entity.getCollisionBorderSize());
-            Optional<Vector3d> vec = aabb.rayTrace(eyePos, startAndEnd.getRight());
-
-            if (aabb.contains(eyePos)) {
-                if (rangeSq2 >= 0.0D) {
-                    focusedEntity = entity;
-                    hitVec = vec.orElse(eyePos);
-                    rangeSq2 = 0.0D;
-                }
-            } else if (vec.isPresent()) {
-                double rangeSq3 = eyePos.squareDistanceTo(vec.get());
-
-                if (rangeSq3 < rangeSq2 || rangeSq2 == 0.0D) {
-                    if (entity == entity.getRidingEntity() && !entity.canRiderInteract()) {
-                        if (rangeSq2 == 0.0D) {
-                            focusedEntity = entity;
-                            hitVec = vec.get();
-                        }
-                    } else {
-                        focusedEntity = entity;
-                        hitVec = vec.get();
-                        rangeSq2 = rangeSq3;
-                    }
-                }
-            }
-        }
-
-        if (focusedEntity != null && (rangeSq2 < rangeSq || result == null)) {
-            result = new EntityRayTraceResult(focusedEntity, hitVec);
-        }
-        return result;
     }
 
     /**
@@ -710,10 +585,6 @@ public class PneumaticCraftUtils {
         return new TranslationTextComponent(s, args);
     }
 
-    public static void addText(List<ITextComponent> l, String s) {
-        l.add(new StringTextComponent(s));
-    }
-
     public static String dyeColorDesc(int c) {
         // TODO 1.14 make this better
         return TextFormatting.BOLD + StringUtils.capitalize(DyeColor.byId(c).getTranslationKey()) + TextFormatting.RESET;
@@ -776,15 +647,17 @@ public class PneumaticCraftUtils {
         return filled == fluidAmount;
     }
 
-    // this method from Block went missing in 1.16.2
-    public static boolean blockHasSolidSide(BlockState state, IBlockReader worldIn, BlockPos pos, Direction side) {
-        return Block.doesSideFillSquare(state.getRenderShape(worldIn, pos), side);
+    public static double getPlayerReachDistance(PlayerEntity player) {
+        if (player != null) {
+            ModifiableAttributeInstance attr = player.getAttribute(ForgeMod.REACH_DISTANCE.get());
+            if (attr != null) return attr.getValue() + 1D;
+        }
+        return 4.5D;
     }
 
     public static boolean canPlayerReach(PlayerEntity player, BlockPos pos) {
         if (player == null) return false;
-        ModifiableAttributeInstance attr = player.getAttribute(ForgeMod.REACH_DISTANCE.get());
-        double dist = attr != null ? player.getAttribute(ForgeMod.REACH_DISTANCE.get()).getValue() + 1 : 4.5;
+        double dist = getPlayerReachDistance(player);
         return player.getDistanceSq(Vector3d.copyCentered(pos)) <= dist * dist;
     }
 }

@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.common.tileentity;
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Either;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.NBTKeys;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -108,7 +107,7 @@ public class RedstoneController<T extends TileEntity & IRedstoneControl<T>> {
     }
 
     public void updateRedstonePower(TileEntity te) {
-        currentRedstonePower = PneumaticCraftUtils.getRedstoneLevel(te.getWorld(), te.getPos());
+        currentRedstonePower = te.getWorld().getRedstonePowerFromNeighbors(te.getPos());
     }
 
     public boolean isEmitter() {

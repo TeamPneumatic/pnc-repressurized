@@ -80,7 +80,7 @@ public class TooltipEventHandler {
             if (item.getInventoryHeader() != null && !stacks.isEmpty()) {
                 curInfo.add(item.getInventoryHeader());
             }
-            PneumaticCraftUtils.sortCombineItemStacksAndToString(curInfo, stacks.toArray(new ItemStack[0]), item.getTooltipPrefix(stack));
+            PneumaticCraftUtils.summariseItemStacks(curInfo, stacks.toArray(new ItemStack[0]), item.getTooltipPrefix(stack));
         }
 
         String key = ICustomTooltipName.getTranslationKey(stack, true);

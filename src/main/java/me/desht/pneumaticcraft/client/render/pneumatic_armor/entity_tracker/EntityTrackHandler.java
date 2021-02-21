@@ -285,7 +285,7 @@ public class EntityTrackHandler {
         private static void addInventory(String key, List<ITextComponent> curInfo, NonNullList<ItemStack> stacks) {
             curInfo.add(xlate(key).mergeStyle(TextFormatting.GRAY));
             List<ITextComponent> l = new ArrayList<>();
-            PneumaticCraftUtils.sortCombineItemStacksAndToString(l, asItemStackArray(stacks));
+            PneumaticCraftUtils.summariseItemStacks(l, asItemStackArray(stacks));
             if (l.isEmpty()) {
                 curInfo.add(xlate("pneumaticcraft.gui.misc.no_items"));
             } else {

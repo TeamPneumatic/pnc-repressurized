@@ -9,6 +9,7 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.IFluidRendered;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityFluidTank;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.util.RayTraceUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.lib.NBTKeys;
 import net.minecraft.block.Block;
@@ -90,7 +91,7 @@ public class BlockFluidTank extends BlockPneumaticCraft implements ColorHandlers
     @Override
     public boolean onWrenched(World world, PlayerEntity player, BlockPos pos, Direction side, Hand hand) {
         if (!player.isSneaking()) {
-            RayTraceResult rtr = PneumaticCraftUtils.getMouseOverServer(player, 5);
+            RayTraceResult rtr = RayTraceUtils.getMouseOverServer(player, PneumaticCraftUtils.getPlayerReachDistance(player));
             if (rtr.getType() == RayTraceResult.Type.BLOCK) {
                 BlockRayTraceResult brtr = (BlockRayTraceResult) rtr;
                 if (brtr.getPos().equals(pos)) {
