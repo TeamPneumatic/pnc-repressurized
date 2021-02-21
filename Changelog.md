@@ -8,6 +8,28 @@ Changes are in reverse chronological order; newest changes at the top.
 
 Note: PNC:R 2.9.3 and later have been successfully tested on Minecraft 1.16.5.  Older (but recent) versions will probably also work on MC 1.16.5, but haven't been tested.
 
+## 2.10.1-?? (unreleased)
+
+### Updates
+* COFH/Thermal fuels (Refined Fuel, Tree Oil & Creosote) are now supported in the Liquid Compressor & Advanced Liquid Compressor
+  * Note that COFH Crude Oil is still not accepted by the Refinery by default, because it is not added to the `forge:crude_oil` fluid tag
+* Pneumatic Door Base now has a GUI option to open its attached Pneumatic Door when it (the base) receives a redstone signal
+  * Previously the Pneumatic Door itself required a redstone signal to open
+  * Only applies in Wooden Door or Iron Door mode, of course
+* Notify players who are holding an Amadron Tablet when new offers become available
+  * Can be disabled by clientside config setting: `notify_amadron_offer_updates` in `pneumaticcraft-client.toml`
+
+### Fixes
+* Fixed heat handling tile entities losing their heat information when moved by Quark (and possibly other mods like Create)
+* Fixed a problem with Drones not always being able to place fluids in-world (in particular where waterlogged replaceable blocks like Sea Grass existed)
+* Fixed Pneumatic Armor GUI being able to move stat panels completely off-screen (by switching opening direction when panel is on the edge)
+* Fixed Security Station failing to prevent block breaking by certain fake players (not including Drones)
+* Fixed problem where Drones wouldn't always move into fluids even with a Security Upgrade equipped
+  * Drones will now move into any cool fluid, but not fluids with a temperature of over 373K (100C)
+  * Note the Programmable Controller fake drone doesn't care about temperatures and will happily move through anything
+* Clarified docs for Right Click Widget when in Item Mode: the filter applies to the held item, not the clicked block
+  * Note that this widget can't filter by clicked block when in Item Mode; this is likely to be remedied in a later release, but will probably require a separate progwidget
+  
 ## 2.10.0-134 (6 Feb 2021)
 
 ### New
