@@ -37,6 +37,7 @@ public class FluidIngredient extends Ingredient {
     private final int amount;
     private ItemStack[] cachedStacks;
     private final ResourceLocation tagId;
+    private final ResourceLocation fluidId;
 
     public static final FluidIngredient EMPTY = new FluidIngredient();
 
@@ -45,13 +46,7 @@ public class FluidIngredient extends Ingredient {
         this.fluids = Collections.emptyList();
         this.amount = 0;
         this.tagId = null;
-    }
-
-    private FluidIngredient(ResourceLocation tagId, int amount) {
-        super(Stream.empty());
-        this.fluids = null; // will be filled out lazily
-        this.amount = amount;
-        this.tagId = tagId;
+        this.fluidId = null;
     }
 
     public FluidIngredient(Collection<Fluid> fluids, int amount) {
@@ -59,6 +54,20 @@ public class FluidIngredient extends Ingredient {
         this.fluids = ImmutableList.copyOf(fluids);
         this.amount = amount;
         this.tagId = null;
+        this.fluidId = null;
+    }
+
+    private FluidIngredient(ResourceLocation fluidId, int amount, boolean isFluid) {
+        super(Stream.empty());
+        this.fluids = null; // will be filled out lazily
+        this.amount = amount;
+        if (isFluid) {
+            this.tagId = null;
+            this.fluidId = fluidId;
+        } else {
+            this.tagId = fluidId;
+            this.fluidId = null;
+        }
     }
 
     public static FluidIngredient of(int amount, Fluid... fluids) {
@@ -66,13 +75,24 @@ public class FluidIngredient extends Ingredient {
     }
 
     public static FluidIngredient of(int amount, ITag.INamedTag<Fluid> fluid) {
-        return new FluidIngredient(fluid.getName(), amount);
+        return new FluidIngredient(fluid.getName(), amount, false);
+    }
+
+    public static FluidIngredient of(int amount, ResourceLocation fluidId) {
+        return new FluidIngredient(fluidId, amount, true);
     }
 
     private Collection<Fluid> getFluidList() {
-        if (fluids == null && tagId != null) {
-            ITag<Fluid> tag = FluidTags.getCollection().get(tagId);
-            fluids = tag == null ? Collections.emptyList() : ImmutableList.copyOf(tag.getAllElements());
+        if (fluids == null && (tagId != null || fluidId != null)) {
+            if (tagId != null) {
+                ITag<Fluid> tag = FluidTags.getCollection().get(tagId);
+                fluids = tag == null ? Collections.emptyList() : ImmutableList.copyOf(tag.getAllElements());
+            }  else {
+                Fluid f = ForgeRegistries.FLUIDS.getValue(fluidId);
+                if (f != null && f != Fluids.EMPTY) {
+                    fluids = Collections.singletonList(f);
+                }
+            }
         }
         return fluids;
     }
@@ -124,10 +144,14 @@ public class FluidIngredient extends Ingredient {
     public JsonElement serialize() {
         JsonObject json = new JsonObject();
         json.addProperty("type", Serializer.ID.toString());
-        if (tagId == null) {
+        if (tagId != null) {
+            json.addProperty("tag", tagId.toString());
+        } else if (fluidId != null) {
+            json.addProperty("fluid", fluidId.toString());
+        } else if (!fluids.isEmpty()) {
             json.addProperty("fluid", fluids.get(0).getRegistryName().toString());
         } else {
-            json.addProperty("tag", tagId.toString());
+            throw new IllegalStateException("ingredient has no ID, tag or fluid!");
         }
         json.addProperty("amount", amount);
         return json;
@@ -167,7 +191,7 @@ public class FluidIngredient extends Ingredient {
             if (json.has("tag")) {
                 ResourceLocation rl = new ResourceLocation(JSONUtils.getString(json, "tag"));
                 if (TagCollectionManager.getManager().getFluidTags().get(rl) == null) throw new JsonSyntaxException("Unknown fluid tag '" + rl + "'");
-                return new FluidIngredient(rl, amount);
+                return new FluidIngredient(rl, amount, false);
             } else if (json.has("fluid")) {
                 ResourceLocation fluidName = new ResourceLocation(JSONUtils.getString(json, "fluid"));
                 Fluid fluid = ForgeRegistries.FLUIDS.getValue(fluidName);

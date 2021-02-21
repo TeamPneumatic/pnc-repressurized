@@ -34,6 +34,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.crafting.ConditionalRecipe;
 import net.minecraftforge.common.crafting.NBTIngredient;
+import net.minecraftforge.common.crafting.conditions.ICondition;
 import net.minecraftforge.common.crafting.conditions.ModLoadedCondition;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -1401,34 +1402,36 @@ public class ModRecipeProvider extends RecipeProvider {
         ).build(consumer, RL("fluid_mixer/mix_obsidian"));
 
         // fuels
-        fuelQuality(FluidIngredient.of(1000, PneumaticCraftTags.Fluids.CRUDE_OIL), 200000, 0.25f)
+        fuelQuality(FluidIngredient.of(1000, PneumaticCraftTags.Fluids.CRUDE_OIL), 200_000, 0.25f)
                 .build(consumer, RL("pneumaticcraft_fuels/crude_oil"));
-        fuelQuality(FluidIngredient.of(1000, PneumaticCraftTags.Fluids.DIESEL), 1000000, 0.8f)
+        fuelQuality(FluidIngredient.of(1000, PneumaticCraftTags.Fluids.DIESEL), 1_000_000, 0.8f)
                 .build(consumer, RL("pneumaticcraft_fuels/diesel"));
-        fuelQuality(FluidIngredient.of(1000, PneumaticCraftTags.Fluids.BIODIESEL), 1000000, 0.8f)
+        fuelQuality(FluidIngredient.of(1000, PneumaticCraftTags.Fluids.BIODIESEL), 1_000_000, 0.8f)
                 .build(consumer, RL("pneumaticcraft_fuels/biodiesel"));
-        fuelQuality(FluidIngredient.of(1000, PneumaticCraftTags.Fluids.KEROSENE), 1100000, 1f)
+        fuelQuality(FluidIngredient.of(1000, PneumaticCraftTags.Fluids.KEROSENE), 1_100_000, 1f)
                 .build(consumer, RL("pneumaticcraft_fuels/kerosene"));
-        fuelQuality(FluidIngredient.of(1000, PneumaticCraftTags.Fluids.GASOLINE), 1500000, 1.5f)
+        fuelQuality(FluidIngredient.of(1000, PneumaticCraftTags.Fluids.GASOLINE), 1_500_000, 1.5f)
                 .build(consumer, RL("pneumaticcraft_fuels/gasoline"));
-        fuelQuality(FluidIngredient.of(1000, PneumaticCraftTags.Fluids.LPG), 1800000, 1.25f)
+        fuelQuality(FluidIngredient.of(1000, PneumaticCraftTags.Fluids.LPG), 1_800_000, 1.25f)
                 .build(consumer, RL("pneumaticcraft_fuels/lpg"));
-        fuelQuality(FluidIngredient.of(1000, PneumaticCraftTags.Fluids.ETHANOL), 400000, 1f)
+        fuelQuality(FluidIngredient.of(1000, PneumaticCraftTags.Fluids.ETHANOL), 400_000, 1f)
                 .build(consumer, RL("pneumaticcraft_fuels/ethanol"));
 
         // non-pneumaticcraft fuel compat
-        ConditionalRecipe.builder()
-                .addCondition(new FluidTagPresentCondition("forge:ethene"))
-                .addRecipe(c -> fuelQuality(
-                        FluidIngredient.of(1000, PneumaticCraftTags.Fluids.forgeTag("ethene")), 1800000, 1.25f
-                ).build(c, RL("pneumaticcraft_fuels/ethylene")))
-                .build(consumer, RL("pneumaticcraft_fuels/ethylene"));
-        ConditionalRecipe.builder()
-                .addCondition(new FluidTagPresentCondition("forge:hydrogen"))
-                .addRecipe(c -> fuelQuality(
-                        FluidIngredient.of(1000, PneumaticCraftTags.Fluids.forgeTag("hydrogen")), 300000, 1.5f
-                ).build(c, RL("pneumaticcraft_fuels/hydrogen")))
-                .build(consumer, RL("pneumaticcraft_fuels/hydrogen"));
+        conditionalFuelQuality(consumer, RL("pneumaticcraft_fuels/ethylene"), new FluidTagPresentCondition("forge:ethene"),
+                FluidIngredient.of(1000, PneumaticCraftTags.Fluids.forgeTag("ethene")), 1_800_000, 1.25f);
+        conditionalFuelQuality(consumer, RL("pneumaticcraft_fuels/hydrogen"), new FluidTagPresentCondition("forge:hydrogen"),
+                FluidIngredient.of(1000, PneumaticCraftTags.Fluids.forgeTag("hydrogen")), 300_000, 1.5f);
+
+        ModLoadedCondition thermalLoaded = new ModLoadedCondition("thermal");
+//        conditionalFuelRecipe(consumer, RL("pneumaticcraft_fuels/cofh_biofuel"), thermalLoaded,
+//                FluidIngredient.of(1000, new ResourceLocation("thermal:biofuel")), 1_000_000, 0.8f);
+        conditionalFuelQuality(consumer, RL("pneumaticcraft_fuels/cofh_creosote"), thermalLoaded,
+                FluidIngredient.of(1000, new ResourceLocation("thermal:creosote")), 50_000, 0.25f);
+        conditionalFuelQuality(consumer, RL("pneumaticcraft_fuels/cofh_refined_fuel"), thermalLoaded,
+                FluidIngredient.of(1000, new ResourceLocation("thermal:refined_fuel")), 1_500_000, 1.5f);
+        conditionalFuelQuality(consumer, RL("pneumaticcraft_fuels/cofh_tree_oil"), thermalLoaded,
+                FluidIngredient.of(1000, new ResourceLocation("thermal:tree_oil")), 400_000, 1.0f);
     }
 
     private <T extends IItemProvider & IForgeRegistryEntry<?>> ShapelessRecipeBuilder shapeless(T result, T required, Object... ingredients) {
@@ -1615,6 +1618,13 @@ public class ModRecipeProvider extends RecipeProvider {
     private FuelQualityBuilder fuelQuality(FluidIngredient fuel, int airPerBucket, float burnRate) {
         return new FuelQualityBuilder(fuel, airPerBucket, burnRate)
                 .addCriterion(Criteria.has(ModBlocks.LIQUID_COMPRESSOR.get()));
+    }
+
+    private void conditionalFuelQuality(Consumer<IFinishedRecipe> consumer, ResourceLocation recipeID, ICondition condition, FluidIngredient fuel, int airPerBucket, float burnRate) {
+        ConditionalRecipe.builder()
+                .addCondition(condition)
+                .addRecipe(c -> fuelQuality(fuel, airPerBucket, burnRate).build(c, recipeID))
+                .build(consumer, recipeID);
     }
 
     private String getId(String s) {
