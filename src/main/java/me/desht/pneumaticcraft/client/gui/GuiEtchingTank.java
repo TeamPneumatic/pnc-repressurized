@@ -52,7 +52,7 @@ public class GuiEtchingTank extends GuiPneumaticContainerBase<ContainerEtchingTa
     public void tick() {
         super.tick();
 
-        te.getHeatCap(null).ifPresent(l -> tempWidget.setTemperature(l.getTemperatureAsInt()));
+        tempWidget.setTemperature(te.getHeatExchanger().getTemperatureAsInt());
         tempWidget.autoScaleForTemperature();
     }
 

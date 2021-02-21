@@ -1,15 +1,14 @@
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.common.DamageSourcePneumaticCraft;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityHeatSink;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
@@ -65,26 +64,24 @@ public class BlockHeatSink extends BlockPneumaticCraft implements ColorHandlers.
     }
 
     @Override
-    public void onEntityCollision(BlockState state, World world, BlockPos pos,Entity entity) {
-        TileEntity te = world.getTileEntity(pos);
-        if (te instanceof TileEntityHeatSink && entity instanceof LivingEntity) {
-            if (entity instanceof PlayerEntity && ((PlayerEntity) entity).isCreative()) return;
-            te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY).ifPresent(heatExchanger -> {
-                double temp = heatExchanger.getTemperature();
-                if (temp > 333) { // +60C
-                    entity.attackEntityFrom(DamageSource.HOT_FLOOR, 1f + ((float) temp - 333) * 0.05f);
-                    if (temp > 373) { // +100C
-                        entity.setFire(3);
-                    }
-                } else if (temp < 243) { // -30C
-                    int durationTicks = (int) ((243 - temp) * 2);
-                    int amplifier = (int) ((243 - temp) / 20);
-                    ((LivingEntity) entity).addPotionEffect(new EffectInstance(Effects.SLOWNESS, durationTicks, amplifier));
-                    if (temp < 213) { // -60C
-                        entity.attackEntityFrom(DamageSourcePneumaticCraft.FREEZING, 2);
-                    }
+    public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+        if (!(entity instanceof LivingEntity)) return;
+
+        PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityHeatSink.class).ifPresent(te -> {
+            double temp = te.getHeatExchanger().getTemperature();
+            if (temp > 333) { // +60C
+                entity.attackEntityFrom(DamageSource.HOT_FLOOR, 1f + ((float) temp - 333) * 0.05f);
+                if (temp > 373) { // +100C
+                    entity.setFire(3);
                 }
-            });
-        }
+            } else if (temp < 243) { // -30C
+                int durationTicks = (int) ((243 - temp) * 2);
+                int amplifier = (int) ((243 - temp) / 20);
+                ((LivingEntity) entity).addPotionEffect(new EffectInstance(Effects.SLOWNESS, durationTicks, amplifier));
+                if (temp < 213) { // -60C
+                    entity.attackEntityFrom(DamageSourcePneumaticCraft.FREEZING, 2);
+                }
+            }
+        });
     }
 }

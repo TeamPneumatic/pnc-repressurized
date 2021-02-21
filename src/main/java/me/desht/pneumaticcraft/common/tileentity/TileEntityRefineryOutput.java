@@ -28,8 +28,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Map;
 
-public class TileEntityRefineryOutput extends TileEntityTickableBase
-        implements IRedstoneControl<TileEntityRefineryOutput>, IComparatorSupport, ISerializableTanks, INamedContainerProvider {
+public class TileEntityRefineryOutput extends TileEntityTickableBase implements
+        IRedstoneControl<TileEntityRefineryOutput>, IComparatorSupport, ISerializableTanks,
+        INamedContainerProvider, IHeatExchangingTE {
 
     private TileEntityRefineryController controllerTE = null;
 
@@ -137,6 +138,11 @@ public class TileEntityRefineryOutput extends TileEntityTickableBase
     @Override
     public LazyOptional<IHeatExchangerLogic> getHeatCap(Direction side) {
         return heatCap;
+    }
+
+    @Override
+    public IHeatExchangerLogic getHeatExchanger(Direction dir) {
+        return heatExchanger;
     }
 
     private static class TankWrapper implements IFluidHandler {

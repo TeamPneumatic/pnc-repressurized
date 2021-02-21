@@ -11,6 +11,7 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketBlockDestroyed;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.tileentity.IComparatorSupport;
+import me.desht.pneumaticcraft.common.tileentity.IHeatExchangingTE;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPneumaticBase;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
@@ -168,8 +169,9 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
             if (stack.hasDisplayName() && te instanceof TileEntityBase) {
                 ((TileEntityBase) te).setCustomName(stack.getDisplayName());
             }
-            te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY)
-                    .ifPresent(logic -> logic.setTemperature(HeatExchangerLogicAmbient.atPosition(world, pos).getAmbientTemperature()));
+            if (te instanceof IHeatExchangingTE) {
+                ((IHeatExchangingTE) te).getHeatExchanger().setTemperature(HeatExchangerLogicAmbient.getAmbientTemperature(world, pos));
+            }
         }
     }
 

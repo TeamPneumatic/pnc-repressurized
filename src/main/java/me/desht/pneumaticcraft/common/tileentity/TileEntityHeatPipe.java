@@ -16,7 +16,7 @@ import net.minecraftforge.items.IItemHandler;
 
 import java.util.function.BiPredicate;
 
-public class TileEntityHeatPipe extends TileEntityTickableBase implements ICamouflageableTE {
+public class TileEntityHeatPipe extends TileEntityTickableBase implements ICamouflageableTE, IHeatExchangingTE {
     private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
     private final LazyOptional<IHeatExchangerLogic> heatCap = LazyOptional.of(() -> heatExchanger);
 
@@ -84,5 +84,10 @@ public class TileEntityHeatPipe extends TileEntityTickableBase implements ICamou
     public void setCamouflage(BlockState state) {
         camoState = state;
         ICamouflageableTE.syncToClient(this);
+    }
+
+    @Override
+    public IHeatExchangerLogic getHeatExchanger(Direction dir) {
+        return heatExchanger;
     }
 }

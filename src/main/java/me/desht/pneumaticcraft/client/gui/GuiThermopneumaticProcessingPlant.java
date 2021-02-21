@@ -65,7 +65,7 @@ public class GuiThermopneumaticProcessingPlant extends
         } else {
             tempWidget.setOperatingRange(null);
         }
-        te.getHeatCap(null).ifPresent(l -> tempWidget.setTemperature(l.getTemperatureAsInt()));
+        tempWidget.setTemperature(te.getHeatExchanger().getTemperatureAsInt());
         tempWidget.autoScaleForTemperature();
 
         if (hasShiftDown()) {

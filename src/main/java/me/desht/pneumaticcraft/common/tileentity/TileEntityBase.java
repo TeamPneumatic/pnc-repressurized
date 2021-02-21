@@ -184,7 +184,10 @@ public abstract class TileEntityBase extends TileEntity
         upgradeCache.validate();
 
         if (!world.isRemote) {
-            getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY).ifPresent(IHeatExchangerLogic::tick);
+            if (this instanceof IHeatExchangingTE) {
+                // tick primary heat exchanger; if the TE has other exchangers, they are handled in the subclass
+                ((IHeatExchangingTE) this).getHeatExchanger().tick();
+            }
 
             if (this instanceof IAutoFluidEjecting && getUpgrades(EnumUpgrade.DISPENSER) > 0) {
                 ((IAutoFluidEjecting) this).autoExportFluid(this);
@@ -211,7 +214,7 @@ public abstract class TileEntityBase extends TileEntity
     }
 
     protected void onFirstServerTick() {
-        initializeHullHeatExchangers();
+        if (this instanceof IHeatExchangingTE) initializeHullHeatExchangers();
     }
 
     protected void updateNeighbours() {
@@ -271,14 +274,12 @@ public abstract class TileEntityBase extends TileEntity
         if (customName != null) {
             tag.putString("CustomName", ITextComponent.Serializer.toJson(customName));
         }
-
         if (getUpgradeHandler().getSlots() > 0) {
             tag.put(NBTKeys.NBT_UPGRADE_INVENTORY, getUpgradeHandler().serializeNBT());
         }
-
-        getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY)
-                .ifPresent(logic -> tag.put(NBTKeys.NBT_HEAT_EXCHANGER, logic.serializeNBT()));
-
+        if (this instanceof IHeatExchangingTE) {
+            tag.put(NBTKeys.NBT_HEAT_EXCHANGER, ((IHeatExchangingTE) this).getHeatExchanger().serializeNBT());
+        }
         if (this instanceof IRedstoneControl) {
             ((IRedstoneControl<?>) this).getRedstoneController().serialize(tag);
         }
@@ -297,14 +298,12 @@ public abstract class TileEntityBase extends TileEntity
         if (tag.contains("CustomName", Constants.NBT.TAG_STRING)) {
             customName = ITextComponent.Serializer.getComponentFromJson(tag.getString("CustomName"));
         }
-
         if (tag.contains(NBTKeys.NBT_UPGRADE_INVENTORY) && getUpgradeHandler() != null) {
             getUpgradeHandler().deserializeNBT(tag.getCompound(NBTKeys.NBT_UPGRADE_INVENTORY));
         }
-
-        getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY)
-                .ifPresent(logic -> logic.deserializeNBT(tag.getCompound(NBTKeys.NBT_HEAT_EXCHANGER)));
-
+        if (this instanceof IHeatExchangingTE) {
+            ((IHeatExchangingTE) this).getHeatExchanger().deserializeNBT(tag.getCompound(NBTKeys.NBT_HEAT_EXCHANGER));
+        }
         if (this instanceof IRedstoneControl) {
             ((IRedstoneControl<?>) this).getRedstoneController().deserialize(tag);
         }
@@ -406,7 +405,7 @@ public abstract class TileEntityBase extends TileEntity
     }
 
     public void onNeighborBlockUpdate() {
-        if (getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY).isPresent()) {
+        if (this instanceof IHeatExchangingTE) {
             initializeHullHeatExchangers();
         }
         if (this instanceof IRedstoneControl) {
@@ -420,8 +419,8 @@ public abstract class TileEntityBase extends TileEntity
     private void initializeHullHeatExchangers() {
         Map<IHeatExchangerLogic, List<Direction>> map = new IdentityHashMap<>();
         for (Direction side : Direction.VALUES) {
-            getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY, side)
-                    .ifPresent(logic -> map.computeIfAbsent(logic, k -> new ArrayList<>()).add(side));
+            IHeatExchangerLogic logic = ((IHeatExchangingTE) this).getHeatExchanger(side);
+            if (logic != null) map.computeIfAbsent(logic, k -> new ArrayList<>()).add(side);
         }
         map.forEach((logic, sides) ->
                 logic.initializeAsHull(getWorld(), getPos(), heatExchangerBlockFilter(), sides.toArray(new Direction[0])));
@@ -519,23 +518,24 @@ public abstract class TileEntityBase extends TileEntity
     }
 
     @Nonnull
+    @Override
+    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+        if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
+            return getInventoryCap().cast();
+        } else if (cap == PNCCapabilities.HEAT_EXCHANGER_CAPABILITY) {
+            return getHeatCap(side).cast();
+        }
+        return super.getCapability(cap, side);
+    }
+
+    @Nonnull
     protected LazyOptional<IItemHandler> getInventoryCap() {
         // for internal use only!
         return LazyOptional.empty();
     }
 
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (cap == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
-            return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.orEmpty(cap, getInventoryCap());
-        } else if (cap == PNCCapabilities.HEAT_EXCHANGER_CAPABILITY) {
-            return PNCCapabilities.HEAT_EXCHANGER_CAPABILITY.orEmpty(cap, getHeatCap(side));
-        }
-        return super.getCapability(cap, side);
-    }
-
     public LazyOptional<IHeatExchangerLogic> getHeatCap(Direction side) {
+        // for internal use only!
         return LazyOptional.empty();
     }
 

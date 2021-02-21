@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.client.gui;
 
-import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetEnergy;
@@ -57,7 +56,7 @@ public class GuiFluxCompressor extends GuiPneumaticContainerBase<ContainerFluxCo
 
         inputStat.setText(getOutputStat());
 
-        te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY).ifPresent(h -> tempWidget.setTemperature(h.getTemperatureAsInt()));
+        tempWidget.setTemperature(te.getHeatExchanger().getTemperatureAsInt());
         tempWidget.autoScaleForTemperature();
     }
 

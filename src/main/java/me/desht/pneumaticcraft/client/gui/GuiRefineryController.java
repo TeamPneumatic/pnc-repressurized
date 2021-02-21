@@ -2,9 +2,7 @@ package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
-import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
@@ -48,7 +46,7 @@ public class GuiRefineryController extends GuiPneumaticContainerBase<ContainerRe
         // "te" always refers to the master refinery; the bottom block of the stack
         outputs = new ArrayList<>();
         TileEntity te1 = te.findAdjacentOutput();
-        if (te1 instanceof TileEntityRefineryOutput) {
+        if (te1 != null) {
             int i = 0;
             do {
                 TileEntityRefineryOutput teRO = (TileEntityRefineryOutput) te1;
@@ -76,7 +74,7 @@ public class GuiRefineryController extends GuiPneumaticContainerBase<ContainerRe
         } else {
             widgetTemperature.setOperatingRange(null);
         }
-        te.getHeatCap(null).ifPresent(l -> widgetTemperature.setTemperature(l.getTemperatureAsInt()));
+        widgetTemperature.setTemperature(te.getHeatExchanger().getTemperatureAsInt());
         widgetTemperature.autoScaleForTemperature();
     }
 
@@ -109,9 +107,7 @@ public class GuiRefineryController extends GuiPneumaticContainerBase<ContainerRe
     public void addProblems(List<ITextComponent> curInfo) {
         super.addProblems(curInfo);
 
-        int temp = te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY)
-                .map(IHeatExchangerLogic::getTemperatureAsInt).orElseThrow(RuntimeException::new);
-        if (temp < te.minTemp) {
+        if (te.getHeatExchanger().getTemperatureAsInt() < te.minTemp) {
             curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.notEnoughHeat"));
         }
         if (te.getInputTank().getFluidAmount() < 10) {

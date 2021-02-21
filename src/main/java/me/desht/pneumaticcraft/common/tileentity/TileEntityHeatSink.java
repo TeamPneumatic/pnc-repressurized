@@ -5,12 +5,13 @@ import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicAmbient;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
+import net.minecraft.block.BlockState;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.common.util.LazyOptional;
 
 public class TileEntityHeatSink extends TileEntityCompressedIronBlock {
-
     private final IHeatExchangerLogic airExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
 
     private double ambientTemp;
@@ -32,8 +33,20 @@ public class TileEntityHeatSink extends TileEntityCompressedIronBlock {
     protected void onFirstServerTick() {
         super.onFirstServerTick();
 
-        ambientTemp = HeatExchangerLogicAmbient.atPosition(getWorld(), getPos()).getTemperature();
+        ambientTemp = HeatExchangerLogicAmbient.getAmbientTemperature(getWorld(), getPos());
         airExchanger.setTemperature(ambientTemp);
+    }
+
+    @Override
+    public CompoundNBT write(CompoundNBT tag) {
+        tag.put("airExchanger", airExchanger.serializeNBT());
+        return super.write(tag);
+    }
+
+    @Override
+    public void read(BlockState state, CompoundNBT tag) {
+        super.read(state, tag);
+        airExchanger.deserializeNBT(tag.getCompound("airExchanger"));
     }
 
     @Override

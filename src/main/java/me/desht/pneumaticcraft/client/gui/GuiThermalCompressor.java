@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
+import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
@@ -52,11 +52,9 @@ public class GuiThermalCompressor extends GuiPneumaticContainerBase<ContainerThe
     }
 
     private int getTemperatureDifferential(Direction side) {
-        int temp1 = te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY, side)
-                .orElseThrow(RuntimeException::new).getTemperatureAsInt();
-        int temp2 = te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY, side.getOpposite())
-                .orElseThrow(RuntimeException::new).getTemperatureAsInt();
-        return Math.abs(temp1 - temp2);
+        IHeatExchangerLogic l1 = te.getHeatExchanger(side);
+        IHeatExchangerLogic l2 = te.getHeatExchanger(side.getOpposite());
+        return l1 != null && l2 != null ? Math.abs(l1.getTemperatureAsInt() - l2.getTemperatureAsInt()) : 0;
     }
 
     @Override

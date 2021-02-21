@@ -37,7 +37,7 @@ import javax.annotation.Nullable;
 import java.util.Map;
 
 public class TileEntityEtchingTank extends TileEntityTickableBase
-        implements INamedContainerProvider, ISerializableTanks {
+        implements INamedContainerProvider, ISerializableTanks, IHeatExchangingTE {
     public static final int ETCHING_SLOTS = 25;
 
     private final EtchingTankHandler itemHandler = new EtchingTankHandler();
@@ -219,6 +219,11 @@ public class TileEntityEtchingTank extends TileEntityTickableBase
         itemHandler.deserializeNBT(tag.getCompound("Inventory"));
         outputHandler.deserializeNBT(tag.getCompound("Output"));
         failedHandler.deserializeNBT(tag.getCompound("Failed"));
+    }
+
+    @Override
+    public IHeatExchangerLogic getHeatExchanger(Direction dir) {
+        return heatExchanger;
     }
 
     private class EtchingTankHandler extends BaseItemStackHandler {

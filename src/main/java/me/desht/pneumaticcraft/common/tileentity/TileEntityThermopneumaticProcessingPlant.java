@@ -48,7 +48,7 @@ import java.util.Set;
 
 public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumaticBase implements
         IMinWorkingPressure, IRedstoneControl<TileEntityThermopneumaticProcessingPlant>, ISerializableTanks,
-        IAutoFluidEjecting, INamedContainerProvider, IComparatorSupport {
+        IAutoFluidEjecting, INamedContainerProvider, IComparatorSupport, IHeatExchangingTE {
 
     private static final int INVENTORY_SIZE = 1;
     private static final int CRAFTING_TIME = 60 * 100;  // 60 ticks base crafting time
@@ -300,6 +300,11 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
     public static void clearCachedItemsAndFluids() {
         acceptedItemCache.clear();
         acceptedFluidCache.clear();
+    }
+
+    @Override
+    public IHeatExchangerLogic getHeatExchanger(Direction dir) {
+        return heatExchanger;
     }
 
     private class ThermopneumaticFluidTankInput extends SmartSyncTank {

@@ -5,6 +5,7 @@ import net.minecraft.util.text.IFormattableTextComponent;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
+@FunctionalInterface
 public interface IRedstoneControl<T extends TileEntity & IRedstoneControl<T>> {
     /**
      * Get the redstone controller object for this TE

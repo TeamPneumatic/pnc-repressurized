@@ -1,11 +1,11 @@
 package me.desht.pneumaticcraft.client.gui;
 
-import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTemperature;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.inventory.ContainerLiquidCompressor;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityAdvancedLiquidCompressor;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
@@ -32,7 +32,7 @@ public class GuiAdvancedLiquidCompressor extends GuiLiquidCompressor {
     public void tick() {
         super.tick();
 
-        te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY).ifPresent(h -> tempWidget.setTemperature(h.getTemperatureAsInt()));
+        tempWidget.setTemperature(((TileEntityAdvancedLiquidCompressor) te).getHeatExchanger().getTemperatureAsInt());
         tempWidget.autoScaleForTemperature();
     }
 

@@ -13,7 +13,7 @@ import net.minecraft.util.Direction;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 
-public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHeatTinted {
+public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHeatTinted, IHeatExchangingTE {
     private final IHeatExchangerLogic coldHeatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
     private final LazyOptional<IHeatExchangerLogic> coldHeatCap = LazyOptional.of(() -> coldHeatExchanger);
     private final IHeatExchangerLogic hotHeatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
@@ -58,6 +58,7 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
     @Override
     public CompoundNBT write(CompoundNBT tag) {
         super.write(tag);
+        // hot side heat exchanger is the default, and handled in superclass
         tag.put("coldHeat", coldHeatExchanger.serializeNBT());
         tag.put("connector", connectingExchanger.serializeNBT());
         return tag;
@@ -67,6 +68,7 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
     public void read(BlockState state, CompoundNBT tag) {
         super.read(state, tag);
 
+        // hot side heat exchanger is the default, and handled in superclass
         coldHeatExchanger.deserializeNBT(tag.getCompound("coldHeat"));
         connectingExchanger.deserializeNBT(tag.getCompound("connector"));
     }
@@ -102,6 +104,17 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
             case 1: return HeatUtil.getColourForTemperature(syncHot.getSyncedTemp());
             case 2: return HeatUtil.getColourForTemperature(syncCold.getSyncedTemp());
             default: return HeatUtil.getColourForTemperature(300);
+        }
+    }
+
+    @Override
+    public IHeatExchangerLogic getHeatExchanger(Direction dir) {
+        if (dir == null || dir == getRotation().getOpposite()) {
+            return hotHeatExchanger;
+        } else if (dir == getRotation()) {
+            return coldHeatExchanger;
+        } else {
+            return null;
         }
     }
 }

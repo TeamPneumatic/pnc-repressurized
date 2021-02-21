@@ -28,7 +28,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class TileEntityFluxCompressor extends TileEntityPneumaticBase
-        implements IRedstoneControl<TileEntityFluxCompressor>, INamedContainerProvider {
+        implements IRedstoneControl<TileEntityFluxCompressor>, INamedContainerProvider, IHeatExchangingTE {
     private static final int BASE_FE_PRODUCTION = 40;
     private final PneumaticEnergyStorage energy = new PneumaticEnergyStorage(100000);
     private final LazyOptional<IEnergyStorage> energyCap = LazyOptional.of(() -> energy);
@@ -154,5 +154,10 @@ public class TileEntityFluxCompressor extends TileEntityPneumaticBase
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
         return new ContainerEnergy<>(ModContainers.FLUX_COMPRESSOR.get(), i, playerInventory, getPos());
+    }
+
+    @Override
+    public IHeatExchangerLogic getHeatExchanger(Direction dir) {
+        return heatExchanger;
     }
 }

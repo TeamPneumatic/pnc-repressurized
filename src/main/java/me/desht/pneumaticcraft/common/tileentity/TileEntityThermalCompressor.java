@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 public class TileEntityThermalCompressor extends TileEntityPneumaticBase
-        implements IHeatTinted, IRedstoneControl<TileEntityThermalCompressor>, INamedContainerProvider {
+        implements IHeatTinted, IRedstoneControl<TileEntityThermalCompressor>, INamedContainerProvider, IHeatExchangingTE {
     private static final double AIR_GEN_MULTIPLIER = 0.05;  // mL per degree of difference
 
     // track running air generation amounts; won't be added to the air handler until > 1.0
@@ -102,6 +102,7 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase
         }
     }
 
+    @Override
     public IHeatExchangerLogic getHeatExchanger(Direction side) {
         return heatExchangers[side.getHorizontalIndex()];
     }

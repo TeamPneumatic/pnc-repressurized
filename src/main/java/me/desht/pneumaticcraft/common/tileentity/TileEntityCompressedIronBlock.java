@@ -12,7 +12,7 @@ import net.minecraft.util.Direction;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 
-public class TileEntityCompressedIronBlock extends TileEntityTickableBase implements IComparatorSupport, IHeatTinted {
+public class TileEntityCompressedIronBlock extends TileEntityTickableBase implements IComparatorSupport, IHeatTinted, IHeatExchangingTE {
 
     protected final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
     private final LazyOptional<IHeatExchangerLogic> heatCap = LazyOptional.of(() -> heatExchanger);
@@ -73,5 +73,10 @@ public class TileEntityCompressedIronBlock extends TileEntityTickableBase implem
     @Override
     public TintColor getColorForTintIndex(int tintIndex) {
         return HeatUtil.getColourForTemperature(syncedTemperature.getSyncedTemp());
+    }
+
+    @Override
+    public IHeatExchangerLogic getHeatExchanger(Direction dir) {
+        return heatExchanger;
     }
 }

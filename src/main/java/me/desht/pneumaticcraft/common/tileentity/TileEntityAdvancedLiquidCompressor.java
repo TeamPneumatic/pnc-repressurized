@@ -15,7 +15,7 @@ import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nullable;
 
-public class TileEntityAdvancedLiquidCompressor extends TileEntityLiquidCompressor {
+public class TileEntityAdvancedLiquidCompressor extends TileEntityLiquidCompressor implements IHeatExchangingTE {
 
     @GuiSynced
     private final IHeatExchangerLogic heatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
@@ -50,5 +50,10 @@ public class TileEntityAdvancedLiquidCompressor extends TileEntityLiquidCompress
     @Override
     public LazyOptional<IHeatExchangerLogic> getHeatCap(Direction side) {
         return heatCap;
+    }
+
+    @Override
+    public IHeatExchangerLogic getHeatExchanger(Direction dir) {
+        return heatExchanger;
     }
 }

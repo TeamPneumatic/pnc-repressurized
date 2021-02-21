@@ -28,6 +28,10 @@ public class HeatExchangerLogicAmbient extends HeatExchangerLogicConstant {
         return exchangers.computeIfAbsent(temp, HeatExchangerLogicAmbient::new);
     }
 
+    public static double getAmbientTemperature(IWorld world, BlockPos pos) {
+        return atPosition(world, pos).getAmbientTemperature();
+    }
+
     private HeatExchangerLogicAmbient(double temperature) {
         super(temperature, Heat.airThermalResistance);
     }

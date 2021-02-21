@@ -29,7 +29,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implements
-        IRedstoneControl<TileEntityPneumaticDynamo>, IMinWorkingPressure, INamedContainerProvider {
+        IRedstoneControl<TileEntityPneumaticDynamo>, IMinWorkingPressure,
+        INamedContainerProvider, IHeatExchangingTE {
 
     private final PneumaticEnergyStorage energy = new PneumaticEnergyStorage(100000);
     private final LazyOptional<IEnergyStorage> energyCap = LazyOptional.of(() -> energy);
@@ -166,5 +167,11 @@ public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implement
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
         return new ContainerEnergy<TileEntityPneumaticDynamo>(ModContainers.PNEUMATIC_DYNAMO.get(), i, playerInventory, getPos());
+    }
+
+    @Nullable
+    @Override
+    public IHeatExchangerLogic getHeatExchanger(Direction dir) {
+        return heatExchanger;
     }
 }

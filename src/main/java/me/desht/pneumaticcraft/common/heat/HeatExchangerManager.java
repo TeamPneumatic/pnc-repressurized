@@ -40,6 +40,7 @@ public enum HeatExchangerManager implements IHeatRegistry {
     public LazyOptional<IHeatExchangerLogic> getLogic(World world, BlockPos pos, Direction side, BiPredicate<IWorld,BlockPos> blockFilter) {
         if (!world.isAreaLoaded(pos, 0)) return LazyOptional.empty();
         TileEntity te = world.getTileEntity(pos);
+        // important: use cap here, not IHeatExchangingTE interface
         if (te != null && te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY, side).isPresent()) {
             return te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY, side);
         } else {

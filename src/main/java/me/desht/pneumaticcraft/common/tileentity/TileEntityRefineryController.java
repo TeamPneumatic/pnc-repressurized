@@ -41,8 +41,9 @@ import java.util.Map;
 import java.util.stream.IntStream;
 
 public class TileEntityRefineryController extends TileEntityTickableBase
-        implements IRedstoneControl<TileEntityRefineryController>, IComparatorSupport, ISerializableTanks, INamedContainerProvider {
-
+        implements IRedstoneControl<TileEntityRefineryController>, IComparatorSupport, ISerializableTanks,
+        INamedContainerProvider, IHeatExchangingTE
+{
     @GuiSynced
     @DescSynced
     private final RefineryInputTank inputTank = new RefineryInputTank(PneumaticValues.NORMAL_TANK_CAPACITY);
@@ -347,6 +348,11 @@ public class TileEntityRefineryController extends TileEntityTickableBase
     @Override
     public LazyOptional<IHeatExchangerLogic> getHeatCap(Direction side) {
         return heatCap;
+    }
+
+    @Override
+    public IHeatExchangerLogic getHeatExchanger(Direction dir) {
+        return heatExchanger;
     }
 
     private class RefineryInputTank extends SmartSyncTank {
