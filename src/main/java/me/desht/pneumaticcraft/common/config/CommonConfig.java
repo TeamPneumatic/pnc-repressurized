@@ -43,6 +43,8 @@ public class CommonConfig {
         ForgeConfigSpec.IntValue pneumaticPumpEfficiency;
         ForgeConfigSpec.DoubleValue speedUpgradeSpeedMultiplier;
         ForgeConfigSpec.DoubleValue speedUpgradeUsageMultiplier;
+        ForgeConfigSpec.ConfigValue<List<String>> seismicSensorFluids;
+        ForgeConfigSpec.ConfigValue<List<String>> seismicSensorFluidTags;
     }
     public static class Armor {
         ForgeConfigSpec.IntValue jetBootsAirUsage;
@@ -293,6 +295,16 @@ public class CommonConfig {
                 .comment("Fuel usage / heat gen multiplier per speed upgrade: usage mult = speedUpgradeUsageMultiplier ^ num_of_speed_upgrades")
                 .translation("pneumaticcraft.config.common.machine_properties.speed_upgrade_usage_multiplier")
                 .defineInRange("speed_upgrade_usage_multiplier", PneumaticValues.DEF_SPEED_UPGRADE_USAGE_MULTIPLIER, 1.0, 2.0);
+        machines.seismicSensorFluids = builder
+                .worldRestart()
+                .comment("Fluid registry ID's that the Seismic Sensor will search for. It's recommended to use 'seismicSensorFluidTags' where possible, but this setting can be used if you want to add fluids which don't have any associated fluid tags.")
+                .translation("pneumaticcraft.config.common.machines.seismic_sensor_fluids")
+                .define("seismic_sensor_fluids", Lists.newArrayList());
+        machines.seismicSensorFluidTags = builder
+                .worldRestart()
+                .comment("Fluid tag names that the Seismic Sensor will search for. Known vanilla tags are 'minecraft:water' and 'minecraft:lava'. Other available fluid tags are mod-dependent.")
+                .translation("pneumaticcraft.config.common.machines.seismic_sensor_fluid_tags")
+                .define("seismic_sensor_fluid_tags", Lists.newArrayList("forge:crude_oil"));
         builder.pop();
 
         builder.push("Pneumatic Armor");

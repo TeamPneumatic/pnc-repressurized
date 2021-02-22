@@ -660,4 +660,14 @@ public class PneumaticCraftUtils {
         double dist = getPlayerReachDistance(player);
         return player.getDistanceSq(Vector3d.copyCentered(pos)) <= dist * dist;
     }
+
+    /**
+     * In 1.17 this will become non-trivial.  Adding it now to make porting easier in future.
+     *
+     * @param world the world
+     * @return minimum height allowed for this world.
+     */
+    public static int getMinHeight(@SuppressWarnings("unused") World world) {
+        return 0;
+    }
 }

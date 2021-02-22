@@ -1,22 +1,32 @@
 package me.desht.pneumaticcraft.common.item;
 
-import me.desht.pneumaticcraft.common.core.ModFluids;
+import com.google.common.collect.Sets;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.FluidState;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemUseContext;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
+import net.minecraftforge.registries.ForgeRegistries;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.Stack;
 
 public class ItemSeismicSensor extends Item {
+    private static final int MAX_SEARCH = 500;
+
+    private static final Set<ResourceLocation> fluidsOfInterest = new HashSet<>();
+    private static boolean needRecache = true;  // recache on first startup & when tags are reloaded
+
     public ItemSeismicSensor() {
         super(ModItems.defaultProps().maxStackSize(1));
     }
@@ -24,41 +34,67 @@ public class ItemSeismicSensor extends Item {
     @Override
     public ActionResultType onItemUse(ItemUseContext ctx) {
         World world = ctx.getWorld();
-        BlockPos pos = ctx.getPos();
         PlayerEntity player = ctx.getPlayer();
-        if (!world.isRemote) {
-            int startY = pos.getY();
-            while (pos.getY() > 0) {
-                pos = pos.offset(Direction.DOWN);
-                if (isOil(world, pos)) {
-                    Set<BlockPos> oilPositions = new HashSet<>();
-                    Stack<BlockPos> pendingPositions = new Stack<>();
-                    pendingPositions.add(new BlockPos(pos));
-                    while (!pendingPositions.empty()) {
-                        BlockPos checkingPos = pendingPositions.pop();
-                        for (Direction d : Direction.values()) {
-                            BlockPos newPos = checkingPos.offset(d);
-                            if (isOil(world, newPos) && oilPositions.add(newPos)) {
-                                pendingPositions.add(newPos);
-                            }
-                        }
-                    }
+        if (!world.isRemote && player != null) {
+            BlockPos.Mutable searchPos = ctx.getPos().toMutable();
+            while (searchPos.getY() > PneumaticCraftUtils.getMinHeight(world)) {
+                searchPos.move(Direction.DOWN);
+                Fluid fluid = findFluid(world, searchPos);
+                if (fluid != null) {
+                    Set<BlockPos> fluidPositions = findLake(world, searchPos.toImmutable(), fluid);
+                    int count = Math.max(1, fluidPositions.size() / 10 * 10);
                     player.sendStatusMessage(new TranslationTextComponent(
                             "pneumaticcraft.message.seismicSensor.foundOilDetails",
-                            TextFormatting.GREEN.toString() + (startY - pos.getY()),
-                            TextFormatting.GREEN.toString() + oilPositions.size() / 10 * 10),
+                            new TranslationTextComponent(fluid.getAttributes().getTranslationKey()),
+                            TextFormatting.GREEN.toString() + (ctx.getPos().getY() - searchPos.getY()),
+                            TextFormatting.GREEN.toString() + count),
                             false);
+                    world.playSound(null, ctx.getPos(), SoundEvents.BLOCK_NOTE_BLOCK_CHIME, SoundCategory.PLAYERS, 1f, 1f);
                     return ActionResultType.SUCCESS;
                 }
             }
             player.sendStatusMessage(new TranslationTextComponent("pneumaticcraft.message.seismicSensor.noOilFound"), false);
         }
         return ActionResultType.SUCCESS; // we don't want to use the item.
-
     }
 
-    private boolean isOil(World world, BlockPos pos) {
-        // TODO 1.14 make more tag-friendly
-        return world.getFluidState(pos).getFluid() == ModFluids.OIL.get();
+    private Fluid findFluid(World world, BlockPos pos) {
+        if (needRecache) {
+            fluidsOfInterest.clear();
+            for (Fluid f : ForgeRegistries.FLUIDS.getValues()) {
+                if (!Sets.intersection(f.getTags(), PNCConfig.Common.Machines.seismicSensorFluidTags).isEmpty()) {
+                    fluidsOfInterest.add(f.getRegistryName());
+                } else if (PNCConfig.Common.Machines.seismicSensorFluids.contains(f.getRegistryName())) {
+                    fluidsOfInterest.add(f.getRegistryName());
+                }
+            }
+            needRecache = false;
+        }
+
+        FluidState state = world.getFluidState(pos);
+        return fluidsOfInterest.contains(state.getFluid().getRegistryName()) ? state.getFluid() : null;
+    }
+
+    private Set<BlockPos> findLake(World world, BlockPos searchPos, Fluid fluid) {
+        Set<BlockPos> fluidPositions = new HashSet<>();
+        Deque<BlockPos> pendingPositions = new ArrayDeque<>();
+        pendingPositions.add(searchPos);
+        while (!pendingPositions.isEmpty() && fluidPositions.size() < MAX_SEARCH) {
+            BlockPos checkingPos = pendingPositions.pop();
+            for (Direction d : Direction.values()) {
+                if (d != Direction.UP) {
+                    BlockPos newPos = checkingPos.offset(d);
+                    FluidState state = world.getFluidState(newPos);
+                    if (state.getFluid() == fluid && state.isSource() && fluidPositions.add(newPos)) {
+                        pendingPositions.add(newPos);
+                    }
+                }
+            }
+        }
+        return fluidPositions;
+    }
+
+    public static void clearCachedFluids() {
+        needRecache = true;
     }
 }

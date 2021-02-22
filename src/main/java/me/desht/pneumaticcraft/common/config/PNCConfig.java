@@ -84,6 +84,8 @@ public class PNCConfig {
             public static int pneumaticPumpEfficiency;
             public static double speedUpgradeSpeedMultiplier;
             public static double speedUpgradeUsageMultiplier;
+            public static Set<ResourceLocation> seismicSensorFluids;
+            public static Set<ResourceLocation> seismicSensorFluidTags;
         }
 
         public static class Armor {

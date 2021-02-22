@@ -94,6 +94,10 @@ public class ConfigHelper {
         PNCConfig.Common.Machines.pneumaticPumpEfficiency = common.machines.pneumaticPumpEfficiency.get();
         PNCConfig.Common.Machines.speedUpgradeSpeedMultiplier = common.machines.speedUpgradeSpeedMultiplier.get();
         PNCConfig.Common.Machines.speedUpgradeUsageMultiplier = common.machines.speedUpgradeUsageMultiplier.get();
+        PNCConfig.Common.Machines.seismicSensorFluids = common.machines.seismicSensorFluids.get()
+                .stream().map(resourceName -> new ResourceLocation(resourceName.toLowerCase())).collect(Collectors.toSet());
+        PNCConfig.Common.Machines.seismicSensorFluidTags = common.machines.seismicSensorFluidTags.get()
+                .stream().map(resourceName -> new ResourceLocation(resourceName.toLowerCase())).collect(Collectors.toSet());
 
         PNCConfig.Common.Armor.jetBootsAirUsage = common.armor.jetBootsAirUsage.get();
         PNCConfig.Common.Armor.armorStartupTime = common.armor.armorStartupTime.get();
