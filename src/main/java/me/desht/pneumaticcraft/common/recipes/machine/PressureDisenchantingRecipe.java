@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.recipes.machine;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import me.desht.pneumaticcraft.common.core.ModRecipes;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -39,8 +40,11 @@ public class PressureDisenchantingRecipe extends PressureChamberRecipeImpl {
             ItemStack stack = chamberHandler.getStackInSlot(i);
             if (stack.getItem() == Items.BOOK) {
                 bookSlot = i;
-            } else if (stack.getItem() != Items.ENCHANTED_BOOK && EnchantmentHelper.getEnchantments(stack).size() > 0) {
-                itemSlot = i;
+            } else {
+                int minEnchantments = stack.getItem() == Items.ENCHANTED_BOOK ? 2 : 1;
+                if (EnchantmentHelper.getEnchantments(stack).size() >= minEnchantments) {
+                    itemSlot = i;
+                }
             }
             if (bookSlot >= 0 && itemSlot >= 0) return ImmutableList.of(bookSlot, itemSlot);
         }
@@ -48,9 +52,9 @@ public class PressureDisenchantingRecipe extends PressureChamberRecipeImpl {
     }
 
     @Override
-    public NonNullList<ItemStack> craftRecipe(@Nonnull IItemHandler chamberHandler, List<Integer> ingredientSlots) {
-        ItemStack book = chamberHandler.extractItem(ingredientSlots.get(0), 1, false);
-        ItemStack enchantedStack = chamberHandler.extractItem(ingredientSlots.get(1), 1, false);
+    public NonNullList<ItemStack> craftRecipe(@Nonnull IItemHandler chamberHandler, List<Integer> ingredientSlots, boolean simulate) {
+        ItemStack book = chamberHandler.extractItem(ingredientSlots.get(0), 1, simulate);
+        ItemStack enchantedStack = chamberHandler.extractItem(ingredientSlots.get(1), 1, simulate);
 
         if (book.isEmpty() || enchantedStack.isEmpty()) return NonNullList.create();
 
@@ -60,6 +64,10 @@ public class PressureDisenchantingRecipe extends PressureChamberRecipeImpl {
         Enchantment strippedEnchantment = l.get(ThreadLocalRandom.current().nextInt(l.size()));
         int level = enchantments.get(strippedEnchantment);
         enchantments.remove(strippedEnchantment);
+        // Workaround for setEnchantments on an Enchanted Book merging enchantments instead of setting them
+        if (enchantedStack.getItem() == Items.ENCHANTED_BOOK) {
+            enchantedStack = new ItemStack(Items.ENCHANTED_BOOK);
+        }
         EnchantmentHelper.setEnchantments(enchantments, enchantedStack);
 
         // ...and create an enchanted book with it
@@ -73,16 +81,29 @@ public class PressureDisenchantingRecipe extends PressureChamberRecipeImpl {
     public List<Ingredient> getInputsForDisplay() {
         ItemStack pick = new ItemStack(Items.DIAMOND_PICKAXE);
         pick.addEnchantment(Enchantments.FORTUNE, 1);
+        ItemStack enchantedBook = new ItemStack(Items.ENCHANTED_BOOK);
+        enchantedBook.addEnchantment(Enchantments.FORTUNE, 1);
+        enchantedBook.addEnchantment(Enchantments.EFFICIENCY, 1);
 
-        return ImmutableList.of(Ingredient.fromStacks(pick), Ingredient.fromItems(Items.BOOK));
+        return ImmutableList.of(Ingredient.fromStacks(pick, enchantedBook), Ingredient.fromItems(Items.BOOK));
     }
 
     @Override
-    public NonNullList<ItemStack> getResultsForDisplay() {
+    public List<List<ItemStack>> getResultsForDisplay() {
         ItemStack pick = new ItemStack(Items.DIAMOND_PICKAXE);
-        ItemStack book = new ItemStack(Items.ENCHANTED_BOOK);
-        book.addEnchantment(Enchantments.FORTUNE, 1);
-        return NonNullList.from(ItemStack.EMPTY, pick, book);
+        ItemStack enchantedBook = new ItemStack(Items.ENCHANTED_BOOK);
+        enchantedBook.addEnchantment(Enchantments.EFFICIENCY, 1);
+        ItemStack resultBook = new ItemStack(Items.ENCHANTED_BOOK);
+        resultBook.addEnchantment(Enchantments.FORTUNE, 1);
+        return ImmutableList.of(ImmutableList.of(pick, enchantedBook), ImmutableList.of(resultBook));
+    }
+
+    @Override
+    public List<Set<RecipeSlot>> getSyncGroupsForDisplay() {
+        return ImmutableList.of(ImmutableSet.of(
+                new RecipeSlot(true, 0),
+                new RecipeSlot(false, 0)
+        ));
     }
 
     @Override

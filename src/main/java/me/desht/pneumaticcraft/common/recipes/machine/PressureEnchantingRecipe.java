@@ -66,7 +66,7 @@ public class PressureEnchantingRecipe extends PressureChamberRecipeImpl {
     }
 
     @Override
-    public NonNullList<ItemStack> craftRecipe(@Nonnull IItemHandler chamberHandler, List<Integer> ingredientSlots) {
+    public NonNullList<ItemStack> craftRecipe(@Nonnull IItemHandler chamberHandler, List<Integer> ingredientSlots, boolean simulate) {
         ItemStack enchantedBook = chamberHandler.getStackInSlot(ingredientSlots.get(0));
         ItemStack enchantable = chamberHandler.getStackInSlot(ingredientSlots.get(1)).copy();
 
@@ -91,8 +91,8 @@ public class PressureEnchantingRecipe extends PressureChamberRecipeImpl {
             bookEnchantments.forEach(newBook::addEnchantment);
         }
 
-        chamberHandler.extractItem(ingredientSlots.get(0), 1, false);
-        chamberHandler.extractItem(ingredientSlots.get(1), 1, false);
+        chamberHandler.extractItem(ingredientSlots.get(0), 1, simulate);
+        chamberHandler.extractItem(ingredientSlots.get(1), 1, simulate);
         return NonNullList.from(ItemStack.EMPTY, newBook, enchantable);
     }
 
@@ -105,7 +105,7 @@ public class PressureEnchantingRecipe extends PressureChamberRecipeImpl {
     }
 
     @Override
-    public NonNullList<ItemStack> getResultsForDisplay() {
+    public List<ItemStack> getSingleResultsForDisplay() {
         ItemStack pick = new ItemStack(Items.DIAMOND_PICKAXE);
         pick.addEnchantment(Enchantments.FORTUNE, 1);
         ItemStack book = new ItemStack(Items.BOOK);
