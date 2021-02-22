@@ -70,22 +70,28 @@ public abstract class PressureChamberRecipe extends PneumaticCraftRecipe {
     }
 
     /**
-     * Get the slot groups that are synchronized with each other.
+     * Get the slots that are synchronized with each other.
      * They must have the same cycle length and not intersect.
+     * <p>
+     * A sync group (represented by a set of {@link RecipeSlot}s) will have all its member's cycles synchronized
+     * should one of the members be the focus for a recipe lookup.
+     * <p>
+     * If you need more functionality, see {@link PressureChamberRecipe#getSyncForDisplay(SlotCycle)}.
      *
-     * @return List of slot groups
-     * @see PressureChamberRecipe#getSyncForDisplay(SlotCycle)
+     * @return List of sync groups represented by a set of {@link RecipeSlot}s
      */
     protected List<Set<RecipeSlot>> getSyncGroupsForDisplay() {
         return ImmutableList.of();
     }
 
     /**
-     * Get the slots that are synchronized with the given slot.
+     * Get the slots and associated cycles that are synchronized with the given focused slot and matched cycle indices.
      * Prefer overriding {@link PressureChamberRecipe#getSyncGroupsForDisplay()} unless you need special handling.
+     * <p>
+     * This method is called when a recipe lookup is done through JEI that has a focus.
      *
-     * @param focusedSlotCycle target slot
-     * @return synchronizations for the given slot
+     * @param focusedSlotCycle Slot and indices of the slot's cycle that matches with the focus
+     * @return Synchronizations for the given slot cycle
      */
     public Map<RecipeSlot, List<Integer>> getSyncForDisplay(SlotCycle focusedSlotCycle) {
         RecipeSlot focusedSlot = focusedSlotCycle.getSlot();
@@ -138,19 +144,34 @@ public abstract class PressureChamberRecipe extends PneumaticCraftRecipe {
         return "";
     }
 
+    /**
+     * Data object for type of slot and the index of the slot.
+     */
     public static final class RecipeSlot {
         private final boolean input;
         private final int index;
 
+        /**
+         * Create a data object to store the type of slot and the index of the slot.
+         *
+         * @param input true iff this is an input slot
+         * @param index index of the slot in the recipe
+         */
         public RecipeSlot(boolean input, int index) {
             this.input = input;
             this.index = index;
         }
 
+        /**
+         * Checks if this is an input slot.
+         */
         public boolean isInput() {
             return input;
         }
 
+        /**
+         * Get the index of the slot.
+         */
         public int getIndex() {
             return index;
         }
@@ -169,19 +190,34 @@ public abstract class PressureChamberRecipe extends PneumaticCraftRecipe {
         }
     }
 
+    /**
+     * Data object for storing a {@link RecipeSlot} and a cycle represented as a list indices for the slot.
+     */
     public static final class SlotCycle {
         private final RecipeSlot slot;
         private final ImmutableList<Integer> cycle;
 
+        /**
+         * Create a data object to store a {@link RecipeSlot} and a cycle represented as a list of indices for the slot.
+         *
+         * @param slot  Type of slot and the index of the slot
+         * @param cycle A cycle represented as a list of indices
+         */
         public SlotCycle(RecipeSlot slot, ImmutableList<Integer> cycle) {
             this.slot = slot;
             this.cycle = cycle;
         }
 
+        /**
+         * Get the {@link RecipeSlot} that this cycle belongs to.
+         */
         public RecipeSlot getSlot() {
             return slot;
         }
 
+        /**
+         * Get the cycle represented as a list of indices.
+         */
         public ImmutableList<Integer> getCycle() {
             return cycle;
         }
