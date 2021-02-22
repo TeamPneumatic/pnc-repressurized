@@ -77,7 +77,7 @@ public class PressureChamberRecipeImpl extends PressureChamberRecipe {
     }
 
     @Override
-    public NonNullList<ItemStack> getResultsForDisplay() {
+    protected List<ItemStack> getSingleResultsForDisplay() {
         return outputs;
     }
 
@@ -109,7 +109,7 @@ public class PressureChamberRecipeImpl extends PressureChamberRecipe {
 
     @Nonnull
     @Override
-    public NonNullList<ItemStack> craftRecipe(@Nonnull IItemHandler chamberHandler, List<Integer> ingredientSlots) {
+    public NonNullList<ItemStack> craftRecipe(@Nonnull IItemHandler chamberHandler, List<Integer> ingredientSlots, boolean simulate) {
         // remove the recipe's input items from the chamber
         for (Ingredient ingredient : inputs) {
             if (ingredient.hasNoMatchingItems()) return NonNullList.create(); // sanity check
@@ -117,7 +117,7 @@ public class PressureChamberRecipeImpl extends PressureChamberRecipe {
             for (int i = 0; i < ingredientSlots.size() && nItems > 0; i++) {
                 int slot = ingredientSlots.get(i);
                 if (ingredient.test(chamberHandler.getStackInSlot(slot))) {
-                    ItemStack extracted = chamberHandler.extractItem(slot, nItems, false);
+                    ItemStack extracted = chamberHandler.extractItem(slot, nItems, simulate);
                     nItems -= extracted.getCount();
                 }
             }

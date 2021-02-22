@@ -17,7 +17,7 @@
     {
       "type": "text",
       "title": "Applications",
-      "text": "The following uses exist for negative (vacuum) pressure:$(li)Disenchanting: place an $(item)enchanted item/$ and a vanilla $(item)Book/$ in a $(l:manufacturing/pressure_chamber)Pressure Chamber/$ and give the chamber sufficient negative pressure. A random enchantment will transfer from the item to the book.$(li)The $(l:tubes/air_grate_module)Air Grate Module/$, when given negative pressure, will attract entities to itself."
+      "text": "The following uses exist for negative (vacuum) pressure:$(li)Disenchanting: place an $(item)enchanted item/$ or $(item)Enchanted Book/$ with more than one enchantment and a vanilla $(item)Book/$ in a $(l:manufacturing/pressure_chamber)Pressure Chamber/$ and give the chamber sufficient negative pressure. A random enchantment will transfer from the item to the book.$(li)The $(l:tubes/air_grate_module)Air Grate Module/$, when given negative pressure, will attract entities to itself."
     },
     {
       "type": "text",
@@ -28,6 +28,11 @@
       "type": "crafting",
       "text": "Creating a Vacuum Pump",
       "recipe": "pneumaticcraft:vacuum_pump"
+    },
+    {
+      "type": "pneumaticcraft:pressure_chamber",
+      "header": "Vacuum Disenchanting",
+      "recipe": "pneumaticcraft:pressure_chamber/pressure_chamber_disenchanting"
     }
   ]
 }
