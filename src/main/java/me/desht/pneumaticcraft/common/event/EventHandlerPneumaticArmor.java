@@ -142,7 +142,7 @@ public class EventHandlerPneumaticArmor {
         if (event.getEntityLiving() instanceof PlayerEntity) {
             PlayerEntity player = (PlayerEntity) event.getEntityLiving();
 
-            if (isPneumaticArmorPiece(player, EquipmentSlotType.CHEST) && event.getSource().isFireDamage()) {
+            if (isPneumaticArmorPiece(player, EquipmentSlotType.CHEST) && event.getSource().isFireDamage() && !(player.isCreative() || player.isSpectator())) {
                 CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
                 if (handler.isArmorEnabled() && handler.getArmorPressure(EquipmentSlotType.CHEST) > 0.1F && handler.getUpgradeCount(EquipmentSlotType.CHEST, EnumUpgrade.SECURITY) > 0) {
                     event.setCanceled(true);
