@@ -23,6 +23,7 @@ Note: PNC:R 2.9.3 and later have been successfully tested on Minecraft 1.16.5.  
   * See the `seismic_sensor_fluid_tags` and `seismic_sensor_fluids` config settings in `pneumaticcraft-common.toml`; these take a list of fluid tags and a list of fluid ID's, respectively
   * Prefer `seismic_sensor_fluid_tags` where possible to add fluids by tag (e.g. `minecraft:water` or `minecraft:lava`); use `seismic_sensor_fluids` when you don't have a fluid tag: this takes a direct fluid ID
   * Both config settings can be used together; the permitted fluids will be combined as a set union
+* Vacuum Trap GUI now has a 'R' range preview button to show mob absorption range
 
 ### Fixes
 * Fixed heat handling tile entities losing their heat information when moved by Quark (and possibly other mods like Create)

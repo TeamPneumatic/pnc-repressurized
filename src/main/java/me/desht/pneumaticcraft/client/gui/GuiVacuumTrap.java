@@ -1,5 +1,7 @@
 package me.desht.pneumaticcraft.client.gui;
 
+import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetRangeToggleButton;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
@@ -13,6 +15,8 @@ import net.minecraft.util.text.ITextComponent;
 import java.util.List;
 
 public class GuiVacuumTrap extends GuiPneumaticContainerBase<ContainerVacuumTrap, TileEntityVacuumTrap> {
+    WidgetButtonExtended rangeButton;
+
     public GuiVacuumTrap(ContainerVacuumTrap container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
     }
@@ -22,6 +26,8 @@ public class GuiVacuumTrap extends GuiPneumaticContainerBase<ContainerVacuumTrap
         super.init();
 
         addButton(new WidgetTank(guiLeft + 98, guiTop + 14, te.getFluidTank()));
+
+        addButton(rangeButton = new WidgetRangeToggleButton(guiLeft + 152, guiTop + 66, te));
     }
 
     @Override
@@ -33,7 +39,7 @@ public class GuiVacuumTrap extends GuiPneumaticContainerBase<ContainerVacuumTrap
     protected PointXY getGaugeLocation() {
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
-        return new PointXY(xStart + (int)(xSize * 0.82), yStart + ySize / 4 + 4);
+        return new PointXY(xStart + (int)(xSize * 0.82), yStart + ySize / 4 - 2);
     }
 
     @Override

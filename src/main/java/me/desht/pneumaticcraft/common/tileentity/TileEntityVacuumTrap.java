@@ -52,7 +52,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class TileEntityVacuumTrap extends TileEntityPneumaticBase implements IMinWorkingPressure, INamedContainerProvider, ISerializableTanks {
+public class TileEntityVacuumTrap extends TileEntityPneumaticBase implements
+        IMinWorkingPressure, INamedContainerProvider, ISerializableTanks, IRangedTE {
     static final String DEFENDER_TAG = Names.MOD_ID + ":defender";
     public static final int MEMORY_ESSENCE_AMOUNT = 100;
 
@@ -73,6 +74,8 @@ public class TileEntityVacuumTrap extends TileEntityPneumaticBase implements IMi
 
     private final List<MobEntity> targetEntities = new ArrayList<>();
 
+    private final RangeManager rangeManager = new RangeManager(this, 0x60600060);
+
     @GuiSynced
     private final SmartSyncTank xpTank = new XPTank();
     private final LazyOptional<IFluidHandler> fluidCap = LazyOptional.of(() -> xpTank);
@@ -91,6 +94,8 @@ public class TileEntityVacuumTrap extends TileEntityPneumaticBase implements IMi
         super.tick();
 
         xpTank.tick();
+
+        rangeManager.setRange(3 + getUpgrades(EnumUpgrade.RANGE));
 
         if (!world.isRemote) {
             isCoreLoaded = inv.getStats() != null;
@@ -145,9 +150,7 @@ public class TileEntityVacuumTrap extends TileEntityPneumaticBase implements IMi
 
     private void scanForEntities() {
         targetEntities.clear();
-
-        AxisAlignedBB aabb = new AxisAlignedBB(pos).grow(3 + getUpgrades(EnumUpgrade.RANGE));
-        targetEntities.addAll(world.getEntitiesWithinAABB(MobEntity.class, aabb, this::isApplicable));
+        targetEntities.addAll(world.getEntitiesWithinAABB(MobEntity.class, rangeManager.getExtents(), this::isApplicable));
     }
 
     private boolean isApplicable(LivingEntity e) {
@@ -239,6 +242,16 @@ public class TileEntityVacuumTrap extends TileEntityPneumaticBase implements IMi
 
     public boolean isOpen() {
         return getBlockState().getBlock() == ModBlocks.VACUUM_TRAP.get() && getBlockState().get(BlockStateProperties.OPEN);
+    }
+
+    @Override
+    public RangeManager getRangeManager() {
+        return rangeManager;
+    }
+
+    @Override
+    public AxisAlignedBB getRenderBoundingBox() {
+        return rangeManager.shouldShowRange() ? rangeManager.getExtents() : super.getRenderBoundingBox();
     }
 
     private class XPTank extends SmartSyncTank {
