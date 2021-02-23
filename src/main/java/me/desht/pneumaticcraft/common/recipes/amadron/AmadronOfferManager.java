@@ -121,7 +121,7 @@ public enum AmadronOfferManager {
         activeOffers.clear();
         newOffers.forEach(offer -> addOffer(activeOffers, offer));
 
-        Log.info("Received " + activeOffers.size() + " active Amadron offers from server");
+        Log.debug("Received " + activeOffers.size() + " active Amadron offers from server");
         if (notifyPlayer && PNCConfig.Client.notifyAmadronOfferUpdates) {
             maybeNotifyPlayerOfUpdates(ClientUtils.getClientPlayer());
         }
@@ -256,7 +256,7 @@ public enum AmadronOfferManager {
         // send active list to all clients (but not the local player for an integrated server)
         NetworkHandler.sendNonLocal(new PacketSyncAmadronOffers(true));
         maybeNotifyLocalPlayerOfUpdates();
-        Log.info(activeOffers.size() + " active Amadron offers to sync to clients");
+        Log.debug(activeOffers.size() + " active Amadron offers to sync to clients");
     }
 
     public void addPlayerOffers() {
@@ -348,7 +348,7 @@ public enum AmadronOfferManager {
 
     public void maybeRebuildActiveOffers(World world) {
         if (rebuildRequired) {
-            Log.info("Rebuilding Amadron offer list");
+            Log.debug("Rebuilding Amadron offer list");
 
             staticOffers.clear();
             periodicOffers.clear();
