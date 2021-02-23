@@ -8,7 +8,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 Note: PNC:R 2.9.3 and later have been successfully tested on Minecraft 1.16.5.  Older (but recent) versions will probably also work on MC 1.16.5, but haven't been tested.
 
-## 2.10.1-?? (unreleased)
+## 2.10.1-140 (23 Feb 2021)
 
 ### Updates
 * COFH/Thermal fuels (Refined Fuel, Tree Oil & Creosote) are now supported in the Liquid Compressor & Advanced Liquid Compressor
@@ -18,6 +18,11 @@ Note: PNC:R 2.9.3 and later have been successfully tested on Minecraft 1.16.5.  
   * Only applies in Wooden Door or Iron Door mode, of course
 * Notify players who are holding an Amadron Tablet when new offers become available
   * Can be disabled by clientside config setting: `notify_amadron_offer_updates` in `pneumaticcraft-client.toml`
+* The Seismic Sensor can now be configured to search for underground fluids other than PneumaticCraft Crude Oil
+  * By default it will now find any fluid tagged as `forge:crude_oil` (which includes PneumaticCraft Crude Oil)
+  * See the `seismic_sensor_fluid_tags` and `seismic_sensor_fluids` config settings in `pneumaticcraft-common.toml`; these take a list of fluid tags and a list of fluid ID's, respectively
+  * Prefer `seismic_sensor_fluid_tags` where possible to add fluids by tag (e.g. `minecraft:water` or `minecraft:lava`); use `seismic_sensor_fluids` when you don't have a fluid tag: this takes a direct fluid ID
+  * Both config settings can be used together; the permitted fluids will be combined as a set union
 
 ### Fixes
 * Fixed heat handling tile entities losing their heat information when moved by Quark (and possibly other mods like Create)
@@ -29,7 +34,8 @@ Note: PNC:R 2.9.3 and later have been successfully tested on Minecraft 1.16.5.  
   * Note the Programmable Controller fake drone doesn't care about temperatures and will happily move through anything
 * Clarified docs for Right Click Widget when in Item Mode: the filter applies to the held item, not the clicked block
   * Note that this widget can't filter by clicked block when in Item Mode; this is likely to be remedied in a later release, but will probably require a separate progwidget
-  
+* Pneumatic Chestplate Security Upgrade will no longer attempt to extinguish fires or solidify lava when player is in creative or spectator mode
+
 ## 2.10.0-134 (6 Feb 2021)
 
 ### New
