@@ -273,11 +273,15 @@ public class EventHandlerPneumaticArmor {
                 if (!player.isOnGround() && isPneumaticArmorPiece(player, EquipmentSlotType.FEET)) {
                     JetBootsState state = tracker.getJetBootsState(player);
                     if (state != null && state.isEnabled() && (!player.isElytraFlying() || state.isActive()) && player.getDistanceSq(event.player) < distThresholdSq) {
-                        int nParticles = state.isActive() ? 3 : 1;
-                        Vector3d jetVec = state.shouldRotatePlayer() ? player.getLookVec().scale(-0.5) : IDLE_VEC;
-                        Vector3d feet = state.shouldRotatePlayer() ? player.getPositionVec().add(player.getLookVec().scale(-2)) : player.getPositionVec();
-                        for (int i = 0; i < nParticles; i++) {
-                            player.world.addParticle(AirParticleData.DENSE, feet.x, feet.y, feet.z, jetVec.x, jetVec.y, jetVec.z);
+                        // reduce hovering particle density when in first person, to make looking downward less obscured
+                        if (state.isActive() || (player.world.getGameTime() & 0x3) == 0 || !ClientUtils.isFirstPersonCamera()) {
+                            int nParticles = state.isActive() ? 3 : 1;
+                            Vector3d jetVec = state.shouldRotatePlayer() ? player.getLookVec().scale(-0.5) : IDLE_VEC;
+                            double scale = player == ClientUtils.getClientPlayer() ? -4 : -2;
+                            Vector3d feet = state.shouldRotatePlayer() ? player.getPositionVec().add(player.getLookVec().scale(scale)) : player.getPositionVec().add(0, -0.25, 0);
+                            for (int i = 0; i < nParticles; i++) {
+                                player.world.addParticle(AirParticleData.DENSE, feet.x, feet.y, feet.z, jetVec.x, jetVec.y, jetVec.z);
+                            }
                         }
                         if (player.getEntityId() != event.player.getEntityId() && state.shouldRotatePlayer()) {
                             player.setPose(Pose.FALL_FLYING);

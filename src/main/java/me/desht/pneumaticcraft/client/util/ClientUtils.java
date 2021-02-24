@@ -45,7 +45,8 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 /**
- * Miscellaneous client-side utilities
+ * Miscellaneous client-side utilities.  Used to wrap client-only code in methods safe to call from classes that could
+ * be loaded on dedicated server (mainly packet handlers & event handlers, but could be anywhere...)
  */
 public class ClientUtils {
     /**
@@ -95,7 +96,7 @@ public class ClientUtils {
     /**
      * Close a container-based GUI, and restore the player's openContainer. See {@link ClientUtils#openContainerGui(ContainerType, ITextComponent)}
      *
-     * @param parentScreen the previous-opened GUI, which will be re-opened
+     * @param parentScreen the previously-opened GUI, which will be re-opened
      */
     public static void closeContainerGui(Screen parentScreen) {
         Minecraft mc = Minecraft.getInstance();
@@ -165,8 +166,7 @@ public class ClientUtils {
 
     public static float getBrightnessAtWorldHeight() {
         PlayerEntity player = getClientPlayer();
-        // TODO world.getMaxHeight() ?
-        BlockPos pos = new BlockPos.Mutable(player.getPosX(), 255, player.getPosZ());
+        BlockPos pos = new BlockPos.Mutable(player.getPosX(), getClientWorld().getHeight(), player.getPosZ());
         if (player.world.isBlockLoaded(pos)) {
             return player.world.getDimensionType().getAmbientLight(player.world.getLight(pos));
         } else {
@@ -258,5 +258,9 @@ public class ClientUtils {
     public static int getRenderDistanceThresholdSq() {
         int d = Minecraft.getInstance().gameSettings.renderDistanceChunks * 16;
         return d * d;
+    }
+
+    public static boolean isFirstPersonCamera() {
+        return Minecraft.getInstance().gameSettings.getPointOfView().func_243192_a();
     }
 }

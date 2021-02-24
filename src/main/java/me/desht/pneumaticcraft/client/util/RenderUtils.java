@@ -12,10 +12,8 @@ import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.math.vector.Vector3f;
 import org.lwjgl.opengl.GL11;
@@ -190,23 +188,6 @@ public class RenderUtils {
         }
         matrixStack.rotate(Vector3f.YP.rotationDegrees(yRotation));
         return yRotation;
-    }
-
-    public static void renderRangeLines(RangeLines rangeLines, MatrixStack matrixStack, IVertexBuilder builder) {
-        if (!rangeLines.shouldRender()) return;
-
-        matrixStack.push();
-
-        PlayerEntity player = ClientUtils.getClientPlayer();
-        BlockPos pos = rangeLines.getPos();
-        if (pos != null) {
-            matrixStack.translate(pos.getX() - player.getPosX() + 0.5, pos.getY() - player.getPosY() + 0.5, pos.getZ() - player.getPosZ() + 0.5);
-        }
-        for (ProgressingLine line : rangeLines.getLines()) {
-            renderProgressingLine(line, matrixStack, builder, rangeLines.getColor());
-        }
-
-        matrixStack.pop();
     }
 
     /**

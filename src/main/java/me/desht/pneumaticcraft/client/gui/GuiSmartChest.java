@@ -72,11 +72,11 @@ public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest
 
         addPushPullTab();
 
-        showRangeButton = new WidgetButtonExtended(guiLeft + 196, guiTop + 189, 12, 12, "A", b -> showRangeLines());
+        showRangeButton = new WidgetButtonExtended(guiLeft + 196, guiTop + 189, 12, 12, "A", b -> previewRange());
         addButton(showRangeButton);
     }
 
-    private void showRangeLines() {
+    private void previewRange() {
         if (AreaRenderManager.getInstance().isShowing(te)) {
             AreaRenderManager.getInstance().removeHandlers(te);
         } else {

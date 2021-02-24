@@ -75,8 +75,7 @@ public final class PneumaticRegistry {
          *
          * @param player the player who is trying to access the block
          * @param pos blockpos of the block being tested
-         * @param showRangeLines when true, any Security Station that prevents interaction will show the line grid
-         *                       (server --> client update is handled internally).
+         * @param showRangeLines this is ignored and will disappear in a future release
          * @return the number of Security Stations that disallow interaction for the given player.
          * @throws IllegalArgumentException when called from the client side
          */
