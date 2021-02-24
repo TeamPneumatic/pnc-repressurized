@@ -10,6 +10,7 @@ import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.item.ItemTubeModule;
 import me.desht.pneumaticcraft.common.network.DescSynced;
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.RayTraceUtils;
 import me.desht.pneumaticcraft.lib.Log;
@@ -90,7 +91,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
 
     public void writeModulesToNBT(CompoundNBT tag) {
         ListNBT moduleList = new ListNBT();
-        for (Direction d : Direction.VALUES) {
+        for (Direction d : DirectionUtil.VALUES) {
             TubeModule tm = getModule(d);
             if (tm != null) {
                 CompoundNBT moduleTag = new CompoundNBT();
@@ -149,7 +150,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
 
         if (!getWorld().isRemote) airHandler.setSideLeaking(null);
 
-        for (Direction dir : Direction.VALUES) {
+        for (Direction dir : DirectionUtil.VALUES) {
             TubeModule tm = getModule(dir);
             if (tm != null) {
                 hasModules = true;

@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.nbt.CompoundNBT;
@@ -50,7 +51,7 @@ public class TileEntityHeatPipe extends TileEntityTickableBase implements ICamou
 
         BlockState state = getBlockState();
         boolean changed = false;
-        for (Direction dir : Direction.VALUES) {
+        for (Direction dir : DirectionUtil.VALUES) {
             BooleanProperty prop = BlockPneumaticCraft.connectionProperty(dir);
             boolean connected = heatExchanger.isSideConnected(dir);
             if (state.get(prop) != connected) {

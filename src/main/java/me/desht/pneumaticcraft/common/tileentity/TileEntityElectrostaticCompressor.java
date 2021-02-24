@@ -9,6 +9,7 @@ import me.desht.pneumaticcraft.common.inventory.ContainerElectrostaticCompressor
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.tileentity.RedstoneController.EmittingRedstoneMode;
 import me.desht.pneumaticcraft.common.tileentity.RedstoneController.RedstoneMode;
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.block.Block;
@@ -179,7 +180,7 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase
      * @param pos
      */
     public void getElectrostaticGrid(Set<BlockPos> set, World world, BlockPos pos, Direction dir) {
-        for (Direction d : Direction.VALUES) {
+        for (Direction d : DirectionUtil.VALUES) {
             if (d == dir) continue;
             BlockPos newPos = pos.offset(d);
             Block block = world.getBlockState(newPos).getBlock();

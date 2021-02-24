@@ -7,8 +7,8 @@ import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
 import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram;
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.IOHelper;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
@@ -350,7 +350,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
     private ItemImport getInventoryDirectionForItem(AssemblyRecipe recipe) {
         ItemStack heldStack = itemHandler.getStackInSlot(0);
         if (heldStack.isEmpty() || recipe.getInput().test(heldStack)) {
-            for (Direction dir : PneumaticCraftUtils.HORIZONTALS) {
+            for (Direction dir : DirectionUtil.HORIZONTALS) {
                 ItemStack found = IOHelper.getInventoryForTE(getCachedNeighbor(dir), Direction.UP)
                         .map(h -> findIngredientInInventory(h, recipe)).orElse(ItemStack.EMPTY);
                 if (!found.isEmpty()) return new ItemImport(new Direction[]{dir, null}, found);
@@ -392,7 +392,7 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
 
     private Direction[] getExportLocationForItem(ItemStack exportedItem) {
         if (!exportedItem.isEmpty()) {
-            for (Direction dir : PneumaticCraftUtils.HORIZONTALS) {
+            for (Direction dir : DirectionUtil.HORIZONTALS) {
                 TileEntity te = getWorld().getTileEntity(getPos().offset(dir));
                 int slot = getPlacementSlot(exportedItem, te);
                 if (slot >= 0) return new Direction[]{dir, null};

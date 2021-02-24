@@ -8,6 +8,7 @@ import me.desht.pneumaticcraft.common.inventory.ContainerGasLift;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.progwidgets.IBlockOrdered;
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -258,7 +259,7 @@ public class TileEntityGasLift extends TileEntityPneumaticBase implements
         pumpingLake.add(thisPos);
         while (!pendingPositions.empty()) {
             BlockPos checkingPos = pendingPositions.pop();
-            for (Direction d : Direction.VALUES) {
+            for (Direction d : DirectionUtil.VALUES) {
                 if (d == Direction.DOWN) continue;
                 BlockPos newPos = checkingPos.offset(d);
                 if (PneumaticCraftUtils.distBetweenSq(newPos, thisPos) <= MAX_PUMP_RANGE_SQUARED

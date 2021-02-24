@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.fluid;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -43,7 +44,7 @@ public class FluidYeastCulture {
         public void tick(World worldIn, BlockPos pos, FluidState state) {
             List<ItemEntity> entities = worldIn.getEntitiesWithinAABB(ItemEntity.class, new AxisAlignedBB(pos), e -> e.getItem().getItem() == Items.SUGAR);
             if (!entities.isEmpty()) {
-                for (Direction d : Direction.VALUES) {
+                for (Direction d : DirectionUtil.VALUES) {
                     FluidState fluidState = worldIn.getFluidState(pos.offset(d));
                     if (fluidState.isSource() && fluidState.getFluid() == Fluids.WATER) {
                         worldIn.setBlockState(pos.offset(d), ModFluids.YEAST_CULTURE.get().getDefaultState().getBlockState(), Constants.BlockFlags.DEFAULT);

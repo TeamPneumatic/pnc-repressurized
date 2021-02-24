@@ -8,6 +8,16 @@ import static net.minecraft.util.Direction.*;
  * rotateAround() disappeared from Direction in 1.15
  */
 public class DirectionUtil {
+    // since this is private in Direction...
+    public static final Direction[] VALUES = new Direction[] {
+            DOWN, UP, NORTH, SOUTH, WEST, EAST
+    };
+
+    // this may return to Direction.HORIZONTALS one day (like in 1.12.2) but for now...
+    public static final Direction[] HORIZONTALS = new Direction[] {
+            NORTH, SOUTH, WEST, EAST
+    };
+
     public static Direction rotateAround(Direction dir, Direction.Axis axis) {
         switch (axis) {
             case X:

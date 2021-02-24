@@ -204,7 +204,7 @@ public class FluidUtils {
         boolean removeBlock = true;
         if (fluid == Fluids.WATER && PNCConfig.Common.Advanced.dontUpdateInfiniteWaterSources) {
             int n = 0;
-            for (Direction d : PneumaticCraftUtils.HORIZONTALS) {
+            for (Direction d : DirectionUtil.HORIZONTALS) {
                 if (world.getFluidState(pos.offset(d)).getFluid() == Fluids.WATER && ++n >= 2) {
                     removeBlock = false;
                     break;

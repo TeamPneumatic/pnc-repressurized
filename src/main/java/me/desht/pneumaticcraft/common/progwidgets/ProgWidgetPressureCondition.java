@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.common.ai.DroneAIBlockCondition;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
@@ -35,7 +36,7 @@ public class ProgWidgetPressureCondition extends ProgWidgetCondition {
                 TileEntity te = drone.world().getTileEntity(pos);
                 if (te != null) {
                     float pressure = Float.MIN_VALUE;
-                    for (Direction d : Direction.VALUES) {
+                    for (Direction d : DirectionUtil.VALUES) {
                         if (getSides()[d.ordinal()]) {
                             float p = te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, d)
                                     .map(IAirHandlerMachine::getPressure)

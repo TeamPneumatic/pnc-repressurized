@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import net.minecraft.pathfinding.FlyingNodeProcessor;
 import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.util.Direction;
@@ -24,7 +25,7 @@ public class NodeProcessorDrone extends FlyingNodeProcessor {
 
         int i = 0;
 
-        for(Direction dir : Direction.VALUES){
+        for(Direction dir : DirectionUtil.VALUES){
             PathPoint point = openPoint(currentPoint.x + dir.getXOffset(), currentPoint.y + dir.getYOffset(), currentPoint.z + dir.getZOffset());
             if(point != null && !point.visited) {
                 pathOptions[i++] = point;

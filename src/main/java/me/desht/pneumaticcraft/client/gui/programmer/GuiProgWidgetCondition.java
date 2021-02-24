@@ -8,6 +8,7 @@ import me.desht.pneumaticcraft.common.progwidgets.ICondition;
 import me.desht.pneumaticcraft.common.progwidgets.ISidedWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetCondition;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetEntityCondition;
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import net.minecraft.util.Direction;
 import net.minecraft.util.text.ITextComponent;
@@ -31,7 +32,7 @@ public class GuiProgWidgetCondition<T extends ProgWidgetCondition> extends GuiPr
         super.init();
 
         if (isSidedWidget()) {
-            for (Direction dir : Direction.VALUES) {
+            for (Direction dir : DirectionUtil.VALUES) {
                 ITextComponent sideName = ClientUtils.translateDirectionComponent(dir);
                 WidgetCheckBox checkBox = new WidgetCheckBox(guiLeft + 8, guiTop + 30 + dir.getIndex() * 12, 0xFF404040, sideName,
                         b -> ((ISidedWidget) progWidget).getSides()[dir.getIndex()] = b.checked);

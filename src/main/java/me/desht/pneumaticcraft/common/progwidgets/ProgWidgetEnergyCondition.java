@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.DroneAIBlockCondition;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
@@ -38,7 +39,7 @@ public class ProgWidgetEnergyCondition extends ProgWidgetCondition {
                 TileEntity te = drone.world().getTileEntity(pos);
                 if (te == null) return false;
                 int energy = 0;
-                for (Direction face : Direction.VALUES) {
+                for (Direction face : DirectionUtil.VALUES) {
                     if (getSides()[face.getIndex()]) {
                         energy = Math.max(energy, getEnergy(te, face));
                     }

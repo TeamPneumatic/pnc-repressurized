@@ -11,6 +11,7 @@ import me.desht.pneumaticcraft.common.heat.TemperatureData;
 import me.desht.pneumaticcraft.common.item.ItemCamoApplicator;
 import me.desht.pneumaticcraft.common.thirdparty.waila.IInfoForwarder;
 import me.desht.pneumaticcraft.common.tileentity.*;
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -85,7 +86,7 @@ public class TOPInfoProvider {
     private static void handleHeat(ProbeMode mode, IProbeInfo probeInfo, TileEntity heatExchanger) {
         TemperatureData tempData = new TemperatureData(heatExchanger);
         if (tempData.isMultisided()) {
-            for (Direction face : Direction.VALUES) {
+            for (Direction face : DirectionUtil.VALUES) {
                 if (tempData.hasData(face)) {
                     probeInfo.text(HeatUtil.formatHeatString(face, (int) tempData.getTemperature(face)));
                 }

@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraftforge.fluids.FluidStack;
@@ -19,7 +20,7 @@ interface IAutoFluidEjecting {
                 if (ejectDir != null) {
                     tryEjectLiquid(te, handler, ejectDir, toDrain.getAmount());
                 } else {
-                    for (Direction d : Direction.VALUES) {
+                    for (Direction d : DirectionUtil.VALUES) {
                         toDrain.setAmount(toDrain.getAmount() - tryEjectLiquid(te, handler, d, toDrain.getAmount()));
                         if (toDrain.getAmount() <= 0) break;
                     }

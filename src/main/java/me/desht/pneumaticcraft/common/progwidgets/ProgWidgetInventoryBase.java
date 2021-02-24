@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.progwidgets;
 import joptsimple.internal.Strings;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.lib.GuiConstants;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
@@ -98,7 +99,7 @@ public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase imp
         } else if (noSides) {
             return Collections.singletonList(NONE_TEXT);
         } else {
-            List<String> l = Arrays.stream(Direction.VALUES)
+            List<String> l = Arrays.stream(DirectionUtil.VALUES)
                     .filter(side -> accessingSides[side.getIndex()])
                     .map(ClientUtils::translateDirection)
                     .collect(Collectors.toList());

@@ -9,6 +9,7 @@ import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaConstant;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethod;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethodRegistry;
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.lib.NBTKeys;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
@@ -127,7 +128,7 @@ public abstract class TileEntityPneumaticBase extends TileEntityTickableBase {
 
     public void initializeHullAirHandlers() {
         airHandlerMap.clear();
-        for (Direction side : Direction.VALUES) {
+        for (Direction side : DirectionUtil.VALUES) {
             getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, side)
                     .ifPresent(handler -> airHandlerMap.computeIfAbsent(handler, k -> new ArrayList<>()).add(side));
         }

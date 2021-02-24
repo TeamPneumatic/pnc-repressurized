@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.block.tubes;
 
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
@@ -40,7 +41,7 @@ public class ModuleNetworkManager {
             tube.tubeModules()
                     .filter(tm -> tm instanceof INetworkedModule && module.getClass() == tm.getClass())
                     .forEach(modules::add);
-            for (Direction dir : Direction.VALUES) {
+            for (Direction dir : DirectionUtil.VALUES) {
                 TileEntity newTube = tube.getConnectedNeighbor(dir);
                 if (newTube instanceof TileEntityPressureTube && !traversedTubes.contains(newTube)) {
                     pendingTubes.add((TileEntityPressureTube) newTube);

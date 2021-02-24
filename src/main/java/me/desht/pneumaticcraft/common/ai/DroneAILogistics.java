@@ -9,6 +9,7 @@ import me.desht.pneumaticcraft.common.progwidgets.ILiquidFiltered;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetAreaItemBase;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetInventoryBase;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.StreamUtils;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.fluid.Fluid;
@@ -128,7 +129,7 @@ public class DroneAILogistics extends Goal {
     }
 
     private boolean hasNoPathTo(BlockPos pos) {
-        for (Direction d : Direction.VALUES) {
+        for (Direction d : DirectionUtil.VALUES) {
             if (drone.isBlockValidPathfindBlock(pos.offset(d))) return false;
         }
         drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.general.debug.cantNavigate", pos);

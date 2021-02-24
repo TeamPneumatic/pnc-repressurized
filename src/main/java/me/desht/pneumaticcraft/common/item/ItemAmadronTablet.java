@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.inventory.ContainerAmadron;
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
@@ -103,7 +104,7 @@ public class ItemAmadronTablet extends ItemPressurizable implements IPositionPro
         GlobalPos pos = getItemProvidingLocation(tablet);
         if (pos != null) {
             TileEntity te = GlobalPosHelper.getTileEntity(pos);
-            for (Direction dir : Direction.VALUES) {
+            for (Direction dir : DirectionUtil.VALUES) {
                 LazyOptional<IItemHandler> lazy = IOHelper.getInventoryForTE(te, dir);
                 if (lazy.isPresent()) return lazy;
             }
@@ -125,7 +126,7 @@ public class ItemAmadronTablet extends ItemPressurizable implements IPositionPro
         GlobalPos pos = getFluidProvidingLocation(tablet);
         if (pos != null) {
             TileEntity te = GlobalPosHelper.getTileEntity(pos);
-            for (Direction dir : Direction.VALUES) {
+            for (Direction dir : DirectionUtil.VALUES) {
                 LazyOptional<IFluidHandler> lazy = IOHelper.getFluidHandlerForTE(te, dir);
                 if (lazy.isPresent()) return lazy;
             }

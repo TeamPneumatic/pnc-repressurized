@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.ai;
 import me.desht.pneumaticcraft.common.progwidgets.ILiquidFiltered;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetInventoryBase;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetLiquidImport;
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.IBucketPickupHandler;
 import net.minecraft.fluid.FluidState;
@@ -46,7 +47,7 @@ public class DroneAILiquidImport<W extends ProgWidgetInventoryBase & ILiquidFilt
             TileEntity te = drone.world().getTileEntity(pos);
             if (te != null) {
                 boolean didWork = false;
-                for (Direction side : Direction.VALUES) {
+                for (Direction side : DirectionUtil.VALUES) {
                     if (progWidget.isSideSelected(side)) {
                         didWork = te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, side)
                                 .map(handler -> tryImportFluid(handler, simulate)).orElse(false);

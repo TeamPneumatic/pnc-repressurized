@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
@@ -14,7 +15,7 @@ public class TileEntityDroneRedstoneEmitter extends TileEntity implements ITicka
     @Override
     public void tick() {
         BlockState state = getWorld().getBlockState(getPos());
-        for (Direction facing : Direction.VALUES) {
+        for (Direction facing : DirectionUtil.VALUES) {
             if (state.getWeakPower(getWorld(), getPos(),  facing) > 0) {
                 return;
             }

@@ -9,6 +9,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
 
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -98,7 +99,7 @@ public enum ApplicableUpgradesDB {
     }
 
     private Map<EnumUpgrade, Integer> getApplicableUpgrades(List<Integer> l) {
-        Map<EnumUpgrade,Integer> res = new HashMap<>();
+        Map<EnumUpgrade,Integer> res = new EnumMap<>(EnumUpgrade.class);
         for (EnumUpgrade upgrade : EnumUpgrade.values()) {
             int n = l.get(upgrade.ordinal());
             if (n > 0) res.put(upgrade, n);

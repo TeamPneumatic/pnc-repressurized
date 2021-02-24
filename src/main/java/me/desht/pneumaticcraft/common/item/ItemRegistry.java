@@ -3,8 +3,10 @@ package me.desht.pneumaticcraft.common.item;
 import me.desht.pneumaticcraft.api.item.*;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.GuiConstants;
+import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -14,11 +16,12 @@ import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ItemRegistry implements IItemRegistry {
+public enum ItemRegistry implements IItemRegistry {
+    INSTANCE;
 
-    private static final ItemRegistry INSTANCE = new ItemRegistry();
+    private final List<Item> inventoryItemBlacklist = new ArrayList<>();
     public final List<IInventoryItem> inventoryItems = new ArrayList<>();
-    private final Map<EnumUpgrade, List<IUpgradeAcceptor>> upgradeToAcceptors = new HashMap<>();
+    private final Map<EnumUpgrade, List<IUpgradeAcceptor>> upgradeToAcceptors = new EnumMap<>(EnumUpgrade.class);
     private final List<IMagnetSuppressor> magnetSuppressors = new ArrayList<>();
 
     public static ItemRegistry getInstance() {
@@ -68,5 +71,36 @@ public class ItemRegistry implements IItemRegistry {
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean shouldSuppressMagnet(Entity e) {
         return magnetSuppressors.stream().anyMatch(s -> s.shouldSuppressMagnet(e));
+    }
+
+    /**
+     * Get a list of the items contained in the given item.  This uses the {@link IInventoryItem} interface.
+     *
+     * @param item the item to check
+     * @return a list of the items contained within the given item
+     */
+    public List<ItemStack> getStacksInItem(@Nonnull ItemStack item) {
+        List<ItemStack> items = new ArrayList<>();
+        if (item.getItem() instanceof IInventoryItem && !inventoryItemBlacklist.contains(item.getItem())) {
+            try {
+                ((IInventoryItem) item.getItem()).getStacksInItem(item, items);
+            } catch (Throwable e) {
+                Log.error("An InventoryItem crashed:");
+                e.printStackTrace();
+                inventoryItemBlacklist.add(item.getItem());
+            }
+        } else {
+            Iterator<IInventoryItem> iterator = getInstance().inventoryItems.iterator();
+            while (iterator.hasNext()) {
+                try {
+                    iterator.next().getStacksInItem(item, items);
+                } catch (Throwable e) {
+                    Log.error("An InventoryItem crashed:");
+                    e.printStackTrace();
+                    iterator.remove();
+                }
+            }
+        }
+        return items;
     }
 }

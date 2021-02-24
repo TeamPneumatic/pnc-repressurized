@@ -5,8 +5,8 @@ import com.mojang.blaze3d.vertex.IVertexBuilder;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
+import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.util.IOHelper;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.Item;
@@ -58,7 +58,7 @@ public class RenderSearchItemBlock {
         if (stack.getItem() == item) {
             itemCount += stack.getCount();
         }
-        List<ItemStack> inventoryItems = PneumaticCraftUtils.getStacksInItem(stack);
+        List<ItemStack> inventoryItems = ItemRegistry.getInstance().getStacksInItem(stack);
         for (ItemStack s : inventoryItems) {
             itemCount += getSearchedItemCount(s, item);
         }

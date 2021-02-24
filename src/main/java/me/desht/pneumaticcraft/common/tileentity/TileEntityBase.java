@@ -11,6 +11,7 @@ import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethod;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethodRegistry;
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.TileEntityCache;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
@@ -418,7 +419,7 @@ public abstract class TileEntityBase extends TileEntity
 
     private void initializeHullHeatExchangers() {
         Map<IHeatExchangerLogic, List<Direction>> map = new IdentityHashMap<>();
-        for (Direction side : Direction.VALUES) {
+        for (Direction side : DirectionUtil.VALUES) {
             IHeatExchangerLogic logic = ((IHeatExchangingTE) this).getHeatExchanger(side);
             if (logic != null) map.computeIfAbsent(logic, k -> new ArrayList<>()).add(side);
         }
@@ -483,7 +484,7 @@ public abstract class TileEntityBase extends TileEntity
 
     @Override
     public void addLuaMethods(LuaMethodRegistry registry) {
-        for (Direction d : Direction.VALUES) {
+        for (Direction d : DirectionUtil.VALUES) {
             if (getHeatCap(d).isPresent()) {
                 registry.registerLuaMethod(new LuaMethod("getTemperature") {
                     @Override

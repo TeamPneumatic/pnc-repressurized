@@ -9,6 +9,7 @@ import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdatePressureBlock;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -53,7 +54,7 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
 
         this.dangerPressure = dangerPressure;
         this.criticalPressure = criticalPressure;
-        for (Direction ignored : Direction.VALUES) {
+        for (Direction ignored : DirectionUtil.VALUES) {
             this.neighbourAirHandlers.add(LazyOptional.empty());
         }
     }
@@ -142,14 +143,14 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
     }
 
     private Direction anyClearDirection(World world, BlockPos pos) {
-        for (Direction d : Direction.VALUES) {
+        for (Direction d : DirectionUtil.VALUES) {
             if (!Block.hasEnoughSolidSide(world, pos.offset(d), d.getOpposite())) return d;
         }
         return Direction.UP; // arbitrary
     }
 
     private Direction anyConnectedFace() {
-        for (Direction d : Direction.VALUES) {
+        for (Direction d : DirectionUtil.VALUES) {
             if (connectedFaces.get(d.getIndex())) return d;
         }
         return null;
@@ -268,7 +269,7 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
 
     private List<Connection> getConnectedAirHandlers(TileEntity ownerTE, boolean onlyLowerPressure) {
         List<IAirHandlerMachine.Connection> neighbours = new ArrayList<>();
-        for (Direction dir : Direction.VALUES) {
+        for (Direction dir : DirectionUtil.VALUES) {
             if (connectedFaces.get(dir.getIndex())) {
                 getNeighbourAirHandler(ownerTE, dir).ifPresent(h -> {
                     if ((!onlyLowerPressure || h.getPressure() < getPressure())) {

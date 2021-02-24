@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.block;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorBase;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorCaller;
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -69,7 +70,7 @@ public class BlockElevatorCaller extends BlockPneumaticCraftCamo {
     }
 
     public static void setSurroundingElevators(World world, BlockPos pos, int floor) {
-        for (Direction dir : PneumaticCraftUtils.HORIZONTALS) {
+        for (Direction dir : DirectionUtil.HORIZONTALS) {
             getElevatorBase(world, pos.offset(dir).offset(Direction.DOWN, 2)).ifPresent(te -> te.goToFloor(floor));
         }
     }
@@ -95,7 +96,7 @@ public class BlockElevatorCaller extends BlockPneumaticCraftCamo {
      * @param pos the blockpos where the caller has been placed/removed
      */
     private void updateElevatorButtons(World world, BlockPos pos) {
-        for (Direction dir : PneumaticCraftUtils.HORIZONTALS) {
+        for (Direction dir : DirectionUtil.HORIZONTALS) {
             boolean ok = getElevatorBase(world, pos.offset(dir).offset(Direction.DOWN, 2)).map(te -> {
                 te.updateFloors(true);
                 return true;

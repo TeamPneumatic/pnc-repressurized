@@ -9,6 +9,7 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ItemTubeModule;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityAdvancedPressureTube;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.RayTraceUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -48,7 +49,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static me.desht.pneumaticcraft.common.block.BlockPressureTube.ConnectionType.CONNECTED;
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.HORIZONTALS;
+import static me.desht.pneumaticcraft.common.util.DirectionUtil.HORIZONTALS;
 import static net.minecraft.state.properties.BlockStateProperties.WATERLOGGED;
 
 public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWaterLoggable {
@@ -120,7 +121,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
     public BlockState getStateForPlacement(BlockItemUseContext ctx) {
         BlockState state = getDefaultState();
         List<Direction> l = new ArrayList<>();
-        for (Direction dir : Direction.VALUES) {
+        for (Direction dir : DirectionUtil.VALUES) {
             TileEntity te = ctx.getWorld().getTileEntity(ctx.getPos().offset(dir));
             if (te != null && te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, dir.getOpposite()).isPresent()) {
                 state = setSide(state, dir, CONNECTED);
@@ -155,7 +156,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
             // soon enough to re-cache the old shape...
             tePT.clearCachedShape();
             BlockState state = stateIn;
-            for (Direction dir : Direction.VALUES) {
+            for (Direction dir : DirectionUtil.VALUES) {
                 ConnectionType type = ConnectionType.UNCONNECTED;
                 if (tePT.isSideClosed(dir)) {
                     type = ConnectionType.CLOSED;
@@ -175,7 +176,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
     private static BlockState checkForSingleConnection(TileEntityPressureTube te, BlockState state) {
         List<Direction> connected = new ArrayList<>();
         int nUnconnected = 0;
-        for (Direction dir : Direction.VALUES) {
+        for (Direction dir : DirectionUtil.VALUES) {
             if (te.getModule(dir) != null) {
                 return state;
             }
@@ -371,7 +372,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
         }
 
         // now check attached tube modules
-        for (Direction dir : Direction.VALUES) {
+        for (Direction dir : DirectionUtil.VALUES) {
             TubeModule tm = tube.getModule(dir);
             if (tm != null) {
                 AxisAlignedBB tubeAABB = tm.getShape().getBoundingBox();
@@ -506,7 +507,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
         TileEntityPressureTube tePt = getPressureTube(par1IBlockAccess, pos);
         if (tePt != null) {
             int redstoneLevel = 0;
-            for (Direction face : Direction.VALUES) {
+            for (Direction face : DirectionUtil.VALUES) {
                 TubeModule tm = tePt.getModule(face);
                 if (tm != null) {
                     if (side.getOpposite() == face || face != side && tm.isInline()) {

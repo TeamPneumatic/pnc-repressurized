@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.progwidgets.ICountWidget;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ISidedWidget;
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import net.minecraft.util.Direction;
 import net.minecraft.util.text.ITextComponent;
 
@@ -25,7 +26,7 @@ public class GuiProgWidgetImportExport<P extends IProgWidget & ISidedWidget & IC
         super.init();
 
         if (showSides()) {
-            for (Direction dir : Direction.VALUES) {
+            for (Direction dir : DirectionUtil.VALUES) {
                 ITextComponent sideName = ClientUtils.translateDirectionComponent(dir);
                 WidgetCheckBox checkBox = new WidgetCheckBox(guiLeft + 8, guiTop + 32 + dir.getIndex() * 12, 0xFF404040,
                         sideName, b -> progWidget.getSides()[dir.getIndex()] = b.checked);

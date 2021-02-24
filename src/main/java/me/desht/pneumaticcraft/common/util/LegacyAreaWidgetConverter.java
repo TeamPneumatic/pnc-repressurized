@@ -4,7 +4,7 @@ import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea;
 import me.desht.pneumaticcraft.common.progwidgets.area.*;
 import me.desht.pneumaticcraft.lib.Log;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 
 /**
@@ -12,7 +12,7 @@ import java.util.Map;
  * the Computer Control progwidget's "addArea" and "removeArea" methods.
  */
 public class LegacyAreaWidgetConverter {
-    private static final Map<EnumOldAreaType, String> oldFormatToAreaTypes = new HashMap<>();
+    private static final Map<EnumOldAreaType, String> oldFormatToAreaTypes = new EnumMap<>(EnumOldAreaType.class);
 
     static {
         register(AreaTypeBox.ID, EnumOldAreaType.FILL, EnumOldAreaType.WALL, EnumOldAreaType.FRAME);

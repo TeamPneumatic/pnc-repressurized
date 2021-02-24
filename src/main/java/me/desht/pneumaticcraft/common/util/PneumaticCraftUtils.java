@@ -7,7 +7,6 @@ import me.desht.pneumaticcraft.common.XPFluidManager;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.lib.GuiConstants;
-import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -61,13 +60,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class PneumaticCraftUtils {
-    private static final List<Item> inventoryItemBlacklist = new ArrayList<>();
-
-    // this may return to Direction.HORIZONTALS one day (like in 1.12.2) but for now...
-    public static final Direction[] HORIZONTALS = new Direction[] {
-            Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST
-    };
-
     /**
      * Returns the EnumFacing of the given entity.
      *
@@ -274,10 +266,11 @@ public class PneumaticCraftUtils {
     }
 
     /**
-     * Sorts the stacks given alphabetically, combines them (so 2x64 will become 1x128), and adds the strings into the
-     * given string list.  This method is aware of inventory items implementing the {@link IInventoryItem} interface.
+     * Sort the given array of itemstacks alphabetically by display name, then combine them (so e.g. 2x64 becomes
+     * 1x128), and add the display name to the given text component list.  This method is aware of inventory items
+     * implementing the {@link IInventoryItem} interface.
      *
-     * @param textList string list to add information to
+     * @param textList text component list to add information to
      * @param originalStacks array of item stacks to sort & combine
      * @param prefix prefix string to prepend to each line of output
      */
@@ -303,7 +296,7 @@ public class PneumaticCraftUtils {
                 } else {
                     itemCount += stack.getCount();
                 }
-                prevInventoryItems = getStacksInItem(stack);
+                prevInventoryItems = ItemRegistry.getInstance().getStacksInItem(stack);
             }
         }
         if (itemCount > 0 && !prevItemStack.isEmpty()) {
@@ -314,37 +307,6 @@ public class PneumaticCraftUtils {
 
     private static void addText(List<ITextComponent> l, String s) {
         l.add(new StringTextComponent(s));
-    }
-
-    /**
-     * Get a list of the items contained in the given item.  This uses the {@link IInventoryItem} interface.
-     *
-     * @param item the item to check
-     * @return a list of the items contained within the given item
-     */
-    public static List<ItemStack> getStacksInItem(@Nonnull ItemStack item) {
-        List<ItemStack> items = new ArrayList<>();
-        if (item.getItem() instanceof IInventoryItem && !inventoryItemBlacklist.contains(item.getItem())) {
-            try {
-                ((IInventoryItem) item.getItem()).getStacksInItem(item, items);
-            } catch (Throwable e) {
-                Log.error("An InventoryItem crashed:");
-                e.printStackTrace();
-                inventoryItemBlacklist.add(item.getItem());
-            }
-        } else {
-            Iterator<IInventoryItem> iterator = ItemRegistry.getInstance().inventoryItems.iterator();
-            while (iterator.hasNext()) {
-                try {
-                    iterator.next().getStacksInItem(item, items);
-                } catch (Throwable e) {
-                    Log.error("An InventoryItem crashed:");
-                    e.printStackTrace();
-                    iterator.remove();
-                }
-            }
-        }
-        return items;
     }
 
     /**

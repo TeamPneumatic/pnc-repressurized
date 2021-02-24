@@ -11,6 +11,7 @@ import me.desht.pneumaticcraft.common.inventory.ContainerRefinery;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.player.PlayerEntity;
@@ -235,7 +236,7 @@ public class TileEntityRefineryController extends TileEntityTickableBase
     }
 
     public TileEntityRefineryOutput findAdjacentOutput() {
-        for (Direction d : Direction.VALUES) {
+        for (Direction d : DirectionUtil.VALUES) {
             if (d != Direction.DOWN) {
                 TileEntity te = getCachedNeighbor(d);
                 if (te instanceof TileEntityRefineryOutput) return (TileEntityRefineryOutput) te;

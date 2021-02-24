@@ -9,6 +9,7 @@ import me.desht.pneumaticcraft.common.network.PacketUpdatePressureBlock;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.tileentity.RangeManager;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityHeatSink;
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.EntityFilter;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -168,7 +169,7 @@ public class ModuleAirGrate extends TubeModule {
         }
 
         adjacentInsertionTE = null;
-        for (Direction dir : Direction.VALUES) {
+        for (Direction dir : DirectionUtil.VALUES) {
             TileEntity inv = pressureTube.getWorld().getTileEntity(pressureTube.getPos().offset(dir));
             if (inv != null && inv.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir.getOpposite()).isPresent()) {
                 adjacentInsertionTE = inv;

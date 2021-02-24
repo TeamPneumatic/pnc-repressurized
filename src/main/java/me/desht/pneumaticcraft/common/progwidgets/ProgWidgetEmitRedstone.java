@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.item.DyeColor;
@@ -84,7 +85,7 @@ public class ProgWidgetEmitRedstone extends ProgWidget implements IRedstoneEmiss
         } else if (noSides) {
             return Collections.singletonList(NONE_TEXT);
         } else {
-            List<String> l = Arrays.stream(Direction.VALUES)
+            List<String> l = Arrays.stream(DirectionUtil.VALUES)
                     .filter(side -> accessingSides[side.getIndex()])
                     .map(ClientUtils::translateDirection)
                     .collect(Collectors.toList());

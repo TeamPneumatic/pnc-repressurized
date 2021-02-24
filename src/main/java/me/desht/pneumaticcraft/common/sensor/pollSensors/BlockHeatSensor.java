@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.universal_sensor.IBlockAndCoordinatePollSensor;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerManager;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
@@ -49,7 +50,7 @@ public class BlockHeatSensor implements IBlockAndCoordinatePollSensor {
             TileEntity te = world.getTileEntity(p);
             if (te != null) {
                 // possibly sided TE?
-                for (Direction side : Direction.VALUES) {
+                for (Direction side : DirectionUtil.VALUES) {
                     temperature = Math.max(temperature, te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY, side)
                             .map(IHeatExchangerLogic::getTemperature).orElse(0d));
                 }

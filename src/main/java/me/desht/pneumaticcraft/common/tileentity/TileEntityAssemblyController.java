@@ -8,7 +8,7 @@ import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram;
 import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram.EnumMachine;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -162,7 +162,7 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase
     }
 
     private void findMachines(List<IAssemblyMachine> machineList, BlockPos pos, int max) {
-        for (Direction dir : PneumaticCraftUtils.HORIZONTALS) {
+        for (Direction dir : DirectionUtil.HORIZONTALS) {
             TileEntity te = getWorld().getTileEntity(pos.offset(dir));
             if (te instanceof IAssemblyMachine && !machineList.contains(te) && machineList.size() < max) {
                 machineList.add((IAssemblyMachine) te);

@@ -25,6 +25,7 @@ import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.tileentity.SideConfigurator.RelativeFace;
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.fakeplayer.DroneFakePlayer;
@@ -730,7 +731,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
 
     private LazyOptional<IItemHandler> findEjectionDest() {
         Direction dir = null;
-        for (Direction d : Direction.VALUES) {
+        for (Direction d : DirectionUtil.VALUES) {
             if (getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, d).map(h -> h == inventory).orElse(false)) {
                 dir = d;
                 break;

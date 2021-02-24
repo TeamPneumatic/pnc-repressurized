@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -53,7 +54,7 @@ public class ItemManometer extends ItemPressurizable {
 
             te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY)
                     .ifPresent(exchanger -> curInfo.add(HeatUtil.formatHeatString(exchanger.getTemperatureAsInt())));
-            for (Direction d : Direction.VALUES) {
+            for (Direction d : DirectionUtil.VALUES) {
                 te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY, d)
                         .ifPresent(exchanger -> curInfo.add(HeatUtil.formatHeatString(exchanger.getTemperatureAsInt())));
             }

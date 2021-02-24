@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.network.PacketSendNBTPacket;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Slot;
@@ -61,7 +62,7 @@ public class ContainerProgrammer extends ContainerPneumaticBase<TileEntityProgra
         // update the client about contents of adjacent inventories so the programmer GUI knows what
         // puzzle pieces are available
         if (te.getWorld().getGameTime() % 20 == 0) {
-            for (Direction d : Direction.VALUES) {
+            for (Direction d : DirectionUtil.VALUES) {
                 TileEntity neighbor = te.getTileCache()[d.getIndex()].getTileEntity();
                 if (neighbor != null && neighbor.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, d.getOpposite()).isPresent()) {
                     sendToContainerListeners(new PacketSendNBTPacket(neighbor));

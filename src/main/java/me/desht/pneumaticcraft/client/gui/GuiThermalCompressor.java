@@ -9,6 +9,7 @@ import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.inventory.ContainerThermalCompressor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityThermalCompressor;
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.player.PlayerInventory;
@@ -93,7 +94,7 @@ public class GuiThermalCompressor extends GuiPneumaticContainerBase<ContainerThe
         super.tick();
 
         int min = Integer.MAX_VALUE, max = Integer.MIN_VALUE;
-        for (Direction d : PneumaticCraftUtils.HORIZONTALS) {
+        for (Direction d : DirectionUtil.HORIZONTALS) {
             int t = te.getHeatExchanger(d).getTemperatureAsInt();
             tempWidgets[d.getHorizontalIndex()].setTemperature(t);
             min = Math.min(min, t);

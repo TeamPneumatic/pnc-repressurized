@@ -15,6 +15,7 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.network.PacketProgrammerUpdate;
 import me.desht.pneumaticcraft.common.progwidgets.*;
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
@@ -374,7 +375,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
         ItemStack stack = new ItemStack(ModItems.PROGRAMMING_PUZZLE.get());
 
         // try to insert puzzle pieces into adjacent inventory(s)
-        for (Direction d : Direction.VALUES) {
+        for (Direction d : DirectionUtil.VALUES) {
             TileEntity te = getCachedNeighbor(d);
             if (te != null) {
                 while (count > 0) {
@@ -447,7 +448,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
         }
 
         // look in adjacent inventories
-        for (Direction d : Direction.VALUES) {
+        for (Direction d : DirectionUtil.VALUES) {
             TileEntity te = getTileCache()[d.getIndex()].getTileEntity();
             if (te != null) {
                 final int r = required - found;

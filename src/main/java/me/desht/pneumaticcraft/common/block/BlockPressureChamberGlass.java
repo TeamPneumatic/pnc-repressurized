@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberGlass;
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.tileentity.TileEntity;
@@ -25,7 +26,7 @@ public class BlockPressureChamberGlass extends BlockPressureChamberWallBase {
             PneumaticCraftUtils.getTileEntityAt(worldIn, currentPos, TileEntityPressureChamberGlass.class).ifPresent(teGlass -> {
                 teGlass.requestModelDataUpdate();
                 // handle any glass that's diagonally connected
-                for (Direction d : Direction.VALUES) {
+                for (Direction d : DirectionUtil.VALUES) {
                     if (d.getAxis() != facing.getAxis()) {
                         TileEntity te1 = teGlass.getCachedNeighbor(d);
                         if (te1 instanceof TileEntityPressureChamberGlass) te1.requestModelDataUpdate();

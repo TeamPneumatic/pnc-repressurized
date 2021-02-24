@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.ByteNBT;
 import net.minecraft.nbt.CompoundNBT;
@@ -166,7 +166,7 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundNBT> {
     }
 
     void setupFacingMatrix() {
-        for (Direction f : PneumaticCraftUtils.HORIZONTALS) {
+        for (Direction f : DirectionUtil.HORIZONTALS) {
             facingMatrix[f.getHorizontalIndex()] = new RelativeFace[4];
             for (RelativeFace rf : RelativeFace.HORIZONTALS) {
                 Direction f2 = rot(f, rf);

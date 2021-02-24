@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetInventoryBase;
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.item.ItemStack;
@@ -28,7 +29,7 @@ public class DroneEntityAIInventoryImport extends DroneAIImExBase<ProgWidgetInve
     private boolean importItems(BlockPos pos, boolean simulate) {
         TileEntity te = drone.world().getTileEntity(pos);
         boolean imported = false;
-        for (Direction dir : Direction.VALUES) {
+        for (Direction dir : DirectionUtil.VALUES) {
             if (progWidget.isSideSelected(dir)) {
                 imported = IOHelper.getInventoryForTE(te, dir).map(inv -> tryImport(inv, pos, simulate)).orElse(false);
                 if (imported) break;

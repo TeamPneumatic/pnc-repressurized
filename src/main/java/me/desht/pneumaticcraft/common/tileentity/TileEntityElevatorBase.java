@@ -16,6 +16,7 @@ import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethodRegist
 import me.desht.pneumaticcraft.common.tileentity.RedstoneController.ReceivingRedstoneMode;
 import me.desht.pneumaticcraft.common.tileentity.RedstoneController.RedstoneMode;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorCaller.ElevatorButton;
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
@@ -365,7 +366,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
                 if (curElevator.isCoreElevator() && !multiElevators.contains(curElevator)) {
                     multiElevators.add(curElevator);
                     curElevator.multiElevators = multiElevators;
-                    for (Direction face : PneumaticCraftUtils.HORIZONTALS) {
+                    for (Direction face : DirectionUtil.HORIZONTALS) {
                         TileEntity te = curElevator.getCachedNeighbor(face);
                         if (te instanceof TileEntityElevatorBase && !te.isRemoved()) {
                             todo.push((TileEntityElevatorBase) te);
@@ -433,7 +434,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
                 scanLoop: while (pos.getY() + yOffset < worldHeight - 2) {
                     boolean registeredThisFloor = false;
                     for (TileEntityElevatorBase base : multiElevators) {
-                        for (Direction dir : PneumaticCraftUtils.HORIZONTALS) {
+                        for (Direction dir : DirectionUtil.HORIZONTALS) {
                             mut.setPos(base.getPos());
                             mut.move(dir.getXOffset(), yOffset + 2, dir.getZOffset());
                             if (base.world.getBlockState(mut).getBlock() == ModBlocks.ELEVATOR_CALLER.get()) {

@@ -8,6 +8,7 @@ import me.desht.pneumaticcraft.common.progwidgets.IBlockOrdered;
 import me.desht.pneumaticcraft.common.progwidgets.IBlockOrdered.Ordering;
 import me.desht.pneumaticcraft.common.progwidgets.ISidedWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetAreaItemBase;
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.ThreadedSorter;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FlowingFluidBlock;
@@ -206,7 +207,7 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
             }
         } else {
             ISidedWidget w = progWidget instanceof ISidedWidget ? (ISidedWidget) progWidget : null;
-            for (Direction dir : Direction.VALUES) {
+            for (Direction dir : DirectionUtil.VALUES) {
                 BlockPos pos2 = curPos.offset(dir);
                 if (drone.getDronePos().squareDistanceTo(pos2.getX() + 0.5, pos2.getY() + 0.5, pos2.getZ() + 0.5) < 0.5) {
                     // consider that close enough already

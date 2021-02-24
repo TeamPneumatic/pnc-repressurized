@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.common.progwidgets.ICountWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ILiquidExport;
 import me.desht.pneumaticcraft.common.progwidgets.ILiquidFiltered;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetInventoryBase;
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
@@ -45,7 +46,7 @@ public class DroneAILiquidExport<W extends ProgWidgetInventoryBase & ILiquidFilt
                 FluidStack exportedFluid = drone.getFluidTank().drain(Integer.MAX_VALUE, FluidAction.SIMULATE);
                 if (!exportedFluid.isEmpty() && progWidget.isFluidValid(exportedFluid.getFluid())) {
                     FillStatus status = FillStatus.NO_HANDLER;
-                    for (Direction side : Direction.VALUES) {
+                    for (Direction side : DirectionUtil.VALUES) {
                         if (progWidget.isSideSelected(side)) {
                             status = trySide(te, side, exportedFluid, simulate);
                             if (status == FillStatus.OK) return true;

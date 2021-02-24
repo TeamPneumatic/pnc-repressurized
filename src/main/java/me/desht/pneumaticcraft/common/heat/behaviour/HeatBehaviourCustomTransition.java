@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.heat.behaviour;
 import me.desht.pneumaticcraft.api.heat.HeatBehaviour;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.common.heat.BlockHeatProperties;
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.FluidUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -98,7 +99,7 @@ public class HeatBehaviourCustomTransition extends HeatBehaviourTransition {
             traversed.add(getPos());
             while (!pending.isEmpty()) {
                 BlockPos pos = pending.pop();
-                for (Direction d : Direction.VALUES) {
+                for (Direction d : DirectionUtil.VALUES) {
                     BlockPos newPos = pos.offset(d);
                     Block checkingBlock = getWorld().getBlockState(newPos).getBlock();
                     if (checkingBlock == getBlockState().getBlock() && traversed.add(newPos)) {

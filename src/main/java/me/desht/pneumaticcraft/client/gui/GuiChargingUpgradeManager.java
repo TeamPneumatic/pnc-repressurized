@@ -26,7 +26,7 @@ import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,7 +37,7 @@ public abstract class GuiChargingUpgradeManager extends GuiPneumaticContainerBas
 
     protected final ItemStack itemStack;
     private Button guiBackButton;
-    private final Map<EnumUpgrade, IGuiAnimatedStat> cycleTabs = new HashMap<>();
+    private final Map<EnumUpgrade, IGuiAnimatedStat> cycleTabs = new EnumMap<>(EnumUpgrade.class);
 
     GuiChargingUpgradeManager(ContainerChargingStationUpgradeManager container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);

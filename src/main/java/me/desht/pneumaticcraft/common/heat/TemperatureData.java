@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.heat;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.Direction;
@@ -30,7 +31,7 @@ public class TemperatureData implements INBTSerializable<CompoundNBT> {
         Arrays.fill(temp, null);
 
         Set<IHeatExchangerLogic> heatExchangers = new HashSet<>();
-        for (Direction face : Direction.VALUES) {
+        for (Direction face : DirectionUtil.VALUES) {
             boolean done = provider.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY, face).map(h -> {
                 if (heatExchangers.contains(h)) {
                     isMultisided = false;
@@ -44,7 +45,7 @@ public class TemperatureData implements INBTSerializable<CompoundNBT> {
         }
 
         if (isMultisided) {
-            for (Direction face : Direction.VALUES) {
+            for (Direction face : DirectionUtil.VALUES) {
                 provider.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY, face)
                         .ifPresent(h -> temp[face.ordinal()] = h.getTemperature());
             }
@@ -70,7 +71,7 @@ public class TemperatureData implements INBTSerializable<CompoundNBT> {
         CompoundNBT nbt = new CompoundNBT();
         if (isMultisided()) {
             ListNBT tagList = new ListNBT();
-            for (Direction face : Direction.VALUES) {
+            for (Direction face : DirectionUtil.VALUES) {
                 if (temp[face.ordinal()] != null) {
                     CompoundNBT heatTag = new CompoundNBT();
                     heatTag.putByte("side", (byte) face.ordinal());
@@ -90,7 +91,7 @@ public class TemperatureData implements INBTSerializable<CompoundNBT> {
         CompoundNBT nbt = new CompoundNBT();
         if (isMultisided()) {
             ListNBT tagList = new ListNBT();
-            for (Direction face : Direction.VALUES) {
+            for (Direction face : DirectionUtil.VALUES) {
                 CompoundNBT heatTag = new CompoundNBT();
                 heatTag.putByte("side", (byte) face.ordinal());
                 heatTag.putInt("temp", (int) getTemperature(face));

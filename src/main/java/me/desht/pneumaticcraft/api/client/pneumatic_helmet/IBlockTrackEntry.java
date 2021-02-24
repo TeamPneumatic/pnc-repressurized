@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.api.client.pneumatic_helmet;
 
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
@@ -84,7 +85,7 @@ public interface IBlockTrackEntry {
      * @return true the provider provides the capability on any face, including the null "face"
      */
     static boolean hasCapabilityOnAnyFace(ICapabilityProvider provider, Capability<?> cap) {
-        for (Direction face : Direction.VALUES) {
+        for (Direction face : DirectionUtil.VALUES) {
             if (provider.getCapability(cap, face).isPresent()) return true;
         }
         return provider.getCapability(cap).isPresent();

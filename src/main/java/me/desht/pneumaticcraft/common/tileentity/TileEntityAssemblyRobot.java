@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
 import net.minecraft.block.BlockState;
@@ -215,8 +216,8 @@ public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase imp
         }
         slowMode = tag.getBoolean("slowMode");
         speed = tag.getFloat("speed");
-        targetDirection[0] = tag.contains("targetDir1") ? Direction.VALUES[tag.getInt("targetDir1")] : null;
-        targetDirection[1] = tag.contains("targetDir2") ? Direction.VALUES[tag.getInt("targetDir2")] : null;
+        targetDirection[0] = tag.contains("targetDir1") ? DirectionUtil.VALUES[tag.getInt("targetDir1")] : null;
+        targetDirection[1] = tag.contains("targetDir2") ? DirectionUtil.VALUES[tag.getInt("targetDir2")] : null;
 
     }
 
@@ -241,7 +242,7 @@ public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase imp
     public abstract boolean canMoveToDiagonalNeighbours();
 
     Direction[] getPlatformDirection() {
-        for (Direction dir : PneumaticCraftUtils.HORIZONTALS) {
+        for (Direction dir : DirectionUtil.HORIZONTALS) {
             if (getWorld().getTileEntity(getPos().offset(dir)) instanceof TileEntityAssemblyPlatform)
                 return new Direction[]{dir, null};
         }

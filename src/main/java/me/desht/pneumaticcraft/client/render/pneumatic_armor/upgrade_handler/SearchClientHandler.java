@@ -17,9 +17,9 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderSearchItemBlo
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
+import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.BlockTrackerHandler;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
@@ -145,7 +145,7 @@ public class SearchClientHandler extends IArmorUpgradeClientHandler.AbstractHand
                     searchedItems.put(itemEntity, itemEntity.getItem().getCount());
                     itemSearchCount += itemEntity.getItem().getCount();
                 } else {
-                    List<ItemStack> inventoryItems = PneumaticCraftUtils.getStacksInItem(itemEntity.getItem());
+                    List<ItemStack> inventoryItems = ItemRegistry.getInstance().getStacksInItem(itemEntity.getItem());
                     int itemCount = 0;
                     for (ItemStack inventoryItem : inventoryItems) {
                         if (inventoryItem.getItem() == searchedItem) {

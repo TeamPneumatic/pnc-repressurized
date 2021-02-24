@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetAreaItemBase;
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -102,7 +103,7 @@ public class DroneAIPlace<W extends ProgWidgetAreaItemBase /*& IBlockOrdered & I
     }
 
     private BlockPos findClearSide(BlockPos pos) {
-        for (Direction side : Direction.VALUES) {
+        for (Direction side : DirectionUtil.VALUES) {
             BlockPos pos2 = pos.offset(side);
             if (drone.world().getBlockState(pos.offset(side)).allowsMovement(drone.world(), pos2, PathType.AIR)) {
                 return pos2;

@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetEmitRedstone;
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.Direction;
 import net.minecraft.util.text.ITextComponent;
@@ -19,7 +20,7 @@ public class GuiProgWidgetEmitRedstone extends GuiProgWidgetOptionBase<ProgWidge
     public void init() {
         super.init();
 
-        for (Direction dir : Direction.VALUES) {
+        for (Direction dir : DirectionUtil.VALUES) {
             ITextComponent sideName = ClientUtils.translateDirectionComponent(dir);
             WidgetCheckBox checkBox = new WidgetCheckBox(guiLeft + 8, guiTop + 30 + dir.getIndex() * 12, 0xFF404040, sideName,
                     b -> progWidget.getSides()[dir.getIndex()] = b.checked);
