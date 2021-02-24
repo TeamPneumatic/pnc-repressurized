@@ -11,6 +11,7 @@ import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.inventory.ContainerJackhammerSetup;
+import me.desht.pneumaticcraft.common.inventory.ContainerPneumaticBase;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.item.ItemDrillBit.DrillBitType;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -54,7 +55,6 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -134,12 +134,11 @@ public class ItemJackHammer extends ItemPressurizable
                     return stack.getDisplayName();
                 }
 
-                @Nullable
                 @Override
                 public Container createMenu(int windowId, PlayerInventory inv, PlayerEntity player) {
                     return new ContainerJackhammerSetup(windowId, inv, handIn);
                 }
-            }, buf -> buf.writeBoolean(handIn == Hand.MAIN_HAND));
+            }, buf -> ContainerPneumaticBase.putHand(buf, handIn));
         }
         return ActionResult.resultSuccess(stack);
     }
@@ -401,9 +400,9 @@ public class ItemJackHammer extends ItemPressurizable
     }
 
     @Override
-    public void onShiftScrolled(PlayerEntity player, boolean forward) {
+    public void onShiftScrolled(PlayerEntity player, boolean forward, Hand hand) {
         if (!player.world.isRemote) {
-            DigMode newMode = cycleDigMode(player.getHeldItemMainhand(), forward);
+            DigMode newMode = cycleDigMode(player.getHeldItem(hand), forward);
             if (newMode != null) {
                 player.sendStatusMessage(xlate("pneumaticcraft.message.jackhammer.mode")
                         .append(xlate(newMode.getTranslationKey()).mergeStyle(TextFormatting.YELLOW)), true);

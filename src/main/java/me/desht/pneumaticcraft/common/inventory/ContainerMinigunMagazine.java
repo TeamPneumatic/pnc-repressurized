@@ -9,6 +9,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.ClickType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.Hand;
 import net.minecraft.util.SoundEvents;
 import net.minecraftforge.items.SlotItemHandler;
 
@@ -16,15 +17,17 @@ import javax.annotation.Nonnull;
 
 public class ContainerMinigunMagazine extends ContainerPneumaticBase<TileEntityBase> {
     private final ItemMinigun.MagazineHandler gunInv;
+    private final Hand hand;
 
     public ContainerMinigunMagazine(int i, PlayerInventory playerInventory, @SuppressWarnings("unused") PacketBuffer buffer) {
-        this(i, playerInventory);
+        this(i, playerInventory, getHand(buffer));
     }
 
-    public ContainerMinigunMagazine(int windowId, PlayerInventory playerInventory) {
+    public ContainerMinigunMagazine(int windowId, PlayerInventory playerInventory, Hand hand) {
         super(ModContainers.MINIGUN_MAGAZINE.get(), windowId, playerInventory);
+        this.hand = hand;
 
-        gunInv = ItemMinigun.getMagazine(playerInventory.player.getHeldItemMainhand());
+        gunInv = ItemMinigun.getMagazine(playerInventory.player.getHeldItem(hand));
         if (gunInv != null) {
             for (int i = 0; i < gunInv.getSlots(); i++) {
                 addSlot(new SlotItemHandler(gunInv, i, 26 + (i % 2) * 18, 26 + (i / 2) * 18));
@@ -51,7 +54,7 @@ public class ContainerMinigunMagazine extends ContainerPneumaticBase<TileEntityB
     public ItemStack slotClick(int slotId, int dragType, ClickType clickType, PlayerEntity player) {
         if (clickType == ClickType.CLONE && dragType == 2 && slotId >= 0 && slotId < ItemMinigun.MAGAZINE_SIZE) {
             // middle-click to lock a slot
-            ItemStack gunStack = player.getHeldItemMainhand();
+            ItemStack gunStack = player.getHeldItem(hand);
             if (gunStack.getItem() instanceof ItemMinigun) {
                 int slot = ItemMinigun.getLockedSlot(gunStack);
                 if (slot == slotId) {
@@ -67,5 +70,9 @@ public class ContainerMinigunMagazine extends ContainerPneumaticBase<TileEntityB
         } else {
             return super.slotClick(slotId, dragType, clickType, player);
         }
+    }
+
+    public Hand getHand() {
+        return hand;
     }
 }

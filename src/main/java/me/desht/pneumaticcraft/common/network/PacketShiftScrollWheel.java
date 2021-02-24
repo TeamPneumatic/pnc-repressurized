@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.common.item.IShiftScrollable;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.Hand;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -16,17 +17,21 @@ import java.util.function.Supplier;
  */
 public class PacketShiftScrollWheel {
     private final boolean forward;
+    private final boolean mainHand;
 
-    public PacketShiftScrollWheel(boolean forward) {
+    public PacketShiftScrollWheel(boolean forward, Hand mainHand) {
         this.forward = forward;
+        this.mainHand = mainHand == Hand.MAIN_HAND;
     }
 
     public PacketShiftScrollWheel(PacketBuffer buf) {
         this.forward = buf.readBoolean();
+        this.mainHand = buf.readBoolean();
     }
 
     public void toBytes(PacketBuffer buf) {
         buf.writeBoolean(forward);
+        buf.writeBoolean(mainHand);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
@@ -35,7 +40,7 @@ public class PacketShiftScrollWheel {
             if (player != null) {
                 ItemStack stack = player.getHeldItemMainhand();
                 if (stack.getItem() instanceof IShiftScrollable) {
-                    ((IShiftScrollable) stack.getItem()).onShiftScrolled(player, forward);
+                    ((IShiftScrollable) stack.getItem()).onShiftScrolled(player, forward, mainHand ? Hand.MAIN_HAND : Hand.OFF_HAND);
                 }
             }
         });

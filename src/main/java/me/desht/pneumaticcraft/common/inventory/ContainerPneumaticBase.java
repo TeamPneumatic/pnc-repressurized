@@ -49,10 +49,14 @@ public class ContainerPneumaticBase<T extends TileEntityBase> extends Container 
         }
     }
 
-    static Hand getHand(PacketBuffer extraData) { return extraData.readBoolean() ? Hand.MAIN_HAND : Hand.OFF_HAND; }
+    public static void putHand(PacketBuffer buf, Hand hand) {
+        buf.writeBoolean(hand == Hand.MAIN_HAND);
+    }
 
-    static BlockPos getTilePos(PacketBuffer extraData) {
-        return extraData.readBlockPos();
+    static Hand getHand(PacketBuffer buf) { return buf.readBoolean() ? Hand.MAIN_HAND : Hand.OFF_HAND; }
+
+    static BlockPos getTilePos(PacketBuffer buf) {
+        return buf.readBlockPos();
     }
 
     void addSyncedField(SyncedField<?> field) {

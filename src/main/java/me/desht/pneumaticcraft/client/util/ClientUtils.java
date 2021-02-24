@@ -10,7 +10,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.renderer.FirstPersonRenderer;
 import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.model.BakedQuad;
@@ -152,12 +151,6 @@ public class ClientUtils {
                 y + h > y0 &&
                 x < x0 + rect.getWidth() &&
                 y < y0 + rect.getHeight());
-    }
-
-    public static void suppressItemEquipAnimation() {
-        FirstPersonRenderer renderer = Minecraft.getInstance().getFirstPersonRenderer();
-        renderer.equippedProgressMainHand = 1;
-        renderer.prevEquippedProgressMainHand = 1;
     }
 
     /**

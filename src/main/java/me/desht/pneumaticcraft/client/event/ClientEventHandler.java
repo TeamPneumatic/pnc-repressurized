@@ -47,6 +47,7 @@ import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tags.FluidTags;
+import net.minecraft.util.Hand;
 import net.minecraft.util.HandSide;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.math.vector.Vector3d;
@@ -364,12 +365,20 @@ public class ClientEventHandler {
 
     @SubscribeEvent
     public static void onShiftScroll(InputEvent.MouseScrollEvent event) {
-        ItemStack stack = ClientUtils.getClientPlayer().getHeldItemMainhand();
-        if (ClientUtils.getClientPlayer().isCrouching() && stack.getItem() instanceof IShiftScrollable) {
-            NetworkHandler.sendToServer(new PacketShiftScrollWheel(event.getScrollDelta() > 0));
-            ((IShiftScrollable) stack.getItem()).onShiftScrolled(ClientUtils.getClientPlayer(), event.getScrollDelta() > 0);
-            event.setCanceled(true);
+        if (ClientUtils.getClientPlayer().isCrouching()) {
+            if (!tryHand(event, Hand.MAIN_HAND)) tryHand(event, Hand.OFF_HAND);
         }
+    }
+
+    private static boolean tryHand(InputEvent.MouseScrollEvent event, Hand hand) {
+        ItemStack stack = ClientUtils.getClientPlayer().getHeldItem(hand);
+        if (stack.getItem() instanceof IShiftScrollable) {
+            NetworkHandler.sendToServer(new PacketShiftScrollWheel(event.getScrollDelta() > 0, Hand.MAIN_HAND));
+            ((IShiftScrollable) stack.getItem()).onShiftScrolled(ClientUtils.getClientPlayer(), event.getScrollDelta() > 0, Hand.MAIN_HAND);
+            event.setCanceled(true);
+            return true;
+        }
+        return false;
     }
 
     @SubscribeEvent

@@ -49,7 +49,7 @@ public class GuiMinigunMagazine extends GuiPneumaticContainerBase<ContainerMinig
     public void tick() {
         super.tick();
 
-        ItemStack gunStack = ItemMinigun.getHeldMinigun(Minecraft.getInstance().player);
+        ItemStack gunStack = Minecraft.getInstance().player.getHeldItem(container.getHand());
         if (gunStack.getItem() instanceof ItemMinigun) {
             lockedSlot = ItemMinigun.getLockedSlot(gunStack);
         }

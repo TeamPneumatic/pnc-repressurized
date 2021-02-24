@@ -64,6 +64,7 @@ public class UpgradesDBSetup {
         db.addApplicableUpgrades(ModItems.LOGISTICS_DRONE.get(), LOGISTICS_DRONE_UPGRADES);
 
         db.addApplicableUpgrades(ModItems.MINIGUN.get(), new Builder()
+                .with(EnumUpgrade.VOLUME, MAX_VOLUME)
                 .with(EnumUpgrade.SPEED, 3)
                 .with(EnumUpgrade.RANGE, 6)
                 .with(EnumUpgrade.DISPENSER, 3)

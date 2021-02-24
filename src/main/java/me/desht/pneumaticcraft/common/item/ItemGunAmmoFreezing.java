@@ -103,7 +103,7 @@ public class ItemGunAmmoFreezing extends ItemGunAmmo {
             } else if (world.getBlockState(pos1).getBlock() == Blocks.WATER) {
                 // freeze surface water
                 Vector3d eye = minigun.getPlayer().getEyePosition(0f);
-                RayTraceContext ctx = new RayTraceContext(eye, brtr.getHitVec(), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, minigun.getPlayer());
+                RayTraceContext ctx = new RayTraceContext(eye, brtr.getHitVec(), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.SOURCE_ONLY, minigun.getPlayer());
                 BlockRayTraceResult res = world.rayTraceBlocks(ctx);
                 if (res.getType() == RayTraceResult.Type.BLOCK) {
                     pos1 = res.getPos();
