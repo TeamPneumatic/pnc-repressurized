@@ -1046,6 +1046,13 @@ public class EntityDrone extends EntityDroneBase implements
             if (suffocationCounter-- > 0 || !PNCConfig.Common.General.enableDroneSuffocation) {
                 return false;
             }
+        } else if (damageSource instanceof EntityDamageSource) {
+            Entity e = damageSource.getTrueSource();
+            if (e != null && e.getEntityId() == getFakePlayer().getEntityId()) {
+                // don't allow the drone's fake player to damage the drone
+                // e.g. if the drone is wielding an infinity hammer
+                return false;
+            }
         }
         return super.attackEntityFrom(damageSource, damage);
     }
