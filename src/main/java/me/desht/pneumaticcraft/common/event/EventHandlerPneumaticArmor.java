@@ -43,7 +43,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import static me.desht.pneumaticcraft.common.item.ItemPneumaticArmor.isPneumaticArmorPiece;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -54,7 +53,6 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class EventHandlerPneumaticArmor {
     private static final Map<Integer, Integer> targetingTracker = new HashMap<>();
 
-    private static final Map<UUID,Long> armorJumping = new HashMap<>();
     private static final int ARMOR_REPAIR_AMOUNT = 16;  // durability repaired per compressed iron ingot
 
     @SubscribeEvent
@@ -91,49 +89,49 @@ public class EventHandlerPneumaticArmor {
 
     @SubscribeEvent
     public void onPlayerFall(LivingFallEvent event) {
-        // todo handle this client side too to avoid sending particle/sound packets over the network?
-        if (!(event.getEntity() instanceof PlayerEntity) || event.getEntity().world.isRemote) return;
-
-        PlayerEntity player = (PlayerEntity) event.getEntity();
-
-        // this is a kludge, but setting player.fallDistance to a negative amount doesn't seem to work as it should
-        // cancel fall damage if the player jumped with pneumatic legs in the last 40 ticks
-        long when = armorJumping.getOrDefault(player.getUniqueID(), 0L);
-        if (player.world.getGameTime() - when < 40) {
-            event.setCanceled(true);
-            return;
-        }
-        armorJumping.remove(player.getUniqueID());
-
-        if (event.getDistance() > 3.0F) {
+        if (event.getDistance() > 3.0F && event.getEntity() instanceof PlayerEntity) {
+            PlayerEntity player = (PlayerEntity) event.getEntity();
             ItemStack stack = player.getItemStackFromSlot(EquipmentSlotType.FEET);
             if (!(stack.getItem() instanceof ItemPneumaticArmor)) {
                 return;
             }
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
-            if (!handler.isArmorEnabled()) return;
+            if (!handler.isArmorEnabled()) {
+                return;
+            }
             if (event.getEntity().world.getDifficulty() == Difficulty.HARD && handler.isJetBootsActive()) {
+                // thrusting into the ground hurts at hard difficulty!
                 event.setDamageMultiplier(0.2F);
-                return;  // thrusting into the ground hurts at hard difficulty!
+                return;
+            }
+            if (handler.isArmorReady(EquipmentSlotType.LEGS) && handler.isJumpBoostEnabled() && handler.getArmorPressure(EquipmentSlotType.LEGS) > 0.1f) {
+                // straight fall distance reduction if jump upgrade operational in legs
+                event.setDistance(Math.max(0, event.getDistance() - 1.5f * handler.getUpgradeCount(EquipmentSlotType.LEGS, EnumUpgrade.JUMPING)));
+                if (event.getDistance() < 2) {
+                    event.setCanceled(true);
+                    return;
+                }
             }
 
-            float airNeeded = event.getDistance() * PneumaticValues.PNEUMATIC_ARMOR_FALL_USAGE;
-            int vol = stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).map(IAirHandler::getVolume).orElse(0);
-            float airAvailable = vol * handler.getArmorPressure(EquipmentSlotType.FEET);
-            if (airAvailable < 1) {
-                return;
-            } else if (airAvailable >= airNeeded) {
-                event.setCanceled(true);
-            } else {
-                event.setDamageMultiplier(1.0F - (airAvailable / airNeeded));
+            if (!player.world.isRemote) {
+                float airNeeded = event.getDistance() * PneumaticValues.PNEUMATIC_ARMOR_FALL_USAGE;
+                int vol = stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).map(IAirHandler::getVolume).orElse(0);
+                float airAvailable = vol * handler.getArmorPressure(EquipmentSlotType.FEET);
+                if (airAvailable < 1) {
+                    return;
+                } else if (airAvailable >= airNeeded) {
+                    event.setCanceled(true);
+                } else {
+                    event.setDamageMultiplier(1.0F - (airAvailable / airNeeded));
+                }
+                for (int i = 0; i < event.getDistance() / 2; i++) {
+                    float sx = player.getRNG().nextFloat() * 0.6F - 0.3F;
+                    float sz = player.getRNG().nextFloat() * 0.6F - 0.3F;
+                    NetworkHandler.sendToAllTracking(new PacketSpawnParticle(AirParticleData.DENSE, player.getPosX(), player.getPosY(), player.getPosZ(), sx, 0.1, sz), player.world, player.getPosition());
+                }
+                player.world.playSound(null, player.getPosition(), ModSounds.SHORT_HISS.get(), SoundCategory.PLAYERS, 0.3f, 0.8f);
+                handler.addAir(EquipmentSlotType.FEET, (int) -airNeeded);
             }
-            for (int i = 0; i < event.getDistance() / 2; i++) {
-                float sx = player.getRNG().nextFloat() * 0.6F - 0.3F;
-                float sz = player.getRNG().nextFloat() * 0.6F - 0.3F;
-                NetworkHandler.sendToAllTracking(new PacketSpawnParticle(AirParticleData.DENSE, player.getPosX(), player.getPosY(), player.getPosZ(), sx, 0.1, sz), player.world, player.getPosition());
-            }
-            player.world.playSound(null, player.getPosition(), ModSounds.SHORT_HISS.get(), SoundCategory.PLAYERS, 0.3f, 0.8f);
-            handler.addAir(EquipmentSlotType.FEET, (int) -airNeeded);
         }
     }
 
@@ -215,8 +213,6 @@ public class EventHandlerPneumaticArmor {
                 double addX = m.x == 0 ? 0 : - (double)(MathHelper.sin(rotRad) * scale);
                 double addZ = m.z == 0 ? 0 : + (double)(MathHelper.cos(rotRad) * scale);
                 player.setMotion(m.x + addX, m.y + actualBoost * 0.15f, m.z + addZ);
-
-                armorJumping.put(player.getUniqueID(), player.world.getGameTime());
                 int airUsed = (int) Math.ceil(PneumaticValues.PNEUMATIC_ARMOR_JUMP_USAGE * actualBoost * (player.isSprinting() ? 2 : 1));
                 handler.addAir(EquipmentSlotType.LEGS, -airUsed);
             }
