@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.common.villages;
 
-import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import net.minecraft.util.ResourceLocation;
@@ -9,9 +8,7 @@ import net.minecraft.util.registry.WorldGenRegistries;
 import net.minecraft.world.gen.feature.jigsaw.JigsawPattern;
 import net.minecraft.world.gen.feature.jigsaw.JigsawPattern.PlacementBehaviour;
 import net.minecraft.world.gen.feature.jigsaw.JigsawPiece;
-import net.minecraft.world.gen.feature.jigsaw.LegacySingleJigsawPiece;
 import net.minecraft.world.gen.feature.structure.*;
-import net.minecraft.world.gen.feature.template.ProcessorLists;
 import org.jline.utils.Log;
 
 import java.util.List;
@@ -44,7 +41,8 @@ public class VillageStructures {
         }
         List<JigsawPiece> shuffled = old.getShuffledPieces(ThreadLocalRandom.current());
         List<Pair<JigsawPiece, Integer>> newPieces = shuffled.stream().map(p -> new Pair<>(p, 1)).collect(Collectors.toList());
-        newPieces.add(new Pair<>(new LegacySingleJigsawPiece(Either.left(toAdd), () -> ProcessorLists.field_244101_a, PlacementBehaviour.RIGID), weight));
+        JigsawPiece newPiece = JigsawPiece.func_242849_a(toAdd.toString()).apply(PlacementBehaviour.RIGID);
+        newPieces.add(Pair.of(newPiece, weight));
         Registry.register(WorldGenRegistries.JIGSAW_POOL, pool, new JigsawPattern(pool, old.getName(), newPieces));
     }
 }

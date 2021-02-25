@@ -24,6 +24,10 @@ Note: PNC:R 2.9.3 and later have been successfully tested on Minecraft 1.16.5.  
 ## 2.10.1-140 (23 Feb 2021)
 
 ### Updates
+* Pressure Chamber disenchanting now works for enchanted book too
+  * The Enchanted Book to remove enchantments from must have more than one enchantment
+  * A random enchantment will be removed and added to a regular Book
+  * Thanks to @BlueAgent for this
 * COFH/Thermal fuels (Refined Fuel, Tree Oil & Creosote) are now supported in the Liquid Compressor & Advanced Liquid Compressor
   * Note that COFH Crude Oil is still not accepted by the Refinery by default, because it is not added to the `forge:crude_oil` fluid tag
 * Pneumatic Door Base now has a GUI option to open its attached Pneumatic Door when it (the base) receives a redstone signal
