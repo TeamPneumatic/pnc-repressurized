@@ -72,6 +72,12 @@ public class PneumaticCraftAPIHandler implements PneumaticRegistry.IPneumaticCra
     }
 
     @Override
+    public int getProtectingSecurityStations(PlayerEntity player, BlockPos pos) {
+        Validate.isTrue(!player.getEntityWorld().isRemote, "This method can only be called from the server side!");
+        return TileEntitySecurityStation.getProtectingSecurityStations(player, pos, false);
+    }
+
+    @Override
     public void registerXPFluid(Fluid fluid, int liquidToPointRatio) {
         XPFluidManager.getInstance().registerXPFluid(fluid, liquidToPointRatio);
     }

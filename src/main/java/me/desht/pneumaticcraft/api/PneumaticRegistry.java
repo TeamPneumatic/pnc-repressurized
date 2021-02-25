@@ -78,8 +78,21 @@ public final class PneumaticRegistry {
          * @param showRangeLines this is ignored and will disappear in a future release
          * @return the number of Security Stations that disallow interaction for the given player.
          * @throws IllegalArgumentException when called from the client side
+         * @deprecated use {@link #getProtectingSecurityStations(PlayerEntity, BlockPos)}
          */
+        @Deprecated
         int getProtectingSecurityStations(PlayerEntity player, BlockPos pos, boolean showRangeLines);
+
+        /**
+         * Returns the number of Security Stations that disallow interaction with the given coordinate for the given
+         * player. Usually you'd disallow interaction when this returns > 0.
+         *
+         * @param player the player who is trying to access the block
+         * @param pos blockpos of the block being tested
+         * @return the number of Security Stations that disallow interaction for the given player.
+         * @throws IllegalArgumentException when called from the client side
+         */
+        int getProtectingSecurityStations(PlayerEntity player, BlockPos pos);
 
         /**
          * Register a fluid that represents liquid XP (e.g. PneumaticCraft Memory Essence, CoFH Essence of
