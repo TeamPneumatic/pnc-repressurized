@@ -8,6 +8,19 @@ Changes are in reverse chronological order; newest changes at the top.
 
 Note: PNC:R 2.9.3 and later have been successfully tested on Minecraft 1.16.5.  Older (but recent) versions will probably also work on MC 1.16.5, but haven't been tested.
 
+## 2.10.2-?? (unreleased)
+
+### Updates
+* Minigun: the selected ammo can now be cycled with Sneak + Scroll Wheel. Useful if you have multiple ammo types in the gun.
+* The Minigun can now take Volume Upgrades
+* Drones can no longer injure themselves with area attacks when using weapons like the Infinity Hammer from Industrial Foregoing
+* Updated the Jetboots looping sound effect
+  * New effect is a lower-pitched rumble and (hopefully) much easier on the ears
+
+### Fixes
+* Fixed Minigun Freeze ammo not forming ice blocks on the surface of water
+* Fixed crash when opening Minigun magazine inventory from the off-hand
+
 ## 2.10.1-140 (23 Feb 2021)
 
 ### Updates
