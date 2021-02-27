@@ -9,6 +9,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.boss.dragon.EnderDragonPartEntity;
 import net.minecraft.entity.item.EnderCrystalEntity;
 import net.minecraft.entity.projectile.DamagingProjectileEntity;
 import net.minecraft.entity.projectile.ShulkerBulletEntity;
@@ -26,7 +27,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.entity.PartEntity;
 
 import java.util.List;
 
@@ -130,7 +130,8 @@ public abstract class ItemGunAmmo extends Item implements ColorHandlers.ITintabl
 
         double dmgMult = getDamageMultiplier(target, ammo);
         if (dmgMult > 0) {
-            if (target instanceof LivingEntity || target instanceof PartEntity || target instanceof EnderCrystalEntity) {
+            // note: can't just check for PartEntity (will get ClassNotFoundException on dedicated server)
+            if (target instanceof LivingEntity || target instanceof EnderDragonPartEntity || target instanceof EnderCrystalEntity) {
                 target.attackEntityFrom(getDamageSource(minigun), (float)(PNCConfig.Common.Minigun.baseDamage * dmgMult * times));
             } else if (target instanceof ShulkerBulletEntity || target instanceof DamagingProjectileEntity) {
                 target.remove();
