@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.client.util.TintColor;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
+import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicAmbient;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.heat.SyncedTemperature;
 import me.desht.pneumaticcraft.common.inventory.ContainerThermalCompressor;
@@ -18,6 +19,8 @@ import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 
@@ -104,7 +107,16 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase
 
     @Override
     public IHeatExchangerLogic getHeatExchanger(Direction side) {
+        if (side == null) return null;
         return side.getAxis() == Direction.Axis.Y ? null : heatExchangers[side.getHorizontalIndex()];
+    }
+
+    @Override
+    public void initHeatExchangersOnPlacement(World world, BlockPos pos) {
+        double temp = HeatExchangerLogicAmbient.getAmbientTemperature(world, pos);
+        for (IHeatExchangerLogic logic : heatExchangers) {
+            logic.setTemperature(temp);
+        }
     }
 
     private void equaliseHeat(Direction side, double airProduced) {

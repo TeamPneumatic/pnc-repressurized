@@ -6,7 +6,6 @@ import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicAmbient;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketBlockDestroyed;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
@@ -165,13 +164,11 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
         super.onBlockPlacedBy(world, pos, state, entity, stack);
 
         TileEntity te = world.getTileEntity(pos);
-        if (te != null) {
-            if (stack.hasDisplayName() && te instanceof TileEntityBase) {
-                ((TileEntityBase) te).setCustomName(stack.getDisplayName());
-            }
-            if (te instanceof IHeatExchangingTE) {
-                ((IHeatExchangingTE) te).getHeatExchanger().setTemperature(HeatExchangerLogicAmbient.getAmbientTemperature(world, pos));
-            }
+        if (te instanceof TileEntityBase && stack.hasDisplayName()) {
+            ((TileEntityBase) te).setCustomName(stack.getDisplayName());
+        }
+        if (te instanceof IHeatExchangingTE) {
+            ((IHeatExchangingTE) te).initHeatExchangersOnPlacement(world, pos);
         }
     }
 

@@ -40,7 +40,7 @@ public class TileEntityHeatPipe extends TileEntityTickableBase implements ICamou
     }
 
     @Override
-    protected BiPredicate<IWorld, BlockPos> heatExchangerBlockFilter() {
+    public BiPredicate<IWorld, BlockPos> heatExchangerBlockFilter() {
         // heat pipes don't connect to air or fluids
         return (world, pos) -> !world.isAirBlock(pos) && !(world.getBlockState(pos).getBlock() instanceof FlowingFluidBlock);
     }

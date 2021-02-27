@@ -4,20 +4,24 @@ import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.client.util.TintColor;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
+import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicAmbient;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.heat.SyncedTemperature;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 
 public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHeatTinted, IHeatExchangingTE {
-    private final IHeatExchangerLogic coldHeatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
-    private final LazyOptional<IHeatExchangerLogic> coldHeatCap = LazyOptional.of(() -> coldHeatExchanger);
+    // hot side heat exchanger is also the default
     private final IHeatExchangerLogic hotHeatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
     private final LazyOptional<IHeatExchangerLogic> hotHeatCap = LazyOptional.of(() -> hotHeatExchanger);
+    private final IHeatExchangerLogic coldHeatExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
+    private final LazyOptional<IHeatExchangerLogic> coldHeatCap = LazyOptional.of(() -> coldHeatExchanger);
     private final IHeatExchangerLogic connectingExchanger = PneumaticRegistry.getInstance().getHeatRegistry().makeHeatExchangerLogic();
 
     @DescSynced
@@ -116,5 +120,12 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
         } else {
             return null;
         }
+    }
+
+    @Override
+    public void initHeatExchangersOnPlacement(World world, BlockPos pos) {
+        double temp = HeatExchangerLogicAmbient.getAmbientTemperature(world, pos);
+        hotHeatExchanger.setTemperature(temp);
+        coldHeatExchanger.setTemperature(temp);
     }
 }

@@ -7,11 +7,11 @@ import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicAmbient;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethod;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethodRegistry;
-import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.TileEntityCache;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
@@ -33,7 +33,6 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.IWorld;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelDataMap;
 import net.minecraftforge.common.capabilities.Capability;
@@ -48,8 +47,9 @@ import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.*;
-import java.util.function.BiPredicate;
+import java.util.BitSet;
+import java.util.List;
+import java.util.Map;
 
 public abstract class TileEntityBase extends TileEntity
         implements INameable, IGUIButtonSensitive, IDescSynced, IUpgradeAcceptor, IUpgradeHolder, ILuaMethodProvider {
@@ -186,8 +186,9 @@ public abstract class TileEntityBase extends TileEntity
 
         if (!world.isRemote) {
             if (this instanceof IHeatExchangingTE) {
-                // tick primary heat exchanger; if the TE has other exchangers, they are handled in the subclass
-                ((IHeatExchangingTE) this).getHeatExchanger().tick();
+                // tick default heat exchanger; if the TE has other exchangers, they are handled in the subclass
+                IHeatExchangerLogic logic = ((IHeatExchangingTE) this).getHeatExchanger();
+                if (logic != null) logic.tick();
             }
 
             if (this instanceof IAutoFluidEjecting && getUpgrades(EnumUpgrade.DISPENSER) > 0) {
@@ -215,7 +216,9 @@ public abstract class TileEntityBase extends TileEntity
     }
 
     protected void onFirstServerTick() {
-        if (this instanceof IHeatExchangingTE) initializeHullHeatExchangers();
+        if (this instanceof IHeatExchangingTE) {
+            ((IHeatExchangingTE) this).initializeHullHeatExchangers(world, pos);
+        }
     }
 
     protected void updateNeighbours() {
@@ -279,7 +282,8 @@ public abstract class TileEntityBase extends TileEntity
             tag.put(NBTKeys.NBT_UPGRADE_INVENTORY, getUpgradeHandler().serializeNBT());
         }
         if (this instanceof IHeatExchangingTE) {
-            tag.put(NBTKeys.NBT_HEAT_EXCHANGER, ((IHeatExchangingTE) this).getHeatExchanger().serializeNBT());
+            IHeatExchangerLogic logic = ((IHeatExchangingTE) this).getHeatExchanger();
+            if (logic != null) tag.put(NBTKeys.NBT_HEAT_EXCHANGER, logic.serializeNBT());
         }
         if (this instanceof IRedstoneControl) {
             ((IRedstoneControl<?>) this).getRedstoneController().serialize(tag);
@@ -303,7 +307,8 @@ public abstract class TileEntityBase extends TileEntity
             getUpgradeHandler().deserializeNBT(tag.getCompound(NBTKeys.NBT_UPGRADE_INVENTORY));
         }
         if (this instanceof IHeatExchangingTE) {
-            ((IHeatExchangingTE) this).getHeatExchanger().deserializeNBT(tag.getCompound(NBTKeys.NBT_HEAT_EXCHANGER));
+            IHeatExchangerLogic logic = ((IHeatExchangingTE) this).getHeatExchanger();
+            if (logic != null) logic.deserializeNBT(tag.getCompound(NBTKeys.NBT_HEAT_EXCHANGER));
         }
         if (this instanceof IRedstoneControl) {
             ((IRedstoneControl<?>) this).getRedstoneController().deserialize(tag);
@@ -407,7 +412,7 @@ public abstract class TileEntityBase extends TileEntity
 
     public void onNeighborBlockUpdate() {
         if (this instanceof IHeatExchangingTE) {
-            initializeHullHeatExchangers();
+            ((IHeatExchangingTE) this).initializeHullHeatExchangers(world, pos);
         }
         if (this instanceof IRedstoneControl) {
             ((IRedstoneControl<?>)this).getRedstoneController().updateRedstonePower(this);
@@ -415,24 +420,6 @@ public abstract class TileEntityBase extends TileEntity
         for (TileEntityCache cache : getTileCache()) {
             cache.update();
         }
-    }
-
-    private void initializeHullHeatExchangers() {
-        Map<IHeatExchangerLogic, List<Direction>> map = new IdentityHashMap<>();
-        for (Direction side : DirectionUtil.VALUES) {
-            IHeatExchangerLogic logic = ((IHeatExchangingTE) this).getHeatExchanger(side);
-            if (logic != null) map.computeIfAbsent(logic, k -> new ArrayList<>()).add(side);
-        }
-        map.forEach((logic, sides) ->
-                logic.initializeAsHull(getWorld(), getPos(), heatExchangerBlockFilter(), sides.toArray(new Direction[0])));
-    }
-
-    /**
-     * Should this (heat-using) machine lose heat to the surrounding air blocks? Most blocks do.
-     * @return true if heat will be lost to the air on exposed faces, false otherwise
-     */
-    protected BiPredicate<IWorld,BlockPos> heatExchangerBlockFilter() {
-        return IHeatExchangerLogic.ALL_BLOCKS;
     }
 
     /**
@@ -484,20 +471,17 @@ public abstract class TileEntityBase extends TileEntity
 
     @Override
     public void addLuaMethods(LuaMethodRegistry registry) {
-        for (Direction d : DirectionUtil.VALUES) {
-            if (getHeatCap(d).isPresent()) {
-                registry.registerLuaMethod(new LuaMethod("getTemperature") {
-                    @Override
-                    public Object[] call(Object[] args) {
-                        requireArgs(args, 0, 1, "face? (down/up/north/south/west/east)");
-                        Direction dir = args.length == 0 ? null : getDirForString((String) args[0]);
-                        return new Object[]{
-                                getHeatCap(dir).map(IHeatExchangerLogic::getTemperature).orElseThrow(RuntimeException::new)
-                        };
-                    }
-                });
-                break;
-            }
+        if (this instanceof IHeatExchangingTE) {
+            registry.registerLuaMethod(new LuaMethod("getTemperature") {
+                @Override
+                public Object[] call(Object[] args) {
+                    requireArgs(args, 0, 1, "face? (down/up/north/south/west/east)");
+                    Direction dir = args.length == 0 ? null : getDirForString((String) args[0]);
+                    IHeatExchangerLogic logic = ((IHeatExchangingTE) TileEntityBase.this).getHeatExchanger(dir);
+                    double temp = logic == null ? HeatExchangerLogicAmbient.getAmbientTemperature(world, pos) : logic.getTemperature();
+                    return new Object[] { temp };
+                }
+            });
         }
     }
 
@@ -535,6 +519,7 @@ public abstract class TileEntityBase extends TileEntity
         return LazyOptional.empty();
     }
 
+    @Nonnull
     public LazyOptional<IHeatExchangerLogic> getHeatCap(Direction side) {
         // for internal use only!
         return LazyOptional.empty();
