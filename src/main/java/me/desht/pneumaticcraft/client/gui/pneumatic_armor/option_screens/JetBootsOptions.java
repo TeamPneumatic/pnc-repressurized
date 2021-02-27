@@ -35,7 +35,8 @@ public class JetBootsOptions extends AbstractSliderOptions<JetBootsClientHandler
         super.populateGui(gui);
 
         checkBox = WidgetKeybindCheckBox.getOrCreate(RL("jet_boots.module.builder_mode"), 5, 45, 0xFFFFFFFF,
-                b -> setBuilderMode(b.checked));
+                b -> setBuilderMode(b.checked))
+                .withOwnerUpgradeID(getClientUpgradeHandler().getCommonHandler().getID());
         gui.addWidget(checkBox);
 
         gui.addWidget(new WidgetButtonExtended(30, 128, 150, 20,

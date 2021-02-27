@@ -31,11 +31,12 @@ public class BlockTrackOptions extends IOptionPage.SimpleToggleableOptions<Block
         ResourceLocation blockTrackerID = ArmorUpgradeRegistry.getInstance().blockTrackerHandler.getID();
 
         int nWidgets = BlockTrackEntryList.INSTANCE.trackList.size();
+        ResourceLocation owningId = getClientUpgradeHandler().getCommonHandler().getID();
         for (int i = 0; i < nWidgets; i++) {
             WidgetKeybindCheckBox checkBox = WidgetKeybindCheckBox.getOrCreate(BlockTrackEntryList.INSTANCE.trackList.get(i).getEntryID(), 5, 38 + i * 12, 0xFFFFFFFF, cb -> {
                 ResourceLocation subID = ((WidgetKeybindCheckBox) cb).getUpgradeId();
                 HUDHandler.getInstance().addFeatureToggleMessage(ArmorUpgradeRegistry.getStringKey(blockTrackerID), ArmorUpgradeRegistry.getStringKey(subID), cb.checked);
-            });
+            }).withOwnerUpgradeID(owningId);
             gui.addWidget(checkBox);
         }
     }

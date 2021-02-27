@@ -41,6 +41,7 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
     private static WidgetKeybindCheckBox coreComponents;
 
     private final ResourceLocation upgradeID;
+    private ResourceLocation ownerUpgradeID = null;
     private boolean isListeningForBinding;
     private ITextComponent oldCheckboxText;
 
@@ -86,6 +87,16 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
         return coreComponents;
     }
 
+    /**
+     * Set the upgrade ID of the owning upgrade. Use this for sub-controls, e.g. the builder mode setting on jet boots.
+     * @param ownerUpgradeID the upgrade ID of the owning upgrade
+     * @return this widget, for fluency
+     */
+    public WidgetKeybindCheckBox withOwnerUpgradeID(ResourceLocation ownerUpgradeID) {
+        this.ownerUpgradeID = ownerUpgradeID;
+        return this;
+    }
+
     public static boolean isHandlerEnabled(IArmorUpgradeHandler handler) {
         return forUpgrade(handler).checked;
     }
@@ -115,8 +126,13 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
 
             CommonArmorHandler commonArmorHandler = CommonArmorHandler.getHandlerForPlayer();
             ArmorUpgradeRegistry.ArmorUpgradeEntry entry = ArmorUpgradeRegistry.getInstance().getUpgradeEntry(upgradeID);
+            ArmorUpgradeRegistry.ArmorUpgradeEntry ownerEntry = ArmorUpgradeRegistry.getInstance().getUpgradeEntry(ownerUpgradeID);
 
-            if (entry == null || !commonArmorHandler.isArmorReady(entry.getSlot())) {
+            // for main control: entry != null, ownerEntry == null
+            // for sub-control: entry == null, ownerEntry != null
+            if (entry != null) {
+                if (!commonArmorHandler.isArmorReady(entry.getSlot())) return true;
+            } else if (ownerEntry != null && !commonArmorHandler.isArmorReady(ownerEntry.getSlot())) {
                 return true;
             }
 
@@ -130,10 +146,12 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
                 e.printStackTrace();
             }
 
-            EquipmentSlotType slot = entry.getSlot();
-            byte idx = (byte) entry.getIndex();
-            if (commonArmorHandler.isUpgradeInserted(slot, idx)) {
-                toggleUpgrade(commonArmorHandler, slot, idx);
+            if (entry != null) {
+                EquipmentSlotType slot = entry.getSlot();
+                byte idx = (byte) entry.getIndex();
+                if (commonArmorHandler.isUpgradeInserted(slot, idx)) {
+                    toggleUpgrade(commonArmorHandler, slot, idx);
+                }
             }
             if (this == coreComponents) {
                 toggleAllUpgrades(commonArmorHandler);

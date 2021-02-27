@@ -118,6 +118,7 @@ public enum ArmorUpgradeRegistry {
     }
 
     public ArmorUpgradeEntry getUpgradeEntry(ResourceLocation upgradeID) {
+        if (upgradeID == null) return null;
         return byID.get(upgradeID);
     }
 
