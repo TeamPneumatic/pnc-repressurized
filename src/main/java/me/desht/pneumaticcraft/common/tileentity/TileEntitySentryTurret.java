@@ -72,7 +72,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements
     private double rangeSq;
     private Vector3d tileVec;
     @DescSynced
-    public float idleYaw;
+    private float idleYaw;
 
     public TileEntitySentryTurret() {
         super(ModTileEntities.SENTRY_TURRET.get(), 4);
@@ -81,11 +81,9 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements
     @Override
     public void tick() {
         super.tick();
+
         if (!getWorld().isRemote) {
             if (getMinigun().getAttackTarget() == null && rsController.shouldRun()) {
-                if (!PneumaticCraftUtils.areFloatsEqual(getMinigun().minigunYaw, getMinigun().getIdleYaw())) {
-                    getMinigun().setReturning(true);
-                }
                 getMinigun().setSweeping(true);
                 if ((getWorld().getGameTime() & 0xF) == 0) {
                     List<LivingEntity> entities = getWorld().getEntitiesWithinAABB(LivingEntity.class, getTargetingBoundingBox(), entitySelector);
@@ -93,7 +91,8 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements
                         entities.sort(new EntityDistanceComparator(getPos()));
                         getMinigun().setAttackTarget(entities.get(0));
                         targetEntityId = entities.get(0).getEntityId();
-                    } else {
+                    } else if (targetEntityId > 0) {
+                        getMinigun().setReturning(true);
                         targetEntityId = -1;
                     }
                 }
@@ -106,14 +105,9 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements
                     if ((getWorld().getGameTime() & 0x7) == 0) {
                         // Make sure any knockback has the right direction.
                         getFakePlayer().setPosition(getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5);
-                        boolean usedAmmo = getMinigun().tryFireMinigun(target);
-                        if (usedAmmo) {
-                            for (int i = 0; i < inventory.getSlots(); i++) {
-                                if (!inventory.getStackInSlot(i).isEmpty()) {
-                                    inventory.setStackInSlot(i, ItemStack.EMPTY);
-                                    break;
-                                }
-                            }
+                        boolean usedUpAmmo = getMinigun().tryFireMinigun(target);
+                        if (usedUpAmmo) {
+                            clearEmptyAmmo();
                         }
                     }
                 } else {
@@ -126,12 +120,21 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements
         getMinigun().update(getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5);
     }
 
+    private void clearEmptyAmmo() {
+        for (int i = 0; i < inventory.getSlots(); i++) {
+            ItemStack stack = inventory.getStackInSlot(i);
+            if (stack.getItem() instanceof ItemGunAmmo && stack.getDamage() >= stack.getMaxDamage()) {
+                inventory.setStackInSlot(i, ItemStack.EMPTY);
+            }
+        }
+    }
+
     @Override
     public void serializeExtraItemData(CompoundNBT blockEntityTag, boolean preserveState) {
         blockEntityTag.putString(NBT_ENTITY_FILTER, getText(0));
     }
 
-    private boolean canSeeEntity(Entity entity) {
+    private boolean canTurretSeeEntity(Entity entity) {
         Vector3d entityVec = new Vector3d(entity.getPosX() + entity.getWidth() / 2, entity.getPosY() + entity.getHeight() / 2, entity.getPosZ() + entity.getWidth() / 2);
         RayTraceContext ctx = new RayTraceContext(entityVec, tileVec, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, entity);
         BlockRayTraceResult trace = getWorld().rayTraceBlocks(ctx);
@@ -139,7 +142,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements
     }
 
     private AxisAlignedBB getTargetingBoundingBox() {
-        return new AxisAlignedBB(getPos()).grow(range);
+        return new AxisAlignedBB(getPos(), getPos()).grow(range);
     }
 
     @Override
@@ -152,6 +155,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements
     @Override
     protected void onFirstServerTick() {
         super.onFirstServerTick();
+
         tileVec = new Vector3d(getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5);
         updateAmmo();
         onFilterChanged(entityFilter);
@@ -172,11 +176,8 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements
 
     public Minigun getMinigun() {
         if (minigun == null) {
-            minigun = new MinigunSentryTurret();
+            minigun = new MinigunSentryTurret(world.isRemote ? null : getFakePlayer());
             minigun.setWorld(getWorld());
-            if (!getWorld().isRemote) {
-                minigun.setPlayer(getFakePlayer());
-            }
             minigun.minigunYaw = idleYaw;
             minigun.setIdleYaw(idleYaw);
         }
@@ -230,6 +231,10 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements
         return new ContainerSentryTurret(i, playerInventory, getPos());
     }
 
+    public void setIdleYaw(float idleYaw) {
+        this.idleYaw = Minigun.clampYaw(idleYaw);
+    }
+
     private class TurretItemStackHandler extends BaseItemStackHandler {
         TurretItemStackHandler(TileEntity te) {
             super(te, INVENTORY_SIZE);
@@ -269,13 +274,13 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements
         super.onUpgradesChanged();
         if (getWorld() != null) {
             // this can get called when reading nbt on load when world = null
-            // in that case, range is recalculated in onFirstServerUpdate()
+            // in that case, range is recalculated in onFirstServerTick()
             recalculateRange();
         }
     }
 
     private void recalculateRange() {
-        range = 16.0 + Math.min(16, getUpgrades(EnumUpgrade.RANGE));
+        range = 16 + Math.min(16, getUpgrades(EnumUpgrade.RANGE));
         ItemStack ammoStack = getMinigun().getAmmoStack();
         if (ammoStack.getItem() instanceof ItemGunAmmo) {
             range *= ((ItemGunAmmo) ammoStack.getItem()).getRangeMultiplier(ammoStack);
@@ -285,8 +290,8 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements
 
     private class MinigunSentryTurret extends Minigun {
 
-        MinigunSentryTurret() {
-            super(true);
+        MinigunSentryTurret(PlayerEntity fakePlayer) {
+            super(fakePlayer,true);
         }
 
         @Override
@@ -296,12 +301,18 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements
 
         @Override
         public void setMinigunActivated(boolean activated) {
-            TileEntitySentryTurret.this.activated = activated;
+            if (!world.isRemote) {
+                // ony set server-side; TE sync's the activation state to client
+                TileEntitySentryTurret.this.activated = activated;
+            }
         }
 
         @Override
         public void setAmmoColorStack(@Nonnull ItemStack ammo) {
-            minigunColorStack = ammo;
+            if (!world.isRemote) {
+                // ony set server-side; TE sync's the activation state to client
+                minigunColorStack = ammo;
+            }
         }
 
         @Override
@@ -342,7 +353,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements
                 PlayerEntity player = (PlayerEntity) entity;
                 if (player.isCreative() || player.isSpectator() || isExcludedBySecurityStations(player)) return false;
             }
-            return super.apply(entity) && inRange(entity) && canSeeEntity(entity);
+            return super.apply(entity) && inRange(entity) && canTurretSeeEntity(entity);
         }
 
         private boolean inRange(Entity entity) {

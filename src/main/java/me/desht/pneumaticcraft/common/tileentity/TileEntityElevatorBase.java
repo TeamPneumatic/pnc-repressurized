@@ -495,8 +495,8 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
                 if (callerFloor == -1) {
                     Log.error("Error while updating elevator floors! This will cause a indexOutOfBoundsException, index = -1");
                 }
-                caller.setEmittingRedstone(PneumaticCraftUtils.areFloatsEqual(targetExtension, extension, 0.1F)
-                        && PneumaticCraftUtils.areFloatsEqual(extension, callerFloorHeight, 0.1F));
+                caller.setEmittingRedstone(PneumaticCraftUtils.epsilonEquals(targetExtension, extension, 0.1F)
+                        && PneumaticCraftUtils.epsilonEquals(extension, callerFloorHeight, 0.1F));
                 caller.setFloors(elevatorButtons, callerFloor);
             }
         }

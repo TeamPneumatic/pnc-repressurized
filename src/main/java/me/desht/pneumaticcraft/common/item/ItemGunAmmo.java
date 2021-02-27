@@ -26,6 +26,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.entity.PartEntity;
 
 import java.util.List;
 
@@ -83,7 +84,6 @@ public abstract class ItemGunAmmo extends Item implements ColorHandlers.ITintabl
      * @param ammo the ammo cartridge
      * @return a rendering color (ARGB format)
      */
-    @OnlyIn(Dist.CLIENT)
     public abstract int getAmmoColor(ItemStack ammo);
 
     /**
@@ -130,10 +130,7 @@ public abstract class ItemGunAmmo extends Item implements ColorHandlers.ITintabl
 
         double dmgMult = getDamageMultiplier(target, ammo);
         if (dmgMult > 0) {
-            /*if (target instanceof MultiPartEntityPart) {
-                ((MultiPartEntityPart) target).parent.attackEntityFromPart((MultiPartEntityPart) target, getDamageSource(minigun), ConfigHandler.minigun.baseDamage * dmgMult * times);
-            } else*/
-            if (target instanceof LivingEntity || target instanceof EnderCrystalEntity) {
+            if (target instanceof LivingEntity || target instanceof PartEntity || target instanceof EnderCrystalEntity) {
                 target.attackEntityFrom(getDamageSource(minigun), (float)(PNCConfig.Common.Minigun.baseDamage * dmgMult * times));
             } else if (target instanceof ShulkerBulletEntity || target instanceof DamagingProjectileEntity) {
                 target.remove();

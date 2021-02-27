@@ -115,7 +115,7 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
             }
             if (progress < targetProgress) progress = targetProgress;
         }
-        if (!getWorld().isRemote && !PneumaticCraftUtils.areFloatsEqual(oldProgress, progress)) {
+        if (!getWorld().isRemote && !PneumaticCraftUtils.epsilonEquals(oldProgress, progress)) {
             addAir((int) (-Math.abs(oldProgress - progress) * PneumaticValues.USAGE_PNEUMATIC_DOOR * (getSpeedUsageMultiplierFromUpgrades() / speedMultiplier)));
         }
         door = getDoor();

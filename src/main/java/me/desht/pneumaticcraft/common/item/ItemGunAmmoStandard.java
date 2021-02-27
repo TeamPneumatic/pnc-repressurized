@@ -66,7 +66,6 @@ public class ItemGunAmmoStandard extends ItemGunAmmo {
     }
 
     @Override
-    @OnlyIn(Dist.CLIENT)
     public int getAmmoColor(ItemStack ammo) {
         ItemStack potion = getPotion(ammo);
         return potion.isEmpty() ? 0x00FFFF00 : Minecraft.getInstance().getItemColors().getColor(potion, 0);

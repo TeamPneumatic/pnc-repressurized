@@ -28,6 +28,6 @@ public class MovingSoundElevator extends TickableSound {
 
     @Override
     public boolean isDonePlaying() {
-        return te.isRemoved() || PneumaticCraftUtils.areFloatsEqual(te.extension, te.getTargetExtension());
+        return te.isRemoved() || PneumaticCraftUtils.epsilonEquals(te.extension, te.getTargetExtension());
     }
 }

@@ -92,7 +92,7 @@ public class ModelMinigun {
         float barrelRotation = 0;
         if (minigun != null) {
             barrelRotation = minigun.getOldMinigunRotation() + partialTick * (minigun.getMinigunRotation() - minigun.getOldMinigunRotation());
-            float yaw = minigun.oldMinigunYaw + partialTick * (minigun.minigunYaw - minigun.oldMinigunYaw);
+            float yaw = minigun.oldMinigunYaw + partialTick * Minigun.clampYaw(minigun.minigunYaw - minigun.oldMinigunYaw);
             float pitch = minigun.oldMinigunPitch + partialTick * (minigun.minigunPitch - minigun.oldMinigunPitch);
 
             matrixStack.translate(0, 23 / 16D, 0);

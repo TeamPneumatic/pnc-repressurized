@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySentryTurret;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.TickableSound;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -17,6 +18,7 @@ public class MovingSoundMinigun extends TickableSound {
     private final Entity entity;
     private final TileEntity tileEntity;
     private boolean finished = false;
+    private static long lastSpinDown = 0L;
 
     MovingSoundMinigun(Entity entity) {
         super(ModSounds.MINIGUN.get(), SoundCategory.NEUTRAL);
@@ -47,30 +49,34 @@ public class MovingSoundMinigun extends TickableSound {
         if (entity != null) {
             if (!entity.isAlive()) {
                 finished = true;
-                return;
-            }
-            x = (float) entity.getPosX();
-            y = (float) entity.getPosY();
-            z = (float) entity.getPosZ();
-            if (entity instanceof PlayerEntity) {
-                PlayerEntity player = (PlayerEntity) entity;
-                ItemStack curItem = player.getHeldItemMainhand();
-                if (curItem.getItem() == ModItems.MINIGUN.get()) {
-                    minigun = ModItems.MINIGUN.get().getMinigun(curItem, player);
+            } else {
+                x = (float) entity.getPosX();
+                y = (float) entity.getPosY();
+                z = (float) entity.getPosZ();
+                if (entity instanceof PlayerEntity) {
+                    PlayerEntity player = (PlayerEntity) entity;
+                    ItemStack curItem = player.getHeldItemMainhand();
+                    if (curItem.getItem() == ModItems.MINIGUN.get()) {
+                        minigun = ModItems.MINIGUN.get().getMinigun(curItem, player);
+                    }
+                } else if (entity instanceof EntityDrone) {
+                    minigun = ((EntityDrone) entity).getMinigun();
                 }
-            } else if (entity instanceof EntityDrone) {
-                minigun = ((EntityDrone) entity).getMinigun();
             }
         } else if (tileEntity != null) {
             if (tileEntity.isRemoved()) {
                 finished = true;
-                return;
-            }
-            if (tileEntity instanceof TileEntitySentryTurret) {
-                minigun = ((TileEntitySentryTurret) tileEntity).getMinigun();
+            } else {
+                if (tileEntity instanceof TileEntitySentryTurret) {
+                    minigun = ((TileEntitySentryTurret) tileEntity).getMinigun();
+                }
             }
         }
         finished = minigun == null || !minigun.isMinigunActivated() || minigun.getMinigunSpeed() < Minigun.MAX_GUN_SPEED * 0.9;
+        if (finished && Minecraft.getInstance().world.getGameTime() - lastSpinDown > 20) {
+            Minecraft.getInstance().player.playSound(ModSounds.MINIGUN_STOP.get(), 1f, 0.5F);
+            lastSpinDown = Minecraft.getInstance().world.getGameTime();
+        }
     }
 
     @Override

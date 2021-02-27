@@ -54,6 +54,6 @@ public class BlockSentryTurret extends BlockPneumaticCraft {
         super.onBlockPlacedBy(world, pos, state, entity, stack);
 
         PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntitySentryTurret.class)
-                .ifPresent(te -> te.idleYaw = entity.getYaw(0f));
+                .ifPresent(te -> te.setIdleYaw(entity.getYaw(0f)));
     }
 }

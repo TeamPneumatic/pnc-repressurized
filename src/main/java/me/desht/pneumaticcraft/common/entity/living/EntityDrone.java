@@ -136,7 +136,7 @@ public class EntityDrone extends EntityDroneBase implements
     private static final DataParameter<Integer> DRONE_COLOR = EntityDataManager.createKey(EntityDrone.class, DataSerializers.VARINT);
     private static final DataParameter<Boolean> MINIGUN_ACTIVE = EntityDataManager.createKey(EntityDrone.class, DataSerializers.BOOLEAN);
     private static final DataParameter<Boolean> HAS_MINIGUN = EntityDataManager.createKey(EntityDrone.class, DataSerializers.BOOLEAN);
-    private static final DataParameter<ItemStack> AMMO = EntityDataManager.createKey(EntityDrone.class, DataSerializers.ITEMSTACK);
+    private static final DataParameter<Integer> AMMO = EntityDataManager.createKey(EntityDrone.class, DataSerializers.VARINT);
     private static final DataParameter<String> LABEL = EntityDataManager.createKey(EntityDrone.class, DataSerializers.STRING);
     private static final DataParameter<Integer> ACTIVE_WIDGET = EntityDataManager.createKey(EntityDrone.class, DataSerializers.VARINT);
     private static final DataParameter<BlockPos> TARGET_POS = EntityDataManager.createKey(EntityDrone.class, DataSerializers.BLOCK_POS);
@@ -304,7 +304,7 @@ public class EntityDrone extends EntityDroneBase implements
         dataManager.register(DRONE_COLOR, DyeColor.BLACK.getId());
         dataManager.register(MINIGUN_ACTIVE, false);
         dataManager.register(HAS_MINIGUN, false);
-        dataManager.register(AMMO, ItemStack.EMPTY);
+        dataManager.register(AMMO, 0xFFFFFF00);
         dataManager.register(LABEL, "");
         dataManager.register(ACTIVE_WIDGET, 0);
         dataManager.register(TARGET_POS, BlockPos.ZERO);
@@ -639,14 +639,11 @@ public class EntityDrone extends EntityDroneBase implements
     }
 
     public int getAmmoColor() {
-        ItemStack ammo = dataManager.get(AMMO);
-        if (ammo.getItem() instanceof ItemGunAmmo) {
-            return ((ItemGunAmmo) ammo.getItem()).getAmmoColor(ammo);
-        }
-        return 0x808080;  // shouldn't happen
+        return dataManager.get(AMMO);
     }
 
-    private void setAmmoColor(ItemStack color) {
+    private void setAmmoColor(ItemStack ammo) {
+        int color = ammo.getItem() instanceof ItemGunAmmo ? ((ItemGunAmmo) ammo.getItem()).getAmmoColor(ammo) : 0xFFFF0000;
         dataManager.set(AMMO, color);
     }
 
@@ -1014,7 +1011,7 @@ public class EntityDrone extends EntityDroneBase implements
 
     public Minigun getMinigun() {
         if (minigun == null) {
-            minigun = new MinigunDrone().setPlayer(getFakePlayer())
+            minigun = new MinigunDrone(world.isRemote ? null : getFakePlayer())
                     .setWorld(world)
                     .setAirHandler(this.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY), PneumaticValues.DRONE_USAGE_ATTACK);
         }
@@ -1398,8 +1395,8 @@ public class EntityDrone extends EntityDroneBase implements
     }
 
     public class MinigunDrone extends Minigun {
-        MinigunDrone() {
-            super(true);
+        MinigunDrone(FakePlayer fakePlayer) {
+            super(fakePlayer, true);
         }
 
         @Override
@@ -1414,12 +1411,18 @@ public class EntityDrone extends EntityDroneBase implements
 
         @Override
         public void setMinigunActivated(boolean activated) {
-            EntityDrone.this.setMinigunActivated(activated);
+            if (!world.isRemote) {
+                // only set server-side; drone sync's the activation state to client
+                EntityDrone.this.setMinigunActivated(activated);
+            }
         }
 
         @Override
         public void setAmmoColorStack(@Nonnull ItemStack ammo) {
-            setAmmoColor(ammo);
+            if (!world.isRemote) {
+                // only set server-side; drone sync's the activation state to client
+                setAmmoColor(ammo);
+            }
         }
 
         @Override

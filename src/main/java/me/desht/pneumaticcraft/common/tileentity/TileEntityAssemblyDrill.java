@@ -124,7 +124,7 @@ public class TileEntityAssemblyDrill extends TileEntityAssemblyRobot {
 
     private boolean isDoneInternal() {
         if (super.isDoneMoving()) {
-            return isDrillOn ? drillSpeed > TileEntityConstants.ASSEMBLY_DRILL_MAX_SPEED - 1F : PneumaticCraftUtils.areFloatsEqual(drillSpeed, 0F);
+            return isDrillOn ? drillSpeed > TileEntityConstants.ASSEMBLY_DRILL_MAX_SPEED - 1F : PneumaticCraftUtils.epsilonEquals(drillSpeed, 0F);
         } else {
             return false;
         }

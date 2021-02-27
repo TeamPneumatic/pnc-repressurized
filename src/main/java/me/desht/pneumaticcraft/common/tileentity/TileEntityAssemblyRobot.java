@@ -197,13 +197,13 @@ public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase imp
 
     boolean isDoneMoving() {
         for (int i = 0; i < 5; i++) {
-            if (!PneumaticCraftUtils.areFloatsEqual(angles[i], targetAngles[i])) return false;
+            if (!PneumaticCraftUtils.epsilonEquals(angles[i], targetAngles[i])) return false;
         }
         return true;
     }
 
     public boolean isDoneRotatingYaw() {
-        return PneumaticCraftUtils.areFloatsEqual(angles[EnumAngles.TURN.ordinal()], targetAngles[EnumAngles.TURN.ordinal()]);
+        return PneumaticCraftUtils.epsilonEquals(angles[EnumAngles.TURN.ordinal()], targetAngles[EnumAngles.TURN.ordinal()]);
     }
 
     @Override

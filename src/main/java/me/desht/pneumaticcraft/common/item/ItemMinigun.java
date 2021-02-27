@@ -13,6 +13,7 @@ import me.desht.pneumaticcraft.common.inventory.ContainerMinigunMagazine;
 import me.desht.pneumaticcraft.common.inventory.ContainerPneumaticBase;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
+import me.desht.pneumaticcraft.common.minigun.MinigunPlayerTracker;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
@@ -30,7 +31,6 @@ import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.*;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -71,19 +71,15 @@ public class ItemMinigun extends ItemPressurizable implements
     @Override
     public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean currentItem) {
         super.inventoryTick(stack, world, entity, slot, currentItem);
+
         PlayerEntity player = (PlayerEntity) entity;
         Minigun minigun = getMinigun(stack, player);
         if (!currentItem) {
-            minigun.setMinigunSoundCounter(-1);
             minigun.setMinigunSpeed(0);
             minigun.setMinigunActivated(false);
             minigun.setMinigunTriggerTimeOut(0);
         } else {
             minigun.update(player.getPosX(), player.getPosY(), player.getPosZ());
-        }
-
-        if (world.isRemote && currentItem && minigun.getMinigunSpeed() > 0) {
-            player.isSwingInProgress = false;
         }
 
         if (!world.isRemote && slot >= 0 && slot <= 8) {
@@ -119,10 +115,8 @@ public class ItemMinigun extends ItemPressurizable implements
     }
 
     private Minigun getMinigun(ItemStack stack, PlayerEntity player, ItemStack ammo) {
-        return new MinigunItem()
-                .setItemStack(stack)
+        return new MinigunItem(player, stack)
                 .setAmmoStack(ammo)
-                .setPlayer(player)
                 .setAirHandler(stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY), PneumaticValues.USAGE_ITEM_MINIGUN)
                 .setWorld(player.world);
     }
@@ -134,8 +128,8 @@ public class ItemMinigun extends ItemPressurizable implements
     @Override
     public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand handIn) {
         ItemStack stack = player.getHeldItem(handIn);
-        if (!world.isRemote) {
-            if (player.isSneaking() && stack.getCount() == 1) {
+        if (player.isSneaking()) {
+            if (!world.isRemote && stack.getCount() == 1) {
                 NetworkHooks.openGui((ServerPlayerEntity) player, new INamedContainerProvider() {
                     @Override
                     public ITextComponent getDisplayName() {
@@ -147,25 +141,33 @@ public class ItemMinigun extends ItemPressurizable implements
                         return new ContainerMinigunMagazine(i, playerInventory, handIn);
                     }
                 }, buf -> ContainerPneumaticBase.putHand(buf, handIn));
-            } else {
-                MagazineHandler magazineHandler = getMagazine(stack);
-                ItemStack ammo = magazineHandler.getAmmo();
-                if (!ammo.isEmpty()) {
-                    player.setActiveHand(handIn);
-                }
             }
+            return ActionResult.resultConsume(stack);
+        } else {
+            MagazineHandler magazineHandler = getMagazine(stack);
+            ItemStack ammo = magazineHandler.getAmmo();
+            if (!ammo.isEmpty()) {
+                player.setActiveHand(handIn);
+                return ActionResult.func_233538_a_(stack, world.isRemote);
+            }
+            if (player.world.isRemote) {
+                player.playSound(SoundEvents.BLOCK_COMPARATOR_CLICK, 1f, 1f);
+                player.sendStatusMessage(new TranslationTextComponent("pneumaticcraft.message.minigun.outOfAmmo"), true);
+            }
+            return ActionResult.resultFail(stack);
         }
-        return ActionResult.resultSuccess(stack);
     }
 
     @Override
-    public void onUsingTick(ItemStack stack, LivingEntity player, int count) {
-        if (!(player instanceof ServerPlayerEntity)) return;
+    public void onUsingTick(ItemStack stack, LivingEntity entity, int count) {
+        if (!(entity instanceof PlayerEntity)) return;
+        PlayerEntity player = (PlayerEntity) entity;
+
         MagazineHandler magazineHandler = getMagazine(stack);
         ItemStack ammo = magazineHandler.getAmmo();
         if (!ammo.isEmpty()) {
             int prevDamage = ammo.getDamage();
-            Minigun minigun = getMinigun(stack, (ServerPlayerEntity) player, ammo);
+            Minigun minigun = getMinigun(stack, player, ammo);
             // an item life upgrade will prevent the stack from being destroyed
             boolean usedUpAmmo = minigun.tryFireMinigun(null) && minigun.getUpgrades(EnumUpgrade.ITEM_LIFE) == 0;
             if (usedUpAmmo) ammo.setCount(0);
@@ -173,9 +175,11 @@ public class ItemMinigun extends ItemPressurizable implements
                 magazineHandler.save();
             }
         } else {
+            if (player.world.isRemote) {
+                player.playSound(SoundEvents.BLOCK_COMPARATOR_CLICK, 1f, 1f);
+                player.sendStatusMessage(new TranslationTextComponent("pneumaticcraft.message.minigun.outOfAmmo"), true);
+            }
             player.stopActiveHand();
-            NetworkHandler.sendToPlayer(new PacketPlaySound(SoundEvents.BLOCK_COMPARATOR_CLICK, SoundCategory.PLAYERS, player.getPosX(), player.getPosY(), player.getPosZ(), 1.0f, 1.0f, false), (ServerPlayerEntity) player);
-            ((ServerPlayerEntity) player).sendStatusMessage(new TranslationTextComponent("pneumaticcraft.message.minigun.outOfAmmo"), true);
         }
     }
 
@@ -296,97 +300,90 @@ public class ItemMinigun extends ItemPressurizable implements
     }
 
     private static class MinigunItem extends Minigun {
-        MinigunItem() {
-            super(false);
+        private final ItemStack minigunStack;
+        private final MinigunPlayerTracker tracker;
+
+        MinigunItem(PlayerEntity player, ItemStack stack) {
+            super(player, false);
+            tracker = MinigunPlayerTracker.getInstance(player);
+            this.minigunStack = stack;
         }
 
         @Override
         public boolean isMinigunActivated() {
-            return NBTUtils.getBoolean(minigunStack, "activated");
+            return tracker.isActivated();
         }
 
         @Override
         public void setMinigunActivated(boolean activated) {
-            NBTUtils.setBoolean(minigunStack, "activated", activated);
+            tracker.setActivated(activated);
         }
 
         @Override
         public void setAmmoColorStack(@Nonnull ItemStack ammo) {
             if (!ammo.isEmpty() ) {
-                NBTUtils.setCompoundTag(minigunStack, "ammoColorStack", ammo.write(new CompoundNBT()));
+                tracker.setAmmoColor(getAmmoColor(ammo));
             } else {
-                NBTUtils.removeTag(minigunStack, "ammoColorStack");
+                tracker.setAmmoColor(0);
             }
         }
 
         @Override
         public int getAmmoColor() {
-            ItemStack ammo = ItemStack.EMPTY;
-            if (NBTUtils.hasTag(minigunStack, "ammoColorStack")) {
-                CompoundNBT tag = NBTUtils.getCompoundTag(minigunStack, "ammoColorStack");
-                ammo = ItemStack.read(tag);
-            }
-            return getAmmoColor(ammo);
+            return tracker.getAmmoColor();
         }
 
         @Override
         public void playSound(SoundEvent soundName, float volume, float pitch) {
-            NetworkHandler.sendToAllTracking(new PacketPlaySound(soundName, SoundCategory.PLAYERS, player.getPosition(), volume, pitch, false), player.world, player.getPosition());
+            if (!player.world.isRemote) {
+                NetworkHandler.sendToAllTracking(new PacketPlaySound(soundName, SoundCategory.PLAYERS, player.getPosition(), volume, pitch, false), player.world, player.getPosition());
+            }
         }
 
         @Override
         public float getMinigunSpeed() {
-            return NBTUtils.getFloat(minigunStack, "speed");
+            return tracker.getRotationSpeed();
         }
 
         @Override
         public void setMinigunSpeed(float minigunSpeed) {
-            NBTUtils.setFloat(minigunStack, "speed", minigunSpeed);
+            tracker.setRotationSpeed(minigunSpeed);
         }
 
         @Override
         public int getMinigunTriggerTimeOut() {
-            return NBTUtils.getInteger(minigunStack, "triggerTimeout");
+            return tracker.getTriggerTimeout();
         }
 
         @Override
         public void setMinigunTriggerTimeOut(int minigunTriggerTimeOut) {
-            NBTUtils.setInteger(minigunStack, "triggerTimeout", minigunTriggerTimeOut);
-        }
-
-        @Override
-        public int getMinigunSoundCounter() {
-            return NBTUtils.getInteger(minigunStack, "soundCounter");
-        }
-
-        @Override
-        public void setMinigunSoundCounter(int minigunSoundCounter) {
-            NBTUtils.setInteger(minigunStack, "soundCounter", minigunSoundCounter);
+            tracker.setTriggerTimeout(minigunTriggerTimeOut);
         }
 
         @Override
         public float getMinigunRotation() {
-            return NBTUtils.getFloat(minigunStack, "rotation");
+            return tracker.getBarrelRotation();
         }
 
         @Override
         public void setMinigunRotation(float minigunRotation) {
-            NBTUtils.setFloat(minigunStack, "rotation", minigunRotation);
+            tracker.setBarrelRotation(minigunRotation);
         }
 
         @Override
         public float getOldMinigunRotation() {
-            return NBTUtils.getFloat(minigunStack, "oldRotation");
+            return tracker.getPrevBarrelRotation();
         }
 
         @Override
         public void setOldMinigunRotation(float oldMinigunRotation) {
-            NBTUtils.setFloat(minigunStack, "oldRotation", oldMinigunRotation);
+            tracker.setPrevBarrelRotation(oldMinigunRotation);
         }
 
         @Override
         public int getUpgrades(EnumUpgrade upgrade) {
-            return Math.min(ApplicableUpgradesDB.getInstance().getMaxUpgrades(minigunStack.getItem(), upgrade), UpgradableItemUtils.getUpgrades(minigunStack, upgrade));
+            return Math.min(ApplicableUpgradesDB.getInstance().getMaxUpgrades(minigunStack.getItem(), upgrade),
+                    UpgradableItemUtils.getUpgrades(minigunStack, upgrade));
         }
     }
 }

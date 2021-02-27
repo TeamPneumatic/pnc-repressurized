@@ -244,13 +244,14 @@ public class PneumaticCraftUtils {
     }
 
     /**
-     * used to compare two floats which are tested for having (almost) the same value
+     * Compare two floats which are tested for having (almost) the same value. There are methods in MathHelper to do
+     * this but at least one of them is client-only.
      */
-    public static boolean areFloatsEqual(float f1, float f2) {
-        return areFloatsEqual(f1, f2, 0.0001F);
+    public static boolean epsilonEquals(float f1, float f2) {
+        return epsilonEquals(f1, f2, 0.0001F);
     }
 
-    public static boolean areFloatsEqual(float f1, float f2, float maxDifference) {
+    public static boolean epsilonEquals(float f1, float f2, float maxDifference) {
         return Math.abs(f1 - f2) < maxDifference;
     }
 
