@@ -104,7 +104,7 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase
 
     @Override
     public IHeatExchangerLogic getHeatExchanger(Direction side) {
-        return heatExchangers[side.getHorizontalIndex()];
+        return side.getAxis() == Direction.Axis.Y ? null : heatExchangers[side.getHorizontalIndex()];
     }
 
     private void equaliseHeat(Direction side, double airProduced) {
