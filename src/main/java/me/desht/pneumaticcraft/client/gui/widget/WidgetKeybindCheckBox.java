@@ -113,6 +113,13 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
                 return true;
             }
 
+            CommonArmorHandler commonArmorHandler = CommonArmorHandler.getHandlerForPlayer();
+            ArmorUpgradeRegistry.ArmorUpgradeEntry entry = ArmorUpgradeRegistry.getInstance().getUpgradeEntry(upgradeID);
+
+            if (entry == null || !commonArmorHandler.isArmorReady(entry.getSlot())) {
+                return true;
+            }
+
             // left click - usual toggle action
             super.onClick(mouseX, mouseY);
 
@@ -123,14 +130,10 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
                 e.printStackTrace();
             }
 
-            CommonArmorHandler commonArmorHandler = CommonArmorHandler.getHandlerForPlayer();
-            ArmorUpgradeRegistry.ArmorUpgradeEntry entry = ArmorUpgradeRegistry.getInstance().getUpgradeEntry(upgradeID);
-            if (entry != null) {
-                EquipmentSlotType slot = entry.getSlot();
-                byte idx = (byte) entry.getIndex();
-                if (commonArmorHandler.isUpgradeInserted(slot, idx)) {
-                    toggleUpgrade(commonArmorHandler, slot, idx);
-                }
+            EquipmentSlotType slot = entry.getSlot();
+            byte idx = (byte) entry.getIndex();
+            if (commonArmorHandler.isUpgradeInserted(slot, idx)) {
+                toggleUpgrade(commonArmorHandler, slot, idx);
             }
             if (this == coreComponents) {
                 toggleAllUpgrades(commonArmorHandler);
