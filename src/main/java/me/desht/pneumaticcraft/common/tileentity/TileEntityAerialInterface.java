@@ -5,9 +5,12 @@ import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.XPFluidManager;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerAerialInterface;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.network.NetworkHandler;
+import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.thirdparty.curios.Curios;
 import me.desht.pneumaticcraft.common.tileentity.RedstoneController.EmittingRedstoneMode;
 import me.desht.pneumaticcraft.common.tileentity.RedstoneController.RedstoneMode;
@@ -33,6 +36,7 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.capabilities.Capability;
@@ -63,6 +67,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
     private static final UUID NO_PLAYER = new UUID(0L, 0L);
     private static final int ENERGY_CAPACITY = 100000;
     private static final int RF_PER_TICK = 1000;
+    private static final int PLAYER_AIR_MULTIPLIER = 5;
 
     private static final List<RedstoneMode<TileEntityAerialInterface>> REDSTONE_MODES = ImmutableList.of(
             new EmittingRedstoneMode<>("standard.never", new ItemStack(Items.GUNPOWDER),
@@ -350,12 +355,13 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
     }
 
     private void supplyAirToPlayer(PlayerEntity player) {
-        // check every 16 ticks
-        if ((getWorld().getGameTime() & 0xf) == 0) {
-            if (player.getAir() <= 280) {
-                player.setAir(player.getAir() + 16);
-                addAir(-80);  // 5 pneumatic air per player air
-            }
+        // A little higher than the pneumatic helmet with scuba upgrade, so aerial interface
+        // takes precedence if both are available
+        if (player.getAir() <= 170) {
+            int playerAir = 300 - player.getAir();
+            player.setAir(300);
+            addAir(-playerAir * PLAYER_AIR_MULTIPLIER);
+            NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.SCUBA.get(), SoundCategory.PLAYERS, player.getPosition(), 1f, 0.9f, false), (ServerPlayerEntity) player);
         }
     }
 

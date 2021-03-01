@@ -310,7 +310,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         if (!player.world.isRemote
                 && scubaEnabled && getUpgradeCount(EquipmentSlotType.HEAD, EnumUpgrade.SCUBA) > 0
                 && getArmorPressure(EquipmentSlotType.HEAD) > 0.1f
-                && player.getAir() < 200) {
+                && player.getAir() < 150) {
 
             ItemStack helmetStack = player.getItemStackFromSlot(EquipmentSlotType.HEAD);
 
@@ -321,7 +321,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
 
             int airUsed = playerAir * Armor.scubaMultiplier;
             addAir(EquipmentSlotType.HEAD, -airUsed);
-            NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.SCUBA.get(), SoundCategory.PLAYERS, player.getPosition(), 1.5f, 1.0f, false), (ServerPlayerEntity) player);
+            NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.SCUBA.get(), SoundCategory.PLAYERS, player.getPosition(), 1f, 1.0f, false), (ServerPlayerEntity) player);
             Vector3d eyes = player.getEyePosition(1.0f).add(player.getLookVec().scale(0.5));
             NetworkHandler.sendToAllTracking(new PacketSpawnParticle(ParticleTypes.BUBBLE, eyes.x - 0.5, eyes.y, eyes.z -0.5, 0.0, 0.2, 0.0, 10, 1.0, 1.0, 1.0), player.world, player.getPosition());
         }
