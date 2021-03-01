@@ -20,7 +20,7 @@
       "images": [
           "pneumaticcraft:textures/patchouli/oil_pumping.png"
       ],
-      "text": "$(italic)Pumping Oil with a Gas Lift and auto-ejecting into a Liquid Hopper/$"
+      "text": "$(italic)Pumping Oil with a Gas Lift, auto-ejecting into a Large Tank/$"
     },
     {
       "type": "text",

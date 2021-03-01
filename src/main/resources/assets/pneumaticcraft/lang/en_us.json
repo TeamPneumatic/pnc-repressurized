@@ -1313,7 +1313,7 @@
    "pneumaticcraft.gui.tab.info.item.jackhammer.volumeUpgrade" : "§0Increases the Jackhammer's air storage by by 2 * √U, where U = the number of Volume Upgrades, allowing the Jackhammer to run longer between recharges.",
    "pneumaticcraft.gui.tab.info.item.minigun.dispenserUpgrade" : "§0Each Dispenser Upgrade added increases the chance of ammo effects (potions, explosive, freezing etc.) being activated. This can significantly increase air usage, depending on the ammo type in use.",
    "pneumaticcraft.gui.tab.info.item.minigun.entityTrackerUpgrade" : "§0Zooms the player view when the minigun is activated. This has no extra air cost.",
-   "pneumaticcraft.gui.tab.info.item.minigun.itemLifeUpgrade" : "§0Slowly replenishes any ammo in the minigun's magazine, but at a very steep air cost.",
+   "pneumaticcraft.gui.tab.info.item.minigun.itemLifeUpgrade" : "§0Slowly replenishes any ammo in the minigun's magazine, but at a steep air cost. Also prevents empty ammo cartridges from disappearing.${br}The Minigun must be on your hotbar for ammo to be replenished.",
    "pneumaticcraft.gui.tab.info.item.minigun.rangeUpgrade" : "§0Increases the minigun's range. Each upgrade adds 5 meters to the base range of 50 meters. Increased range comes at an increased air cost.",
    "pneumaticcraft.gui.tab.info.item.minigun.securityUpgrade" : "§0Prevents the minigun from damaging tamed entities and other players. This has no extra air cost.",
    "pneumaticcraft.gui.tab.info.item.minigun.speedUpgrade" : "§0Allows the minigun to spin up faster, reducing delay before firing, and also adds a small chance of firing multiple rounds at once. This incurs a significantly increased air cost.",
