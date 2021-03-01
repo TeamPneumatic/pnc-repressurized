@@ -14,15 +14,22 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class WidgetFluidStack extends WidgetFluidFilter {
+    private boolean adjustable = false;
+
     public WidgetFluidStack(int x, int y, FluidStack stack, Consumer<WidgetFluidFilter> pressable) {
         super(x, y, stack, pressable);
+    }
+
+    public WidgetFluidStack setAdjustable() {
+        this.adjustable = true;
+        return this;
     }
 
     public FluidStack getFluidStack() {
         return fluidStack;
     }
 
-    public WidgetFluidFilter setFluidStack(FluidStack fluidStack) {
+    public WidgetFluidStack setFluidStack(FluidStack fluidStack) {
         this.fluidStack = fluidStack;
         return this;
     }
@@ -47,7 +54,7 @@ public class WidgetFluidStack extends WidgetFluidFilter {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (this.clicked(mouseX, mouseY)) {
-            if (!fluidStack.isEmpty()) {
+            if (!fluidStack.isEmpty() && adjustable) {
                 boolean shift = Screen.hasShiftDown();
                 switch (button) {
                     case 0:  // left-click: drain 1000mB (or halve with Shift held)

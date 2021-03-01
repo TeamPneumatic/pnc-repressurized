@@ -87,7 +87,7 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
         IntStream.range(0, EntityLogisticsFrame.FLUID_FILTER_SLOTS).forEach(i -> {
             FluidStack stack = logistics.getFluidFilter(i);
             PointXY p = getFluidSlotPos(i);
-            fluidWidgets.add(new WidgetFluidStack(p.x, p.y, stack.copy(), w -> fluidClicked((WidgetFluidStack) w, i)));
+            fluidWidgets.add(new WidgetFluidStack(p.x, p.y, stack.copy(), w -> fluidClicked((WidgetFluidStack) w, i)).setAdjustable());
         });
         fluidWidgets.forEach(this::addButton);
 

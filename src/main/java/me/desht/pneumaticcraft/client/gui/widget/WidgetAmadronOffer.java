@@ -35,14 +35,13 @@ public class WidgetAmadronOffer extends Widget implements ITooltipProvider {
         super(x, y, 73, 35, StringTextComponent.EMPTY);
         this.offer = offer;
         if (offer.getInput().getType() == AmadronTradeResource.Type.FLUID) {
-            subWidgets.add(new WidgetFluidStack(x + 6, y + 15, offer.getInput().getFluid(), null));
+            subWidgets.add(new WidgetFluidStack(x + 6, y + 15, offer.getInput().getFluid().copy(), null));
         }
         if (offer.getOutput().getType() == AmadronTradeResource.Type.FLUID) {
-            subWidgets.add(new WidgetFluidStack(x + 51, y + 15, offer.getOutput().getFluid(), null));
+            subWidgets.add(new WidgetFluidStack(x + 51, y + 15, offer.getOutput().getFluid().copy(), null));
         }
         if (offer.isRemovableBy(Minecraft.getInstance().player)) {
-            List<ITextComponent> l = new ArrayList<>();
-            l.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.amadron.amadronWidget.sneakRightClickToRemove"));
+            List<ITextComponent> l = new ArrayList<>(GuiUtils.xlateAndSplit("pneumaticcraft.gui.amadron.amadronWidget.sneakRightClickToRemove"));
             l.add(StringTextComponent.EMPTY);
             subWidgets.add(new WidgetButtonExtended(x + 57, y + 1, 11, 11, new StringTextComponent(TextFormatting.RED + "x"),
                     b -> NetworkHandler.sendToServer(new PacketGuiButton("remove:" + offer.getId())))
