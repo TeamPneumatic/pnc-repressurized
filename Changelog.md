@@ -11,15 +11,20 @@ Note: PNC:R 2.9.3 and later have been successfully tested on Minecraft 1.16.5.  
 ## 2.10.2-?? (unreleased)
 
 ### Updates
+* Added a 4th tier of fluid tank: the Huge Fluid Tank, with 512000mB of storage (and an expensive recipe...)
 * Minigun: the selected ammo can now be cycled with Sneak + Scroll Wheel. Useful if you have multiple ammo types in the gun.
 * The Minigun can now take Volume Upgrades
 * Drones can no longer injure themselves with area attacks when using weapons like the Infinity Hammer from Industrial Foregoing
 * Updated the Jetboots looping sound effect
-  * New effect is a lower-pitched rumble and (hopefully) much easier on the ears
+  * New effect is a lower-pitched rumble, (hopefully) much easier on the ears
+* Aerial Interface now plays a "scuba" sound effect to the player when it supplies them with air underwater
 
 ### Fixes
 * Fixed Minigun Freeze ammo not forming ice blocks on the surface of water
+* Fixed Minigun not hurting the Ender Dragon
 * Fixed crash when opening Minigun magazine inventory from the off-hand
+* Fixed Amadron GUI bug where clicking fluids in the GUI left the tablet unusable until the player re-logs
+* Fixed server NPE crash relating to heat capability discovery on the Thermal Compressor
 
 ## 2.10.1-140 (23 Feb 2021)
 
