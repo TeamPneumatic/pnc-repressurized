@@ -50,6 +50,8 @@ import static me.desht.pneumaticcraft.lib.NBTKeys.BLOCK_ENTITY_TAG;
 import static me.desht.pneumaticcraft.lib.NBTKeys.NBT_EXTRA;
 
 public class BlockAphorismTile extends BlockPneumaticCraft implements ColorHandlers.ITintableBlock {
+    public static final float APHORISM_TILE_THICKNESS = 1 / 16F;
+
     private static final VoxelShape[] SHAPES = new VoxelShape[] {
             Block.makeCuboidShape(0, 0, 0, 16,  1, 16),
             Block.makeCuboidShape(0, 15, 0, 16, 16, 16),

@@ -23,9 +23,4 @@ public class Names {
 
     // Agreed by convention among several mods to denote item entities which should not be magnet'd
     public static final String PREVENT_REMOTE_MOVEMENT = "PreventRemoteMovement";
-
-    // Permission nodes
-    public static final String AMADRON_ADD_PERIODIC_TRADE = MOD_ID + ".amadron.addPeriodicTrade";
-    public static final String AMADRON_ADD_STATIC_TRADE = MOD_ID + ".amadron.addStaticTrade";
-
 }

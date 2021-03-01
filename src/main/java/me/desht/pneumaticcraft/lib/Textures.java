@@ -33,7 +33,6 @@ public class Textures {
     public static final ResourceLocation MODEL_UNIVERSAL_SENSOR = modelTexture("universal_sensor.png");
     public static final ResourceLocation MODEL_DRONE_MINIGUN = modelTexture("drone_minigun.png");
     public static final ResourceLocation MODEL_HEAT_FRAME = modelTexture("heat_frame.png");
-    public static final ResourceLocation MODEL_SENTRY_TURRET = modelTexture("sentry_turret.png");
     public static final ResourceLocation MODEL_SPAWNER_EXTRACTOR = modelTexture("spawner_extractor_top.png");
 
     // Tube Module textures
@@ -63,14 +62,14 @@ public class Textures {
     public static final ResourceLocation PROG_WIDGET_ENTITY_IM = progWidgetTexture("entity_import_piece.png");
     public static final ResourceLocation PROG_WIDGET_RF_EXPORT = progWidgetTexture("rf_export_piece.png");
     public static final ResourceLocation PROG_WIDGET_RF_IMPORT = progWidgetTexture("rf_import_piece.png");
-    public static final ResourceLocation PROG_WIDGET_ESSENTIA_EX = progWidgetTexture("essentia_export_piece.png");
-    public static final ResourceLocation PROG_WIDGET_ESSENTIA_IM = progWidgetTexture("essentia_import_piece.png");
+//    public static final ResourceLocation PROG_WIDGET_ESSENTIA_EX = progWidgetTexture("essentia_export_piece.png");
+//    public static final ResourceLocation PROG_WIDGET_ESSENTIA_IM = progWidgetTexture("essentia_import_piece.png");
+//    public static final ResourceLocation PROG_WIDGET_ESSENTIA_FILTER = progWidgetTexture("essentia_filter_piece.png");
+    public static final ResourceLocation PROG_WIDGET_PICK_ITEM = progWidgetTexture("item_pick_piece.png");
     public static final ResourceLocation PROG_WIDGET_ENTITY_RIGHT_CLICK = progWidgetTexture("entity_right_click_piece.png");
     public static final ResourceLocation PROG_WIDGET_BLOCK_RIGHT_CLICK = progWidgetTexture("block_right_click_piece.png");
     public static final ResourceLocation PROG_WIDGET_ITEM_FILTER = progWidgetTexture("item_filter_piece.png");
     public static final ResourceLocation PROG_WIDGET_LIQUID_FILTER = progWidgetTexture("liquid_filter_piece.png");
-    public static final ResourceLocation PROG_WIDGET_ESSENTIA_FILTER = progWidgetTexture("essentia_filter_piece.png");
-    public static final ResourceLocation PROG_WIDGET_PICK_ITEM = progWidgetTexture("item_pick_piece.png");
     public static final ResourceLocation PROG_WIDGET_PLACE = progWidgetTexture("place_piece.png");
     public static final ResourceLocation PROG_WIDGET_START = progWidgetTexture("start_piece.png");
     public static final ResourceLocation PROG_WIDGET_TEXT = progWidgetTexture("text_piece.png");
@@ -125,7 +124,6 @@ public class Textures {
     public static final ResourceLocation GUI_SECURITY_STATION = guiTexture("gui_security_station.png");
     public static final ResourceLocation GUI_HACKING = guiTexture("gui_hacking.png");
     public static final ResourceLocation GUI_UNIVERSAL_SENSOR = guiTexture("gui_universal_sensor.png");
-    public static final ResourceLocation GUI_UNIVERSAL_SENSOR_SLOT = guiTexture("gui_universal_sensor_slot.png");
     public static final ResourceLocation GUI_PNEUMATIC_DOOR = guiTexture("gui_pneumatic_door_base.png");
     public static final ResourceLocation GUI_BUILDCRAFT_ENERGY = guiTexture("gui_buildcraft_energy.png");
     public static final ResourceLocation GUI_OMNIDIRECTIONAL_HOPPER = guiTexture("gui_omnidirectional_hopper.png");
@@ -151,7 +149,6 @@ public class Textures {
     public static final ResourceLocation GUI_PASTEBIN = guiTexture("gui_pastebin.png");
     public static final ResourceLocation GUI_INVENTORY_SEARCHER = guiTexture("gui_inventory_searcher.png");
     public static final ResourceLocation GUI_TUBE_MODULE = guiTexture("gui_tube_module.png");
-    public static final ResourceLocation GUI_TEXT_WIDGET = guiTexture("gui_text_widget.png");
     public static final ResourceLocation GUI_MODULE_SIMPLE = guiTexture("gui_tube_module_simple.png");
     public static final ResourceLocation GUI_MICROMISSILE = guiTexture("gui_micromissile.png");
     public static final ResourceLocation GUI_AMADRON_ADD_TRADE = guiTexture("gui_amadron_add_trade.png");
@@ -189,7 +186,6 @@ public class Textures {
     public static final ResourceLocation GUI_UPGRADES_LOCATION = guiIconTexture("gui_upgrade.png");
     public static final ResourceLocation GUI_WARNING_TEXTURE = guiIconTexture("gui_warning.png");
     public static final ResourceLocation GUI_X_BUTTON = guiIconTexture("gui_x_button.png");
-    public static final ResourceLocation GUI_RIGHT_ARROW = guiIconTexture("gui_right_arrow.png");
     public static final ResourceLocation GUI_JEI_LOGO = guiIconTexture("jei_logo.png");
     public static final ResourceLocation GUI_HIGH_SIGNAL_ANGLE = guiIconTexture("gui_high_signal_angle.png");
     public static final ResourceLocation GUI_HIGH_SIGNAL_SPACE = guiIconTexture("gui_high_signal_space.png");
