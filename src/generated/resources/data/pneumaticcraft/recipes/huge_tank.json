@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "NTN",
+    "TRT",
+    "NTN"
+  ],
+  "key": {
+    "T": {
+      "type": "forge:nbt",
+      "item": "pneumaticcraft:large_tank",
+      "count": 1
+    },
+    "R": {
+      "item": "pneumaticcraft:reinforced_air_canister"
+    },
+    "N": {
+      "tag": "forge:ingots/netherite"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:huge_tank"
+  }
+}

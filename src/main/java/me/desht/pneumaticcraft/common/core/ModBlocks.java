@@ -179,6 +179,8 @@ public class ModBlocks {
             () -> new BlockFluidTank(BlockFluidTank.Size.MEDIUM), block -> () -> new BlockFluidTank.ItemBlockFluidTank(block.get()));
     public static final RegistryObject<BlockFluidTank> TANK_LARGE = register("large_tank",
             () -> new BlockFluidTank(BlockFluidTank.Size.LARGE), block -> () -> new BlockFluidTank.ItemBlockFluidTank(block.get()));
+    public static final RegistryObject<BlockFluidTank> TANK_HUGE = register("huge_tank",
+            () -> new BlockFluidTank(BlockFluidTank.Size.HUGE), block -> () -> new BlockFluidTank.ItemBlockFluidTank(block.get()));
     public static final RegistryObject<BlockReinforcedChest> REINFORCED_CHEST = register("reinforced_chest",
             BlockReinforcedChest::new, block -> () -> new BlockReinforcedChest.ItemBlockReinforcedChest(block.get()));
     public static final RegistryObject<BlockSmartChest> SMART_CHEST = register("smart_chest",

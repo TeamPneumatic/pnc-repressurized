@@ -16,6 +16,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
+import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.state.StateContainer;
@@ -73,6 +74,13 @@ public class BlockFluidTank extends BlockPneumaticCraft implements ColorHandlers
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
         return SHAPE;
+    }
+
+    @Nullable
+    @Override
+    public BlockState getStateForPlacement(BlockItemUseContext ctx) {
+        BlockState state = super.getStateForPlacement(ctx);
+        return state == null ? null : state.with(UP, false).with(DOWN, false);
     }
 
     @Override
@@ -207,7 +215,8 @@ public class BlockFluidTank extends BlockPneumaticCraft implements ColorHandlers
     public enum Size {
         SMALL(32000, 0xFF909090, TileEntityFluidTank.Small.class),
         MEDIUM(64000, 0xFFFFFF40, TileEntityFluidTank.Medium.class),
-        LARGE(128000, 0xFF91E8E4, TileEntityFluidTank.Large.class);
+        LARGE(128000, 0xFF91E8E4, TileEntityFluidTank.Large.class),
+        HUGE(512000, 0xFF5A3950, TileEntityFluidTank.Huge.class);
 
         private final int capacity;
         private final int tintColor;

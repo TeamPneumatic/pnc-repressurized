@@ -119,6 +119,8 @@ public class ModTileEntities {
             = register("medium_tank", () -> new TileEntityType<>(TileEntityFluidTank.Medium::new, ImmutableSet.of(ModBlocks.TANK_MEDIUM.get()), null));
     public static final RegistryObject<TileEntityType<TileEntityFluidTank.Large>> TANK_LARGE
             = register("large_tank", () -> new TileEntityType<>(TileEntityFluidTank.Large::new, ImmutableSet.of(ModBlocks.TANK_LARGE.get()), null));
+    public static final RegistryObject<TileEntityType<TileEntityFluidTank.Huge>> TANK_HUGE
+            = register("huge_tank", () -> new TileEntityType<>(TileEntityFluidTank.Huge::new, ImmutableSet.of(ModBlocks.TANK_HUGE.get()), null));
     public static final RegistryObject<TileEntityType<TileEntityReinforcedChest>> REINFORCED_CHEST
             = register("reinforced_chest", () -> new TileEntityType<>(TileEntityReinforcedChest::new, ImmutableSet.of(ModBlocks.REINFORCED_CHEST.get()),null));
     public static final RegistryObject<TileEntityType<TileEntitySmartChest>> SMART_CHEST

@@ -193,4 +193,10 @@ public abstract class TileEntityFluidTank extends TileEntityTickableBase
             super(ModTileEntities.TANK_LARGE.get(), BlockFluidTank.Size.LARGE);
         }
     }
+
+    public static class Huge extends TileEntityFluidTank {
+        public Huge() {
+            super(ModTileEntities.TANK_HUGE.get(), BlockFluidTank.Size.HUGE);
+        }
+    }
 }

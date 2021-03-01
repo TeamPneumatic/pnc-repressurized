@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "pneumaticcraft:huge_tank"
+    ]
+  },
+  "criteria": {
+    "has_advanced_pressure_tube": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:advanced_pressure_tube"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "pneumaticcraft:huge_tank"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_advanced_pressure_tube",
+      "has_the_recipe"
+    ]
+  ]
+}

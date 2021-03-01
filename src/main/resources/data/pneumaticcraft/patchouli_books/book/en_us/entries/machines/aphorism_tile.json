@@ -6,7 +6,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "On these sign-like blocks you can store theoretically infinite amounts of text. When you type the text it will automatically scale in a way that the full text fits on the tile.$(p)When you place down an Aphorism Tile it $(ttcolor)$(t:This can be disabled in client config - see 'B:dramaSplash')defaults/$ to a random splash text from the $(l:http://mc-drama.herokuapp.com/)Drama Generator/$."
+      "text": "$(thing)Aphorism Tiles/$ are like $(item)Signs/$, but they can display arbitrary amounts of text. Any text is automatically scaled so that the full text fits on the tile.$(p)When you place down an Aphorism Tile it $(ttcolor)$(t:This can be disabled in client config - see 'B:dramaSplash')defaults/$ to a random splash text from the $(l:http://mc-drama.herokuapp.com/)Drama Generator/$."
     },
     {
       "type": "text",

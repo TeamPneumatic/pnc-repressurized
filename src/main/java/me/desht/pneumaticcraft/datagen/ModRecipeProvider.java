@@ -832,6 +832,13 @@ public class ModRecipeProvider extends RecipeProvider {
                 'T', ModBlocks.ADVANCED_PRESSURE_TUBE.get()
         ).build(consumer);
 
+        shaped(ModBlocks.TANK_HUGE.get(), ModBlocks.ADVANCED_PRESSURE_TUBE.get(),
+                "NTN/TRT/NTN",
+                'T', IngredientNBTWrapper.fromItemStack(new ItemStack(ModBlocks.TANK_LARGE.get())),
+                'R', ModItems.REINFORCED_AIR_CANISTER.get(),
+                'N', Tags.Items.INGOTS_NETHERITE
+        ).build(consumer);
+
         shaped(ModBlocks.THERMAL_COMPRESSOR.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
                 "ITI/PAP/ITI",
                 'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,

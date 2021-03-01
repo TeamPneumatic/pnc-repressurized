@@ -6,12 +6,12 @@
   "pages": [
     {
       "type": "text",
-      "text": "There are three dedicated fluid storage tanks, imaginatively titled the $(item)Small Tank/$, the $(item)Medium Tank/$, and the $(item)Large Tank/$. While $(l:machines/liquid_hopper)Liquid Hoppers/$ are also suitable for general fluid storage, these tanks provide denser fluid storage and some useful stacking functionality, and don't automatically transfer fluids (although they can push fluids with a $(l:base_concepts/upgrades#dispenser)Dispenser Upgrade/$)."
+      "text": "There are four fluid storage tanks, imaginatively titled the $(item)Small Tank/$, the $(item)Medium Tank/$, the $(item)Large Tank/$, and the $(item)Huge Tank/$. While $(l:machines/liquid_hopper)Liquid Hoppers/$ are also suitable for fluid storage, these tanks provide denser storage and some useful stacking functionality, and don't automatically transfer fluids (although they can push fluids if a $(l:base_concepts/upgrades#dispenser)Dispenser Upgrade/$) is added."
     },
     {
       "type": "text",
       "title": "Stacking",
-      "text": "All three types of tank can be $(thing)stacked/$ vertically, and formed into a sort-of-multiblock. To do this, right-click the tank with a $(l:tools/pneumatic_wrench)Wrench/$; wrenching the top half will attempt to join the tank to the tank above, and vice versa for the tank below. Once tanks are stacked, any fluid in $(ttcolor)$(t:If the fluid has a density of < 0, it will move up rather than down)higher tanks/$ will automatically flow down to lower tanks, assuming there is space."
+      "text": "All four types of tank can be $(thing)stacked/$ vertically with each other, and formed into a sort-of-multiblock. To do this, right-click the tank with a $(l:tools/pneumatic_wrench)Wrench/$; wrenching the top half will attempt to join the tank to the tank above, and vice versa for the tank below.$(p)Once tanks are stacked, any fluid in $(ttcolor)$(t:If the fluid has a density of < 0, it will move up rather than down)higher tanks/$ will automatically flow down to lower tanks, assuming there is space."
     },
     {
       "type": "image",
@@ -32,7 +32,8 @@
     },
     {
       "type": "crafting",
-      "recipe": "pneumaticcraft:large_tank"
+      "recipe": "pneumaticcraft:large_tank",
+      "recipe2": "pneumaticcraft:huge_tank"
     }
   ]
 }
