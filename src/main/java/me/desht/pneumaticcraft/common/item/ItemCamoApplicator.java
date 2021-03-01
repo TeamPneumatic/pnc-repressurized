@@ -53,8 +53,9 @@ public class ItemCamoApplicator extends ItemPressurizable {
                     playerIn.playSound(ModSounds.CHIRP.get(), 1.0f, 1.0f);
                 }
             }
+            return new ActionResult<>(ActionResultType.SUCCESS, playerIn.getHeldItem(handIn));
         }
-        return new ActionResult<>(ActionResultType.SUCCESS, playerIn.getHeldItem(handIn));
+        return new ActionResult<>(ActionResultType.PASS, playerIn.getHeldItem(handIn));
     }
 
     @Override
@@ -67,14 +68,14 @@ public class ItemCamoApplicator extends ItemPressurizable {
             if (player.isSneaking()) {
                 // sneak-right-click: clear camo
                 setCamoState(stack, null);
+                world.playSound(null, ctx.getPos(), ModSounds.CHIRP.get(), SoundCategory.PLAYERS, 1f, 1f);
             } else {
                 TileEntity te = world.getTileEntity(pos);
                 BlockState state = world.getBlockState(pos);
                 if (!(te instanceof ICamouflageableTE)) {
                     // right-click non-camo block: copy its state
                     setCamoState(stack, state);
-                    NetworkHandler.sendToAllTracking(new PacketPlaySound(ModSounds.CHIRP.get(), SoundCategory.PLAYERS,
-                            pos, 1.0F, 2.0F, true), world, pos);
+                    world.playSound(null, ctx.getPos(), ModSounds.CHIRP.get(), SoundCategory.PLAYERS, 1f, 2f);
                 } else {
                     // right-click camo block: try to apply (or remove) camo
 
@@ -88,8 +89,7 @@ public class ItemCamoApplicator extends ItemPressurizable {
                     BlockState existingCamo = ((ICamouflageableTE) te).getCamouflage();
 
                     if (existingCamo == newCamo) {
-                        NetworkHandler.sendToAllTracking(new PacketPlaySound(SoundEvents.BLOCK_COMPARATOR_CLICK, SoundCategory.PLAYERS,
-                                pos, 1.0F, 2.0F, true), world, pos);
+                        world.playSound(null, ctx.getPos(), SoundEvents.BLOCK_COMPARATOR_CLICK, SoundCategory.PLAYERS, 1f, 2f);
                         return ActionResultType.SUCCESS;
                     }
 
@@ -126,7 +126,7 @@ public class ItemCamoApplicator extends ItemPressurizable {
             }
         }
 
-        return ActionResultType.SUCCESS;
+        return ActionResultType.func_233537_a_(world.isRemote);
     }
 
     private static void setCamoState(ItemStack stack, BlockState state) {
