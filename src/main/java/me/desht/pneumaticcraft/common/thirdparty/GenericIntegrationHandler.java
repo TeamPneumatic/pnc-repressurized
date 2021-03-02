@@ -9,7 +9,7 @@ import net.minecraftforge.fml.ModList;
 import net.minecraftforge.registries.ForgeRegistries;
 
 /**
- * Generic integration tasks which don't depend on specific mods' API.
+ * Generic integration tasks which don't depend on specific mods' APIs.
  */
 public class GenericIntegrationHandler implements IThirdParty {
     @Override

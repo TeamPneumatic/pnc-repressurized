@@ -8,6 +8,7 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketLeftClickEmpty;
 import me.desht.pneumaticcraft.common.thirdparty.curios.Curios;
+import me.desht.pneumaticcraft.common.thirdparty.curios.CuriosUtils;
 import me.desht.pneumaticcraft.common.util.EnchantmentUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Names;
@@ -286,7 +287,7 @@ public class ItemMemoryStick extends Item implements ColorHandlers.ITintableItem
             if (invName.isEmpty()) {
                 return player.inventory.getStackInSlot(slot);
             } else if (Curios.available) {
-                return Curios.getStack(player, invName, slot);
+                return CuriosUtils.getStack(player, invName, slot);
             }
             return ItemStack.EMPTY;
         }

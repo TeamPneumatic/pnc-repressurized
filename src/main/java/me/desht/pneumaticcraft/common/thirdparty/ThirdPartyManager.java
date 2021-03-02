@@ -16,9 +16,8 @@ import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class ThirdPartyManager {
-
-    private static final ThirdPartyManager INSTANCE = new ThirdPartyManager();
+public enum ThirdPartyManager {
+    INSTANCE;
 
     private static final GenericIntegrationHandler GENERIC = new GenericIntegrationHandler();
 
@@ -53,21 +52,19 @@ public class ThirdPartyManager {
             thirdPartyClasses.put(ModIds.MEKANISM, () -> new Mekanism());
             thirdPartyClasses.put(ModIds.AE2, () -> IMPLICIT_INIT);
 
-            // these were supported 1.12.2 and may or may not come back...
+            // these were supported in 1.12.2 and may or may not come back...
 
 //            thirdPartyClasses.put(ModIds.BUILDCRAFT, BuildCraft.class);
 //            thirdPartyClasses.put(ModIds.IGWMOD, IGWMod.class);
 //            if (!ModList.get().isLoaded(ModIds.COMPUTERCRAFT)) {
 //                thirdPartyClasses.put(ModIds.OPEN_COMPUTERS, OpenComputers.class);
 //            }
-//            thirdPartyClasses.put(ModIds.AE2, AE2.class);
 //            thirdPartyClasses.put(ModIds.FORESTRY, Forestry.class);
 //            thirdPartyClasses.put(ModIds.EIO, EnderIO.class);
 //            thirdPartyClasses.put(ModIds.COFH_CORE, CoFHCore.class);
 //            thirdPartyClasses.put(ModIds.CRAFTTWEAKER, CraftTweaker.class);
 //            thirdPartyClasses.put(ModIds.INDUSTRIALCRAFT, IC2.class);
 //            thirdPartyClasses.put(ModIds.THAUMCRAFT, Thaumcraft.class);
-//            thirdPartyClasses.put(ModIds.IMMERSIVE_PETROLEUM, ImmersivePetroleum.class);
 //            thirdPartyClasses.put(ModIds.BAUBLES, Baubles.class);
 //            thirdPartyClasses.put(ModIds.TOUGH_AS_NAILS, ToughAsNails.class);
         } catch (Throwable e) {
@@ -92,8 +89,21 @@ public class ThirdPartyManager {
         Log.info("Thirdparty integration activated for [" + String.join(",", modNames) + "]");
     }
 
-    public void init() {
+    public void preInit() {
         discoverMods();
+
+        GENERIC.preInit();
+        for (IThirdParty thirdParty : thirdPartyMods) {
+            try {
+                thirdParty.preInit();
+            } catch (Throwable e) {
+                Log.error("PneumaticCraft wasn't able to load third party content from the third party class " + thirdParty.getClass() + " in the PreInit phase!");
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void init() {
 
         GENERIC.init();
         for (IThirdParty thirdParty : thirdPartyMods) {

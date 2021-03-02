@@ -41,7 +41,7 @@ public class Mek2PNCHeatProvider implements ICapabilityProvider {
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
         if (cap != PNCCapabilities.HEAT_EXCHANGER_CAPABILITY
             || teRef.get() == null
-            || !teRef.get().getCapability(Mekanism.CAPABILITY_HEAT_HANDLER, side).isPresent()) {
+            || !teRef.get().getCapability(MekanismIntegration.CAPABILITY_HEAT_HANDLER, side).isPresent()) {
             return LazyOptional.empty();
         }
 
@@ -55,7 +55,7 @@ public class Mek2PNCHeatProvider implements ICapabilityProvider {
         int idx = side == null ? 6 : side.getIndex();
         if (!handlers.get(idx).isPresent()) {
             TileEntity te = teRef.get();
-            LazyOptional<IHeatHandler> heatHandler = te.getCapability(Mekanism.CAPABILITY_HEAT_HANDLER, side);
+            LazyOptional<IHeatHandler> heatHandler = te.getCapability(MekanismIntegration.CAPABILITY_HEAT_HANDLER, side);
             if (heatHandler.isPresent()) {
                 heatHandler.addListener(l -> handlers.set(idx, LazyOptional.empty()));
                 Mek2PNCHeatAdapter adapter = new Mek2PNCHeatAdapter(side, heatHandler,

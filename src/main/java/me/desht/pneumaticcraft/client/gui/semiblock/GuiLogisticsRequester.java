@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsRequester;
 import me.desht.pneumaticcraft.common.inventory.ContainerLogistics;
 import me.desht.pneumaticcraft.common.thirdparty.ae2.AE2Integration;
+import me.desht.pneumaticcraft.common.thirdparty.ae2.AE2PNCAddon;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.player.PlayerInventory;
@@ -37,7 +38,7 @@ public class GuiLogisticsRequester extends GuiLogisticsBase<EntityLogisticsReque
 
 
     private void addAE2Tab() {
-        Item item = AE2Integration.glassCable();
+        Item item = AE2PNCAddon.glassCable();
         if (item == null) {
             Log.warning("AE2 cable couldn't be found!");
             item = ModItems.LOGISTICS_FRAME_REQUESTER.get();

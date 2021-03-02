@@ -22,6 +22,6 @@ public class PneumaticPeripheralProvider implements ICapabilityProvider {
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        return ComputerCraft.PERIPHERAL_CAPABILITY.orEmpty(cap, lazy);
+        return PneumaticTilePeripheral.PERIPHERAL_CAPABILITY.orEmpty(cap, lazy);
     }
 }

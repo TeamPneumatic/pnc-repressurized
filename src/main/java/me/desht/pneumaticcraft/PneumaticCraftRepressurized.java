@@ -50,6 +50,7 @@ import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLConstructModEvent;
 import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
 import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
@@ -66,6 +67,7 @@ public class PneumaticCraftRepressurized {
 
         DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> ClientSetup::initEarly);
 
+        modBus.addListener(this::modConstructSetup);
         modBus.addListener(this::commonSetup);
 
         forgeBus.addListener(this::serverStarted);
@@ -111,6 +113,10 @@ public class PneumaticCraftRepressurized {
         ModHarvestHandlers.HARVEST_HANDLERS_DEFERRED.register(modBus);
         ModHoeHandlers.HOE_HANDLERS_DEFERRED.register(modBus);
         ModProgWidgets.PROG_WIDGETS_DEFERRED.register(modBus);
+    }
+
+    private void modConstructSetup(FMLConstructModEvent event) {
+        ThirdPartyManager.instance().preInit();
     }
 
     private void commonSetup(FMLCommonSetupEvent event) {

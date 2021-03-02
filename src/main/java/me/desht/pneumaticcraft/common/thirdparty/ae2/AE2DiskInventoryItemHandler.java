@@ -10,13 +10,13 @@ import net.minecraft.item.ItemStack;
 
 import java.util.List;
 
-public class AE2DiskInventoryItemHandler implements IInventoryItem{
+public class AE2DiskInventoryItemHandler implements IInventoryItem {
 	private final ICellRegistry cellRegistry = AE2PNCAddon.api.registries().cell();
 	private final IItemStorageChannel itemChannel = AE2PNCAddon.api.storage().getStorageChannel(IItemStorageChannel.class);
 
 	@Override
 	public void getStacksInItem(ItemStack stack, List<ItemStack> curStacks){
-		IMEInventoryHandler<IAEItemStack> cellInventoryHandler = cellRegistry.getCellInventory(stack, null,	itemChannel);
+		IMEInventoryHandler<IAEItemStack> cellInventoryHandler = cellRegistry.getCellInventory(stack, null, itemChannel);
 		if (cellInventoryHandler != null) {
 			IItemList<IAEItemStack> cellItemList = itemChannel.createList();
 			cellInventoryHandler.getAvailableItems(cellItemList);

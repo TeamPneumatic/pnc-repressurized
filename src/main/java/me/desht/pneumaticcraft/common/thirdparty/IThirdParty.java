@@ -2,6 +2,11 @@ package me.desht.pneumaticcraft.common.thirdparty;
 
 public interface IThirdParty {
     /**
+     * Called on both client and server after mods have loaded but before registry events, in the mod creation thread.
+     */
+    default void preInit() {}
+
+    /**
      * Called on both client and server after any registry objects are created, in the mod creation thread.
      */
     default void init() {}

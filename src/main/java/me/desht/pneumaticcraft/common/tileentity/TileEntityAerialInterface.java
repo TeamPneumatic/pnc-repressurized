@@ -12,6 +12,7 @@ import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.thirdparty.curios.Curios;
+import me.desht.pneumaticcraft.common.thirdparty.curios.CuriosUtils;
 import me.desht.pneumaticcraft.common.tileentity.RedstoneController.EmittingRedstoneMode;
 import me.desht.pneumaticcraft.common.tileentity.RedstoneController.RedstoneMode;
 import me.desht.pneumaticcraft.common.tileentity.SideConfigurator.RelativeFace;
@@ -349,7 +350,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
             }
 
             if (Curios.available && energyStorage.getEnergyStored() > 0) {
-                Curios.chargeItems(player, energyStorage, RF_PER_TICK);
+                CuriosUtils.chargeItems(player, energyStorage, RF_PER_TICK);
             }
         }
     }
@@ -489,7 +490,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
     private class PlayerCuriosHandler extends PlayerInvHandler {
         @Override
         protected IItemHandler getInvWrapper(PlayerEntity player) {
-            if (cached == null) cached = Curios.makeCombinedInvWrapper(player);
+            if (cached == null) cached = CuriosUtils.makeCombinedInvWrapper(player);
             return cached;
         }
     }

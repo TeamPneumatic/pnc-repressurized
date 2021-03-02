@@ -33,7 +33,7 @@ public class PNC2MekHeatProvider implements ICapabilityProvider {
     @Nonnull
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (cap != Mekanism.CAPABILITY_HEAT_HANDLER
+        if (cap != MekanismIntegration.CAPABILITY_HEAT_HANDLER
                 || teRef.get() == null
                 || !teRef.get().getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY, side).isPresent())
         {

@@ -1,97 +1,12 @@
 package me.desht.pneumaticcraft.common.thirdparty.curios;
 
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
-import me.desht.pneumaticcraft.common.tileentity.PneumaticEnergyStorage;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
-import net.minecraftforge.energy.CapabilityEnergy;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.wrapper.CombinedInvWrapper;
-import org.apache.commons.lang3.tuple.Pair;
-import top.theillusivec4.curios.api.CuriosApi;
-import top.theillusivec4.curios.api.type.capability.ICuriosItemHandler;
-import top.theillusivec4.curios.api.type.inventory.ICurioStacksHandler;
-
-import javax.annotation.Nonnull;
-import java.util.Map;
-import java.util.function.Predicate;
 
 public class Curios implements IThirdParty {
-    @CapabilityInject(ICuriosItemHandler.class)
-    public static final Capability<ICuriosItemHandler> CAPABILITY_CURIO_HANDLER = null;
-
     public static boolean available = false;
 
-    public static final Pair<String,Integer> NONE = Pair.of("", -1);
-
     @Override
-    public void init() {
+    public void preInit() {
         available = true;
-    }
-
-    /**
-     * Supply Forge Energy from the given energy storage to all Curio items the player has.
-     *
-     * @param player the player
-     * @param energyStorage source energy storage
-     * @param maxTransfer max amount to transfer per item
-     */
-    public static void chargeItems(PlayerEntity player, PneumaticEnergyStorage energyStorage, int maxTransfer) {
-        CuriosApi.getCuriosHelper().getCuriosHandler(player).ifPresent(handler -> handler.getCurios().forEach((id, stackHandler) -> {
-            for (int i = 0; i < stackHandler.getSlots() && energyStorage.getEnergyStored() > 0; i++) {
-                ItemStack stack = stackHandler.getStacks().getStackInSlot(i);
-                stack.getCapability(CapabilityEnergy.ENERGY).ifPresent(receivingStorage -> {
-                    int energyLeft = energyStorage.getEnergyStored();
-                    energyStorage.extractEnergy(
-                            receivingStorage.receiveEnergy(Math.min(energyLeft, maxTransfer), false), false
-                    );
-                });
-            }
-        }));
-    }
-
-    /**
-     * Get the curio item in the given curios inventory at the given slot
-     * @param player the player
-     * @param invId id of the curios inventory in question
-     * @param slot slot in the given curios inventory
-     * @return stack in that slot
-     */
-    public static ItemStack getStack(PlayerEntity player, String invId, int slot) {
-        return CuriosApi.getCuriosHelper().getCuriosHandler(player).map(handler -> {
-            ICurioStacksHandler h = handler.getCurios().get(invId);
-            return h == null ? ItemStack.EMPTY : h.getStacks().getStackInSlot(slot);
-        }).orElse(ItemStack.EMPTY);
-    }
-
-    /**
-     * Try to find a curio item on the player matching the given predicate
-     * @param player the player
-     * @param predicate an itemstack matching predicate
-     * @return a pair of (inventory id and slot), or null if no match
-     */
-    public static Pair<String,Integer> findStack(PlayerEntity player, Predicate<ItemStack> predicate) {
-        return CuriosApi.getCuriosHelper().getCuriosHandler(player).map(handler -> {
-            for (Map.Entry<String,ICurioStacksHandler> entry : handler.getCurios().entrySet()) {
-                for (int i = 0; i < entry.getValue().getSlots(); i++) {
-                    if (predicate.test(entry.getValue().getStacks().getStackInSlot(i))) {
-                        return Pair.of(entry.getKey(), i);
-                    }
-                }
-            }
-            return NONE;
-        }).orElse(NONE);
-    }
-
-    public static IItemHandler makeCombinedInvWrapper(@Nonnull PlayerEntity player) {
-        return CuriosApi.getCuriosHelper().getCuriosHandler(player)
-                .map(handler -> new CombinedInvWrapper(handler.getCurios().values().stream()
-                        .map(ICurioStacksHandler::getStacks)
-                        .toArray(IItemHandlerModifiable[]::new))
-                ).orElse(new CombinedInvWrapper());
-
     }
 }
