@@ -79,7 +79,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
     private final boolean[][] upgradeRenderersEnabled = new boolean[4][];
     private final int[] ticksSinceEquip = new int[4];
     private final List<LazyOptional<IAirHandlerItem>> airHandlers = new ArrayList<>();
-    private final int[][] upgradeMatrix = new int [4][];
+    private final List<EnumMap<EnumUpgrade, Integer>> upgradeMatrix = new ArrayList<>();
     private final int[] startupTimes = new int[4];
 
     private boolean isValid; // true if the handler is valid; gets invalidated if player disconnects
@@ -115,12 +115,10 @@ public class CommonArmorHandler implements ICommonArmorHandler {
             List<IArmorUpgradeHandler> renderHandlers = ArmorUpgradeRegistry.getInstance().getHandlersForSlot(slot);
             upgradeRenderersInserted[slot.getIndex()] = new boolean[renderHandlers.size()];
             upgradeRenderersEnabled[slot.getIndex()] = new boolean[renderHandlers.size()];
-            upgradeMatrix[slot.getIndex()] = new int[EnumUpgrade.values().length];
-        }
-        Arrays.fill(startupTimes, 200);
-        for (int i = 0; i < 4; i++) {
+            upgradeMatrix.add(new EnumMap<>(EnumUpgrade.class));
             airHandlers.add(LazyOptional.empty());
         }
+        Arrays.fill(startupTimes, 200);
         isValid = true;
     }
 
@@ -582,11 +580,10 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         }
 
         // record the number of upgrades of every type
-        Arrays.fill(upgradeMatrix[slot.getIndex()], 0);
         for (ItemStack stack : upgradeStacks) {
             if (stack.getItem() instanceof ItemMachineUpgrade) {
-                ItemMachineUpgrade item = (ItemMachineUpgrade) stack.getItem();
-                upgradeMatrix[slot.getIndex()][item.getUpgradeType().ordinal()] += stack.getCount() * item.getTier();
+                ItemMachineUpgrade upgrade = (ItemMachineUpgrade) stack.getItem();
+                upgradeMatrix.get(slot.getIndex()).put(upgrade.getUpgradeType(), stack.getCount() * upgrade.getTier());
             }
         }
         startupTimes[slot.getIndex()] = (int) (Armor.armorStartupTime * Math.pow(0.8, getSpeedFromUpgrades(slot) - 1));
@@ -616,11 +613,11 @@ public class CommonArmorHandler implements ICommonArmorHandler {
 
     @Override
     public int getUpgradeCount(EquipmentSlotType slot, EnumUpgrade upgrade) {
-        return upgradeMatrix[slot.getIndex()][upgrade.ordinal()];
+        return upgradeMatrix.get(slot.getIndex()).getOrDefault(upgrade, 0);
     }
 
     public int getUpgradeCount(EquipmentSlotType slot, EnumUpgrade upgrade, int max) {
-        return Math.min(max, upgradeMatrix[slot.getIndex()][upgrade.ordinal()]);
+        return Math.min(max, getUpgradeCount(slot, upgrade));
     }
 
     public boolean isUpgradeInserted(EquipmentSlotType slot, int featureIndex) {
