@@ -1,5 +1,5 @@
 {
-  "parent": "pneumaticcraft:block/display_table",
+  "parent": "pneumaticcraft:block/display_table_inv",
   "textures": {
     "all": "pneumaticcraft:block/tag_workbench",
     "particle": "pneumaticcraft:block/tag_workbench"

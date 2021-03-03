@@ -1,0 +1,7 @@
+{
+  "parent": "pneumaticcraft:block/display_table_top",
+  "textures": {
+    "all": "pneumaticcraft:block/tag_workbench",
+    "particle": "pneumaticcraft:block/tag_workbench"
+  }
+}

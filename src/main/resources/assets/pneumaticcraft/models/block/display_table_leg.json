@@ -1,0 +1,23 @@
+{
+  "parent": "forge:block/default",
+  "credit": "Made with Blockbench",
+  "textures": {
+    "all": "pneumaticcraft:block/display_table",
+    "particle": "pneumaticcraft:block/display_table"
+  },
+  "elements": [
+    {
+      "name": "leg1",
+      "from": [1, 0, 1],
+      "to": [3, 14, 3],
+      "faces": {
+        "north": {"uv": [0, 4, 2, 16], "texture": "#all"},
+        "east": {"uv": [0, 4, 2, 16], "texture": "#all"},
+        "south": {"uv": [0, 4, 2, 16], "texture": "#all"},
+        "west": {"uv": [0, 4, 2, 16], "texture": "#all"},
+        "up": {"uv": [0, 0, 2, 12], "texture": "#all"},
+        "down": {"uv": [0, 0, 2, 12], "texture": "#all"}
+      }
+    }
+  ]
+}

@@ -1,8 +1,12 @@
 {
-  "variants": {
-    "facing=north": { "model": "pneumaticcraft:block/tag_workbench" },
-    "facing=south": { "model": "pneumaticcraft:block/tag_workbench", "y": 180 },
-    "facing=west": { "model": "pneumaticcraft:block/tag_workbench", "y": 90 },
-    "facing=east": { "model": "pneumaticcraft:block/tag_workbench", "y": 270 }
-  }
+  "multipart": [
+    { "when": { "facing":  "north" }, "apply": { "model":  "pneumaticcraft:block/tag_workbench_top" } },
+    { "when": { "facing":  "south" }, "apply": { "model":  "pneumaticcraft:block/tag_workbench_top", "y": 180 } },
+    { "when": { "facing":  "west" }, "apply": { "model":  "pneumaticcraft:block/tag_workbench_top", "y": 90} },
+    { "when": { "facing":  "east" }, "apply": { "model":  "pneumaticcraft:block/tag_workbench_top", "y":  270 } },
+    { "when":  { "ne":  "false" }, "apply": { "model": "pneumaticcraft:block/tag_workbench_leg", "y":  90 } },
+    { "when":  { "nw":  "false" }, "apply": { "model": "pneumaticcraft:block/tag_workbench_leg" } },
+    { "when":  { "sw":  "false" }, "apply": { "model": "pneumaticcraft:block/tag_workbench_leg", "y":  270 } },
+    { "when":  { "se":  "false" }, "apply": { "model": "pneumaticcraft:block/tag_workbench_leg", "y":  180 } }
+  ]
 }
