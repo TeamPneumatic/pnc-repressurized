@@ -12,12 +12,21 @@ Note: PNC:R 2.9.3 and later have been successfully tested on Minecraft 1.16.5.  
 
 ### Updates
 * Added a 4th tier of fluid tank: the Huge Fluid Tank, with 512000mB of storage (and an expensive recipe...)
-* Minigun: the selected ammo can now be cycled with Sneak + Scroll Wheel. Useful if you have multiple ammo types in the gun.
-* The Minigun can now take Volume Upgrades
-* Drones can no longer injure themselves with area attacks when using weapons like the Infinity Hammer from Industrial Foregoing
+* The Minigun's selected ammo slot can now be cycled with Sneak + Scroll Wheel (in addition to via the magazine GUI). 
+  * Useful if you have multiple ammo types in the gun.
+* The Minigun can now accept Volume Upgrades
+* Drones will no longer injure or kill themselves with area attacks when using weapons like the Infinity Hammer from Industrial Foregoing
+  * Specifically, drones are now immune to any damage from their own fake player object
 * Updated the Jetboots looping sound effect
   * New effect is a lower-pitched rumble, (hopefully) much easier on the ears
 * Aerial Interface now plays a "scuba" sound effect to the player when it supplies them with air underwater
+* Added the ability to blacklist items from the Pressure Chamber disenchanting system
+  * See new config setting `disenchanting_blacklist` in the Machines category of `pneumaticcraft-common.toml`
+  * By default, Quark Ancient Tomes and all items from the Tetra mod are blacklisted; both use enchanting systems which allow enchantment duping in the Pressure Chamber since their enchantments can't be stripped by normal (vanilla) means
+* Display Tables (and Tag Workbenches) will now form a visual "multiblock" if placed adjacent to each other and rotated in the same direction
+  * Table legs are shown or hidden based on what's adjacent to the table; a table with the same rotation as this one will cause table legs to be hidden
+* Mekanism Paxels may now be used as hoes (for replanting purposes) by Harvesting Drones (and the Harvest progwidget in general)
+* Reinforced and Smart Chests now support loot tables (via `/setblock`) using the `LootTable` and `LootTableSeed` NBT tags, same as vanilla Chests do
 
 ### Fixes
 * Fixed Minigun Freeze ammo not forming ice blocks on the surface of water
@@ -29,7 +38,7 @@ Note: PNC:R 2.9.3 and later have been successfully tested on Minecraft 1.16.5.  
 ## 2.10.1-140 (23 Feb 2021)
 
 ### Updates
-* Pressure Chamber disenchanting now works for enchanted book too
+* Pressure Chamber disenchanting now also works for Enchanted Books
   * The Enchanted Book to remove enchantments from must have more than one enchantment
   * A random enchantment will be removed and added to a regular Book
   * Thanks to @BlueAgent for this
