@@ -78,7 +78,6 @@ public class PNCConfig {
             public static int kineticCompressorEfficiency;
             public static boolean liquidHopperDispenser;
             public static boolean omniHopperDispenser;
-            public static int plasticMixerPlasticRatio;
             public static int pneumaticDynamoEfficiency;
             public static int pneumaticEngineEfficiency;
             public static int pneumaticGeneratorEfficiency;

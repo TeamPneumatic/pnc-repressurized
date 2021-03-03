@@ -36,7 +36,6 @@ public class CommonConfig {
         ForgeConfigSpec.IntValue kineticCompressorEfficiency;
         ForgeConfigSpec.BooleanValue liquidHopperDispenser;
         ForgeConfigSpec.BooleanValue omniHopperDispenser;
-        ForgeConfigSpec.IntValue plasticMixerPlasticRatio;
         ForgeConfigSpec.IntValue pneumaticDynamoEfficiency;
         ForgeConfigSpec.IntValue pneumaticEngineEfficiency;
         ForgeConfigSpec.IntValue pneumaticGeneratorEfficiency;

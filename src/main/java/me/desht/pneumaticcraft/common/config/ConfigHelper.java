@@ -87,7 +87,6 @@ public class ConfigHelper {
         PNCConfig.Common.Machines.kineticCompressorEfficiency = common.machines.kineticCompressorEfficiency.get();
         PNCConfig.Common.Machines.liquidHopperDispenser = common.machines.liquidHopperDispenser.get();
         PNCConfig.Common.Machines.omniHopperDispenser = common.machines.omniHopperDispenser.get();
-        PNCConfig.Common.Machines.plasticMixerPlasticRatio = common.machines.plasticMixerPlasticRatio.get();
         PNCConfig.Common.Machines.pneumaticDynamoEfficiency = common.machines.pneumaticDynamoEfficiency.get();
         PNCConfig.Common.Machines.pneumaticEngineEfficiency = common.machines.pneumaticEngineEfficiency.get();
         PNCConfig.Common.Machines.pneumaticGeneratorEfficiency = common.machines.pneumaticGeneratorEfficiency.get();
