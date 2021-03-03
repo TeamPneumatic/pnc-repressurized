@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.recipes.machine;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModRecipes;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -42,7 +43,7 @@ public class PressureDisenchantingRecipe extends PressureChamberRecipeImpl {
                 bookSlot = i;
             } else {
                 int minEnchantments = stack.getItem() == Items.ENCHANTED_BOOK ? 2 : 1;
-                if (EnchantmentHelper.getEnchantments(stack).size() >= minEnchantments) {
+                if (!blacklisted(stack) && EnchantmentHelper.getEnchantments(stack).size() >= minEnchantments) {
                     itemSlot = i;
                 }
             }
@@ -129,5 +130,13 @@ public class PressureDisenchantingRecipe extends PressureChamberRecipeImpl {
     @Override
     public IRecipeSerializer<?> getSerializer() {
         return ModRecipes.PRESSURE_CHAMBER_DISENCHANTING.get();
+    }
+
+    private boolean blacklisted(ItemStack stack) {
+        if (stack.getItem().getRegistryName() != null) {
+            String name = stack.getItem().getRegistryName().toString();
+            return PNCConfig.Common.Machines.disenchantingBlacklist.stream().anyMatch(name::startsWith);
+        }
+        return false;
     }
 }

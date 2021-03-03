@@ -98,6 +98,7 @@ public class ConfigHelper {
                 .stream().map(resourceName -> new ResourceLocation(resourceName.toLowerCase())).collect(Collectors.toSet());
         PNCConfig.Common.Machines.seismicSensorFluidTags = common.machines.seismicSensorFluidTags.get()
                 .stream().map(resourceName -> new ResourceLocation(resourceName.toLowerCase())).collect(Collectors.toSet());
+        PNCConfig.Common.Machines.disenchantingBlacklist = common.machines.disenchantingBlacklist.get();
 
         PNCConfig.Common.Armor.jetBootsAirUsage = common.armor.jetBootsAirUsage.get();
         PNCConfig.Common.Armor.armorStartupTime = common.armor.armorStartupTime.get();

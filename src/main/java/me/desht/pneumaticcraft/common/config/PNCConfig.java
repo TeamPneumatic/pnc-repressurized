@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.common.progwidgets.IProgWidget.WidgetDifficulty;
 import me.desht.pneumaticcraft.common.villages.VillagerTradesRegistration;
 import net.minecraft.util.ResourceLocation;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -86,6 +87,7 @@ public class PNCConfig {
             public static double speedUpgradeUsageMultiplier;
             public static Set<ResourceLocation> seismicSensorFluids;
             public static Set<ResourceLocation> seismicSensorFluidTags;
+            public static List<String> disenchantingBlacklist;
         }
 
         public static class Armor {

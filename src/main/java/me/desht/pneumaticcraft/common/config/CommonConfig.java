@@ -45,6 +45,7 @@ public class CommonConfig {
         ForgeConfigSpec.DoubleValue speedUpgradeUsageMultiplier;
         ForgeConfigSpec.ConfigValue<List<String>> seismicSensorFluids;
         ForgeConfigSpec.ConfigValue<List<String>> seismicSensorFluidTags;
+        ForgeConfigSpec.ConfigValue<List<String>> disenchantingBlacklist;
     }
     public static class Armor {
         ForgeConfigSpec.IntValue jetBootsAirUsage;
@@ -267,10 +268,6 @@ public class CommonConfig {
                 .comment("Can the Omnidirectional Hopper dispense items into the world with a Dispenser Upgrade?")
                 .translation("pneumaticcraft.config.common.machine_properties.omni_hopper_dispenser")
                 .define("omni_hopper_dispenser", true);
-        machines.plasticMixerPlasticRatio = builder
-                .comment("The ratio of liquid plastic to solid plastic sheets in the Plastic Mixer, in mB per sheet.  If set to 0, no default liquid->solid plastic recipe will be added (but CraftTweaker or API can be used to add recipes)")
-                .translation("pneumaticcraft.config.common.machine_properties.plastic_mixer_plastic_ratio")
-                .defineInRange("plastic_mixer_plastic_ratio", 1000, 0, Integer.MAX_VALUE);
         machines.pneumaticDynamoEfficiency = builder
                 .comment("The amount of FE (Forge Energy) produced by using 100mL of air in the Pneumatic Dynamo")
                 .translation("pneumaticcraft.config.common.machine_properties.pneumatic_dynamo_efficiency")
@@ -302,9 +299,13 @@ public class CommonConfig {
                 .define("seismic_sensor_fluids", Lists.newArrayList());
         machines.seismicSensorFluidTags = builder
                 .worldRestart()
-                .comment("Fluid tag names that the Seismic Sensor will search for. Known vanilla tags are 'minecraft:water' and 'minecraft:lava'. Other available fluid tags are mod-dependent.")
+                .comment("Fluid tag names that the Seismic Sensor will search for. Known vanilla tags are 'minecraft:water' and 'minecraft:lava'. Other available fluid tags are mod-dependent. By default, 'forge:crude_oil' is matched, allowing PneumaticCraft (and potentially other mods) crude oil.")
                 .translation("pneumaticcraft.config.common.machines.seismic_sensor_fluid_tags")
                 .define("seismic_sensor_fluid_tags", Lists.newArrayList("forge:crude_oil"));
+        machines.disenchantingBlacklist = builder
+                .comment("Blacklist items from being allowed in the Pressure Chamber disenchanting system. This is a starts-with string match, so you can match by mod, or individual item names as you need. Blacklisted by default are Quark Ancient Tomes, and all Tetra items; both can lead to enchantment duping as they have special enchantment mechanics.")
+                .translation("pneumaticcraft.config.common.machines.disenchanting_blacklist")
+                .define("disenchanting_blacklist", Lists.newArrayList("quark:ancient_tome", "tetra:"));
         builder.pop();
 
         builder.push("Pneumatic Armor");
