@@ -19,6 +19,7 @@ import java.util.List;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
 public class BlockTrackEntryMisc implements IBlockTrackEntry {
+    private static final ResourceLocation ID = RL("block_tracker.module.misc");
 
     @Override
     public boolean shouldTrackWithThisEntry(IBlockReader world, BlockPos pos, BlockState state, TileEntity te) {
@@ -42,6 +43,6 @@ public class BlockTrackEntryMisc implements IBlockTrackEntry {
 
     @Override
     public ResourceLocation getEntryID() {
-        return RL("block_tracker.module.misc");
+        return ID;
     }
 }

@@ -2,6 +2,8 @@ package me.desht.pneumaticcraft.api.client.pneumatic_helmet;
 
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
@@ -29,7 +31,7 @@ public interface IBlockTrackEntry {
      * @param pos   The position of the block examined.
      * @param state The block of the current coordinate. This will save you a
      *              call to World.getBlockState().
-     * @param te    The TileEntity at this x,y,z.
+     * @param te    The TileEntity at this x,y,z  (may be null)
      * @return true if the coordinate should be tracked by this BlockTrackEntry.
      */
     boolean shouldTrackWithThisEntry(IBlockReader world, BlockPos pos, BlockState state, TileEntity te);
@@ -56,33 +58,33 @@ public interface IBlockTrackEntry {
     int spamThreshold();
 
     /**
-     * This method is called each render tick to retrieve the blocks additional
-     * information. The method behaves the same as the addInformation method in
-     * the Item class. This method only will be called if
-     * shouldTrackWithThisEntry() returned true and the player hovers over the
-     * coordinate.
+     * This method is called each client tick to retrieve the block's additional
+     * information. The method behaves much the same as {@link net.minecraft.item.Item#addInformation(ItemStack, World, List, ITooltipFlag)}.
+     * This method is only called if {@link #shouldTrackWithThisEntry(IBlockReader, BlockPos, BlockState, TileEntity)}
+     * returned true, and the player is curently focused on the block.
      *
      * @param world    The world the block is in.
      * @param pos      The position the block is at.
-     * @param te       The TileEntity at the x,y,z.
+     * @param te       The TileEntity at the x,y,z (may be null)
      * @param face     The blockface the player is looking at (null if player is not looking directly at the block)
      * @param infoList The list of lines to display.
      */
     void addInformation(World world, BlockPos pos, TileEntity te, Direction face, List<ITextComponent> infoList);
+
     /**
-     * This method is called when displaying the currently tracked blocks.
-     * Will be tried to be mapped to the localization file first.
+     * Return a unique identifier for this block track entry. This is also used for translation key and keybind naming
+     * purposes; see {@link me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler#getStringKey(ResourceLocation)}
      *
-     * @return the name of the group of this entry.
+     * @return the ID of this entry
      */
     ResourceLocation getEntryID();
 
     /**
-     * Convenience method: check if the given capability provider provides the given capability.
+     * Convenience method: check if the given capability provider provides the given capability on any block face.
      *
      * @param provider the capability provider
      * @param cap the capability
-     * @return true the provider provides the capability on any face, including the null "face"
+     * @return true if the provider provides the capability on any face, including the null "face"
      */
     static boolean hasCapabilityOnAnyFace(ICapabilityProvider provider, Capability<?> cap) {
         for (Direction face : DirectionUtil.VALUES) {

@@ -28,6 +28,8 @@ import java.util.List;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
 public class BlockTrackEntryInventory implements IBlockTrackEntry {
+    private static final ResourceLocation ID = RL("block_tracker.module.inventories");
+
     @Override
     public boolean shouldTrackWithThisEntry(IBlockReader world, BlockPos pos, BlockState state, TileEntity te) {
         if (te instanceof ChestTileEntity && state.hasProperty(ChestBlock.TYPE) && state.get(ChestBlock.TYPE) == ChestType.RIGHT) {
@@ -87,6 +89,6 @@ public class BlockTrackEntryInventory implements IBlockTrackEntry {
 
     @Override
     public ResourceLocation getEntryID() {
-        return RL("block_tracker.module.inventories");
+        return ID;
     }
 }

@@ -16,7 +16,7 @@ public enum BlockTrackEntryList {
     public final NonNullList<IBlockTrackEntry> trackList = NonNullList.create();
 
     // initialize default Block Track Entries.
-    private BlockTrackEntryList() {
+    BlockTrackEntryList() {
         trackList.add(new BlockTrackEntryHackable());
         trackList.add(new BlockTrackEntryInventory());
         trackList.add(new BlockTrackEntryFluid());
@@ -28,7 +28,8 @@ public enum BlockTrackEntryList {
 
     public List<IBlockTrackEntry> getEntriesForCoordinate(IBlockReader blockAccess, BlockPos pos, TileEntity te) {
         return trackList.stream()
-                .filter(entry -> WidgetKeybindCheckBox.get(entry.getEntryID()).checked && entry.shouldTrackWithThisEntry(blockAccess, pos, blockAccess.getBlockState(pos), te))
+                .filter(entry -> WidgetKeybindCheckBox.get(entry.getEntryID()).checked
+                        && entry.shouldTrackWithThisEntry(blockAccess, pos, blockAccess.getBlockState(pos), te))
                 .collect(Collectors.toList());
     }
 }

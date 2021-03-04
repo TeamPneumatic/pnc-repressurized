@@ -27,6 +27,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class BlockTrackEntryMobSpawner implements IBlockTrackEntry {
+    private static final ResourceLocation ID = RL("block_tracker.module.spawner");
 
     @Override
     public boolean shouldTrackWithThisEntry(IBlockReader world, BlockPos pos, BlockState state, TileEntity te) {
@@ -73,6 +74,6 @@ public class BlockTrackEntryMobSpawner implements IBlockTrackEntry {
 
     @Override
     public ResourceLocation getEntryID() {
-        return RL("block_tracker.module.spawner");
+        return ID;
     }
 }

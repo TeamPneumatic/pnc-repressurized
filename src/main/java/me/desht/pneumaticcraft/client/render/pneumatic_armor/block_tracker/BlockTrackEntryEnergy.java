@@ -19,6 +19,8 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class BlockTrackEntryEnergy implements IBlockTrackEntry {
+    private static final ResourceLocation ID = RL("block_tracker.module.energy");
+
     @Override
     public boolean shouldTrackWithThisEntry(IBlockReader world, BlockPos pos, BlockState state, TileEntity te) {
         return te != null
@@ -51,6 +53,6 @@ public class BlockTrackEntryEnergy implements IBlockTrackEntry {
 
     @Override
     public ResourceLocation getEntryID() {
-        return RL("block_tracker.module.energy");
+        return ID;
     }
 }
