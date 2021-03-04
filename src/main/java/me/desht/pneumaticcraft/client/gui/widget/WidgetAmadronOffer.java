@@ -69,7 +69,7 @@ public class WidgetAmadronOffer extends Widget implements ITooltipProvider {
             FontRenderer fr = Minecraft.getInstance().fontRenderer;
             if (renderBackground) {
                 Minecraft.getInstance().getTextureManager().bindTexture(Textures.WIDGET_AMADRON_OFFER);
-                RenderSystem.color4f(1f, canBuy ? 1f : 0.4f, canBuy ? 1f : 0.4f, canBuy ? 0.75f : 1f);
+                RenderSystem.color4f(1f, canBuy ? 1f : 0.4f, canBuy ? 1f : 0.4f, 1f);
                 AbstractGui.blit(matrixStack, x, y, 0, 0, width, height, 256, 256);
             }
             IReorderingProcessor r = fr.trimStringToWidth(new StringTextComponent(offer.getVendor()).mergeStyle(canBuy ? TextFormatting.BLACK : TextFormatting.DARK_GRAY), 73).get(0);
