@@ -62,7 +62,8 @@ public class RenderAphorismTile extends TileEntityRenderer<TileEntityAphorismTil
                 String textLine;
                 if (editedLine == i) {
                     String cursor = showCursor ? "\u25a0" : "\u25a1";
-                    textLine = textLines[i].substring(0, editor.cursorX) + cursor + textLines[i].substring(editor.cursorX);
+                    int cx = Math.min(editor.cursorX, textLines[i].length());
+                    textLine = textLines[i].substring(0, cx) + cursor + textLines[i].substring(cx);
                 } else {
                     textLine = textLines[i];
                 }

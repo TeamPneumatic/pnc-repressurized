@@ -172,9 +172,10 @@ public class GuiAphorismTile extends Screen implements Slider.ISlider {
                 break;
             case GLFW.GLFW_KEY_ENTER:
                 cursorY++;
-                textLines = insertLine(textLines[cursorY - 1].substring(cursorX), cursorY);
-                textLines[cursorY - 1] = textLines[cursorY - 1].substring(0, cursorX);
+                int oldCursorX = cursorX;
                 cursorX = 0;
+                textLines = insertLine(textLines[cursorY - 1].substring(oldCursorX), cursorY);
+                textLines[cursorY - 1] = textLines[cursorY - 1].substring(0, oldCursorX);
                 updateTE = true;
                 break;
             case GLFW.GLFW_KEY_BACKSPACE:
