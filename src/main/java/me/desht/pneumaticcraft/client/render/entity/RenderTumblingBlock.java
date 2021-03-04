@@ -23,8 +23,6 @@ import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 
-import java.util.concurrent.ThreadLocalRandom;
-
 public class RenderTumblingBlock extends EntityRenderer<EntityTumblingBlock> {
     public static final IRenderFactory<EntityTumblingBlock> FACTORY = RenderTumblingBlock::new;
 
@@ -59,7 +57,7 @@ public class RenderTumblingBlock extends EntityRenderer<EntityTumblingBlock> {
                 for (RenderType type : RenderType.getBlockRenderTypes()) {
                     if (RenderTypeLookup.canRenderInLayer(state, type)) {
                         ForgeHooksClient.setRenderLayer(type);
-                        blockrendererdispatcher.getBlockModelRenderer().renderModel(world, blockrendererdispatcher.getModelForState(state), state, blockpos, matrixStackIn, bufferIn.getBuffer(type), false, ThreadLocalRandom.current(), state.getPositionRandom(entity.getOrigin()), OverlayTexture.NO_OVERLAY, EmptyModelData.INSTANCE);
+                        blockrendererdispatcher.getBlockModelRenderer().renderModel(world, blockrendererdispatcher.getModelForState(state), state, blockpos, matrixStackIn, bufferIn.getBuffer(type), false, world.getRandom(), state.getPositionRandom(entity.getOrigin()), OverlayTexture.NO_OVERLAY, EmptyModelData.INSTANCE);
                     }
                 }
                 ForgeHooksClient.setRenderLayer(null);
