@@ -61,10 +61,11 @@ public class ModuleFlowDetector extends TubeModuleRedstoneEmitting implements II
     }
 
     @Override
-    public void writeToNBT(CompoundNBT tag) {
+    public CompoundNBT writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
         tag.putFloat("rotation", rotation);
         tag.putInt("flow", oldFlow);
+        return tag;
     }
 
     @Override

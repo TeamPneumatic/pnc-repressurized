@@ -42,9 +42,10 @@ public abstract class TubeModuleRedstoneEmitting extends TubeModule {
     }
 
     @Override
-    public void writeToNBT(CompoundNBT tag) {
+    public CompoundNBT writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
         tag.putInt("redstone", redstone);
+        return tag;
     }
 
     @Override

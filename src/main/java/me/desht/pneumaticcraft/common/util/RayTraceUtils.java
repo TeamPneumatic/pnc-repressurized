@@ -2,7 +2,6 @@ package me.desht.pneumaticcraft.common.util;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.RayTraceContext;
@@ -21,15 +20,9 @@ public class RayTraceUtils {
     }
 
     public static Pair<Vector3d, Vector3d> getStartAndEndLookVec(LivingEntity entity, double maxDistance) {
-        Vector3d entityVec;
-        if (entity.world.isRemote && entity instanceof PlayerEntity) {
-            entityVec = new Vector3d(entity.getPosX(), entity.getPosY() + 1.6200000000000001D, entity.getPosZ());
-        } else {
-            entityVec = new Vector3d(entity.getPosX(), entity.getPosY() + entity.getEyeHeight() - (entity.isSneaking() ? 0.08 : 0), entity.getPosZ());
-        }
-        Vector3d entityLookVec = entity.getLook(1.0F);
-        Vector3d maxDistVec = entityVec.add(entityLookVec.scale(maxDistance));
-        return new ImmutablePair<>(entityVec, maxDistVec);
+        Vector3d entityVec = new Vector3d(entity.getPosX(), entity.getPosY() + entity.getEyeHeight(), entity.getPosZ());
+        Vector3d maxDistVec = entityVec.add(entity.getLook(1F).scale(maxDistance));
+        return new ImmutablePair<>(entity.getEyePosition(1F), maxDistVec);
     }
 
     public static RayTraceResult getMouseOverServer(LivingEntity lookingEntity, double range) {

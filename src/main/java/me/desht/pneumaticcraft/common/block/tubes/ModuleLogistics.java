@@ -89,10 +89,11 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
     }
 
     @Override
-    public void writeToNBT(CompoundNBT nbt) {
+    public CompoundNBT writeToNBT(CompoundNBT nbt) {
         super.writeToNBT(nbt);
         nbt.putBoolean("powered", powered);
         nbt.putByte("colorChannel", (byte) colorChannel);
+        return nbt;
     }
 
     @Override

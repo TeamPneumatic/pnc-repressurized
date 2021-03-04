@@ -9,7 +9,6 @@ import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.text.ITextComponent;
@@ -24,9 +23,9 @@ public class TubeModuleProvider {
         public void appendServerData(CompoundNBT compoundNBT, ServerPlayerEntity player, World world, TileEntity te) {
             if (te instanceof TileEntityPressureTube) {
                 TubeModule module = BlockPressureTube.getFocusedModule(world, te.getPos(), player);
-                ((TileEntityPressureTube) te).writeModulesToNBT(compoundNBT);
                 if (module != null) {
-                    compoundNBT.putInt("lookedSide", module.getDirection().getIndex());
+                    compoundNBT.put("module", module.writeToNBT(new CompoundNBT()));
+                    compoundNBT.putByte("side", (byte) module.getDirection().getIndex());
                 }
             }
         }
@@ -38,17 +37,12 @@ public class TubeModuleProvider {
             if (accessor.getTileEntity() instanceof TileEntityPressureTube) {
                 TileEntityPressureTube tube = (TileEntityPressureTube) accessor.getTileEntity();
                 CompoundNBT tubeTag = accessor.getServerData();
-                ListNBT moduleList = tubeTag.getList("modules", Constants.NBT.TAG_COMPOUND);
-                int side = tubeTag.getInt("lookedSide");
-                for (int i = 0; i < moduleList.size(); i++) {
-                    CompoundNBT moduleTag = moduleList.getCompound(i);
-                    if (side == moduleTag.getInt("side")) {
-                        TubeModule module = tube.getModule(Direction.byIndex(side));
-                        if (module != null) {
-                            module.readFromNBT(moduleTag);
-                            module.addInfo(tooltip);
-                            break;
-                        }
+                if (tubeTag.contains("side", Constants.NBT.TAG_BYTE)) {
+                    int side = tubeTag.getByte("side");
+                    TubeModule module = tube.getModule(Direction.byIndex(side));
+                    if (module != null) {
+                        module.readFromNBT(tubeTag.getCompound("module"));
+                        module.addInfo(tooltip);
                     }
                 }
             }

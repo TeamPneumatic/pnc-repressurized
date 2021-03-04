@@ -130,12 +130,13 @@ public abstract class TubeModule {
         advancedConfig = !nbt.contains("advancedConfig") || nbt.getBoolean("advancedConfig");
     }
 
-    public void writeToNBT(CompoundNBT nbt) {
+    public CompoundNBT writeToNBT(CompoundNBT nbt) {
         nbt.putInt("dir", dir.getIndex());
         nbt.putBoolean("upgraded", upgraded);
         nbt.putFloat("lowerBound", lowerBound);
         nbt.putFloat("higherBound", higherBound);
         nbt.putBoolean("advancedConfig", advancedConfig);
+        return nbt;
     }
 
     public void update() {

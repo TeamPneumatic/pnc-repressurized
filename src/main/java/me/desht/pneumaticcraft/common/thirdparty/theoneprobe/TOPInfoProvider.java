@@ -39,7 +39,7 @@ public class TOPInfoProvider {
         TileEntity te = world.getTileEntity(data.getPos());
         if (te == null) return;
 
-        if (te instanceof IInfoForwarder){
+        if (te instanceof IInfoForwarder) {
             te = ((IInfoForwarder)te).getInfoTileEntity();
             if (te == null) return;
         }

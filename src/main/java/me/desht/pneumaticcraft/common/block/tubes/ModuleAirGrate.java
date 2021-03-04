@@ -211,11 +211,12 @@ public class ModuleAirGrate extends TubeModule {
     }
 
     @Override
-    public void writeToNBT(CompoundNBT tag) {
+    public CompoundNBT writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
         tag.putBoolean("vacuum", vacuum);
         tag.putInt("grateRange", grateRange);
         tag.putString("entityFilter", entityFilter == null ? "" : entityFilter.toString());
+        return tag;
     }
 
     @Override

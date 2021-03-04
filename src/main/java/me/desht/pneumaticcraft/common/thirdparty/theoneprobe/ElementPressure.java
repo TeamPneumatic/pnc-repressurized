@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.thirdparty.theoneprobe;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import io.netty.buffer.ByteBuf;
 import mcjty.theoneprobe.api.IElement;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer2D;
@@ -25,11 +24,11 @@ public class ElementPressure implements IElement {
         crit = airHandler.getCriticalPressure();
     }
 
-    ElementPressure(ByteBuf byteBuf) {
-        min = byteBuf.readFloat();
-        pressure = byteBuf.readFloat();
-        danger = byteBuf.readFloat();
-        crit = byteBuf.readFloat();
+    ElementPressure(PacketBuffer buf) {
+        min = buf.readFloat();
+        pressure = buf.readFloat();
+        danger = buf.readFloat();
+        crit = buf.readFloat();
     }
 
     @Override

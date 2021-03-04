@@ -21,9 +21,10 @@ public abstract class TubeModuleRedstoneReceiving extends TubeModule {
     }
 
     @Override
-    public void writeToNBT(CompoundNBT tag) {
+    public CompoundNBT writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
         tag.putInt("redstone", redstoneLevel);
+        return tag;
     }
 
     @Override

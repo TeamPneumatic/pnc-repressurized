@@ -55,12 +55,12 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
 
     @Override
     public double getWidth() {
-        return 8D;
+        return 9D;
     }
 
     @Override
     protected double getHeight() {
-        return 4D;
+        return 5D;
     }
 
     @Override
@@ -140,7 +140,7 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
     }
 
     @Override
-    public void writeToNBT(CompoundNBT tag) {
+    public CompoundNBT writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
 
         tag.putBoolean("input", redstoneDirection == EnumRedstoneDirection.INPUT);
@@ -151,6 +151,8 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
         tag.putInt("const", (byte) constantVal);
         tag.putBoolean("invert", inverted);
         tag.putLong("prevLevels", encodeLevels(prevLevels));
+
+        return tag;
     }
 
     @Override
