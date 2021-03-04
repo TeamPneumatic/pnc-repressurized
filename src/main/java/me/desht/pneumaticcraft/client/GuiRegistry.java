@@ -15,6 +15,8 @@ import net.minecraftforge.registries.IForgeRegistryEntry;
 import javax.annotation.Nonnull;
 import java.util.HashMap;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+
 public class GuiRegistry implements IClientRegistry {
 
     private static final GuiRegistry INSTANCE = new GuiRegistry();
@@ -38,6 +40,11 @@ public class GuiRegistry implements IClientRegistry {
 
     @Override
     public IGuiAnimatedStat getAnimatedStat(Screen gui, String iconTexture, int backgroundColor) {
+        return new WidgetAnimatedStat(gui, backgroundColor, RL(iconTexture));
+    }
+
+    @Override
+    public IGuiAnimatedStat getAnimatedStat(Screen gui, ResourceLocation iconTexture, int backgroundColor) {
         return new WidgetAnimatedStat(gui, backgroundColor, iconTexture);
     }
 

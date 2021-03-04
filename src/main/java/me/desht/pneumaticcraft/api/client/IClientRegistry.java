@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.api.client.assembly_machine.IAssemblyRenderOverri
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import javax.annotation.Nonnull;
@@ -13,31 +14,44 @@ public interface IClientRegistry {
     /**
      * Returns a GuiAnimatedStat without icon.
      *
-     * @param gui
-     * @param backgroundColor
-     * @return
+     * @param gui the owning GUI screen
+     * @param backgroundColor background color for the stat in ARGB format
+     * @return a new stat widget
      */
     IGuiAnimatedStat getAnimatedStat(Screen gui, int backgroundColor);
 
     /**
      * Returns a GuiAnimatedStat which uses an itemstack as static icon.
      *
-     * @param gui
-     * @param iconStack
-     * @param backgroundColor
-     * @return
+     * @param gui the owning GUI screen
+     * @param iconStack an itemstack to use as the stat widget's icon
+     * @param backgroundColor background color for the stat in ARGB format
+     * @return a new stat widget
      */
     IGuiAnimatedStat getAnimatedStat(Screen gui, ItemStack iconStack, int backgroundColor);
 
     /**
+     * Returns a GuiAnimatedStat which uses a texture location as static icon. This texture will always be
+     * namespaced with "pneumaticcraft:"
+     *
+     * @param gui the owning GUI screen
+     * @param iconTexture name of a texture to use as the stat widget's icon
+     * @param backgroundColor background color for the stat in ARGB format
+     * @return a new stat widget
+     * @deprecated use {@link #getAnimatedStat(Screen, ResourceLocation, int)}
+     */
+    @Deprecated
+    IGuiAnimatedStat getAnimatedStat(Screen gui, String iconTexture, int backgroundColor);
+
+    /**
      * Returns a GuiAnimatedStat which uses a texture location as static icon.
      *
-     * @param gui
-     * @param iconTexture     / text
-     * @param backgroundColor
-     * @return
+     * @param gui the owning GUI screen
+     * @param iconTexture a texture to use as the stat widget's icon
+     * @param backgroundColor background color for the stat in ARGB format
+     * @return a new stat widget
      */
-    IGuiAnimatedStat getAnimatedStat(Screen gui, String iconTexture, int backgroundColor);
+    IGuiAnimatedStat getAnimatedStat(Screen gui, ResourceLocation iconTexture, int backgroundColor);
 
     /**
      * Draws a Pressure Gauge, the same which is also used in many PneumaticCraft applications. This should only be used

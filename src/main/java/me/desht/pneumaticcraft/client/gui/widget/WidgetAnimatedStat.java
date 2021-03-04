@@ -42,8 +42,6 @@ import org.lwjgl.opengl.GL11;
 import java.util.ArrayList;
 import java.util.List;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
-
 public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, ITooltipProvider {
     private static final int MIN_WIDTH_HEIGHT = 17;
     private static final int MAX_VISIBLE_LINES = 12;
@@ -120,9 +118,9 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
         statIcon = StatIcon.of(icon);
     }
 
-    public WidgetAnimatedStat(Screen gui, int backgroundColor, String texture) {
+    public WidgetAnimatedStat(Screen gui, int backgroundColor, ResourceLocation texture) {
         this(gui, backgroundColor);
-        statIcon = StatIcon.of(RL(texture));
+        statIcon = StatIcon.of(texture);
     }
 
     public WidgetAnimatedStat(Screen gui, ITextComponent title, StatIcon icon, int xPos, int yPos, int backGroundColor,
