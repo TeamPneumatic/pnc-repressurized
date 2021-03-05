@@ -11,8 +11,10 @@ import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.ai.attributes.GlobalEntityTypeAttributes;
+import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.RegistryObject;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -262,28 +264,17 @@ public class ModEntities {
                 .setShouldReceiveVelocityUpdates(false);
     }
 
-    public static void registerGlobalAttributes() {
-        GlobalEntityTypeAttributes.put(ModEntities.DRONE.get(), EntityDrone.prepareAttributes().create());
-        GlobalEntityTypeAttributes.put(ModEntities.AMADRONE.get(), EntityDrone.prepareAttributes().create());
-        GlobalEntityTypeAttributes.put(ModEntities.COLLECTOR_DRONE.get(), EntityDrone.prepareAttributes().create());
-        GlobalEntityTypeAttributes.put(ModEntities.GUARD_DRONE.get(), EntityDrone.prepareAttributes().create());
-        GlobalEntityTypeAttributes.put(ModEntities.HARVESTING_DRONE.get(), EntityDrone.prepareAttributes().create());
-        GlobalEntityTypeAttributes.put(ModEntities.LOGISTICS_DRONE.get(), EntityDrone.prepareAttributes().create());
-        GlobalEntityTypeAttributes.put(ModEntities.PROGRAMMABLE_CONTROLLER.get(), EntityDrone.prepareAttributes().create());
+    @Mod.EventBusSubscriber(modid = Names.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+    public static class Listener {
+        @SubscribeEvent
+        public static void registerGlobalAttributes(EntityAttributeCreationEvent event) {
+            event.put(ModEntities.DRONE.get(), EntityDrone.prepareAttributes().create());
+            event.put(ModEntities.AMADRONE.get(), EntityDrone.prepareAttributes().create());
+            event.put(ModEntities.COLLECTOR_DRONE.get(), EntityDrone.prepareAttributes().create());
+            event.put(ModEntities.GUARD_DRONE.get(), EntityDrone.prepareAttributes().create());
+            event.put(ModEntities.HARVESTING_DRONE.get(), EntityDrone.prepareAttributes().create());
+            event.put(ModEntities.LOGISTICS_DRONE.get(), EntityDrone.prepareAttributes().create());
+            event.put(ModEntities.PROGRAMMABLE_CONTROLLER.get(), EntityDrone.prepareAttributes().create());
+        }
     }
-
-    // TODO replace above with this in 2.11.0
-//    @Mod.EventBusSubscriber(modid = Names.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
-//    public static class Listener {
-//        @SubscribeEvent
-//        public static void registerGlobalAttributes(EntityAttributeCreationEvent event) {
-//            event.put(ModEntities.DRONE.get(), EntityDrone.prepareAttributes().create());
-//            event.put(ModEntities.AMADRONE.get(), EntityDrone.prepareAttributes().create());
-//            event.put(ModEntities.COLLECTOR_DRONE.get(), EntityDrone.prepareAttributes().create());
-//            event.put(ModEntities.GUARD_DRONE.get(), EntityDrone.prepareAttributes().create());
-//            event.put(ModEntities.HARVESTING_DRONE.get(), EntityDrone.prepareAttributes().create());
-//            event.put(ModEntities.LOGISTICS_DRONE.get(), EntityDrone.prepareAttributes().create());
-//            event.put(ModEntities.PROGRAMMABLE_CONTROLLER.get(), EntityDrone.prepareAttributes().create());
-//        }
-//    }
 }
