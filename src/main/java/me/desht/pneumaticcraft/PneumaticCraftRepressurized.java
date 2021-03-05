@@ -139,8 +139,6 @@ public class PneumaticCraftRepressurized {
             DispenserBlock.registerDispenseBehavior(ModItems.LOGISTICS_DRONE.get(), new BehaviorDispenseDrone());
             DispenserBlock.registerDispenseBehavior(ModItems.HARVESTING_DRONE.get(), new BehaviorDispenseDrone());
 
-            ModEntities.registerGlobalAttributes();
-
             ThirdPartyManager.instance().postInit();
 
             for (RegistryObject<Block> block : ModBlocks.BLOCKS.getEntries()) {
