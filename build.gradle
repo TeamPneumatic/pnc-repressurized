@@ -216,6 +216,7 @@ dependencies {
     compileOnly fg.deobf("curse.maven:hwyla:${hwyla_curse_id}")
     runtimeOnly fg.deobf("curse.maven:hwyla:${hwyla_curse_id}")
     compileOnly fg.deobf("appeng:appliedenergistics2:${ae2_version}:api")
+    runtimeOnly fg.deobf("appeng:appliedenergistics2:${ae2_version}")
 
 //    runtimeOnly fg.deobf("curse.maven:modernui:3158102")
 //    compileOnly "li.cil.oc:OpenComputers:MC1.12.2-${oc_version}:api"
