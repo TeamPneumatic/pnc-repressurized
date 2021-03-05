@@ -11,7 +11,6 @@ import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 
-import java.util.ArrayList;
 import java.util.Collections;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -82,13 +81,13 @@ public class CoordinateTrackerOptions extends IOptionPage.SimpleToggleableOption
         mc.setGameFocused(true);
         switch (coordHandler.navigateToSurface(mc.player)) {
             case EASY_PATH:
-                HUDHandler.getInstance().addMessage(new ArmorMessage(xlate("pneumaticcraft.armor.message.coordinateTracker.routeFound"), new ArrayList<>(), 90, 0x7000AA00));
+                HUDHandler.getInstance().addMessage(new ArmorMessage(xlate("pneumaticcraft.armor.message.coordinateTracker.routeFound"), 90, 0x7000AA00));
                 break;
             case DRONE_PATH:
-                HUDHandler.getInstance().addMessage(new ArmorMessage(xlate("pneumaticcraft.armor.message.coordinateTracker.harderRouteFound"), new ArrayList<>(), 90, 0x7044AA00));
+                HUDHandler.getInstance().addMessage(new ArmorMessage(xlate("pneumaticcraft.armor.message.coordinateTracker.harderRouteFound"), 90, 0x7044AA00));
                 break;
             case NO_PATH:
-                HUDHandler.getInstance().addMessage(new ArmorMessage(xlate("pneumaticcraft.armor.message.coordinateTracker.noRouteFound"), new ArrayList<>(), 90, 0x70FF0000));
+                HUDHandler.getInstance().addMessage(new ArmorMessage(xlate("pneumaticcraft.armor.message.coordinateTracker.noRouteFound"), 90, 0x70FF0000));
                 break;
         }
     }

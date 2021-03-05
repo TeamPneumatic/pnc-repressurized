@@ -107,7 +107,7 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
             if (!shouldStopSpamOnEntityTracking) {
                 shouldStopSpamOnEntityTracking = true;
                 ITextComponent msg = xlate("pneumaticcraft.blockTracker.message.stopSpam", I18n.format("pneumaticcraft.armor.upgrade.entity_tracker"));
-                HUDHandler.getInstance().addMessage(new ArmorMessage(msg, new ArrayList<>(), 60, 0x7700AA00));
+                HUDHandler.getInstance().addMessage(new ArmorMessage(msg,60, 0x7700AA00));
             }
         } else {
             shouldStopSpamOnEntityTracking = false;

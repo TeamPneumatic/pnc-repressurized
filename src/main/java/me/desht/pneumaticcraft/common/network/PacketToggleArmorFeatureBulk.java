@@ -44,8 +44,7 @@ public class PacketToggleArmorFeatureBulk {
                 CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
                 features.forEach(f -> {
                     if (f.featureIndex >= 0 && f.featureIndex < ArmorUpgradeRegistry.getInstance().getHandlersForSlot(f.slot).size()
-                        && ItemPneumaticArmor.isPneumaticArmorPiece(player, f.slot)
-                        && handler.isUpgradeInserted(f.slot, f.featureIndex))
+                        && ItemPneumaticArmor.isPneumaticArmorPiece(player, f.slot))
                     {
                         handler.setUpgradeEnabled(f.slot, f.featureIndex, f.state);
                     }

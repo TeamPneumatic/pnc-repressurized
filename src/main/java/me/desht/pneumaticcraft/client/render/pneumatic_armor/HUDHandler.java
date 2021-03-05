@@ -87,22 +87,24 @@ public enum HUDHandler implements IKeyListener {
     @SubscribeEvent
     public void renderHUD3d(RenderWorldLastEvent event) {
         Minecraft mc = Minecraft.getInstance();
-        if (!WidgetKeybindCheckBox.getCoreComponents().checked || mc.gameSettings.hideGUI) return;
-
         PlayerEntity player = mc.player;
-        if (player == null) return;
 
-        IRenderTypeBuffer.Impl buffer = Minecraft.getInstance().getRenderTypeBuffers().getBufferSource();
-        MatrixStack matrixStack = event.getMatrixStack();
+        if (player == null || mc.gameSettings.hideGUI || mc.currentScreen != null
+                || !ItemPneumaticArmor.isPneumaticArmorPiece(player, EquipmentSlotType.HEAD)
+                || WidgetKeybindCheckBox.getCoreComponents() == null
+                || !WidgetKeybindCheckBox.getCoreComponents().checked) {
+            return;
+        }
 
-        matrixStack.push();
-
-        Vector3d projectedView = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
-        matrixStack.translate(-projectedView.x, -projectedView.y, -projectedView.z);
-
-        ItemStack helmetStack = player.getItemStackFromSlot(EquipmentSlotType.HEAD);
         CommonArmorHandler commonArmorHandler = CommonArmorHandler.getHandlerForPlayer(player);
-        if (helmetStack.getItem() instanceof ItemPneumaticArmor && commonArmorHandler.getArmorPressure(EquipmentSlotType.HEAD) > 0F) {
+        if (commonArmorHandler.getArmorPressure(EquipmentSlotType.HEAD) > 0F) {
+            IRenderTypeBuffer.Impl buffer = Minecraft.getInstance().getRenderTypeBuffers().getBufferSource();
+            MatrixStack matrixStack = event.getMatrixStack();
+            matrixStack.push();
+
+            Vector3d projectedView = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
+            matrixStack.translate(-projectedView.x, -projectedView.y, -projectedView.z);
+
             for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
                 if (commonArmorHandler.isArmorReady(slot)) {
                     GlStateManager.disableTexture();
@@ -116,9 +118,9 @@ public enum HUDHandler implements IKeyListener {
                     GlStateManager.enableTexture();
                 }
             }
-        }
 
-        matrixStack.pop();
+            matrixStack.pop();
+        }
     }
 
     /**
@@ -131,7 +133,8 @@ public enum HUDHandler implements IKeyListener {
         Minecraft mc = Minecraft.getInstance();
         PlayerEntity player = mc.player;
 
-        if (mc.gameSettings.hideGUI || player == null || mc.currentScreen != null || !ItemPneumaticArmor.isPlayerWearingAnyPneumaticArmor(player)) {
+        if (player == null || mc.gameSettings.hideGUI || mc.currentScreen != null
+                || !ItemPneumaticArmor.isPlayerWearingAnyPneumaticArmor(player)) {
             return;
         }
 
@@ -317,7 +320,7 @@ public enum HUDHandler implements IKeyListener {
             playArmorInitSound(player, ModSounds.HUD_INIT_COMPLETE.get(), 1.0F);
             addMessage(new ArmorMessage(xlate("pneumaticcraft.armor.message.initComplete", itemName), 50, 0x7000AA00));
         } else if (ticksSinceEquipped == 0 && WidgetKeybindCheckBox.getCoreComponents().checked) {
-            // tick 0: cache colours & inform the server which upgrades are enabled
+            // tick 0: inform the server which upgrades are enabled
             for (IArmorUpgradeClientHandler handler : ArmorUpgradeClientRegistry.getInstance().getHandlersForSlot(slot)) {
                 handler.reset();
             }
@@ -372,7 +375,8 @@ public enum HUDHandler implements IKeyListener {
 
     public void addMessage(ArmorMessage message) {
         if (pendingMessages.size() > 0) {
-            message.setDependingMessage(pendingMessages.get(pendingMessages.size() - 1).getStat()); //set the depending stat of the new stat to the last stat.
+            // this message is dependent on the previous one, so renders right beneath it
+            message.setDependingMessage(pendingMessages.get(pendingMessages.size() - 1).getStat());
         }
         pendingMessages.add(message);
     }
