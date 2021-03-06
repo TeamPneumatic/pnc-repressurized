@@ -8,6 +8,12 @@ Changes are in reverse chronological order; newest changes at the top.
 
 Note: PNC:R 2.9.3 and later have been successfully tested on Minecraft 1.16.5.  Older (but recent) versions will probably also work on MC 1.16.5, but haven't been tested.
 
+## 2.10.3-149 (6 Mar 2021)
+
+### Fixes
+* Fix Pneumatic Armor bug where armor couldn't be switched on from cold (Core Components toggle button)
+* Fix timing issue on SMP where Pneumatic Armor feature enablement packets sometimes got ignored by server
+
 ## 2.10.2-148 (4 Mar 2021)
 
 ### Updates
