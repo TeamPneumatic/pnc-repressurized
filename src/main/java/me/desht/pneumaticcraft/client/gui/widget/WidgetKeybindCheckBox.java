@@ -131,7 +131,7 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
             // for main control: entry != null, ownerEntry == null
             // for sub-control: entry == null, ownerEntry != null
             if (entry != null) {
-                if (!commonArmorHandler.isArmorReady(entry.getSlot())) return true;
+                if (this != coreComponents && !commonArmorHandler.isArmorReady(entry.getSlot())) return true;
             } else if (ownerEntry != null && !commonArmorHandler.isArmorReady(ownerEntry.getSlot())) {
                 return true;
             }
