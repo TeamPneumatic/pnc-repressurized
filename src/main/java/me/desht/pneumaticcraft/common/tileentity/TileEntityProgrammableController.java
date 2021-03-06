@@ -33,6 +33,7 @@ import me.desht.pneumaticcraft.common.util.fakeplayer.DroneItemHandler;
 import me.desht.pneumaticcraft.common.util.fakeplayer.FakeNetHandlerPlayerServer;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.NBTKeys;
+import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -52,6 +53,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.math.vector.Vector3d;
@@ -62,6 +64,7 @@ import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.common.world.ForgeChunkManager;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -134,6 +137,14 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     public String label = "";
     @DescSynced
     public String ownerNameClient = "";
+    @GuiSynced
+    private boolean chunkloadSelf = true;
+    @GuiSynced
+    private boolean chunkloadWorkingChunk = true;
+    @GuiSynced
+    private boolean chunkloadWorkingChunk3x3 = true;
+    private ChunkPos prevChunkPos = null;
+    private Set<ChunkPos> loadedChunks = new HashSet<>();
 
     private UUID ownerID;
     private ITextComponent ownerName;
@@ -197,10 +208,20 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
                 fp.interactionManager.tick();
             }
             fp.setPosition(curX, curY, curZ);
+            ChunkPos newChunkPos = new ChunkPos((int)curX >> 4, (int)curZ >> 4);
+            if (prevChunkPos == null || !prevChunkPos.equals(newChunkPos)) {
+                handleDynamicChunkloading(prevChunkPos, newChunkPos);
+            }
+            prevChunkPos = newChunkPos;
             fp.tick();
 
             if (getPressure() >= getMinWorkingPressure()) {
-                if (!aiManager.isIdling()) addAir(-PneumaticValues.USAGE_PROGRAMMABLE_CONTROLLER);
+                if (!isIdle) {
+                    addAir(-PneumaticValues.USAGE_PROGRAMMABLE_CONTROLLER);
+                    if (chunkloadWorkingChunk3x3) addAir(-PneumaticValues.USAGE_PROGRAMMABLE_CONTROLLER_CHUNKLOAD_WORK3);
+                    else if (chunkloadWorkingChunk) addAir(-PneumaticValues.USAGE_PROGRAMMABLE_CONTROLLER_CHUNKLOAD_WORK);
+                }
+                if (chunkloadSelf) addAir(-PneumaticValues.USAGE_PROGRAMMABLE_CONTROLLER_CHUNKLOAD_SELF);
                 aiManager.onUpdateTasks();
                 maybeChargeHeldItem();
             }
@@ -219,6 +240,35 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
             }
             drone.setPosition(curX, curY, curZ);
         }
+    }
+
+    private void handleDynamicChunkloading(ChunkPos oldPos, ChunkPos newPos) {
+        Log.info("drone moved from " + oldPos + " to " + newPos);
+        for (int cx = newPos.x - 1; cx <= newPos.x + 1; cx++) {
+            for (int cz = newPos.z - 1; cz <= newPos.z + 1; cz++) {
+                ChunkPos cp = new ChunkPos(cx, cz);
+                if (shouldLoadChunk(cp)) loadedChunks.add(cp);
+            }
+        }
+
+        Iterator<ChunkPos> iter = loadedChunks.iterator();
+        while (iter.hasNext()) {
+            ChunkPos cp = iter.next();
+            boolean load = shouldLoadChunk(cp);
+            Log.info("chunkload " + cp + "? " + load);
+            ForgeChunkManager.forceChunk((ServerWorld) world, Names.MOD_ID, pos, cp.x, cp.z, load, false);
+            if (!load) {
+                iter.remove();
+            }
+        }
+    }
+
+    private boolean shouldLoadChunk(ChunkPos cp) {
+        int cx = (int)curX >> 4;
+        int cz = (int)curZ >> 4;
+        return chunkloadSelf && cp.x == pos.getX() >> 4 && cp.z == pos.getZ() >> 4
+                || chunkloadWorkingChunk && !isIdle && cp.x == cx && cp.z == cz
+                || chunkloadWorkingChunk3x3 && !isIdle && cp.x >= cx - 1 && cp.x <= cx + 1 && cp.z >= cz - 1 && cp.z <= cz + 1;
     }
 
     private void maybeChargeHeldItem() {
@@ -253,6 +303,9 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     public void remove() {
         super.remove();
 
+        if (world instanceof ServerWorld) {
+            loadedChunks.forEach(cp -> ForgeChunkManager.forceChunk((ServerWorld) world, Names.MOD_ID, pos, cp.x, cp.z, false, false));
+        }
         MinecraftForge.EVENT_BUS.unregister(this);
     }
 
@@ -422,6 +475,12 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
         curX = targetX = getPos().getX() + 0.5;
         curY = targetY = getPos().getY() + 1.0;
         curZ = targetZ = getPos().getZ() + 0.5;
+
+        if (chunkloadSelf) {
+            ChunkPos cp = new ChunkPos(pos);
+            ForgeChunkManager.forceChunk((ServerWorld) world, Names.MOD_ID, pos, cp.x, cp.z, true, false);
+            loadedChunks.add(cp);
+        }
     }
 
     private static boolean isProgrammableAndValidForDrone(IDroneBase drone, ItemStack programmable) {
