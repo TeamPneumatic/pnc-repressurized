@@ -92,6 +92,7 @@ public class UpgradesDBSetup {
                     .with(EnumUpgrade.VOLUME, MAX_VOLUME)
                     .with(EnumUpgrade.ITEM_LIFE, PneumaticValues.ARMOR_REPAIR_MAX_UPGRADES)
                     .with(EnumUpgrade.ARMOR, 4)
+                    .with(EnumUpgrade.RADIATION_SHIELDING, 1)
                     .with(EnumUpgrade.THAUMCRAFT, 1);
         }
         // piece-specific upgrades which don't have a specific upgrade handler
