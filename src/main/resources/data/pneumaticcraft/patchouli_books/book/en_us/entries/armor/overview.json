@@ -51,6 +51,13 @@
       "text": "$(l:base_concepts/upgrades#item_life)Item Life Upgrades/$ slowly repair the armor piece, at a cost of $(base_concepts/pressure)air/$. Up to 6 upgrades can be installed in each piece, providing incrementally faster (but less air-efficient) repair."
     },
     {
+      "type": "spotlight",
+      "flag": "mod:mekanism",
+      "title": "Mekanism Radiation",
+      "item": "pneumaticcraft:radiation_shielding_upgrade",
+      "text": "The $(l:base_concepts/upgrades#radiation_shielding)Radiation Shielding Upgrade/$ provides protection against the harmful effects of Mekanism radiation, same as Mekanism's own $(l:https://wiki.aidancbrady.com/wiki/Radiation_Shielding_Unit)Radiation Shielding Unit/$. Note that you must have a Shielding Upgrade in every armor piece to receive full protection."
+    },
+    {
       "type": "text",
       "title": "Thaumcraft",
       "flag": "mod:thaumcraft",

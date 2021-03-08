@@ -95,6 +95,7 @@ public class ItemPneumaticArmor extends ArmorItem implements
     public static final String NBT_SPEED_BOOST = "speedBoost";
     public static final String NBT_BUILDER_MODE = "JetBootsBuilderMode";
     public static final String NBT_JET_BOOTS_POWER = "JetBootsPower";
+    public static final String NBT_FLIGHT_STABILIZERS = "JetBootsStabilizers";
 
     public ItemPneumaticArmor(EquipmentSlotType equipmentSlotIn) {
         super(PNEUMATIC_ARMOR_MATERIAL, equipmentSlotIn, ModItems.defaultProps());
