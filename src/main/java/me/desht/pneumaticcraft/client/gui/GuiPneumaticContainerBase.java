@@ -471,8 +471,13 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
             text.add(new StringTextComponent(GuiConstants.TRIANGLE_RIGHT + " " + upgrades + " x ")
                     .append(EnumUpgrade.VOLUME.getItemStack().getDisplayName())
             );
+            addExtraVolumeModifierInfo(text);
             text.add(xlate("pneumaticcraft.gui.tooltip.effectiveVolume", String.format("%,d",volume)));
         }
+    }
+
+    protected void addExtraVolumeModifierInfo(List<ITextComponent> text) {
+        // nothing, override in subclasses
     }
 
     /**

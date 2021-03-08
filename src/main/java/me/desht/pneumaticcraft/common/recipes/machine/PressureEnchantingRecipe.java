@@ -13,6 +13,7 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -57,7 +58,8 @@ public class PressureEnchantingRecipe extends PressureChamberRecipeImpl {
         for (Map.Entry<Enchantment, Integer> entry : bookMap.entrySet()) {
             // if the enchantment is applicable, AND the item doesn't have an existing enchantment of the
             // same type which is equal to or stronger than the book's enchantment level...
-            if (entry.getKey().canApply(enchantable)
+
+            if (enchantable.canApplyAtEnchantingTable(entry.getKey())
                     && EnchantmentHelper.getEnchantmentLevel(entry.getKey(), enchantable) < entry.getValue()) {
                 return true;
             }
@@ -68,7 +70,7 @@ public class PressureEnchantingRecipe extends PressureChamberRecipeImpl {
     @Override
     public NonNullList<ItemStack> craftRecipe(@Nonnull IItemHandler chamberHandler, List<Integer> ingredientSlots, boolean simulate) {
         ItemStack enchantedBook = chamberHandler.getStackInSlot(ingredientSlots.get(0));
-        ItemStack enchantable = chamberHandler.getStackInSlot(ingredientSlots.get(1)).copy();
+        ItemStack enchantable = ItemHandlerHelper.copyStackWithSize(chamberHandler.getStackInSlot(ingredientSlots.get(1)), 1);
 
         Map<Enchantment, Integer> bookEnchantments = EnchantmentHelper.getEnchantments(enchantedBook);
         Set<Enchantment> itemEnchantments = EnchantmentHelper.getEnchantments(enchantable).keySet();

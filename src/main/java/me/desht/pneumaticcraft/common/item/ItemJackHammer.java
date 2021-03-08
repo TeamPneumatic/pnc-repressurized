@@ -394,12 +394,6 @@ public class ItemJackHammer extends ItemPressurizable
     }
 
     @Override
-    public boolean isEnchantable(ItemStack stack) {
-        // not enchantable by normal means; only by adding a silk touch or fortune book via GUI
-        return false;
-    }
-
-    @Override
     public void onShiftScrolled(PlayerEntity player, boolean forward, Hand hand) {
         if (!player.world.isRemote) {
             DigMode newMode = cycleDigMode(player.getHeldItem(hand), forward);
@@ -510,10 +504,13 @@ public class ItemJackHammer extends ItemPressurizable
             this.jackhammerStack = jackhammerStack;
 
             Map<Enchantment, Integer> ench = EnchantmentHelper.getEnchantments(jackhammerStack);
-            if (ench.size() == 1 && (ench.containsKey(Enchantments.SILK_TOUCH) || ench.containsKey(Enchantments.FORTUNE))) {
-                ItemStack book = new ItemStack(Items.ENCHANTED_BOOK);
-                EnchantmentHelper.setEnchantments(ench, book);
-                setStackInSlot(0, book);
+            for (Map.Entry<Enchantment, Integer> map : ench.entrySet()) {
+                if (map.getKey() == Enchantments.SILK_TOUCH || map.getKey() == Enchantments.FORTUNE) {
+                    ItemStack book = new ItemStack(Items.ENCHANTED_BOOK);
+                    EnchantmentHelper.setEnchantments(Collections.singletonMap(map.getKey(), map.getValue()), book);
+                    setStackInSlot(0, book);
+                    break;
+                }
             }
         }
 
@@ -523,12 +520,15 @@ public class ItemJackHammer extends ItemPressurizable
         }
 
         public void save() {
+            // replace any silk touch or fortune enchant, but leave any other enchants untouched
             ItemStack bookStack = getStackInSlot(0);
+            Map<Enchantment, Integer> currentEnchants = EnchantmentHelper.getEnchantments(jackhammerStack);
+            currentEnchants.remove(Enchantments.SILK_TOUCH);
+            currentEnchants.remove(Enchantments.FORTUNE);
             if (validateBook(bookStack)) {
-                EnchantmentHelper.setEnchantments(EnchantmentHelper.getEnchantments(bookStack), jackhammerStack);
-            } else {
-                EnchantmentHelper.setEnchantments(Collections.emptyMap(), jackhammerStack);
+                EnchantmentHelper.getEnchantments(bookStack).forEach(currentEnchants::put);
             }
+            EnchantmentHelper.setEnchantments(currentEnchants, jackhammerStack);
         }
 
         public static boolean validateBook(ItemStack bookStack) {

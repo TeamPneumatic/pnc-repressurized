@@ -215,6 +215,8 @@ dependencies {
     runtimeOnly fg.deobf("curse.maven:mekanism:${mekanism_curse_id}")
     compileOnly fg.deobf("curse.maven:hwyla:${hwyla_curse_id}")
     runtimeOnly fg.deobf("curse.maven:hwyla:${hwyla_curse_id}")
+    compileOnly fg.deobf("curse.maven:cofh_core:${cofh_core_curse_id}")
+    runtimeOnly fg.deobf("curse.maven:cofh_core:${cofh_core_curse_id}")
     compileOnly fg.deobf("appeng:appliedenergistics2:${ae2_version}:api")
     runtimeOnly fg.deobf("appeng:appliedenergistics2:${ae2_version}")
 

@@ -104,6 +104,7 @@ public class PNCConfig {
             public static int ieExternalHeaterRFperTick;
             public static double mekThermalResistanceFactor;
             public static double mekThermalEfficiencyFactor;
+            public static double cofhHoldingMultiplier;
         }
 
         public static class Advanced {

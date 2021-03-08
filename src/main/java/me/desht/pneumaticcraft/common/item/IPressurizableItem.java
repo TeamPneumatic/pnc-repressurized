@@ -25,7 +25,8 @@ public interface IPressurizableItem {
 
     default int getUpgradedVolume(ItemStack stack) {
         int nUpgrades = UpgradableItemUtils.getUpgrades(stack, EnumUpgrade.VOLUME);
-        return ApplicableUpgradesDB.getInstance().getUpgradedVolume(getBaseVolume(), nUpgrades);
+        int vol0 = ApplicableUpgradesDB.getInstance().getUpgradedVolume(getBaseVolume(), nUpgrades);
+        return ItemRegistry.getInstance().getUpgradedVolume(stack, vol0);
     }
 
     default float getPressure(ItemStack stack) {

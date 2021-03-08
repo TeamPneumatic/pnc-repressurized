@@ -23,6 +23,7 @@ public enum ItemRegistry implements IItemRegistry {
     public final List<IInventoryItem> inventoryItems = new ArrayList<>();
     private final Map<EnumUpgrade, List<IUpgradeAcceptor>> upgradeToAcceptors = new EnumMap<>(EnumUpgrade.class);
     private final List<IMagnetSuppressor> magnetSuppressors = new ArrayList<>();
+    private final List<ItemVolumeModifier> volumeModifiers = new ArrayList<>();
 
     public static ItemRegistry getInstance() {
         return INSTANCE;
@@ -68,6 +69,11 @@ public enum ItemRegistry implements IItemRegistry {
         return PneumaticCraftUtils.doesItemMatchFilter(filterStack, stack, checkDurability, checkNBT, checkModSimilarity);
     }
 
+    @Override
+    public void registerPneumaticVolumeModifier(ItemVolumeModifier modifierFunc) {
+        volumeModifiers.add(modifierFunc);
+    }
+
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean shouldSuppressMagnet(Entity e) {
         return magnetSuppressors.stream().anyMatch(s -> s.shouldSuppressMagnet(e));
@@ -102,5 +108,12 @@ public enum ItemRegistry implements IItemRegistry {
             }
         }
         return items;
+    }
+
+    public int getUpgradedVolume(ItemStack stack, int baseVolume) {
+        for (ItemVolumeModifier modifier : volumeModifiers) {
+            baseVolume = modifier.getNewVolume(stack, baseVolume);
+        }
+        return baseVolume;
     }
 }

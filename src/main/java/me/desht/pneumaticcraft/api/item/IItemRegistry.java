@@ -62,4 +62,11 @@ public interface IItemRegistry {
      * @return true if the item passes the filter test, false otherwise
      */
     boolean doesItemMatchFilter(@Nonnull ItemStack filterStack, @Nonnull ItemStack stack, boolean checkDurability, boolean checkNBT, boolean checkModSimilarity);
+
+    /**
+     * Register a handler to calculate the effective volume of a pneumatic item (i.e. one that hold air/pressure).
+     *
+     * @param modifierFunc a volume modifier function
+     */
+    void registerPneumaticVolumeModifier(ItemVolumeModifier modifierFunc);
 }
