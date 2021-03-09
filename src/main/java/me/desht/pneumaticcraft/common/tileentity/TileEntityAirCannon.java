@@ -61,6 +61,9 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class TileEntityAirCannon extends TileEntityPneumaticBase
         implements IMinWorkingPressure, IRedstoneControl<TileEntityAirCannon>, IGUIButtonSensitive, INamedContainerProvider {
 
+    private static final String FP_NAME = "[Air Cannon]";
+    private static final UUID FP_UUID = UUID.nameUUIDFromBytes(FP_NAME.getBytes());
+
     private static final List<RedstoneMode<TileEntityAirCannon>> REDSTONE_MODES = ImmutableList.of(
             new ReceivingRedstoneMode<>("airCannon.highSignalAndAngle", Textures.GUI_HIGH_SIGNAL_ANGLE,
                     te -> te.getCurrentRedstonePower() > 0 && te.doneTurning),
@@ -631,7 +634,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
 
     private PlayerEntity getFakePlayer() {
         if (fakePlayer == null) {
-            fakePlayer = FakePlayerFactory.get((ServerWorld) getWorld(), new GameProfile(null, "[Air Cannon]"));
+            fakePlayer = FakePlayerFactory.get((ServerWorld) getWorld(), new GameProfile(FP_UUID, FP_NAME));
             fakePlayer.connection = new FakeNetHandlerPlayerServer(ServerLifecycleHooks.getCurrentServer(), fakePlayer);
             fakePlayer.setPosition(getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5);
         }
