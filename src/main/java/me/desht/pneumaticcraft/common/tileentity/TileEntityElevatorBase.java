@@ -34,7 +34,6 @@ import net.minecraft.nbt.ListNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.IFormattableTextComponent;
@@ -61,41 +60,41 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
 
     private static final float BUTTON_HEIGHT = 0.06F;
     private static final float BUTTON_SPACING = 0.02F;
-
     private static final byte RS_REDSTONE_MODE = 0;
     private static final byte RS_CALLER_MODE = 1;
 
-    public float oldExtension;
     @DescSynced
     @LazySynced
     public float extension;
     @DescSynced
     private float targetExtension;
     @DescSynced
-    float syncedSpeedMult;
+    float syncedSpeedMult;  // speed multiplier, calculated on server, sync'd to client
+    @DescSynced
+    public int multiElevatorCount;  // number of elevator columns in the multiblock
+    @GuiSynced
+    private final RedstoneController<TileEntityElevatorBase> rsController = new RedstoneController<>(this, REDSTONE_LABELS);
+    @GuiSynced
+    private int maxFloorHeight;
+    @DescSynced
+    private int chargingUpgrades; // needs to be sync'd since it affects elevator descent rate
+
+    public float oldExtension;
     private boolean isStopped = true;
     // top elevator of the vertical stack (not to be confused with multiElevators, which is horizontal connections
     private TileEntityElevatorBase coreElevator;
     // horizontally-connected multiblock; will always be non-null after init, even when only one elevator
     private List<TileEntityElevatorBase> multiElevators;
-    @DescSynced
-    public int multiElevatorCount;
-    @GuiSynced
-    private final RedstoneController<TileEntityElevatorBase> rsController = new RedstoneController<>(this, REDSTONE_LABELS);
-    public int[] floorHeights = new int[0]; //list of every floor of Elevator Callers.
+    public int[] floorHeights = new int[0]; // list of every floor of Elevator Callers.
     private HashMap<Integer, String> floorNames = new HashMap<>();
-    @GuiSynced
-    private int maxFloorHeight;
-    @DescSynced
-    private int chargingUpgrades; // needs to be sync'd since it affects elevator descent rate
     private int redstoneInputLevel; // current redstone input level
     private BlockState camoState;
     private BlockState prevCamoState;
-    public float[] fakeFloorTextureUV;
-
+    public int ticksRunning;  // ticks since elevator started moving (0 = stopped)
     private final List<Integer> floorList = new ArrayList<>();
     private final List<BlockPos> callerList = new ArrayList<>();
     private long lastFloorUpdate = 0L;
+    public float[] fakeFloorTextureUV;
     public int lightAbove;
 
     public TileEntityElevatorBase() {
@@ -113,11 +112,6 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
             return;
         }
 
-        if (world.isRemote && (world.getGameTime() & 0xf) == 0) {
-            // kludge to prevent elevator TER rendering unlit sometimes
-            lightAbove = ClientUtils.getLightAt(pos.up());
-        }
-
         float speedMultiplier;
         if (!getWorld().isRemote) {
             if (isControlledByRedstone()) {
@@ -130,69 +124,62 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
                 fakeFloorTextureUV = ClientUtils.getTextureUV(camoState, Direction.UP);
                 prevCamoState = camoState;
             }
+            if ((getWorld().getGameTime() & 0xf) == 0) {
+                // kludge to prevent elevator TER rendering unlit sometimes
+                lightAbove = ClientUtils.getLightAt(pos.up());
+            }
         }
 
-        SoundEvent soundName = null;
         if (extension < targetExtension) {
             if (!getWorld().isRemote && getPressure() < PneumaticValues.MIN_PRESSURE_ELEVATOR) {
                 targetExtension = extension;
-                sendDescriptionPacket(256D);
             }
-
             float moveBy = extension < targetExtension - TileEntityConstants.ELEVATOR_SLOW_EXTENSION ?
                     TileEntityConstants.ELEVATOR_SPEED_FAST * speedMultiplier :
                     TileEntityConstants.ELEVATOR_SPEED_SLOW * speedMultiplier;
-
-            if (extension + moveBy > targetExtension) {
-                extension = targetExtension;
-            }
-
-            if (isStopped) {
-                soundName = ModSounds.ELEVATOR_RISING_START.get();
-                isStopped = false;
-                if (!getWorld().isRemote && shouldPlaySounds()) {
-                    NetworkHandler.sendToAllTracking(new PacketPlayMovingSound(MovingSounds.Sound.ELEVATOR, getCoreElevator()), this);
-                }
-            }
-            float startingExtension = extension;
-
-            while (extension < startingExtension + moveBy) {
-                extension += TileEntityConstants.ELEVATOR_SPEED_SLOW;
-            }
-            // substract the ascended distance from the air reservoir.
+            extension = Math.min(targetExtension, extension + moveBy);
             addAir((int) ((oldExtension - extension) * PneumaticValues.USAGE_ELEVATOR * (getSpeedUsageMultiplierFromUpgrades() / speedMultiplier)));
-        }
-        if (extension > targetExtension) {
+        } else if (extension > targetExtension) {
             float chargingSlowdown = 1.0f - chargingUpgrades * 0.1f;
-            if (extension > targetExtension + TileEntityConstants.ELEVATOR_SLOW_EXTENSION) {
-                extension -= TileEntityConstants.ELEVATOR_SPEED_FAST * speedMultiplier * chargingSlowdown;
-            } else {
-                extension -= TileEntityConstants.ELEVATOR_SPEED_SLOW * speedMultiplier * chargingSlowdown;
-            }
-            if (extension < targetExtension) {
-                extension = targetExtension;
-            }
-            if (isStopped) {
-                soundName = ModSounds.ELEVATOR_RISING_START.get();
-                isStopped = false;
-                if (!world.isRemote && shouldPlaySounds()) {
-                    NetworkHandler.sendToAllTracking(new PacketPlayMovingSound(MovingSounds.Sound.ELEVATOR, getCoreElevator()), this);
-                }
-            }
-            if (!world.isRemote && chargingUpgrades > 0 && getPressure() < dangerPressure - 0.1f) {
+            float moveBy = extension > targetExtension + TileEntityConstants.ELEVATOR_SLOW_EXTENSION ?
+                    TileEntityConstants.ELEVATOR_SPEED_FAST * speedMultiplier * chargingSlowdown:
+                    TileEntityConstants.ELEVATOR_SPEED_SLOW * speedMultiplier * chargingSlowdown;
+            extension = Math.max(targetExtension, extension - moveBy);
+            if (!getWorld().isRemote && chargingUpgrades > 0 && getPressure() < dangerPressure - 0.1f) {
                 float mul = 0.15f * Math.min(4, chargingUpgrades);
                 addAir((int) ((oldExtension - extension) * PneumaticValues.USAGE_ELEVATOR * mul * (getSpeedUsageMultiplierFromUpgrades() / speedMultiplier)));
             }
         }
-        if (oldExtension == extension && !isStopped) {
-            soundName = ModSounds.ELEVATOR_RISING_STOP.get();
-            isStopped = true;
-            if (!world.isRemote) updateFloors(false);
-        }
 
-        if (soundName != null && getWorld().isRemote && shouldPlaySounds()) {
-            getWorld().playSound(getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5, soundName, SoundCategory.BLOCKS, (float) PNCConfig.Client.Sound.elevatorVolumeStartStop, 1.0F, true);
+        if (PneumaticCraftUtils.epsilonEquals(oldExtension, extension) && !isStopped) {
+            // just arrived
+            isStopped = true;
+            ticksRunning = 0;
+            playStopStartSound();
+            if (!getWorld().isRemote) updateFloors(false);
+        } else if (!PneumaticCraftUtils.epsilonEquals(oldExtension, extension) && isStopped) {
+            // just departed
+            isStopped = false;
+            playStopStartSound();
         }
+        if (!isStopped) ticksRunning++;
+    }
+
+    private void playStopStartSound() {
+        if (shouldPlaySounds()) {
+            if (getWorld().isRemote()) {
+                getWorld().playSound(getPos().getX() + 0.5, getPos().getY() + extension, getPos().getZ() + 0.5,
+                        isStopped ? ModSounds.ELEVATOR_RISING_STOP.get() : ModSounds.ELEVATOR_RISING_START.get(),
+                        SoundCategory.BLOCKS, (float) PNCConfig.Client.Sound.elevatorVolumeStartStop, 1.0F, true);
+            } else if (!isStopped) {
+                NetworkHandler.sendToAllTracking(new PacketPlayMovingSound(MovingSounds.Sound.ELEVATOR, getCoreElevator()), this);
+            }
+        }
+    }
+
+    private boolean shouldPlaySounds() {
+        return !(getCachedNeighbor(Direction.EAST) instanceof TileEntityElevatorBase)
+                && !(getCachedNeighbor(Direction.SOUTH) instanceof TileEntityElevatorBase);
     }
 
     @Override
@@ -200,13 +187,12 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
         super.onUpgradesChanged();
 
         if (!world.isRemote) {
-            chargingUpgrades = getUpgrades(EnumUpgrade.CHARGING);
+            chargingUpgrades = getUpgrades(EnumUpgrade.CHARGING);  // will sync to client
         }
     }
 
-    private boolean shouldPlaySounds() {
-        return !(getCachedNeighbor(Direction.EAST) instanceof TileEntityElevatorBase)
-                && !(getCachedNeighbor(Direction.SOUTH) instanceof TileEntityElevatorBase);
+    public boolean isStopped() {
+        return isStopped;
     }
 
     private void handleRedstoneControl() {

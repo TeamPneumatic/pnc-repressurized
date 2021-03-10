@@ -15,6 +15,7 @@ import net.minecraft.util.math.vector.Matrix4f;
 
 public class RenderElevatorBase extends AbstractTileModelRenderer<TileEntityElevatorBase> {
     private static final float FACTOR = 9F / 16;
+    private static final float[] SHADE = new float[] { 1f, 0.85f, 0.7f, 0.55f };
 
     private final ModelRenderer pole1;
     private final ModelRenderer pole2;
@@ -67,7 +68,7 @@ public class RenderElevatorBase extends AbstractTileModelRenderer<TileEntityElev
     protected void renderExtras(TileEntityElevatorBase te, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer iRenderTypeBuffer, int combinedLightIn, int combinedOverlayIn) {
         if (te.fakeFloorTextureUV != null && te.fakeFloorTextureUV.length == 4) {
             matrixStack.push();
-            float extension = te.oldExtension + (te.extension - te.oldExtension) * partialTicks;
+            float extension = MathHelper.lerp(partialTicks, te.oldExtension, te.extension);
             matrixStack.translate(0, extension + 1.0005f, 0);
             IVertexBuilder builder = iRenderTypeBuffer.getBuffer(ModRenderTypes.getTextureRender(AtlasTexture.LOCATION_BLOCKS_TEXTURE));
             float uMin = te.fakeFloorTextureUV[0];
@@ -89,7 +90,7 @@ public class RenderElevatorBase extends AbstractTileModelRenderer<TileEntityElev
         matrixStackIn.translate(0, FACTOR, 0);
         matrixStackIn.scale(1, extension * 16 / 14 / 4, 1);
         matrixStackIn.translate(0, -FACTOR, 0);
-        pole.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn, 1 - idx * 0.15f, 1 - idx * 0.15f, 1 - idx * 0.15f, 1);
+        pole.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn, SHADE[idx], SHADE[idx], SHADE[idx], 1);
         matrixStackIn.pop();
     }
 

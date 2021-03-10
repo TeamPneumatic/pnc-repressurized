@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.client.sound;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorBase;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.audio.TickableSound;
 import net.minecraft.util.SoundCategory;
 
@@ -14,7 +13,7 @@ public class MovingSoundElevator extends TickableSound {
         super(ModSounds.ELEVATOR_RISING.get(), SoundCategory.BLOCKS);
         this.te = te;
         x = te.getPos().getX();
-        y = te.getPos().getY() + te.extension / 2;
+        y = te.getPos().getY() + te.extension;
         z = te.getPos().getZ();
         repeat = true;
         repeatDelay = 0;
@@ -23,11 +22,11 @@ public class MovingSoundElevator extends TickableSound {
 
     @Override
     public void tick() {
-        y = te.getPos().getY() + te.extension / 2;
+        y = te.getPos().getY() + te.extension;
     }
 
     @Override
     public boolean isDonePlaying() {
-        return te.isRemoved() || PneumaticCraftUtils.epsilonEquals(te.extension, te.getTargetExtension());
+        return te.isRemoved() || te.isStopped();
     }
 }

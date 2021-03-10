@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.block.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.BlockItemUseContext;
@@ -102,37 +103,27 @@ public class BlockElevatorFrame extends BlockPneumaticCraft implements IWaterLog
 
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext selectionContext) {
-        return getShapePrivate(state, world, pos, selectionContext, false);
+        return selectionContext.hasItem(this.asItem()) ? MOSTLY_FULL : getCachedShape(state);
     }
 
     @Override
     public VoxelShape getCollisionShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-        return getShapePrivate(state, worldIn, pos, context, true);
+        float blockHeight = getElevatorBlockHeight(worldIn, pos);
+        if (blockHeight > 1f) {
+            return VoxelShapes.fullCube();
+        } else if (blockHeight > 0f) {
+            float minY = Math.max(0f, blockHeight - 0.06125f) * 16f;
+            float maxY = blockHeight * 16f;
+            return VoxelShapes.or(getCachedShape(state), Block.makeCuboidShape(0.001, minY, 0.001, 15.999, maxY, 15.999));
+        } else {
+            return getCachedShape(state);
+        }
     }
 
     @Override
     public BlockRenderType getRenderType(BlockState state) {
         // this avoids a crash when trying to render particles (see ParticleManager#addBlockDestroyEffects)
         return getCachedShape(state).isEmpty() ? BlockRenderType.INVISIBLE : super.getRenderType(state);
-    }
-
-    private VoxelShape getShapePrivate(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext selectionContext, boolean collision) {
-        if (selectionContext.hasItem(this.asItem()) && !collision) {
-            // return a (mostly) full bounding box if holding frames, for ease of placement of frames against frames
-            return MOSTLY_FULL;
-        }
-
-        VoxelShape shape = getCachedShape(state);
-        float blockHeight = getElevatorBlockHeight(world, pos);
-        if (blockHeight > 0f && blockHeight <= 1f) {
-            float minY = Math.max(0f, blockHeight - 0.06125f) * 16f;
-            float maxY = blockHeight * 16f;
-            shape = VoxelShapes.or(shape, Block.makeCuboidShape(0.001, minY, 0.001, 15.999, maxY, 15.999));
-        } else if (blockHeight > 1f) {
-            shape = VoxelShapes.or(shape, Block.makeCuboidShape(5, 0, 5, 11, 16, 11));
-        }
-
-        return shape;
     }
 
     private VoxelShape getCachedShape(BlockState state) {
@@ -167,36 +158,46 @@ public class BlockElevatorFrame extends BlockPneumaticCraft implements IWaterLog
 
     @Override
     public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
-//        TileEntityElevatorBase te = getElevatorBase(world, pos);
-        getElevatorBase(world, pos).ifPresent(te -> {
-            if (te.oldExtension != te.extension && te.getPressure() > te.getMinWorkingPressure()) {
-                if (Math.abs(entity.getPosY() - (te.getPos().getY() + te.extension)) < 2.5) {
-                    AxisAlignedBB box = entity.getBoundingBox();
-                    int x = te.getPos().getX();
-                    int z = te.getPos().getZ();
-                    // nudge the entity onto the platform if they're hanging over by too much
-                    if (box.minX < x - 0.1) {
-                        entity.addVelocity(0.02, 0, 0);
-                    } else if (box.maxX > x + 1.1) {
-                        entity.addVelocity(-0.02, 0, 0);
-                    } else if (box.minZ < z - 0.1) {
-                        entity.addVelocity(0, 0, 0.02);
-                    } else if (box.maxZ > z + 1.1) {
-                        entity.addVelocity(0, 0, -0.02);
+        int x = pos.getX();
+        int z = pos.getZ();
+        if (entity.getPosX() < x || entity.getPosX() >= x + 1 || entity.getPosZ() < z || entity.getPosZ() >= z + 1) {
+            return;
+        }
+
+        getElevatorBase(world, pos).ifPresent(teBase -> {
+            if (!teBase.isStopped() && teBase.getPressure() > teBase.getMinWorkingPressure()) {
+                int y = teBase.getPos().getY();
+                if (entity.getPosY() >= y && entity.getPosY() < y + teBase.extension + 10) {
+                    double eX = entity.getPosX();
+                    double eZ = entity.getPosZ();
+                    if (teBase.ticksRunning < 10) {
+                        // when departing, nudge the entity onto the platform if they're hanging over the edge
+                        AxisAlignedBB box = entity.getBoundingBox();
+                        if (box.minX < x && !(teBase.getCachedNeighbor(Direction.WEST) instanceof TileEntityElevatorBase)
+                                || (box.maxX > x + 1 && !(teBase.getCachedNeighbor(Direction.EAST) instanceof TileEntityElevatorBase))) {
+                            eX = x + 0.5;
+                        }
+                        if (box.minZ < z && !(teBase.getCachedNeighbor(Direction.NORTH) instanceof TileEntityElevatorBase)
+                                || box.maxZ > z + 1 && !(teBase.getCachedNeighbor(Direction.SOUTH) instanceof TileEntityElevatorBase)) {
+                            eZ = z + 0.5;
+                        }
                     }
-                    entity.setPosition(entity.getPosX(), te.getPos().getY() + 1 + te.extension, entity.getPosZ());
+                    entity.setPosition(eX, y + teBase.extension + 1.2, eZ);
+                    if (entity instanceof ServerPlayerEntity) {
+                        // prevents "<player> moved too quickly" problems when the elevator is fast (>= 7 speed upgrades)
+                        ((ServerPlayerEntity) entity).connection.captureCurrentPosition();
+                    }
+                    entity.fallDistance = 0;
                 }
-                entity.fallDistance = 0;
             }
         });
     }
 
     static Optional<TileEntityElevatorBase> getElevatorBase(IBlockReader world, BlockPos pos) {
-        // caching the elevator base in the frame TE - should be safe from a caching point of view,
-        // since if the base (or any frame below us) is broken, all frames above it (including us) will also break
+        // caching the elevator base in the frame TE - this should be safe from a caching point of view,
+        // since if the base (or any frame below us) is broken, all frames above it - including us - will also break
         return PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityElevatorFrame.class)
-                .map(te -> Optional.ofNullable(te.getElevatorBase()))
-                .orElse(Optional.empty());
+                .map(TileEntityElevatorFrame::getElevatorBase);
     }
 
     private float getElevatorBlockHeight(IBlockReader world, BlockPos pos) {
@@ -220,7 +221,7 @@ public class BlockElevatorFrame extends BlockPneumaticCraft implements IWaterLog
 
     @Override
     public boolean allowsMovement(BlockState state, IBlockReader worldIn, BlockPos pos, PathType type) {
-        return true;
+        return getElevatorBlockHeight(worldIn, pos) == 0f;
     }
 
     @Override
