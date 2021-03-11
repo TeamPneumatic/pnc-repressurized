@@ -80,6 +80,8 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
     public TPProblem problem = TPProblem.OK;
     @DescSynced
     private boolean didWork;
+    @GuiSynced
+    private String currentRecipeIdSynced = "";
     private ThermoPlantRecipe currentRecipe;
     private boolean searchForRecipe = true;
 
@@ -114,6 +116,7 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
             ThermoPlantRecipe prevRecipe = currentRecipe;
             if (searchForRecipe) {
                 currentRecipe = findApplicableRecipe();
+                currentRecipeIdSynced = currentRecipe == null ? "" : currentRecipe.getId().toString();
                 searchForRecipe = false;
             }
             if (prevRecipe != currentRecipe) {
@@ -255,8 +258,8 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
             } else {
                 moved = FluidUtil.tryFluidTransfer(outputTank, inputTank, inputTank.getFluidAmount(), true);
             }
-            if (!moved.isEmpty() && player instanceof ServerPlayerEntity) {
-                NetworkHandler.sendToPlayer(new PacketPlaySound(SoundEvents.ITEM_BUCKET_FILL, SoundCategory.BLOCKS, pos, 1f, 1f, false), (ServerPlayerEntity) player);
+            if (!moved.isEmpty()) {
+                NetworkHandler.sendToPlayer(new PacketPlaySound(SoundEvents.ITEM_BUCKET_FILL, SoundCategory.BLOCKS, pos, 1f, 1f, false), player);
             }
         }
     }
@@ -305,6 +308,11 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
     @Override
     public IHeatExchangerLogic getHeatExchanger(Direction dir) {
         return heatExchanger;
+    }
+
+    @Override
+    public String getCurrentRecipeIdSynced() {
+        return currentRecipeIdSynced;
     }
 
     private class ThermopneumaticFluidTankInput extends SmartSyncTank {

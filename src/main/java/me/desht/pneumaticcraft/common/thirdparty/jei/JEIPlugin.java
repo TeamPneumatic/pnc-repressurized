@@ -137,9 +137,9 @@ public class JEIPlugin implements IModPlugin {
     public void registerGuiHandlers(IGuiHandlerRegistration registration) {
         registration.addRecipeClickArea(GuiAssemblyController.class, 110, 10, 50, 50, ModCategoryUid.ASSEMBLY_CONTROLLER);
         registration.addRecipeClickArea(GuiPressureChamber.class, 100, 7, 60, 60, ModCategoryUid.PRESSURE_CHAMBER);
-        registration.addRecipeClickArea(GuiRefineryController.class, 47, 33, 27, 47, ModCategoryUid.REFINERY);
-        registration.addRecipeClickArea(GuiThermopneumaticProcessingPlant.class, 30, 36, 48, 30, ModCategoryUid.THERMO_PLANT);
-        registration.addRecipeClickArea(GuiFluidMixer.class, 50, 40, 47, 24, ModCategoryUid.FLUID_MIXER);
+        CustomRecipeClickArea.add(registration, GuiRefineryController.class, 47, 33, 27, 47, ModCategoryUid.REFINERY);
+        CustomRecipeClickArea.add(registration, GuiThermopneumaticProcessingPlant.class, 30, 36, 48, 30, ModCategoryUid.THERMO_PLANT);
+        CustomRecipeClickArea.add(registration, GuiFluidMixer.class, 50, 40, 47, 24, ModCategoryUid.FLUID_MIXER);
 
         registration.addGlobalGuiHandler(new GuiTabHandler());
 
@@ -154,4 +154,5 @@ public class JEIPlugin implements IModPlugin {
     public ResourceLocation getPluginUid() {
         return RL("default");
     }
+
 }

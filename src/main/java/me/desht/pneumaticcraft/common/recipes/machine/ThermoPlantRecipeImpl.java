@@ -34,7 +34,7 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
     private final ItemStack outputItem;
 
     public ThermoPlantRecipeImpl(
-            ResourceLocation id, @Nonnull FluidIngredient inputFluid, @Nullable Ingredient inputItem,
+            ResourceLocation id, @Nonnull FluidIngredient inputFluid, @Nonnull Ingredient inputItem,
             FluidStack outputFluid, ItemStack outputItem, TemperatureRange operatingTemperature, float requiredPressure,
             float recipeSpeed, boolean exothermic)
     {
@@ -51,9 +51,9 @@ public class ThermoPlantRecipeImpl extends ThermoPlantRecipe {
     }
 
     @Override
-    public boolean matches(FluidStack fluidStack, @Nonnull ItemStack stack) {
-        return (inputFluid == FluidIngredient.EMPTY || inputFluid.testFluid(fluidStack.getFluid()))
-                && (inputItem == Ingredient.EMPTY || inputItem.test(stack));
+    public boolean matches(FluidStack fluidStack, @Nonnull ItemStack itemStack) {
+        return (inputFluid.hasNoMatchingItems() && fluidStack.isEmpty() || inputFluid.testFluid(fluidStack.getFluid()))
+                && (inputItem.hasNoMatchingItems() && itemStack.isEmpty() || inputItem.test(itemStack));
     }
 
     @Override

@@ -62,7 +62,8 @@ public class TileEntityRefineryController extends TileEntityTickableBase
     public int minTemp;
     @GuiSynced
     public int maxTemp;
-
+    @GuiSynced
+    private String currentRecipeIdSynced = "";
     @DescSynced
     private int outputCount;
     @DescSynced
@@ -114,6 +115,7 @@ public class TileEntityRefineryController extends TileEntityTickableBase
             }
             if (searchForRecipe) {
                 currentRecipe = getRecipeFor(inputTank.getFluid());
+                currentRecipeIdSynced = currentRecipe == null ? "" : currentRecipe.getId().toString();
                 operatingTemp = currentRecipe == null ? TemperatureRange.invalid() : currentRecipe.getOperatingTemp();
                 minTemp = operatingTemp.getMin();
                 maxTemp = operatingTemp.getMax();
@@ -281,6 +283,11 @@ public class TileEntityRefineryController extends TileEntityTickableBase
             case 2: return totalPower == 0;
         }
         return false;
+    }
+
+    @Override
+    public String getCurrentRecipeIdSynced() {
+        return currentRecipeIdSynced;
     }
 
     @Override

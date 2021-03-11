@@ -73,6 +73,8 @@ public class TileEntityFluidMixer extends TileEntityPneumaticBase implements
     public boolean didWork;
     @GuiSynced
     private final RedstoneController<TileEntityFluidMixer> rsController = new RedstoneController<>(this);
+    @GuiSynced
+    private String currentRecipeIdSynced = "";
 
     private float airUsed;
     private FluidMixerRecipe currentRecipe = null;
@@ -98,6 +100,7 @@ public class TileEntityFluidMixer extends TileEntityPneumaticBase implements
             didWork = false;
             if (searchRecipes) {
                 currentRecipe = findApplicableRecipe();
+                currentRecipeIdSynced = currentRecipe == null ? "" : currentRecipe.getId().toString();
                 requiredPressure = currentRecipe != null ? currentRecipe.getRequiredPressure() : 0f;
                 maxProgress = currentRecipe != null ? currentRecipe.getProcessingTime() * 100 : 0;
                 searchRecipes = false;
@@ -142,6 +145,11 @@ public class TileEntityFluidMixer extends TileEntityPneumaticBase implements
         super.read(state, tag);
 
         outputInv.deserializeNBT(tag.getCompound("Items"));
+    }
+
+    @Override
+    public String getCurrentRecipeIdSynced() {
+        return currentRecipeIdSynced;
     }
 
     private boolean takeInputIngredients() {

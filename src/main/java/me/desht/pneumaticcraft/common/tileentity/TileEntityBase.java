@@ -565,6 +565,15 @@ public abstract class TileEntityBase extends TileEntity
         this.preserveStateOnBreak = preserveStateOnBreak;
     }
 
+
+    /**
+     * For machines which use recipes, get the synced recipe ID client-side for informational purposes
+     * @return the recipe id (in string form), or the empty string if no current recipe or not applicable
+     */
+    public String getCurrentRecipeIdSynced() {
+        return "";
+    }
+
     /**
      * Called when a machine's upgrades have changed in any way.  This is also called from readNBT() when saved upgrades
      * are deserialized, so it is not guaranteed that the world field is non-null - beware.  If you override this,

@@ -6,16 +6,21 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetTank;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.inventory.ContainerFluidMixer;
+import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityFluidMixer;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fluids.FluidStack;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -92,5 +97,19 @@ public class GuiFluidMixer extends GuiPneumaticContainerBase<ContainerFluidMixer
         if (te.maxProgress == 0) {
             curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.missingIngredients"));
         }
+    }
+
+    @Override
+    public Collection<ItemStack> getTargetItems() {
+        return getCurrentRecipe(PneumaticCraftRecipeType.FLUID_MIXER)
+                .map(recipe -> Collections.singletonList(recipe.getOutputItem()))
+                .orElse(Collections.emptyList());
+    }
+
+    @Override
+    public Collection<FluidStack> getTargetFluids() {
+        return getCurrentRecipe(PneumaticCraftRecipeType.FLUID_MIXER)
+                .map(recipe -> Collections.singletonList(recipe.getOutputFluid()))
+                .orElse(Collections.emptyList());
     }
 }

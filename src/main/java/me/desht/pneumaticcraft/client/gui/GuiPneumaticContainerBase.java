@@ -6,10 +6,12 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.ITickableWidget;
+import me.desht.pneumaticcraft.api.crafting.recipe.PneumaticCraftRecipe;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat.StatIcon;
 import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer2D;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
@@ -17,6 +19,7 @@ import me.desht.pneumaticcraft.common.inventory.ContainerPneumaticBase;
 import me.desht.pneumaticcraft.common.item.ICustomTooltipName;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketGuiButton;
+import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.common.tileentity.*;
 import me.desht.pneumaticcraft.common.tileentity.SideConfigurator.RelativeFace;
@@ -44,6 +47,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.ITextProperties;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.ModList;
 
 import javax.annotation.Nonnull;
@@ -602,5 +606,19 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
      */
     public void onGuiUpdate() {
         // nothing; override in subclasses
+    }
+
+    public Collection<ItemStack> getTargetItems() {
+        return Collections.emptyList();
+    }
+
+    public Collection<FluidStack> getTargetFluids() {
+        return Collections.emptyList();
+    }
+
+    <R extends PneumaticCraftRecipe> Optional<R> getCurrentRecipe(PneumaticCraftRecipeType<R> type) {
+        String id = te.getCurrentRecipeIdSynced();
+        return id.isEmpty() ? Optional.empty() :
+                Optional.ofNullable(type.getRecipe(ClientUtils.getClientWorld(), new ResourceLocation(id)));
     }
 }

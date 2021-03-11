@@ -9,16 +9,20 @@ import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.inventory.ContainerThermopneumaticProcessingPlant;
+import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityThermopneumaticProcessingPlant;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityThermopneumaticProcessingPlant.TPProblem;
 import me.desht.pneumaticcraft.lib.GuiConstants;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fluids.FluidStack;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -126,5 +130,19 @@ public class GuiThermopneumaticProcessingPlant extends
         if (nExposedFaces > 0) {
             curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.exposedFaces", nExposedFaces, 6));
         }
+    }
+
+    @Override
+    public Collection<ItemStack> getTargetItems() {
+        return getCurrentRecipe(PneumaticCraftRecipeType.THERMO_PLANT)
+                .map(thermoPlantRecipe -> Collections.singletonList(thermoPlantRecipe.getOutputItem()))
+                .orElse(Collections.emptyList());
+    }
+
+    @Override
+    public Collection<FluidStack> getTargetFluids() {
+        return getCurrentRecipe(PneumaticCraftRecipeType.THERMO_PLANT)
+                .map(thermoPlantRecipe -> Collections.singletonList(thermoPlantRecipe.getOutputFluid()))
+                .orElse(Collections.emptyList());
     }
 }
