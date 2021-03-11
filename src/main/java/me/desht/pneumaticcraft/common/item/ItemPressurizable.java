@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.common.capabilities.AirHandlerItemStack;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import net.minecraft.enchantment.IVanishable;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -13,8 +14,7 @@ import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
 import javax.annotation.Nullable;
 
-public class ItemPressurizable extends Item implements IPressurizableItem {
-
+public class ItemPressurizable extends Item implements IPressurizableItem, IVanishable {
     private final int volume;
     private final float maxPressure;
 
@@ -72,7 +72,7 @@ public class ItemPressurizable extends Item implements IPressurizableItem {
             items.add(new ItemStack(this));
 
             ItemStack stack = new ItemStack(this);
-            new AirHandlerItemStack(stack, volume, maxPressure).addAir((int) (volume * maxPressure));
+            new AirHandlerItemStack(stack, maxPressure).addAir((int) (volume * maxPressure));
             items.add(stack);
         }
     }
@@ -80,13 +80,8 @@ public class ItemPressurizable extends Item implements IPressurizableItem {
     @Nullable
     @Override
     public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt) {
-        return stack.getItem() instanceof ItemPressurizable ? new AirHandlerItemStack(stack, volume, maxPressure) : super.initCapabilities(stack, nbt);
+        return stack.getItem() instanceof ItemPressurizable ? new AirHandlerItemStack(stack, maxPressure) : super.initCapabilities(stack, nbt);
     }
-
-//    @Override
-//    public float getPressure(ItemStack stack) {
-//        return stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).orElseThrow(RuntimeException::new).getPressure();
-//    }
 
     @Nullable
     @Override
@@ -97,6 +92,16 @@ public class ItemPressurizable extends Item implements IPressurizableItem {
     @Override
     public int getBaseVolume() {
         return volume;
+    }
+
+    @Override
+    public boolean isEnchantable(ItemStack stack) {
+        return true;
+    }
+
+    @Override
+    public int getItemEnchantability() {
+        return 9;  // same as iron or compressed iron
     }
 
     /**

@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetKeybindCheckBox;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.JetBootsClientHandler;
+import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -24,7 +25,8 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class JetBootsOptions extends AbstractSliderOptions<JetBootsClientHandler> {
-    private WidgetKeybindCheckBox checkBox;
+    private WidgetKeybindCheckBox checkBoxBuilderMode;
+    private WidgetKeybindCheckBox checkBoxStabilizers;
 
     public JetBootsOptions(IGuiScreen screen, JetBootsClientHandler upgradeHandler) {
         super(screen, upgradeHandler);
@@ -34,10 +36,14 @@ public class JetBootsOptions extends AbstractSliderOptions<JetBootsClientHandler
     public void populateGui(IGuiScreen gui) {
         super.populateGui(gui);
 
-        checkBox = WidgetKeybindCheckBox.getOrCreate(RL("jet_boots.module.builder_mode"), 5, 45, 0xFFFFFFFF,
-                b -> setBuilderMode(b.checked))
+        checkBoxBuilderMode = WidgetKeybindCheckBox.getOrCreate(RL("jet_boots.module.builder_mode"), 5, 45, 0xFFFFFFFF,
+                b -> setFlag(ItemPneumaticArmor.NBT_BUILDER_MODE, JetBootsClientHandler.BUILDER_MODE_LEVEL, (WidgetKeybindCheckBox) b))
                 .withOwnerUpgradeID(getClientUpgradeHandler().getCommonHandler().getID());
-        gui.addWidget(checkBox);
+        gui.addWidget(checkBoxBuilderMode);
+        checkBoxStabilizers = WidgetKeybindCheckBox.getOrCreate(RL("jet_boots.module.flight_stabilizers"), 5, 65, 0xFFFFFFFF,
+                b -> setFlag(ItemPneumaticArmor.NBT_FLIGHT_STABILIZERS, JetBootsClientHandler.STABLIZERS_LEVEL, (WidgetKeybindCheckBox) b))
+                .withOwnerUpgradeID(getClientUpgradeHandler().getCommonHandler().getID());
+        gui.addWidget(checkBoxStabilizers);
 
         gui.addWidget(new WidgetButtonExtended(30, 128, 150, 20,
                 xlate("pneumaticcraft.armor.gui.misc.moveStatScreen"), b -> {
@@ -46,15 +52,20 @@ public class JetBootsOptions extends AbstractSliderOptions<JetBootsClientHandler
         }));
     }
 
-    private void setBuilderMode(boolean enabled) {
+    @Override
+    protected PointXY getSliderPos() {
+        return new PointXY(30, 80);
+    }
+
+    private void setFlag(String flagName, int minTier, WidgetKeybindCheckBox cb) {
         CommonArmorHandler commonArmorHandler = CommonArmorHandler.getHandlerForPlayer();
-        if (commonArmorHandler.getUpgradeCount(EquipmentSlotType.FEET, EnumUpgrade.JET_BOOTS) >= JetBootsClientHandler.BUILDER_MODE_LEVEL) {
+        if (commonArmorHandler.getUpgradeCount(EquipmentSlotType.FEET, EnumUpgrade.JET_BOOTS) >= minTier) {
             CompoundNBT tag = new CompoundNBT();
-            tag.putBoolean(ItemPneumaticArmor.NBT_BUILDER_MODE, enabled);
+            tag.putBoolean(flagName, cb.checked);
             NetworkHandler.sendToServer(new PacketUpdateArmorExtraData(EquipmentSlotType.FEET, tag));
-            CommonArmorHandler.getHandlerForPlayer().onDataFieldUpdated(ItemPneumaticArmor.NBT_BUILDER_MODE, tag.get(ItemPneumaticArmor.NBT_BUILDER_MODE));
-            ResourceLocation id = getClientUpgradeHandler().getCommonHandler().getID();
-            HUDHandler.getInstance().addFeatureToggleMessage(ArmorUpgradeRegistry.getStringKey(id), ArmorUpgradeRegistry.getStringKey(checkBox.getUpgradeId()), enabled);
+            CommonArmorHandler.getHandlerForPlayer().onDataFieldUpdated(flagName, tag.get(flagName));
+            ResourceLocation ownerId = getClientUpgradeHandler().getCommonHandler().getID();
+            HUDHandler.getInstance().addFeatureToggleMessage(ArmorUpgradeRegistry.getStringKey(ownerId), ArmorUpgradeRegistry.getStringKey(cb.getUpgradeId()), cb.checked);
         }
     }
 
@@ -63,7 +74,8 @@ public class JetBootsOptions extends AbstractSliderOptions<JetBootsClientHandler
         super.tick();
 
         CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer();
-        checkBox.active = handler.getUpgradeCount(EquipmentSlotType.FEET, EnumUpgrade.JET_BOOTS) >= JetBootsClientHandler.BUILDER_MODE_LEVEL;
+        checkBoxBuilderMode.active = handler.getUpgradeCount(EquipmentSlotType.FEET, EnumUpgrade.JET_BOOTS) >= JetBootsClientHandler.BUILDER_MODE_LEVEL;
+        checkBoxStabilizers.active = handler.getUpgradeCount(EquipmentSlotType.FEET, EnumUpgrade.JET_BOOTS) >= JetBootsClientHandler.STABLIZERS_LEVEL;
     }
 
 

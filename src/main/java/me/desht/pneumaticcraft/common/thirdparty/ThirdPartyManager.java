@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.thirdparty;
 
 import me.desht.pneumaticcraft.common.config.subconfig.ThirdPartyConfig;
 import me.desht.pneumaticcraft.common.thirdparty.botania.Botania;
+import me.desht.pneumaticcraft.common.thirdparty.cofhcore.CoFHCore;
 import me.desht.pneumaticcraft.common.thirdparty.computercraft.ComputerCraft;
 import me.desht.pneumaticcraft.common.thirdparty.curios.Curios;
 import me.desht.pneumaticcraft.common.thirdparty.immersiveengineering.ImmersiveEngineering;
@@ -51,6 +52,7 @@ public enum ThirdPartyManager {
             thirdPartyClasses.put(ModIds.IMMERSIVE_ENGINEERING, () -> new ImmersiveEngineering());
             thirdPartyClasses.put(ModIds.MEKANISM, () -> new Mekanism());
             thirdPartyClasses.put(ModIds.AE2, () -> IMPLICIT_INIT);
+            thirdPartyClasses.put(ModIds.COFH_CORE, () -> new CoFHCore());
 
             // these were supported in 1.12.2 and may or may not come back...
 

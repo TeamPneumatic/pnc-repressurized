@@ -21,6 +21,7 @@ import me.desht.pneumaticcraft.common.item.ItemMachineUpgrade;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.network.*;
+import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.*;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
@@ -108,6 +109,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
     private float speedBoostMult;
     private boolean jetBootsBuilderMode;
     private float jetBootsPower;
+    private boolean flightStabilizers;
 
     private CommonArmorHandler(PlayerEntity player) {
         this.player = player;
@@ -600,6 +602,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
                 break;
             case FEET:
                 jetBootsBuilderMode = ItemPneumaticArmor.getBooleanData(armorStack, ItemPneumaticArmor.NBT_BUILDER_MODE, false);
+                flightStabilizers = ItemPneumaticArmor.getBooleanData(armorStack, ItemPneumaticArmor.NBT_FLIGHT_STABILIZERS, false);
                 jetBootsPower = ItemPneumaticArmor.getIntData(armorStack, ItemPneumaticArmor.NBT_JET_BOOTS_POWER, 100, 0, 100) / 100f;
                 JetBootsStateTracker.getTracker(player).setJetBootsState(player, isJetBootsEnabled(), isJetBootsActive(), jetBootsBuilderMode);
                 break;
@@ -730,6 +733,14 @@ public class CommonArmorHandler implements ICommonArmorHandler {
     public void setJetBootsActive(boolean jetBootsActive) {
         if (!jetBootsActive) {
             jetBootsActiveTicks = 0;
+            if (flightStabilizers && this.jetBootsActive && !this.jetBootsBuilderMode) {
+                if (!player.world.isRemote) {
+                    double l = Math.pow(player.getMotion().length(), 1.65);
+                    addAir(EquipmentSlotType.FEET, (int) (l * - 50));
+                    NetworkHandler.sendToAllTracking(new PacketSpawnParticle(AirParticleData.DENSE, player.getPosX(), player.getPosY(), player.getPosZ(), 0, 0, 0, (int)(l * 2), 0, 0, 0), player.world, player.getPosition());
+                }
+                player.setMotion(Vector3d.ZERO);
+            }
         }
         this.jetBootsActive = jetBootsActive;
         this.player.setForcedPose(jetBootsActive && !jetBootsBuilderMode ? Pose.FALL_FLYING : null);
@@ -802,6 +813,9 @@ public class CommonArmorHandler implements ICommonArmorHandler {
                 break;
             case ItemPneumaticArmor.NBT_JET_BOOTS_POWER:
                 jetBootsPower = MathHelper.clamp(((IntNBT) dataTag).getInt() / 100f, 0f, 1f);
+                break;
+            case ItemPneumaticArmor.NBT_FLIGHT_STABILIZERS:
+                flightStabilizers = ((ByteNBT) dataTag).getByte() == 1;
                 break;
         }
     }

@@ -1,9 +1,11 @@
 package me.desht.pneumaticcraft.common.thirdparty.mekanism;
 
 import me.desht.pneumaticcraft.common.config.PNCConfig;
+import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
 import me.desht.pneumaticcraft.lib.ModIds;
 import me.desht.pneumaticcraft.lib.Names;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -13,11 +15,9 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
 @Mod.EventBusSubscriber(modid = Names.MOD_ID)
 public class Mekanism implements IThirdParty {
-    public static boolean available = false;
-
     @Override
-    public void preInit() {
-        available = true;
+    public void init() {
+        MekanismIntegration.mekSetup();
     }
 
     @SubscribeEvent
@@ -28,6 +28,18 @@ public class Mekanism implements IThirdParty {
             }
             if (event.getObject().getType().getRegistryName().getNamespace().equals(ModIds.MEKANISM)) {
                 event.addCapability(RL("mek2pnc_heat_adapter"), new Mek2PNCHeatProvider(event.getObject()));
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void attachRadiationShield(AttachCapabilitiesEvent<ItemStack> event) {
+        if (MekanismIntegration.CAPABILITY_RADIATION_SHIELDING != null) {
+            if (event.getObject().getItem() instanceof ItemPneumaticArmor) {
+                event.addCapability(RL("mek_rad_shielding"),
+                        new MekRadShieldProvider(event.getObject(),
+                                ((ItemPneumaticArmor) event.getObject().getItem()).getEquipmentSlot())
+                );
             }
         }
     }

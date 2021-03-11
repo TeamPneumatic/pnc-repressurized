@@ -16,17 +16,22 @@
     {
       "type": "spotlight",
       "item": "pneumaticcraft:jet_boots_upgrade_1",
-      "text": "If you've ever wanted to soar through the air without a care in the world (except how much pressure you have left), the $(l:base_concepts/upgrades#jet_boots_1)Jet Boots Upgrade/$ is for you.  There are 5 tiers of Jet Boots Upgrade for progressively faster flight, and greater air usage.$(p)"
+      "text": "If you've ever wanted to soar through the air without a care in the world (except how much pressure you have left), the $(l:base_concepts/upgrades#jet_boots_1)Jet Boots Upgrade/$ is for you.  There are 5 tiers of Jet Boots Upgrade for progressively faster flight, and greater air usage."
     },
     {
       "type": "text",
       "title": "Jet Boots (cont.)",
-      "text": "The $(thing)Jet Boots/$ are a $(bold)heavy/$ user of air; it's strongly recommended to add multiple $(l:base_concepts/upgrades#volume)Volume Upgrades/$ to your boots (and $(l:armor/pneumatic_chestplate)chestplate/$, with $(l:base_concepts/upgrades#charging)Charging Upgrades/$).$(p)Use of an $(l:machines/aerial_interface)Aerial Interface/$ is also advised when possible, along with a good charging infrastructure at your base."
+      "text": "When the upgrade is active, simply hold the $(k:key.jump) key to thrust in the direction you're looking.$(p)$(thing)Jet Boots/$ are a $(bold)heavy/$ user of air; it's strongly recommended to add multiple $(l:base_concepts/upgrades#volume)Volume Upgrades/$ to your boots (and $(l:armor/pneumatic_chestplate)chestplate/$, with $(l:base_concepts/upgrades#charging)Charging Upgrades/$).$(p)Use of an $(l:machines/aerial_interface)Aerial Interface/$ is also advised when possible, along with a good charging infrastructure at your base."
     },
     {
       "type": "text",
       "title": "Jet Boots (cont.)",
-      "text": "$(l:base_concepts/upgrades#jet_boots_3)Jet Boots Upgrades: Tier III/$ or better, you will also have access to $(thing)Builder Mode/$, which allows for more creative-style (but slower) flight control and improved airborne digging speed. This can be toggled on & off via the armor GUI (and bound to a toggle key)."
+      "text": "With $(l:base_concepts/upgrades#jet_boots_3)Jet Boots Upgrades: Tier III/$ or better, you will also have access to $(thing)Builder Mode/$, which allows for more creative-style (but slower) flight control and improved airborne digging speed.$(p)This can be toggled on & off via the armor GUI (and bound to a toggle key)."
+    },
+    {
+      "type": "text",
+      "title": "Jet Boots (cont.)",
+      "text": "With $(l:base_concepts/upgrades#jet_boots_4)Jet Boots Upgrades: Tier IV/$ or better, you also get access to $(thing)Flight Stabilizers/$, which will bring you to an immediate halt when you release the thrust key (at an air cost proportional to the speed you were travelling at).$(p)Like Builder Mode, this too can be toggled on & off via the armor GUI (and bound to a toggle key)."
     },
     {
       "type": "spotlight",

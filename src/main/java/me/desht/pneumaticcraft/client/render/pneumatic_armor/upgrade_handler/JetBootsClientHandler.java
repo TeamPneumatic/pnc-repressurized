@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler;
 
+import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
@@ -27,13 +28,13 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.gen.Heightmap;
 
 import java.util.Collection;
-import java.util.Collections;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleToggleableHandler {
     public static final int BUILDER_MODE_LEVEL = 3;  // tier needed for builder mode
+    public static final int STABLIZERS_LEVEL = 4;  // tier needed for flight stabilizers
 
     private static final String[] HEADINGS = new String[] { "S", "SW", "W", "NW", "N", "NE", "E", "SE" };
 
@@ -146,6 +147,6 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
 
     @Override
     public Collection<ResourceLocation> getSubKeybinds() {
-        return Collections.singletonList(RL("jet_boots.module.builder_mode"));
+        return ImmutableList.of(RL("jet_boots.module.builder_mode"), RL("jet_boots.module.flight_stabilizers"));
     }
 }

@@ -60,6 +60,7 @@ public class CommonConfig {
         ForgeConfigSpec.DoubleValue ieExternalHeaterHeatPerRF;
         ForgeConfigSpec.IntValue ieExternalHeaterRFperTick;
         ForgeConfigSpec.DoubleValue mekThermalResistanceFactor;
+        ForgeConfigSpec.DoubleValue cofhHoldingMultiplier;
     }
     public static class Advanced {
         ForgeConfigSpec.BooleanValue disableKeroseneLampFakeAirBlock;
@@ -508,6 +509,10 @@ public class CommonConfig {
                 .comment("Mekanism <-> PneumaticCraft heat conversion efficiency. Set to 0 to disable Mekanism heat integration entirely. Note that Mekanism and PNC use a similar heat system, but scale things quite differently (Mekanism heaters produces a LOT of heat by PneumaticCraft standards), so conversion efficiency tuning is important for inter-mod balance.")
                 .translation("pneumaticcraft.config.common.integration.mek_thermal_efficiency_factor")
                 .defineInRange("mek_thermal_conversion_efficiency", 0.01, 0.0, 2.0);
+        integration.cofhHoldingMultiplier = builder
+                .comment("Volume boost multiplier for pressurizable items with the CoFH Holding enchantment; air volume is multiplied by (1 + level_of_holding_enchantment) x this value. Set to 0 to disallow pressurizable items by enchanted with the Holding enchantment at all.")
+                .translation("pneumaticcraft.config.common.integration.cofh_holding_multiplier")
+                .defineInRange("cofh_holding_multiplier", 1.0, 0.0, Double.MAX_VALUE);
         builder.pop();
 
         builder.push("Recipes");

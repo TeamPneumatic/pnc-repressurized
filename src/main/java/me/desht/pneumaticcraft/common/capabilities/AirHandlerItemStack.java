@@ -1,11 +1,8 @@
 package me.desht.pneumaticcraft.common.capabilities;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerItem;
 import me.desht.pneumaticcraft.common.item.IPressurizableItem;
-import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
-import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
@@ -22,13 +19,15 @@ public class AirHandlerItemStack implements IAirHandlerItem, ICapabilityProvider
     private final LazyOptional<IAirHandlerItem> holder = LazyOptional.of(() -> this);
 
     private final ItemStack container;
-    private int volume;
+    private final IPressurizableItem pressurizable;
+    private int baseVolume;
     private final float maxPressure;
 
-    public AirHandlerItemStack(ItemStack container, int volume, float maxPressure) {
+    public AirHandlerItemStack(ItemStack container, float maxPressure) {
         Validate.isTrue(container.getItem() instanceof IPressurizableItem, "itemstack " + container + " must be an IPressurizableItem!");
         this.container = container;
-        this.volume = volume;
+        this.pressurizable = (IPressurizableItem) container.getItem();
+        this.baseVolume = pressurizable.getBaseVolume();
         this.maxPressure = maxPressure;
     }
 
@@ -40,12 +39,12 @@ public class AirHandlerItemStack implements IAirHandlerItem, ICapabilityProvider
 
     @Override
     public float getPressure() {
-        return (float) getAir() / getVolume();
+        return pressurizable.getPressure(container);
     }
 
     @Override
     public int getAir() {
-        return container.getItem() instanceof IPressurizableItem ? ((IPressurizableItem) container.getItem()).getAir(container) : 0;
+        return pressurizable.getAir(container);
     }
 
     @Override
@@ -69,18 +68,17 @@ public class AirHandlerItemStack implements IAirHandlerItem, ICapabilityProvider
 
     @Override
     public int getBaseVolume() {
-        return volume;
+        return baseVolume;
     }
 
     @Override
     public void setBaseVolume(int newBaseVolume) {
-        this.volume = newBaseVolume;
+        this.baseVolume = newBaseVolume;
     }
 
     @Override
     public int getVolume() {
-        int nUpgrades = UpgradableItemUtils.getUpgrades(container, EnumUpgrade.VOLUME);
-        return ApplicableUpgradesDB.getInstance().getUpgradedVolume(getBaseVolume(), nUpgrades);
+        return pressurizable.getUpgradedVolume(container);
     }
 
     @Override

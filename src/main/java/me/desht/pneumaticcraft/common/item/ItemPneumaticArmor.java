@@ -95,6 +95,7 @@ public class ItemPneumaticArmor extends ArmorItem implements
     public static final String NBT_SPEED_BOOST = "speedBoost";
     public static final String NBT_BUILDER_MODE = "JetBootsBuilderMode";
     public static final String NBT_JET_BOOTS_POWER = "JetBootsPower";
+    public static final String NBT_FLIGHT_STABILIZERS = "JetBootsStabilizers";
 
     public ItemPneumaticArmor(EquipmentSlotType equipmentSlotIn) {
         super(PNEUMATIC_ARMOR_MATERIAL, equipmentSlotIn, ModItems.defaultProps());
@@ -103,11 +104,7 @@ public class ItemPneumaticArmor extends ArmorItem implements
     @Nullable
     @Override
     public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt) {
-        if (stack.getItem() instanceof ItemPneumaticArmor) {
-            return new AirHandlerItemStack(stack, ARMOR_VOLUMES[getEquipmentSlot().getIndex()], 10F);
-        } else {
-            return super.initCapabilities(stack, nbt);
-        }
+        return new AirHandlerItemStack(stack, 10F);
     }
 
     /**
@@ -137,7 +134,6 @@ public class ItemPneumaticArmor extends ArmorItem implements
     public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlotType slot, String type) {
         String s = slot == EquipmentSlotType.LEGS ? Textures.ARMOR_PNEUMATIC + "_2" : Textures.ARMOR_PNEUMATIC + "_1";
         return type == null ? s + ".png" : s + "_" + type + ".png";
-//        return slot == EquipmentSlotType.LEGS ? Textures.ARMOR_PNEUMATIC + "_2.png" : Textures.ARMOR_PNEUMATIC + "_1.png";
     }
 
     @Override

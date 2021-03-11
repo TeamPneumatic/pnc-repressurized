@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.api.item;
 
+import com.google.common.collect.ImmutableList;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -7,6 +8,7 @@ import net.minecraft.item.Items;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import java.util.List;
 import java.util.Locale;
 
 public enum EnumUpgrade {
@@ -33,24 +35,21 @@ public enum EnumUpgrade {
     JUMPING("jumping", 4),
     FLIPPERS("flippers"),
     STANDBY("standby"),
-    MINIGUN("minigun");
+    MINIGUN("minigun"),
+    RADIATION_SHIELDING("radiation_shielding", 1, "mekanism");
 
     private final String name;
     private final int maxTier;
-    private final String depModId;
+    private final List<String> depModIds;
 
     EnumUpgrade(String name) {
-        this(name, 1,null);
+        this(name, 1);
     }
 
-    EnumUpgrade(String name, int maxTier) {
-        this(name, maxTier, null);
-    }
-
-    EnumUpgrade(String name, int maxTier, String depModId) {
+    EnumUpgrade(String name, int maxTier, String... depModIds) {
         this.name = name;
         this.maxTier = maxTier;
-        this.depModId = depModId;
+        this.depModIds = ImmutableList.copyOf(depModIds);
     }
 
     public String getName() {
@@ -62,13 +61,13 @@ public enum EnumUpgrade {
     }
 
     /**
-     * Check if this upgrade's dependent mod (if any) is loaded.  If this returns false, then
+     * Check if any of this upgrade's dependent mods are loaded.  If this returns false, then
      * {@link #getItem()} will return null.
      *
-     * @return true if this upgrade's dependent mod is loaded, false otherwise
+     * @return true if any of this upgrade's dependent mods are loaded, false otherwise
      */
     public boolean isDepLoaded() {
-        return depModId == null || ModList.get().isLoaded(depModId);
+        return depModIds.isEmpty() || depModIds.stream().anyMatch(modid -> ModList.get().isLoaded(modid));
     }
 
     public Item getItem(int tier) {

@@ -194,6 +194,13 @@
             "anchor": "air_conditioning",
             "recipe": "pneumaticcraft:air_conditioning_upgrade",
             "text": "Creating an Air Conditioning Upgrade"
+        },
+        {
+            "type": "crafting",
+            "flag": "mod:mekanism",
+            "anchor": "radiation_shielding",
+            "recipe": "pneumaticcraft:radiation_shielding_upgrade",
+            "text": "Creating a Radiation Shielding Upgrade"
         }
     ]
 }

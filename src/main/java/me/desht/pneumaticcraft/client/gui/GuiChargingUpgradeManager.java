@@ -4,11 +4,13 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer2D;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.inventory.ContainerChargingStationUpgradeManager;
+import me.desht.pneumaticcraft.common.thirdparty.cofhcore.CoFHCore;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
@@ -22,6 +24,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.glfw.GLFW;
 
@@ -64,9 +67,18 @@ public abstract class GuiChargingUpgradeManager extends GuiPneumaticContainerBas
     @Override
     protected void addPressureStatInfo(List<ITextComponent> pressureStatText) {
         int upgrades = UpgradableItemUtils.getUpgrades(itemStack, EnumUpgrade.VOLUME);
-        int volume = ApplicableUpgradesDB.getInstance().getUpgradedVolume(getDefaultVolume(), upgrades);
+        int volume = itemStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
+                .map(IAirHandler::getVolume).orElse(getDefaultVolume());
         float curPressure = te.chargingItemPressure;
         addPressureInfo(pressureStatText, curPressure, volume, getDefaultVolume(), upgrades);
+    }
+
+    @Override
+    protected void addExtraVolumeModifierInfo(List<ITextComponent> text) {
+        int nHolding = CoFHCore.getHoldingUpgrades(itemStack);
+        if (nHolding > 0) {
+            text.add(new StringTextComponent(GuiConstants.TRIANGLE_RIGHT + " ").append(CoFHCore.holdingEnchantmentName(nHolding)));
+        }
     }
 
     @Override

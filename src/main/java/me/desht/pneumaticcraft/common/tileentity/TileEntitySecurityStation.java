@@ -615,7 +615,8 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
 
     private static boolean isPlayerExempt(PlayerEntity player) {
         // can player ignore security stations entirely? server ops and creative mode players
-        return player.isCreative() || player.getCommandSource().hasPermissionLevel(2);
+        // note : player.getCommandSource() will throw NPE if player is a fakeplayer with a null id
+        return player.isCreative() || (player.getGameProfile().getId() != null && player.getCommandSource().hasPermissionLevel(2));
     }
 
     private class SecurityStationHandler extends BaseItemStackHandler {

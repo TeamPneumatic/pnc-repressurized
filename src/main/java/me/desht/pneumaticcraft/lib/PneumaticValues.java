@@ -79,6 +79,9 @@ public class PneumaticValues {
     public static final int USAGE_LOGISTICS_CONFIGURATOR = 50;//mL per usage.
     public static final int USAGE_CAMO_APPLICATOR = 50;//mL per usage.
     public static final int USAGE_PROGRAMMABLE_CONTROLLER = 10;//mL per tick when not idling
+    public static final int USAGE_PROGRAMMABLE_CONTROLLER_CHUNKLOAD_SELF = 10;//mL per tick to load its own chunk
+    public static final int USAGE_PROGRAMMABLE_CONTROLLER_CHUNKLOAD_WORK = 10;//mL per tick to load the work area chunk
+    public static final int USAGE_PROGRAMMABLE_CONTROLLER_CHUNKLOAD_WORK3 = 30;//mL per tick to load 3x3 chunks around the work area
     public static final int USAGE_ITEM_MINIGUN = 20;//mL per tick while firing
     public static final int USAGE_ITEM_MANOMETER = 30;//mL per usage
     public static final int USAGE_JACKHAMMER = 50; // mL per block broken

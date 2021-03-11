@@ -11,6 +11,7 @@ public class ModIds {
     public static final String PATCHOULI = "patchouli";
     public static final String MEKANISM = "mekanism";
     public static final String CURIOS = "curios";
+    public static final String COFH_CORE = "cofh_core";
     public static final String WAILA = "waila";
 
     // the mods we have integrated with in the past but not in 1.16
@@ -21,7 +22,6 @@ public class ModIds {
 //    public static final String THAUMCRAFT = "thaumcraft";
 //    public static final String FORESTRY = "forestry";
 //    public static final String OPEN_BLOCKS = "openblocks";
-//    public static final String COFH_CORE = "cofhcore";
 //    public static final String OPEN_COMPUTERS = "opencomputers";
 //    public static final String EIO = "enderio";
 //    public static final String IMMERSIVE_PETROLEUM = "immersivepetroleum";

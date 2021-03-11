@@ -6,6 +6,7 @@ import net.minecraft.entity.item.ExperienceOrbEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.util.FakePlayer;
@@ -54,5 +55,10 @@ public class DroneFakePlayer extends FakePlayer {
     @Override
     public Vector3d getPositionVec() {
         return drone.getDronePos();
+    }
+
+    @Override
+    public BlockPos getPosition() {
+        return new BlockPos(drone.getDronePos());
     }
 }

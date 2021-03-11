@@ -15,6 +15,7 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModRecipes;
 import me.desht.pneumaticcraft.common.recipes.FluidTagPresentCondition;
 import me.desht.pneumaticcraft.datagen.recipe.*;
+import me.desht.pneumaticcraft.lib.ModIds;
 import net.minecraft.block.Blocks;
 import net.minecraft.data.*;
 import net.minecraft.fluid.Fluids;
@@ -1050,6 +1051,18 @@ public class ModRecipeProvider extends RecipeProvider {
                 'P', Blocks.PISTON,
                 'C', ModItems.PNEUMATIC_CYLINDER.get()
         ).build(consumer);
+
+        Item mekRadShield = ForgeRegistries.ITEMS.getValue(new ResourceLocation("mekanism:module_radiation_shielding_unit"));
+        ConditionalRecipe.builder()
+                .addCondition(new ModLoadedCondition(ModIds.MEKANISM))
+                .addRecipe(
+                        shaped(EnumUpgrade.RADIATION_SHIELDING.getItem(), ModItems.PRINTED_CIRCUIT_BOARD.get(),
+                                "LIL/IRI/LIL",
+                                'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON,
+                                'L', PneumaticCraftTags.Items.UPGRADE_COMPONENTS,
+                                'R', mekRadShield)
+                                ::build)
+                .build(consumer, RL("radiation_shield_mekanism"));
 
         // bricks etc.
         shaped(ModBlocks.REINFORCED_STONE.get(), 8, ModItems.COMPRESSED_IRON_INGOT.get(),

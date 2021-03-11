@@ -111,6 +111,7 @@ public class ConfigHelper {
         PNCConfig.Common.Integration.ieExternalHeaterRFperTick = common.integration.ieExternalHeaterRFperTick.get();
         PNCConfig.Common.Integration.mekThermalResistanceFactor = common.integration.mekThermalResistanceFactor.get();
         PNCConfig.Common.Integration.mekThermalEfficiencyFactor = common.integration.mekThermalEfficiencyFactor.get();
+        PNCConfig.Common.Integration.cofhHoldingMultiplier = common.integration.cofhHoldingMultiplier.get();
 
         PNCConfig.Common.Advanced.disableKeroseneLampFakeAirBlock = common.advanced.disableKeroseneLampFakeAirBlock.get();
         PNCConfig.Common.Advanced.fluidTankUpdateRate = common.advanced.fluidTankUpdateRate.get();

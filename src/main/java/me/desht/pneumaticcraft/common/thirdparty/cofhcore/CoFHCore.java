@@ -1,13 +1,55 @@
 package me.desht.pneumaticcraft.common.thirdparty.cofhcore;
 
+import me.desht.pneumaticcraft.api.PneumaticRegistry;
+import me.desht.pneumaticcraft.common.item.IPressurizableItem;
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
 import me.desht.pneumaticcraft.lib.Names;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.registries.ForgeRegistries;
 
-@Mod.EventBusSubscriber(modid=Names.MOD_ID)
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+
 public class CoFHCore implements IThirdParty {
+    static Enchantment holdingEnchantment = null;
+
     @Override
     public void init() {
-        // fuel registration now all done by conditional recipes in ModRecipeProvider
+        // note: fuel registration is now by datapack: all done by conditional recipes in ModRecipeProvider
+
+        // holding enchantment adds another volume multiplier
+        holdingEnchantment = ForgeRegistries.ENCHANTMENTS.getValue(new ResourceLocation("cofh_core", "holding"));
+        if (holdingEnchantment != null) {
+            PneumaticRegistry.getInstance().getItemRegistry().registerPneumaticVolumeModifier(
+                    (stack, oldVolume) -> oldVolume * (1 + EnchantmentHelper.getEnchantmentLevel(holdingEnchantment, stack))
+            );
+        }
+    }
+
+    public static int getHoldingUpgrades(ItemStack stack) {
+        return holdingEnchantment == null ? 0 : EnchantmentHelper.getEnchantmentLevel(holdingEnchantment, stack);
+    }
+
+    public static ITextComponent holdingEnchantmentName(int level) {
+        return holdingEnchantment == null ? StringTextComponent.EMPTY : holdingEnchantment.getDisplayName(level);
+    }
+
+    @Mod.EventBusSubscriber(modid = Names.MOD_ID)
+    public static class Listener {
+        @SubscribeEvent
+        public static void attachCap(AttachCapabilitiesEvent<ItemStack> event) {
+            // potentially allow any pressurizable items to take the CoFH holding enchantment
+            if (holdingEnchantment != null && HoldingEnchantableProvider.CAPABILITY_ENCHANTABLE_ITEM != null
+                    && event.getObject().getItem() instanceof IPressurizableItem) {
+                event.addCapability(RL("cofh_enchantable"), new HoldingEnchantableProvider());
+            }
+        }
     }
 }

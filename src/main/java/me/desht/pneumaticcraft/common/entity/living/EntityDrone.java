@@ -33,6 +33,7 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketShowWireframe;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetGoToLocation;
+import me.desht.pneumaticcraft.common.thirdparty.RadiationSourceCheck;
 import me.desht.pneumaticcraft.common.tileentity.PneumaticEnergyStorage;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
@@ -1039,19 +1040,28 @@ public class EntityDrone extends EntityDroneBase implements
     @Override
     public boolean attackEntityFrom(DamageSource damageSource, float damage) {
         if (damageSource == DamageSource.IN_WALL) {
-            isSuffocating = true;
-            if (suffocationCounter-- > 0 || !PNCConfig.Common.General.enableDroneSuffocation) {
-                return false;
-            }
-        } else if (damageSource instanceof EntityDamageSource) {
-            Entity e = damageSource.getTrueSource();
-            if (e != null && e.getEntityId() == getFakePlayer().getEntityId()) {
-                // don't allow the drone's fake player to damage the drone
-                // e.g. if the drone is wielding an infinity hammer
-                return false;
-            }
+            if (suffocationCounter > 0) suffocationCounter--;
         }
         return super.attackEntityFrom(damageSource, damage);
+    }
+
+    @Override
+    public boolean isInvulnerableTo(DamageSource source) {
+        if (source == DamageSource.IN_WALL) {
+            return suffocationCounter > 0 || !PNCConfig.Common.General.enableDroneSuffocation;
+        }
+        if (RadiationSourceCheck.INSTANCE.isRadiation(source)) {
+            return true;
+        }
+        if (source instanceof EntityDamageSource) {
+            Entity e = source.getTrueSource();
+            if (e != null && e.getEntityId() == getFakePlayer().getEntityId()) {
+                // don't allow the drone's own fake player to damage the drone
+                // e.g. if the drone is wielding an infinity hammer
+                return true;
+            }
+        }
+        return super.isInvulnerableTo(source);
     }
 
     @Override
