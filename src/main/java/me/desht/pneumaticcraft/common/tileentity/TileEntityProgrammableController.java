@@ -138,13 +138,13 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     @DescSynced
     public String ownerNameClient = "";
     @GuiSynced
-    private boolean chunkloadSelf = true;
+    private boolean chunkloadSelf = false;
     @GuiSynced
-    private boolean chunkloadWorkingChunk = true;
+    private boolean chunkloadWorkingChunk = false;
     @GuiSynced
-    private boolean chunkloadWorkingChunk3x3 = true;
+    private boolean chunkloadWorkingChunk3x3 = false;
     private ChunkPos prevChunkPos = null;
-    private Set<ChunkPos> loadedChunks = new HashSet<>();
+    private final Set<ChunkPos> loadedChunks = new HashSet<>();
 
     private UUID ownerID;
     private ITextComponent ownerName;
@@ -322,6 +322,12 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayerEntity player) {
         if (tag.equals("charging")) {
             shouldChargeHeldItem = !shouldChargeHeldItem;
+        } else if (tag.equals("chunkload_self")) {
+            chunkloadSelf = !chunkloadSelf;
+        } else if (tag.equals("chunkload_work")) {
+            chunkloadWorkingChunk = !chunkloadWorkingChunk;
+        } else if (tag.equals("chunkload_work_3x3")) {
+            chunkloadWorkingChunk3x3 = !chunkloadWorkingChunk3x3;
         } else if (itemHandlerSideConfigurator.handleButtonPress(tag)) {
             updateNeighbours = true;
         }
@@ -421,6 +427,10 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
         shouldChargeHeldItem = tag.getBoolean("chargeHeld");
 
         variablesNBT = tag.getCompound("variables");
+
+        chunkloadSelf = tag.getBoolean("chunkload_self");
+        chunkloadWorkingChunk = tag.getBoolean("chunkload_work");
+        chunkloadWorkingChunk3x3 = tag.getBoolean("chunkload_work_3x3");
     }
 
     @Override
@@ -447,6 +457,10 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
         tag.putBoolean("chargeHeld", shouldChargeHeldItem);
 
         if (aiManager != null) tag.put("variables", aiManager.writeToNBT(new CompoundNBT()));
+
+        tag.putBoolean("chunkload_self", chunkloadSelf);
+        tag.putBoolean("chunkload_work", chunkloadWorkingChunk);
+        tag.putBoolean("chunkload_work_3x3", chunkloadWorkingChunk3x3);
 
         return tag;
     }
@@ -787,6 +801,18 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     @Override
     public boolean isDroneStillValid() {
         return !removed;
+    }
+
+    public boolean chunkloadSelf() {
+        return chunkloadSelf;
+    }
+
+    public boolean chunkloadWorkingChunk() {
+        return chunkloadWorkingChunk;
+    }
+
+    public boolean chunkloadWorkingChunk3x3() {
+        return chunkloadWorkingChunk3x3;
     }
 
     private LazyOptional<IItemHandler> findEjectionDest() {
