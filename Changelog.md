@@ -8,6 +8,37 @@ Changes are in reverse chronological order; newest changes at the top.
 
 Note: PNC:R 2.9.3 and later have been successfully tested on Minecraft 1.16.5.  Older (but recent) versions will probably also work on MC 1.16.5, but haven't been tested.
 
+## 2.11.0-?? (unreleased)
+
+### New
+* The Programmable Controller now has some optional chunkloading functionality
+  * You can choose in the GUI whether to load the PC's own chunk and/or the current working chunk (where the minidrone is) and/or a 3x3 area around the working chunk
+  * This comes with an extra air cost if enabled: 10 mL/t to load itself, and another 10mL/t to load the working area, or 30mL/t to load a 3x3 area
+* Added Jet Boots Flight Stabilizers to bring you to an instant halt when releasing the thrust key
+  * With Jet Boots Tier IV or Tier V, the Jet Boots armor GUI gets a checkbox to toggle Flight Stabilizers
+  * Can also be bound to a hotkey for quick enabling/disabling
+  * No extra upgrade needed, just Jet Boots Upgrade Tier IV or V
+* Added Radiation Shielding Upgrade for Pneumatic Armor to protect against Mekanism radiation
+  * Needs a Mekanism Radiation Shielding Unit to craft
+  * One upgrade is needed for each armor piece for effective protection (you need all 4 to be safe)
+  * This protection may extend to other mods which add radiation mechanics in future as they become available on 1.16
+  * Note: protects against initial irradiation; if you're already irradiated, this won't help!
+  
+### Updates
+* GUIs for Thermopneumatic Processing Plant, Fluid Mixer and Refinery now show the current recipe in the JEI recipe click area
+  * If the machine has a current recipe based on its input items/fluids, then the planned output(s) will be shown in the area tooltip
+  * If extended information is enabled (F3+H), the internal recipe ID will also be shown
+* All pressurizable items can now take the CoFH Holding enchantment to increase their air storage (over & above what Volume Upgrades add)
+  * Each level of Holding acts as a straight volume multiplier: Holding I = 2x, Holding II = 3x, etc.
+  * This only applies to items/tools, not pneumatic machines when in item form
+* All PneumaticCraft Drones are now immune to Mekanism radiation
+
+### Fixes
+* Hopefully fix Thermopneumatic Processing Plant from choosing the wrong recipe under certain circumstances
+  * Seems to be an issue with similar recipes (e.g. Potato -> Vegetable Oil & Potato/Yeast -> Ethanol) when extra recipes have been added
+* Hopefully fix problems with players falling off/through Elevators (generally with a lot of speed upgrades)
+* Fix Air Cannon causing server crashes when launching TNT near a Security Station
+
 ## 2.10.3-149 (6 Mar 2021)
 
 ### Fixes
