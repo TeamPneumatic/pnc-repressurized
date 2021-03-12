@@ -13,6 +13,7 @@ import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import net.minecraft.client.Minecraft;
@@ -36,11 +37,16 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
     public static final int BUILDER_MODE_LEVEL = 3;  // tier needed for builder mode
     public static final int STABLIZERS_LEVEL = 4;  // tier needed for flight stabilizers
 
+    private static final ItemStack PICK = new ItemStack(Items.DIAMOND_PICKAXE);
+    private static final ItemStack ROTOR = new ItemStack(ModItems.TURBINE_ROTOR.get());
+    private static final ItemStack ELYTRA = new ItemStack(Items.ELYTRA);
+
     private static final String[] HEADINGS = new String[] { "S", "SW", "W", "NW", "N", "NE", "E", "SE" };
 
     private String l1, l2, l3, r1, r2, r3;
     private int widestR;
-    private boolean drawShovel;
+    private boolean builderMode;
+    private boolean flightStabilizers;
     private double prevX, prevY, prevZ;
 
     private IGuiAnimatedStat jbStat;
@@ -86,7 +92,8 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
             widestR = Math.max(fr.getStringWidth(r1), Math.max(fr.getStringWidth(r2), fr.getStringWidth(r3)));
 
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer();
-            drawShovel = handler.isJetBootsBuilderMode();
+            builderMode = handler.isJetBootsBuilderMode();
+            flightStabilizers = handler.isFlightStabilizers();
         }
     }
 
@@ -110,11 +117,18 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
             fr.drawStringWithShadow(matrixStack, r2, xr - widestR, y + fr.FONT_HEIGHT, 0x404040);
             fr.drawStringWithShadow(matrixStack, r3, xr - widestR, y + fr.FONT_HEIGHT * 2, 0x404040);
 
-            if (drawShovel) {
-                GuiUtils.renderItemStack(matrixStack, new ItemStack(Items.DIAMOND_PICKAXE), xr - 30, jbStat.getBaseY());
+            int iconX = xr - 30;
+            if (builderMode) {
+                GuiUtils.renderItemStack(matrixStack, PICK, iconX, jbStat.getBaseY());
+                iconX -= 16;
+            }
+            if (flightStabilizers) {
+                GuiUtils.renderItemStack(matrixStack, ROTOR, iconX, jbStat.getBaseY());
+                iconX -= 16;
             }
             if (Minecraft.getInstance().player.isElytraFlying()) {
-                GuiUtils.renderItemStack(matrixStack, new ItemStack(Items.ELYTRA), xr - 46, jbStat.getBaseY());
+                GuiUtils.renderItemStack(matrixStack, ELYTRA, iconX, jbStat.getBaseY());
+//                iconX -= 16;
             }
         }
     }

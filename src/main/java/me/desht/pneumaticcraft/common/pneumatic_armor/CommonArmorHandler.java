@@ -23,6 +23,7 @@ import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.*;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.lib.Names;
@@ -423,7 +424,12 @@ public class CommonArmorHandler implements ICommonArmorHandler {
                 jetBootsActiveTicks++;
             } else if (isJetBootsEnabled() && !player.isOnGround() && !player.isElytraFlying()) {
                 // jetboots not firing, but enabled - slowly descend (or hover if enough upgrades)
-                setYMotion(player, player.isSneaking() ? -0.45 : -0.1 + 0.02 * jetbootsCount);
+                // and bring player to complete halt if flight stabilizes and not actively moving laterally
+                boolean stopped = flightStabilizers && PneumaticCraftUtils.epsilonEquals(player.moveForward, 0f);
+                double xMotion = stopped ? 0 : player.getMotion().x;
+                double yMotion = player.isSneaking() ? -0.45 : -0.1 + 0.02 * jetbootsCount;
+                double zMotion = stopped ? 0 : player.getMotion().z;
+                player.setMotion(new Vector3d(xMotion, yMotion, zMotion));
                 player.fallDistance = 0;
                 jetbootsAirUsage = (int) (Armor.jetBootsAirUsage * (player.isSneaking() ? 0.25F : 0.5F));
                 flightAccel = 1.0F;
@@ -777,6 +783,10 @@ public class CommonArmorHandler implements ICommonArmorHandler {
 
     public boolean isJetBootsBuilderMode() {
         return jetBootsBuilderMode;
+    }
+
+    public boolean isFlightStabilizers() {
+        return flightStabilizers;
     }
 
     /**
