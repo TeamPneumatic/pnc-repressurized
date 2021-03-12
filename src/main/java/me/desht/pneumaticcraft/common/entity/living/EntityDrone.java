@@ -1055,7 +1055,7 @@ public class EntityDrone extends EntityDroneBase implements
         }
         if (source instanceof EntityDamageSource) {
             Entity e = source.getTrueSource();
-            if (e != null && e.getEntityId() == getFakePlayer().getEntityId()) {
+            if (e != null && !world.isRemote && e.getEntityId() == getFakePlayer().getEntityId()) {
                 // don't allow the drone's own fake player to damage the drone
                 // e.g. if the drone is wielding an infinity hammer
                 return true;
