@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorBase;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityElevatorFrame;
@@ -183,8 +184,9 @@ public class BlockElevatorFrame extends BlockPneumaticCraft implements IWaterLog
                         }
                     }
                     entity.setPosition(eX, y + teBase.extension + 1.2, eZ);
-                    if (entity instanceof ServerPlayerEntity) {
-                        // prevents "<player> moved too quickly" problems when the elevator is fast (>= 7 speed upgrades)
+                    if (entity instanceof ServerPlayerEntity && teBase.getUpgrades(EnumUpgrade.SPEED) >= 6) {
+                        // prevents "<player> moved too quickly" problems when the elevator is fast
+                        // note: using this can lead to jerky upward movement, so only doing for fast elevators
                         ((ServerPlayerEntity) entity).connection.captureCurrentPosition();
                     }
                     entity.fallDistance = 0;
