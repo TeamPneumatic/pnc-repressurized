@@ -28,6 +28,7 @@ import me.desht.pneumaticcraft.common.entity.semiblock.EntityLogisticsFrame;
 import me.desht.pneumaticcraft.common.item.ItemDrone;
 import me.desht.pneumaticcraft.common.item.ItemGPSTool;
 import me.desht.pneumaticcraft.common.item.ItemGunAmmo;
+import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketShowWireframe;
@@ -52,6 +53,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.material.Material;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -203,6 +206,7 @@ public class EntityDrone extends EntityDroneBase implements
     // Although this is only used by DroneAILogistics, it is here rather than there
     // so it can persist, for performance reasons; DroneAILogistics is a short-lived object
     private LogisticsManager logisticsManager;
+    private final Map<Enchantment,Integer> stackEnchants = new HashMap<>();
 
     public EntityDrone(EntityType<? extends EntityDrone> type, World world) {
         super(type, world);
@@ -254,6 +258,7 @@ public class EntityDrone extends EntityDroneBase implements
         CompoundNBT stackTag = droneStack.getTag();
         if (stackTag != null) {
             upgradeInventory.deserializeNBT(stackTag.getCompound(UpgradableItemUtils.NBT_UPGRADE_TAG));
+            EnchantmentHelper.getEnchantments(droneStack).forEach(stackEnchants::put);
             int air = droneStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).orElseThrow(RuntimeException::new).getAir();
             getAirHandler().addAir(air);
             if (((ItemDrone) droneStack.getItem()).canProgram(droneStack)) {
@@ -287,6 +292,7 @@ public class EntityDrone extends EntityDroneBase implements
             tag.put("Tank", fluidTank.writeToNBT(new CompoundNBT()));
         }
         droneStack.setTag(tag);
+        EnchantmentHelper.setEnchantments(stackEnchants, droneStack);
 
         droneStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).orElseThrow(RuntimeException::new).addAir(getAirHandler().getAir());
 
@@ -886,6 +892,9 @@ public class EntityDrone extends EntityDroneBase implements
     protected BasicAirHandler getAirHandler() {
         if (airHandler == null) {
             int vol = ApplicableUpgradesDB.getInstance().getUpgradedVolume(PneumaticValues.DRONE_VOLUME, getUpgrades(EnumUpgrade.VOLUME));
+            ItemStack stack = new ItemStack(getDroneItem());
+            EnchantmentHelper.setEnchantments(stackEnchants, stack);
+            vol = ItemRegistry.getInstance().getUpgradedVolume(stack, vol);
             airHandler = new BasicAirHandler(vol);
         }
         return airHandler;
@@ -922,6 +931,12 @@ public class EntityDrone extends EntityDroneBase implements
         if (ownerUUID != null) {
             tag.putLong("ownerUUID_M", ownerUUID.getMostSignificantBits());
             tag.putLong("ownerUUID_L", ownerUUID.getLeastSignificantBits());
+        }
+
+        if (!stackEnchants.isEmpty()) {
+            CompoundNBT eTag = new CompoundNBT();
+            stackEnchants.forEach((ench, lvl) -> eTag.putInt(ench.getRegistryName().toString(), lvl));
+            tag.put("stackEnchants", eTag);
         }
 
         if (!displacedLiquids.isEmpty()) {
@@ -966,6 +981,16 @@ public class EntityDrone extends EntityDroneBase implements
 
         if (tag.contains("owner")) ownerName = new StringTextComponent(tag.getString("owner"));
         if (tag.contains("ownerUUID_M")) ownerUUID = new UUID(tag.getLong("ownerUUID_M"), tag.getLong("ownerUUID_L"));
+
+        if (tag.contains("stackEnchants", Constants.NBT.TAG_COMPOUND)) {
+            CompoundNBT eTag = tag.getCompound("stackEnchants");
+            for (String name : eTag.keySet()) {
+                Enchantment e = ForgeRegistries.ENCHANTMENTS.getValue(new ResourceLocation(name));
+                if (e != null) {
+                    stackEnchants.put(e, eTag.getInt(name));
+                }
+            }
+        }
 
         if (tag.contains("displacedLiquids")) {
             for (INBT inbt : tag.getList("displacedLiquids", Constants.NBT.TAG_LIST)) {
