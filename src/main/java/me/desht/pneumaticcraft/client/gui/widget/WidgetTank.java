@@ -17,7 +17,9 @@ import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -72,14 +74,14 @@ public class WidgetTank extends Widget implements ITooltipProvider {
     @Override
     public void addTooltip(double mouseX, double mouseY, List<ITextComponent> curTip, boolean shift) {
         Fluid fluid = tank.getFluid().getFluid();
-        int amt = tank.getFluidAmount();
-        int capacity = tank.getCapacity();
+        String amt = NumberFormat.getNumberInstance(Locale.getDefault()).format(tank.getFluidAmount());
+        String capacity = NumberFormat.getNumberInstance(Locale.getDefault()).format(tank.getCapacity());
 
-        curTip.add(new StringTextComponent(amt + "/" + capacity + " mB"));
-        if (fluid == Fluids.EMPTY || amt == 0 || capacity == 0) {
+        curTip.add(new StringTextComponent(amt + " / " + capacity + " mB"));
+        if (fluid == Fluids.EMPTY || tank.getCapacity() == 0 || tank.getFluidAmount() == 0) {
             curTip.add(xlate("pneumaticcraft.gui.misc.empty").mergeStyle(TextFormatting.GRAY));
         } else {
-            curTip.add(new FluidStack(fluid, amt).getDisplayName().deepCopy().mergeStyle(TextFormatting.GRAY));
+            curTip.add(new FluidStack(fluid, tank.getFluidAmount()).getDisplayName().deepCopy().mergeStyle(TextFormatting.GRAY));
             curTip.add(new StringTextComponent(ModNameCache.getModName(fluid)).mergeStyle(TextFormatting.BLUE, TextFormatting.ITALIC));
         }
     }
