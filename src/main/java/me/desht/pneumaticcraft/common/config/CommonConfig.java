@@ -63,6 +63,7 @@ public class CommonConfig {
         ForgeConfigSpec.DoubleValue cofhHoldingMultiplier;
     }
     public static class Advanced {
+        ForgeConfigSpec.IntValue stuckDroneTeleportTicks;
         ForgeConfigSpec.BooleanValue disableKeroseneLampFakeAirBlock;
         ForgeConfigSpec.IntValue fluidTankUpdateRate;
         ForgeConfigSpec.IntValue pressureSyncPrecision;
@@ -353,7 +354,7 @@ public class CommonConfig {
                 .translation("pneumaticcraft.config.common.advanced.pressurizable_sync_precision")
                 .defineInRange("pressurizable_sync_precision", 10, 1, 100);
         advanced.stopDroneAI = builder
-                .comment("When set to true, Drones will not execute any program. This is useful to set to true when due to a bug Drones are lagging your server or crashing it. Please report the bug if you encounter it.")
+                .comment("When set to true, Drones will not execute any program. This is useful to set to true when due to a bug Drones are lagging your server or crashing it. Please report any such bugs as a PneumaticCraft: Repressurized issue so it can be investigated.")
                 .translation("pneumaticcraft.config.common.advanced.stop_drone_ai")
                 .define("stop_drone_ai", false);
         advanced.dontUpdateInfiniteWaterSources = builder
@@ -364,6 +365,10 @@ public class CommonConfig {
                 .comment("How far will a drone go to find a Charging Station when it's low on air? Note: drones will teleport, possibly across the world to someone else's base, if this range is very large.")
                 .translation("pneumaticcraft.config.common.advanced.max_drone_charging_station_search_range")
                 .defineInRange("max_drone_charging_station_search_range", 80, 16, Integer.MAX_VALUE);
+        advanced.stuckDroneTeleportTicks = builder
+                .comment("If a Drone has found a path, but gets stuck on a block along that path, it will teleport to its destination after this many ticks of being stuck. Set this to 0 to disable teleporting, which will likely leave the drone waiting there forever (or until it runs out of air). Note that getting stuck on a block is usually the fault of the mod that added the block (especially if the block has a non-full-cube shape), but if you encounter this behaviour, please report it as a PneumaticCraft: Repressurized issue so it can be investigated.")
+                .translation("pneumaticcraft.config.common.advanced.stuck_drone_teleport_ticks")
+                .defineInRange("stuck_drone_teleport_ticks", 20, 0, Integer.MAX_VALUE);
         builder.pop();
 
         builder.push("Micromissile Properties");

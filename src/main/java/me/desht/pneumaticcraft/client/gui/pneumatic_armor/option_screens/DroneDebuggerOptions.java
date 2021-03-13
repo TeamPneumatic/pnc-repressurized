@@ -122,11 +122,10 @@ public class DroneDebuggerOptions extends IOptionPage.SimpleToggleableOptions<Dr
         followCheckbox.render(matrixStack, x, y, partialTicks);
 
         if (isDroneValid()) {
-            IProgWidget widget = programmerUnit.getHoveredWidget(x, y);
-            if (widget == null) widget = areaShowingWidget;
+
             getClientUpgradeHandler().getShowingPositions().clear();
-            if (widget != null) {
-                int widgetId = selectedDrone.getProgWidgets().indexOf(widget);
+            if (areaShowingWidget != null) {
+                int widgetId = selectedDrone.getProgWidgets().indexOf(areaShowingWidget);
                 DroneDebugEntry entry = selectedDrone.getDebugger().getDebugEntry(widgetId);
                 if (entry != null && entry.hasCoords()) {
                     getClientUpgradeHandler().getShowingPositions().add(entry.getPos());
@@ -158,10 +157,10 @@ public class DroneDebuggerOptions extends IOptionPage.SimpleToggleableOptions<Dr
     public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
         if (!isDroneValid()) return false;
 
+        IProgWidget widget = programmerUnit.getHoveredWidget((int)mouseX, (int)mouseY);
         if (mouseButton == 0) {
-            areaShowingWidget = programmerUnit.getHoveredWidget((int)mouseX, (int)mouseY);
+            areaShowingWidget = areaShowingWidget == widget ? null : programmerUnit.getHoveredWidget((int)mouseX, (int)mouseY);
         } else if (mouseButton == 1) {
-            IProgWidget widget = programmerUnit.getHoveredWidget((int)mouseX, (int)mouseY);
             if (widget instanceof IAreaProvider) {
                 getClientUpgradeHandler().getShownArea().clear();
                 int widgetId = selectedDrone.getProgWidgets().indexOf(widget);
@@ -206,7 +205,7 @@ public class DroneDebuggerOptions extends IOptionPage.SimpleToggleableOptions<Dr
             DroneDebugEntry entry = selectedDrone.getDebugger().getDebugEntry(widgetId);
             if (entry != null) {
                 long elapsed = (System.currentTimeMillis() - entry.getReceivedTime()) / 50;
-                tooltip.add(new StringTextComponent("Last message:" ).mergeStyle(TextFormatting.AQUA)
+                tooltip.add(new StringTextComponent("Last message: " ).mergeStyle(TextFormatting.AQUA)
                         .appendString(PneumaticCraftUtils.convertTicksToMinutesAndSeconds(elapsed, true))
                         .mergeStyle(TextFormatting.YELLOW)
                         .appendString(" ago"));
@@ -215,9 +214,8 @@ public class DroneDebuggerOptions extends IOptionPage.SimpleToggleableOptions<Dr
                         .appendString("\"  ")
                         .mergeStyle(TextFormatting.AQUA, TextFormatting.ITALIC));
                 if (entry.hasCoords()) {
-                    tooltip.add(xlate("pneumaticcraft.gui.progWidget.debug.hasPositions").mergeStyle(TextFormatting.GREEN));
-                    if (widget != areaShowingWidget)
-                        tooltip.add(xlate("pneumaticcraft.gui.progWidget.debug.clickToShow").mergeStyle(TextFormatting.GREEN));
+                    tooltip.add(xlate("pneumaticcraft.gui.progWidget.debug.hasPositions").mergeStyle(TextFormatting.YELLOW));
+                    tooltip.add(xlate("pneumaticcraft.gui.progWidget.debug.clickToShow").mergeStyle(TextFormatting.GREEN));
                 }
             }
             if (widget instanceof IAreaProvider) {

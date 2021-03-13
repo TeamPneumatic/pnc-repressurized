@@ -255,6 +255,14 @@ public class PneumaticCraftUtils {
         return Math.abs(f1 - f2) < maxDifference;
     }
 
+    public static boolean epsilonEquals(double d1, double d2) {
+        return epsilonEquals(d1, d2, 0.0001);
+    }
+
+    private static boolean epsilonEquals(double d1, double d2, double maxDifference) {
+        return Math.abs(d1 - d2) < maxDifference;
+    }
+
     /**
      * Sorts the stacks given alphabetically, combines them (so 2x64 will become 1x128), and adds the strings into the
      * given string list.  This method is aware of inventory items implementing the {@link IInventoryItem} interface.

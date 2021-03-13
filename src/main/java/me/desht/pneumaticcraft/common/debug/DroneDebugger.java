@@ -123,7 +123,7 @@ public class DroneDebugger {
                 if (path != null) {
                     for (int i = path.getCurrentPathIndex(); i < path.getCurrentPathLength(); i++) {
                         //get current point
-                        BlockPos pos = path.getPathPointFromIndex(i).func_224759_a();
+                        BlockPos pos = path.getPathPointFromIndex(i).func_224759_a();  // func_224759_a() = copy()
                         //get next point (or current point)
                         BlockPos nextPos = (i+1) != path.getCurrentPathLength() ? path.getPathPointFromIndex(i+1).func_224759_a() : pos;
                         //get difference for vector
@@ -137,8 +137,9 @@ public class DroneDebugger {
                                 endPos.getX(), endPos.getY(), endPos.getZ(), 0.1);
                     }
                     // render end point
-                    BlockPos pos = navi.getTargetPos();
-                    if (drone.getDronePos().squareDistanceTo(Vector3d.copyCentered(pos)) > 1) {
+                    BlockPos pos = navi.getTargetPos();  // yes, this *can* be null: https://github.com/TeamPneumatic/pnc-repressurized/issues/761
+                    //noinspection ConstantConditions
+                    if (pos != null && drone.getDronePos().squareDistanceTo(Vector3d.copyCentered(pos)) > 1) {
                         spawnParticle(drone.getDebugger().debuggingPlayers, ParticleTypes.HEART,
                                 pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 0,
                                 0, 0, 0, 0);

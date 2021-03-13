@@ -119,6 +119,7 @@ public class ConfigHelper {
         PNCConfig.Common.Advanced.maxDroneChargingStationSearchRange = common.advanced.maxDroneChargingStationSearchRange.get();
         PNCConfig.Common.Advanced.stopDroneAI = common.advanced.stopDroneAI.get();
         PNCConfig.Common.Advanced.dontUpdateInfiniteWaterSources = common.advanced.dontUpdateInfiniteWaterSources.get();
+        PNCConfig.Common.Advanced.stuckDroneTeleportTicks = common.advanced.stuckDroneTeleportTicks.get();
 
         PNCConfig.Common.Micromissiles.baseExplosionDamage = common.micromissiles.baseExplosionDamage.get();
         PNCConfig.Common.Micromissiles.damageTerrain = common.micromissiles.damageTerrain.get();

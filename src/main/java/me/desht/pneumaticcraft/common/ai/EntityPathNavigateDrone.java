@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.ai;
 
 import com.google.common.collect.Lists;
 import me.desht.pneumaticcraft.api.drone.IPathNavigator;
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -32,6 +33,7 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
     private int teleportCounter = -1;
     private BlockPos telPos;
     private static final int TELEPORT_TICKS = 120;
+    private int stuckTicks = 0;
 
     public EntityPathNavigateDrone(EntityDrone pathfindingEntity, World par2World) {
         super(pathfindingEntity, par2World);
@@ -83,14 +85,14 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
         }
 
         // Store the potential teleport destination
-        telPos = pos;        
-        
+        telPos = pos;
+
         // If we are forced to teleport, trigger right away
         if (forceTeleport) {
             teleportCounter = 0;
             return null;
         }
-        
+
         pathfindingEntity.setStandby(false);
 
         Path path;
@@ -114,7 +116,7 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
                 path = null;
             }
         }
-        
+
         if (path == null) {
             // No valid flight path: teleport instead, but don't reset the teleport counter if it's already in progress
             if (teleportCounter == -1) teleportCounter = 0;
@@ -138,6 +140,7 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
 
     @Override
     public void tick() {
+        ++totalTicks;
         if (isGoingToTeleport()) {
             if (teleportCounter == 0 || teleportCounter == 60) {
                 pathfindingEntity.world.playSound(null, pathfindingEntity.getPosition(), ModSounds.HUD_INIT.get(), SoundCategory.NEUTRAL, 0.3f, teleportCounter == 0 ? 0.7F : 1F);
@@ -164,6 +167,17 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
             // super.onUpdateNavigation();
             if (!noPath()) {
                 pathFollow();
+                if (PNCConfig.Common.Advanced.stuckDroneTeleportTicks > 0 && entity.getMotion().lengthSquared() < 0.0001) {
+                    if (stuckTicks++ > PNCConfig.Common.Advanced.stuckDroneTeleportTicks) {
+                        Vector3d v = pathfindingEntity.getDronePos();
+                        pathfindingEntity.getDebugger().addEntry("pneumaticcraft.gui.progWidget.general.debug.stuckBlock",
+                                new BlockPos(Math.round(v.x), Math.round(v.y), Math.round(v.z)));
+                        teleportCounter = 0;
+                        stuckTicks = 0;
+                    }
+                } else {
+                    stuckTicks = 0;
+                }
                 if (!noPath()) {
                     Vector3d vec32 = currentPath.getPosition(entity);
                     entity.getMoveHelper().setMoveTo(vec32.x, vec32.y, vec32.z, speed);
@@ -207,7 +221,7 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
         if(success) forceRidingEntityPaths();
         return success;
     }
-    
+
     /**
      * Override to prevent MobEntity#updateEntityActionState() assigning a path with a higher speed.
      */
@@ -215,7 +229,7 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
     public boolean setPath(Path pathentityIn, double speedIn){
         return super.setPath(pathentityIn, pathfindingEntity.getSpeed());
     }
-    
+
     /**
      * Hack to prevent riding entities to override the Drone's path (instead they will assign the Drone's path)
      */
