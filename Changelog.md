@@ -23,8 +23,20 @@ Note: PNC:R 2.9.3 and later have been successfully tested on Minecraft 1.16.5.  
   * One upgrade is needed for each armor piece for effective protection (you need all 4 to be safe)
   * This protection may extend to other mods which add radiation mechanics in future as they become available on 1.16
   * Note: protects against initial irradiation; if you're already irradiated, this won't help!
+* Added custom heat properties for a bunch of new modded blocks (thanks @MuteTiefling)
+  * Better End (Forge): all the Emerald Ice blocks
+  * Biomes You'll Go: Boric/Cryptic Campfires, Cryptic Magma, Magmatic Stone
+  * Create: Blaze Burner (with different properties based on the Burner state: smouldering/kindled/seething/fading)
+  * Decorative Blocks: Brazier & Soul Brazier
+  * Minecraft: Soul Campfire
+  * Occultism: Spirit Fire
+  * Valhelsia Structures: Brazier
   
 ### Updates
+* Drones which get stuck on a block (even when they are able to pathfind) will now teleport if stuck for more than 20 ticks
+  * Note that such blocks are most commonly non-full-cube blocks with a movement-blocking hitbox added by mods which have forgotten to mark those blocks as non-pathable
+  * If you see cases of drones getting stuck & teleporting around particular blocks, please raise a github issue so I can investigate
+  * Stuck teleport timeout is configurable: see `Advanced` -> `stuck_drone_teleport_ticks` in `pneumaticcraft-common.toml`; if you set it to 0, teleportation is disabled, and drones will mostly likely sit at the stuck position indefinitely (as in previous versions)
 * GUIs for Thermopneumatic Processing Plant, Fluid Mixer and Refinery now show the current recipe in the JEI recipe click area
   * If the machine has a current recipe based on its input items/fluids, then the planned output(s) will be shown in the area tooltip
   * If extended information is enabled (F3+H), the internal recipe ID will also be shown
@@ -32,12 +44,15 @@ Note: PNC:R 2.9.3 and later have been successfully tested on Minecraft 1.16.5.  
   * Each level of Holding acts as a straight volume multiplier: Holding I = 2x, Holding II = 3x, etc.
   * This only applies to items/tools, not pneumatic machines when in item form
 * All PneumaticCraft Drones are now immune to Mekanism radiation
+* Custom block heat properties now support multiple entries for the same block
+  * Entries must be distinguished by blockstate predicates.  See the `create/blaze_burner_*.json` entries for examples.
 
 ### Fixes
-* Hopefully fix Thermopneumatic Processing Plant from choosing the wrong recipe under certain circumstances
-  * Seems to be an issue with similar recipes (e.g. Potato -> Vegetable Oil & Potato/Yeast -> Ethanol) when extra recipes have been added
+* Fix Thermopneumatic Processing Plant choosing the wrong recipe under certain circumstances
+  * Was an issue with similar recipes (e.g. Potato -> Vegetable Oil & Potato/Yeast -> Ethanol), exposed when extra recipes have been added
 * Hopefully fix problems with players falling off/through Elevators (generally with a lot of speed upgrades)
 * Fix Air Cannon causing server crashes when launching TNT near a Security Station
+* Fixed client crash when players hit drones (bug introduced in 2.10.2 related to drones being immune to their own area attacks)
 
 ## 2.10.3-149 (6 Mar 2021)
 
