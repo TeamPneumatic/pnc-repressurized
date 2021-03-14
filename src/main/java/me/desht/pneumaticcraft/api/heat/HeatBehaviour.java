@@ -40,7 +40,7 @@ public abstract class HeatBehaviour<T extends TileEntity> implements INBTSeriali
      * @param pos block pos of the owning tile entity
      * @param direction direction of this behaviour (from the tile entity's point of view)
      */
-    public HeatBehaviour initialize(IHeatExchangerLogic connectedHeatLogic, World world, BlockPos pos, Direction direction) {
+    public HeatBehaviour<?> initialize(IHeatExchangerLogic connectedHeatLogic, World world, BlockPos pos, Direction direction) {
         this.connectedHeatLogic = connectedHeatLogic;
         this.world = world;
         this.pos = pos;

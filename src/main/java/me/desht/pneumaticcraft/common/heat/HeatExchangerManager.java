@@ -9,7 +9,6 @@ import me.desht.pneumaticcraft.common.heat.BlockHeatProperties.CustomHeatEntry;
 import me.desht.pneumaticcraft.common.heat.behaviour.HeatBehaviourManager;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
@@ -56,13 +55,8 @@ public enum HeatExchangerManager implements IHeatRegistry {
             if (world.isAirBlock(pos)) {
                 return LazyOptional.of(() -> HeatExchangerLogicAmbient.atPosition(world, pos));
             }
-            BlockState state = world.getBlockState(pos);
-            CustomHeatEntry entry = BlockHeatProperties.getInstance().getCustomHeatEntry(state.getBlock());
-            if (entry != null && entry.testPredicates(state)) {
-                return LazyOptional.of(entry::getLogic);
-            } else {
-                return LazyOptional.empty();
-            }
+            CustomHeatEntry entry = BlockHeatProperties.getInstance().getCustomHeatEntry(world.getBlockState(pos));
+            return entry != null ? LazyOptional.of(entry::getLogic) : LazyOptional.empty();
         }
     }
 

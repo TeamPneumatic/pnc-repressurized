@@ -220,6 +220,9 @@ dependencies {
     compileOnly fg.deobf("appeng:appliedenergistics2:${ae2_version}:api")
     runtimeOnly fg.deobf("appeng:appliedenergistics2:${ae2_version}")
 
+    compileOnly fg.deobf("curse.maven:create:3167531")
+    runtimeOnly fg.deobf("curse.maven:create:3167531")
+
 //    runtimeOnly fg.deobf("curse.maven:modernui:3158102")
 //    compileOnly "li.cil.oc:OpenComputers:MC1.12.2-${oc_version}:api"
 //    compileOnly "CraftTweaker2:CraftTweaker2-API:${crafttweaker_version}"

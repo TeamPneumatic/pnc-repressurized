@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.heat;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.google.gson.*;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -34,14 +35,17 @@ public enum BlockHeatProperties {
 
     private static final String BLOCK_HEAT_PROPERTIES = "pneumaticcraft/block_heat_properties";
 
-    private final Map<ResourceLocation, CustomHeatEntry> customHeatEntries = new HashMap<>();
+    private final ArrayListMultimap<ResourceLocation, CustomHeatEntry> customHeatEntries = ArrayListMultimap.create();
 
     public static BlockHeatProperties getInstance() {
         return INSTANCE;
     }
 
-    public CustomHeatEntry getCustomHeatEntry(Block block) {
-        return customHeatEntries.get(block.getRegistryName());
+    public CustomHeatEntry getCustomHeatEntry(BlockState state) {
+        return customHeatEntries.get(state.getBlock().getRegistryName()).stream()
+                .filter(entry -> entry.testPredicates(state))
+                .findFirst()
+                .orElse(null);
     }
 
     /**
@@ -53,13 +57,13 @@ public enum BlockHeatProperties {
      * @return the custom heat entry, or null if there was a problem adding one
      */
     public CustomHeatEntry getOrCreateCustomHeatEntry(Fluid fluid) {
-        Block block = fluid.getDefaultState().getBlockState().getBlock();
-        if (block == Blocks.AIR || block == null) return null;
+        BlockState state = fluid.getDefaultState().getBlockState();
+        if (state.getBlock() == Blocks.AIR) return null;
 
-        CustomHeatEntry entry = getCustomHeatEntry(block);
+        CustomHeatEntry entry = getCustomHeatEntry(state);
         if (entry == null) {
-            entry = buildDefaultFluidEntry(block, fluid);
-            customHeatEntries.put(block.getRegistryName(), entry);
+            entry = buildDefaultFluidEntry(state.getBlock(), fluid);
+            customHeatEntries.put(state.getBlock().getRegistryName(), entry);
         }
         return entry;
     }
@@ -136,14 +140,14 @@ public enum BlockHeatProperties {
             // add defaulted values for all fluids which don't already have a custom entry
             for (Fluid fluid : ForgeRegistries.FLUIDS.getValues()) {
                 if (fluid == Fluids.EMPTY) continue;
-                Block block = fluid.getDefaultState().getBlockState().getBlock();
-                if (block == null || block == Blocks.AIR || BlockHeatProperties.getInstance().getCustomHeatEntry(block) != null) {
+                BlockState state = fluid.getDefaultState().getBlockState();
+                if (state.getBlock() == Blocks.AIR || BlockHeatProperties.getInstance().getCustomHeatEntry(state) != null) {
                     continue;
                 }
                 CustomHeatEntry entry = BlockHeatProperties.getInstance().getOrCreateCustomHeatEntry(fluid);
                 if (entry == null) {
                     Log.warning("unable to build custom heat entry for fluid %s (block %s) ",
-                            fluid.getRegistryName(), block.getRegistryName());
+                            fluid.getRegistryName(), state.getBlock().getRegistryName());
                 }
             }
         }
