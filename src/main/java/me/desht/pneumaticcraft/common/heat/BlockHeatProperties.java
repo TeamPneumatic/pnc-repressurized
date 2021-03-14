@@ -12,6 +12,7 @@ import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.client.resources.JsonReloadListener;
 import net.minecraft.command.arguments.BlockStateParser;
 import net.minecraft.fluid.Fluid;
@@ -54,11 +55,11 @@ public enum BlockHeatProperties {
      * add it to the custom entries.
      *
      * @param fluid a fluid
-     * @return the custom heat entry, or null if there was a problem adding one
+     * @return the custom heat entry, or null if the fluid doesn't have a block
      */
-    public CustomHeatEntry getOrCreateCustomHeatEntry(Fluid fluid) {
+    public CustomHeatEntry getOrCreateCustomFluidEntry(Fluid fluid) {
         BlockState state = fluid.getDefaultState().getBlockState();
-        if (state.getBlock() == Blocks.AIR) return null;
+        if (!(state.getBlock() instanceof FlowingFluidBlock)) return null;
 
         CustomHeatEntry entry = getCustomHeatEntry(state);
         if (entry == null) {
@@ -141,10 +142,11 @@ public enum BlockHeatProperties {
             for (Fluid fluid : ForgeRegistries.FLUIDS.getValues()) {
                 if (fluid == Fluids.EMPTY) continue;
                 BlockState state = fluid.getDefaultState().getBlockState();
-                if (state.getBlock() == Blocks.AIR || BlockHeatProperties.getInstance().getCustomHeatEntry(state) != null) {
+                // block must be a fluid block and not already have a custom heat entry
+                if (!(state.getBlock() instanceof FlowingFluidBlock) || BlockHeatProperties.getInstance().getCustomHeatEntry(state) != null) {
                     continue;
                 }
-                CustomHeatEntry entry = BlockHeatProperties.getInstance().getOrCreateCustomHeatEntry(fluid);
+                CustomHeatEntry entry = BlockHeatProperties.getInstance().getOrCreateCustomFluidEntry(fluid);
                 if (entry == null) {
                     Log.warning("unable to build custom heat entry for fluid %s (block %s) ",
                             fluid.getRegistryName(), state.getBlock().getRegistryName());
@@ -287,8 +289,7 @@ public enum BlockHeatProperties {
                     return false;
                 }
                 Comparable<?> comparable = iproperty.parseValue(entry.getValue()).orElse(null);
-                // looks dubious, but should be OK, at least for boolean/enum/integer
-                //noinspection EqualsBetweenInconvertibleTypes
+                // looks weird, but should be OK, at least for boolean/enum/integer properties
                 if (comparable == null || state.get(iproperty) != comparable) {
                     return false;
                 }
