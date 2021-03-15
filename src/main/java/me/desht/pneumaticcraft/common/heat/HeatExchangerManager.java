@@ -1,12 +1,13 @@
 package me.desht.pneumaticcraft.common.heat;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
+import me.desht.pneumaticcraft.api.crafting.recipe.HeatPropertiesRecipe;
 import me.desht.pneumaticcraft.api.heat.HeatBehaviour;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.heat.IHeatRegistry;
 import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
-import me.desht.pneumaticcraft.common.heat.BlockHeatProperties.CustomHeatEntry;
 import me.desht.pneumaticcraft.common.heat.behaviour.HeatBehaviourManager;
+import me.desht.pneumaticcraft.common.recipes.other.HeatPropertiesRecipeImpl;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
@@ -55,14 +56,14 @@ public enum HeatExchangerManager implements IHeatRegistry {
             if (world.isAirBlock(pos)) {
                 return LazyOptional.of(() -> HeatExchangerLogicAmbient.atPosition(world, pos));
             }
-            CustomHeatEntry entry = BlockHeatProperties.getInstance().getCustomHeatEntry(world.getBlockState(pos));
+            HeatPropertiesRecipe entry = BlockHeatProperties.getInstance().getCustomHeatEntry(world, world.getBlockState(pos));
             return entry != null ? LazyOptional.of(entry::getLogic) : LazyOptional.empty();
         }
     }
 
     @Override
     public void registerBlockExchanger(Block block, double temperature, double thermalResistance) {
-        BlockHeatProperties.getInstance().register(block.getRegistryName(), new CustomHeatEntry(block, (int) temperature, thermalResistance));
+        BlockHeatProperties.getInstance().register(block, new HeatPropertiesRecipeImpl(block, (int) temperature, thermalResistance));
     }
 
     @Override

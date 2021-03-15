@@ -1,0 +1,9 @@
+{
+  "type": "pneumaticcraft:heat_properties",
+  "block": "quark:brimstone",
+  "temperature": 423,
+  "heatCapacity": 5000,
+  "transformCold": {
+    "block": "minecraft:cobblestone"
+  }
+}

@@ -16,7 +16,7 @@ import me.desht.pneumaticcraft.common.dispenser.BehaviorDispenseDrone;
 import me.desht.pneumaticcraft.common.event.*;
 import me.desht.pneumaticcraft.common.fluid.FluidSetup;
 import me.desht.pneumaticcraft.common.hacking.HackableHandler;
-import me.desht.pneumaticcraft.common.heat.BlockHeatProperties;
+import me.desht.pneumaticcraft.common.heat.behaviour.HeatBehaviourManager;
 import me.desht.pneumaticcraft.common.item.ItemGPSAreaTool;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
@@ -131,6 +131,7 @@ public class PneumaticCraftRepressurized {
         UpgradesDBSetup.init();
         VillageStructures.init();
         ModNameCache.init();
+        HeatBehaviourManager.getInstance().init();
 
         event.enqueueWork(() -> {
             ModWorldGen.registerConfiguredFeatures();
@@ -162,7 +163,7 @@ public class PneumaticCraftRepressurized {
 
     private void addReloadListeners(AddReloadListenerEvent event) {
         event.addListener(PneumaticCraftRecipeType.getCacheReloadListener());
-        event.addListener(new BlockHeatProperties.ReloadListener());
+//        event.addListener(new BlockHeatProperties.ReloadListener());
     }
 
     private void registerCommands(RegisterCommandsEvent event) {

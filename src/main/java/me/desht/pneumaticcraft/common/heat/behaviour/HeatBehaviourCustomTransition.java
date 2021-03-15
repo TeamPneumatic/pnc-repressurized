@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.heat.behaviour;
 
+import me.desht.pneumaticcraft.api.crafting.recipe.HeatPropertiesRecipe;
 import me.desht.pneumaticcraft.api.heat.HeatBehaviour;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.common.heat.BlockHeatProperties;
@@ -16,19 +17,18 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.Stack;
 
-import static me.desht.pneumaticcraft.common.heat.BlockHeatProperties.CustomHeatEntry;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
 public class HeatBehaviourCustomTransition extends HeatBehaviourTransition {
     static final ResourceLocation ID = RL("custom_transition");
 
-    private CustomHeatEntry heatEntry;
+    private HeatPropertiesRecipe heatEntry;
 
     @Override
     public HeatBehaviour<?> initialize(IHeatExchangerLogic connectedHeatLogic, World world, BlockPos pos, Direction direction) {
         super.initialize(connectedHeatLogic, world, pos, direction);
 
-        heatEntry = BlockHeatProperties.getInstance().getCustomHeatEntry(getBlockState());
+        heatEntry = BlockHeatProperties.getInstance().getCustomHeatEntry(world, getBlockState());
         return this;
     }
 
@@ -77,7 +77,7 @@ public class HeatBehaviourCustomTransition extends HeatBehaviourTransition {
         }
     }
 
-    private CustomHeatEntry getHeatEntry() {
+    private HeatPropertiesRecipe getHeatEntry() {
         return heatEntry;
     }
 

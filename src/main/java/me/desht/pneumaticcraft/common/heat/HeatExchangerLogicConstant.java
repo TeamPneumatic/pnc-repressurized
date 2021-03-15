@@ -17,7 +17,7 @@ public class HeatExchangerLogicConstant implements IHeatExchangerLogic {
     private final double temperature;
     private final double thermalResistance;
 
-    HeatExchangerLogicConstant(double temperature, double thermalResistance) {
+    public HeatExchangerLogicConstant(double temperature, double thermalResistance) {
         this.temperature = temperature;
         this.thermalResistance = thermalResistance;
     }

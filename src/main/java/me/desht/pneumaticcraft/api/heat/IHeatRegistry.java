@@ -17,11 +17,11 @@ public interface IHeatRegistry {
     IHeatExchangerLogic makeHeatExchangerLogic();
 
     /**
-     * Register a block as a heat exchanger. Don't call this directly; subscribe to {@link HeatRegistrationEvent} or
-     * use datapacks.
+     * Register a block as a simple heat exchanger (temperature and thermal resistance only; no blockstate transitions).
+     * Don't call this directly; subscribe to {@link HeatRegistrationEvent} or use datapacks.
      *<p>
-     * Note: the preferred way to do this is with datapacks. See
-     * {@code data/pneumaticcraft/pneumaticcraft/block_heat_properties/*.json}
+     * Note: the preferred way (and only way if you want blockstate transitions) to do this is with datapack recipes. See
+     * {@code data/pneumaticcraft/recipes/block_heat_properties/*.json}
      *
      * @param block the block
      * @param temperature the block's temperature
@@ -30,11 +30,12 @@ public interface IHeatRegistry {
     void registerBlockExchanger(Block block, double temperature, double thermalResistance);
 
     /**
-     * Register a heat behaviour instance. Don't call this directly; subscribe to {@link HeatRegistrationEvent} or use
-     * datapacks.
+     * Register a heat behaviour instance. This can be called from your {@link net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent}
+     * handler, but be sure to use {@link net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent#enqueueWork(Runnable)}.
      * <p>
-     * Note: the preferred way to do this is with datapacks. See
-     * {@code data/pneumaticcraft/pneumaticcraft/block_heat_properties/*.json}
+     * This is intended to add custom behaviours to certain tile entities, similar to how the vanilla furnace is handled.
+     * For general blockstate transitions (on excess heat added/removed), the correct way to do this is with datapack
+     * recipes. See {@code data/pneumaticcraft/recipes/block_heat_properties/*.json} for examples.
      *
      * @param id a unique for this heat behaviour
      * @param heatBehaviour a heat behaviour supplier

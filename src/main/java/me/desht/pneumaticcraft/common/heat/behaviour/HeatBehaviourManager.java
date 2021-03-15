@@ -25,7 +25,7 @@ public enum HeatBehaviourManager {
         return INSTANCE;
     }
 
-    public void reload() {
+    public void init() {
         behaviourRegistry.clear();
 
         registerBehaviour(HeatBehaviourFurnace.ID, HeatBehaviourFurnace::new);

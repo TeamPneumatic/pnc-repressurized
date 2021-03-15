@@ -12,4 +12,5 @@ public class PneumaticCraftRecipeTypes {
     public static final String THERMO_PLANT = "thermo_plant";
     public static final String FLUID_MIXER = "fluid_mixer";
     public static final String FUEL_QUALITY = "fuel_quality";
+    public static final String HEAT_PROPERTIES = "heat_properties";
 }

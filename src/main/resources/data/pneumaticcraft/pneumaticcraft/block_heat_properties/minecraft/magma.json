@@ -1,9 +1,0 @@
-{
-  "block": "minecraft:magma_block",
-  "temperature": 1300,
-  "thermalResistance": 500,
-  "transformCold": {
-    "block": "minecraft:netherrack"
-  },
-  "heatCapacity": 10000
-}

@@ -1,0 +1,10 @@
+{
+  "type": "pneumaticcraft:heat_properties",
+  "block": "powah:dry_ice",
+  "temperature": 173,
+  "thermalResistance": 200,
+  "heatCapacity": 20000,
+  "transformHot": {
+    "block": "minecraft:blue_ice"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "type": "pneumaticcraft:heat_properties",
+  "block": "minecraft:fire",
+  "temperature": 1700,
+  "thermalResistance": 1000,
+  "transformCold": {
+    "block": "minecraft:air"
+  },
+  "heatCapacity": 1000
+}

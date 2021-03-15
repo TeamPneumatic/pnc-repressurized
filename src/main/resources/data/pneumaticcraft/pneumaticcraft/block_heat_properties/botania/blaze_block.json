@@ -1,8 +1,0 @@
-{
-  "block": "botania:blaze_block",
-  "temperature": 773,
-  "heatCapacity": 13500,
-  "transformCold": {
-    "block": "minecraft:glowstone"
-  }
-}

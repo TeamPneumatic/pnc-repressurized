@@ -3,7 +3,10 @@ package me.desht.pneumaticcraft.common.network;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.inventory.ContainerPneumaticBase;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.NBTUtil;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.RegistryKey;
@@ -13,6 +16,8 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Objects;
 import java.util.Optional;
 
 public class PacketUtil {
@@ -74,5 +79,34 @@ public class PacketUtil {
     public static <T extends TileEntity> Optional<T> getTE(PlayerEntity player, Class<T> cls) {
         if (player.world.isRemote) throw new RuntimeException("don't call this method client side!");
         return getTE(player, null, cls);
+    }
+
+    /**
+     * Write a blockstate, which may be null, to the network
+     * @param buf the packet buffer
+     * @param state the state to write
+     */
+    public static void writeNullableBlockState(PacketBuffer buf, @Nullable BlockState state) {
+        if (state == null) {
+            buf.writeBoolean(false);
+        } else {
+            buf.writeBoolean(true);
+            buf.writeCompoundTag(NBTUtil.writeBlockState(state));
+        }
+    }
+
+    /**
+     * Read a (possibly null) blockstate from the network
+     * @param buf the packet buffer
+     * @return the blockstate, may be null
+     */
+    @Nullable
+    public static BlockState readNullableBlockState(PacketBuffer buf) {
+        if (buf.readBoolean()) {
+            CompoundNBT tag = buf.readCompoundTag();
+            return NBTUtil.readBlockState(Objects.requireNonNull(tag));
+        } else {
+            return null;
+        }
     }
 }

@@ -1,52 +1,76 @@
 package me.desht.pneumaticcraft.common.heat;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.google.gson.*;
-import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import me.desht.pneumaticcraft.api.crafting.recipe.HeatPropertiesRecipe;
 import me.desht.pneumaticcraft.api.heat.HeatRegistrationEvent;
-import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
-import me.desht.pneumaticcraft.common.heat.behaviour.HeatBehaviourManager;
+import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
+import me.desht.pneumaticcraft.common.recipes.other.HeatPropertiesRecipeImpl;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FlowingFluidBlock;
-import net.minecraft.client.resources.JsonReloadListener;
-import net.minecraft.command.arguments.BlockStateParser;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.profiler.IProfiler;
-import net.minecraft.resources.IResourceManager;
-import net.minecraft.state.Property;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.ModList;
 import net.minecraftforge.registries.ForgeRegistries;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 public enum BlockHeatProperties {
     INSTANCE;
 
-    private static final String BLOCK_HEAT_PROPERTIES = "pneumaticcraft/block_heat_properties";
-
-    private final ArrayListMultimap<ResourceLocation, CustomHeatEntry> customHeatEntries = ArrayListMultimap.create();
+    private final ArrayListMultimap<Block, HeatPropertiesRecipe> customHeatEntries = ArrayListMultimap.create();
 
     public static BlockHeatProperties getInstance() {
         return INSTANCE;
     }
 
-    public CustomHeatEntry getCustomHeatEntry(BlockState state) {
-        return customHeatEntries.get(state.getBlock().getRegistryName()).stream()
-                .filter(entry -> entry.testPredicates(state))
+    public HeatPropertiesRecipe getCustomHeatEntry(World world, BlockState state) {
+        if (customHeatEntries.isEmpty()) {
+            populateCustomHeatEntries(world);
+        }
+        return customHeatEntries.get(state.getBlock()).stream()
+                .filter(entry -> entry.matchState(state))
                 .findFirst()
                 .orElse(null);
+    }
+
+    public void clear() {
+        customHeatEntries.clear();
+    }
+
+    public void register(Block block, HeatPropertiesRecipe entry) {
+        customHeatEntries.put(block, entry);
+    }
+
+    private void populateCustomHeatEntries(World world) {
+        PneumaticCraftRecipeType.HEAT_PROPERTIES.getRecipes(world)
+                .forEach((key, recipe) -> customHeatEntries.put(recipe.getBlock(), recipe));
+
+        // give other mods a chance to programmatically add simple heat properties (no transitions, just temperature & resistance)
+        MinecraftForge.EVENT_BUS.post(new HeatRegistrationEvent(HeatExchangerManager.getInstance()));
+
+        registerDefaultFluidValues();
+    }
+
+    private void registerDefaultFluidValues() {
+        // add defaulted values for all fluids which don't already have a custom entry
+        for (Fluid fluid : ForgeRegistries.FLUIDS.getValues()) {
+            if (fluid == Fluids.EMPTY) continue;
+            BlockState state = fluid.getDefaultState().getBlockState();
+            // block must be a fluid block and not already have a custom heat entry
+            if (!(state.getBlock() instanceof FlowingFluidBlock) || customHeatEntries.containsKey(state.getBlock())) {
+                continue;
+            }
+            if (!BlockHeatProperties.getInstance().getOrCreateCustomFluidEntry(fluid)) {
+                Log.warning("unable to build custom heat entry for fluid %s (block %s) ",
+                        fluid.getRegistryName(), state.getBlock().getRegistryName());
+            }
+        }
     }
 
     /**
@@ -57,24 +81,15 @@ public enum BlockHeatProperties {
      * @param fluid a fluid
      * @return the custom heat entry, or null if the fluid doesn't have a block
      */
-    public CustomHeatEntry getOrCreateCustomFluidEntry(Fluid fluid) {
+    private boolean getOrCreateCustomFluidEntry(Fluid fluid) {
         BlockState state = fluid.getDefaultState().getBlockState();
-        if (!(state.getBlock() instanceof FlowingFluidBlock)) return null;
+        if (!(state.getBlock() instanceof FlowingFluidBlock)) return false;
 
-        CustomHeatEntry entry = getCustomHeatEntry(state);
-        if (entry == null) {
-            entry = buildDefaultFluidEntry(state.getBlock(), fluid);
-            customHeatEntries.put(state.getBlock().getRegistryName(), entry);
+        List<HeatPropertiesRecipe> entry = customHeatEntries.get(state.getBlock());
+        if (entry.isEmpty()) {
+            customHeatEntries.put(state.getBlock(), buildDefaultFluidEntry(state.getBlock(), fluid));
         }
-        return entry;
-    }
-
-    private void clear() {
-        customHeatEntries.clear();
-    }
-
-    public void register(ResourceLocation id, CustomHeatEntry entry) {
-        customHeatEntries.put(id, entry);
+        return true;
     }
 
     /**
@@ -83,7 +98,7 @@ public enum BlockHeatProperties {
      * @param fluid the fluid
      * @return a new custom heat entry for this fluid
      */
-    private CustomHeatEntry buildDefaultFluidEntry(Block block, Fluid fluid) {
+    private HeatPropertiesRecipe buildDefaultFluidEntry(Block block, Fluid fluid) {
         BlockState transformHot, transformHotFlowing, transformCold, transformColdFlowing;
         int temperature = fluid.getAttributes().getTemperature();
         if (fluid.getAttributes().getTemperature() >= 1300) {  // lava temperature
@@ -97,7 +112,8 @@ public enum BlockHeatProperties {
             transformCold = Blocks.ICE.getDefaultState();
             transformColdFlowing = Blocks.SNOW.getDefaultState();
         }
-        return new CustomHeatEntry(
+        return new HeatPropertiesRecipeImpl(
+                block.getRegistryName(),
                 block,
                 transformHot, transformHotFlowing,
                 transformCold, transformColdFlowing,
@@ -106,271 +122,5 @@ public enum BlockHeatProperties {
                 PNCConfig.Common.Heat.defaultFluidThermalResistance,
                 Collections.emptyMap()
         );
-    }
-
-    public static class ReloadListener extends JsonReloadListener {
-        private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().disableHtmlEscaping().create();
-
-        public ReloadListener() {
-            super(GSON, BLOCK_HEAT_PROPERTIES);
-        }
-
-        @Override
-        protected void apply(Map<ResourceLocation, JsonElement> resourceList, IResourceManager resourceManagerIn, IProfiler profilerIn) {
-            BlockHeatProperties.getInstance().clear();
-            resourceList.forEach((id, json) -> {
-                try {
-                    CustomHeatEntry entry = CustomHeatEntry.fromJson(json);
-                    if (entry != null) {
-                        BlockHeatProperties.getInstance().register(entry.getId(), entry);
-                    }
-                } catch (JsonParseException e) {
-                    Log.error("can't load %s: %s", id, e.getMessage());
-                    Log.error(ExceptionUtils.getStackTrace(e));
-                }
-            });
-
-            HeatBehaviourManager.getInstance().reload();
-
-            MinecraftForge.EVENT_BUS.post(new HeatRegistrationEvent(HeatExchangerManager.getInstance()));
-
-            registerDefaultFluidValues();
-        }
-
-        private void registerDefaultFluidValues() {
-            // add defaulted values for all fluids which don't already have a custom entry
-            for (Fluid fluid : ForgeRegistries.FLUIDS.getValues()) {
-                if (fluid == Fluids.EMPTY) continue;
-                BlockState state = fluid.getDefaultState().getBlockState();
-                // block must be a fluid block and not already have a custom heat entry
-                if (!(state.getBlock() instanceof FlowingFluidBlock) || BlockHeatProperties.getInstance().getCustomHeatEntry(state) != null) {
-                    continue;
-                }
-                CustomHeatEntry entry = BlockHeatProperties.getInstance().getOrCreateCustomFluidEntry(fluid);
-                if (entry == null) {
-                    Log.warning("unable to build custom heat entry for fluid %s (block %s) ",
-                            fluid.getRegistryName(), state.getBlock().getRegistryName());
-                }
-            }
-        }
-    }
-
-    public static class CustomHeatEntry {
-        private final int heatCapacity;
-        private final int temperature;
-        private final double thermalResistance;
-        private final Block block;
-        private final BlockState transformHot;
-        private final BlockState transformHotFlowing;
-        private final BlockState transformCold;
-        private final BlockState transformColdFlowing;
-        private final ResourceLocation id;
-        private final Map<String, String> predicates;
-        private final IHeatExchangerLogic logic;
-
-        CustomHeatEntry(Block block,
-                        BlockState transformHot, BlockState transformHotFlowing,
-                        BlockState transformCold, BlockState transformColdFlowing,
-                        int heatCapacity, int temperature, double thermalResistance, Map<String, String> predicates) {
-            this.id = block.getRegistryName();
-            this.heatCapacity = heatCapacity;
-            this.block = block;
-            this.transformHot = transformHot;
-            this.transformHotFlowing = transformHotFlowing != null ? transformHotFlowing : transformHot;
-            this.transformCold = transformCold;
-            this.transformColdFlowing = transformColdFlowing != null ? transformColdFlowing : transformCold;
-            this.temperature = temperature;
-            this.thermalResistance = thermalResistance;
-            this.predicates = predicates;
-            this.logic = new HeatExchangerLogicConstant(temperature, thermalResistance);
-        }
-
-        CustomHeatEntry(Block block, int temperature, double thermalResistance) {
-            this (block, null, null, null, null, 0,
-                    temperature, thermalResistance, Collections.emptyMap());
-        }
-
-        static CustomHeatEntry fromJson(JsonElement jsonElement) {
-            BlockState transformHot = null;
-            BlockState transformHotFlowing = null;
-            BlockState transformCold = null;
-            BlockState transformColdFlowing = null;
-            Map<String, String> predicates = new HashMap<>();
-
-            Block block;
-            Fluid fluid;
-
-            if (!(jsonElement.isJsonObject())) return null;
-            JsonObject json = jsonElement.getAsJsonObject();
-
-            if (json.has("block") && json.has("fluid")) {
-                throw new JsonSyntaxException("heat properties entry must have only one of \"block\" or \"fluid\" fields!");
-            }
-            if (json.has("block")) {
-                ResourceLocation blockId = new ResourceLocation(JSONUtils.getString(json, "block"));
-                if (blockId.toString().equals("minecraft:air")) {
-                    throw new JsonSyntaxException("minecraft:air block heat properties may not be changed!");
-                }
-                block = ForgeRegistries.BLOCKS.getValue(blockId);
-                validateBlock(blockId, block);
-                fluid = block.getDefaultState().getFluidState().getFluid();  // ok if this is absent
-            } else if (json.has("fluid")) {
-                ResourceLocation fluidId = new ResourceLocation(JSONUtils.getString(json, "block"));
-                fluid = ForgeRegistries.FLUIDS.getValue(fluidId);
-                if (fluid == Fluids.EMPTY) {
-                    throw new JsonSyntaxException("unknown fluid " + fluidId);
-                }
-                block = fluid.getDefaultState().getBlockState().getBlock();  // not ok if this is absent!
-                validateBlock(fluidId, block);
-            } else {
-                throw new JsonSyntaxException("heat properties entry must have a \"block\" or \"fluid\" field!");
-            }
-
-            if (block == Blocks.AIR) return null;
-
-            // blocks with a total heat capacity will transform into something else if too much heat is added/removed
-            int totalHeat = 0;
-            if (json.has("heatCapacity")) {
-                totalHeat = json.get("heatCapacity").getAsInt();
-            } else if (fluid != Fluids.EMPTY) {
-                totalHeat = PNCConfig.Common.Heat.defaultFluidHeatCapacity;
-            }
-            if (totalHeat != 0) {
-                transformHot = maybeGetBlock(block, json, "transformHot");
-                transformHotFlowing = maybeGetBlock(block, json, "transformHotFlowing");
-                transformCold = maybeGetBlock(block, json, "transformCold");
-                transformColdFlowing = maybeGetBlock(block, json, "transformColdFlowing");
-            }
-
-            int temperature;
-            if (json.has("temperature")) {
-                temperature = JSONUtils.getInt(json, "temperature");
-            } else {
-                if (fluid == Fluids.EMPTY) {
-                    throw new JsonSyntaxException(block.toString() + ": Non-fluid definitions must have a 'temperature' field!");
-                } else {
-                    temperature = fluid.getAttributes().getTemperature();
-                }
-            }
-
-            double thermalResistance;
-            if (json.has("thermalResistance")) {
-                thermalResistance = json.get("thermalResistance").getAsDouble();
-            } else if (fluid == Fluids.EMPTY) {
-                thermalResistance = PNCConfig.Common.Heat.defaultBlockThermalResistance;
-            } else {
-                thermalResistance = PNCConfig.Common.Heat.defaultFluidThermalResistance;
-            }
-
-            if (json.has("statePredicate")) {
-                json.getAsJsonObject("statePredicate").entrySet().forEach(entry -> {
-                    if (block.getStateContainer().getProperty(entry.getKey()) == null) {
-                        throw new JsonSyntaxException("unknown blockstate property " + entry.getKey() + " for block" + block.getRegistryName());
-                    }
-                    predicates.put(entry.getKey(), entry.getValue().getAsString());
-                });
-            }
-
-            return new CustomHeatEntry(block,
-                    transformHot, transformHotFlowing, transformCold, transformColdFlowing,
-                    totalHeat, temperature, thermalResistance, predicates
-            );
-        }
-
-        public IHeatExchangerLogic getLogic() {
-            return logic;
-        }
-
-        boolean testPredicates(BlockState state) {
-            if (predicates.isEmpty()) return true;
-            for (Map.Entry<String, String> entry : predicates.entrySet()) {
-                Property<?> iproperty = state.getBlock().getStateContainer().getProperty(entry.getKey());
-                if (iproperty == null) {
-                    return false;
-                }
-                Comparable<?> comparable = iproperty.parseValue(entry.getValue()).orElse(null);
-                // looks weird, but should be OK, at least for boolean/enum/integer properties
-                if (comparable == null || state.get(iproperty) != comparable) {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        private static void validateBlock(ResourceLocation blockId, Block block) {
-            if (block == Blocks.AIR) {
-                String mod = blockId.getNamespace();
-                if (ModList.get().isLoaded(mod)) {
-                    throw new JsonSyntaxException("unknown block id: " + blockId.toString());
-                } else {
-                    // not really an error
-                    Log.info("ignoring heat properties for %s: mod '%s' not loaded", blockId, mod);
-                }
-            }
-        }
-
-        private static BlockState parseBlockState(String str) {
-            try {
-                BlockStateParser parser = (new BlockStateParser(new StringReader(str), false)).parse(false);
-                return parser.getState();
-            } catch (CommandSyntaxException e) {
-                throw new JsonSyntaxException(String.format("invalid blockstate [%s] - %s", str, e.getMessage()));
-            }
-        }
-
-        private static BlockState maybeGetBlock(Block b, JsonObject json, String field) {
-            if (!json.has(field)) return null;
-
-            JsonObject sub = json.get(field).getAsJsonObject();
-            if (sub.has("block")) {
-                return parseBlockState(JSONUtils.getString(sub, "block"));
-            } else if (sub.has("fluid")) {
-                ResourceLocation fluidId = new ResourceLocation(JSONUtils.getString(sub, "fluid"));
-                if (ForgeRegistries.FLUIDS.containsKey(fluidId)) {
-                    return ForgeRegistries.FLUIDS.getValue(fluidId).getDefaultState().getBlockState();
-                } else {
-                    throw new JsonSyntaxException(String.format("unknown fluid '%s' for field '%s' in block '%s'", fluidId, field, b.getRegistryName()));
-                }
-            } else {
-                throw new JsonSyntaxException(String.format("block %s must have either a 'block' or 'fluid' section!", b.getRegistryName()));
-            }
-        }
-
-        public int getHeatCapacity() {
-            return heatCapacity;
-        }
-
-        public int getTemperature() {
-            return temperature;
-        }
-
-        public double getThermalResistance() {
-            return thermalResistance;
-        }
-
-        public Block getBlock() {
-            return block;
-        }
-
-        public BlockState getTransformHot() {
-            return transformHot;
-        }
-
-        public BlockState getTransformCold() {
-            return transformCold;
-        }
-
-        public BlockState getTransformHotFlowing() {
-            return transformHotFlowing;
-        }
-
-        public BlockState getTransformColdFlowing() {
-            return transformColdFlowing;
-        }
-
-        public ResourceLocation getId() {
-            return id;
-        }
-
     }
 }

@@ -1,8 +1,0 @@
-{
-  "block": "quark:blaze_lantern",
-  "temperature": 773,
-  "heatCapacity": 9675,
-  "transformCold": {
-    "block": "minecraft:glowstone"
-  }
-}

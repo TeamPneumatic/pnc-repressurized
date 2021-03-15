@@ -1,0 +1,9 @@
+{
+  "type": "pneumaticcraft:heat_properties",
+  "block": "quark:permafrost",
+  "temperature": 223,
+  "heatCapacity": 5000,
+  "transformCold": {
+    "block": "minecraft:cobblestone"
+  }
+}

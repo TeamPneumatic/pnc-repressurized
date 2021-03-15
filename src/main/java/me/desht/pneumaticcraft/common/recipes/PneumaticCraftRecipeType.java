@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe;
 import me.desht.pneumaticcraft.api.crafting.recipe.PneumaticCraftRecipe;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.fluid.FuelRegistry;
+import me.desht.pneumaticcraft.common.heat.BlockHeatProperties;
 import me.desht.pneumaticcraft.common.item.ItemSeismicSensor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketClearRecipeCache;
@@ -12,6 +13,7 @@ import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.recipes.machine.*;
 import me.desht.pneumaticcraft.common.recipes.other.FuelQualityRecipeImpl;
+import me.desht.pneumaticcraft.common.recipes.other.HeatPropertiesRecipeImpl;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityFluidMixer;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberInterface;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityThermopneumaticProcessingPlant;
@@ -61,6 +63,8 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
             = registerType(PneumaticCraftRecipeTypes.FLUID_MIXER);
     public static final PneumaticCraftRecipeType<FuelQualityRecipeImpl> FUEL_QUALITY
             = registerType(PneumaticCraftRecipeTypes.FUEL_QUALITY);
+    public static final PneumaticCraftRecipeType<HeatPropertiesRecipeImpl> HEAT_PROPERTIES
+            = registerType(PneumaticCraftRecipeTypes.HEAT_PROPERTIES);
 
     private final Map<ResourceLocation, T> cachedRecipes = new HashMap<>();
     private final ResourceLocation registryName;
@@ -103,6 +107,7 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
         AmadronOfferManager.getInstance().rebuildRequired();
         FuelRegistry.getInstance().clearCachedFuelFluids();
         ItemSeismicSensor.clearCachedFluids();
+        BlockHeatProperties.getInstance().clear();
     }
 
     public Map<ResourceLocation, T> getRecipes(World world) {
