@@ -30,13 +30,12 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
 import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
     private final Block block;
+    private final BlockState inputState;
     private final BlockState transformHot;
     private final BlockState transformHotFlowing;
     private final BlockState transformCold;
@@ -60,11 +59,30 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
         this.transformHotFlowing = transformHotFlowing;
         this.transformCold = transformCold;
         this.transformColdFlowing = transformColdFlowing;
-        this.predicates = predicates;
+        this.predicates = ImmutableMap.copyOf(predicates);
         this.heatCapacity = heatCapacity;
         this.temperature = temperature;
         this.thermalResistance = thermalResistance;
         this.logic = new HeatExchangerLogicConstant(temperature, thermalResistance);
+        this.inputState = makeInputState();
+    }
+
+    private BlockState makeInputState() {
+        if (!predicates.isEmpty()) {
+            List<String> l = predicates.entrySet().stream()
+                    .map(e -> e.getKey() + "=" + e.getValue())
+                    .collect(Collectors.toList());
+            BlockStateParser parser;
+            try {
+                String str = block.getRegistryName().toString() + "[" + String.join(",", l) + "]";
+                parser = (new BlockStateParser(new StringReader(str), false)).parse(false);
+            } catch (CommandSyntaxException e) {
+                return block.getDefaultState();
+            }
+            return parser.getState();
+        } else {
+            return block.getDefaultState();
+        }
     }
 
     public HeatPropertiesRecipeImpl(Block block, int temperature, double thermalResistance) {
@@ -89,6 +107,11 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
     @Override
     public Block getBlock() {
         return block;
+    }
+
+    @Override
+    public BlockState getBlockState() {
+        return inputState;
     }
 
     @Override
@@ -157,6 +180,11 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
             }
         }
         return true;
+    }
+
+    @Override
+    public Map<String, String> getBlockStatePredicates() {
+        return predicates;
     }
 
     public static class Serializer<T extends HeatPropertiesRecipe> extends ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<T> {

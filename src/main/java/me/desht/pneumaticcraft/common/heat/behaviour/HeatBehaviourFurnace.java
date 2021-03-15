@@ -17,7 +17,7 @@ public class HeatBehaviourFurnace extends HeatBehaviour<AbstractFurnaceTileEntit
 
     @Override
     public boolean isApplicable() {
-        return getTileEntity() instanceof AbstractFurnaceTileEntity;
+        return getBlockState().getBlock() instanceof AbstractFurnaceBlock;
     }
 
     @Override

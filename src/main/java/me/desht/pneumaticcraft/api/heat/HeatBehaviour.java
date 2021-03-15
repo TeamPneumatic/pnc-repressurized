@@ -14,14 +14,16 @@ import java.util.function.Supplier;
 
 /**
  * You can extend this class, and register it via
- * {@link HeatRegistrationEvent#registerHeatBehaviour(ResourceLocation, Supplier)} )}
+ * {@link IHeatRegistry#registerHeatBehaviour(ResourceLocation, Supplier)}
  * <p>
  * This can be used to add heat dependent logic to non-TE's or blocks you don't have access to. For example,
  * PneumaticCraft uses this to power Furnaces with heat, and to turn Lava into Obsidian when heat is drained.
- * This only works for ticking heat logic, not for static heat sources like lava blocks.
+ * Of course, this requires a ticking heat exchanger block (e.g. a compressed iron block or any heatable machine) to
+ * perform the ticking behaviour; simply adding a heat behaviour to lava won't make lava spontaneously turn into
+ * obsidian. A ticking heat exchanger is needed to actually drain the heat.
  * <p>
- * For general blockstate transitions, datapacks are the preferred way to add custom heat behaviours. See
- * {@code data/pneumaticcraft/pneumaticcraft/block_heat_properties/}
+ * For general blockstate transitions, datapack recipes are the preferred way to add custom heat behaviours. See
+ * {@code data/pneumaticcraft/recipes/block_heat_properties/*.json}
  */
 public abstract class HeatBehaviour<T extends TileEntity> implements INBTSerializable<CompoundNBT> {
     private IHeatExchangerLogic connectedHeatLogic;

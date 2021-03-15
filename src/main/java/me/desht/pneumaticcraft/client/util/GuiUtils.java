@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.gui.AbstractGui;
@@ -21,14 +22,17 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.fluid.Fluid;
+import net.minecraft.inventory.container.PlayerContainer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Matrix4f;
+import net.minecraft.util.math.vector.Vector3f;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
+import net.minecraftforge.client.model.data.EmptyModelData;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidTank;
 import org.apache.commons.lang3.StringUtils;
@@ -132,6 +136,32 @@ public class GuiUtils {
                 RenderSystem.enableDepthTest();
             }
         }
+    }
+
+    public static void renderBlockInGui(MatrixStack matrixStack, BlockState block, float x, float y, float z, float rotate, float scale) {
+        final Minecraft mc = Minecraft.getInstance();
+        matrixStack.push();
+        matrixStack.translate(x, y, z);
+        matrixStack.scale(scale, -scale, scale);
+        matrixStack.translate(-0.5F, -1F, 0);
+
+        matrixStack.rotate(Vector3f.XP.rotationDegrees(30F));
+
+        matrixStack.translate(0.5F, 0, -0.5F);
+        matrixStack.rotate(Vector3f.YP.rotationDegrees(rotate));
+        matrixStack.translate(-0.5F, 0, 0.5F);
+
+        matrixStack.push();
+        RenderSystem.color4f(1F, 1F, 1F, 1F);
+        matrixStack.translate(0, 0, -1);
+
+        mc.getTextureManager().bindTexture(PlayerContainer.LOCATION_BLOCKS_TEXTURE);
+        final IRenderTypeBuffer.Impl buffers = Minecraft.getInstance().getRenderTypeBuffers().getBufferSource();
+        mc.getBlockRendererDispatcher().renderBlock(block, matrixStack, buffers, RenderUtils.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, EmptyModelData.INSTANCE);
+        buffers.finish();
+        matrixStack.pop();
+
+        matrixStack.pop();
     }
 
     public static void drawFluid(MatrixStack matrixStack, final Rectangle2d bounds, @Nullable FluidStack fluidStack, @Nullable IFluidTank tank) {

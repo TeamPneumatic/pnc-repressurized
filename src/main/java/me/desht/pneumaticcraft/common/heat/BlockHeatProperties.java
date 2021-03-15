@@ -17,10 +17,12 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
-public enum BlockHeatProperties {
+public enum BlockHeatProperties implements Iterable<HeatPropertiesRecipe> {
     INSTANCE;
 
     private final ArrayListMultimap<Block, HeatPropertiesRecipe> customHeatEntries = ArrayListMultimap.create();
@@ -37,6 +39,13 @@ public enum BlockHeatProperties {
                 .filter(entry -> entry.matchState(state))
                 .findFirst()
                 .orElse(null);
+    }
+
+    public Collection<HeatPropertiesRecipe> getAllEntries(World world) {
+        if (customHeatEntries.isEmpty()) {
+            populateCustomHeatEntries(world);
+        }
+        return customHeatEntries.values();
     }
 
     public void clear() {
@@ -101,11 +110,16 @@ public enum BlockHeatProperties {
     private HeatPropertiesRecipe buildDefaultFluidEntry(Block block, Fluid fluid) {
         BlockState transformHot, transformHotFlowing, transformCold, transformColdFlowing;
         int temperature = fluid.getAttributes().getTemperature();
-        if (fluid.getAttributes().getTemperature() >= 1300) {  // lava temperature
+        if (temperature >= Fluids.LAVA.getAttributes().getTemperature()) {
             transformHot = null;
             transformHotFlowing = null;
             transformCold = Blocks.OBSIDIAN.getDefaultState();
             transformColdFlowing = Blocks.COBBLESTONE.getDefaultState();
+        } else if (temperature <= 273) {
+            transformHot = Blocks.SNOW_BLOCK.getDefaultState();
+            transformHotFlowing = Blocks.SNOW.getDefaultState();
+            transformCold = Blocks.BLUE_ICE.getDefaultState();
+            transformColdFlowing = Blocks.SNOW.getDefaultState();
         } else {
             transformHot = Blocks.AIR.getDefaultState();
             transformHotFlowing = Blocks.AIR.getDefaultState();
@@ -122,5 +136,10 @@ public enum BlockHeatProperties {
                 PNCConfig.Common.Heat.defaultFluidThermalResistance,
                 Collections.emptyMap()
         );
+    }
+
+    @Override
+    public Iterator<HeatPropertiesRecipe> iterator() {
+        return customHeatEntries.values().iterator();
     }
 }

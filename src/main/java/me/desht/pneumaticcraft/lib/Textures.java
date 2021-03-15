@@ -171,7 +171,8 @@ public class Textures {
     public static final ResourceLocation GUI_JEI_YEAST_CRAFTING = guiTexture("jei/gui_jei_yeast_crafting.png");
     public static final ResourceLocation GUI_JEI_BONUS = guiTexture("jei/gui_jei_bonus.png");
     public static final ResourceLocation GUI_JEI_SPAWNER_EXTRACTION = guiTexture("jei/gui_jei_spawner_extraction.png");
-
+    public static final ResourceLocation GUI_JEI_HEAT_PROPERTIES = guiTexture("jei/gui_jei_heat_properties.png");
+    
     // misc GUI Icons
     public static final ResourceLocation GUI_COPY_ICON_LOCATION = guiIconTexture("gui_copy.png");
     public static final ResourceLocation GUI_DELETE_ICON_LOCATION = guiIconTexture("gui_delete.png");
@@ -200,6 +201,8 @@ public class Textures {
     public static final ResourceLocation WIDGET_AMADRON_OFFER = guiTexture("widget/widget_amadron_offer.png");
     public static final ResourceLocation WIDGET_VERTICAL_SCROLLBAR = guiTexture("widget/widget_vertical_scrollbar.png");
     public static final ResourceLocation JEI_EXPLOSION = guiTexture("jei/explosion.png");
+    public static final ResourceLocation JEI_THERMOMETER = guiTexture("jei/thermometer.png");
+
 
     // misc rendering textures
     public static final ResourceLocation MINIGUN_CROSSHAIR = new ResourceLocation(RENDER_LOCATION + "minigun_crosshair.png");

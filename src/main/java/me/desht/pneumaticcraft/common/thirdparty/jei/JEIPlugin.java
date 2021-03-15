@@ -21,7 +21,10 @@ import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter;
+import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.registration.*;
+import mezz.jei.api.runtime.IJeiRuntime;
+import mezz.jei.api.runtime.IRecipesGui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.Item;
@@ -36,6 +39,8 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 @JeiPlugin
 public class JEIPlugin implements IModPlugin {
     static IJeiHelpers jeiHelpers;
+    static IRecipeManager recipeManager;
+    static IRecipesGui recipesGui;
 
     @Override
     public void registerItemSubtypes(ISubtypeRegistration registration) {
@@ -66,7 +71,8 @@ public class JEIPlugin implements IModPlugin {
                 new JEIPlasticSolidifyingCategory(),
                 new JEIEtchingTankCategory(),
                 new JEIYeastCraftingCategory(),
-                new JEISpawnerExtractionCategory()
+                new JEISpawnerExtractionCategory(),
+                new JEIBlockHeatPropertiesCategory()
         );
         if (PNCConfig.Common.Recipes.explosionCrafting) {
             registry.addRecipeCategories(new JEIExplosionCraftingCategory());
@@ -95,6 +101,10 @@ public class JEIPlugin implements IModPlugin {
         registration.addRecipes(JEIEtchingTankCategory.getAllRecipes(), ModCategoryUid.ETCHING_TANK);
         registration.addRecipes(JEIYeastCraftingCategory.getAllRecipes(), ModCategoryUid.YEAST_CRAFTING);
         registration.addRecipes(JEISpawnerExtractionCategory.getAllRecipes(), ModCategoryUid.SPAWNER_EXTRACTION);
+
+        // even though heat properties are in the vanilla recipe system, we use a custom registration here
+        // so we can pull extra entries from the BlockHeatProperties manager (auto-registered fluids etc.)
+        registration.addRecipes(JEIBlockHeatPropertiesCategory.getAllRecipes(), ModCategoryUid.HEAT_PROPERTIES);
 
         for (RegistryObject<Item> item: ModItems.ITEMS.getEntries()) {
             addStackInfo(registration, new ItemStack(item.get()));
@@ -131,6 +141,7 @@ public class JEIPlugin implements IModPlugin {
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.ETCHING_TANK.get()), ModCategoryUid.ETCHING_TANK);
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.FLUID_MIXER.get()), ModCategoryUid.FLUID_MIXER);
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.SPAWNER_EXTRACTOR.get()), ModCategoryUid.SPAWNER_EXTRACTION);
+        registration.addRecipeCatalyst(new ItemStack(ModBlocks.HEAT_PIPE.get()), ModCategoryUid.HEAT_PROPERTIES);
     }
 
     @Override
@@ -148,6 +159,12 @@ public class JEIPlugin implements IModPlugin {
         registration.addGhostIngredientHandler(GuiAmadronAddTrade.class, new AmadronAddTradeGhost());
         registration.addGhostIngredientHandler(GuiLogisticsBase.class, (IGhostIngredientHandler) new LogisticsFilterGhost());
         registration.addGhostIngredientHandler(GuiProgWidgetItemFilter.class, new ProgWidgetItemFilterGhost());
+    }
+
+    @Override
+    public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
+        recipeManager = jeiRuntime.getRecipeManager();
+        recipesGui = jeiRuntime.getRecipesGui();
     }
 
     @Override

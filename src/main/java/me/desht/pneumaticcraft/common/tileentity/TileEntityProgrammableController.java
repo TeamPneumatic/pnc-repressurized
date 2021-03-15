@@ -243,7 +243,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     }
 
     private void handleDynamicChunkloading(ChunkPos oldPos, ChunkPos newPos) {
-        Log.info("drone moved from " + oldPos + " to " + newPos);
+//        Log.info("drone moved from " + oldPos + " to " + newPos);
         for (int cx = newPos.x - 1; cx <= newPos.x + 1; cx++) {
             for (int cz = newPos.z - 1; cz <= newPos.z + 1; cz++) {
                 ChunkPos cp = new ChunkPos(cx, cz);
@@ -255,7 +255,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
         while (iter.hasNext()) {
             ChunkPos cp = iter.next();
             boolean load = shouldLoadChunk(cp);
-            Log.info("chunkload " + cp + "? " + load);
+//            Log.info("chunkload " + cp + "? " + load);
             ForgeChunkManager.forceChunk((ServerWorld) world, Names.MOD_ID, pos, cp.x, cp.z, load, false);
             if (!load) {
                 iter.remove();

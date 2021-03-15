@@ -20,7 +20,7 @@ public class HeatBehaviourHeatFrame extends HeatBehaviour<TileEntity> {
     private EntityHeatFrame semiBlock;
 
     @Override
-    public HeatBehaviour initialize(IHeatExchangerLogic connectedHeatLogic, World world, BlockPos pos, Direction direction) {
+    public HeatBehaviour<?> initialize(IHeatExchangerLogic connectedHeatLogic, World world, BlockPos pos, Direction direction) {
         super.initialize(connectedHeatLogic, world, pos, direction);
         semiBlock = null;
         return this;

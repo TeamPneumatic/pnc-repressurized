@@ -16,6 +16,7 @@ public class ModCategoryUid {
     static final ResourceLocation AMADRON_TRADE = RL("amadron_trade");
     static final ResourceLocation YEAST_CRAFTING = RL("yeast_crafting");
     static final ResourceLocation SPAWNER_EXTRACTION = RL("spawner_extraction");
+    static final ResourceLocation HEAT_PROPERTIES = RL("heat_properties");
 
     // pseudo-recipes
     static final ResourceLocation UV_LIGHT_BOX = RL("uv_light_box");

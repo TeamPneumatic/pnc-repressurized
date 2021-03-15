@@ -93,6 +93,7 @@ public class HeatBehaviourCustomTransition extends HeatBehaviourTransition {
             getWorld().setBlockState(getPos(), turningBlockSource);
             onTransition(getPos());
         } else {
+            // a flowing block: follow it back to the source
             Set<BlockPos> traversed = new HashSet<>();
             Stack<BlockPos> pending = new Stack<>();
             pending.push(getPos());
