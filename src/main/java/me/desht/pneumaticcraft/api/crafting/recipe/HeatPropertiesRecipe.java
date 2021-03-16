@@ -40,6 +40,8 @@ public abstract class HeatPropertiesRecipe extends PneumaticCraftRecipe {
 
     public abstract Map<String,String> getBlockStatePredicates();
 
+    public abstract String getDescriptionKey();
+
     public ITextComponent getInputDisplayName() {
         if (getBlock() instanceof FlowingFluidBlock) {
             return new FluidStack(((FlowingFluidBlock) getBlock()).getFluid(), 1000).getDisplayName();

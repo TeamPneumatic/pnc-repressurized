@@ -134,7 +134,8 @@ public enum BlockHeatProperties implements Iterable<HeatPropertiesRecipe> {
                 PNCConfig.Common.Heat.defaultFluidHeatCapacity,
                 temperature,
                 PNCConfig.Common.Heat.defaultFluidThermalResistance,
-                Collections.emptyMap()
+                Collections.emptyMap(),
+                ""
         );
     }
 

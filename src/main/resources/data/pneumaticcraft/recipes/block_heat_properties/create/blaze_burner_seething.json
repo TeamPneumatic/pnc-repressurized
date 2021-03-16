@@ -1,5 +1,6 @@
 {
   "type": "pneumaticcraft:heat_properties",
+  "description": "pneumaticcraft.gui.jei.description.create_blaze_burner.seething",
   "block": "create:blaze_burner",
   "statePredicate": {
     "blaze": "seething"

@@ -45,12 +45,13 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
     private final int heatCapacity;
     private final int temperature;
     private final double thermalResistance;
+    private final String descriptionKey;
 
     public HeatPropertiesRecipeImpl(ResourceLocation id, Block block,
                                     BlockState transformHot, BlockState transformHotFlowing,
                                     BlockState transformCold, BlockState transformColdFlowing,
                                     int heatCapacity, int temperature, double thermalResistance,
-                                    Map<String, String> predicates)
+                                    Map<String, String> predicates, String descriptionKey)
     {
         super(id);
 
@@ -63,8 +64,13 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
         this.heatCapacity = heatCapacity;
         this.temperature = temperature;
         this.thermalResistance = thermalResistance;
+        this.descriptionKey = descriptionKey;
         this.logic = new HeatExchangerLogicConstant(temperature, thermalResistance);
         this.inputState = makeInputState();
+    }
+
+    public HeatPropertiesRecipeImpl(Block block, int temperature, double thermalResistance) {
+        this(block.getRegistryName(), block, null, null, null, null, 0, temperature, thermalResistance, Collections.emptyMap(), "");
     }
 
     private BlockState makeInputState() {
@@ -83,10 +89,6 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
         } else {
             return block.getDefaultState();
         }
-    }
-
-    public HeatPropertiesRecipeImpl(Block block, int temperature, double thermalResistance) {
-        this(block.getRegistryName(), block, null, null, null, null, 0, temperature, thermalResistance, Collections.emptyMap());
     }
 
     @Override
@@ -154,6 +156,7 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
         buffer.writeInt(temperature);
         buffer.writeInt(heatCapacity);
         buffer.writeDouble(thermalResistance);
+        buffer.writeString(descriptionKey);
     }
 
     @Override
@@ -185,6 +188,11 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
     @Override
     public Map<String, String> getBlockStatePredicates() {
         return predicates;
+    }
+
+    @Override
+    public String getDescriptionKey() {
+        return descriptionKey;
     }
 
     public static class Serializer<T extends HeatPropertiesRecipe> extends ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<T> {
@@ -279,9 +287,11 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
                 });
             }
 
+            String descriptionKey = JSONUtils.getString(json, "description", "");
+
             return factory.create(recipeId, block,
                     transformHot, transformHotFlowing, transformCold, transformColdFlowing,
-                    totalHeat, temperature, thermalResistance, predicates
+                    totalHeat, temperature, thermalResistance, predicates, descriptionKey
             );
         }
 
@@ -301,10 +311,11 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
             int temperature = buffer.readInt();
             int heatCapacity = buffer.readInt();
             double thermalResistance = buffer.readDouble();
+            String descriptionKey = buffer.readString();
 
             return factory.create(recipeId, block,
                     transformHot, transformHotFlowing, transformCold, transformColdFlowing,
-                    heatCapacity, temperature, thermalResistance, predBuilder.build()
+                    heatCapacity, temperature, thermalResistance, predBuilder.build(), descriptionKey
             );
         }
 
@@ -352,7 +363,7 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
                      BlockState transformHot, BlockState transformHotFlowing,
                      BlockState transformCold, BlockState transformColdFlowing,
                      int heatCapacity, int temperature, double thermalResistance,
-                     Map<String, String> predicates);
+                     Map<String, String> predicates, String descriptionKey);
         }
     }
 }
