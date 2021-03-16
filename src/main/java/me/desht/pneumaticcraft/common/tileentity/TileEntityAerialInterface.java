@@ -137,12 +137,16 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
         invHandlers.add(playerOffhandInvHandler);
         invHandlers.add(playerEnderInvHandler);
 
-        if (Curios.available) {
-            PlayerCuriosHandler playerCuriosHandler = new PlayerCuriosHandler();
-            itemHandlerSideConfigurator.registerHandler("curiosInv", new ItemStack(Items.DIAMOND),
-                    CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, () -> playerCuriosHandler);
-            invHandlers.add(playerCuriosHandler);
-        }
+        // disabled for now:
+        // 1) reports of item duplication (which I can't reproduce)
+        // 2) curios item handlers don't prevent non curio items being inserted (looks like checking only done at the slot level)
+
+//        if (Curios.available) {
+//            PlayerCuriosHandler playerCuriosHandler = new PlayerCuriosHandler();
+//            itemHandlerSideConfigurator.registerHandler("curiosInv", new ItemStack(Items.DIAMOND),
+//                    CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, () -> playerCuriosHandler);
+//            invHandlers.add(playerCuriosHandler);
+//        }
     }
 
     @Override
@@ -487,13 +491,13 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
         }
     }
 
-    private class PlayerCuriosHandler extends PlayerInvHandler {
-        @Override
-        protected IItemHandler getInvWrapper(PlayerEntity player) {
-            if (cached == null) cached = CuriosUtils.makeCombinedInvWrapper(player);
-            return cached;
-        }
-    }
+//    private class PlayerCuriosHandler extends PlayerInvHandler {
+//        @Override
+//        protected IItemHandler getInvWrapper(PlayerEntity player) {
+//            if (cached == null) cached = CuriosUtils.makeCombinedInvWrapper(player);
+//            return cached;
+//        }
+//    }
 
     private class PlayerFoodHandler implements IItemHandler {
         @Override

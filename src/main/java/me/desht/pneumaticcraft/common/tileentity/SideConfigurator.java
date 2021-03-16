@@ -221,6 +221,10 @@ public class SideConfigurator<T> implements INBTSerializable<CompoundNBT> {
         ListNBT l = nbt.getList("faces", Constants.NBT.TAG_BYTE);
         for (int i = 0; i < l.size() && i < faces.length; i++) {
             faces[i] = ((ByteNBT) l.get(i)).getByte();
+            if (faces[i] < 0 || faces[i] >= entries.size()) {
+                // sanity check: 0th element is always available ("unconnected")
+                faces[i] = 0;
+            }
         }
     }
 
