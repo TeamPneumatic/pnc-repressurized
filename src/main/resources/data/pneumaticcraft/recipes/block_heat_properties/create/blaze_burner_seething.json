@@ -4,5 +4,6 @@
   "statePredicate": {
     "blaze": "seething"
   },
-  "temperature": 1700
+  "temperature": 1700,
+  "thermalResistance": 50
 }
