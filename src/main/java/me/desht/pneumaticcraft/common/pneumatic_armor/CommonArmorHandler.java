@@ -424,8 +424,10 @@ public class CommonArmorHandler implements ICommonArmorHandler {
                 jetBootsActiveTicks++;
             } else if (isJetBootsEnabled() && !player.isOnGround() && !player.isElytraFlying()) {
                 // jetboots not firing, but enabled - slowly descend (or hover if enough upgrades)
-                // and bring player to complete halt if flight stabilizes and not actively moving laterally
-                boolean stopped = flightStabilizers && PneumaticCraftUtils.epsilonEquals(player.moveForward, 0f);
+                // and bring player to complete halt if flight stabilizers and not actively moving forward/sideways
+                boolean stopped = flightStabilizers
+                        && PneumaticCraftUtils.epsilonEquals(player.moveForward, 0f)
+                        && PneumaticCraftUtils.epsilonEquals(player.moveStrafing, 0f);
                 double xMotion = stopped ? 0 : player.getMotion().x;
                 double yMotion = player.isSneaking() ? -0.45 : -0.1 + 0.02 * jetbootsCount;
                 double zMotion = stopped ? 0 : player.getMotion().z;
