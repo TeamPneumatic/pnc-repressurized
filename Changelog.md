@@ -23,6 +23,12 @@ Note: PNC:R 2.9.3 and later have been successfully tested on Minecraft 1.16.5.  
   * One upgrade is needed for each armor piece for effective protection (you need all 4 to be safe)
   * This protection may extend to other mods which add radiation mechanics in future as they become available on 1.16
   * Note: protects against initial irradiation; if you're already irradiated, this won't help!
+* Added JEI support for displaying the PneumaticCraft heat properties of any blocks/fluids which have been assigned custom heat properties
+  * Displays temperature and thermal resistance for all blocks & fluids
+  * For blocks which have a transition (e.g. lava -> magma) also shows the hot/cold transitions, and the heat capacity of the block/fluids
+* As part of the above change, all custom heat properties are now added via the vanilla recipe system
+  * This means that data files under `data/pneumaticcraft/pneumaticraft/block_heat_properties` have moved to `data/pneumaticcraft/recipes/block_heat_properties`
+  * The JSON files themselves have the same format as before, with the addition of a mandatory `"type": "pneumaticcraft:heat_properties"` field
 * Added custom heat properties for a bunch of new modded blocks (thanks @MuteTiefling)
   * Better End (Forge): all the Emerald Ice blocks
   * Biomes You'll Go: Boric/Cryptic Campfires, Cryptic Magma, Magmatic Stone
@@ -31,6 +37,10 @@ Note: PNC:R 2.9.3 and later have been successfully tested on Minecraft 1.16.5.  
   * Minecraft: Soul Campfire
   * Occultism: Spirit Fire
   * Valhelsia Structures: Brazier
+* All pressurizable items can now take the CoFH Holding enchantment to increase their air storage (over & above what Volume Upgrades add)
+  * Each level of Holding acts as a straight volume multiplier: Holding I = 2x, Holding II = 3x, etc.
+  * This only applies to items/tools, not pneumatic machines when in item form
+  * Also works for Drones, which will remember the enchantment when switching between item and entity form
   
 ### Updates
 * Drones which get stuck on a block (even when they are able to pathfind) will now teleport if stuck for more than 20 ticks
@@ -40,9 +50,6 @@ Note: PNC:R 2.9.3 and later have been successfully tested on Minecraft 1.16.5.  
 * GUIs for Thermopneumatic Processing Plant, Fluid Mixer and Refinery now show the current recipe in the JEI recipe click area
   * If the machine has a current recipe based on its input items/fluids, then the planned output(s) will be shown in the area tooltip
   * If extended information is enabled (F3+H), the internal recipe ID will also be shown
-* All pressurizable items can now take the CoFH Holding enchantment to increase their air storage (over & above what Volume Upgrades add)
-  * Each level of Holding acts as a straight volume multiplier: Holding I = 2x, Holding II = 3x, etc.
-  * This only applies to items/tools, not pneumatic machines when in item form
 * All PneumaticCraft Drones are now immune to Mekanism radiation
 * Custom block heat properties now support multiple entries for the same block
   * Entries must be distinguished by blockstate predicates.  See the `create/blaze_burner_*.json` entries for examples.
