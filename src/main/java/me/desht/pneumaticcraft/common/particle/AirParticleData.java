@@ -59,7 +59,7 @@ public class AirParticleData implements IParticleData {
     }
 
     public float getAlpha() {
-        return alpha;
+        return useAlt ? alpha * 2 : alpha;
     }
 
     private boolean useAltParticles() {
