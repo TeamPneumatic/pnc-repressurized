@@ -4,11 +4,11 @@ This is an overview of significant new features and fixes by release.  See https
 
 Changes are in reverse chronological order; newest changes at the top.
 
-## Minecraft 1.16.3 / 1.16.4 / 1.16.5
+## Minecraft 1.16.5
 
-Note: PNC:R 2.9.3 and later have been successfully tested on Minecraft 1.16.5.  Older (but recent) versions will probably also work on MC 1.16.5, but haven't been tested.
+PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 
-## 2.11.0-?? (unreleased)
+## 2.11.0-155 (17 Mar 2021)
 
 ### New
 * The Programmable Controller now has some optional chunkloading functionality
@@ -25,7 +25,7 @@ Note: PNC:R 2.9.3 and later have been successfully tested on Minecraft 1.16.5.  
   * Note: protects against initial irradiation; if you're already irradiated, this won't help!
 * Added JEI support for displaying the PneumaticCraft heat properties of any blocks/fluids which have been assigned custom heat properties
   * Displays temperature and thermal resistance for all blocks & fluids
-  * For blocks which have a transition (e.g. lava -> magma) also shows the hot/cold transitions, and the heat capacity of the block/fluids
+  * For blocks which have a transition (e.g. Lava -> Netherrack) also shows the hot/cold transitions, and the heat capacity of the block/fluids
 * As part of the above change, all custom heat properties are now added via the vanilla recipe system
   * This means that data files under `data/pneumaticcraft/pneumaticraft/block_heat_properties` have moved to `data/pneumaticcraft/recipes/block_heat_properties`
   * The JSON files themselves have the same format as before, with the addition of a mandatory `"type": "pneumaticcraft:heat_properties"` field
@@ -40,7 +40,7 @@ Note: PNC:R 2.9.3 and later have been successfully tested on Minecraft 1.16.5.  
 * All pressurizable items can now take the CoFH Holding enchantment to increase their air storage (over & above what Volume Upgrades add)
   * Each level of Holding acts as a straight volume multiplier: Holding I = 2x, Holding II = 3x, etc.
   * This only applies to items/tools, not pneumatic machines when in item form
-  * Also works for Drones, which will remember the enchantment when switching between item and entity form
+  * Also works for Drones, which will remember the enchantment when switched between item and entity form
   
 ### Updates
 * Drones which get stuck on a block (even when they are able to pathfind) will now teleport if stuck for more than 20 ticks
@@ -53,13 +53,19 @@ Note: PNC:R 2.9.3 and later have been successfully tested on Minecraft 1.16.5.  
 * All PneumaticCraft Drones are now immune to Mekanism radiation
 * Custom block heat properties now support multiple entries for the same block
   * Entries must be distinguished by blockstate predicates.  See the `create/blaze_burner_*.json` entries for examples.
-
+* Disabled Aerial Interface / Curios inventory insertion and extraction
+  * I've had reports of item duplication bugs, although I can't reproduce them myself
+  * Other Curios integration (Aerial Interface FE-charging items in Curios slots and Memory Stick as a Curio) continue to work as before
+  
 ### Fixes
 * Fix Thermopneumatic Processing Plant choosing the wrong recipe under certain circumstances
   * Was an issue with similar recipes (e.g. Potato -> Vegetable Oil & Potato/Yeast -> Ethanol), exposed when extra recipes have been added
-* Hopefully fix problems with players falling off/through Elevators (generally with a lot of speed upgrades)
+* Hopefully fix problems with players falling off/through Elevators which have a lot of speed upgrades (6+)
 * Fix Air Cannon causing server crashes when launching TNT near a Security Station
 * Fixed client crash when players hit drones (bug introduced in 2.10.2 related to drones being immune to their own area attacks)
+* Fixed a server crash related to capturing Drones in a Mob Imprisonment Tool (Industrial Foregoing) and then releasing them
+
+## Minecraft 1.16.3 / 1.16.4 / 1.16.5
 
 ## 2.10.3-149 (6 Mar 2021)
 
