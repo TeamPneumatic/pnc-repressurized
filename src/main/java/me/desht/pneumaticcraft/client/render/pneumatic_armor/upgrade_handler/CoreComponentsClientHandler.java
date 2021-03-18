@@ -94,14 +94,16 @@ public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.Abst
             return NO_ARMOR;
         float pressure = handler.getArmorPressure(slot);
         if (showPressureNumerically) {
-            return new StringTextComponent(String.format("%4.1f", pressure)).mergeStyle(getColourForPressure(pressure));
+            return new StringTextComponent(String.format("%4.1f", Math.max(0f, pressure))).mergeStyle(getColourForPressure(pressure));
         } else {
             return new StringTextComponent(getBarStr(pressure));
         }
     }
 
     private TextFormatting getColourForPressure(float pressure) {
-        if (pressure < 0.5F) {
+        if (pressure <= 0.1F) {
+            return TextFormatting.GRAY;
+        } else if (pressure < 0.5F) {
             return TextFormatting.RED;
         } else if (pressure < 2.0F) {
             return TextFormatting.GOLD;

@@ -128,12 +128,15 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
             ArmorUpgradeRegistry.ArmorUpgradeEntry entry = ArmorUpgradeRegistry.getInstance().getUpgradeEntry(upgradeID);
             ArmorUpgradeRegistry.ArmorUpgradeEntry ownerEntry = ArmorUpgradeRegistry.getInstance().getUpgradeEntry(ownerUpgradeID);
 
-            // for main control: entry != null, ownerEntry == null
-            // for sub-control: entry == null, ownerEntry != null
-            if (entry != null) {
-                if (this != coreComponents && !commonArmorHandler.isArmorReady(entry.getSlot())) return true;
-            } else if (ownerEntry != null && !commonArmorHandler.isArmorReady(ownerEntry.getSlot())) {
-                return true;
+            if (!checked) {
+                // require armor to be ready to switch on a feature (but always allow switching off)
+                // for main control: entry != null, ownerEntry == null
+                // for sub-control: entry == null, ownerEntry != null
+                if (entry != null) {
+                    if (this != coreComponents && !commonArmorHandler.isArmorReady(entry.getSlot())) return true;
+                } else if (ownerEntry != null && !commonArmorHandler.isArmorReady(ownerEntry.getSlot())) {
+                    return true;
+                }
             }
 
             // left click - usual toggle action

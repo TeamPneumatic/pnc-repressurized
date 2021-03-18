@@ -73,6 +73,9 @@ public class CommonArmorHandler implements ICommonArmorHandler {
 
     private static final Vector3d FORWARD = new Vector3d(0, 0, 1);
 
+    public static final float CRITICAL_PRESSURE = 0.1F;
+    public static final float LOW_PRESSURE = 0.5F;
+
     private final HashMap<UUID, CommonArmorHandler> playerHandlers = new HashMap<>();
     private PlayerEntity player;
     private int magnetRadius;
@@ -199,17 +202,11 @@ public class CommonArmorHandler implements ICommonArmorHandler {
             ticksSinceEquip[slot.getIndex()]++;
             if (armorEnabled && getArmorPressure(slot) > 0F) {
                 armorActive = true;
-                if (!player.world.isRemote) {
-                    if (isArmorReady(slot) && !player.isCreative()) {
-                        // use up air in the armor piece
-                        float airUsage = getIdleAirUsage(slot, false);
-                        if (airUsage != 0) {
-                            float oldPressure = addAir(slot, (int) -airUsage);
-                            if (oldPressure > 0F && getArmorPressure(slot) == 0F) {
-                                // out of air!
-                                NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.MINIGUN_STOP.get(), SoundCategory.PLAYERS, player.getPosX(), player.getPosY(), player.getPosZ(), 1.0f, 2.0f, false), (ServerPlayerEntity) player);
-                            }
-                        }
+                if (!player.world.isRemote && isArmorReady(slot) && !player.isCreative()) {
+                    // use up air in the armor piece
+                    float airUsage = getIdleAirUsage(slot, false);
+                    if (airUsage != 0) {
+                        addAir(slot, (int) -airUsage);
                     }
                 }
                 doArmorActions(slot);
@@ -294,7 +291,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
     private void handleNightVision() {
         // checking every 8 ticks should be enough
         if (!player.world.isRemote && (getTicksSinceEquipped(EquipmentSlotType.HEAD) & 0x7) == 0) {
-            boolean shouldEnable = getArmorPressure(EquipmentSlotType.HEAD) > 0.0f
+            boolean shouldEnable = hasMinPressure(EquipmentSlotType.HEAD)
                     && getUpgradeCount(EquipmentSlotType.HEAD, EnumUpgrade.NIGHT_VISION) > 0
                     && nightVisionEnabled;
             if (shouldEnable) {
@@ -310,7 +307,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         // checking every 16 ticks
         if (!player.world.isRemote
                 && scubaEnabled && getUpgradeCount(EquipmentSlotType.HEAD, EnumUpgrade.SCUBA) > 0
-                && getArmorPressure(EquipmentSlotType.HEAD) > 0.1f
+                && hasMinPressure(EquipmentSlotType.HEAD)
                 && player.getAir() < 150) {
 
             ItemStack helmetStack = player.getItemStackFromSlot(EquipmentSlotType.HEAD);
@@ -333,7 +330,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
             ModifiableAttributeInstance attr = player.getAttribute(ForgeMod.REACH_DISTANCE.get());
             if (attr != null) {
                 attr.removeModifier(REACH_DIST_BOOST);
-                if (getArmorPressure(EquipmentSlotType.CHEST) > 0f && getUpgradeCount(EquipmentSlotType.CHEST, EnumUpgrade.RANGE) > 0 && armorEnabled && reachDistanceEnabled) {
+                if (hasMinPressure(EquipmentSlotType.CHEST) && getUpgradeCount(EquipmentSlotType.CHEST, EnumUpgrade.RANGE) > 0 && armorEnabled && reachDistanceEnabled) {
                     attr.applyNonPersistentModifier(REACH_DIST_BOOST);
                 }
             }
@@ -341,7 +338,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
     }
 
     private void handleStepAssist() {
-        if (getArmorPressure(EquipmentSlotType.FEET) > 0.0F && isStepAssistEnabled()) {
+        if (hasMinPressure(EquipmentSlotType.FEET) && isStepAssistEnabled()) {
             player.stepHeight = player.isSneaking() ? 0.6001F : 1.25F;
         } else {
             player.stepHeight = 0.6F;
@@ -377,7 +374,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
 
     public double getSpeedBoostFromLegs() {
         int speedUpgrades = getUpgradeCount(EquipmentSlotType.LEGS, EnumUpgrade.SPEED, PneumaticValues.PNEUMATIC_LEGS_MAX_SPEED);
-        if (isArmorReady(EquipmentSlotType.LEGS) && speedUpgrades > 0 && isRunSpeedEnabled() && getArmorPressure(EquipmentSlotType.LEGS) > 0.0F) {
+        if (isArmorReady(EquipmentSlotType.LEGS) && speedUpgrades > 0 && isRunSpeedEnabled() && hasMinPressure(EquipmentSlotType.LEGS)) {
             return PneumaticValues.PNEUMATIC_LEGS_BOOST_PER_UPGRADE * speedUpgrades * speedBoostMult;
         } else {
             return 0.0;
@@ -404,7 +401,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         if (jetbootsCount == 0) return;
 
         int jetbootsAirUsage = 0;
-        if (getArmorPressure(EquipmentSlotType.FEET) > 0.0F) {
+        if (hasMinPressure(EquipmentSlotType.FEET)) {
             if (isJetBootsActive()) {
                 if (jetBootsBuilderMode && jetbootsCount >= JetBootsClientHandler.BUILDER_MODE_LEVEL) {
                     // builder mode - rise vertically (or hover if sneaking and firing)
@@ -438,7 +435,14 @@ public class CommonArmorHandler implements ICommonArmorHandler {
             } else {
                 flightAccel = 1.0F;
             }
+        } else {
+            if (isJetBootsEnabled() && !player.isOnGround() && !player.isElytraFlying()) {
+                // insufficient pressure but still active and in the air: using minimal air here keeps the boots running
+                // and thus avoids triggering multiple looping sounds (see "jet boots starting up" code below)
+                jetbootsAirUsage = 1;
+            }
         }
+
         if (jetbootsAirUsage != 0 && !player.world.isRemote) {
             if (prevJetBootsAirUsage == 0) {
                 // jet boots starting up
@@ -474,12 +478,12 @@ public class CommonArmorHandler implements ICommonArmorHandler {
 
         for (EquipmentSlotType slot : EquipmentSlotType.values()) {
             if (slot != EquipmentSlotType.CHEST) {
-                if (getArmorPressure(EquipmentSlotType.CHEST) < 0.1F) return;
+                if (!hasMinPressure(EquipmentSlotType.CHEST)) return;
                 tryPressurize(airAmount, player.getItemStackFromSlot(slot));
             }
         }
         for (ItemStack stack : player.inventory.mainInventory) {
-            if (getArmorPressure(EquipmentSlotType.CHEST) < 0.1F) return;
+            if (!hasMinPressure(EquipmentSlotType.CHEST)) return;
             tryPressurize(airAmount, stack);
         }
     }
@@ -505,7 +509,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
 
         ItemStack armorStack = player.getItemStackFromSlot(slot);
         if (armorStack.getDamage() > 0
-                && getArmorPressure(slot) > 0.1F
+                && hasMinPressure(slot)
                 && ticksSinceEquip[slot.getIndex()] % interval == 0) {
             addAir(slot, -airUsage);
             armorStack.setDamage(armorStack.getDamage() - 1);
@@ -514,7 +518,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
 
     private void handleChestplateMagnet() {
         if (player.world.isRemote || !magnetEnabled || (getTicksSinceEquipped(EquipmentSlotType.CHEST) & 0x3) != 0
-                || getUpgradeCount(EquipmentSlotType.CHEST, EnumUpgrade.MAGNET) == 0)
+                || getUpgradeCount(EquipmentSlotType.CHEST, EnumUpgrade.MAGNET) == 0 || !hasMinPressure(EquipmentSlotType.CHEST))
             return;
 
         AxisAlignedBB box = new AxisAlignedBB(player.getPosition()).grow(magnetRadius);
@@ -528,7 +532,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
             if (item.getPositionVec().squareDistanceTo(playerVec) <= magnetRadiusSq
                     && !ItemRegistry.getInstance().shouldSuppressMagnet(item)
                     && !item.getPersistentData().getBoolean(Names.PREVENT_REMOTE_MOVEMENT)) {
-                if (getArmorPressure(EquipmentSlotType.CHEST) < 0.1F) break;
+                if (!hasMinPressure(EquipmentSlotType.CHEST)) break;
                 item.setPosition(player.getPosX(), player.getPosY(), player.getPosZ());
                 if (item instanceof ItemEntity) ((ItemEntity) item).setPickupDelay(0);
                 addAir(EquipmentSlotType.CHEST, -Armor.magnetAirUsage);
@@ -789,6 +793,10 @@ public class CommonArmorHandler implements ICommonArmorHandler {
 
     public boolean isFlightStabilizers() {
         return flightStabilizers;
+    }
+
+    public boolean hasMinPressure(EquipmentSlotType slot) {
+        return getArmorPressure(slot) >= CRITICAL_PRESSURE;
     }
 
     /**

@@ -53,6 +53,8 @@ import java.util.Collections;
 import java.util.List;
 
 import static me.desht.pneumaticcraft.common.item.ItemPneumaticArmor.isPneumaticArmorPiece;
+import static me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler.CRITICAL_PRESSURE;
+import static me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler.LOW_PRESSURE;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 /**
@@ -70,8 +72,8 @@ public enum HUDHandler implements IKeyListener {
     private boolean sentForceInitPacket = false; // whether to send an armor init packet when helmet not equipped
 
     private final List<ArmorMessage> pendingMessages = new ArrayList<>();
-    private final boolean[] gaveEmptyWarning = new boolean[4];  // per-slot
-    private final boolean[] gaveNearlyEmptyWarning = new boolean[4];  // per-slot
+    private final boolean[] gaveCriticalWarning = new boolean[4];  // per-slot
+    private final boolean[] gaveLowPressureWarning = new boolean[4];  // per-slot
 
     public static HUDHandler getInstance() {
         return INSTANCE;
@@ -163,8 +165,6 @@ public enum HUDHandler implements IKeyListener {
             }
             if (anyArmorInInit) {
                 // draw initialization progress bar(s)
-                gaveEmptyWarning[slot.getIndex()] = false;
-                gaveNearlyEmptyWarning[slot.getIndex()] = false;
                 if (comHudHandler.isArmorEnabled()) {
                     int xLeft = mw.getScaledWidth() / 2;
                     int yOffset = 10 + (3 - slot.getIndex()) * PROGRESS_BAR_HEIGHT;
@@ -182,18 +182,9 @@ public enum HUDHandler implements IKeyListener {
                 }
             }
             if (comHudHandler.isArmorReady(slot)) {
-                ITextComponent itemName = armorStack.getDisplayName();
                 float pressure = comHudHandler.getArmorPressure(slot);
 
-                // low/no pressure warnings
-                if (pressure < 0.05F && !gaveEmptyWarning[slot.getIndex()]) {
-                    addMessage(new ArmorMessage(xlate("pneumaticcraft.armor.message.outOfAir", itemName), 100, 0x70FF0000));
-                    gaveEmptyWarning[slot.getIndex()] = true;
-                }
-                if (pressure > 0.2F && pressure < 0.5F && !gaveNearlyEmptyWarning[slot.getIndex()]) {
-                    addMessage(new ArmorMessage(xlate("pneumaticcraft.armor.message.almostOutOfAir", itemName), 60, 0x70FF8000));
-                    gaveNearlyEmptyWarning[slot.getIndex()] = true;
-                }
+                handlePressureWarnings(player, slot, pressure);
 
                 // all enabled upgrades do their 2D rendering here
                 if (WidgetKeybindCheckBox.getCoreComponents().checked || Minecraft.getInstance().currentScreen == null) {
@@ -235,6 +226,23 @@ public enum HUDHandler implements IKeyListener {
         }
 
         RenderSystem.enableBlend(); // without this, nether portal overlay rendering will be broken
+    }
+
+    private void handlePressureWarnings(PlayerEntity player, EquipmentSlotType slot, float pressure) {
+        // low/no pressure warnings
+        if (pressure <= CRITICAL_PRESSURE && !gaveCriticalWarning[slot.getIndex()]) {
+            addMessage(new ArmorMessage(xlate("pneumaticcraft.armor.message.outOfAir", player.getItemStackFromSlot(slot).getDisplayName()),
+                    100, 0x70FF0000));
+            gaveCriticalWarning[slot.getIndex()] = true;
+            player.playSound(ModSounds.MINIGUN_STOP.get(), 1f, 2f);
+        } else if (pressure > CRITICAL_PRESSURE && pressure <= LOW_PRESSURE && !gaveLowPressureWarning[slot.getIndex()]) {
+            addMessage(new ArmorMessage(xlate("pneumaticcraft.armor.message.almostOutOfAir", player.getItemStackFromSlot(slot).getDisplayName()),
+                    60, 0x70FF8000));
+            gaveLowPressureWarning[slot.getIndex()] = true;
+        }
+
+        if (pressure > LOW_PRESSURE + 0.1F) gaveLowPressureWarning[slot.getIndex()] = false;
+        if (pressure > CRITICAL_PRESSURE + 0.1F) gaveCriticalWarning[slot.getIndex()] = false;
     }
 
     @SubscribeEvent

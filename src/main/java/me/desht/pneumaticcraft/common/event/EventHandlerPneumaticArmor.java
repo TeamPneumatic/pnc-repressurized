@@ -67,7 +67,7 @@ public class EventHandlerPneumaticArmor {
             if (isPneumaticArmorPiece(player, EquipmentSlotType.HEAD)) {
                 if (!targetingTracker.containsKey(mobId) || targetingTracker.get(mobId) != event.getTarget().getEntityId()) {
                     CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
-                    if (handler.isArmorReady(EquipmentSlotType.HEAD) && handler.getArmorPressure(EquipmentSlotType.HEAD) > 0 && handler.isEntityTrackerEnabled()) {
+                    if (handler.isArmorReady(EquipmentSlotType.HEAD) && handler.hasMinPressure(EquipmentSlotType.HEAD) && handler.isEntityTrackerEnabled()) {
                         NetworkHandler.sendToPlayer(new PacketSendArmorHUDMessage(
                                         xlate("pneumaticcraft.armor.message.targetWarning", event.getEntityLiving().getName().getString()),
                                         60, 0x70FF4000),
@@ -104,7 +104,7 @@ public class EventHandlerPneumaticArmor {
                 event.setDamageMultiplier(0.2F);
                 return;
             }
-            if (handler.isArmorReady(EquipmentSlotType.LEGS) && handler.isJumpBoostEnabled() && handler.getArmorPressure(EquipmentSlotType.LEGS) > 0.1f) {
+            if (handler.isArmorReady(EquipmentSlotType.LEGS) && handler.isJumpBoostEnabled() && handler.hasMinPressure(EquipmentSlotType.LEGS)) {
                 // straight fall distance reduction if jump upgrade operational in legs
                 event.setDistance(Math.max(0, event.getDistance() - 1.5f * handler.getUpgradeCount(EquipmentSlotType.LEGS, EnumUpgrade.JUMPING)));
                 if (event.getDistance() < 2) {
@@ -142,7 +142,7 @@ public class EventHandlerPneumaticArmor {
 
             if (isPneumaticArmorPiece(player, EquipmentSlotType.CHEST) && event.getSource().isFireDamage() && !(player.isCreative() || player.isSpectator())) {
                 CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
-                if (handler.isArmorEnabled() && handler.getArmorPressure(EquipmentSlotType.CHEST) > 0.1F && handler.getUpgradeCount(EquipmentSlotType.CHEST, EnumUpgrade.SECURITY) > 0) {
+                if (handler.isArmorEnabled() && handler.hasMinPressure(EquipmentSlotType.CHEST) && handler.getUpgradeCount(EquipmentSlotType.CHEST, EnumUpgrade.SECURITY) > 0) {
                     event.setCanceled(true);
                     player.extinguish();
                     if (!player.world.isRemote) {
@@ -202,7 +202,7 @@ public class EventHandlerPneumaticArmor {
             }
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
             if (!handler.isJetBootsEnabled() && handler.isArmorReady(EquipmentSlotType.LEGS)
-                    && handler.isJumpBoostEnabled() && handler.getArmorPressure(EquipmentSlotType.LEGS) > 0.01F) {
+                    && handler.isJumpBoostEnabled() && handler.hasMinPressure(EquipmentSlotType.LEGS)) {
                 float power = ItemPneumaticArmor.getIntData(stack, ItemPneumaticArmor.NBT_JUMP_BOOST, 100, 0, 100) / 100.0f;
                 int rangeUpgrades = handler.getUpgradeCount(EquipmentSlotType.LEGS, EnumUpgrade.JUMPING,
                         player.isSneaking() ? 1 : PneumaticValues.PNEUMATIC_LEGS_MAX_JUMP);
@@ -252,7 +252,7 @@ public class EventHandlerPneumaticArmor {
             PlayerEntity player = (PlayerEntity) event.getEntity();
             if (isPneumaticArmorPiece(player, EquipmentSlotType.FEET)) {
                 CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
-                if (handler.getArmorPressure(EquipmentSlotType.FEET) > 0 && handler.isArmorReady(EquipmentSlotType.FEET)) {
+                if (handler.hasMinPressure(EquipmentSlotType.FEET) && handler.isArmorReady(EquipmentSlotType.FEET)) {
                     event.setCanceled(true);
                 }
             }
