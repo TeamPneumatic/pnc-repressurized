@@ -16,6 +16,7 @@ import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.tileentity.RedstoneController.EmittingRedstoneMode;
 import me.desht.pneumaticcraft.common.tileentity.RedstoneController.RedstoneMode;
 import me.desht.pneumaticcraft.common.util.GlobalTileEntityCacheManager;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.block.BlockState;
@@ -101,9 +102,9 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
                 float itemVolume = itemAirHandler.getVolume();
                 float chargerPressure = getPressure();
                 float delta = Math.abs(chargerPressure - itemPressure) / 2.0F;
-                int airInItem = itemAirHandler.getAir(); //(int) (itemPressure * itemVolume);
+                int airInItem = itemAirHandler.getAir();
 
-                if (chargerPressure == 0f && delta < 0.1f) {
+                if (PneumaticCraftUtils.epsilonEquals(chargerPressure, 0f) && delta < 0.1f) {
                     // small kludge to get last tiny bit of air out of an item (arithmetic rounding)
                     itemAirHandler.addAir(-airInItem);
                 } else if (itemPressure > chargerPressure + 0.01F && itemPressure > 0F) {
@@ -115,7 +116,8 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
                 } else if (itemPressure < chargerPressure - 0.01F && itemPressure < itemAirHandler.maxPressure()) {
                     // move air from charger to item
                     int maxAirInItem = (int) (itemAirHandler.maxPressure() * itemVolume);
-                    int airToMove = Math.min(Math.min(airToTransfer, airHandler.getAir()), maxAirInItem - airInItem);
+                    float boost = chargerPressure < 15f ? 1f : 1f + (chargerPressure - 15f) / 5f;
+                    int airToMove = Math.min(Math.min((int)(airToTransfer * boost), airHandler.getAir()), maxAirInItem - airInItem);
                     airToMove = Math.min((int) (delta * itemVolume), airToMove);
                     itemAirHandler.addAir(airToMove);
                     this.addAir(-airToMove);
