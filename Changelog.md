@@ -8,6 +8,21 @@ Changes are in reverse chronological order; newest changes at the top.
 
 PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 
+## 2.11.1-?? (unreleased)
+
+### Updates
+* Charging Station now gets a boost in charging speed when pressure > 15 bar
+  * Up to 2x faster at 20 bar
+  * This is over and above any Speed Upgrade speed boosts
+* Slight change in Pneumatic Armor behaviour: all upgrade features now require a minimum of 0.1 bar pressure to operate
+  * Armor itself still provides protection when out of pressure
+  
+### Fixes
+* Fixed not being able to toggle off Pneumatic Armor upgrades when out of air
+  * Can now toggle upgrades off (but not back on) when the armor piece has insufficient pressure
+  * Fixes problem of running out of air with Jet Boots and then being unable to jump without taking boots off
+* Fixed some messy text formatting in Universal Sensor GUI, sensor info tab
+
 ## 2.11.0-155 (17 Mar 2021)
 
 ### New
