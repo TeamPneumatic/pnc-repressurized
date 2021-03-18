@@ -34,7 +34,6 @@ import org.lwjgl.glfw.GLFW;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 import static me.desht.pneumaticcraft.lib.GuiConstants.*;
@@ -74,6 +73,7 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
         int yStart = (height - ySize) / 2;
 
         sensorInfoStat = addAnimatedStat(new StringTextComponent("Sensor Info"), new ItemStack(ModBlocks.UNIVERSAL_SENSOR.get()), 0xFFFFAA00, false);
+        sensorInfoStat.setForegroundColor(0xFF000000);
 
         nameFilterField = new TextFieldWidget(font, xStart + 70, yStart + 58, 98, 10, StringTextComponent.EMPTY);
         nameFilterField.setText(te.getText(0));
@@ -254,7 +254,7 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
         if (sensor != null) {
             String[] folders = te.getSensorSetting().split("/");
             text.add(new StringTextComponent(folders[folders.length - 1]).mergeStyle(TextFormatting.WHITE));
-            text.addAll(sensor.getDescription().stream().map(s -> xlate(s).mergeStyle(TextFormatting.BLACK)).collect(Collectors.toList()));
+            text.addAll(GuiUtils.xlateAndSplit(sensor.getDescription().get(0)));
         } else {
             text.add(xlate("pneumaticcraft.gui.misc.none").mergeStyle(TextFormatting.BLACK));
         }
