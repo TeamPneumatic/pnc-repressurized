@@ -72,7 +72,8 @@ public class JEIPlugin implements IModPlugin {
                 new JEIEtchingTankCategory(),
                 new JEIYeastCraftingCategory(),
                 new JEISpawnerExtractionCategory(),
-                new JEIBlockHeatPropertiesCategory()
+                new JEIBlockHeatPropertiesCategory(),
+                new JEIMemoryEssenceCategory()
         );
         if (PNCConfig.Common.Recipes.explosionCrafting) {
             registry.addRecipeCategories(new JEIExplosionCraftingCategory());
@@ -101,6 +102,7 @@ public class JEIPlugin implements IModPlugin {
         registration.addRecipes(JEIEtchingTankCategory.getAllRecipes(), ModCategoryUid.ETCHING_TANK);
         registration.addRecipes(JEIYeastCraftingCategory.getAllRecipes(), ModCategoryUid.YEAST_CRAFTING);
         registration.addRecipes(JEISpawnerExtractionCategory.getAllRecipes(), ModCategoryUid.SPAWNER_EXTRACTION);
+        registration.addRecipes(JEIMemoryEssenceCategory.getAllRecipes(), ModCategoryUid.MEMORY_ESSENCE);
 
         // even though heat properties are in the vanilla recipe system, we use a custom registration here
         // so we can pull extra entries from the BlockHeatProperties manager (auto-registered fluids etc.)
@@ -142,6 +144,7 @@ public class JEIPlugin implements IModPlugin {
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.FLUID_MIXER.get()), ModCategoryUid.FLUID_MIXER);
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.SPAWNER_EXTRACTOR.get()), ModCategoryUid.SPAWNER_EXTRACTION);
         registration.addRecipeCatalyst(new ItemStack(ModBlocks.HEAT_PIPE.get()), ModCategoryUid.HEAT_PROPERTIES);
+        registration.addRecipeCatalyst(new ItemStack(ModItems.MEMORY_ESSENCE_BUCKET.get()), ModCategoryUid.MEMORY_ESSENCE);
     }
 
     @Override

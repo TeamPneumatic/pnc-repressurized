@@ -22,4 +22,5 @@ public class ModCategoryUid {
     static final ResourceLocation UV_LIGHT_BOX = RL("uv_light_box");
     static final ResourceLocation PLASTIC_SOLIDIFYING = RL("plastic_solidifying");
     static final ResourceLocation ETCHING_TANK = RL("etching_tank");
+    static final ResourceLocation MEMORY_ESSENCE = RL("memory_essence");
 }
