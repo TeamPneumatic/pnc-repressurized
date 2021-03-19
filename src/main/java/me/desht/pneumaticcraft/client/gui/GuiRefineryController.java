@@ -74,7 +74,7 @@ public class GuiRefineryController extends GuiPneumaticContainerBase<ContainerRe
     public void tick() {
         super.tick();
 
-        if (te.maxTemp > te.minTemp) {
+        if (te.maxTemp > te.minTemp && !te.getCurrentRecipeIdSynced().isEmpty()) {
             widgetTemperature.setOperatingRange(TemperatureRange.of(te.minTemp, te.maxTemp));
         } else {
             widgetTemperature.setOperatingRange(null);

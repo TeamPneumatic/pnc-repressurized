@@ -64,7 +64,7 @@ public class GuiThermopneumaticProcessingPlant extends
     public void tick() {
         super.tick();
 
-        if (te.maxTemperature > te.minTemperature) {
+        if (te.maxTemperature > te.minTemperature && !te.getCurrentRecipeIdSynced().isEmpty()) {
             tempWidget.setOperatingRange(TemperatureRange.of(te.minTemperature, te.maxTemperature));
         } else {
             tempWidget.setOperatingRange(null);
