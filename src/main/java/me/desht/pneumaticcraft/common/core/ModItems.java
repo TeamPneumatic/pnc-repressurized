@@ -10,7 +10,6 @@ import me.desht.pneumaticcraft.common.item.ItemDrillBit.DrillBitType;
 import me.desht.pneumaticcraft.common.item.ItemNetworkComponent.NetworkComponentType;
 import me.desht.pneumaticcraft.common.semiblock.ItemSemiBlock;
 import me.desht.pneumaticcraft.lib.Names;
-import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.*;
@@ -67,9 +66,9 @@ public class ModItems {
     public static final RegistryObject<ItemSpawnerCore> SPAWNER_CORE = register("spawner_core", ItemSpawnerCore::new);
 
     public static final RegistryObject<ItemPressurizable> AIR_CANISTER = register("air_canister",
-            () -> new ItemPressurizable(PneumaticValues.AIR_CANISTER_MAX_AIR, PneumaticValues.AIR_CANISTER_VOLUME));
+            ItemAirCanister.Basic::new);
     public static final RegistryObject<ItemPressurizable> REINFORCED_AIR_CANISTER = register("reinforced_air_canister",
-            () -> new ItemPressurizable(PneumaticValues.REINFORCED_AIR_CANISTER_MAX_AIR, PneumaticValues.REINFORCED_AIR_CANISTER_VOLUME));
+            ItemAirCanister.Reinforced::new);
     public static final RegistryObject<ItemVortexCannon> VORTEX_CANNON = register("vortex_cannon",
             ItemVortexCannon::new);
     public static final RegistryObject<ItemPneumaticWrench> PNEUMATIC_WRENCH = register("pneumatic_wrench",

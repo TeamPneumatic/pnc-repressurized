@@ -22,6 +22,8 @@ PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
   * Can now toggle upgrades off (but not back on) when the armor piece has insufficient pressure
   * Fixes problem of running out of air with Jet Boots and then being unable to jump without taking boots off
 * Fixed some messy text formatting in Universal Sensor GUI, sensor info tab
+* Fixed stacked Air Canisters acting as an infinite air source under some circumstances
+  * Air Canisters may now only stack if completely empty (no NBT), for ease of use as a crafting component
 
 ## 2.11.0-155 (17 Mar 2021)
 

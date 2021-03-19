@@ -28,7 +28,7 @@ public class ModuleCharging extends TubeModule {
             pressureTube.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).ifPresent(airHandler -> {
                 for (int slot = 0; slot < itemHandler.getSlots(); slot++) {
                     ItemStack chargedItem = itemHandler.getStackInSlot(slot);
-                    if (chargedItem.isEmpty()) continue;
+                    if (chargedItem.getCount() != 1) continue;
                     chargedItem.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(airHandlerItem -> {
                         float itemPressure = airHandlerItem.getPressure();
                         float itemVolume = airHandlerItem.getVolume();

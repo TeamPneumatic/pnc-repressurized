@@ -150,7 +150,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     private List<IAirHandler> findChargeable() {
         List<IAirHandler> res = new ArrayList<>();
 
-        if (!getChargingStack().isEmpty()) {
+        if (getChargingStack().getCount() == 1) {
             getChargingStack().getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(h -> {
                 res.add(h);
                 chargingItemPressure = h.getPressure();
@@ -166,7 +166,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
                     PlayerInventory inv = ((PlayerEntity) entity).inventory;
                     for (int i = 0; i < inv.getSizeInventory(); i++) {
                         ItemStack stack = inv.getStackInSlot(i);
-                        if (!stack.isEmpty()) {
+                        if (stack.getCount() == 1) {
                             stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(res::add);
                         }
                     }
