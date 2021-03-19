@@ -25,7 +25,7 @@ public class ProgramDrill extends AssemblyProgram {
         World world = system.getPlatform().getWorld();
 
         if (!system.getPlatform().getHeldStack().isEmpty()) {
-            if (canItemBeDrilled(system.getPlatform().getWorld(), system.getPlatform().getHeldStack())) {
+            if (canItemBeDrilled(world, system.getPlatform().getHeldStack())) {
                 system.getDrill().goDrilling();
             } else if (system.getDrill().isIdle()) {
                 useAir = system.getExportUnit().pickupItem(null);

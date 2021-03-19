@@ -26,8 +26,7 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class TileEntityAssemblyController extends TileEntityPneumaticBase
         implements IAssemblyMachine, IMinWorkingPressure, INamedContainerProvider {
@@ -132,7 +131,7 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase
         EnumMachine[] requiredMachines = curProgram != null ? curProgram.getRequiredMachines() : EnumMachine.values();
 
         duplicateMachine = null;
-        AssemblySystem assemblySystem = new AssemblySystem();
+        AssemblySystem assemblySystem = new AssemblySystem(getPos());
         for (IAssemblyMachine machine : findMachines(requiredMachines.length * 2)) {  // *2 ensures duplicates are noticed
             if (!assemblySystem.addMachine(machine)) {
                 duplicateMachine = machine.getAssemblyType();
@@ -241,46 +240,45 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase
         return new ContainerAssemblyController(i, playerInventory, getPos());
     }
 
-    public class AssemblySystem {
-        final IAssemblyMachine[] machines = new IAssemblyMachine[EnumMachine.values().length];
+    public static class AssemblySystem {
+        private final EnumMap<EnumMachine,IAssemblyMachine> machines = new EnumMap<>(EnumMachine.class);
+        private final BlockPos controllerPos;
+
+        public AssemblySystem(BlockPos controllerPos) {
+            this.controllerPos = controllerPos;
+        }
 
         private IAssemblyMachine get(EnumMachine machine) {
-            return machines[machine.ordinal()];
+            return machines.get(machine);
         }
 
         boolean addMachine(IAssemblyMachine machine) {
-            if (machines[machine.getAssemblyType().ordinal()] != null) {
+            if (machines.containsKey(machine.getAssemblyType())) {
                 return false;  // already present
             }
-            machines[machine.getAssemblyType().ordinal()] = machine;
-            machine.setControllerPos(getPos());
+            machines.put(machine.getAssemblyType(), machine);
+            machine.setControllerPos(controllerPos);
             return true;
         }
 
         boolean reset() {
             boolean resetDone = true;
-            for (IAssemblyMachine machine : machines) {
-                if (machine instanceof IResettable) {
-                    if (!((IResettable) machine).reset()) {
-                        resetDone = false;
-                        if (machine instanceof TileEntityAssemblyPlatform) {
-                            getExportUnit().pickupItem(null);
-                        }
-                        break;
+            for (IAssemblyMachine machine : machines.values()) {
+                if (machine instanceof IResettable && !((IResettable) machine).reset()) {
+                    resetDone = false;
+                    if (machine instanceof TileEntityAssemblyPlatform) {
+                        getExportUnit().pickupItem(null);
                     }
+                    break;
                 }
             }
             return resetDone;
         }
 
         void setSpeed(float speedMult) {
-            for (IAssemblyMachine te : machines) {
-                if (te != null) te.setSpeed(speedMult);
-            }
-        }
-
-        TileEntityAssemblyController getController() {
-            return (TileEntityAssemblyController) get(EnumMachine.CONTROLLER);
+            machines.values().stream()
+                    .filter(Objects::nonNull)
+                    .forEach(te -> te.setSpeed(speedMult));
         }
 
         public TileEntityAssemblyIOUnit getImportUnit() {
@@ -304,12 +302,10 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase
         }
 
         EnumMachine checkForMissingMachine(EnumMachine[] requiredMachines) {
-            for (EnumMachine e : requiredMachines) {
-                if (get(e) == null) {
-                    return e;
-                }
-            }
-            return null;
+            return Arrays.stream(requiredMachines)
+                    .filter(e -> !machines.containsKey(e))
+                    .findFirst()
+                    .orElse(null);
         }
     }
 
