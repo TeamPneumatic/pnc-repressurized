@@ -11,6 +11,8 @@ PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 ## 2.11.1-?? (unreleased)
 
 ### Updates
+* API note: the PneumaticCraft API is now licensed under the LGPLv3 (previous GPLv3)
+  * Intention is to allow any mod to link against the API and not worry about needing to license under the GPL. All open source mods welcome!
 * Charging Station now gets a boost in charging speed when pressure > 15 bar
   * Up to 2x faster at 20 bar
   * This is over and above any Speed Upgrade speed boosts
