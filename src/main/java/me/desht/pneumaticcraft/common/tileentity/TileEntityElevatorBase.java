@@ -165,6 +165,13 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
         if (!isStopped) ticksRunning++;
     }
 
+    @Override
+    protected void onFirstServerTick() {
+        super.onFirstServerTick();
+
+        connectAsMultiblock();
+    }
+
     private void playStopStartSound() {
         if (shouldPlaySounds()) {
             if (getWorld().isRemote()) {
@@ -365,8 +372,8 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
     }
 
     @Override
-    public void onNeighborBlockUpdate() {
-        super.onNeighborBlockUpdate();
+    public void onNeighborBlockUpdate(BlockPos fromPos) {
+        super.onNeighborBlockUpdate(fromPos);
         getCoreElevator().updateRedstoneInputLevel();
         connectAsMultiblock();
         updateConnections();
@@ -517,10 +524,10 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
     private void sendDescPacketFromAllElevators() {
         if (multiElevators != null) {
             for (TileEntityElevatorBase base : multiElevators) {
-                base.sendDescriptionPacket(256);
+                base.sendDescriptionPacket();
             }
         } else {
-            sendDescriptionPacket(256);
+            sendDescriptionPacket();
         }
     }
 

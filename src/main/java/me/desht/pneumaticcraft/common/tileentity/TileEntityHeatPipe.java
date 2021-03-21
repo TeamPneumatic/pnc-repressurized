@@ -46,8 +46,8 @@ public class TileEntityHeatPipe extends TileEntityTickableBase implements ICamou
     }
 
     @Override
-    public void onNeighborBlockUpdate() {
-        super.onNeighborBlockUpdate();
+    public void onNeighborBlockUpdate(BlockPos fromPos) {
+        super.onNeighborBlockUpdate(fromPos);
 
         BlockState state = getBlockState();
         boolean changed = false;

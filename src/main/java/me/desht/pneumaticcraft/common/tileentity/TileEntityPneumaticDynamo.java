@@ -80,7 +80,7 @@ public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implement
                 world.setBlockState(pos, state.with(BlockPneumaticDynamo.ACTIVE, isEnabled));
             }
 
-            TileEntity receiver = getTileCache()[getRotation().ordinal()].getTileEntity();
+            TileEntity receiver = getCachedNeighbor(getRotation());
             if (receiver != null) {
                 receiver.getCapability(CapabilityEnergy.ENERGY, getRotation().getOpposite()).ifPresent(neighborStorage -> {
                     int extracted = energy.extractEnergy(rfPerTick * 2, true);

@@ -41,7 +41,7 @@ public class BlockPneumaticDoorBase extends BlockPneumaticCraftCamo {
     public void neighborChanged(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
         PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityPneumaticDoorBase.class).ifPresent(teDoorBase -> {
             updateDoorSide(teDoorBase);
-            teDoorBase.onNeighborBlockUpdate();
+            teDoorBase.onNeighborBlockUpdate(fromPos);
             BlockPos doorPos = pos.offset(teDoorBase.getRotation());
             BlockState doorState = world.getBlockState(doorPos);
             if (doorState.getBlock() instanceof BlockPneumaticDoor) {

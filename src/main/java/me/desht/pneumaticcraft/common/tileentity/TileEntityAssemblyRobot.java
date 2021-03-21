@@ -48,8 +48,8 @@ public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase imp
     }
 
     @Override
-    public void onNeighborBlockUpdate() {
-        super.onNeighborBlockUpdate();
+    public void onNeighborBlockUpdate(BlockPos fromPos) {
+        super.onNeighborBlockUpdate(fromPos);
         invalidateSystem();
     }
 

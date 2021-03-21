@@ -30,7 +30,7 @@ interface IAutoFluidEjecting {
     }
 
     default int tryEjectLiquid(TileEntityBase te, IFluidHandler handler, Direction dir, int amount) {
-        TileEntity teNeighbour = te.getTileCache()[dir.ordinal()].getTileEntity();
+        TileEntity teNeighbour = te.getCachedNeighbor(dir);
         if (teNeighbour != null) {
             return teNeighbour.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dir.getOpposite()).map(destHandler -> {
                 FluidStack fluidStack = FluidUtil.tryFluidTransfer(destHandler, handler, amount, true);

@@ -57,7 +57,7 @@ public class PacketUpdatePressureBlock extends LocationIntPacket {
                     handler.setSideLeaking(leakDir);
                     handler.addAir(currentAir - handler.getAir());
                     if (handlerDir != null && te instanceof TileEntityPneumaticBase) {
-                        ((TileEntityPneumaticBase) te).initializeHullAirHandler(handlerDir, handler);
+                        ((TileEntityPneumaticBase) te).initializeHullAirHandlerClient(handlerDir, handler);
                     }
                 });
             }

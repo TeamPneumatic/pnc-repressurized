@@ -290,7 +290,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
         if (world instanceof World && !((World) world).isRemote) {
             TileEntity te = world.getTileEntity(pos);
             if (te instanceof TileEntityBase) {
-                ((TileEntityBase) te).onNeighborTileUpdate();
+                ((TileEntityBase) te).onNeighborTileUpdate(tilePos);
             }
         }
     }
@@ -300,7 +300,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
         if (!world.isRemote) {
             TileEntity te = world.getTileEntity(pos);
             if (te instanceof TileEntityBase) {
-                ((TileEntityBase) te).onNeighborBlockUpdate();
+                ((TileEntityBase) te).onNeighborBlockUpdate(fromPos);
             }
         }
     }

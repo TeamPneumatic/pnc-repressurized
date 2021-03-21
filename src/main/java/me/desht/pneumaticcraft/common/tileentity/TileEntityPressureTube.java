@@ -25,6 +25,7 @@ import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
@@ -35,7 +36,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -43,11 +44,11 @@ import java.util.stream.Stream;
 public class TileEntityPressureTube extends TileEntityPneumaticBase implements IAirListener, IManoMeasurable, ICamouflageableTE {
     @DescSynced
     private final boolean[] sidesClosed = new boolean[6];
-    private final TubeModule[] modules = new TubeModule[6];
+    private final EnumMap<Direction,TubeModule> modules = new EnumMap<>(Direction.class);
     private BlockState camoState;
     private AxisAlignedBB renderBoundingBox = null;
     private Direction inLineModuleDir = null;  // only one inline module allowed
-    private final List<Direction> connectedNeighbours = new ArrayList<>();
+    private final List<Direction> neighbourDirections = new ArrayList<>();
     private VoxelShape cachedTubeShape = null; // important for performance
     private int pendingCacheShapeClear = 0;
 
@@ -108,7 +109,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
         super.readFromPacket(tag);
 
         clearCachedShape();
-        Arrays.fill(modules, null);
+        modules.clear();
         ListNBT moduleList = tag.getList("modules", Constants.NBT.TAG_COMPOUND);
         for (int i = 0; i < moduleList.size(); i++) {
             CompoundNBT moduleTag = moduleList.getCompound(i);
@@ -129,11 +130,11 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     }
 
     public void updateRenderBoundingBox() {
-        renderBoundingBox = new AxisAlignedBB(getPos().getX(), getPos().getY(), getPos().getZ(), getPos().getX() + 1, getPos().getY() + 1, getPos().getZ() + 1);
+        renderBoundingBox = new AxisAlignedBB(getPos());
 
-        for (int i = 0; i < 6; i++) {
-            if (modules[i] != null && modules[i].getRenderBoundingBox() != null) {
-                renderBoundingBox = renderBoundingBox.union(modules[i].getRenderBoundingBox());
+        for (Direction dir : DirectionUtil.VALUES) {
+            if (modules.containsKey(dir) && modules.get(dir).getRenderBoundingBox() != null) {
+                renderBoundingBox = renderBoundingBox.union(modules.get(dir).getRenderBoundingBox());
             }
         }
     }
@@ -163,13 +164,20 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
         }
 
         // check for possibility of air leak due to unconnected tube
-        if (!getWorld().isRemote && !hasModules && !hasClosedSide && connectedNeighbours.size() == 1) {
-            Direction d = connectedNeighbours.get(0).getOpposite();
+        if (!getWorld().isRemote && !hasModules && !hasClosedSide && neighbourDirections.size() == 1) {
+            Direction d = neighbourDirections.get(0).getOpposite();
             airHandler.setSideLeaking(canConnectPneumatic(d) ? d : null);
         }
 
         super.tick();
+    }
 
+    @Override
+    protected void onFirstServerTick() {
+        super.onFirstServerTick();
+
+        neighbourDirections.clear();
+        airHandler.getConnectedAirHandlers(this).forEach(connection -> neighbourDirections.add(connection.getDirection()));
     }
 
     @Override
@@ -194,7 +202,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     }
 
     public TubeModule getModule(Direction side) {
-        return modules[side.getIndex()];
+        return modules.get(side);
     }
 
     public boolean isSideClosed(Direction side) {
@@ -206,7 +214,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     }
 
     public Stream<TubeModule> tubeModules() {
-        return Arrays.stream(modules).filter(Objects::nonNull);
+        return modules.values().stream().filter(Objects::nonNull);
     }
 
     public boolean mayPlaceModule(Direction side) {
@@ -226,7 +234,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
             }
         }
         clearCachedShape();
-        modules[side.getIndex()] = module;
+        modules.put(side, module);
         if (getWorld() != null && !getWorld().isRemote) {
             world.setBlockState(getPos(), BlockPressureTube.recalculateState(world, pos, getBlockState()), Constants.BlockFlags.DEFAULT);
             sendDescriptionPacket();
@@ -242,23 +250,21 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     }
 
     @Override
-    public void onNeighborTileUpdate() {
-        super.onNeighborTileUpdate();
-        for (TubeModule module : modules) {
-            if (module != null) module.onNeighborTileUpdate();
-        }
+    public void onNeighborTileUpdate(BlockPos tilePos) {
+        super.onNeighborTileUpdate(tilePos);
+
+        tubeModules().filter(module -> getPos().offset(module.getDirection()).equals(tilePos))
+                .forEach(TubeModule::onNeighborTileUpdate);
     }
 
     @Override
-    public void onNeighborBlockUpdate() {
-        super.onNeighborBlockUpdate();
-        for (TubeModule module : modules) {
-            if (module != null) module.onNeighborBlockUpdate();
-        }
+    public void onNeighborBlockUpdate(BlockPos fromPos) {
+        super.onNeighborBlockUpdate(fromPos);
 
-        List<IAirHandlerMachine.Connection> l = airHandler.getConnectedAirHandlers(this);
-        connectedNeighbours.clear();
-        l.forEach(connection -> connectedNeighbours.add(connection.getDirection()));
+        tubeModules().forEach(TubeModule::onNeighborBlockUpdate);
+
+        neighbourDirections.clear();
+        airHandler.getConnectedAirHandlers(this).forEach(connection -> neighbourDirections.add(connection.getDirection()));
     }
 
     @Override
@@ -305,9 +311,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     public VoxelShape getCachedTubeShape(VoxelShape blockShape) {
         if (cachedTubeShape == null) {
             cachedTubeShape = blockShape;
-            for (TubeModule module : modules) {
-                if (module != null) cachedTubeShape = VoxelShapes.or(cachedTubeShape, module.getShape());
-            }
+            tubeModules().forEach(module -> cachedTubeShape = VoxelShapes.or(cachedTubeShape, module.getShape()));
         }
         return cachedTubeShape;
     }

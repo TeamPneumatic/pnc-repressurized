@@ -63,7 +63,7 @@ public class ContainerProgrammer extends ContainerPneumaticBase<TileEntityProgra
         // puzzle pieces are available
         if (te.getWorld().getGameTime() % 20 == 0) {
             for (Direction d : DirectionUtil.VALUES) {
-                TileEntity neighbor = te.getTileCache()[d.getIndex()].getTileEntity();
+                TileEntity neighbor = te.getCachedNeighbor(d);
                 if (neighbor != null && neighbor.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, d.getOpposite()).isPresent()) {
                     sendToContainerListeners(new PacketSendNBTPacket(neighbor));
                 }

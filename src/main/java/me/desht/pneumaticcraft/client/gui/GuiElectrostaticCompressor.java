@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.inventory.ContainerElectrostaticCompressor;
@@ -22,8 +23,7 @@ import java.util.Set;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiElectrostaticCompressor extends GuiPneumaticContainerBase<ContainerElectrostaticCompressor,TileEntityElectrostaticCompressor> {
-    private int connectedCompressors = 1;
-    private int ticksExisted;
+    private int connectedCompressors;
     private WidgetAnimatedStat electrostaticStat;
 
     public GuiElectrostaticCompressor(ContainerElectrostaticCompressor container, PlayerInventory inv, ITextComponent displayString) {
@@ -46,28 +46,24 @@ public class GuiElectrostaticCompressor extends GuiPneumaticContainerBase<Contai
     protected void addWarnings(List<ITextComponent> textList) {
         super.addWarnings(textList);
         int grounding = PneumaticValues.MAX_REDIRECTION_PER_IRON_BAR * te.ironBarsBeneath;
-        int generated = PneumaticValues.PRODUCTION_ELECTROSTATIC_COMPRESSOR / connectedCompressors;
-        if (grounding < generated) {
-            textList.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.electrostatic.notEnoughGrounding", grounding, generated));
+        if (connectedCompressors > 0) {
+            int generated = PneumaticValues.PRODUCTION_ELECTROSTATIC_COMPRESSOR / connectedCompressors;
+            if (grounding < generated) {
+                textList.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.electrostatic.notEnoughGrounding", grounding, generated));
+            }
         }
     }
 
     @Override
     public void tick() {
         super.tick();
-        if (ticksExisted % 20 == 0) {
+        if (ClientUtils.getClientWorld().getGameTime() % 20 == 0) {
             Set<BlockPos> positions = new HashSet<>();
+            Set<TileEntityElectrostaticCompressor> compressors = new HashSet<>();
             positions.add(te.getPos());
-            te.getElectrostaticGrid(positions, te.getWorld(), te.getPos(), null);
-            connectedCompressors = 0;
-            for (BlockPos coord : positions) {
-                if (te.getWorld().getBlockState(coord).getBlock() == ModBlocks.ELECTROSTATIC_COMPRESSOR.get()) {
-                    connectedCompressors++;
-                }
-            }
+            te.getElectrostaticGrid(positions, compressors, te.getPos());
+            connectedCompressors = compressors.size();
         }
-
-        ticksExisted++;
 
         List<ITextComponent> info = new ArrayList<>();
         info.add(xlate("pneumaticcraft.gui.tab.info.electrostatic.generating",

@@ -11,12 +11,15 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
 
 import java.util.Comparator;
 import java.util.List;
@@ -38,6 +41,7 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
     // for client-side rendering the redstone connector
     public float extension = 1.0f;
     public float lastExtension;
+    private boolean comparatorInput;  // input acts like a vanilla comparator?
 
     public ModuleRedstone(ItemTubeModule itemTubeModule) {
         super(itemTubeModule);
@@ -50,7 +54,12 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
 
     @Override
     public void onNeighborBlockUpdate() {
-        updateInputLevel();
+        if (!comparatorInput) updateInputLevel();
+    }
+
+    @Override
+    public void onNeighborTileUpdate() {
+        if (comparatorInput) updateInputLevel();
     }
 
     @Override
@@ -151,6 +160,7 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
         tag.putInt("const", (byte) constantVal);
         tag.putBoolean("invert", inverted);
         tag.putLong("prevLevels", encodeLevels(prevLevels));
+        tag.putBoolean("comparatorInput", comparatorInput);
 
         return tag;
     }
@@ -177,11 +187,12 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
         }
         inverted = tag.getBoolean("invert");
         decodeLevels(tag.getLong("prevLevels"), prevLevels);
+        comparatorInput = tag.getBoolean("comparatorInput");
     }
 
     private long encodeLevels(byte[] l) {
         return IntStream.range(0, l.length)
-                .mapToLong(i -> l[i] << 4 * i)
+                .mapToLong(i -> (long) l[i] << 4 * i)
                 .reduce(0, (a, b) -> a | b);
     }
 
@@ -242,6 +253,14 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
         this.inverted = inverted;
     }
 
+    public boolean isComparatorInput() {
+        return comparatorInput;
+    }
+
+    public void setComparatorInput(boolean comparatorInput) {
+        this.comparatorInput = comparatorInput;
+    }
+
     @Override
     public void addInfo(List<ITextComponent> curInfo) {
         super.addInfo(curInfo);
@@ -289,8 +308,7 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
     }
 
     private boolean updateInputLevel() {
-        int newInputLevel = redstoneDirection == EnumRedstoneDirection.INPUT ?
-                pressureTube.getWorld().getRedstonePower(pressureTube.getPos().offset(getDirection()), getDirection()) : 0;
+        int newInputLevel = redstoneDirection == EnumRedstoneDirection.INPUT ? readInputLevel() : 0;
 
         newInputLevel = Math.max(newInputLevel,  pressureTube.tubeModules()
                 .filter(tm -> tm instanceof TubeModuleRedstoneEmitting)
@@ -304,6 +322,17 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
             return true;
         }
         return false;
+    }
+
+    private int readInputLevel() {
+        if (comparatorInput && upgraded) {
+            TileEntity te = pressureTube.getCachedNeighbor(getDirection());
+            if (te == null) return 0;
+            return te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, getDirection().getOpposite())
+                    .map(ItemHandlerHelper::calcRedstoneFromInventory).orElse(0);
+        } else {
+            return pressureTube.getWorld().getRedstonePower(pressureTube.getPos().offset(getDirection()), getDirection());
+        }
     }
 
     public Operation getOperation() {

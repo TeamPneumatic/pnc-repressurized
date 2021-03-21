@@ -248,7 +248,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
         // force TE to calculate its connections immediately so network manager rescanning works
         TileEntityPressureTube te = getPressureTube(world, pos);
         if (te != null) {
-            te.onNeighborTileUpdate();
+            te.onNeighborTileUpdate(null);
         }
     }
 
@@ -445,7 +445,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
                 if (lookData != null) {
                     Direction sideHit = lookData.getRight();
                     tube.setSideClosed(sideHit, !tube.isSideClosed(sideHit));
-                    tube.onNeighborBlockUpdate();
+                    tube.onNeighborBlockUpdate(pos.offset(sideHit));
                     world.setBlockState(pos, recalculateState(world, pos, world.getBlockState(pos)));
                 }
             }

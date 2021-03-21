@@ -22,11 +22,11 @@ public class ContainerRefinery extends ContainerPneumaticBase<TileEntityRefinery
         super(ModContainers.REFINERY.get(), i, playerInventory, pos);
 
         TileEntityRefineryController refinery = te;
-        refinery.onNeighborTileUpdate();
-        while (refinery.getTileCache()[Direction.UP.ordinal()].getTileEntity() instanceof TileEntityRefineryController) {
-            refinery = (TileEntityRefineryController) refinery.getTileCache()[Direction.UP.ordinal()].getTileEntity();
+        refinery.onNeighborTileUpdate(null);
+        while (refinery.getCachedNeighbor(Direction.UP) instanceof TileEntityRefineryController) {
+            refinery = (TileEntityRefineryController) refinery.getCachedNeighbor(Direction.UP);
             addSyncedFields(refinery);
-            refinery.onNeighborTileUpdate();
+            refinery.onNeighborTileUpdate(null);
         }
 
         addPlayerSlots(playerInventory, 108);

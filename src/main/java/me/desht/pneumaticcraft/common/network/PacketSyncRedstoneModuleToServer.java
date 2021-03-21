@@ -24,6 +24,7 @@ public class PacketSyncRedstoneModuleToServer extends LocationIntPacket {
     private final int constantVal;
     private final boolean invert;
     private final boolean input;
+    private final boolean comparatorInput;
 
     public PacketSyncRedstoneModuleToServer(ModuleRedstone module) {
         super(module.getTube().getPos());
@@ -35,6 +36,7 @@ public class PacketSyncRedstoneModuleToServer extends LocationIntPacket {
         this.otherColor = (byte) module.getOtherColor();
         this.constantVal = module.getConstantVal();
         this.invert = module.isInverted();
+        this.comparatorInput = module.isComparatorInput();
     }
 
     PacketSyncRedstoneModuleToServer(PacketBuffer buffer) {
@@ -47,11 +49,13 @@ public class PacketSyncRedstoneModuleToServer extends LocationIntPacket {
             otherColor = 0;
             constantVal = 0;
             invert = false;
+            comparatorInput = buffer.readBoolean();
         } else {
             op = buffer.readByte();
             otherColor = buffer.readByte();
             constantVal = buffer.readVarInt();
             invert = buffer.readBoolean();
+            comparatorInput = false;
         }
     }
 
@@ -61,7 +65,9 @@ public class PacketSyncRedstoneModuleToServer extends LocationIntPacket {
         buf.writeByte(side);
         buf.writeBoolean(input);
         buf.writeByte(ourColor);
-        if (!input) {
+        if (input) {
+            buf.writeBoolean(comparatorInput);
+        } else {
             buf.writeByte(op);
             buf.writeByte(otherColor);
             buf.writeVarInt(constantVal);
@@ -79,7 +85,9 @@ public class PacketSyncRedstoneModuleToServer extends LocationIntPacket {
                         ModuleRedstone mr = (ModuleRedstone) tm;
                         mr.setRedstoneDirection(input ? EnumRedstoneDirection.INPUT : EnumRedstoneDirection.OUTPUT);
                         mr.setColorChannel(ourColor);
-                        if (!input) {
+                        if (input) {
+                            mr.setComparatorInput(comparatorInput);
+                        } else {
                             mr.setInverted(invert);
                             mr.setOperation(ModuleRedstone.Operation.values()[op], otherColor, constantVal);
                         }

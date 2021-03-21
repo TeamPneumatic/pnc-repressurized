@@ -15,6 +15,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 
@@ -22,6 +23,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
+/**
+ * Base class for all PNC tile entities which handle air. Provides one default air handler; machines with multiple
+ * air handlers can add extra handlers in their subclass.
+ */
 public abstract class TileEntityPneumaticBase extends TileEntityTickableBase {
     @GuiSynced
     final IAirHandlerMachine airHandler;
@@ -136,8 +141,8 @@ public abstract class TileEntityPneumaticBase extends TileEntityTickableBase {
     }
 
     // called clientside when a PacketUpdatePressureBlock is received
-    // this ensures the TE can tick this air handler for air leak purposes
-    public void initializeHullAirHandler(Direction dir, IAirHandlerMachine handler) {
+    // this ensures the TE can tick this air handler for air leak sound and particle purposes
+    public void initializeHullAirHandlerClient(Direction dir, IAirHandlerMachine handler) {
         airHandlerMap.clear();
         List<Direction> l = Collections.singletonList(dir);
         airHandlerMap.put(handler, l);
@@ -145,8 +150,8 @@ public abstract class TileEntityPneumaticBase extends TileEntityTickableBase {
     }
 
     @Override
-    public void onNeighborBlockUpdate() {
-        super.onNeighborBlockUpdate();
+    public void onNeighborBlockUpdate(BlockPos fromPos) {
+        super.onNeighborBlockUpdate(fromPos);
 
         initializeHullAirHandlers();
     }
@@ -195,10 +200,6 @@ public abstract class TileEntityPneumaticBase extends TileEntityTickableBase {
         registry.registerLuaMethod(new LuaConstant("getCriticalPressure", criticalPressure));
         registry.registerLuaMethod(new LuaConstant("getDefaultVolume", defaultVolume));
     }
-
-    /*
-     * End ComputerCraft API 
-     */
 
     public float getPressure() {
         return airHandler.getPressure();

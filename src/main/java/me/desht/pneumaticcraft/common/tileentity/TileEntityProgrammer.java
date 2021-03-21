@@ -449,7 +449,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
 
         // look in adjacent inventories
         for (Direction d : DirectionUtil.VALUES) {
-            TileEntity te = getTileCache()[d.getIndex()].getTileEntity();
+            TileEntity te = getCachedNeighbor(d);
             if (te != null) {
                 final int r = required - found;
                 found += te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, d.getOpposite())

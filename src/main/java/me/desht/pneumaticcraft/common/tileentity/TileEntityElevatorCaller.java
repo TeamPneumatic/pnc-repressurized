@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.items.IItemHandler;
 
 public class TileEntityElevatorCaller extends TileEntityTickableBase implements ICamouflageableTE, IRedstoneControl<TileEntityElevatorCaller> {
@@ -78,9 +79,9 @@ public class TileEntityElevatorCaller extends TileEntityTickableBase implements 
     }
 
     @Override
-    public void onNeighborBlockUpdate() {
+    public void onNeighborBlockUpdate(BlockPos fromPos) {
         boolean wasPowered = getRedstoneController().getCurrentRedstonePower() > 0;
-        super.onNeighborBlockUpdate();
+        super.onNeighborBlockUpdate(fromPos);
         if (getRedstoneController().getCurrentRedstonePower() > 0 && !wasPowered) {
             BlockElevatorCaller.setSurroundingElevators(getWorld(), getPos(), thisFloor);
         }

@@ -33,6 +33,7 @@ public class GuiRedstoneModule extends GuiTubeModule<ModuleRedstone> {
     private int ourColor;
     private int otherColor;
     private WidgetCheckBox invertCheckBox;
+    private WidgetCheckBox comparatorInputCheckBox;
     private boolean upgraded;
     private boolean output;
     private final List<IReorderingProcessor> lowerText = new ArrayList<>();
@@ -91,37 +92,43 @@ public class GuiRedstoneModule extends GuiTubeModule<ModuleRedstone> {
         addButton(new WidgetColorSelector(xBase, guiTop + 20, b -> ourColor = b.getColor().getId())
                 .withInitialColor(DyeColor.byId(ourColor)));
 
-        if (!output) return;
+        if (!output) {
+            comparatorInputCheckBox = new WidgetCheckBox(guiLeft + 10, guiTop + 40, 0xFF404040, xlate("pneumaticcraft.gui.redstoneModule.comparatorInput"));
+            comparatorInputCheckBox.setChecked(module.isComparatorInput());
+            comparatorInputCheckBox.setTooltipKey("pneumaticcraft.gui.redstoneModule.comparatorInput.tooltip");
+            comparatorInputCheckBox.visible = !output && upgraded;
+            addButton(comparatorInputCheckBox);
+        } else {
+            comboBox = new WidgetComboBox(font, xBase, guiTop + 43, xSize - xBase + guiLeft - 10, 12)
+                    .initFromEnum(module.getOperation());
+            comboBox.active = upgraded;
+            addButton(comboBox);
 
-        comboBox = new WidgetComboBox(font, xBase, guiTop + 43, xSize - xBase + guiLeft - 10, 12)
-                .initFromEnum(module.getOperation());
-        comboBox.active = upgraded;
-        addButton(comboBox);
+            otherColorButton = new WidgetColorSelector(xBase, guiTop + 60, b -> otherColor = b.getColor().getId())
+                    .withInitialColor(DyeColor.byId(otherColor));
+            otherColorButton.active = upgraded;
+            addButton(otherColorButton);
 
-        otherColorButton = new WidgetColorSelector(xBase, guiTop + 60, b -> otherColor = b.getColor().getId())
-                .withInitialColor(DyeColor.byId(otherColor));
-        otherColorButton.active = upgraded;
-        addButton(otherColorButton);
+            textField = new WidgetTextFieldNumber(font, xBase, guiTop + 63, 30, 12);
+            textField.minValue = 0;
+            textField.setDecimals(0);
+            textField.setValue(module.getConstantVal());
+            textField.active = upgraded;
+            addButton(textField);
 
-        textField = new WidgetTextFieldNumber(font, xBase, guiTop + 63, 30, 12);
-        textField.minValue = 0;
-        textField.setDecimals(0);
-        textField.setValue(module.getConstantVal());
-        textField.active = upgraded;
-        addButton(textField);
+            invertCheckBox = new WidgetCheckBox(guiLeft + 10, guiTop + 85, 0xFF404040, xlate("pneumaticcraft.gui.redstoneModule.invert")) {
+                @Override
+                public boolean mouseClicked(double mouseX, double mouseY, int button) {
+                    if (comboBox.isFocused()) return true;  // it hangs over the button
+                    return super.mouseClicked(mouseX, mouseY, button);
+                }
+            };
+            invertCheckBox.setChecked(module.isInverted());
+            invertCheckBox.setTooltipKey("pneumaticcraft.gui.redstoneModule.invert.tooltip");
+            addButton(invertCheckBox);
 
-        invertCheckBox = new WidgetCheckBox(guiLeft + 10, guiTop + 85, 0xFF404040, xlate("pneumaticcraft.gui.redstoneModule.invert")) {
-            @Override
-            public boolean mouseClicked(double mouseX, double mouseY, int button) {
-                if (comboBox.isFocused()) return true;  // it hangs over the button
-                return super.mouseClicked(mouseX, mouseY, button);
-            }
-        };
-        invertCheckBox.setChecked(module.isInverted());
-        invertCheckBox.setTooltipKey("pneumaticcraft.gui.redstoneModule.invert.tooltip");
-        addButton(invertCheckBox);
-
-        updateWidgetVisibility();
+            updateWidgetVisibility();
+        }
     }
 
     @Override
@@ -186,6 +193,8 @@ public class GuiRedstoneModule extends GuiTubeModule<ModuleRedstone> {
         if (output) {
             module.setInverted(invertCheckBox.checked);
             module.setOperation(getSelectedOp(), otherColor, textField.getValue());
+        } else {
+            module.setComparatorInput(comparatorInputCheckBox.checked);
         }
         NetworkHandler.sendToServer(new PacketSyncRedstoneModuleToServer(module));
     }

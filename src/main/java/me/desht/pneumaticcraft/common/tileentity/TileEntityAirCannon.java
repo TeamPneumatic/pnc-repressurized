@@ -547,9 +547,9 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     }
 
     @Override
-    public void onNeighborBlockUpdate() {
+    public void onNeighborBlockUpdate(BlockPos fromPos) {
         boolean wasPowered = rsController.getCurrentRedstonePower() > 0;
-        super.onNeighborBlockUpdate();
+        super.onNeighborBlockUpdate(fromPos);
         boolean isPowered = rsController.getCurrentRedstonePower() > 0;
         if (isPowered && !wasPowered && rsController.shouldRun()) {
             fire();

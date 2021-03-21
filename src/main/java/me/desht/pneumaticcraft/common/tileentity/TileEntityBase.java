@@ -13,16 +13,15 @@ import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethod;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethodRegistry;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import me.desht.pneumaticcraft.common.util.TileEntityCache;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.common.util.upgrade.IUpgradeHolder;
 import me.desht.pneumaticcraft.common.util.upgrade.UpgradeCache;
 import me.desht.pneumaticcraft.lib.NBTKeys;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
@@ -31,6 +30,7 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.INameable;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.client.model.data.IModelData;
@@ -54,22 +54,17 @@ import java.util.Map;
 public abstract class TileEntityBase extends TileEntity
         implements INameable, IGUIButtonSensitive, IDescSynced, IUpgradeAcceptor, IUpgradeHolder, ILuaMethodProvider {
     private final UpgradeCache upgradeCache = new UpgradeCache(this);
-
-    @GuiSynced
     private final UpgradeHandler upgradeHandler;
-
-    boolean firstRun = true;  // True only the first time updateEntity invokes in a session
-    private boolean forceFullSync;
+    private boolean firstTick = true;
     private List<SyncedField<?>> descriptionFields;
-    private TileEntityCache[] tileCache;
+    private CachedTileNeighbours neighbourCache;
     private boolean preserveStateOnBreak = false; // set to true if shift-wrenched to keep upgrades in the block
     private float actualSpeedMult = PneumaticValues.DEF_SPEED_UPGRADE_MULTIPLIER;
     private float actualUsageMult = PneumaticValues.DEF_SPEED_UPGRADE_USAGE_MULTIPLIER;
     private final LuaMethodRegistry luaMethodRegistry = new LuaMethodRegistry(this);
     private ITextComponent customName = null;
-
-    // tracks which synced fields have changed and need to be synced on the next tick
-    private BitSet fieldsToSync;
+    private boolean forceFullSync;
+    private BitSet fieldsToSync;  // tracks which synced fields have changed and need to be synced on the next tick
 
     public TileEntityBase(TileEntityType type) {
         this(type, 0);
@@ -150,11 +145,10 @@ public abstract class TileEntityBase extends TileEntity
         return descriptionFields;
     }
 
+    /**
+     * Force a sync of this TE to the client right now.
+     */
     public void sendDescriptionPacket() {
-        sendDescriptionPacket(256);
-    }
-
-    void sendDescriptionPacket(double maxPacketDistance) {
         PacketDescription descPacket = new PacketDescription(this, forceFullSync);
         if (descPacket.hasData()) {
             NetworkHandler.sendToAllTracking(descPacket, this);
@@ -175,12 +169,10 @@ public abstract class TileEntityBase extends TileEntity
      * which extend non-tickable subclasses might need it (e.g. TileEntityPressureChamberInterface)
      */
     void tickImpl() {
-        if (firstRun && !world.isRemote) {
+        if (firstTick && !world.isRemote) {
             onFirstServerTick();
-            onNeighborTileUpdate();
-            onNeighborBlockUpdate();
         }
-        firstRun = false;
+        firstTick = false;
 
         upgradeCache.validate();
 
@@ -323,7 +315,7 @@ public abstract class TileEntityBase extends TileEntity
     public void validate() {
         super.validate();
 
-        scheduleDescriptionPacket();  // TODO verify that we actually need this
+        neighbourCache = new CachedTileNeighbours(this);
     }
 
     @Override
@@ -364,17 +356,6 @@ public abstract class TileEntityBase extends TileEntity
         super.updateContainingBlockInfo();
     }
 
-    public int getUpgrades(Item upgrade) {
-        int upgrades = 0;
-        for (int i = 0; i < getUpgradeHandler().getSlots(); i++) {
-            ItemStack stack = getUpgradeHandler().getStackInSlot(i);
-            if (stack.getItem() == upgrade) {
-                upgrades += stack.getCount();
-            }
-        }
-        return upgrades;
-    }
-
     public int getUpgrades(EnumUpgrade upgrade) {
         return upgradeCache.getUpgrades(upgrade);
     }
@@ -392,34 +373,34 @@ public abstract class TileEntityBase extends TileEntity
     }
 
     public boolean isGuiUseableByPlayer(PlayerEntity player) {
-        return getWorld().getTileEntity(getPos()) == this && player.getDistanceSq(getPos().getX() + 0.5D, getPos().getY() + 0.5D, getPos().getZ() + 0.5D) <= 64.0D;
-    }
-
-    public void onNeighborTileUpdate() {
-        for (TileEntityCache cache : getTileCache()) {
-            cache.update();
-        }
-    }
-
-    public TileEntityCache[] getTileCache() {
-        if (tileCache == null) tileCache = TileEntityCache.getDefaultCache(getWorld(), getPos());
-        return tileCache;
+        return getWorld().getTileEntity(getPos()) == this
+                && player.getDistanceSq(Vector3d.copyCentered(getPos())) <= 64.0D;
     }
 
     public TileEntity getCachedNeighbor(Direction dir) {
-        return getTileCache()[dir.getIndex()].getTileEntity();
+        return neighbourCache == null ? null : neighbourCache.getCachedNeighbour(dir);
     }
 
-    public void onNeighborBlockUpdate() {
+    /**
+     * Called when a neighboring tile entity changes state (specifically when
+     * {@link net.minecraft.world.World#updateComparatorOutputLevel(BlockPos, Block)} is called.
+     * @param tilePos the blockpos of the neighboring tile entity
+     */
+    public void onNeighborTileUpdate(BlockPos tilePos) {
+    }
+
+    /**
+     * Called when a neighboring block changes state (i.e. blockstate update)
+     * @param fromPos the blockpos of the block that caused this update
+     */
+    public void onNeighborBlockUpdate(BlockPos fromPos) {
         if (this instanceof IHeatExchangingTE) {
             ((IHeatExchangingTE) this).initializeHullHeatExchangers(world, pos);
         }
         if (this instanceof IRedstoneControl) {
             ((IRedstoneControl<?>)this).getRedstoneController().updateRedstonePower(this);
         }
-        for (TileEntityCache cache : getTileCache()) {
-            cache.update();
-        }
+        neighbourCache.purge();
     }
 
     /**
@@ -564,7 +545,6 @@ public abstract class TileEntityBase extends TileEntity
     public void setPreserveStateOnBreak(boolean preserveStateOnBreak) {
         this.preserveStateOnBreak = preserveStateOnBreak;
     }
-
 
     /**
      * For machines which use recipes, get the synced recipe ID client-side for informational purposes

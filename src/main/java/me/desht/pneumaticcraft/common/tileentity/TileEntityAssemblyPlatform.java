@@ -114,8 +114,8 @@ public class TileEntityAssemblyPlatform extends TileEntityTickableBase implement
     }
 
     @Override
-    public void onNeighborBlockUpdate() {
-        super.onNeighborBlockUpdate();
+    public void onNeighborBlockUpdate(BlockPos fromPos) {
+        super.onNeighborBlockUpdate(fromPos);
         invalidateSystem();
     }
 

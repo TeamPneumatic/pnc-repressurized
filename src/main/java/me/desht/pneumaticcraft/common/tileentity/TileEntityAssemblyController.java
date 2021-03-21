@@ -171,8 +171,8 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase
     }
 
     @Override
-    public void onNeighborBlockUpdate() {
-        super.onNeighborBlockUpdate();
+    public void onNeighborBlockUpdate(BlockPos fromPos) {
+        super.onNeighborBlockUpdate(fromPos);
 
         invalidateAssemblySystem();
     }
@@ -231,7 +231,7 @@ public class TileEntityAssemblyController extends TileEntityPneumaticBase
 
     @Override
     public void setControllerPos(BlockPos controllerPos) {
-        // nop - we *are the controller!
+        // no-op - we *are* the controller!
     }
 
     @Nullable
