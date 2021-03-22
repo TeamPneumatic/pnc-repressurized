@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.thirdparty.cofhcore;
 
-import cofh.core.capability.IEnchantableItem;
+import cofh.lib.capability.IEnchantableItem;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.util.Direction;
