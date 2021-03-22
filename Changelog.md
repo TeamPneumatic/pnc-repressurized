@@ -19,8 +19,12 @@ PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 * Slight change in Pneumatic Armor behaviour: all upgrade features now require a minimum of 0.1 bar pressure to operate
   * Armor itself still provides protection when out of pressure
 * The methods of obtaining Memory Essence (Memory Stick / Aerial Interface) are now shown in JEI  
+* The Redstone Module can now act like a vanilla Comparator when in input mode, measuring the contents of the inventory it faces
+  * Advanced PCB required for this; select "Comparator Mode" via the module GUI
 
 ### Fixes
+* Fixed startup crash when CoFH Core (Thermal series) 1.2.0 is installed
+  * Will start up when older CoFH Core (1.1.6), but 1.2.0 is required for the Holding enchantment to boost the volume of pressurizable items
 * Fixed not being able to toggle off Pneumatic Armor upgrades when out of air
   * Can now toggle upgrades off (but not back on) when the armor piece has insufficient pressure
   * Fixes problem of running out of air with Jet Boots and then being unable to jump without taking boots off
@@ -28,6 +32,8 @@ PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 * Fixed stacked Air Canisters acting as an infinite air source under some circumstances
   * Air Canisters may now only stack if completely empty (no NBT), for ease of use as a crafting component
 * Fixed Refinery GUI temperature tooltip showing nonsense ranges when there's no oil in the Refinery
+* Fixed neighbouring Pressure Tube block shapes not getting updated client-side when a tube explodes due to overpressure
+* Fixed Electrostatic Compressor not always finding all connected compressors if the grid is large
 
 ## 2.11.0-155 (17 Mar 2021)
 
