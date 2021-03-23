@@ -5,7 +5,7 @@
   },
   "fluid_input": {
     "type": "pneumaticcraft:fluid",
-    "fluid": "pneumaticcraft:memory_essence",
+    "tag": "forge:experience",
     "amount": 4000
   },
   "item_output": {

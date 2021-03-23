@@ -1332,7 +1332,7 @@ public class ModRecipeProvider extends RecipeProvider {
                 FluidStack.EMPTY, new ItemStack(ModItems.SALMON_TEMPURA.get(), 1),
                 TemperatureRange.min(423), 0f, 1.0f, false
         ).build(consumer, RL("thermo_plant/salmon_tempura"));
-        thermoPlant(FluidIngredient.of(4000, ModFluids.MEMORY_ESSENCE.get()), Ingredient.fromItems(ModItems.SPAWNER_CORE_SHELL.get()),
+        thermoPlant(FluidIngredient.of(4000, PneumaticCraftTags.Fluids.MEMORY_ESSENCE), Ingredient.fromItems(ModItems.SPAWNER_CORE_SHELL.get()),
                 FluidStack.EMPTY, new ItemStack(ModItems.SPAWNER_CORE.get()),
                 TemperatureRange.any(), 3f, 0.5f, false
         ).build(consumer, RL("thermo_plant/spawner_core"));

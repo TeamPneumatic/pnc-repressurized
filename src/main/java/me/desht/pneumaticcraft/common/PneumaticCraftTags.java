@@ -89,6 +89,7 @@ public class PneumaticCraftTags {
         public static final ITag.INamedTag<Fluid> LPG = forgeTag("lpg");
         public static final ITag.INamedTag<Fluid> BIODIESEL = forgeTag("biodiesel");
         public static final ITag.INamedTag<Fluid> PLANT_OIL = forgeTag("plantoil");
+        public static final ITag.INamedTag<Fluid> MEMORY_ESSENCE = forgeTag("experience");
 
         public static final ITag.INamedTag<Fluid> ETCHING_ACID = modTag("etching_acid");
         public static final ITag.INamedTag<Fluid> PLASTIC = modTag("plastic");
