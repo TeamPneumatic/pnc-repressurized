@@ -43,6 +43,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.List;
 
 public class TileEntitySmartChest extends TileEntityTickableBase
@@ -65,8 +66,8 @@ public class TileEntitySmartChest extends TileEntityTickableBase
     private int cooldown = 0;
 
     // track the current slots being used to push/pull from, to reduce inventory scanning
-    private final int[] pullSlots = new int[6];
-    private final int[] pushSlots = new int[6];
+    private final EnumMap<Direction,Integer> pullSlots = new EnumMap<>(Direction.class);
+    private final EnumMap<Direction,Integer> pushSlots = new EnumMap<>(Direction.class);
 
     public TileEntitySmartChest() {
         super(ModTileEntities.SMART_CHEST.get(), 4);
@@ -107,8 +108,7 @@ public class TileEntitySmartChest extends TileEntityTickableBase
         }
 
         return IOHelper.getInventoryForTE(te, dir.getOpposite()).map(dstHandler -> {
-            int idx = dir.ordinal();
-            ItemStack toPush = findNextItem(inventory, pushSlots, idx);
+            ItemStack toPush = findNextItem(inventory, pushSlots, dir);
             if (toPush.isEmpty()) {
                 // empty inventory
                 return false;
@@ -117,11 +117,11 @@ public class TileEntitySmartChest extends TileEntityTickableBase
             int transferred = toPush.getCount() - excess.getCount();
             if (transferred > 0) {
                 // success!
-                inventory.extractItem(pushSlots[idx], transferred, false);
+                inventory.extractItem(pushSlots.getOrDefault(dir, 0), transferred, false);
                 return true;
             } else {
                 // this item can't be pushed... move on
-                pushSlots[idx] = scanForward(inventory, pushSlots[idx]);
+                pushSlots.put(dir, scanForward(inventory, pushSlots.getOrDefault(dir, 0)));
             }
             return false;
         }).orElse(false);
@@ -130,9 +130,9 @@ public class TileEntitySmartChest extends TileEntityTickableBase
     private boolean tryDispense(Direction dir) {
         if (getUpgrades(EnumUpgrade.DISPENSER) > 0) {
             if (!Block.hasEnoughSolidSide(world, pos, dir.getOpposite())) {
-                ItemStack toPush = findNextItem(inventory, pushSlots, dir.ordinal());
+                ItemStack toPush = findNextItem(inventory, pushSlots, dir);
                 if (!toPush.isEmpty()) {
-                    ItemStack pushed = inventory.extractItem(pushSlots[dir.ordinal()], toPush.getCount(), false);
+                    ItemStack pushed = inventory.extractItem(pushSlots.getOrDefault(dir, 0), toPush.getCount(), false);
                     BlockPos dropPos = pos.offset(dir);
                     PneumaticCraftUtils.dropItemOnGroundPrecisely(pushed, world,dropPos.getX() + 0.5, dropPos.getY() + 0.5, dropPos.getZ() + 0.5);
                     return true;
@@ -150,8 +150,7 @@ public class TileEntitySmartChest extends TileEntityTickableBase
         }
 
         return IOHelper.getInventoryForTE(getCachedNeighbor(dir), dir.getOpposite()).map(srcHandler -> {
-            int idx = dir.ordinal();
-            ItemStack toPull = findNextItem(srcHandler, pullSlots, idx);
+            ItemStack toPull = findNextItem(srcHandler, pullSlots, dir);
             if (toPull.isEmpty()) {
                 // source inventory is empty
                 return false;
@@ -160,11 +159,11 @@ public class TileEntitySmartChest extends TileEntityTickableBase
             int transferred = toPull.getCount() - excess.getCount();
             if (transferred > 0) {
                 // success!
-                srcHandler.extractItem(pullSlots[idx], transferred, false);
+                srcHandler.extractItem(pullSlots.getOrDefault(dir, 0), transferred, false);
                 return true;
             } else {
                 // this item can't be inserted into this chest... move on to next item next tick
-                pullSlots[idx] = scanForward(srcHandler, pullSlots[idx]);
+                pullSlots.put(dir, scanForward(inventory, pullSlots.getOrDefault(dir, 0)));
             }
             return false;
         }).orElse(false);
@@ -199,15 +198,15 @@ public class TileEntitySmartChest extends TileEntityTickableBase
     /**
      * Scan through the inventory, finding the next non-empty itemstack, including the current slot
      * @param handler the inventory
-     * @param slots array of current slot indices, one per side
-     * @param idx the side number; index into the slots array
+     * @param slotMap array of current slot indices, one per side
+     * @param dir the side; index into the slots array
      * @return the next non-empty item (or ItemStack.EMPTY if the whole inventory is empty)
      */
-    private ItemStack findNextItem(IItemHandler handler, int[] slots, int idx) {
-        if (handler.getStackInSlot(slots[idx]).isEmpty()) {
-            slots[idx] = scanForward(handler, slots[idx]);
+    private ItemStack findNextItem(IItemHandler handler, EnumMap<Direction,Integer> slotMap, Direction dir) {
+        if (handler.getStackInSlot(slotMap.getOrDefault(dir, 0)).isEmpty()) {
+            slotMap.put(dir, scanForward(handler, slotMap.getOrDefault(dir, 0)));
         }
-        return handler.extractItem(slots[idx], getMaxItems(), true);
+        return handler.extractItem(slotMap.getOrDefault(dir, 0), getMaxItems(), true);
     }
 
     /**
@@ -232,11 +231,7 @@ public class TileEntitySmartChest extends TileEntityTickableBase
 
     public int getMaxItems() {
         int upgrades = getUpgrades(EnumUpgrade.SPEED);
-        if (upgrades > 3) {
-            return Math.min(1 << (upgrades - 3), 256);
-        } else {
-            return 1;
-        }
+        return upgrades > 3 ? Math.min(1 << (upgrades - 3), 256) : 1;
     }
 
     public Direction getAbsoluteFacing(RelativeFace face, Direction dir) {

@@ -1,11 +1,10 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 public interface IResettable {
-
     /**
-     * Returns true when the machine is done resetting
+     * Reset the machine's state
      *
-     * @return
+     * @return true when the machine is done resetting
      */
     boolean reset();
 }

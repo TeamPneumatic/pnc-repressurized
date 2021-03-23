@@ -4,6 +4,9 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 
+/**
+ * Represents a tile entity which has a range manager and the concept of a range area of effect.
+ */
 @FunctionalInterface
 public interface IRangedTE {
     RangeManager getRangeManager();
