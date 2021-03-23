@@ -121,7 +121,7 @@ public class TileEntitySmartChest extends TileEntityTickableBase
                 return true;
             } else {
                 // this item can't be pushed... move on
-                findNextItem(inventory, pushSlots, idx);
+                pushSlots[idx] = scanForward(inventory, pushSlots[idx]);
             }
             return false;
         }).orElse(false);
