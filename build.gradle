@@ -11,10 +11,14 @@ buildscript {
 
 apply plugin: 'net.minecraftforge.gradle'
 
+// All jar files from this folder will be added automatically as runtime mod dependencies
+def extraModsDir = "extra-mods-${mc_version}"
+
 repositories {
     mavenLocal()
     flatDir {
-        dir 'libs/'
+        name "extra-mods"
+        dir file(extraModsDir)
     }
     maven {
         name "JEI"
@@ -205,8 +209,15 @@ dependencies {
     compileOnly fg.deobf("appeng:appliedenergistics2:${ae2_version}:api")
     runtimeOnly fg.deobf("appeng:appliedenergistics2:${ae2_version}")
 
-    compileOnly fg.deobf("curse.maven:create-328085:3167531")
-    runtimeOnly fg.deobf("curse.maven:create-328085:3167531")
+    // Locally sourced extra mods for runtime (i.e. testing) - thanks AE2 for this idea
+    for (extraModJar in fileTree(dir: extraModsDir, include: '*.jar')) {
+        def basename = extraModJar.name.substring(0, extraModJar.name.length() - ".jar".length())
+        def versionSep = basename.lastIndexOf('-')
+        assert versionSep != -1
+        def artifactId = basename.substring(0, versionSep)
+        def version = basename.substring(versionSep + 1)
+        runtimeOnly fg.deobf("extra-mods:$artifactId:$version")
+    }
 
 //    runtimeOnly fg.deobf("curse.maven:modernui:3158102")
 //    compileOnly "li.cil.oc:OpenComputers:MC1.12.2-${oc_version}:api"

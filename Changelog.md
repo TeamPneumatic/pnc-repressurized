@@ -8,7 +8,16 @@ Changes are in reverse chronological order; newest changes at the top.
 
 PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 
-## 2.11.1-?? (unreleased)
+## 2.11.2-?? (unreleased)
+
+### Updates
+* Memory Essence fluid is now tagged as `forge:experience` for more cross-mod compatibility
+  * Vacuum Trap will now accept any fluids with this tag
+
+### Fixes
+* Fixed Smart Chest in push mode sometimes getting wedged and not pushing items even when it can
+
+## 2.11.1-163 (22 Mar 2021)
 
 ### Updates
 * API note: the PneumaticCraft API is now licensed under the LGPLv3 (previous GPLv3)
