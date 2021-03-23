@@ -233,4 +233,7 @@ public abstract class TubeModule {
 
     public void onPlaced() {
     }
+
+    public void onRemoved() {
+    }
 }

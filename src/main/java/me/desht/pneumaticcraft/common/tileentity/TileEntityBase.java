@@ -398,7 +398,7 @@ public abstract class TileEntityBase extends TileEntity
             ((IHeatExchangingTE) this).initializeHullHeatExchangers(world, pos);
         }
         if (this instanceof IRedstoneControl) {
-            ((IRedstoneControl<?>)this).getRedstoneController().updateRedstonePower(this);
+            ((IRedstoneControl<?>)this).getRedstoneController().updateRedstonePower();
         }
         neighbourCache.purge();
     }

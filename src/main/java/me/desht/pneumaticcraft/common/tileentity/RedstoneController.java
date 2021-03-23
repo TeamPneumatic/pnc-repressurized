@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Either;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.lib.NBTKeys;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
@@ -97,6 +98,13 @@ public class RedstoneController<T extends TileEntity & IRedstoneControl<T>> {
         }
     }
 
+    /**
+     * Attempt to parse a redstone tag string, as received by {@link IGUIButtonSensitive#handleGUIButtonPress(String, boolean, ServerPlayerEntity)}.
+     * If the tag can be parsed, then update the redstone mode for this controller to the integer mode parsed from the tag.
+     *
+     * @param tag the string tag in the form {@code "redstone:<int>"}
+     * @return true if the tag was parsed, false if not
+     */
     public boolean parseRedstoneMode(String tag) {
         Matcher m = RS_TAG_PATTERN.matcher(tag);
         if (m.matches() && m.groupCount() == 1) {
@@ -106,8 +114,11 @@ public class RedstoneController<T extends TileEntity & IRedstoneControl<T>> {
         return false;
     }
 
-    public void updateRedstonePower(TileEntity te) {
-        currentRedstonePower = te.getWorld().getRedstonePowerFromNeighbors(te.getPos());
+    public void updateRedstonePower() {
+        T te = teRef.get();
+        if (te != null) {
+            currentRedstonePower = te.getWorld().getRedstonePowerFromNeighbors(te.getPos());
+        }
     }
 
     public boolean isEmitter() {
