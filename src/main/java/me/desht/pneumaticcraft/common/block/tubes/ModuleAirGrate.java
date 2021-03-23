@@ -249,7 +249,7 @@ public class ModuleAirGrate extends TubeModule {
 
     @Override
     public void onPlaced() {
-        showRange = true;
+//        showRange = true;
     }
 
     public boolean isShowRange() {
@@ -261,6 +261,13 @@ public class ModuleAirGrate extends TubeModule {
         if (showRange) {
             AreaRenderManager.getInstance().showArea(RangeManager.getFrame(getAffectedAABB()), 0x60FFC060, pressureTube, false);
         } else {
+            AreaRenderManager.getInstance().removeHandlers(pressureTube);
+        }
+    }
+
+    @Override
+    public void onRemoved() {
+        if (pressureTube.getWorld().isRemote) {
             AreaRenderManager.getInstance().removeHandlers(pressureTube);
         }
     }

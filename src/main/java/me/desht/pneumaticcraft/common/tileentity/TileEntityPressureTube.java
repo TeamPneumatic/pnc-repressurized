@@ -35,10 +35,7 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Stream;
 
 public class TileEntityPressureTube extends TileEntityPneumaticBase implements IAirListener, IManoMeasurable, ICamouflageableTE {
@@ -109,7 +106,8 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
         super.readFromPacket(tag);
 
         clearCachedShape();
-        modules.clear();
+
+        EnumSet<Direction> dirs = EnumSet.allOf(Direction.class);
         ListNBT moduleList = tag.getList("modules", Constants.NBT.TAG_COMPOUND);
         for (int i = 0; i < moduleList.size(); i++) {
             CompoundNBT moduleTag = moduleList.getCompound(i);
@@ -117,11 +115,25 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
             if (item instanceof ItemTubeModule) {
                 TubeModule module = ((ItemTubeModule) item).createModule();
                 module.readFromNBT(moduleTag);
+                TubeModule oldModule = getModule(module.getDirection());
+                if (oldModule != null && !oldModule.getType().equals(module.getType())) {
+                    oldModule.onRemoved();
+                }
                 setModule(module.getDirection(), module);
+                dirs.remove(module.getDirection());
             } else {
                 Log.error("unknown tube module type: " + moduleTag.getString("type"));
             }
         }
+
+        // any sides *not* listed in the packet data are no longer present and must be removed
+        for (Direction d : dirs) {
+            TubeModule module = getModule(d);
+            if (module != null) {
+                setModule(d, null);
+            }
+        }
+
         updateRenderBoundingBox();
         if (hasWorld() && getWorld().isRemote) {
             rerenderTileEntity();
@@ -232,11 +244,14 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
             if (inLineModuleDir == side) {
                 inLineModuleDir = null;
             }
+            if (modules.containsKey(side)) {
+                modules.get(side).onRemoved();
+            }
         }
         clearCachedShape();
         modules.put(side, module);
         if (getWorld() != null && !getWorld().isRemote) {
-            world.setBlockState(getPos(), BlockPressureTube.recalculateState(world, pos, getBlockState()), Constants.BlockFlags.DEFAULT);
+            getWorld().setBlockState(getPos(), BlockPressureTube.recalculateState(world, pos, getBlockState()), Constants.BlockFlags.DEFAULT);
             sendDescriptionPacket();
             markDirty();
         }
