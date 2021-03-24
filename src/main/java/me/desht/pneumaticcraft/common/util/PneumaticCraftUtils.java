@@ -259,7 +259,7 @@ public class PneumaticCraftUtils {
         return epsilonEquals(d1, d2, 0.0001);
     }
 
-    private static boolean epsilonEquals(double d1, double d2, double maxDifference) {
+    public static boolean epsilonEquals(double d1, double d2, double maxDifference) {
         return Math.abs(d1 - d2) < maxDifference;
     }
 

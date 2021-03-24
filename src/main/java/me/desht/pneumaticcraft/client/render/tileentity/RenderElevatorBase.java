@@ -55,7 +55,7 @@ public class RenderElevatorBase extends AbstractTileModelRenderer<TileEntityElev
 
         IVertexBuilder builder = bufferIn.getBuffer(RenderType.getEntityCutout(Textures.MODEL_ELEVATOR));
 
-        float extension = MathHelper.lerp(partialTicks, te.oldExtension, te.extension);
+        double extension = MathHelper.lerp(partialTicks, te.oldExtension, te.extension);
         renderPole(matrixStackIn, builder, te.lightAbove, combinedOverlayIn, pole4, 0, extension);
         renderPole(matrixStackIn, builder, te.lightAbove, combinedOverlayIn, pole3, 1, extension);
         renderPole(matrixStackIn, builder, te.lightAbove, combinedOverlayIn, pole2, 2, extension);
@@ -68,7 +68,7 @@ public class RenderElevatorBase extends AbstractTileModelRenderer<TileEntityElev
     protected void renderExtras(TileEntityElevatorBase te, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer iRenderTypeBuffer, int combinedLightIn, int combinedOverlayIn) {
         if (te.fakeFloorTextureUV != null && te.fakeFloorTextureUV.length == 4) {
             matrixStack.push();
-            float extension = MathHelper.lerp(partialTicks, te.oldExtension, te.extension);
+            double extension = MathHelper.lerp(partialTicks, te.oldExtension, te.extension);
             matrixStack.translate(0, extension + 1.0005f, 0);
             IVertexBuilder builder = iRenderTypeBuffer.getBuffer(ModRenderTypes.getTextureRender(AtlasTexture.LOCATION_BLOCKS_TEXTURE));
             float uMin = te.fakeFloorTextureUV[0];
@@ -84,11 +84,11 @@ public class RenderElevatorBase extends AbstractTileModelRenderer<TileEntityElev
         }
     }
 
-    private void renderPole(MatrixStack matrixStackIn, IVertexBuilder builder, int combinedLightIn, int combinedOverlayIn, ModelRenderer pole, int idx, float extension) {
+    private void renderPole(MatrixStack matrixStackIn, IVertexBuilder builder, int combinedLightIn, int combinedOverlayIn, ModelRenderer pole, int idx, double extension) {
         matrixStackIn.translate(0, -extension / 4, 0);
         matrixStackIn.push();
         matrixStackIn.translate(0, FACTOR, 0);
-        matrixStackIn.scale(1, extension * 16 / 14 / 4, 1);
+        matrixStackIn.scale(1, (float) (extension * 16 / 14 / 4), 1);
         matrixStackIn.translate(0, -FACTOR, 0);
         pole.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn, SHADE[idx], SHADE[idx], SHADE[idx], 1);
         matrixStackIn.pop();

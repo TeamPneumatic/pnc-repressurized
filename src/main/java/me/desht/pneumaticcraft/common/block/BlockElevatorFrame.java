@@ -109,12 +109,12 @@ public class BlockElevatorFrame extends BlockPneumaticCraft implements IWaterLog
 
     @Override
     public VoxelShape getCollisionShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-        float blockHeight = getElevatorBlockHeight(worldIn, pos);
-        if (blockHeight > 1f) {
+        double blockHeight = getElevatorBlockHeight(worldIn, pos);
+        if (blockHeight > 1) {
             return VoxelShapes.fullCube();
-        } else if (blockHeight > 0f) {
-            float minY = Math.max(0f, blockHeight - 0.06125f) * 16f;
-            float maxY = blockHeight * 16f;
+        } else if (blockHeight > 0) {
+            double minY = Math.max(0, blockHeight - 0.06125d) * 16d;
+            double maxY = blockHeight * 16d;
             return VoxelShapes.or(getCachedShape(state), Block.makeCuboidShape(0.001, minY, 0.001, 15.999, maxY, 15.999));
         } else {
             return getCachedShape(state);
@@ -159,20 +159,16 @@ public class BlockElevatorFrame extends BlockPneumaticCraft implements IWaterLog
 
     @Override
     public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
-        int x = pos.getX();
-        int z = pos.getZ();
-        if (entity.getPosX() < x || entity.getPosX() >= x + 1 || entity.getPosZ() < z || entity.getPosZ() >= z + 1) {
-            return;
-        }
-
         getElevatorBase(world, pos).ifPresent(teBase -> {
-            if (!teBase.isStopped() && teBase.getPressure() > teBase.getMinWorkingPressure()) {
-                int y = teBase.getPos().getY();
-                if (entity.getPosY() >= y && entity.getPosY() < y + teBase.extension + 10) {
+            if (!teBase.isStopped()) {
+                int baseY = teBase.getPos().getY();
+                if (entity.getPosY() >= baseY && entity.getPosY() < baseY + teBase.extension + 10) {
                     double eX = entity.getPosX();
                     double eZ = entity.getPosZ();
                     if (teBase.ticksRunning < 10) {
                         // when departing, nudge the entity onto the platform if they're hanging over the edge
+                        int x = pos.getX();
+                        int z = pos.getZ();
                         AxisAlignedBB box = entity.getBoundingBox();
                         if (box.minX < x && !(teBase.getCachedNeighbor(Direction.WEST) instanceof TileEntityElevatorBase)
                                 || (box.maxX > x + 1 && !(teBase.getCachedNeighbor(Direction.EAST) instanceof TileEntityElevatorBase))) {
@@ -183,7 +179,7 @@ public class BlockElevatorFrame extends BlockPneumaticCraft implements IWaterLog
                             eZ = z + 0.5;
                         }
                     }
-                    entity.setPosition(eX, y + teBase.extension + 1.2, eZ);
+                    entity.setPosition(eX, baseY + teBase.extension + 1.2, eZ);
                     if (entity instanceof ServerPlayerEntity && teBase.getUpgrades(EnumUpgrade.SPEED) >= 6) {
                         // prevents "<player> moved too quickly" problems when the elevator is fast
                         // note: using this can lead to jerky upward movement, so only doing for fast elevators
@@ -202,10 +198,10 @@ public class BlockElevatorFrame extends BlockPneumaticCraft implements IWaterLog
                 .map(TileEntityElevatorFrame::getElevatorBase);
     }
 
-    private float getElevatorBlockHeight(IBlockReader world, BlockPos pos) {
+    private double getElevatorBlockHeight(IBlockReader world, BlockPos pos) {
         return getElevatorBase(world, pos)
-                .map(te -> Math.max(te.extension - (pos.getY() - te.getPos().getY()) + 1, 0F))
-                .orElse(0F);
+                .map(te -> Math.max(te.extension - (pos.getY() - te.getPos().getY()) + 1, 0D))
+                .orElse(0D);
     }
 
     @Override

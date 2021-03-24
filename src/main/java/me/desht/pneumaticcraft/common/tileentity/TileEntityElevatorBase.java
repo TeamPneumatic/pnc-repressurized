@@ -65,11 +65,11 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
 
     @DescSynced
     @LazySynced
-    public float extension;
+    public double extension;
     @DescSynced
-    private float targetExtension;
+    private double targetExtension;
     @DescSynced
-    float syncedSpeedMult;  // speed multiplier, calculated on server, sync'd to client
+    double syncedSpeedMult;  // speed multiplier, calculated on server, sync'd to client
     @DescSynced
     public int multiElevatorCount;  // number of elevator columns in the multiblock
     @GuiSynced
@@ -79,7 +79,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
     @DescSynced
     private int chargingUpgrades; // needs to be sync'd since it affects elevator descent rate
 
-    public float oldExtension;
+    public double oldExtension;
     private boolean isStopped = true;
     // top elevator of the vertical stack (not to be confused with multiElevators, which is horizontal connections
     private TileEntityElevatorBase coreElevator;
@@ -112,7 +112,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
             return;
         }
 
-        float speedMultiplier;
+        double speedMultiplier;
         if (!getWorld().isRemote) {
             if (isControlledByRedstone()) {
                 handleRedstoneControl();
@@ -134,14 +134,14 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
             if (!getWorld().isRemote && getPressure() < PneumaticValues.MIN_PRESSURE_ELEVATOR) {
                 targetExtension = extension;
             }
-            float moveBy = extension < targetExtension - TileEntityConstants.ELEVATOR_SLOW_EXTENSION ?
+            double moveBy = extension < targetExtension - TileEntityConstants.ELEVATOR_SLOW_EXTENSION ?
                     TileEntityConstants.ELEVATOR_SPEED_FAST * speedMultiplier :
                     TileEntityConstants.ELEVATOR_SPEED_SLOW * speedMultiplier;
             extension = Math.min(targetExtension, extension + moveBy);
             addAir((int) ((oldExtension - extension) * PneumaticValues.USAGE_ELEVATOR * (getSpeedUsageMultiplierFromUpgrades() / speedMultiplier)));
         } else if (extension > targetExtension) {
-            float chargingSlowdown = 1.0f - chargingUpgrades * 0.1f;
-            float moveBy = extension > targetExtension + TileEntityConstants.ELEVATOR_SLOW_EXTENSION ?
+            double chargingSlowdown = 1.0 - chargingUpgrades * 0.1;
+            double moveBy = extension > targetExtension + TileEntityConstants.ELEVATOR_SLOW_EXTENSION ?
                     TileEntityConstants.ELEVATOR_SPEED_FAST * speedMultiplier * chargingSlowdown:
                     TileEntityConstants.ELEVATOR_SPEED_SLOW * speedMultiplier * chargingSlowdown;
             extension = Math.max(targetExtension, extension - moveBy);
@@ -203,7 +203,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
     }
 
     private void handleRedstoneControl() {
-        float oldTargetExtension = targetExtension;
+        double oldTargetExtension = targetExtension;
         float maxExtension = getMaxElevatorHeight();
 
         int redstoneInput = redstoneInputLevel;
@@ -298,8 +298,13 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
     @Override
     public void read(BlockState state, CompoundNBT tag) {
         super.read(state, tag);
-        extension = tag.getFloat("extension");
-        targetExtension = tag.getFloat("targetExtension");
+        if (tag.contains("extensionD")) {
+            extension = tag.getDouble("extensionD");
+            targetExtension = tag.getDouble("targetExtensionD");
+        } else {
+            extension = tag.getFloat("extension");
+            targetExtension = tag.getFloat("targetExtension");
+        }
         if (!tag.contains("maxFloorHeight")) {//backwards compatibility implementation.
             updateMaxElevatorHeight();
         } else {
@@ -310,8 +315,8 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
     @Override
     public CompoundNBT write(CompoundNBT tag) {
         super.write(tag);
-        tag.putFloat("extension", extension);
-        tag.putFloat("targetExtension", targetExtension);
+        tag.putDouble("extensionD", extension);
+        tag.putDouble("targetExtensionD", targetExtension);
         tag.putInt("maxFloorHeight", maxFloorHeight);
         return tag;
     }
@@ -488,8 +493,8 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
                 if (callerFloor == -1) {
                     Log.error("Error while updating elevator floors! This will cause a indexOutOfBoundsException, index = -1");
                 }
-                caller.setEmittingRedstone(PneumaticCraftUtils.epsilonEquals(targetExtension, extension, 0.1F)
-                        && PneumaticCraftUtils.epsilonEquals(extension, callerFloorHeight, 0.1F));
+                caller.setEmittingRedstone(PneumaticCraftUtils.epsilonEquals(targetExtension, extension, 0.1)
+                        && PneumaticCraftUtils.epsilonEquals(extension, callerFloorHeight, 0.1));
                 caller.setFloors(elevatorButtons, callerFloor);
             }
         }
@@ -517,7 +522,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
         }
     }
 
-    public float getTargetExtension() {
+    public double getTargetExtension() {
         return targetExtension;
     }
 
