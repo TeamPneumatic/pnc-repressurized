@@ -249,7 +249,11 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
             }
         }
         clearCachedShape();
-        modules.put(side, module);
+        if (module != null) {
+            modules.put(side, module);
+        } else {
+            modules.remove(side);
+        }
         if (getWorld() != null && !getWorld().isRemote) {
             getWorld().setBlockState(getPos(), BlockPressureTube.recalculateState(world, pos, getBlockState()), Constants.BlockFlags.DEFAULT);
             sendDescriptionPacket();

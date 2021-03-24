@@ -12,8 +12,8 @@ import java.util.function.Supplier;
 /**
  * Received on: CLIENT
  *
- * Sent by server when a block is dropped by shift-wrenching it. This happens server-side but the client needs
- * to know too so neighbouring cached block shapes can be recalculated.
+ * Sent by server when a block is dropped by shift-wrenching it, or if a pneumatic TE explodes due to overpressure.
+ * This happens server-side but the client needs to know too so neighbouring cached block shapes can be recalculated.
  */
 public class PacketBlockDestroyed extends LocationIntPacket {
     public PacketBlockDestroyed(BlockPos pos) {
