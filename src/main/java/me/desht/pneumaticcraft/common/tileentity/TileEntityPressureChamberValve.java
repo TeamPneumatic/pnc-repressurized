@@ -573,7 +573,6 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
         valveList.forEach(valve -> valve.accessoryValves = new ArrayList<>(valveList));
 
         // set the multi-block coords in the primary valve only
-        int vol = primaryValve.airHandler.getBaseVolume();
         primaryValve.setupMultiBlock(size, baseX, baseY, baseZ);
 
         // note the core valve in every wall & interface so right clicking & block break work as expected
@@ -607,7 +606,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
 
         if (primaryValve.savedVolume != 0) {
             // restore pressure based on previous saved volume
-            int mul = primaryValve.savedVolume / vol;
+            int mul = primaryValve.savedVolume / primaryValve.airHandler.getBaseVolume();
             int newAir = primaryValve.airHandler.getAir() * mul;
             primaryValve.addAir(newAir - primaryValve.airHandler.getAir());
             primaryValve.savedVolume = 0;
@@ -617,7 +616,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
         primaryValve.captureEntityItemsInChamber();
 
         // force-sync primary valve details to clients for rendering purposes
-        primaryValve.sendDescriptionPacket();
+        primaryValve.scheduleDescriptionPacket();
 
         primaryValve.markDirty();
 
