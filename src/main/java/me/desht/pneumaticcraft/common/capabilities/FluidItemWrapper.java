@@ -78,7 +78,7 @@ public class FluidItemWrapper implements ICapabilityProvider {
      * @param capacity capacity of the created tank
      * @return the deserialized tank, or null
      */
-    static FluidTank deserializeTank(ItemStack stack, String tagName, int capacity) {
+    private FluidTank deserializeTank(ItemStack stack, String tagName, int capacity) {
         CompoundNBT tag = stack.getChildTag(NBTKeys.BLOCK_ENTITY_TAG);
         if (tag != null && tag.contains(NBTKeys.NBT_SAVED_TANKS)) {
             FluidTank tank = new FluidTank(capacity);

@@ -254,7 +254,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
                     } else {
                         Direction f = getRotation(world, pos);
                         do {
-                            f = Direction.byIndex(f.ordinal() + 1);
+                            f = Direction.byIndex(f.getIndex() + 1);
                         } while (!canRotateToTopOrBottom() && f.getAxis() == Axis.Y);
                         setRotation(world, pos, f);
                     }

@@ -78,7 +78,7 @@ public class BlockOmnidirectionalHopper extends BlockPneumaticCraft implements C
         if (SHAPE_CACHE[idx] == null) {
             SHAPE_CACHE[idx] = VoxelShapes.combineAndSimplify(
                     INPUT_SHAPES[state.get(INPUT_FACING).getIndex()],
-                    OUTPUT_SHAPES[state.get(directionProperty()).ordinal()],
+                    OUTPUT_SHAPES[state.get(directionProperty()).getIndex()],
                     IBooleanFunction.OR);
         }
         return SHAPE_CACHE[idx];
@@ -116,13 +116,13 @@ public class BlockOmnidirectionalHopper extends BlockPneumaticCraft implements C
         BlockState state = world.getBlockState(pos);
         if (player != null && player.isSneaking()) {
             Direction outputDir = getRotation(state);
-            outputDir = Direction.byIndex(outputDir.ordinal() + 1);
-            if (outputDir == getInputDirection(world, pos)) outputDir = Direction.byIndex(outputDir.ordinal() + 1);
+            outputDir = Direction.byIndex(outputDir.getIndex() + 1);
+            if (outputDir == getInputDirection(world, pos)) outputDir = Direction.byIndex(outputDir.getIndex() + 1);
             setRotation(world, pos, outputDir);
         } else {
             Direction inputDir = state.get(INPUT_FACING);
-            inputDir = Direction.byIndex(inputDir.ordinal() + 1);
-            if (inputDir == getRotation(world, pos)) inputDir = Direction.byIndex(inputDir.ordinal() + 1);
+            inputDir = Direction.byIndex(inputDir.getIndex() + 1);
+            if (inputDir == getRotation(world, pos)) inputDir = Direction.byIndex(inputDir.getIndex() + 1);
             world.setBlockState(pos, state.with(INPUT_FACING, inputDir));
         }
         PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityAbstractHopper.class).ifPresent(TileEntityAbstractHopper::onBlockRotated);

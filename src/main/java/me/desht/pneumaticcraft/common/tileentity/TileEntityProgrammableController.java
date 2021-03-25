@@ -661,12 +661,12 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
 
     @Override
     public void setEmittingRedstone(Direction orientation, int emittingRedstone) {
-        redstoneLevels[orientation.ordinal()] = emittingRedstone;
+        redstoneLevels[orientation.getIndex()] = emittingRedstone;
         updateNeighbours();
     }
 
     public int getEmittingRedstone(Direction direction) {
-        return redstoneLevels[direction.ordinal()];
+        return redstoneLevels[direction.getIndex()];
     }
 
     @Override

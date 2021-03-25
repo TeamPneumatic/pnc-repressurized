@@ -83,7 +83,7 @@ public class ProgWidgetBlockRightClick extends ProgWidgetPlace implements IBlock
     public void writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
         tag.putBoolean("sneaking", sneaking);
-        tag.putInt("dir", clickSide.ordinal());
+        tag.putInt("dir", clickSide.getIndex());
         tag.putString("clickType", clickType.toString());
     }
 
@@ -99,7 +99,7 @@ public class ProgWidgetBlockRightClick extends ProgWidgetPlace implements IBlock
     public void writeToPacket(PacketBuffer buf) {
         super.writeToPacket(buf);
         buf.writeBoolean(sneaking);
-        buf.writeByte(clickSide.ordinal());
+        buf.writeByte(clickSide.getIndex());
         buf.writeByte(clickType.ordinal());
     }
 

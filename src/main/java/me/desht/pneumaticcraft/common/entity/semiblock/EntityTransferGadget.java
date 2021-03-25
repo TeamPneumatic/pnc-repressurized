@@ -47,7 +47,7 @@ public class EntityTransferGadget extends EntitySemiblockBase implements IDirect
         super.registerData();
 
         getDataManager().register(IO_MODE, IOMode.OUTPUT.ordinal());
-        getDataManager().register(SIDE, Direction.UP.ordinal());
+        getDataManager().register(SIDE, Direction.UP.getIndex());
     }
 
     @Override
@@ -113,7 +113,7 @@ public class EntityTransferGadget extends EntitySemiblockBase implements IDirect
 
     @Override
     public void setSide(Direction facing) {
-        getDataManager().set(SIDE, facing.ordinal());
+        getDataManager().set(SIDE, facing.getIndex());
     }
 
     public IOMode getIOMode() {

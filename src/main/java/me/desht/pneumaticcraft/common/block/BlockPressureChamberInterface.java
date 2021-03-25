@@ -23,11 +23,13 @@ import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
+import java.util.EnumMap;
+
 public class BlockPressureChamberInterface extends BlockPneumaticCraft implements IBlockPressureChamber {
-    private static final VoxelShape[] SHAPES = new VoxelShape[3];
-    private static final VoxelShape[] DOORS = new VoxelShape[6];
+    private static final EnumMap<Axis,VoxelShape> SHAPES = new EnumMap<>(Axis.class);
+    private static final EnumMap<Direction,VoxelShape> DOORS = new EnumMap<>(Direction.class);
     static {
-        SHAPES[Axis.Z.ordinal()] = VoxelShapes.or(
+        SHAPES.put(Axis.Z, VoxelShapes.or(
                 Block.makeCuboidShape(0, 0, 0, 16, 3, 16),
                 Block.makeCuboidShape(0, 13, 0, 16, 16, 16),
                 Block.makeCuboidShape(0, 0, 0, 3, 16, 16),
@@ -36,16 +38,16 @@ public class BlockPressureChamberInterface extends BlockPneumaticCraft implement
                 Block.makeCuboidShape(11, 3, 0, 13, 5, 16),
                 Block.makeCuboidShape(3, 11, 0, 5, 13, 16),
                 Block.makeCuboidShape(11, 11, 0, 13, 13, 16)
-        );
-        SHAPES[Axis.Y.ordinal()] = VoxelShapeUtils.rotateX(SHAPES[Axis.Z.ordinal()], 90);
-        SHAPES[Axis.X.ordinal()] = VoxelShapeUtils.rotateY(SHAPES[Axis.Z.ordinal()], 90);
+        ));
+        SHAPES.put(Axis.Y, VoxelShapeUtils.rotateX(SHAPES.get(Axis.Z), 90));
+        SHAPES.put(Axis.X, VoxelShapeUtils.rotateY(SHAPES.get(Axis.Z), 90));
 
-        DOORS[0] = Block.makeCuboidShape(3, 1, 3, 13, 2, 13);
-        DOORS[1] = Block.makeCuboidShape(3, 14, 3, 13, 15, 13);
-        DOORS[2] = Block.makeCuboidShape(3, 3, 1, 13, 13, 2);
-        DOORS[3] = Block.makeCuboidShape(3, 3, 14, 13, 13, 15);
-        DOORS[4] = Block.makeCuboidShape(1, 3, 3, 2, 13, 13);
-        DOORS[5] = Block.makeCuboidShape(14, 3, 3, 15, 13, 13);
+        DOORS.put(Direction.DOWN, Block.makeCuboidShape(3, 1, 3, 13, 2, 13));
+        DOORS.put(Direction.UP, Block.makeCuboidShape(3, 14, 3, 13, 15, 13));
+        DOORS.put(Direction.NORTH, Block.makeCuboidShape(3, 3, 1, 13, 13, 2));
+        DOORS.put(Direction.SOUTH, Block.makeCuboidShape(3, 3, 14, 13, 13, 15));
+        DOORS.put(Direction.WEST, Block.makeCuboidShape(1, 3, 3, 2, 13, 13));
+        DOORS.put(Direction.EAST, Block.makeCuboidShape(14, 3, 3, 15, 13, 13));
     }
 
     public BlockPressureChamberInterface() {
@@ -55,13 +57,13 @@ public class BlockPressureChamberInterface extends BlockPneumaticCraft implement
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
         Direction dir = getRotation(state);
-        VoxelShape main = SHAPES[dir.getAxis().ordinal()];
+        VoxelShape main = SHAPES.get(dir.getAxis());
 
         return PneumaticCraftUtils.getTileEntityAt(worldIn, pos, TileEntityPressureChamberInterface.class).map(teI -> {
             if (teI.outputProgress < TileEntityPressureChamberInterface.MAX_PROGRESS) {
-                return VoxelShapes.combineAndSimplify(main, DOORS[dir.getIndex()], IBooleanFunction.OR);
+                return VoxelShapes.combineAndSimplify(main, DOORS.get(dir), IBooleanFunction.OR);
             } else if (teI.inputProgress < TileEntityPressureChamberInterface.MAX_PROGRESS) {
-                return VoxelShapes.combineAndSimplify(main, DOORS[dir.getOpposite().getIndex()], IBooleanFunction.OR);
+                return VoxelShapes.combineAndSimplify(main, DOORS.get(dir.getOpposite()), IBooleanFunction.OR);
             } else {
                 return main;
             }

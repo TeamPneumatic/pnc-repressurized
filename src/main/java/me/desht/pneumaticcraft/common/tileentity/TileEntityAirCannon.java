@@ -479,7 +479,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
             tag.putInt("inventoryX", lastInsertingInventory.getX());
             tag.putInt("inventoryY", lastInsertingInventory.getY());
             tag.putInt("inventoryZ", lastInsertingInventory.getZ());
-            tag.putByte("inventorySide", (byte) lastInsertingInventorySide.ordinal());
+            tag.putByte("inventorySide", (byte) lastInsertingInventorySide.getIndex());
         }
 
         return tag;

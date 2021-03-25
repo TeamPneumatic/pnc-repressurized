@@ -58,7 +58,7 @@ public class PacketModWrenchBlock extends LocationIntPacket {
             buf.writeInt(entityID);
         } else {
             buf.writeBoolean(false);
-            buf.writeByte(side.ordinal());
+            buf.writeByte(side.getIndex());
         }
     }
 

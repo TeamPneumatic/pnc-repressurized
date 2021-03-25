@@ -141,11 +141,7 @@ public class ItemMemoryStick extends Item implements ColorHandlers.ITintableItem
     @Nullable
     @Override
     public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundNBT nbt) {
-        if (this.getClass() == ItemMemoryStick.class) {
-            return new FluidItemWrapper(stack, TANK_NAME, XP_FLUID_CAPACITY, fluid -> fluid == ModFluids.MEMORY_ESSENCE.get());
-        } else {
-            return super.initCapabilities(stack, nbt);
-        }
+        return new FluidItemWrapper(stack, TANK_NAME, XP_FLUID_CAPACITY, fluid -> fluid == ModFluids.MEMORY_ESSENCE.get());
     }
 
     public static boolean shouldAbsorbXPOrbs(ItemStack stack) {

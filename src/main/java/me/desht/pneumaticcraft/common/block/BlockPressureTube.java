@@ -205,7 +205,7 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
         int idx = 0;
         int mul = 1;
         for (Direction d : Direction.values()) {
-            idx += state.get(CONNECTION_PROPERTIES_3[d.getIndex()]).ordinal() * mul;
+            idx += state.get(CONNECTION_PROPERTIES_3[d.getIndex()]).getIndex() * mul;
             mul *= 3;
         }
         if (SHAPE_CACHE[idx] == null) {
@@ -596,18 +596,25 @@ public class BlockPressureTube extends BlockPneumaticCraftCamo implements IWater
      * Tri-state representing the 3 possible states for a tube connection.
      */
     public enum ConnectionType implements IStringSerializable {
-        UNCONNECTED("open"),
-        CONNECTED("connected"),
-        CLOSED("closed");
+        UNCONNECTED(0, "open"),
+        CONNECTED(1, "connected"),
+        CLOSED(2, "closed");
 
+        private final int index;
         private final String name;
-        ConnectionType(String name) {
+
+        ConnectionType(int index, String name) {
+            this.index = index;
             this.name = name;
         }
 
         @Override
         public String getString() {
             return name;
+        }
+
+        public int getIndex() {
+            return index;
         }
     }
 }

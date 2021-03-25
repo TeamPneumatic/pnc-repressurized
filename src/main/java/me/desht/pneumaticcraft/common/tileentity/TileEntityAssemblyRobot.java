@@ -14,12 +14,12 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 
 public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase implements IAssemblyMachine, IResettable {
-    public final float[] oldAngles = new float[5];
+    public final float[] oldAngles = new float[EnumAngles.values().length];
     @DescSynced
     @LazySynced
-    public final float[] angles = new float[5];
+    public final float[] angles = new float[EnumAngles.values().length];
     @DescSynced
-    final float[] targetAngles = new float[5];
+    final float[] targetAngles = new float[EnumAngles.values().length];
     Direction[] targetDirection = new Direction[]{null, null};
     @DescSynced
     boolean slowMode; //used for the drill when drilling, the slowmode moves the arm 10x as slow as normal.
@@ -27,18 +27,12 @@ public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase imp
     protected float speed = 1.0F;
     private BlockPos controllerPos;
 
-    protected enum EnumAngles {
-        TURN, BASE, MIDDLE, TAIL, HEAD
-    }
-
     TileEntityAssemblyRobot(TileEntityType type) {
         super(type);
 
         gotoHomePosition();
-        for (int i = 0; i < 5; i++) {
-            angles[i] = targetAngles[i];
-            oldAngles[i] = targetAngles[i];
-        }
+        System.arraycopy(targetAngles, 0, angles, 0, targetAngles.length);
+        System.arraycopy(targetAngles, 0, oldAngles, 0, targetAngles.length);
     }
 
 
@@ -66,10 +60,10 @@ public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase imp
     public void tick() {
         super.tick();
 
-        System.arraycopy(angles, 0, oldAngles, 0, 5);
+        System.arraycopy(angles, 0, oldAngles, 0, angles.length);
 
-        //move the arms and claw more to their destination
-        for (int i = 0; i < 5; i++) {
+        // move the arms and claw toward their destination
+        for (int i = 0; i < angles.length; i++) {
             if (angles[i] > targetAngles[i]) {
                 angles[i] = Math.max(angles[i] - TileEntityConstants.ASSEMBLY_IO_UNIT_ARM_SPEED * (slowMode ? 0.1F : 1) * speed, targetAngles[i]);
             } else if (angles[i] < targetAngles[i]) {
@@ -79,11 +73,9 @@ public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase imp
     }
 
     public void gotoHomePosition() {
-        targetAngles[EnumAngles.TURN.ordinal()] = 0F;
-        targetAngles[EnumAngles.BASE.ordinal()] = 0F;
-        targetAngles[EnumAngles.MIDDLE.ordinal()] = 55F;
-        targetAngles[EnumAngles.TAIL.ordinal()] = 35F;
-        targetAngles[EnumAngles.HEAD.ordinal()] = 0F;
+        for (EnumAngles angle: EnumAngles.values()) {
+            targetAngles[angle.getIndex()] = angle.getHomeAngle();
+        }
     }
 
     boolean gotoTarget() {
@@ -91,10 +83,6 @@ public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase imp
 
         this.gotoNeighbour(targetDirection[0], targetDirection[1]);
         return isDoneMoving();
-    }
-
-    public void gotoNeighbour(Direction direction) {
-        gotoNeighbour(direction, null);
     }
 
     /**
@@ -111,49 +99,49 @@ public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase imp
         switch (primaryDir) {
             case SOUTH:
                 if (secondaryDir == Direction.EAST && diagonalAllowed) {
-                    targetAngles[EnumAngles.TURN.ordinal()] = -45F;
-                    targetAngles[EnumAngles.HEAD.ordinal()] = 40F;
+                    targetAngles[EnumAngles.TURN.getIndex()] = -45F;
+                    targetAngles[EnumAngles.HEAD.getIndex()] = 40F;
                 } else if (secondaryDir == Direction.WEST && diagonalAllowed) {
-                    targetAngles[EnumAngles.TURN.ordinal()] = 45F;
-                    targetAngles[EnumAngles.HEAD.ordinal()] = -40F;
+                    targetAngles[EnumAngles.TURN.getIndex()] = 45F;
+                    targetAngles[EnumAngles.HEAD.getIndex()] = -40F;
                 } else {
-                    targetAngles[EnumAngles.TURN.ordinal()] = 0F;
-                    targetAngles[EnumAngles.HEAD.ordinal()] = 90F;
+                    targetAngles[EnumAngles.TURN.getIndex()] = 0F;
+                    targetAngles[EnumAngles.HEAD.getIndex()] = 90F;
                     diagonal = false;
                 }
                 break;
             case EAST:
-                targetAngles[EnumAngles.TURN.ordinal()] = -90F;
-                targetAngles[EnumAngles.HEAD.ordinal()] = 0F;
+                targetAngles[EnumAngles.TURN.getIndex()] = -90F;
+                targetAngles[EnumAngles.HEAD.getIndex()] = 0F;
                 diagonal = false;
                 break;
             case NORTH:
                 if (secondaryDir == Direction.EAST && diagonalAllowed) {
-                    targetAngles[EnumAngles.TURN.ordinal()] = -135F;
-                    targetAngles[EnumAngles.HEAD.ordinal()] = -40F;
+                    targetAngles[EnumAngles.TURN.getIndex()] = -135F;
+                    targetAngles[EnumAngles.HEAD.getIndex()] = -40F;
                 } else if (secondaryDir == Direction.WEST && diagonalAllowed) {
-                    targetAngles[EnumAngles.TURN.ordinal()] = 135F;
-                    targetAngles[EnumAngles.HEAD.ordinal()] = 40F;
+                    targetAngles[EnumAngles.TURN.getIndex()] = 135F;
+                    targetAngles[EnumAngles.HEAD.getIndex()] = 40F;
                 } else {
-                    targetAngles[EnumAngles.TURN.ordinal()] = 180F;
-                    targetAngles[EnumAngles.HEAD.ordinal()] = 90F;
+                    targetAngles[EnumAngles.TURN.getIndex()] = 180F;
+                    targetAngles[EnumAngles.HEAD.getIndex()] = 90F;
                     diagonal = false;
                 }
                 break;
             case WEST:
-                targetAngles[EnumAngles.TURN.ordinal()] = 90F;
-                targetAngles[EnumAngles.HEAD.ordinal()] = 0F;
+                targetAngles[EnumAngles.TURN.getIndex()] = 90F;
+                targetAngles[EnumAngles.HEAD.getIndex()] = 0F;
                 diagonal = false;
                 break;
         }
         if (diagonal) {
-            targetAngles[EnumAngles.BASE.ordinal()] = 160F;
-            targetAngles[EnumAngles.MIDDLE.ordinal()] = -85F;
-            targetAngles[EnumAngles.TAIL.ordinal()] = -20F;
+            targetAngles[EnumAngles.BASE.getIndex()] = 160F;
+            targetAngles[EnumAngles.MIDDLE.getIndex()] = -85F;
+            targetAngles[EnumAngles.TAIL.getIndex()] = -20F;
         } else {
-            targetAngles[EnumAngles.BASE.ordinal()] = 100F;
-            targetAngles[EnumAngles.MIDDLE.ordinal()] = -10F;
-            targetAngles[EnumAngles.TAIL.ordinal()] = 0F;
+            targetAngles[EnumAngles.BASE.getIndex()] = 100F;
+            targetAngles[EnumAngles.MIDDLE.getIndex()] = -10F;
+            targetAngles[EnumAngles.TAIL.getIndex()] = 0F;
         }
         return diagonal;
     }
@@ -172,22 +160,18 @@ public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase imp
     void hoverOverNeighbour(Direction primaryDir, Direction secondaryDir) {
         boolean diagonal = gotoNeighbour(primaryDir, secondaryDir);
         if (diagonal) {
-            targetAngles[EnumAngles.BASE.ordinal()] = 160F;
-            targetAngles[EnumAngles.MIDDLE.ordinal()] = -95F;
-            targetAngles[EnumAngles.TAIL.ordinal()] = -10F;
+            targetAngles[EnumAngles.BASE.getIndex()] = 160F;
+            targetAngles[EnumAngles.MIDDLE.getIndex()] = -95F;
+            targetAngles[EnumAngles.TAIL.getIndex()] = -10F;
         } else {
-            targetAngles[EnumAngles.BASE.ordinal()] = 100F;
-            targetAngles[EnumAngles.MIDDLE.ordinal()] = -20F;
-            targetAngles[EnumAngles.TAIL.ordinal()] = 10F;
+            targetAngles[EnumAngles.BASE.getIndex()] = 100F;
+            targetAngles[EnumAngles.MIDDLE.getIndex()] = -20F;
+            targetAngles[EnumAngles.TAIL.getIndex()] = 10F;
         }
     }
 
     TileEntity getTileEntityForCurrentDirection() {
         return getTileEntityForDirection(targetDirection[0], targetDirection[1]);
-    }
-
-    public TileEntity getTileEntityForDirection(Direction[] directions) {
-        return getTileEntityForDirection(directions[0], directions[1]);
     }
 
     private TileEntity getTileEntityForDirection(Direction firstDir, Direction secondDir) {
@@ -196,14 +180,10 @@ public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase imp
     }
 
     boolean isDoneMoving() {
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < angles.length; i++) {
             if (!PneumaticCraftUtils.epsilonEquals(angles[i], targetAngles[i])) return false;
         }
         return true;
-    }
-
-    public boolean isDoneRotatingYaw() {
-        return PneumaticCraftUtils.epsilonEquals(angles[EnumAngles.TURN.ordinal()], targetAngles[EnumAngles.TURN.ordinal()]);
     }
 
     @Override
@@ -232,9 +212,8 @@ public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase imp
         tag.putFloat("speed", speed);
 
         if (targetDirection != null) {
-            if (targetDirection[0] != null) tag.putInt("targetDir1", targetDirection[0].ordinal());
-
-            if (targetDirection[1] != null) tag.putInt("targetDir2", targetDirection[1].ordinal());
+            if (targetDirection[0] != null) tag.putInt("targetDir1", targetDirection[0].getIndex());
+            if (targetDirection[1] != null) tag.putInt("targetDir2", targetDirection[1].getIndex());
         }
         return tag;
     }
@@ -266,5 +245,33 @@ public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase imp
     @Override
     public void setSpeed(float speed) {
         this.speed = speed;
+    }
+
+    protected enum EnumAngles {
+        TURN(0),
+        BASE(1),
+        MIDDLE(2, 55f),
+        TAIL(3, 35f),
+        HEAD(4);
+
+        private final int idx;
+        private final float homeAngle;
+
+        EnumAngles(int idx) {
+            this(idx, 0f);
+        }
+
+        EnumAngles(int idx, float homeAngle) {
+            this.idx = idx;
+            this.homeAngle = homeAngle;
+        }
+
+        public int getIndex() {
+            return idx;
+        }
+
+        public float getHomeAngle() {
+            return homeAngle;
+        }
     }
 }

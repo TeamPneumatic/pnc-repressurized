@@ -1099,13 +1099,13 @@ public class EntityDrone extends EntityDroneBase implements
     }
 
     public int getEmittingRedstone(Direction side) {
-        return emittingRedstoneValues[side.ordinal()];
+        return emittingRedstoneValues[side.getIndex()];
     }
 
     @Override
     public void setEmittingRedstone(Direction side, int value) {
-        if (emittingRedstoneValues[side.ordinal()] != value) {
-            emittingRedstoneValues[side.ordinal()] = value;
+        if (emittingRedstoneValues[side.getIndex()] != value) {
+            emittingRedstoneValues[side.getIndex()] = value;
             BlockPos pos = new BlockPos((int) Math.floor(getPosX() + getWidth() / 2), (int) Math.floor(getPosY()), (int) Math.floor(getPosZ() + getWidth() / 2));
             BlockState state = world.getBlockState(pos);
             world.notifyBlockUpdate(pos, state, state, 3);

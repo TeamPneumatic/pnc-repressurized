@@ -18,13 +18,13 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 
-import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiJackHammerSetup extends GuiPneumaticContainerBase<ContainerJackhammerSetup, TileEntityBase> {
-    private final WidgetButtonExtended[] typeButtons = new WidgetButtonExtended[DigMode.values().length];
+    private final EnumMap<DigMode,WidgetButtonExtended> typeButtons = new EnumMap<>(DigMode.class);
     private WidgetButtonExtended selectorButton;
 
     public GuiJackHammerSetup(ContainerJackhammerSetup container, PlayerInventory inv, ITextComponent displayString) {
@@ -46,14 +46,16 @@ public class GuiJackHammerSetup extends GuiPneumaticContainerBase<ContainerJackh
                     StringTextComponent.EMPTY, b -> toggleShowChoices()))
                     .setRenderedIcon(digMode.getGuiIcon());
 
-            int xBase = 147 - 20 * typeButtons.length;
+            int xBase = 147 - 20 * DigMode.values().length;
             for (DigMode dm : DigMode.values()) {
-                typeButtons[dm.ordinal()] = new WidgetButtonExtended(guiLeft + xBase + 20 * dm.ordinal(), guiTop + 47, 20, 20,
+                WidgetButtonExtended button = new WidgetButtonExtended(guiLeft + xBase, guiTop + 47, 20, 20,
                         StringTextComponent.EMPTY, b -> selectDigMode(dm))
                         .setRenderedIcon(dm.getGuiIcon())
                         .withTag("digmode:" + dm.toString());
-                typeButtons[dm.ordinal()].visible = false;
-                addButton(typeButtons[dm.ordinal()]);
+                xBase += 20;
+                button.visible = false;
+                typeButtons.put(dm, button);
+                addButton(button);
             }
         }
 
@@ -69,12 +71,12 @@ public class GuiJackHammerSetup extends GuiPneumaticContainerBase<ContainerJackh
 
     private void selectDigMode(DigMode digMode) {
         // communication to server handled via PacketGuiButton
-        Arrays.stream(typeButtons).forEach(button -> button.visible = false);
+        typeButtons.values().forEach(button -> button.visible = false);
         selectorButton.setRenderedIcon(digMode.getGuiIcon());
     }
 
     private void toggleShowChoices() {
-        Arrays.stream(typeButtons).forEach(button -> button.visible = !button.visible);
+        typeButtons.values().forEach(button -> button.visible = !button.visible);
     }
 
     @Override
@@ -94,9 +96,7 @@ public class GuiJackHammerSetup extends GuiPneumaticContainerBase<ContainerJackh
         DigMode digMode = ItemJackHammer.getDigMode(hammerStack);
         if (digMode == null) digMode = DigMode.MODE_1X1;
 
-        for (DigMode dm : DigMode.values()) {
-            typeButtons[dm.ordinal()].active = dm.getBitType().getTier() <= bitType.getTier();
-        }
+        typeButtons.forEach((dm, button) -> button.active = dm.getBitType().getTier() <= bitType.getTier());
 
         if (digMode.getBitType().getTier() > bitType.getTier() && digMode != DigMode.MODE_1X1) {
             // jackhammer currently has a selected dig type of a tier too high for the installed drill bit

@@ -66,10 +66,10 @@ public class TileEntityAssemblyLaser extends TileEntityAssemblyRobot {
                 default: //4-103
                     isLaserOn = true;
                     slowMode = false;
-                    targetAngles[EnumAngles.BASE.ordinal()] = 100F - (float) PneumaticCraftUtils.sin[(laserStep - 4) * PneumaticCraftUtils.CIRCLE_POINTS / 100] * ITEM_SIZE;
-                    targetAngles[EnumAngles.MIDDLE.ordinal()] = -10F + (float) PneumaticCraftUtils.sin[(laserStep - 4) * PneumaticCraftUtils.CIRCLE_POINTS / 100] * ITEM_SIZE;
-                    targetAngles[EnumAngles.TAIL.ordinal()] = 0F;
-                    targetAngles[EnumAngles.TURN.ordinal()] += (float) PneumaticCraftUtils.sin[(laserStep - 4) * PneumaticCraftUtils.CIRCLE_POINTS / 100] * ITEM_SIZE * 0.03D;
+                    targetAngles[EnumAngles.BASE.getIndex()] = 100F - (float) PneumaticCraftUtils.sin[(laserStep - 4) * PneumaticCraftUtils.CIRCLE_POINTS / 100] * ITEM_SIZE;
+                    targetAngles[EnumAngles.MIDDLE.getIndex()] = -10F + (float) PneumaticCraftUtils.sin[(laserStep - 4) * PneumaticCraftUtils.CIRCLE_POINTS / 100] * ITEM_SIZE;
+                    targetAngles[EnumAngles.TAIL.getIndex()] = 0F;
+                    targetAngles[EnumAngles.TURN.getIndex()] += (float) PneumaticCraftUtils.sin[(laserStep - 4) * PneumaticCraftUtils.CIRCLE_POINTS / 100] * ITEM_SIZE * 0.03D;
                     break;
             }
             if (isDoneInternal() || laserStep >= 4 && laserStep <= 103) {
@@ -88,7 +88,7 @@ public class TileEntityAssemblyLaser extends TileEntityAssemblyRobot {
     @Override
     public boolean gotoNeighbour(Direction primaryDir, Direction secondaryDir) {
         boolean diagonal = super.gotoNeighbour(primaryDir, secondaryDir);
-        targetAngles[EnumAngles.TURN.ordinal()] -= ITEM_SIZE * 0.45D;
+        targetAngles[EnumAngles.TURN.getIndex()] -= ITEM_SIZE * 0.45D;
         return diagonal;
     }
 
