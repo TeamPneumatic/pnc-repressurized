@@ -92,6 +92,11 @@ public class EntityProgrammableController extends EntityDroneBase {
         return controller.label == null ? "<?>" : controller.label;
     }
 
+    @Override
+    public boolean isTeleportRangeLimited() {
+        return true;  // not very relevant since the PC minidrone doesn't need to teleport anyway
+    }
+
     public BlockPos getControllerPos() {
         return controller.getPos();
     }

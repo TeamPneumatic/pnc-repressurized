@@ -70,6 +70,7 @@ public class CommonConfig {
         ForgeConfigSpec.BooleanValue stopDroneAI;
         ForgeConfigSpec.BooleanValue dontUpdateInfiniteWaterSources;
         ForgeConfigSpec.IntValue maxDroneChargingStationSearchRange;
+        ForgeConfigSpec.IntValue maxDroneTeleportRange;
     }
     public static class Micromissiles {
         ForgeConfigSpec.DoubleValue baseExplosionDamage;
@@ -365,6 +366,10 @@ public class CommonConfig {
                 .comment("How far will a drone go to find a Charging Station when it's low on air? Note: drones will teleport, possibly across the world to someone else's base, if this range is very large.")
                 .translation("pneumaticcraft.config.common.advanced.max_drone_charging_station_search_range")
                 .defineInRange("max_drone_charging_station_search_range", 80, 16, Integer.MAX_VALUE);
+        advanced.maxDroneTeleportRange = builder
+                .comment("The maximum distance that a Drone may teleport when it can't find a path to its destination. Default value of 0 means no limit. This is primarily intended to limit abuse of teleportation to other players on PvP servers, but may find other uses. Be careful about setting this value very low.")
+                .translation("pneumaticcraft.config.common.advanced.max_drone_charging_station_search_range")
+                .defineInRange("max_drone_teleport_range", 0, 0, Integer.MAX_VALUE);
         advanced.stuckDroneTeleportTicks = builder
                 .comment("If a Drone has found a path, but gets stuck on a block along that path, it will teleport to its destination after this many ticks of being stuck. Set this to 0 to disable teleporting, which will likely leave the drone waiting there forever (or until it runs out of air). Note that getting stuck on a block is usually the fault of the mod that added the block (especially if the block has a non-full-cube shape), but if you encounter this behaviour, please report it as a PneumaticCraft: Repressurized issue so it can be investigated.")
                 .translation("pneumaticcraft.config.common.advanced.stuck_drone_teleport_ticks")

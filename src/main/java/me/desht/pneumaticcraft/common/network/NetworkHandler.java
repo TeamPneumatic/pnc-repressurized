@@ -43,7 +43,7 @@ import static me.desht.pneumaticcraft.common.network.ILargePayload.MAX_PAYLOAD_S
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
 public class NetworkHandler {
-    private static final String PROTOCOL_VERSION = "4";
+    private static final String PROTOCOL_VERSION = "5";
     private static final SimpleChannel NETWORK = NetworkRegistry.ChannelBuilder
             .named(RL("main_channel"))
             .clientAcceptedVersions(PROTOCOL_VERSION::equals)
@@ -82,6 +82,8 @@ public class NetworkHandler {
 				PacketShowWireframe::toBytes, PacketShowWireframe::new, PacketShowWireframe::handle);
 		registerMessage(PacketSpawnParticle.class,
 				PacketSpawnParticle::toBytes, PacketSpawnParticle::new, PacketSpawnParticle::handle);
+		registerMessage(PacketSpawnParticleTrail.class,
+				PacketSpawnParticleTrail::toBytes, PacketSpawnParticleTrail::new, PacketSpawnParticleTrail::handle);
 		registerMessage(PacketSpawnIndicatorParticles.class,
 				PacketSpawnIndicatorParticles::toBytes, PacketSpawnIndicatorParticles::new, PacketSpawnIndicatorParticles::handle);
 		registerMessage(PacketUpdateSearchItem.class,

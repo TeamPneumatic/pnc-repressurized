@@ -117,6 +117,7 @@ public class ConfigHelper {
         PNCConfig.Common.Advanced.fluidTankUpdateRate = common.advanced.fluidTankUpdateRate.get();
         PNCConfig.Common.Advanced.pressureSyncPrecision = common.advanced.pressureSyncPrecision.get();
         PNCConfig.Common.Advanced.maxDroneChargingStationSearchRange = common.advanced.maxDroneChargingStationSearchRange.get();
+        PNCConfig.Common.Advanced.maxDroneTeleportRange = common.advanced.maxDroneTeleportRange.get();
         PNCConfig.Common.Advanced.stopDroneAI = common.advanced.stopDroneAI.get();
         PNCConfig.Common.Advanced.dontUpdateInfiniteWaterSources = common.advanced.dontUpdateInfiniteWaterSources.get();
         PNCConfig.Common.Advanced.stuckDroneTeleportTicks = common.advanced.stuckDroneTeleportTicks.get();

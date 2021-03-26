@@ -600,7 +600,7 @@ public class PneumaticCraftUtils {
     /**
      * Try to transfer the XP from the given XP orb entity into the given fluid handler.  If the handler has enough
      * room to store only part of the orb's XP, it will reduce the orb's XP by the amount taken (assuming the action is
-     * execute).
+     * execute). Does not remove the entity; the caller should do that iff this returns true.
      *
      * @param handler the fluid handler
      * @param orb the XP orb

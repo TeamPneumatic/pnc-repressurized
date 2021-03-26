@@ -32,10 +32,12 @@ public abstract class DroneEntityBase<W extends IEntityProvider, E extends Entit
                     //noinspection unchecked
                     targetedEntity = (E) ent;
                     return true;
+                } else {
+                    drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.general.debug.cantNavigate");
                 }
             }
         }
-        return false; // 
+        return false;
 
     }
 

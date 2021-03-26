@@ -86,6 +86,8 @@ public class DroneEntityAIPickupItems extends Goal {
             if (drone.getPathNavigator().moveToEntity(ent)) {
                 curPickingUpEntity = (ItemEntity) ent;
                 return true;
+            } else {
+                drone.getDebugger().addEntry("pneumaticcraft.gui.progWidget.general.debug.cantNavigate");
             }
         }
         return false;

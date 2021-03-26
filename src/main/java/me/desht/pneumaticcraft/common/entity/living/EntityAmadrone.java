@@ -147,4 +147,9 @@ public class EntityAmadrone extends EntityDrone {
             amadronAction = AmadronAction.valueOf(subTag.getString("amadronAction"));
         }
     }
+
+    @Override
+    public boolean isTeleportRangeLimited() {
+        return false;
+    }
 }

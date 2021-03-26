@@ -710,10 +710,6 @@ public class EntityDrone extends EntityDroneBase implements
         return oldTargetLine;
     }
 
-//    public double getRange() {
-//        return 75;
-//    }
-
     @Override
     public ActionResultType func_230254_b_(PlayerEntity player, Hand hand) {
         // func_230254_b_ = onEntityRightClick() ?
@@ -1371,6 +1367,11 @@ public class EntityDrone extends EntityDroneBase implements
     @Override
     public String getLabel() {
         return dataManager.get(LABEL);
+    }
+
+    @Override
+    public boolean isTeleportRangeLimited() {
+        return true;
     }
 
     @Override

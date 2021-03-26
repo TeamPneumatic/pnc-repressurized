@@ -115,6 +115,7 @@ public class PNCConfig {
             public static boolean dontUpdateInfiniteWaterSources;
             public static int maxDroneChargingStationSearchRange;
             public static int stuckDroneTeleportTicks;
+            public static int maxDroneTeleportRange;
         }
 
         public static class Micromissiles {

@@ -46,4 +46,6 @@ public abstract class EntityDroneBase extends CreatureEntity {
     public abstract ITextComponent getOwnerName();
 
     public abstract String getLabel();
+
+    public abstract boolean isTeleportRangeLimited();
 }
