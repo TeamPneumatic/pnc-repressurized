@@ -8,7 +8,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 
-## 2.11.2-?? (unreleased)
+## 2.11.2-167 (26 Mar 2021)
 
 ### Updates
 * Memory Essence fluid is now tagged as `forge:experience` for more cross-mod compatibility
@@ -19,6 +19,7 @@ PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
   * Amadrones and Programmer Controller are not affected by this
   * Primarily intended to avoid abuse on PvP servers, but may have other applications
   * Be careful about setting this to very low values; it could mess up drone programs where the drone can't always find a path
+* Added another JEI entry for Memory Essence clarifying that Drones with an Entity Import widget can import XP orbs -> Memory Essence
 
 ### Fixes
 * Fixed Smart Chest in push mode sometimes getting wedged and not pushing items even when it can
