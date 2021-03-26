@@ -236,6 +236,9 @@ public class UpgradesDBSetup {
         db.addApplicableUpgrades(ModTileEntities.TANK_LARGE.get(), new Builder()
                 .with(EnumUpgrade.SPEED, 7)
                 .with(EnumUpgrade.DISPENSER, 1));
+        db.addApplicableUpgrades(ModTileEntities.TANK_HUGE.get(), new Builder()
+                .with(EnumUpgrade.SPEED, 7)
+                .with(EnumUpgrade.DISPENSER, 1));
         db.addApplicableUpgrades(ModTileEntities.SMART_CHEST.get(), new Builder()
                 .with(EnumUpgrade.SPEED, 9)
                 .with(EnumUpgrade.DISPENSER, 1)
