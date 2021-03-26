@@ -171,8 +171,7 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
         } else {
             if (!noPath()) {
                 pathFollow();
-                //noinspection ConstantConditions
-                if (currentPath.getCurrentPathIndex() < currentPath.getCurrentPathLength()) {
+                if (currentPath != null && !currentPath.isFinished()) {
                     if (PNCConfig.Common.Advanced.stuckDroneTeleportTicks > 0 && entity.getMotion().lengthSquared() < 0.0001) {
                         if (stuckTicks++ > PNCConfig.Common.Advanced.stuckDroneTeleportTicks) {
                             Vector3d v = droneEntity.getDronePos();
