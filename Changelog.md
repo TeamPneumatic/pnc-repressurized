@@ -8,6 +8,11 @@ Changes are in reverse chronological order; newest changes at the top.
 
 PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 
+## 2.11.3-168 (26 Mar 2021)
+
+### Fixes
+* Hotfix: drone pathfinding NPE introduced in 2.11.2
+
 ## 2.11.2-167 (26 Mar 2021)
 
 ### Updates
