@@ -13,9 +13,21 @@ PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 ### Updates
 * Memory Essence fluid is now tagged as `forge:experience` for more cross-mod compatibility
   * Vacuum Trap will now accept any fluids with this tag
+* The max teleport distance for Drones is now configurable
+  * Set `max_drone_teleport_range` in `config/pneumaticcraft-common.toml`
+  * Default is 0, meaning unlimited range - same as previous behaviour
+  * Amadrones and Programmer Controller are not affected by this
+  * Primarily intended to avoid abuse on PvP servers, but may have other applications
+  * Be careful about setting this to very low values; it could mess up drone programs where the drone can't always find a path
 
 ### Fixes
 * Fixed Smart Chest in push mode sometimes getting wedged and not pushing items even when it can
+* Fixed (cosmetic) face culling issue for Thermopneumatic Processing Plant.  Also gave it a better block shape (matches model more nicely now).
+* Fixed the new Huge Tank not accepting any upgrades
+* Fixed rebuilding a Pressure Chamber (which already had some pressure) sometimes getting the new pressure very wrong
+* Some more Elevator work: hoping once again that the player-falling-off bug is *really* fixed (looking good so far, but needs testing and feedback please!)
+* Fixed Air Grate range preview not being removed if the Air Grate module is removed
+  * Also, Air Grates no longer show their range when initially placed (use the GUI to toggle range preview)
 
 ## 2.11.1-163 (22 Mar 2021)
 
