@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.common.XPFluidManager;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
@@ -15,9 +16,11 @@ import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IItemProvider;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.util.Collection;
@@ -80,6 +83,13 @@ public class JEIMemoryEssenceCategory implements IRecipeCategory<JEIMemoryEssenc
 
         recipeLayout.getFluidStacks().init(0, false, 112, 29);
         recipeLayout.getFluidStacks().set(0, new FluidStack(ModFluids.MEMORY_ESSENCE.get(), 1000));
+
+        recipeLayout.getItemStacks().addTooltipCallback((slotIndex, input, ingredient, tooltip) -> {
+            String tooltipKey = recipe.getTooltipKey(slotIndex);
+            if (!tooltipKey.isEmpty()) {
+                tooltip.addAll(PneumaticCraftUtils.splitStringComponent(TextFormatting.GREEN + I18n.format(tooltipKey)));
+            }
+        });
     }
 
     @Override
@@ -94,17 +104,29 @@ public class JEIMemoryEssenceCategory implements IRecipeCategory<JEIMemoryEssenc
     static Collection<MemoryEssenceRecipe> getAllRecipes() {
         return ImmutableList.of(
                 new MemoryEssenceRecipe(ModItems.MEMORY_STICK.get(), null),
-                new MemoryEssenceRecipe(ModBlocks.AERIAL_INTERFACE.get(), EnumUpgrade.DISPENSER.getItem())
+                new MemoryEssenceRecipe(ModBlocks.AERIAL_INTERFACE.get(), EnumUpgrade.DISPENSER.getItem()),
+                new MemoryEssenceRecipe(ModItems.DRONE.get(), ModItems.PROGRAMMING_PUZZLE.get())
+                        .setTooltipKey(1, "pneumaticcraft.gui.jei.tooltip.droneImportOrbs")
         );
     }
 
     static class MemoryEssenceRecipe {
-        ItemStack input1;
-        ItemStack input2;
+        final ItemStack input1;
+        final ItemStack input2;
+        final String[] tooltips = new String[] {"", ""};
 
         public MemoryEssenceRecipe(IItemProvider input1, IItemProvider input2) {
             this.input1 = new ItemStack(input1);
             this.input2 = input2 == null ? ItemStack.EMPTY : new ItemStack(input2);
+        }
+
+        public MemoryEssenceRecipe setTooltipKey(int slot, String tooltipKey) {
+            tooltips[slot] = tooltipKey;
+            return this;
+        }
+
+        public String getTooltipKey(int slot) {
+            return slot >= 0 && slot <= 2 ? tooltips[slot] : "";
         }
     }
 }
