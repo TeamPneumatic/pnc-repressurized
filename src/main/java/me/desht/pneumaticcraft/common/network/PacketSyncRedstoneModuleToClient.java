@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleRedstone;
 import me.desht.pneumaticcraft.common.block.tubes.TubeModule;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.Direction;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -51,19 +52,17 @@ public class PacketSyncRedstoneModuleToClient extends LocationIntPacket {
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> {
-            TileEntityPressureTube te = TileEntityPressureTube.getTube(ClientUtils.getClientTE(pos));
-            if (te != null) {
-                TubeModule module = te.getModule(Direction.byIndex(side));
-                if (module instanceof ModuleRedstone) {
-                    ModuleRedstone mr = (ModuleRedstone) module;
-                    mr.setColorChannel(channel);
-                    mr.setRedstoneDirection(dir);
-                    mr.setOutputLevel(outputLevel);
-                    mr.setInputLevel(inputLevel);
-                }
-            }
-        });
+        ctx.get().enqueueWork(() ->
+                PneumaticCraftUtils.getTileEntityAt(ClientUtils.getClientWorld(), pos, TileEntityPressureTube.class).ifPresent(te -> {
+                    TubeModule module = te.getModule(Direction.byIndex(side));
+                    if (module instanceof ModuleRedstone) {
+                        ModuleRedstone mr = (ModuleRedstone) module;
+                        mr.setColorChannel(channel);
+                        mr.setRedstoneDirection(dir);
+                        mr.setOutputLevel(outputLevel);
+                        mr.setInputLevel(inputLevel);
+                    }
+                }));
         ctx.get().setPacketHandled(true);
     }
 }

@@ -340,8 +340,4 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
         // otherwise the old shape (now wrong) can get recached on the client
         pendingCacheShapeClear = 2;
     }
-
-    public static TileEntityPressureTube getTube(TileEntity te) {
-        return te instanceof TileEntityPressureTube ? (TileEntityPressureTube) te : null;
-    }
 }
