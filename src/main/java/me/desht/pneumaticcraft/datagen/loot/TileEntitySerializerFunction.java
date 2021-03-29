@@ -65,7 +65,7 @@ public class TileEntitySerializerFunction extends LootFunction {
 
         // redstone mode
         if (te instanceof IRedstoneControl) {
-            subTag.putInt(NBTKeys.NBT_REDSTONE_MODE, ((IRedstoneControl) te).getRedstoneMode());
+            ((IRedstoneControl<?>) te).getRedstoneController().serialize(subTag);
         }
 
         if (te instanceof TileEntityBase) {

@@ -86,7 +86,10 @@ public class RedstoneController<T extends TileEntity & IRedstoneControl<T>> {
     }
 
     public void serialize(CompoundNBT tag) {
-        tag.putInt(NBTKeys.NBT_REDSTONE_MODE, currentMode);
+        // don't write default mode 0; avoid messy NBT
+        if (currentMode != 0) {
+            tag.putInt(NBTKeys.NBT_REDSTONE_MODE, currentMode);
+        }
     }
 
     public void deserialize(CompoundNBT tag) {
