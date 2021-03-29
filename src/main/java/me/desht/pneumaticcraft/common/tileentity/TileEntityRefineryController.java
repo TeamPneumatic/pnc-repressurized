@@ -228,7 +228,7 @@ public class TileEntityRefineryController extends TileEntityTickableBase
         while (output != null) {
             // direction DOWN is important here to get the unwrapped cap
             LazyOptional<IFluidHandler> handler = output.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, Direction.DOWN);
-            handler.addListener(l -> cacheRefineryOutputs());
+            if (handler.isPresent()) handler.addListener(l -> cacheRefineryOutputs());
             cache.add(handler);
             TileEntity te = output.getCachedNeighbor(Direction.UP);
             output = te instanceof TileEntityRefineryOutput ? (TileEntityRefineryOutput) te : null;
