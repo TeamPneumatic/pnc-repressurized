@@ -8,10 +8,11 @@ Changes are in reverse chronological order; newest changes at the top.
 
 PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 
-## 2.11.4-?? (unreleased)
+## 2.11.4-170 (31 Mar 2021)
 
 ### Fixes
 * Fix infinite recursion crash when breaking Refinery Output blocks
+* Fix potion-crafted ammo causing player kick on dedicated server
 
 ## 2.11.3-168 (26 Mar 2021)
 
