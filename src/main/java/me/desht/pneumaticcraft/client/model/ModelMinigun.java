@@ -33,49 +33,126 @@ public class ModelMinigun {
     private final ModelRenderer main;
     private final ModelRenderer magazine;
     private final ModelRenderer mount;
+    private final ModelRenderer mount_r1;
+    private final ModelRenderer mount_r2;
     private final ModelRenderer magazineColor;
 
     public ModelMinigun() {
+//        barrel = new ModelRenderer(64, 32, 30, 15);
+//        barrel.addBox(-0.5F, 1.5F, 0F, 1, 1, 16);
+//        barrel.setPos(0F, 20.96667F, -8F);
+//        barrel.mirror = true;
+//        support1 = new ModelRenderer(64, 32, 0, 0);
+//        support1.addBox(-1.5F, -1.5F, 0F, 3, 3, 1);
+//        support1.setPos(0F, 21F, -6F);
+//        support1.mirror = true;
+//        support2 = new ModelRenderer(64, 32, 0, 4);
+//        support2.addBox(-1F, 1.5F, 0F, 2, 1, 1);
+//        support2.setPos(0F, 21F, -6F);
+//        support2.mirror = true;
+//        support3 = new ModelRenderer(64, 32, 0, 6);
+//        support3.addBox(-1F, -2.5F, 0F, 2, 1, 1);
+//        support3.setPos(0F, 21F, -6F);
+//        support3.mirror = true;
+//        support4 = new ModelRenderer(64, 32, 0, 8);
+//        support4.addBox(1.5F, -1F, 0F, 1, 2, 1);
+//        support4.setPos(0F, 21F, -6F);
+//        support4.mirror = true;
+//        support5 = new ModelRenderer(64, 32, 0, 11);
+//        support5.addBox(-2.5F, -1F, 0F, 1, 2, 1);
+//        support5.setPos(0F, 21F, -6F);
+//        support5.mirror = true;
+//        main = new ModelRenderer(64, 32, 36, 0);
+//        main.addBox(0F, 0F, 0F, 6, 6, 8);
+//        main.setPos(-3F, 18F, 8F);
+//        main.mirror = true;
+//        magazine = new ModelRenderer(64, 32, 0, 14);
+//        magazine.addBox(0F, 0F, 0F, 2, 3, 6);
+//        magazine.setPos(3F, 22F, 9F);
+//        magazine.mirror = true;
+//        mount = new ModelRenderer(64, 32, 0, 23);
+//        mount.addBox(0F, 0F, 0F, 2, 4, 2);
+//        mount.setPos(-1F, 15F, 11F);
+//        mount.mirror = true;
+//        magazineColor = new ModelRenderer(64, 32, 8, 0);
+//        magazineColor.addBox(0F, 0F, 0F, 1, 2, 4);
+//        magazineColor.setPos(4.3F, 22.5F, 10F);
+//        magazineColor.mirror = true;
+
         barrel = new ModelRenderer(64, 32, 30, 15);
-        barrel.addBox(-0.5F, 1.5F, 0F, 1, 1, 16);
-        barrel.setPos(0F, 20.96667F, -8F);
-        barrel.mirror = true;
+        barrel.setPos(0.0F, 20.9667F, -8.0F);
+        barrel.texOffs(0, 3).addBox(-0.5F, 1.4333F, -4.0F, 1.0F, 1.0F, 20.0F, 0.0F, false);
+
         support1 = new ModelRenderer(64, 32, 0, 0);
-        support1.addBox(-1.5F, -1.5F, 0F, 3, 3, 1);
-        support1.setPos(0F, 21F, -6F);
-        support1.mirror = true;
+        support1.setPos(0.0F, 21.0F, -6.0F);
+        support1.texOffs(22, 16).addBox(-1.5F, -1.5F, -5.0F, 3.0F, 3.0F, 4.0F, 0.0F, false);
+        support1.texOffs(0, 13).addBox(-1.5F, -1.5F, 0.0F, 3.0F, 3.0F, 1.0F, 0.0F, false);
+        support1.texOffs(0, 13).addBox(-1.5F, -1.5F, 5.0F, 3.0F, 3.0F, 1.0F, 0.0F, false);
+        support1.texOffs(0, 13).addBox(-1.5F, -1.5F, 7.0F, 3.0F, 3.0F, 1.0F, 0.0F, false);
+        support1.texOffs(0, 13).addBox(-1.5F, -1.5F, 13.0F, 3.0F, 3.0F, 1.0F, 0.0F, false);
+
         support2 = new ModelRenderer(64, 32, 0, 4);
-        support2.addBox(-1F, 1.5F, 0F, 2, 1, 1);
-        support2.setPos(0F, 21F, -6F);
-        support2.mirror = true;
+        support2.setPos(0.0F, 21.0F, -6.0F);
+        support2.texOffs(22, 8).addBox(-1.5F, 1.5F, -5.0F, 3.0F, 1.0F, 4.0F, 0.0F, false);
+        support2.texOffs(0, 11).addBox(-1.5F, 1.5F, 0.0F, 3.0F, 1.0F, 1.0F, 0.0F, false);
+        support2.texOffs(0, 21).addBox(-1.5F, 1.5F, 5.0F, 3.0F, 1.0F, 1.0F, 0.0F, false);
+        support2.texOffs(0, 21).addBox(-1.5F, 1.5F, 7.0F, 3.0F, 1.0F, 1.0F, 0.0F, false);
+        support2.texOffs(0, 21).addBox(-1.5F, 1.5F, 13.0F, 3.0F, 1.0F, 1.0F, 0.0F, false);
+
         support3 = new ModelRenderer(64, 32, 0, 6);
-        support3.addBox(-1F, -2.5F, 0F, 2, 1, 1);
-        support3.setPos(0F, 21F, -6F);
-        support3.mirror = true;
+        support3.setPos(0.0F, 21.0F, -6.0F);
+        support3.texOffs(22, 8).addBox(-1.5F, -2.5F, -5.0F, 3.0F, 1.0F, 4.0F, 0.0F, false);
+        support3.texOffs(0, 11).addBox(-1.5F, -2.5F, 0.0F, 3.0F, 1.0F, 1.0F, 0.0F, false);
+        support3.texOffs(0, 11).addBox(-1.5F, -2.5F, 5.0F, 3.0F, 1.0F, 1.0F, 0.0F, false);
+        support3.texOffs(0, 11).addBox(-1.5F, -2.5F, 7.0F, 3.0F, 1.0F, 1.0F, 0.0F, false);
+        support3.texOffs(0, 11).addBox(-1.5F, -2.5F, 13.0F, 3.0F, 1.0F, 1.0F, 0.0F, false);
+
         support4 = new ModelRenderer(64, 32, 0, 8);
-        support4.addBox(1.5F, -1F, 0F, 1, 2, 1);
-        support4.setPos(0F, 21F, -6F);
-        support4.mirror = true;
+        support4.setPos(0.0F, 21.0F, -6.0F);
+        support4.texOffs(22, 1).addBox(1.5F, -1.5F, -5.0F, 1.0F, 3.0F, 4.0F, 0.0F, false);
+        support4.texOffs(0, 17).addBox(1.5F, -1.5F, 0.0F, 1.0F, 3.0F, 1.0F, 0.0F, false);
+        support4.texOffs(4, 17).addBox(1.5F, -1.5F, 5.0F, 1.0F, 3.0F, 1.0F, 0.0F, false);
+        support4.texOffs(4, 17).addBox(1.5F, -1.5F, 7.0F, 1.0F, 3.0F, 1.0F, 0.0F, false);
+        support4.texOffs(4, 17).addBox(1.5F, -1.5F, 13.0F, 1.0F, 3.0F, 1.0F, 0.0F, false);
+
         support5 = new ModelRenderer(64, 32, 0, 11);
-        support5.addBox(-2.5F, -1F, 0F, 1, 2, 1);
-        support5.setPos(0F, 21F, -6F);
-        support5.mirror = true;
+        support5.setPos(0.0F, 21.0F, -6.0F);
+        support5.texOffs(32, 1).addBox(-2.5F, -1.5F, -5.0F, 1.0F, 3.0F, 4.0F, 0.0F, false);
+        support5.texOffs(0, 17).addBox(-2.5F, -1.5F, 0.0F, 1.0F, 3.0F, 1.0F, 0.0F, false);
+        support5.texOffs(0, 17).addBox(-2.5F, -1.5F, 5.0F, 1.0F, 3.0F, 1.0F, 0.0F, false);
+        support5.texOffs(4, 17).addBox(-2.5F, -1.5F, 7.0F, 1.0F, 3.0F, 1.0F, 0.0F, false);
+        support5.texOffs(4, 17).addBox(-2.5F, -1.5F, 13.0F, 1.0F, 3.0F, 1.0F, 0.0F, false);
+
         main = new ModelRenderer(64, 32, 36, 0);
-        main.addBox(0F, 0F, 0F, 6, 6, 8);
-        main.setPos(-3F, 18F, 8F);
-        main.mirror = true;
+        main.setPos(-3.0F, 18.0F, 8.0F);
+        main.texOffs(36, 18).addBox(0.0F, 0.0F, 1.0F, 6.0F, 6.0F, 8.0F, 0.0F, false);
+        main.texOffs(34, 3).addBox(0.5F, 0.5F, 0.0F, 5.0F, 5.0F, 10.0F, 0.0F, false);
+
         magazine = new ModelRenderer(64, 32, 0, 14);
-        magazine.addBox(0F, 0F, 0F, 2, 3, 6);
-        magazine.setPos(3F, 22F, 9F);
-        magazine.mirror = true;
+        magazine.setPos(3.0F, 22.0F, 9.0F);
+        magazine.texOffs(0, 0).addBox(-8.0F, -2.0F, 2.5F, 5.0F, 6.0F, 5.0F, 0.0F, true);
+
         mount = new ModelRenderer(64, 32, 0, 23);
-        mount.addBox(0F, 0F, 0F, 2, 4, 2);
-        mount.setPos(-1F, 15F, 11F);
-        mount.mirror = true;
+        mount.setPos(-1.0F, 15.0F, 11.0F);
+
+
+        mount_r1 = new ModelRenderer(64, 32, 0, 23);
+        mount_r1.setPos(1.0F, 2.0F, 2.0F);
+        mount.addChild(mount_r1);
+        setRotationAngle(mount_r1, -0.3927F, 0.0F, 0.0F);
+        mount_r1.texOffs(60, 0).addBox(-0.5F, -3.0F, -0.75F, 1.0F, 2.0F, 1.0F, 0.0F, false);
+
+        mount_r2 = new ModelRenderer(64, 32, 0, 23);
+        mount_r2.setPos(1.0F, 2.0F, 2.0F);
+        mount.addChild(mount_r2);
+        setRotationAngle(mount_r2, -0.2618F, 0.0F, 0.0F);
+        mount_r2.texOffs(54, 3).addBox(-1.0F, -5.0F, -1.0F, 2.0F, 1.0F, 3.0F, 0.0F, false);
+        mount_r2.texOffs(56, 18).addBox(-1.0F, -4.0F, 0.0F, 2.0F, 6.0F, 2.0F, 0.0F, false);
+
         magazineColor = new ModelRenderer(64, 32, 8, 0);
-        magazineColor.addBox(0F, 0F, 0F, 1, 2, 4);
-        magazineColor.setPos(4.3F, 22.5F, 10F);
-        magazineColor.mirror = true;
+        magazineColor.setPos(4.3F, 22.5F, 10.0F);
+        magazineColor.texOffs(54, 7).addBox(-9.6F, -2.0F, 2.0F, 1.0F, 2.0F, 4.0F, 0.0F, true);
+>>>>>>> Initial Push
     }
 
     public void renderMinigun(MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLight, int combinedOverlay, Minigun minigun, float partialTick, boolean renderMount) {
@@ -123,5 +200,11 @@ public class ModelMinigun {
         magazineColor.render(matrixStack, builder, combinedLight, combinedOverlay, cols[1], cols[2], cols[3], cols[0]);
 
         matrixStack.popPose();
+    }
+
+    public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
+        modelRenderer.rotateAngleX = x;
+        modelRenderer.rotateAngleY = y;
+        modelRenderer.rotateAngleZ = z;
     }
 }
