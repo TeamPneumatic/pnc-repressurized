@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "type=bottom": { "model": "pneumaticcraft:block/compressed_stone_slab" },
+    "type=top": { "model": "pneumaticcraft:block/compressed_stone_slab_top" },
+    "type=double": { "model": "pneumaticcraft:block/compressed_stone_slab_double" }
+  }
+}
