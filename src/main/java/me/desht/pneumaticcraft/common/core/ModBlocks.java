@@ -236,6 +236,24 @@ public class ModBlocks {
     public static final RegistryObject<Block> REINFORCED_BRICK_WALL = register("reinforced_brick_wall",
             () -> new WallBlock(reinforcedStoneProps()));
 
+    public static final RegistryObject<Block> COMPRESSED_STONE = register("compressed_stone",
+            () -> new Block(reinforcedStoneProps()));
+    public static final RegistryObject<Block> COMPRESSED_BRICKS = register("compressed_bricks",
+            () -> new Block(reinforcedStoneProps()));
+    public static final RegistryObject<Block> COMPRESSED_BRICK_TILE = register("compressed_brick_tile",
+            () -> new Block(reinforcedStoneProps()));
+    public static final RegistryObject<Block> COMPRESSED_BRICK_STAIRS = register("compressed_brick_stairs",
+            () -> new StairsBlock(() -> COMPRESSED_BRICKS.get().getDefaultState(),
+                    reinforcedStoneProps()));
+    public static final RegistryObject<Block> COMPRESSED_BRICK_SLAB = register("compressed_brick_slab",
+            () -> new SlabBlock(reinforcedStoneProps()));
+    public static final RegistryObject<Block> COMPRESSED_STONE_SLAB = register("compressed_stone_slab",
+            () -> new SlabBlock(reinforcedStoneProps()));
+    public static final RegistryObject<Block> COMPRESSED_BRICK_PILLAR = register("compressed_brick_pillar",
+            () -> new RotatedPillarBlock(reinforcedStoneProps()));
+    public static final RegistryObject<Block> COMPRESSED_BRICK_WALL = register("compressed_brick_wall",
+            () -> new WallBlock(reinforcedStoneProps()));
+
     public static final RegistryObject<BlockFluidEtchingAcid> ETCHING_ACID = registerNoItem("etching_acid",
             () -> new BlockFluidEtchingAcid(fluidProps()));
     public static final RegistryObject<FlowingFluidBlock> PLASTIC = registerNoItem("plastic",
