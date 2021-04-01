@@ -235,7 +235,7 @@ public class Textures {
         return new ResourceLocation(GUI_LOCATION + "icon/" + img);
     }
 
-    private static ResourceLocation modelTexture(String img) {
+    public static ResourceLocation modelTexture(String img) {
         return new ResourceLocation(MODEL_LOCATION + img);
     }
 
