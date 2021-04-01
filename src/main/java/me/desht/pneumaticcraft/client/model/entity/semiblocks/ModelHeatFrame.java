@@ -134,10 +134,10 @@ public class ModelHeatFrame extends EntityModel<EntityHeatFrame> {
         top2.render(matrixStack, buffer, packedLight, packedOverlay);
         top3.render(matrixStack, buffer, packedLight, packedOverlay);
         top4.render(matrixStack, buffer, packedLight, packedOverlay);
-        top5.render(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
-        top6.render(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
-        top7.render(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
-        top8.render(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
+        top5.render(matrixStack, buffer, packedLight, packedOverlay);
+        top6.render(matrixStack, buffer, packedLight, packedOverlay);
+        top7.render(matrixStack, buffer, packedLight, packedOverlay);
+        top8.render(matrixStack, buffer, packedLight, packedOverlay);
         top9.render(matrixStack, buffer, packedLight, packedOverlay);
         top10.render(matrixStack, buffer, packedLight, packedOverlay);
         top11.render(matrixStack, buffer, packedLight, packedOverlay);
