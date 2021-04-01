@@ -5,14 +5,12 @@ import com.mojang.blaze3d.vertex.IVertexBuilder;
 import me.desht.pneumaticcraft.client.model.entity.ModelTransferGadget;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntityTransferGadget;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Direction.Axis;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.math.vector.Vector3f;
@@ -61,12 +59,8 @@ public class RenderTransferGadget extends RenderSemiblockBase<EntityTransferGadg
                 break;
         }
 
-        // kludge: use light level for adjacent block (if this block is solid, entity would render unlit)
-        BlockPos blockpos = entity.getBlockPos().offset(side);
-        int l = LightTexture.packLight(this.getBlockLight(entity, blockpos), this.func_239381_b_(entity, blockpos));
-
         IVertexBuilder builder = bufferIn.getBuffer(RenderType.getEntitySolid(getEntityTexture(entity)));
-        model.render(matrixStackIn, builder, l, OverlayTexture.getPackedUV(0F, false), 1f, 1f, 1f, 1f);
+        model.render(matrixStackIn, builder, kludgeLightingLevel(entity, packedLightIn), OverlayTexture.getPackedUV(0F, false), 1f, 1f, 1f, 1f);
 
         matrixStackIn.pop();
     }
