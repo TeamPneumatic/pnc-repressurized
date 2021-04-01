@@ -1,20 +1,3 @@
-/*
- * This file is part of pnc-repressurized.
- *
- *     pnc-repressurized is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
- *
- *     pnc-repressurized is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
- *
- *     You should have received a copy of the GNU General Public License
- *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
- */
-
 package me.desht.pneumaticcraft.datagen;
 
 import com.google.common.collect.ImmutableList;
@@ -31,7 +14,6 @@ import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModRecipes;
 import me.desht.pneumaticcraft.common.recipes.FluidTagPresentCondition;
-import me.desht.pneumaticcraft.common.util.PlayerFilter;
 import me.desht.pneumaticcraft.datagen.recipe.*;
 import me.desht.pneumaticcraft.lib.ModIds;
 import net.minecraft.block.Blocks;
@@ -1136,71 +1118,45 @@ public class ModRecipeProvider extends RecipeProvider {
                 'B', ModBlocks.REINFORCED_BRICKS.get()
         ).save(consumer);
 
-        // vanilla stonecutter for bricks etc.
-        SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.REINFORCED_STONE.get()), ModBlocks.REINFORCED_STONE_SLAB.get(), 2)
-                .unlocks("has_reinforced_stone", has(ModBlocks.REINFORCED_STONE.get())
-                ).save(consumer, RL("reinforced_stone_slab_from_stone_stonecutting"));
-        SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.REINFORCED_STONE.get()), ModBlocks.REINFORCED_BRICKS.get())
-                .unlocks("has_reinforced_stone", has(ModBlocks.REINFORCED_STONE.get())
-                ).save(consumer, RL("reinforced_bricks_from_stone_stonecutting"));
-        SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.REINFORCED_BRICKS.get()), ModBlocks.REINFORCED_BRICK_SLAB.get(), 2)
-                .unlocks("has_reinforced_stone", has(ModBlocks.REINFORCED_STONE.get())
-                ).save(consumer, RL("reinforced_brick_slab_from_bricks_stonecutting"));
-        SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.REINFORCED_BRICKS.get()), ModBlocks.REINFORCED_BRICK_TILE.get())
-                .unlocks("has_reinforced_stone", has(ModBlocks.REINFORCED_STONE.get())
-                ).save(consumer, RL("reinforced_brick_tile_from_bricks_stonecutting"));
-        SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.REINFORCED_BRICKS.get()), ModBlocks.REINFORCED_BRICK_STAIRS.get())
-                .unlocks("has_reinforced_stone", has(ModBlocks.REINFORCED_STONE.get())
-                ).save(consumer, RL("reinforced_brick_stairs_from_bricks_stonecutting"));
-        SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.REINFORCED_BRICKS.get()), ModBlocks.REINFORCED_BRICK_WALL.get())
-                .unlocks("has_reinforced_stone", has(ModBlocks.REINFORCED_STONE.get())
-                ).save(consumer, RL("reinforced_brick_wall_from_bricks_stonecutting"));
-        SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.REINFORCED_BRICKS.get()), ModBlocks.REINFORCED_BRICK_PILLAR.get())
-                .unlocks("has_reinforced_stone", has(ModBlocks.REINFORCED_STONE.get())
-                ).save(consumer, RL("reinforced_brick_pillar_from_bricks_stonecutting"));
-        SingleItemRecipeBuilder.stonecutting(Ingredient.of(ModBlocks.REINFORCED_BRICK_TILE.get()), ModBlocks.REINFORCED_BRICKS.get())
-                .unlocks("has_reinforced_stone", has(ModBlocks.REINFORCED_STONE.get())
-                ).save(consumer, RL("reinforced_bricks_from_tile_stonecutting"));
-
         shaped(ModBlocks.COMPRESSED_STONE.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
                 "B/B",
                 'B', ModBlocks.COMPRESSED_STONE_SLAB.get()
-        ).save(consumer, RL("compressed_stone_from_slab"));
+        ).build(consumer, RL("compressed_stone_from_slab"));
         shaped(ModBlocks.COMPRESSED_BRICKS.get(), 4, ModItems.COMPRESSED_IRON_INGOT.get(),
                 "SS/SS",
                 'S', ModBlocks.COMPRESSED_STONE.get()
-        ).save(consumer);
+        ).build(consumer);
         shapeless(ModBlocks.COMPRESSED_BRICKS.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
                 ModBlocks.COMPRESSED_BRICK_TILE.get()
-        ).save(consumer, RL("compressed_bricks_from_tile"));
+        ).build(consumer, RL("compressed_bricks_from_tile"));
         shaped(ModBlocks.COMPRESSED_BRICKS.get(), ModItems.COMPRESSED_IRON_INGOT.get(),
                 "B/B",
                 'B', ModBlocks.COMPRESSED_BRICK_SLAB.get()
-        ).save(consumer, RL("compressed_brick_from_slab"));
+        ).build(consumer, RL("compressed_brick_from_slab"));
         shaped(ModBlocks.COMPRESSED_BRICK_SLAB.get(), 6, ModItems.COMPRESSED_IRON_INGOT.get(),
                 "BBB",
                 'B', ModBlocks.COMPRESSED_BRICKS.get()
-        ).save(consumer);
+        ).build(consumer);
         shaped(ModBlocks.COMPRESSED_STONE_SLAB.get(), 6, ModItems.COMPRESSED_IRON_INGOT.get(),
                 "BBB",
                 'B', ModBlocks.COMPRESSED_STONE.get()
-        ).save(consumer);
+        ).build(consumer);
         shaped(ModBlocks.COMPRESSED_BRICK_STAIRS.get(), 4, ModItems.COMPRESSED_IRON_INGOT.get(),
                 "B  /BB /BBB",
                 'B', ModBlocks.COMPRESSED_BRICKS.get()
-        ).save(consumer);
+        ).build(consumer);
         shaped(ModBlocks.COMPRESSED_BRICK_PILLAR.get(), 3, ModItems.COMPRESSED_IRON_INGOT.get(),
                 "B/B/B",
                 'B', ModBlocks.COMPRESSED_BRICKS.get()
-        ).save(consumer);
+        ).build(consumer);
         shaped(ModBlocks.COMPRESSED_BRICK_TILE.get(), 4, ModItems.COMPRESSED_IRON_INGOT.get(),
                 "BB/BB",
                 'B', ModBlocks.COMPRESSED_BRICKS.get()
-        ).save(consumer);
+        ).build(consumer);
         shaped(ModBlocks.COMPRESSED_BRICK_WALL.get(), 6, ModItems.COMPRESSED_IRON_INGOT.get(),
                 "BBB/BBB",
                 'B', ModBlocks.COMPRESSED_BRICKS.get()
-        ).save(consumer);
+        ).build(consumer);
 
         // plastic bricks & wall lamps
         for (DyeColor dye : DyeColor.values()) {
@@ -1226,15 +1182,15 @@ public class ModRecipeProvider extends RecipeProvider {
 
         // smelting
         CookingRecipeBuilder.blasting(Ingredient.of(ModItems.FAILED_PCB.get()), ModItems.EMPTY_PCB.get(),
-                        0.25f, 100)
+                0.25f, 100)
                 .unlockedBy("has_empty_pcb", has(ModItems.FAILED_PCB.get()))
                 .save(consumer, RL("empty_pcb_from_failed_pcb"));
         CookingRecipeBuilder.smelting(Ingredient.of(PneumaticCraftTags.Items.PLASTIC_BRICKS), ModItems.PLASTIC.get(),
-                        0f, 100)
+                0f, 100)
                 .unlockedBy("has_plastic", has(ModItems.PLASTIC.get()))
                 .save(consumer, RL("plastic_sheet_from_brick"));
         CookingRecipeBuilder.smelting(Ingredient.of(ModItems.SOURDOUGH.get()), ModItems.SOURDOUGH_BREAD.get(),
-                        0.35f, 100)
+                0.35f, 100)
                 .unlockedBy("has_dough", has(ModItems.SOURDOUGH.get()))
                 .save(consumer, RL("sourdough_bread"));
 
@@ -1255,38 +1211,38 @@ public class ModRecipeProvider extends RecipeProvider {
                 2.0f, new ItemStack(ModBlocks.COMPRESSED_IRON_BLOCK.get()))
                 .build(consumer, RL("pressure_chamber/compressed_iron_block"));
         pressureChamber(ImmutableList.of(
-                        StackedIngredient.fromItems(2, Items.REDSTONE_TORCH),
-                        StackedIngredient.fromTag(Tags.Items.NUGGETS_GOLD, 3),
-                        Ingredient.of(ModItems.PLASTIC.get())),
+                StackedIngredient.fromItems(2, Items.REDSTONE_TORCH),
+                StackedIngredient.fromTag(Tags.Items.NUGGETS_GOLD, 3),
+                Ingredient.of(ModItems.PLASTIC.get())),
                 1.5f, new ItemStack(ModItems.EMPTY_PCB.get(), 3))
                 .build(consumer, RL("pressure_chamber/empty_pcb"));
         pressureChamber(ImmutableList.of(
-                        StackedIngredient.fromTag(Tags.Items.NUGGETS_GOLD, 2),
-                        Ingredient.of(Tags.Items.SLIMEBALLS),
-                        Ingredient.of(ModItems.PLASTIC.get())),
+                StackedIngredient.fromTag(Tags.Items.NUGGETS_GOLD, 2),
+                Ingredient.of(Tags.Items.SLIMEBALLS),
+                Ingredient.of(ModItems.PLASTIC.get())),
                 1f, new ItemStack(ModItems.CAPACITOR.get()))
                 .build(consumer, RL("pressure_chamber/capacitor"));
         pressureChamber(ImmutableList.of(
-                        StackedIngredient.fromTag(Tags.Items.NUGGETS_GOLD, 3),
-                        Ingredient.of(Tags.Items.DUSTS_REDSTONE),
-                        Ingredient.of(ModItems.PLASTIC.get())),
+                StackedIngredient.fromTag(Tags.Items.NUGGETS_GOLD, 3),
+                Ingredient.of(Tags.Items.DUSTS_REDSTONE),
+                Ingredient.of(ModItems.PLASTIC.get())),
                 1f, new ItemStack(ModItems.TRANSISTOR.get()))
                 .build(consumer, RL("pressure_chamber/transistor"));
         pressureChamber(ImmutableList.of(
-                        Ingredient.of(ModItems.PLASTIC_BUCKET.get()),
-                        StackedIngredient.fromItems(2, Items.ROTTEN_FLESH),
-                        StackedIngredient.fromItems(2, Items.SPIDER_EYE),
-                        StackedIngredient.fromTag(Tags.Items.GUNPOWDER, 2)),
+                Ingredient.of(ModItems.PLASTIC_BUCKET.get()),
+                StackedIngredient.fromItems(2, Items.ROTTEN_FLESH),
+                StackedIngredient.fromItems(2, Items.SPIDER_EYE),
+                StackedIngredient.fromTag(Tags.Items.GUNPOWDER, 2)),
                 1f, new ItemStack(ModItems.ETCHING_ACID_BUCKET.get()))
                 .build(consumer, RL("pressure_chamber/etching_acid"));
         pressureChamber(ImmutableList.of(
-                        Ingredient.of(Items.MILK_BUCKET),
-                        StackedIngredient.fromTag(Tags.Items.DYES_GREEN, 4)),
+                Ingredient.of(Items.MILK_BUCKET),
+                StackedIngredient.fromTag(Tags.Items.DYES_GREEN, 4)),
                 1f, new ItemStack(Items.SLIME_BALL, 4), new ItemStack(Items.BUCKET))
                 .build(consumer, RL("pressure_chamber/milk_to_slime_balls"));
         pressureChamber(ImmutableList.of(
-                        Ingredient.of(Tags.Items.INGOTS_GOLD),
-                        StackedIngredient.fromTag(Tags.Items.DUSTS_REDSTONE, 2)),
+                Ingredient.of(Tags.Items.INGOTS_GOLD),
+                StackedIngredient.fromTag(Tags.Items.DUSTS_REDSTONE, 2)),
                 1f, new ItemStack(ModItems.TURBINE_BLADE.get()))
                 .build(consumer, RL("pressure_chamber/turbine_blade"));
         pressureChamber(ImmutableList.of(StackedIngredient.fromTag(Tags.Items.STORAGE_BLOCKS_COAL, 8)),
@@ -1295,7 +1251,7 @@ public class ModRecipeProvider extends RecipeProvider {
         pressureChamber(ImmutableList.of(Ingredient.of(Tags.Items.CROPS_WHEAT)),
                 1.5f, new ItemStack(ModItems.WHEAT_FLOUR.get(), 3))
                 .build(consumer, RL("pressure_chamber/wheat_flour"));
-        pressureChamber(ImmutableList.of(Ingredient.of(Tags.Items.STONE)),
+        pressureChamber(ImmutableList.of(Ingredient.fromTag(Tags.Items.STONE)),
                 1f, new ItemStack(ModBlocks.COMPRESSED_STONE.get()))
                 .build(consumer, RL("pressure_chamber/compressed_stone"));
 
@@ -1721,7 +1677,7 @@ public class ModRecipeProvider extends RecipeProvider {
     }
 
     private AmadronRecipeBuilder amadronPeriodic(AmadronTradeResource in, AmadronTradeResource out, int tradeLevel, int maxStock) {
-        return new AmadronRecipeBuilder(in, out, false, tradeLevel, maxStock, PlayerFilter.YES, PlayerFilter.NO)
+        return new AmadronRecipeBuilder(in, out, false, tradeLevel, maxStock)
                 .addCriterion(Criteria.has(ModItems.AMADRON_TABLET.get()));
     }
 
