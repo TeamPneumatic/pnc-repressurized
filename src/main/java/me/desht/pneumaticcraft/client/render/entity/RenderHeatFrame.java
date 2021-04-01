@@ -1,20 +1,3 @@
-/*
- * This file is part of pnc-repressurized.
- *
- *     pnc-repressurized is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
- *
- *     pnc-repressurized is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
- *
- *     You should have received a copy of the GNU General Public License
- *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
- */
-
 package me.desht.pneumaticcraft.client.render.entity;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
@@ -30,6 +13,7 @@ import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.vector.Vector3f;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 
 public class RenderHeatFrame extends RenderSemiblockBase<EntityHeatFrame> {
@@ -47,21 +31,22 @@ public class RenderHeatFrame extends RenderSemiblockBase<EntityHeatFrame> {
         float[] f = tint.getComponents(null);
         AxisAlignedBB aabb = entityIn.getBoundingBox();
 
-        matrixStackIn.pushPose();
-        matrixStackIn.scale((float) aabb.getXsize(), (float) aabb.getYsize(), (float) aabb.getZsize());
-        matrixStackIn.translate(0, -0.5, 0);
+        matrixStackIn.push();
+        matrixStackIn.scale((float) aabb.getXSize(), (float) aabb.getYSize(), (float) aabb.getZSize());
+        matrixStackIn.translate(0, 1.5, 0);
+        matrixStackIn.rotate(Vector3f.XP.rotationDegrees(180F));
         if (entityIn.getTimeSinceHit() > 0) {
             wobble(entityIn, partialTicks, matrixStackIn);
         }
 
-        IVertexBuilder builder = bufferIn.getBuffer(RenderType.entityCutout(getTextureLocation(entityIn)));
-        model.renderToBuffer(matrixStackIn, builder, kludgeLightingLevel(entityIn, packedLightIn), OverlayTexture.pack(0F, false), f[0], f[1], f[2], f[3]);
+        IVertexBuilder builder = bufferIn.getBuffer(RenderType.getEntityCutout(getEntityTexture(entityIn)));
+        model.render(matrixStackIn, builder, packedLightIn, OverlayTexture.getPackedUV(0F, false), f[0], f[1], f[2], f[3]);
 
-        matrixStackIn.popPose();
+        matrixStackIn.pop();
     }
 
     @Override
-    public ResourceLocation getTextureLocation(EntityHeatFrame entityHeatFrame) {
+    public ResourceLocation getEntityTexture(EntityHeatFrame entityHeatFrame) {
         return Textures.MODEL_HEAT_FRAME;
     }
 }

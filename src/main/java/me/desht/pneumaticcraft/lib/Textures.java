@@ -51,7 +51,11 @@ public class Textures {
     public static final ResourceLocation MODEL_UNIVERSAL_SENSOR = modelTexture("universal_sensor.png");
     public static final ResourceLocation MODEL_DRONE_MINIGUN = modelTexture("drone_minigun.png");
     public static final ResourceLocation MODEL_HEAT_FRAME = modelTexture("heat_frame.png");
+    public static final ResourceLocation MODEL_CROP_SUPPORT = modelTexture("crop_support.png");
     public static final ResourceLocation MODEL_SPAWNER_EXTRACTOR = modelTexture("spawner_extractor_top.png");
+    public static final ResourceLocation MODEL_SPAWNER_AGITATOR = modelTexture("spawner_agitator.png");
+    public static final ResourceLocation MODEL_TRANSFER_GADGET_IN = modelTexture("transfer_gadget_in.png");
+    public static final ResourceLocation MODEL_TRANSFER_GADGET_OUT = modelTexture("transfer_gadget_out.png");
 
     // Tube Module textures
     public static final ResourceLocation MODEL_FLOW_DETECTOR = tubeModuleTexture("flow_detector.png");
@@ -238,10 +242,13 @@ public class Textures {
 
     // entities
     public static final ResourceLocation VORTEX_ENTITY = entityTexture("vortex.png");
-    public static final ResourceLocation DRONE_ENTITY = entityTexture("drone.png");
+    public static final ResourceLocation DRONE_ENTITY = entityTexture("default_drone.png");
+    public static final ResourceLocation GUARD_DRONE_ENTITY = entityTexture("guard_drone.png");
+    public static final ResourceLocation HARVESTING_DRONE_ENTITY = entityTexture("harvesting_drone.png");
+    public static final ResourceLocation LOGISTICS_DRONE_ENTITY = entityTexture("logistics_drone.png");
+    public static final ResourceLocation COLLECTOR_DRONE_ENTITY = entityTexture("collector_drone.png");
+    public static final ResourceLocation AMADRONE_ENTITY = entityTexture("amadrone.png");
     public static final ResourceLocation MICROMISSILE_ENTITY = entityTexture("micromissile.png");
-    public static final ResourceLocation MODEL_TRANSFER_GADGET_IN = entityTexture("transfer_gadget_in.png");
-    public static final ResourceLocation MODEL_TRANSFER_GADGET_OUT = entityTexture("transfer_gadget_out.png");
 
     private static ResourceLocation guiTexture(String img) {
         return new ResourceLocation(GUI_LOCATION + img);
