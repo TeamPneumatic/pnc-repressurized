@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "pneumaticcraft:reinforced_brick_wall"
+    "pneumaticcraft:reinforced_brick_wall",
+    "pneumaticcraft:compressed_brick_wall"
   ]
 }
