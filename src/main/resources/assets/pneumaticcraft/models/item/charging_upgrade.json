@@ -1,7 +1,7 @@
 {
   "textures" : {
     "layer0" : "pneumaticcraft:item/upgrades/upgrade_layer0",
-    "layer1" : "pneumaticcraft:item/module/charging"
+    "layer1" : "pneumaticcraft:item/upgrades/charging"
   },
   "parent" : "item/generated"
 }
