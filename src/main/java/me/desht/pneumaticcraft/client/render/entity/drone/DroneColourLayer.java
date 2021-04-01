@@ -22,6 +22,7 @@ import com.mojang.blaze3d.vertex.IVertexBuilder;
 import me.desht.pneumaticcraft.client.model.entity.drone.ModelDrone;
 import me.desht.pneumaticcraft.client.model.entity.drone.ModelDroneCore;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
+import me.desht.pneumaticcraft.common.core.ModEntities;
 import me.desht.pneumaticcraft.common.entity.living.EntityDroneBase;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
