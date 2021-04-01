@@ -1,0 +1,7 @@
+{
+    "parent": "block/cube_column",
+    "textures": {
+        "end": "pneumaticcraft:block/compressed_brick_tile",
+        "side": "pneumaticcraft:block/compressed_stone_slab_side"
+    }
+}

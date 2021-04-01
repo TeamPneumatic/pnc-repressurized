@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "SS",
+    "SS"
+  ],
+  "key": {
+    "S": {
+      "item": "pneumaticcraft:compressed_stone"
+    }
+  },
+  "result": {
+    "item": "pneumaticcraft:compressed_bricks",
+    "count": 4
+  }
+}

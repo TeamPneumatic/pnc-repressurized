@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "#pneumaticcraft:reinforced_stone"
+    "#pneumaticcraft:reinforced_stone",
+    "#pneumaticcraft:compressed_stone"
   ]
 }

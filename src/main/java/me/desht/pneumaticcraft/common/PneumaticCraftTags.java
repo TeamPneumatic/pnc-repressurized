@@ -38,6 +38,8 @@ public class PneumaticCraftTags {
         public static final ITag.INamedTag<Block> CHESTS = modTag("chests");
         public static final ITag.INamedTag<Block> REINFORCED_STONE = modTag("reinforced_stone");
         public static final ITag.INamedTag<Block> REINFORCED_STONE_BRICKS = modTag("reinforced_stone_bricks");
+        public static final ITag.INamedTag<Block> COMPRESSED_STONE = modTag("compressed_stone");
+        public static final ITag.INamedTag<Block> COMPRESSED_STONE_BRICKS = modTag("compressed_stone_bricks");
         public static final ITag.INamedTag<Block> WALL_LAMPS = modTag("wall_lamps");
         public static final ITag.INamedTag<Block> WALL_LAMPS_INVERTED = modTag("wall_lamps_inverted");
         public static final ITag.INamedTag<Block> BLOCK_TRACKER_MISC = modTag("block_tracker_misc_blocks");
@@ -72,6 +74,8 @@ public class PneumaticCraftTags {
         public static final ITag.INamedTag<Item> CHESTS = modTag("chests");
         public static final ITag.INamedTag<Item> REINFORCED_STONE = modTag("reinforced_stone");
         public static final ITag.INamedTag<Item> REINFORCED_STONE_BRICKS = modTag("reinforced_stone_bricks");
+        public static final ITag.INamedTag<Item> COMPRESSED_STONE = modTag("compressed_stone");
+        public static final ITag.INamedTag<Item> COMPRESSED_STONE_BRICKS = modTag("compressed_stone_bricks");
 
         public static final ITag.INamedTag<Item> UPGRADE_COMPONENTS = modTag("upgrade_components");
         public static final ITag.INamedTag<Item> BASIC_DRONES = modTag("basic_drones");

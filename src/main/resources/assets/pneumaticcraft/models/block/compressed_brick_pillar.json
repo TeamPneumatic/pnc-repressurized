@@ -1,0 +1,7 @@
+{
+  "parent": "block/cube_column",
+  "textures": {
+    "end": "pneumaticcraft:block/compressed_brick_pillar_top",
+    "side": "pneumaticcraft:block/compressed_brick_pillar"
+  }
+}

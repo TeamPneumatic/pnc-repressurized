@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
+    "#pneumaticcraft:stairs",
     "#pneumaticcraft:stairs"
   ]
 }
