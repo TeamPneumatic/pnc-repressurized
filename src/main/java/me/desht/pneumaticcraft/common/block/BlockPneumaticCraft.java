@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.heat.TemperatureCategory;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketBlockDestroyed;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
@@ -33,6 +34,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.pathfinding.PathType;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.DirectionProperty;
+import net.minecraft.state.EnumProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
@@ -73,6 +75,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
     public static final BooleanProperty SOUTH = BooleanProperty.create("south");
     public static final BooleanProperty WEST = BooleanProperty.create("west");
     public static final BooleanProperty[] CONNECTION_PROPERTIES = new BooleanProperty[]{DOWN, UP, NORTH, SOUTH, WEST, EAST};
+    public static final EnumProperty<TemperatureCategory> TEMPERATURE = EnumProperty.create("temperature", TemperatureCategory.class);
 
     protected BlockPneumaticCraft(Properties props) {
         super(props);
