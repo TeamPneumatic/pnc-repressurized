@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.vector.Vector3f;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 
 public class RenderCropSupport extends RenderSemiblockBase<EntityCropSupport> {
@@ -29,11 +30,12 @@ public class RenderCropSupport extends RenderSemiblockBase<EntityCropSupport> {
 
         matrixStackIn.push();
 
-        matrixStackIn.translate(0, -12/16F, 0);
+        matrixStackIn.translate(0, 0.8f, 0);
+        matrixStackIn.rotate(Vector3f.XP.rotationDegrees(180F));
         if (entityIn.getTimeSinceHit() > 0) {
             wobble(entityIn, partialTicks, matrixStackIn);
         }
-        matrixStackIn.scale((float)(aabb.maxX - aabb.minX), 1f, (float)(aabb.maxZ - aabb.minZ));
+        matrixStackIn.scale((float)(aabb.maxX - aabb.minX), (float)(aabb.maxY - aabb.minY), (float)(aabb.maxZ - aabb.minZ));
         model.render(matrixStackIn, builder, packedLightIn, OverlayTexture.getPackedUV(0F, false), 0.33f, 0.25f, 0.12f, 1F);
 
         matrixStackIn.pop();
@@ -41,6 +43,6 @@ public class RenderCropSupport extends RenderSemiblockBase<EntityCropSupport> {
 
     @Override
     public ResourceLocation getEntityTexture(EntityCropSupport entity) {
-        return Textures.MODEL_HEAT_FRAME;
+        return Textures.MODEL_CROP_SUPPORT;
     }
 }

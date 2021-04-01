@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.vector.Vector3f;
 import net.minecraftforge.fml.client.registry.IRenderFactory;
 
 public class RenderHeatFrame extends RenderSemiblockBase<EntityHeatFrame> {
@@ -32,7 +33,8 @@ public class RenderHeatFrame extends RenderSemiblockBase<EntityHeatFrame> {
 
         matrixStackIn.push();
         matrixStackIn.scale((float) aabb.getXSize(), (float) aabb.getYSize(), (float) aabb.getZSize());
-        matrixStackIn.translate(0, -0.5, 0);
+        matrixStackIn.translate(0, 1.5, 0);
+        matrixStackIn.rotate(Vector3f.XP.rotationDegrees(180F));
         if (entityIn.getTimeSinceHit() > 0) {
             wobble(entityIn, partialTicks, matrixStackIn);
         }

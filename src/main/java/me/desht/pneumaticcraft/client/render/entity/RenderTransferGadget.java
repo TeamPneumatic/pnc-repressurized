@@ -40,15 +40,15 @@ public class RenderTransferGadget extends RenderSemiblockBase<EntityTransferGadg
         }
 
         Direction side = entity.getSide();
-        matrixStackIn.translate(0, side.getAxis() == Axis.Y ? 1.5 : -1.5, 0);
+        matrixStackIn.translate(0, side.getAxis() == Axis.Y ? 1.2 : -1.1, 0);
         switch (side) {
             case UP:
                 matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(90));
-                matrixStackIn.translate(-1.5, -1.5, 0);
+                matrixStackIn.translate(-1.1, -1.1, 0);
                 break;
             case DOWN:
                 matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(-90));
-                matrixStackIn.translate(1.5, -1.5, 0);
+                matrixStackIn.translate(1.3, -1.1, 0);
                 break;
             case NORTH:
                 matrixStackIn.rotate(Vector3f.YP.rotationDegrees(90));
@@ -65,7 +65,7 @@ public class RenderTransferGadget extends RenderSemiblockBase<EntityTransferGadg
         BlockPos blockpos = entity.getBlockPos().offset(side);
         int l = LightTexture.packLight(this.getBlockLight(entity, blockpos), this.func_239381_b_(entity, blockpos));
 
-        IVertexBuilder builder = bufferIn.getBuffer(RenderType.getEntitySolid(getEntityTexture(entity)));
+        IVertexBuilder builder = bufferIn.getBuffer(RenderType.getEntityCutout(getEntityTexture(entity)));
         model.render(matrixStackIn, builder, l, OverlayTexture.getPackedUV(0F, false), 1f, 1f, 1f, 1f);
 
         matrixStackIn.pop();
@@ -78,10 +78,10 @@ public class RenderTransferGadget extends RenderSemiblockBase<EntityTransferGadg
         switch (entityIn.getSide()) {
             case DOWN: return new Vector3d(0, shape.getStart(Axis.Y), 0);
             case UP: return new Vector3d(0, shape.getEnd(Axis.Y), 0);
-            case NORTH: return new Vector3d(0, yOff, shape.getStart(Axis.Z) - 0.5);
-            case SOUTH: return new Vector3d(0, yOff, shape.getEnd(Axis.Z) - 0.5);
-            case WEST: return new Vector3d(shape.getStart(Axis.X) - 0.5, yOff, 0);
-            case EAST: return new Vector3d(shape.getEnd(Axis.X) - 0.5, yOff, 0);
+            case NORTH: return new Vector3d(0, yOff, shape.getStart(Axis.Z) - 0.6);
+            case SOUTH: return new Vector3d(0, yOff, shape.getEnd(Axis.Z) - 0.4);
+            case WEST: return new Vector3d(shape.getStart(Axis.X) - 0.6, yOff, 0);
+            case EAST: return new Vector3d(shape.getEnd(Axis.X) - 0.4, yOff, 0);
             default: return Vector3d.ZERO;
         }
     }
