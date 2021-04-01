@@ -25,24 +25,24 @@ public class RenderCropSupport extends RenderSemiblockBase<EntityCropSupport> {
 
     @Override
     public void render(EntityCropSupport entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
-        IVertexBuilder builder = bufferIn.getBuffer(RenderType.entityCutout(getTextureLocation(entityIn)));
+        IVertexBuilder builder = bufferIn.getBuffer(RenderType.getEntityCutout(getEntityTexture(entityIn)));
         AxisAlignedBB aabb = entityIn.getBoundingBox();
 
-        matrixStackIn.pushPose();
+        matrixStackIn.push();
 
         matrixStackIn.translate(0, 0.8f, 0);
-        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(180F));
+        matrixStackIn.rotate(Vector3f.XP.rotationDegrees(180F));
         if (entityIn.getTimeSinceHit() > 0) {
             wobble(entityIn, partialTicks, matrixStackIn);
         }
         matrixStackIn.scale((float)(aabb.maxX - aabb.minX), (float)(aabb.maxY - aabb.minY), (float)(aabb.maxZ - aabb.minZ));
-        model.renderToBuffer(matrixStackIn, builder, packedLightIn, OverlayTexture.pack(0F, false), 0.33f, 0.25f, 0.12f, 1F);
+        model.render(matrixStackIn, builder, packedLightIn, OverlayTexture.getPackedUV(0F, false), 0.33f, 0.25f, 0.12f, 1F);
 
-        matrixStackIn.popPose();
+        matrixStackIn.pop();
     }
 
     @Override
-    public ResourceLocation getTextureLocation(EntityCropSupport entity) {
+    public ResourceLocation getEntityTexture(EntityCropSupport entity) {
         return Textures.MODEL_CROP_SUPPORT;
     }
 }
