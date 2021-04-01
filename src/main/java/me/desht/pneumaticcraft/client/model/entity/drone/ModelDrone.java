@@ -160,176 +160,176 @@ public class ModelDrone extends EntityModel<EntityDroneBase> {
 //        LaserSource.addBox(0F, 0F, 0F, 2, 2, 2);
 //        LaserSource.setRotationPoint(-1F, 22F, -1F);
 //        LaserSource.mirror = true;
-        textureWidth = 128;
-        textureHeight = 128;
+        texWidth = 128;
+        texHeight = 128;
 
         done = new ModelRenderer(this);
-        done.setRotationPoint(0.0F, 22.5F, 0.0F);
+        done.setPos(0.0F, 22.5F, 0.0F);
 
 
         body = new ModelRenderer(this);
-        body.setRotationPoint(0.0F, -3.0F, 0.0F);
+        body.setPos(0.0F, -3.0F, 0.0F);
         done.addChild(body);
-        body.setTextureOffset(0, 93).addBox(-4.0F, -4.0F, -12.0F, 8.0F, 4.0F, 24.0F, 0.0F, false);
-        body.setTextureOffset(10, 121).addBox(4.0F, -4.0F, 6.0F, 2.0F, 4.0F, 3.0F, 0.0F, false);
-        body.setTextureOffset(20, 121).addBox(-6.0F, -4.0F, 6.0F, 2.0F, 4.0F, 3.0F, 0.0F, false);
-        body.setTextureOffset(0, 121).addBox(4.0F, -4.0F, -9.0F, 2.0F, 4.0F, 3.0F, 0.0F, false);
-        body.setTextureOffset(30, 121).addBox(-6.0F, -4.0F, -9.0F, 2.0F, 4.0F, 3.0F, 0.0F, false);
-        body.setTextureOffset(0, 67).addBox(-4.5F, -3.5F, -12.5F, 9.0F, 1.0F, 25.0F, 0.0F, false);
+        body.texOffs(0, 93).addBox(-4.0F, -4.0F, -12.0F, 8.0F, 4.0F, 24.0F, 0.0F, false);
+        body.texOffs(10, 121).addBox(4.0F, -4.0F, 6.0F, 2.0F, 4.0F, 3.0F, 0.0F, false);
+        body.texOffs(20, 121).addBox(-6.0F, -4.0F, 6.0F, 2.0F, 4.0F, 3.0F, 0.0F, false);
+        body.texOffs(0, 121).addBox(4.0F, -4.0F, -9.0F, 2.0F, 4.0F, 3.0F, 0.0F, false);
+        body.texOffs(30, 121).addBox(-6.0F, -4.0F, -9.0F, 2.0F, 4.0F, 3.0F, 0.0F, false);
+        body.texOffs(0, 67).addBox(-4.5F, -3.5F, -12.5F, 9.0F, 1.0F, 25.0F, 0.0F, false);
 
         lower_frame_r1 = new ModelRenderer(this);
-        lower_frame_r1.setRotationPoint(-0.25F, -0.75F, -31.25F);
+        lower_frame_r1.setPos(-0.25F, -0.75F, -31.25F);
         body.addChild(lower_frame_r1);
-        setRotationAngle(lower_frame_r1, -3.1416F, 0.0F, 3.1416F);
-        lower_frame_r1.setTextureOffset(0, 67).addBox(-4.75F, -0.75F, -43.75F, 9.0F, 1.0F, 25.0F, 0.0F, false);
+        setRotation(lower_frame_r1, -3.1416F, 0.0F, 3.1416F);
+        lower_frame_r1.texOffs(0, 67).addBox(-4.75F, -0.75F, -43.75F, 9.0F, 1.0F, 25.0F, 0.0F, false);
 
         north_west_wing = new ModelRenderer(this);
-        north_west_wing.setRotationPoint(6.0F, -5.5F, -7.5F);
+        north_west_wing.setPos(6.0F, -5.5F, -7.5F);
         done.addChild(north_west_wing);
-        setRotationAngle(north_west_wing, 0.0F, 0.3927F, 0.0F);
-        north_west_wing.setTextureOffset(0, 113).addBox(-1.0F, -1.0F, -1.0F, 7.0F, 2.0F, 2.0F, 0.0F, false);
-        north_west_wing.setTextureOffset(44, 110).addBox(4.5F, 1.0F, -0.5F, 1.0F, 6.0F, 1.0F, 0.0F, false);
-        north_west_wing.setTextureOffset(52, 107).addBox(4.5F, -3.0F, -0.5F, 1.0F, 2.0F, 1.0F, 0.0F, false);
+        setRotation(north_west_wing, 0.0F, 0.3927F, 0.0F);
+        north_west_wing.texOffs(0, 113).addBox(-1.0F, -1.0F, -1.0F, 7.0F, 2.0F, 2.0F, 0.0F, false);
+        north_west_wing.texOffs(44, 110).addBox(4.5F, 1.0F, -0.5F, 1.0F, 6.0F, 1.0F, 0.0F, false);
+        north_west_wing.texOffs(52, 107).addBox(4.5F, -3.0F, -0.5F, 1.0F, 2.0F, 1.0F, 0.0F, false);
 
         prop_1 = new ModelRenderer(this);
-        prop_1.setRotationPoint(5.0F, -2.5F, 0.0F);
+        prop_1.setPos(5.0F, -2.5F, 0.0F);
         north_west_wing.addChild(prop_1);
-        setRotationAngle(prop_1, 0.0F, 0.0F, 0.0F);
-        prop_1.setTextureOffset(52, 105).addBox(-0.5F, -1.5F, -0.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
+        setRotation(prop_1, 0.0F, 0.0F, 0.0F);
+        prop_1.texOffs(52, 105).addBox(-0.5F, -1.5F, -0.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
 
         blade3_connection_r1 = new ModelRenderer(this);
-        blade3_connection_r1.setRotationPoint(0.0F, -1.0F, 0.0F);
+        blade3_connection_r1.setPos(0.0F, -1.0F, 0.0F);
         prop_1.addChild(blade3_connection_r1);
-        setRotationAngle(blade3_connection_r1, 0.1572F, -0.3614F, -0.4215F);
-        blade3_connection_r1.setTextureOffset(52, 105).addBox(-0.5F, -0.5F, -1.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
-        blade3_connection_r1.setTextureOffset(68, 93).addBox(-1.0F, -0.5F, -6.5F, 2.0F, 1.0F, 5.0F, 0.0F, false);
+        setRotation(blade3_connection_r1, 0.1572F, -0.3614F, -0.4215F);
+        blade3_connection_r1.texOffs(52, 105).addBox(-0.5F, -0.5F, -1.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
+        blade3_connection_r1.texOffs(68, 93).addBox(-1.0F, -0.5F, -6.5F, 2.0F, 1.0F, 5.0F, 0.0F, false);
 
         blade2_connection_r1 = new ModelRenderer(this);
-        blade2_connection_r1.setRotationPoint(0.0F, -1.0F, 0.0F);
+        blade2_connection_r1.setPos(0.0F, -1.0F, 0.0F);
         prop_1.addChild(blade2_connection_r1);
-        setRotationAngle(blade2_connection_r1, 2.7761F, -0.7119F, -2.6117F);
-        blade2_connection_r1.setTextureOffset(48, 105).addBox(-0.5F, -0.5F, -1.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
-        blade2_connection_r1.setTextureOffset(54, 99).addBox(-1.0F, -0.5F, -6.5F, 2.0F, 1.0F, 5.0F, 0.0F, false);
+        setRotation(blade2_connection_r1, 2.7761F, -0.7119F, -2.6117F);
+        blade2_connection_r1.texOffs(48, 105).addBox(-0.5F, -0.5F, -1.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
+        blade2_connection_r1.texOffs(54, 99).addBox(-1.0F, -0.5F, -6.5F, 2.0F, 1.0F, 5.0F, 0.0F, false);
 
         blade1_connection_r1 = new ModelRenderer(this);
-        blade1_connection_r1.setRotationPoint(0.0F, -1.0F, 0.0F);
+        blade1_connection_r1.setPos(0.0F, -1.0F, 0.0F);
         prop_1.addChild(blade1_connection_r1);
-        setRotationAngle(blade1_connection_r1, -1.5708F, 1.1781F, -1.5708F);
-        blade1_connection_r1.setTextureOffset(44, 105).addBox(-0.5F, -0.5F, -1.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
-        blade1_connection_r1.setTextureOffset(40, 93).addBox(-1.0F, -0.5F, -6.5F, 2.0F, 1.0F, 5.0F, 0.0F, false);
+        setRotation(blade1_connection_r1, -1.5708F, 1.1781F, -1.5708F);
+        blade1_connection_r1.texOffs(44, 105).addBox(-0.5F, -0.5F, -1.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
+        blade1_connection_r1.texOffs(40, 93).addBox(-1.0F, -0.5F, -6.5F, 2.0F, 1.0F, 5.0F, 0.0F, false);
 
         south_west_wing = new ModelRenderer(this);
-        south_west_wing.setRotationPoint(6.0F, -5.5F, 7.5F);
+        south_west_wing.setPos(6.0F, -5.5F, 7.5F);
         done.addChild(south_west_wing);
-        setRotationAngle(south_west_wing, 0.0F, -0.3927F, 0.0F);
-        south_west_wing.setTextureOffset(0, 105).addBox(-1.0F, -1.0F, -1.0F, 7.0F, 2.0F, 2.0F, 0.0F, false);
-        south_west_wing.setTextureOffset(48, 110).addBox(4.5F, 1.0F, -0.5F, 1.0F, 6.0F, 1.0F, 0.0F, false);
-        south_west_wing.setTextureOffset(48, 107).addBox(4.5F, -3.0F, -0.5F, 1.0F, 2.0F, 1.0F, 0.0F, false);
+        setRotation(south_west_wing, 0.0F, -0.3927F, 0.0F);
+        south_west_wing.texOffs(0, 105).addBox(-1.0F, -1.0F, -1.0F, 7.0F, 2.0F, 2.0F, 0.0F, false);
+        south_west_wing.texOffs(48, 110).addBox(4.5F, 1.0F, -0.5F, 1.0F, 6.0F, 1.0F, 0.0F, false);
+        south_west_wing.texOffs(48, 107).addBox(4.5F, -3.0F, -0.5F, 1.0F, 2.0F, 1.0F, 0.0F, false);
 
         prop_2 = new ModelRenderer(this);
-        prop_2.setRotationPoint(5.0F, -2.5F, 0.0F);
+        prop_2.setPos(5.0F, -2.5F, 0.0F);
         south_west_wing.addChild(prop_2);
-        setRotationAngle(prop_2, 0.0F, 0.0F, 0.0F);
-        prop_2.setTextureOffset(48, 105).addBox(-0.5F, -1.5F, -0.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
+        setRotation(prop_2, 0.0F, 0.0F, 0.0F);
+        prop_2.texOffs(48, 105).addBox(-0.5F, -1.5F, -0.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
 
         blade6_connection_r1 = new ModelRenderer(this);
-        blade6_connection_r1.setRotationPoint(0.0F, -1.0F, 0.0F);
+        blade6_connection_r1.setPos(0.0F, -1.0F, 0.0F);
         prop_2.addChild(blade6_connection_r1);
-        setRotationAngle(blade6_connection_r1, -0.1572F, 0.3614F, -0.4215F);
-        blade6_connection_r1.setTextureOffset(48, 105).addBox(-0.5F, -0.5F, 0.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
-        blade6_connection_r1.setTextureOffset(68, 99).addBox(-1.0F, -0.5F, 1.5F, 2.0F, 1.0F, 5.0F, 0.0F, false);
+        setRotation(blade6_connection_r1, -0.1572F, 0.3614F, -0.4215F);
+        blade6_connection_r1.texOffs(48, 105).addBox(-0.5F, -0.5F, 0.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
+        blade6_connection_r1.texOffs(68, 99).addBox(-1.0F, -0.5F, 1.5F, 2.0F, 1.0F, 5.0F, 0.0F, false);
 
         blade5_connection_r1 = new ModelRenderer(this);
-        blade5_connection_r1.setRotationPoint(0.0F, -1.0F, 0.0F);
+        blade5_connection_r1.setPos(0.0F, -1.0F, 0.0F);
         prop_2.addChild(blade5_connection_r1);
-        setRotationAngle(blade5_connection_r1, -2.7761F, 0.7119F, -2.6117F);
-        blade5_connection_r1.setTextureOffset(52, 105).addBox(-0.5F, -0.5F, 0.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
-        blade5_connection_r1.setTextureOffset(54, 93).addBox(-1.0F, -0.5F, 1.5F, 2.0F, 1.0F, 5.0F, 0.0F, false);
+        setRotation(blade5_connection_r1, -2.7761F, 0.7119F, -2.6117F);
+        blade5_connection_r1.texOffs(52, 105).addBox(-0.5F, -0.5F, 0.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
+        blade5_connection_r1.texOffs(54, 93).addBox(-1.0F, -0.5F, 1.5F, 2.0F, 1.0F, 5.0F, 0.0F, false);
 
         blade4_connection_r1 = new ModelRenderer(this);
-        blade4_connection_r1.setRotationPoint(0.0F, -1.0F, 0.0F);
+        blade4_connection_r1.setPos(0.0F, -1.0F, 0.0F);
         prop_2.addChild(blade4_connection_r1);
-        setRotationAngle(blade4_connection_r1, 1.5708F, -1.1781F, -1.5708F);
-        blade4_connection_r1.setTextureOffset(40, 105).addBox(-0.5F, -0.5F, 0.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
-        blade4_connection_r1.setTextureOffset(40, 99).addBox(-1.0F, -0.5F, 1.5F, 2.0F, 1.0F, 5.0F, 0.0F, false);
+        setRotation(blade4_connection_r1, 1.5708F, -1.1781F, -1.5708F);
+        blade4_connection_r1.texOffs(40, 105).addBox(-0.5F, -0.5F, 0.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
+        blade4_connection_r1.texOffs(40, 99).addBox(-1.0F, -0.5F, 1.5F, 2.0F, 1.0F, 5.0F, 0.0F, false);
 
         south_east_wing = new ModelRenderer(this);
-        south_east_wing.setRotationPoint(-6.0F, -5.5F, 7.5F);
+        south_east_wing.setPos(-6.0F, -5.5F, 7.5F);
         done.addChild(south_east_wing);
-        setRotationAngle(south_east_wing, 0.0F, 0.3927F, 0.0F);
-        south_east_wing.setTextureOffset(0, 101).addBox(-6.0F, -1.0F, -1.0F, 7.0F, 2.0F, 2.0F, 0.0F, false);
-        south_east_wing.setTextureOffset(52, 110).addBox(-5.5F, 1.0F, -0.5F, 1.0F, 6.0F, 1.0F, 0.0F, false);
-        south_east_wing.setTextureOffset(44, 107).addBox(-5.5F, -3.0F, -0.5F, 1.0F, 2.0F, 1.0F, 0.0F, false);
+        setRotation(south_east_wing, 0.0F, 0.3927F, 0.0F);
+        south_east_wing.texOffs(0, 101).addBox(-6.0F, -1.0F, -1.0F, 7.0F, 2.0F, 2.0F, 0.0F, false);
+        south_east_wing.texOffs(52, 110).addBox(-5.5F, 1.0F, -0.5F, 1.0F, 6.0F, 1.0F, 0.0F, false);
+        south_east_wing.texOffs(44, 107).addBox(-5.5F, -3.0F, -0.5F, 1.0F, 2.0F, 1.0F, 0.0F, false);
 
         prop_3 = new ModelRenderer(this);
-        prop_3.setRotationPoint(-5.0F, -2.5F, 0.0F);
+        prop_3.setPos(-5.0F, -2.5F, 0.0F);
         south_east_wing.addChild(prop_3);
-        setRotationAngle(prop_3, 0.0F, 0.0F, 0.0F);
-        prop_3.setTextureOffset(44, 105).addBox(-0.5F, -1.5F, -0.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
+        setRotation(prop_3, 0.0F, 0.0F, 0.0F);
+        prop_3.texOffs(44, 105).addBox(-0.5F, -1.5F, -0.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
 
         blade9_connection_r1 = new ModelRenderer(this);
-        blade9_connection_r1.setRotationPoint(0.0F, -1.0F, 0.0F);
+        blade9_connection_r1.setPos(0.0F, -1.0F, 0.0F);
         prop_3.addChild(blade9_connection_r1);
-        setRotationAngle(blade9_connection_r1, -0.1572F, -0.3614F, 0.4215F);
-        blade9_connection_r1.setTextureOffset(40, 105).addBox(-0.5F, -0.5F, 0.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
-        blade9_connection_r1.setTextureOffset(68, 93).addBox(-1.0F, -0.5F, 1.5F, 2.0F, 1.0F, 5.0F, 0.0F, false);
+        setRotation(blade9_connection_r1, -0.1572F, -0.3614F, 0.4215F);
+        blade9_connection_r1.texOffs(40, 105).addBox(-0.5F, -0.5F, 0.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
+        blade9_connection_r1.texOffs(68, 93).addBox(-1.0F, -0.5F, 1.5F, 2.0F, 1.0F, 5.0F, 0.0F, false);
 
         blade8_connection_r1 = new ModelRenderer(this);
-        blade8_connection_r1.setRotationPoint(0.0F, -1.0F, 0.0F);
+        blade8_connection_r1.setPos(0.0F, -1.0F, 0.0F);
         prop_3.addChild(blade8_connection_r1);
-        setRotationAngle(blade8_connection_r1, -2.7761F, -0.7119F, 2.6117F);
-        blade8_connection_r1.setTextureOffset(52, 105).addBox(-0.5F, -0.5F, 0.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
-        blade8_connection_r1.setTextureOffset(68, 99).addBox(-1.0F, -0.5F, 1.5F, 2.0F, 1.0F, 5.0F, 0.0F, false);
+        setRotation(blade8_connection_r1, -2.7761F, -0.7119F, 2.6117F);
+        blade8_connection_r1.texOffs(52, 105).addBox(-0.5F, -0.5F, 0.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
+        blade8_connection_r1.texOffs(68, 99).addBox(-1.0F, -0.5F, 1.5F, 2.0F, 1.0F, 5.0F, 0.0F, false);
 
         blade7_connection_r1 = new ModelRenderer(this);
-        blade7_connection_r1.setRotationPoint(0.0F, -1.0F, 0.0F);
+        blade7_connection_r1.setPos(0.0F, -1.0F, 0.0F);
         prop_3.addChild(blade7_connection_r1);
-        setRotationAngle(blade7_connection_r1, 1.5708F, 1.1781F, 1.5708F);
-        blade7_connection_r1.setTextureOffset(44, 105).addBox(-0.5F, -0.5F, 0.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
-        blade7_connection_r1.setTextureOffset(54, 93).addBox(-1.0F, -0.5F, 1.5F, 2.0F, 1.0F, 5.0F, 0.0F, false);
+        setRotation(blade7_connection_r1, 1.5708F, 1.1781F, 1.5708F);
+        blade7_connection_r1.texOffs(44, 105).addBox(-0.5F, -0.5F, 0.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
+        blade7_connection_r1.texOffs(54, 93).addBox(-1.0F, -0.5F, 1.5F, 2.0F, 1.0F, 5.0F, 0.0F, false);
 
         north_east_wing = new ModelRenderer(this);
-        north_east_wing.setRotationPoint(-6.0F, -5.5F, -7.5F);
+        north_east_wing.setPos(-6.0F, -5.5F, -7.5F);
         done.addChild(north_east_wing);
-        setRotationAngle(north_east_wing, 0.0F, -0.3927F, 0.0F);
-        north_east_wing.setTextureOffset(0, 109).addBox(-6.0F, -1.0F, -1.0F, 7.0F, 2.0F, 2.0F, 0.0F, false);
-        north_east_wing.setTextureOffset(40, 110).addBox(-5.5F, 1.0F, -0.5F, 1.0F, 6.0F, 1.0F, 0.0F, false);
-        north_east_wing.setTextureOffset(40, 107).addBox(-5.5F, -3.0F, -0.5F, 1.0F, 2.0F, 1.0F, 0.0F, false);
+        setRotation(north_east_wing, 0.0F, -0.3927F, 0.0F);
+        north_east_wing.texOffs(0, 109).addBox(-6.0F, -1.0F, -1.0F, 7.0F, 2.0F, 2.0F, 0.0F, false);
+        north_east_wing.texOffs(40, 110).addBox(-5.5F, 1.0F, -0.5F, 1.0F, 6.0F, 1.0F, 0.0F, false);
+        north_east_wing.texOffs(40, 107).addBox(-5.5F, -3.0F, -0.5F, 1.0F, 2.0F, 1.0F, 0.0F, false);
 
         prop_4 = new ModelRenderer(this);
-        prop_4.setRotationPoint(-5.0F, -2.5F, 0.0F);
+        prop_4.setPos(-5.0F, -2.5F, 0.0F);
         north_east_wing.addChild(prop_4);
-        setRotationAngle(prop_4, 0.0F, 0.0F, 0.0F);
-        prop_4.setTextureOffset(40, 105).addBox(-0.5F, -1.5F, -0.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
+        setRotation(prop_4, 0.0F, 0.0F, 0.0F);
+        prop_4.texOffs(40, 105).addBox(-0.5F, -1.5F, -0.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
 
         blade12_connection_r1 = new ModelRenderer(this);
-        blade12_connection_r1.setRotationPoint(0.0F, -1.0F, 0.0F);
+        blade12_connection_r1.setPos(0.0F, -1.0F, 0.0F);
         prop_4.addChild(blade12_connection_r1);
-        setRotationAngle(blade12_connection_r1, 0.1572F, 0.3614F, 0.4215F);
-        blade12_connection_r1.setTextureOffset(48, 105).addBox(-0.5F, -0.5F, -1.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
-        blade12_connection_r1.setTextureOffset(40, 99).addBox(-1.0F, -0.5F, -6.5F, 2.0F, 1.0F, 5.0F, 0.0F, false);
+        setRotation(blade12_connection_r1, 0.1572F, 0.3614F, 0.4215F);
+        blade12_connection_r1.texOffs(48, 105).addBox(-0.5F, -0.5F, -1.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
+        blade12_connection_r1.texOffs(40, 99).addBox(-1.0F, -0.5F, -6.5F, 2.0F, 1.0F, 5.0F, 0.0F, false);
 
         blade11_connection_r1 = new ModelRenderer(this);
-        blade11_connection_r1.setRotationPoint(0.0F, -1.0F, 0.0F);
+        blade11_connection_r1.setPos(0.0F, -1.0F, 0.0F);
         prop_4.addChild(blade11_connection_r1);
-        setRotationAngle(blade11_connection_r1, 2.7761F, 0.7119F, 2.6117F);
-        blade11_connection_r1.setTextureOffset(40, 105).addBox(-0.5F, -0.5F, -1.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
-        blade11_connection_r1.setTextureOffset(40, 93).addBox(-1.0F, -0.5F, -6.5F, 2.0F, 1.0F, 5.0F, 0.0F, false);
+        setRotation(blade11_connection_r1, 2.7761F, 0.7119F, 2.6117F);
+        blade11_connection_r1.texOffs(40, 105).addBox(-0.5F, -0.5F, -1.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
+        blade11_connection_r1.texOffs(40, 93).addBox(-1.0F, -0.5F, -6.5F, 2.0F, 1.0F, 5.0F, 0.0F, false);
 
         blade10_connection_r1 = new ModelRenderer(this);
-        blade10_connection_r1.setRotationPoint(0.0F, -1.0F, 0.0F);
+        blade10_connection_r1.setPos(0.0F, -1.0F, 0.0F);
         prop_4.addChild(blade10_connection_r1);
-        setRotationAngle(blade10_connection_r1, -1.5708F, -1.1781F, 1.5708F);
-        blade10_connection_r1.setTextureOffset(44, 105).addBox(-0.5F, -0.5F, -1.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
-        blade10_connection_r1.setTextureOffset(54, 99).addBox(-1.0F, -0.5F, -6.5F, 2.0F, 1.0F, 5.0F, 0.0F, false);
+        setRotation(blade10_connection_r1, -1.5708F, -1.1781F, 1.5708F);
+        blade10_connection_r1.texOffs(44, 105).addBox(-0.5F, -0.5F, -1.5F, 1.0F, 1.0F, 1.0F, 0.0F, false);
+        blade10_connection_r1.texOffs(54, 99).addBox(-1.0F, -0.5F, -6.5F, 2.0F, 1.0F, 5.0F, 0.0F, false);
     }
 
     @Override
-    public void setRotationAngles(EntityDroneBase drone, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void setupAnim(EntityDroneBase drone, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
     }
 
     @Override
-    public void render(MatrixStack matrixStackIn, IVertexBuilder bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
+    public void renderToBuffer(MatrixStack matrixStackIn, IVertexBuilder bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
 //        Base.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
 //
 //        Prop1Part1.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
@@ -359,7 +359,7 @@ public class ModelDrone extends EntityModel<EntityDroneBase> {
     }
 
     @Override
-    public void setLivingAnimations(EntityDroneBase drone, float par2, float par3, float partialTicks) {
+    public void prepareMobModel(EntityDroneBase drone, float par2, float par3, float partialTicks) {
 //        float propRotation = MathHelper.lerp(partialTicks, drone.oldPropRotation, drone.propRotation);
 //        Prop1Part1.rotateAngleY = propRotation;
 //        Prop1Part2.rotateAngleY = propRotation;
@@ -382,19 +382,12 @@ public class ModelDrone extends EntityModel<EntityDroneBase> {
         prop_2.rotateAngleY = propRotation;
         prop_3.rotateAngleY = -propRotation;
         prop_4.rotateAngleY = -propRotation;
-
     }
 
     @SuppressWarnings("SameParameterValue")
     private void setRotation(ModelRenderer model, float x, float y, float z) {
-//        model.rotateAngleX = x;
-//        model.rotateAngleY = y;
-//        model.rotateAngleZ = z;
-    }
-
-    public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
-        modelRenderer.rotateAngleX = x;
-        modelRenderer.rotateAngleY = y;
-        modelRenderer.rotateAngleZ = z;
+        model.xRot = x;
+        model.yRot = y;
+        model.zRot = z;
     }
 }
