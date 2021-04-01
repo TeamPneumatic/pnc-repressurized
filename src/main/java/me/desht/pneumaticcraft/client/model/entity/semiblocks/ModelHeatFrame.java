@@ -31,92 +31,92 @@ public class ModelHeatFrame extends EntityModel<EntityHeatFrame> {
     private final ModelRenderer top12;
 
     public ModelHeatFrame() {
-        textureWidth = 128;
-        textureHeight = 32;
+        texWidth = 128;
+        texHeight = 32;
 
         bottom = new ModelRenderer(this);
-        bottom.setRotationPoint(4.5F, 20.5F, -8.5F);
-        bottom.setTextureOffset(0, 0).addBox(-13.0F, -1.0F, 0.0F, 17.0F, 5.0F, 17.0F, 0.0F, true);
+        bottom.setPos(4.5F, 20.5F, -8.5F);
+        bottom.texOffs(0, 0).addBox(-13.0F, -1.0F, 0.0F, 17.0F, 5.0F, 17.0F, 0.0F, true);
 
         side1 = new ModelRenderer(this);
-        side1.setRotationPoint(-8.5F, 11.5F, -8.5F);
-        side1.setTextureOffset(0, 0).addBox(0.0F, 0.0F, 0.0F, 1.0F, 8.0F, 1.0F, 0.0F, true);
+        side1.setPos(-8.5F, 11.5F, -8.5F);
+        side1.texOffs(0, 0).addBox(0.0F, 0.0F, 0.0F, 1.0F, 8.0F, 1.0F, 0.0F, true);
 
         side2 = new ModelRenderer(this);
-        side2.setRotationPoint(7.5F, 11.5F, -8.5F);
-        side2.setTextureOffset(4, 0).addBox(0.0F, 0.0F, 0.0F, 1.0F, 8.0F, 1.0F, 0.0F, true);
+        side2.setPos(7.5F, 11.5F, -8.5F);
+        side2.texOffs(4, 0).addBox(0.0F, 0.0F, 0.0F, 1.0F, 8.0F, 1.0F, 0.0F, true);
 
         side3 = new ModelRenderer(this);
-        side3.setRotationPoint(-8.5F, 11.5F, 7.5F);
-        side3.setTextureOffset(12, 0).addBox(0.0F, 0.0F, 0.0F, 1.0F, 8.0F, 1.0F, 0.0F, true);
+        side3.setPos(-8.5F, 11.5F, 7.5F);
+        side3.texOffs(12, 0).addBox(0.0F, 0.0F, 0.0F, 1.0F, 8.0F, 1.0F, 0.0F, true);
 
         side4 = new ModelRenderer(this);
-        side4.setRotationPoint(7.5F, 11.5F, 7.5F);
-        side4.setTextureOffset(8, 0).addBox(0.0F, 0.0F, 0.0F, 1.0F, 8.0F, 1.0F, 0.0F, true);
+        side4.setPos(7.5F, 11.5F, 7.5F);
+        side4.texOffs(8, 0).addBox(0.0F, 0.0F, 0.0F, 1.0F, 8.0F, 1.0F, 0.0F, true);
 
         topCorner1 = new ModelRenderer(this);
-        topCorner1.setRotationPoint(-8.5F, 7.5F, 4.5F);
-        topCorner1.setTextureOffset(48, 24).addBox(0.0F, 0.0F, 0.0F, 4.0F, 4.0F, 4.0F, 0.0F, true);
+        topCorner1.setPos(-8.5F, 7.5F, 4.5F);
+        topCorner1.texOffs(48, 24).addBox(0.0F, 0.0F, 0.0F, 4.0F, 4.0F, 4.0F, 0.0F, true);
 
         topCorner2 = new ModelRenderer(this);
-        topCorner2.setRotationPoint(4.5F, 7.5F, -8.5F);
-        topCorner2.setTextureOffset(0, 24).addBox(0.0F, 0.0F, 0.0F, 4.0F, 4.0F, 4.0F, 0.0F, true);
+        topCorner2.setPos(4.5F, 7.5F, -8.5F);
+        topCorner2.texOffs(0, 24).addBox(0.0F, 0.0F, 0.0F, 4.0F, 4.0F, 4.0F, 0.0F, true);
 
         topCorner3 = new ModelRenderer(this);
-        topCorner3.setRotationPoint(-8.5F, 7.5F, -8.5F);
-        topCorner3.setTextureOffset(16, 24).addBox(0.0F, 0.0F, 0.0F, 4.0F, 4.0F, 4.0F, 0.0F, true);
+        topCorner3.setPos(-8.5F, 7.5F, -8.5F);
+        topCorner3.texOffs(16, 24).addBox(0.0F, 0.0F, 0.0F, 4.0F, 4.0F, 4.0F, 0.0F, true);
 
         topCorner4 = new ModelRenderer(this);
-        topCorner4.setRotationPoint(4.5F, 7.5F, 4.5F);
-        topCorner4.setTextureOffset(32, 24).addBox(0.0F, 0.0F, 0.0F, 4.0F, 4.0F, 4.0F, 0.0F, true);
+        topCorner4.setPos(4.5F, 7.5F, 4.5F);
+        topCorner4.texOffs(32, 24).addBox(0.0F, 0.0F, 0.0F, 4.0F, 4.0F, 4.0F, 0.0F, true);
 
         top1 = new ModelRenderer(this);
-        top1.setRotationPoint(-4.5F, 7.5F, 7.5F);
-        top1.setTextureOffset(64, 26).addBox(0.0F, 0.0F, 0.0F, 9.0F, 2.0F, 1.0F, 0.0F, true);
+        top1.setPos(-4.5F, 7.5F, 7.5F);
+        top1.texOffs(64, 26).addBox(0.0F, 0.0F, 0.0F, 9.0F, 2.0F, 1.0F, 0.0F, true);
 
         top2 = new ModelRenderer(this);
-        top2.setRotationPoint(-4.5F, 7.5F, -8.5F);
-        top2.setTextureOffset(64, 29).addBox(0.0F, 0.0F, 0.0F, 9.0F, 2.0F, 1.0F, 0.0F, true);
+        top2.setPos(-4.5F, 7.5F, -8.5F);
+        top2.texOffs(64, 29).addBox(0.0F, 0.0F, 0.0F, 9.0F, 2.0F, 1.0F, 0.0F, true);
 
         top3 = new ModelRenderer(this);
-        top3.setRotationPoint(7.5F, 7.5F, -4.5F);
-        top3.setTextureOffset(51, 0).addBox(0.0F, 0.0F, 0.0F, 1.0F, 2.0F, 9.0F, 0.0F, true);
+        top3.setPos(7.5F, 7.5F, -4.5F);
+        top3.texOffs(51, 0).addBox(0.0F, 0.0F, 0.0F, 1.0F, 2.0F, 9.0F, 0.0F, true);
 
         top4 = new ModelRenderer(this);
-        top4.setRotationPoint(-8.5F, 7.5F, -4.5F);
-        top4.setTextureOffset(71, 10).addBox(0.0F, 0.0F, 0.0F, 1.0F, 2.0F, 9.0F, 0.0F, true);
+        top4.setPos(-8.5F, 7.5F, -4.5F);
+        top4.texOffs(71, 10).addBox(0.0F, 0.0F, 0.0F, 1.0F, 2.0F, 9.0F, 0.0F, true);
 
         top5 = new ModelRenderer(this);
-        top5.setRotationPoint(-8.5F, 9.5F, -4.5F);
-        top5.setTextureOffset(91, 0).addBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 9.0F, 0.0F, true);
+        top5.setPos(-8.5F, 9.5F, -4.5F);
+        top5.texOffs(91, 0).addBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 9.0F, 0.0F, true);
 
         top6 = new ModelRenderer(this);
-        top6.setRotationPoint(7.5F, 9.5F, -4.5F);
-        top6.setTextureOffset(71, 0).addBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 9.0F, 0.0F, true);
+        top6.setPos(7.5F, 9.5F, -4.5F);
+        top6.texOffs(71, 0).addBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 9.0F, 0.0F, true);
 
         top7 = new ModelRenderer(this);
-        top7.setRotationPoint(-4.5F, 9.5F, -8.5F);
-        top7.setTextureOffset(84, 30).addBox(0.0F, 0.0F, 0.0F, 9.0F, 1.0F, 1.0F, 0.0F, true);
+        top7.setPos(-4.5F, 9.5F, -8.5F);
+        top7.texOffs(84, 30).addBox(0.0F, 0.0F, 0.0F, 9.0F, 1.0F, 1.0F, 0.0F, true);
 
         top8 = new ModelRenderer(this);
-        top8.setRotationPoint(-4.5F, 9.5F, 7.5F);
-        top8.setTextureOffset(84, 28).addBox(0.0F, 0.0F, 0.0F, 9.0F, 1.0F, 1.0F, 0.0F, true);
+        top8.setPos(-4.5F, 9.5F, 7.5F);
+        top8.texOffs(84, 28).addBox(0.0F, 0.0F, 0.0F, 9.0F, 1.0F, 1.0F, 0.0F, true);
 
         top9 = new ModelRenderer(this);
-        top9.setRotationPoint(-8.5F, 9.5F, -4.5F);
-        top9.setTextureOffset(91, 10).addBox(0.0F, 1.0F, 0.0F, 1.0F, 1.0F, 9.0F, 0.0F, true);
+        top9.setPos(-8.5F, 9.5F, -4.5F);
+        top9.texOffs(91, 10).addBox(0.0F, 1.0F, 0.0F, 1.0F, 1.0F, 9.0F, 0.0F, true);
 
         top10 = new ModelRenderer(this);
-        top10.setRotationPoint(7.5F, 9.5F, -4.5F);
-        top10.setTextureOffset(102, 5).addBox(0.0F, 1.0F, 0.0F, 1.0F, 1.0F, 9.0F, 0.0F, true);
+        top10.setPos(7.5F, 9.5F, -4.5F);
+        top10.texOffs(102, 5).addBox(0.0F, 1.0F, 0.0F, 1.0F, 1.0F, 9.0F, 0.0F, true);
 
         top11 = new ModelRenderer(this);
-        top11.setRotationPoint(-4.5F, 9.5F, 7.5F);
-        top11.setTextureOffset(84, 26).addBox(0.0F, 1.0F, 0.0F, 9.0F, 1.0F, 1.0F, 0.0F, true);
+        top11.setPos(-4.5F, 9.5F, 7.5F);
+        top11.texOffs(84, 26).addBox(0.0F, 1.0F, 0.0F, 9.0F, 1.0F, 1.0F, 0.0F, true);
 
         top12 = new ModelRenderer(this);
-        top12.setRotationPoint(-4.5F, 9.5F, -8.5F);
-        top12.setTextureOffset(84, 24).addBox(0.0F, 1.0F, 0.0F, 9.0F, 1.0F, 1.0F, 0.0F, true);
+        top12.setPos(-4.5F, 9.5F, -8.5F);
+        top12.texOffs(84, 24).addBox(0.0F, 1.0F, 0.0F, 9.0F, 1.0F, 1.0F, 0.0F, true);
     }
 
     @Override
@@ -134,10 +134,10 @@ public class ModelHeatFrame extends EntityModel<EntityHeatFrame> {
         top2.render(matrixStack, buffer, packedLight, packedOverlay);
         top3.render(matrixStack, buffer, packedLight, packedOverlay);
         top4.render(matrixStack, buffer, packedLight, packedOverlay);
-        top5.render(matrixStack, buffer, packedLight, packedOverlay);
-        top6.render(matrixStack, buffer, packedLight, packedOverlay);
-        top7.render(matrixStack, buffer, packedLight, packedOverlay);
-        top8.render(matrixStack, buffer, packedLight, packedOverlay);
+        top5.render(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
+        top6.render(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
+        top7.render(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
+        top8.render(matrixStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
         top9.render(matrixStack, buffer, packedLight, packedOverlay);
         top10.render(matrixStack, buffer, packedLight, packedOverlay);
         top11.render(matrixStack, buffer, packedLight, packedOverlay);
@@ -145,7 +145,7 @@ public class ModelHeatFrame extends EntityModel<EntityHeatFrame> {
     }
 
     @Override
-    public void setRotationAngles(EntityHeatFrame entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void setupAnim(EntityHeatFrame entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
     }
 
     public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {

@@ -35,24 +35,24 @@ public class ModelDroneCore extends EntityModel<EntityDroneBase> {
 //        Base5.addBox(0F, 0F, 0F, 1, 4, 4);
 //        Base5.setRotationPoint(-4F, 15F, -2F);
 //        Base5.mirror = true;
-        textureWidth = 128;
-        textureHeight = 128;
+        texWidth = 128;
+        texHeight = 128;
 
         done = new ModelRenderer(this);
-        done.setRotationPoint(0.0F, 22.5F, 0.0F);
+        done.setPos(0.0F, 22.5F, 0.0F);
 
         body = new ModelRenderer(this);
-        body.setRotationPoint(0.0F, -3.0F, 0.0F);
+        body.setPos(0.0F, -3.0F, 0.0F);
         done.addChild(body);
-        body.setTextureOffset(48, 106).addBox(-3.5F, -5.0F, -4.5F, 7.0F, 6.0F, 16.0F, 0.0F, false);
+        body.texOffs(48, 106).addBox(-3.5F, -5.0F, -4.5F, 7.0F, 6.0F, 16.0F, 0.0F, false);
     }
 
     @Override
-    public void setRotationAngles(EntityDroneBase drone, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void setupAnim(EntityDroneBase drone, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
     }
 
     @Override
-    public void render(MatrixStack matrixStackIn, IVertexBuilder bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
+    public void renderToBuffer(MatrixStack matrixStackIn, IVertexBuilder bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
         done.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
     }
 }
