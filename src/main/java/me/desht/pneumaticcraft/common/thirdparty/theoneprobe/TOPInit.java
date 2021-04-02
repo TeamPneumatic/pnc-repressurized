@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.thirdparty.theoneprobe;
 
 import mcjty.theoneprobe.api.*;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
+import me.desht.pneumaticcraft.api.semiblock.IDirectionalSemiblock;
 import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
@@ -44,8 +45,9 @@ public class TOPInit implements Function<ITheOneProbe, Void> {
                 if (blockState.getBlock() instanceof BlockPneumaticCraft) {
                     TOPInfoProvider.handle(mode, probeInfo, player, world, blockState, data);
                 }
-                SemiblockTracker.getInstance().getAllSemiblocks(world, data.getPos())
-                        .forEach(semiBlock -> TOPInfoProvider.handleSemiblock(player, mode, probeInfo, semiBlock));
+                SemiblockTracker.getInstance().getAllSemiblocks(world, data.getPos(), data.getSideHit())
+                        .filter(sb -> !(sb instanceof IDirectionalSemiblock) || ((IDirectionalSemiblock) sb).getSide() == data.getSideHit())
+                        .forEach(sb -> TOPInfoProvider.handleSemiblock(player, mode, probeInfo, sb));
             }
         });
 

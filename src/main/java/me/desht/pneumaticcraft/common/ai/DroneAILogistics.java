@@ -106,19 +106,19 @@ public class DroneAILogistics extends Goal {
         if (!drone.getInv().getStackInSlot(0).isEmpty() && !task.transportingItem.isEmpty()) {
             if (hasNoPathTo(task.requester.getBlockPos())) return false;
             curAI = new DroneEntityAIInventoryExport(drone,
-                    new FakeWidgetLogistics(task.requester.getBlockPos(), task.requester.getFacing(), task.transportingItem));
+                    new FakeWidgetLogistics(task.requester.getBlockPos(), task.requester.getSide(), task.transportingItem));
         } else if (drone.getFluidTank().getFluidAmount() > 0 && !task.transportingFluid.isEmpty()) {
             if (hasNoPathTo(task.requester.getBlockPos())) return false;
             curAI = new DroneAILiquidExport<>(drone,
-                    new FakeWidgetLogistics(task.requester.getBlockPos(), task.requester.getFacing(), task.transportingFluid));
+                    new FakeWidgetLogistics(task.requester.getBlockPos(), task.requester.getSide(), task.transportingFluid));
         } else if (!task.transportingItem.isEmpty()) {
             if (hasNoPathTo(task.provider.getBlockPos())) return false;
             curAI = new DroneEntityAIInventoryImport(drone,
-                    new FakeWidgetLogistics(task.provider.getBlockPos(), task.provider.getFacing(), task.transportingItem));
+                    new FakeWidgetLogistics(task.provider.getBlockPos(), task.provider.getSide(), task.transportingItem));
         } else {
             if (hasNoPathTo(task.provider.getBlockPos())) return false;
             curAI = new DroneAILiquidImport<>(drone,
-                    new FakeWidgetLogistics(task.provider.getBlockPos(),  task.provider.getFacing(), task.transportingFluid));
+                    new FakeWidgetLogistics(task.provider.getBlockPos(),  task.provider.getSide(), task.transportingFluid));
         }
         if (curAI.shouldExecute()) {
             task.informRequester();

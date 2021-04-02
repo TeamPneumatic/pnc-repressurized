@@ -76,9 +76,9 @@ public class LogisticsManager {
         if (provider.getCachedTileEntity() == null) return;
 
         if (tryItems) {
-            provider.getCachedTileEntity().getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, provider.getFacing()).ifPresent(itemHandler -> {
+            provider.getCachedTileEntity().getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, provider.getSide()).ifPresent(itemHandler -> {
                 if (requester instanceof IProvidingInventoryListener)
-                    ((IProvidingInventoryListener) requester).notify(new TileEntityAndFace(provider.getCachedTileEntity(), provider.getFacing()));
+                    ((IProvidingInventoryListener) requester).notify(new TileEntityAndFace(provider.getCachedTileEntity(), provider.getSide()));
                 for (int i = 0; i < itemHandler.getSlots(); i++) {
                     ItemStack providingStack = itemHandler.getStackInSlot(i);
                     if (!providingStack.isEmpty() && (!(provider instanceof ISpecificProvider) || ((ISpecificProvider) provider).canProvide(providingStack))) {
@@ -94,7 +94,7 @@ public class LogisticsManager {
         }
 
         if (tryFluids) {
-            provider.getCachedTileEntity().getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, provider.getFacing()).ifPresent(fluidHandler -> {
+            provider.getCachedTileEntity().getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, provider.getSide()).ifPresent(fluidHandler -> {
                 FluidStack providingStack = fluidHandler.drain(16000, IFluidHandler.FluidAction.SIMULATE);
                 if (!providingStack.isEmpty()) {
                     boolean canDrain = IntStream.range(0, fluidHandler.getTanks()).anyMatch(i -> fluidHandler.isFluidValid(i, providingStack));
@@ -124,7 +124,7 @@ public class LogisticsManager {
         if (requestedAmount < providingStack.getCount()) providingStack.setCount(requestedAmount);
         ItemStack remainder = providingStack.copy();
         remainder.grow(requester.getIncomingItems(providingStack));
-        remainder = IOHelper.insert(te, remainder, requester.getFacing(), true);
+        remainder = IOHelper.insert(te, remainder, requester.getSide(), true);
         providingStack.shrink(remainder.getCount());
         return providingStack.getCount() < minOrderSize ? 0 : Math.max(providingStack.getCount(), 0);
     }
@@ -141,7 +141,7 @@ public class LogisticsManager {
         if (requestedAmount < providingStack.getAmount()) providingStack.setAmount(requestedAmount);
         FluidStack remainder = providingStack.copy();
         remainder.grow(requester.getIncomingFluid(remainder.getFluid()));
-        te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, requester.getFacing()).ifPresent(fluidHandler -> {
+        te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, requester.getSide()).ifPresent(fluidHandler -> {
             int fluidFilled = fluidHandler.fill(remainder, IFluidHandler.FluidAction.SIMULATE);
             if (fluidFilled > 0) {
                 remainder.shrink(fluidFilled);

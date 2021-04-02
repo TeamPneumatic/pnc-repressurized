@@ -875,6 +875,7 @@
    "pneumaticcraft.gui.misc.all" : "All",
    "pneumaticcraft.gui.misc.empty" : "Empty",
    "pneumaticcraft.gui.misc.no_fluids" : "No fluids",
+   "pneumaticcraft.gui.misc.no_items" : "No items",
    "pneumaticcraft.gui.misc.none" : "None",
    "pneumaticcraft.gui.misc.requiredTemperature" : "Required Temperature: %d°C",
    "pneumaticcraft.gui.misc.requiredTemperatureString" : "Required Temperature: %s",

@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.block.tubes;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
@@ -13,12 +14,10 @@ import me.desht.pneumaticcraft.common.network.PacketUpdateLogisticsModule;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.fluids.FluidStack;
@@ -27,7 +26,6 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
@@ -105,7 +103,7 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
 
     public EntityLogisticsFrame getFrame() {
         if (cachedFrame == null) {
-            ISemiBlock semiBlock = SemiblockTracker.getInstance().getSemiblock(getTube().getWorld(), getTube().getPos().offset(dir));
+            ISemiBlock semiBlock = SemiblockTracker.getInstance().getSemiblock(getTube().getWorld(), getTube().getPos().offset(dir), dir.getOpposite());
             if (semiBlock instanceof EntityLogisticsFrame) {
                 cachedFrame = (EntityLogisticsFrame) semiBlock;
             }
@@ -142,8 +140,7 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
             }
             if (--ticksUntilNextCycle <= 0) {
                 LogisticsManager manager = new LogisticsManager();
-                Map<Integer, ModuleLogistics> frame2module = new HashMap<>();
-                Map<Integer, Direction> frame2side = new HashMap<>();
+                Map<Integer, ModuleLogistics> frame2module = new Int2ObjectOpenHashMap<>();
                 for (TubeModule module : ModuleNetworkManager.getInstance(getTube().getWorld()).getConnectedModules(this)) {
                     if (module instanceof ModuleLogistics) {
                         ModuleLogistics logistics = (ModuleLogistics) module;
@@ -153,9 +150,6 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
                             // The timer will be reduced to 20 ticks later if the module does some work.
                             logistics.ticksUntilNextCycle = 100;
                             if (logistics.hasPower() && logistics.getFrame() != null) {
-                                // make frame temporarily face the logistics module
-                                frame2side.put(logistics.getFrame().getEntityId(), logistics.getFrame().getFacing());
-                                logistics.getFrame().setFacing(logistics.dir.getOpposite());
                                 // record the frame->module mapping and add the frame to the logistics manager
                                 frame2module.put(logistics.getFrame().getEntityId(), logistics);
                                 manager.addLogisticFrame(logistics.getFrame());
@@ -174,12 +168,6 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
                         }
                     }
                 }
-
-                // restore facing of frames
-                frame2side.forEach((id, dir) -> {
-                    Entity e = getTube().getWorld().getEntityByID(id);
-                    if (e instanceof EntityLogisticsFrame) ((EntityLogisticsFrame) e).setFacing(dir);
-                });
             }
         } else {
             if (ticksSinceAction >= 0) {

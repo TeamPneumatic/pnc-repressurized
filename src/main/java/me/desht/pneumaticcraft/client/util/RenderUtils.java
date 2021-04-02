@@ -91,36 +91,59 @@ public class RenderUtils {
 //        GlStateManager.enableTexture();
 //    }
 
-    public static RenderType renderFrame(MatrixStack matrixStack, IRenderTypeBuffer buffer, AxisAlignedBB aabb, float fw, float r, float g, float b, float a, int packedLightIn, boolean disableDepthTest) {
+    private static boolean drawSide(byte mask, Direction d1, Direction d2) {
+        return ((mask & 1 << d1.getIndex()) | (mask & 1 << d2.getIndex())) != 0;
+    }
+
+    public static RenderType renderFrame(MatrixStack matrixStack, IRenderTypeBuffer buffer, AxisAlignedBB aabb, float fw, float r, float g, float b, float a, int packedLightIn, boolean disableDepthTest, Direction... sides) {
         RenderType type = ModRenderTypes.getBlockFrame(disableDepthTest);
         IVertexBuilder builder = buffer.getBuffer(ModRenderTypes.getBlockFrame(disableDepthTest));
         Matrix4f posMat = matrixStack.getLast().getMatrix();
+        byte mask = 0;
+        if (sides.length == 0) {
+            mask = (byte) 0xFF;
+        } else {
+            for (Direction d: sides) mask |= 1 << d.getIndex();
+        }
 
-        renderOffsetAABB(posMat, builder, new AxisAlignedBB(aabb.minX + fw, aabb.minY - fw, aabb.minZ - fw, aabb.maxX - fw, aabb.minY + fw, aabb.minZ + fw), r, g, b, a, packedLightIn);
-        renderOffsetAABB(posMat, builder, new AxisAlignedBB(aabb.minX + fw, aabb.maxY - fw, aabb.minZ - fw, aabb.maxX - fw, aabb.maxY + fw, aabb.minZ + fw), r, g, b, a, packedLightIn);
-        renderOffsetAABB(posMat, builder, new AxisAlignedBB(aabb.minX + fw, aabb.minY - fw, aabb.maxZ - fw, aabb.maxX - fw, aabb.minY + fw, aabb.maxZ + fw), r, g, b, a, packedLightIn);
-        renderOffsetAABB(posMat, builder, new AxisAlignedBB(aabb.minX + fw, aabb.maxY - fw, aabb.maxZ - fw, aabb.maxX - fw, aabb.maxY + fw, aabb.maxZ + fw), r, g, b, a, packedLightIn);
-
-        renderOffsetAABB(posMat, builder, new AxisAlignedBB(aabb.minX - fw, aabb.minY - fw, aabb.minZ + fw, aabb.minX + fw, aabb.minY + fw, aabb.maxZ - fw), r, g, b, a, packedLightIn);
-        renderOffsetAABB(posMat, builder, new AxisAlignedBB(aabb.minX - fw, aabb.maxY - fw, aabb.minZ + fw, aabb.minX + fw, aabb.maxY + fw, aabb.maxZ - fw), r, g, b, a, packedLightIn);
-        renderOffsetAABB(posMat, builder, new AxisAlignedBB(aabb.maxX - fw, aabb.minY - fw, aabb.minZ + fw, aabb.maxX + fw, aabb.minY + fw, aabb.maxZ - fw), r, g, b, a, packedLightIn);
-        renderOffsetAABB(posMat, builder, new AxisAlignedBB(aabb.maxX - fw, aabb.maxY - fw, aabb.minZ + fw, aabb.maxX + fw, aabb.maxY + fw, aabb.maxZ - fw), r, g, b, a, packedLightIn);
-
-        renderOffsetAABB(posMat, builder, new AxisAlignedBB(aabb.minX - fw, aabb.minY - fw, aabb.minZ - fw, aabb.minX + fw, aabb.maxY + fw, aabb.minZ + fw), r, g, b, a, packedLightIn);
-        renderOffsetAABB(posMat, builder, new AxisAlignedBB(aabb.maxX - fw, aabb.minY - fw, aabb.minZ - fw, aabb.maxX + fw, aabb.maxY + fw, aabb.minZ + fw), r, g, b, a, packedLightIn);
-        renderOffsetAABB(posMat, builder, new AxisAlignedBB(aabb.minX - fw, aabb.minY - fw, aabb.maxZ - fw, aabb.minX + fw, aabb.maxY + fw, aabb.maxZ + fw), r, g, b, a, packedLightIn);
-        renderOffsetAABB(posMat, builder, new AxisAlignedBB(aabb.maxX - fw, aabb.minY - fw, aabb.maxZ - fw, aabb.maxX + fw, aabb.maxY + fw, aabb.maxZ + fw), r, g, b, a, packedLightIn);
-
-        return type;
-    }
-
-    private static void renderOffsetAABB(Matrix4f posMat, IVertexBuilder builder, AxisAlignedBB aabb, float r, float g, float b, float a, int packedLightIn) {
         float x1 = (float) aabb.minX;
         float y1 = (float) aabb.minY;
         float z1 = (float) aabb.minZ;
         float x2 = (float) aabb.maxX;
         float y2 = (float) aabb.maxY;
         float z2 = (float) aabb.maxZ;
+
+        if (drawSide(mask, Direction.DOWN, Direction.NORTH))
+            renderOffsetAABB(posMat, builder, x1 + fw, y1 - fw, z1 - fw, x2 - fw, y1 + fw, z1 + fw, r, g, b, a, packedLightIn);
+        if (drawSide(mask, Direction.UP, Direction.NORTH))
+            renderOffsetAABB(posMat, builder, x1 + fw, y2 - fw, z1 - fw, x2 - fw, y2 + fw, z1 + fw, r, g, b, a, packedLightIn);
+        if (drawSide(mask, Direction.DOWN, Direction.SOUTH))
+            renderOffsetAABB(posMat, builder, x1 + fw, y1 - fw, z2 - fw, x2 - fw, y1 + fw, z2 + fw, r, g, b, a, packedLightIn);
+        if (drawSide(mask, Direction.UP, Direction.SOUTH))
+            renderOffsetAABB(posMat, builder, x1 + fw, y2 - fw, z2 - fw, x2 - fw, y2 + fw, z2 + fw, r, g, b, a, packedLightIn);
+
+        if (drawSide(mask, Direction.DOWN, Direction.WEST))
+            renderOffsetAABB(posMat, builder, x1 - fw, y1 - fw, z1 + fw, x1 + fw, y1 + fw, z2 - fw, r, g, b, a, packedLightIn);
+        if (drawSide(mask, Direction.UP, Direction.WEST))
+            renderOffsetAABB(posMat, builder, x1 - fw, y2 - fw, z1 + fw, x1 + fw, y2 + fw, z2 - fw, r, g, b, a, packedLightIn);
+        if (drawSide(mask, Direction.DOWN, Direction.EAST))
+            renderOffsetAABB(posMat, builder, x2 - fw, y1 - fw, z1 + fw, x2 + fw, y1 + fw, z2 - fw, r, g, b, a, packedLightIn);
+        if (drawSide(mask, Direction.UP, Direction.EAST))
+            renderOffsetAABB(posMat, builder, x2 - fw, y2 - fw, z1 + fw, x2 + fw, y2 + fw, z2 - fw, r, g, b, a, packedLightIn);
+
+        if (drawSide(mask, Direction.WEST, Direction.NORTH))
+            renderOffsetAABB(posMat, builder, x1 - fw, y1 - fw, z1 - fw, x1 + fw, y2 + fw, z1 + fw, r, g, b, a, packedLightIn);
+        if (drawSide(mask, Direction.EAST, Direction.NORTH))
+            renderOffsetAABB(posMat, builder, x2 - fw, y1 - fw, z1 - fw, x2 + fw, y2 + fw, z1 + fw, r, g, b, a, packedLightIn);
+        if (drawSide(mask, Direction.WEST, Direction.SOUTH))
+            renderOffsetAABB(posMat, builder, x1 - fw, y1 - fw, z2 - fw, x1 + fw, y2 + fw, z2 + fw, r, g, b, a, packedLightIn);
+        if (drawSide(mask, Direction.EAST, Direction.SOUTH))
+            renderOffsetAABB(posMat, builder, x2 - fw, y1 - fw, z2 - fw, x2 + fw, y2 + fw, z2 + fw, r, g, b, a, packedLightIn);
+
+        return type;
+    }
+
+    private static void renderOffsetAABB(Matrix4f posMat, IVertexBuilder builder, float x1, float y1, float z1, float x2, float y2, float z2, float r, float g, float b, float a, int packedLightIn) {
 
         builder.pos(posMat, x1, y2, z1).color(r, g, b, a).normal(0, 0, -1).lightmap(packedLightIn).endVertex();
         builder.pos(posMat, x2, y2, z1).color(r, g, b, a).normal(0, 0, -1).lightmap(packedLightIn).endVertex();
@@ -192,7 +215,7 @@ public class RenderUtils {
 
     /**
      * Render a progressing line in GUI context
-     * @param matrixStack
+     * @param matrixStack the matrix stack
      * @param line the line to render
      * @param color line's colour
      */

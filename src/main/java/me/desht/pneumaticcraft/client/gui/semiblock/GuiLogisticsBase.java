@@ -22,8 +22,6 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.ClickType;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -41,8 +39,6 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
     private GuiItemSearcher itemSearchGui;
     private GuiLogisticsLiquidFilter fluidSearchGui;
     private int editingSlot; // used for both fluid & item search.
-    private final WidgetButtonExtended[] facingButtons = new WidgetButtonExtended[6];
-    private WidgetAnimatedStat facingTab;
     private WidgetLabel itemLabel;
     private WidgetLabel fluidLabel;
     private final List<WidgetFluidStack> fluidWidgets = new ArrayList<>();
@@ -93,9 +89,6 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
 
         addInfoTab(GuiUtils.xlateAndSplit("gui.tooltip.item.pneumaticcraft." + logistics.getId().getPath()));
         addFilterTab();
-        if (!container.isItemContainer()) {
-            addFacingTab();
-        }
         addJeiFilterInfoTab();
 
         if (logistics instanceof ISpecificRequester) {
@@ -212,45 +205,6 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
             }).setChecked(logistics.isWhiteList());
             filterTab.addSubWidget(whitelist);
         }
-    }
-
-    private void addFacingTab() {
-        facingTab = addAnimatedStat(StringTextComponent.EMPTY, new ItemStack(Items.MAP), 0xFFC0C0C0, false);
-        facingTab.setMinimumExpandedDimensions(75, 85);
-
-        addDirButton(0, 15, 62);
-        addDirButton(1, 15, 20);
-        addDirButton(2, 36, 20);
-        addDirButton(3, 36, 62);
-        addDirButton(4, 15, 41);
-        addDirButton(5, 57, 41);
-
-        facingTab.addSubWidget(new WidgetButtonExtended(36, 41, 20, 20, StringTextComponent.EMPTY)
-                .setRenderedIcon(Textures.GUI_INFO_LOCATION)
-                .setTooltipText(GuiUtils.xlateAndSplit("pneumaticcraft.gui.logistics_frame.facing.tooltip"))
-                .setVisible(false)
-        );
-        updateFacing();
-    }
-
-    private void addDirButton(int i, int x, int y) {
-        Direction dir = Direction.byIndex(i);
-        String label = dir.toString().substring(0, 1).toUpperCase();
-        facingTab.addSubWidget(facingButtons[i] = new WidgetButtonExtended(x, y, 20, 20, new StringTextComponent(label), b -> setFace(dir)));
-    }
-
-    private void updateFacing() {
-        String s = logistics.getFacing() == null ? "-" : ClientUtils.translateDirection(logistics.getFacing());
-        facingTab.setMessage(xlate("pneumaticcraft.gui.logistics_frame.facing", s));
-        for (Direction face : Direction.values()) {
-            facingButtons[face.getIndex()].active = face != logistics.getFacing();
-        }
-    }
-
-    private void setFace(Direction face) {
-        logistics.setFacing(face);
-        syncToServer();
-        updateFacing();
     }
 
     @Override

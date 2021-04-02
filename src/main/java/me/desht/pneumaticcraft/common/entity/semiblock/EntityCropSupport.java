@@ -20,7 +20,7 @@ public class EntityCropSupport extends EntitySemiblockBase {
     }
 
     @Override
-    public AxisAlignedBB getBlockBounds() {
+    protected AxisAlignedBB calculateBlockBounds() {
         return BOUNDS;
     }
 
