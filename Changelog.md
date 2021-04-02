@@ -8,6 +8,13 @@ Changes are in reverse chronological order; newest changes at the top.
 
 PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 
+## 2.12.0-?? (unreleased)
+
+### Updates
+
+* Logistics Frames are now sided, meaning multiple frames can be placed on one block!
+  * The side can no longer be changed via the GUI; you will need to detach and replace a frame to change its side
+  
 ## 2.11.4-170 (31 Mar 2021)
 
 ### Fixes
