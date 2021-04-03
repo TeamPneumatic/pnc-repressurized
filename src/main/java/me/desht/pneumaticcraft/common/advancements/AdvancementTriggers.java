@@ -17,6 +17,7 @@ public class AdvancementTriggers {
     public static final CustomTrigger FLY_INTO_WALL = new CustomTrigger("fly_into_wall");
     public static final CustomTrigger LOGISTICS_DRONE_DEPLOYED = new CustomTrigger("logistics_drone_deployed");
     public static final CustomTrigger CHARGED_WRENCH = new CustomTrigger("charged_wrench");
+    public static final CustomTrigger MACHINE_VANDAL = new CustomTrigger("machine_vandal");
 
     private static final CustomTrigger[] ALL_TRIGGERS = new CustomTrigger[] {
             EXPLODE_IRON,
@@ -30,7 +31,8 @@ public class AdvancementTriggers {
             FLIGHT,
             FLY_INTO_WALL,
             LOGISTICS_DRONE_DEPLOYED,
-            CHARGED_WRENCH
+            CHARGED_WRENCH,
+            MACHINE_VANDAL
     };
 
     public static void registerTriggers() {

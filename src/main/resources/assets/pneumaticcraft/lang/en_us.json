@@ -530,6 +530,8 @@
    "pneumaticcraft.achievement.lpgBucket" : "Is it a Liquid? Is it a Gas?",
    "pneumaticcraft.achievement.lubricantBucket" : "Born Slippy",
    "pneumaticcraft.achievement.lubricantBucket.desc" : "Make a bucket of Lubricant in the TPP.",
+   "pneumaticcraft.achievement.machineVandal" : "You Vandal!",
+   "pneumaticcraft.achievement.machineVandal.desc" : "Breaking machines like that is so uncivilized. Consider sneak-right-clicking with a Pneumatic Wrench instead, especially if the machine has any stored air or upgrades.",
    "pneumaticcraft.achievement.minigun.desc" : "Craft a Minigun.",
    "pneumaticcraft.achievement.minigun" : "Say Hello to my Little Friend",
    "pneumaticcraft.achievement.oilBucket" : "Black Gold",
