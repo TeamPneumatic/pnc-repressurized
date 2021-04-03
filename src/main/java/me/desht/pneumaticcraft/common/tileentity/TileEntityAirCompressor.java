@@ -80,7 +80,11 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
                 if (itemBurnTime > 0) {
                     burnTime += itemBurnTime;
                     maxBurnTime = burnTime;
-                    fuelStack.shrink(1);
+                    if (fuelStack.hasContainerItem()) {
+                        itemHandler.setStackInSlot(FUEL_SLOT, fuelStack.getContainerItem());
+                    } else {
+                        itemHandler.extractItem(FUEL_SLOT, 1, false);
+                    }
                 }
             }
 
