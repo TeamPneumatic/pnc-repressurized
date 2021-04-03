@@ -11,10 +11,19 @@ PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 ## 2.12.0-?? (unreleased)
 
 ### Updates
-
 * Logistics Frames are now sided, meaning multiple frames can be placed on one block!
+  * Greatly reduces the need for auxiliary input/output inventories and tanks when using logistics with machines
   * The side can no longer be changed via the GUI; you will need to detach and replace a frame to change its side
-  
+  * Rendering has changed to show a frame only on the side that the frame was placed on
+* Breaking machines with a pickaxe now "rewards" the player a new advancement (hinting that using a wrench is preferable)
+  * Pickaxing pressurized machines now causes particles and a sound to played, indicating that air has been lost
+* Thermopneumatic Processing Plant now consumes air and/or heat as it runs, not once when the current recipe run has completed
+  * Overall air/heat usage has not been changed 
+
+### Fixes
+* Fixed Blood Magic Lava Crystals (and other container-like items) being consumed by the (Advanced) Air Compressor
+  * Note that Lava Buckets are still not accepted by Air Compressors (use Liquid Compressors for lava fuel)
+
 ## 2.11.4-170 (31 Mar 2021)
 
 ### Fixes
