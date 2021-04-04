@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.common.semiblock.ISpecificProvider;
 import me.desht.pneumaticcraft.common.semiblock.ISpecificRequester;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import net.minecraft.item.ItemStack;
+import net.minecraft.pathfinding.PathType;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
@@ -34,14 +35,16 @@ public class LogisticsManager {
         logistics.get(frame.getPriority()).add(frame);
     }
 
-    public PriorityQueue<LogisticsTask> getTasks(Object holdingStack) {
+    public PriorityQueue<LogisticsTask> getTasks(Object holdingStack, boolean droneAccess) {
         ItemStack item = holdingStack instanceof ItemStack ? (ItemStack) holdingStack : ItemStack.EMPTY;
         FluidStack fluid = holdingStack instanceof FluidStack ? (FluidStack) holdingStack : FluidStack.EMPTY;
         PriorityQueue<LogisticsTask> tasks = new PriorityQueue<>();
         for (int priority = logistics.size() - 1; priority >= 0; priority--) {
             for (EntityLogisticsFrame requester : logistics.get(priority)) {
+                if (droneAccess && requester.isObstructed(PathType.AIR)) continue;
                 for (int i = 0; i < priority; i++) {
                     for (EntityLogisticsFrame provider : logistics.get(i)) {
+                        if (droneAccess && provider.isObstructed(PathType.AIR)) continue;
                         if (provider.shouldProvideTo(priority)) {
                             if (!item.isEmpty()) {
                                 int requestedAmount = getRequestedAmount(requester, item, false);

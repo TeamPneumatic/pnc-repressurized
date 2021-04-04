@@ -158,7 +158,7 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
                     }
                 }
 
-                PriorityQueue<LogisticsTask> tasks = manager.getTasks(null);
+                PriorityQueue<LogisticsTask> tasks = manager.getTasks(null, false);
                 for (LogisticsTask task : tasks) {
                     if (task.isStillValid(task.transportingItem.isEmpty() ? task.transportingFluid : task.transportingItem)) {
                         if (!task.transportingItem.isEmpty()) {

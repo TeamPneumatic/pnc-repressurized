@@ -28,6 +28,7 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.pathfinding.PathType;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.NonNullList;
@@ -52,7 +53,8 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
     public static final String NBT_MATCH_NBT = "matchNBT";
     public static final String NBT_MATCH_DURABILITY = "matchDurability";
     public static final String NBT_MATCH_MODID = "matchModID";
-    public static final String NBT_WHITELIST = "whitelist";
+    public static final String NBT_ITEM_WHITELIST = "whitelist";
+    public static final String NBT_FLUID_WHITELIST = "fluidWhitelist";
     public static final String NBT_ITEM_FILTERS = "filters";
     public static final String NBT_FLUID_FILTERS = "fluidFilters";
     private static final String NBT_SIDE = "side";
@@ -71,7 +73,8 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
     private boolean matchNBT = false;
     private boolean matchDurability = false;
     private boolean matchModId = false;
-    private boolean whiteList = true;
+    private boolean itemWhiteList = true;
+    private boolean fluidWhiteList = true;
     private int alpha = 255;
     public final double antiZfight;  // prevents frames on adjacent full-blocks from z-fighting
 
@@ -182,12 +185,20 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
         return alpha;
     }
 
-    public boolean isWhiteList() {
-        return whiteList;
+    public boolean isItemWhiteList() {
+        return itemWhiteList;
     }
 
-    public void setWhiteList(boolean whiteList) {
-        this.whiteList = whiteList;
+    public void setItemWhiteList(boolean whiteList) {
+        this.itemWhiteList = whiteList;
+    }
+
+    public boolean isFluidWhiteList() {
+        return fluidWhiteList;
+    }
+
+    public void setFluidWhiteList(boolean whiteList) {
+        this.fluidWhiteList = whiteList;
     }
 
     public boolean isMatchNBT() {
@@ -309,7 +320,12 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
         setMatchNBT(tag.getBoolean(NBT_MATCH_NBT));
         setMatchDurability(tag.getBoolean(NBT_MATCH_DURABILITY));
         setMatchModId(tag.getBoolean(NBT_MATCH_MODID));
-        setWhiteList(tag.getBoolean(NBT_WHITELIST));
+        setItemWhiteList(tag.getBoolean(NBT_ITEM_WHITELIST));
+        if (!tag.contains(NBT_FLUID_WHITELIST, Constants.NBT.TAG_BYTE)) {
+            setFluidWhiteList(true);
+        } else {
+            setFluidWhiteList(tag.getBoolean(NBT_FLUID_WHITELIST));
+        }
         setSide(tag.contains(NBT_SIDE) ? Direction.byIndex(tag.getInt(NBT_SIDE)) : Direction.UP);
 
         if (this instanceof ISpecificRequester) {
@@ -328,7 +344,8 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
         tag.putBoolean(NBT_MATCH_NBT, isMatchNBT());
         tag.putBoolean(NBT_MATCH_DURABILITY, isMatchDurability());
         tag.putBoolean(NBT_MATCH_MODID, isMatchModId());
-        tag.putBoolean(NBT_WHITELIST, isWhiteList());
+        tag.putBoolean(NBT_ITEM_WHITELIST, isItemWhiteList());
+        tag.putBoolean(NBT_FLUID_WHITELIST, isFluidWhiteList());
         if (getSide() != null) tag.putInt(NBT_SIDE, getSide().getIndex());
         if (this instanceof ISpecificRequester) {
             tag.putInt(ISpecificRequester.NBT_MIN_ITEMS, ((ISpecificRequester) this).getMinItemOrderSize());
@@ -350,14 +367,14 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
     }
 
     boolean passesFilter(ItemStack stack) {
-        return itemFilterHandler.isEmpty() || itemFilterHandler.match(stack) == isWhiteList();
+        return itemFilterHandler.isEmpty() || itemFilterHandler.match(stack) == isItemWhiteList();
     }
 
     boolean passesFilter(Fluid fluid) {
         boolean hasFilter = false;
         for (FluidStack filterStack : fluidFilters.fluidStacks) {
             if (filterStack.getAmount() > 0) {
-                if (matchFluids(filterStack, fluid)) return true;
+                if (matchFluids(filterStack, fluid)) return isFluidWhiteList();
                 hasFilter = true;
             }
         }
@@ -423,7 +440,8 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
 
         payload.writeByte(getSide().getIndex());
         payload.writeBoolean(isSemiblockInvisible());
-        payload.writeBoolean(whiteList);
+        payload.writeBoolean(itemWhiteList);
+        payload.writeBoolean(fluidWhiteList);
         payload.writeBoolean(matchNBT);
         payload.writeBoolean(matchDurability);
         payload.writeBoolean(matchModId);
@@ -444,7 +462,8 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
 
         setSide(Direction.byIndex(payload.readByte()));
         setSemiblockInvisible(payload.readBoolean());
-        whiteList = payload.readBoolean();
+        itemWhiteList = payload.readBoolean();
+        fluidWhiteList = payload.readBoolean();
         matchNBT = payload.readBoolean();
         matchDurability = payload.readBoolean();
         matchModId = payload.readBoolean();
@@ -457,6 +476,11 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
             ((ISpecificRequester) this).setMinItemOrderSize(payload.readVarInt());
             ((ISpecificRequester) this).setMinFluidOrderSize(payload.readVarInt());
         }
+    }
+
+    public boolean isObstructed(PathType pathType) {
+        BlockPos pos = getBlockPos().offset(getSide());
+        return !world.getBlockState(pos).allowsMovement(world, pos, pathType);
     }
 
     /**

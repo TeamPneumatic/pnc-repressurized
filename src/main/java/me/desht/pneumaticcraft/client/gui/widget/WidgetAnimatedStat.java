@@ -632,11 +632,11 @@ public class WidgetAnimatedStat extends Widget implements IGuiAnimatedStat, IToo
     public boolean mouseScrolled(double x, double y, double dir) {
         Rectangle2d bounds = getBounds();
         for (Widget widget : subWidgets) {
-            if (widget.mouseScrolled(x - bounds.getX(), y - bounds.getY(), dir)) {
+            if (widget.isFocused() && widget.mouseScrolled(x - bounds.getX(), y - bounds.getY(), dir)) {
                 return true;
             }
         }
-        return false;
+        return scrollBar != null && scrollBar.mouseScrolled(x, y, dir);
     }
 
     @Override

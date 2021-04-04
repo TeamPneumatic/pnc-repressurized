@@ -70,7 +70,7 @@ public abstract class GuiProgWidgetDroneCondition<T extends ProgWidgetDroneCondi
                 radioButton.otherChoices = radioButtons;
             }
 
-            textField = new WidgetTextFieldNumber(font, guiLeft + baseX, guiTop + baseY + 40, 50, 11);
+            textField = new WidgetTextFieldNumber(font, guiLeft + baseX, guiTop + baseY + 40, 50, 11).setRange(0, Integer.MAX_VALUE);
             textField.setText(progWidget.getRequiredCount() + "");
             textField.setMaxStringLength(GlobalVariableManager.MAX_VARIABLE_LEN);
             textField.setFocused2(true);

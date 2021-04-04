@@ -37,7 +37,9 @@ public class GuiPressureModuleSimple extends GuiTubeModule<TubeModule> {
         }).setTooltipKey("pneumaticcraft.gui.tubeModule.advancedConfig.tooltip").setChecked(false);
         addButton(advancedMode);
 
-        thresholdField = new WidgetTextFieldNumber(font, guiLeft + 105, guiTop + 35, 30, font.FONT_HEIGHT + 2).setDecimals(1);
+        thresholdField = new WidgetTextFieldNumber(font, guiLeft + 105, guiTop + 35, 30, font.FONT_HEIGHT + 2)
+                .setDecimals(1)
+                .setAdjustments(0.1, 1.0);
         addButton(thresholdField);
         setListener(thresholdField);
         thresholdField.setFocused2(true);

@@ -64,7 +64,7 @@ public class DroneAILogistics extends Goal {
     private boolean doLogistics() {
         ItemStack item = drone.getInv().getStackInSlot(0);
         FluidStack fluid = drone.getFluidTank().getFluid();
-        PriorityQueue<LogisticsTask> tasks = getLogisticsManager().getTasks(item.isEmpty() ? fluid : item);
+        PriorityQueue<LogisticsTask> tasks = getLogisticsManager().getTasks(item.isEmpty() ? fluid : item, true);
         if (tasks.size() > 0) {
             curTask = tasks.poll();
             return execute(curTask);

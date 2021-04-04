@@ -4,9 +4,11 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextFieldNumber;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.item.ItemGPSTool;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketChangeGPSToolCoordinate;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.item.ItemStack;
@@ -56,11 +58,12 @@ public class GuiGPSTool extends GuiPneumaticScreenBase {
         int xMiddle = width / 2;
         int yMiddle = height / 2;
         for (int i = 0; i < 3; i++) {
-            textFields[i] = new WidgetTextFieldNumber(font, xMiddle - TEXTFIELD_WIDTH / 2, yMiddle - 15 + i * 22, TEXTFIELD_WIDTH, font.FONT_HEIGHT).setValue(oldText[i]);
-            if (i == 1) { // Y
-                textFields[i].minValue = 0;
-                textFields[i].maxValue = 255;
-            }
+            int min = i == 1 ? PneumaticCraftUtils.getMinHeight(ClientUtils.getClientWorld()) : Integer.MIN_VALUE;
+            int max = i == 1 ? ClientUtils.getClientWorld().getHeight() : Integer.MAX_VALUE;
+            textFields[i] = new WidgetTextFieldNumber(font, xMiddle - TEXTFIELD_WIDTH / 2, yMiddle - 15 + i * 22, TEXTFIELD_WIDTH, font.FONT_HEIGHT)
+                    .setValue(oldText[i])
+                    .setRange(min, max)
+                    .setAdjustments(1, 10);
             addButton(textFields[i]);
         }
 

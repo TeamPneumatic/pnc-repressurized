@@ -30,7 +30,7 @@ public class GuiRemoteDropdown extends GuiRemoteVariable<ActionWidgetDropdown> {
         dropDownElementsField.setTooltip(xlate("pneumaticcraft.gui.remote.dropdown.dropDownElements.tooltip"));
         addButton(dropDownElementsField);
 
-        widthField = new WidgetTextFieldNumber(font, guiLeft + 50, guiTop + 99, 30, 10);
+        widthField = new WidgetTextFieldNumber(font, guiLeft + 50, guiTop + 99, 30, 10).setRange(10, Integer.MAX_VALUE);
         widthField.setValue(actionWidget.getWidth());
         widthField.minValue = 10;
         addButton(widthField);

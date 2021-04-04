@@ -374,20 +374,28 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
         AND(true, false),
         OR(true, false),
         XOR(true, false),
-        CLOCK(false, true),
+        CLOCK(false, true, 4, Integer.MAX_VALUE),
         COMPARATOR(true, false),
         SUBTRACT(true, false),
-        COMPARE(false, true),
+        COMPARE(false, true, 0, 15),
         TOGGLE(false, false),
-        CONSTANT(false, true),
-        COUNTER(false, true);
+        CONSTANT(false, true, 0, 15),
+        COUNTER(false, true, 0, 15);
 
         private final boolean useOtherColor;
         private final boolean useConst;
+        private final int min;
+        private final int max;
 
         Operation(boolean useOtherColor, boolean useConst) {
+            this(useOtherColor, useConst, 0, 0);
+        }
+
+        Operation(boolean useOtherColor, boolean useConst, int min, int max) {
             this.useOtherColor = useOtherColor;
             this.useConst = useConst;
+            this.min = min;
+            this.max = max;
         }
 
         @Override
@@ -401,6 +409,14 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
 
         public boolean useConst() {
             return useConst;
+        }
+
+        public int getMin() {
+            return min;
+        }
+
+        public int getMax() {
+            return max;
         }
     }
 }
