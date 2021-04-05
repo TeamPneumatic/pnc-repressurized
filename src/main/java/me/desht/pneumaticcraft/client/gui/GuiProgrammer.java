@@ -989,104 +989,14 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         if (button == 0) {
             // left-click
             IProgWidget hovered = programmerUnit.getHoveredWidget((int) origX, (int) origY);
-
-            // first check if we're clicking with a gps tool in hand
             ItemStack heldItem = minecraft.player.inventory.getItemStack();
             if (heldItem.getItem() instanceof IPositionProvider) {
-                ProgWidgetArea areaToolWidget = heldItem.getItem() instanceof ItemGPSAreaTool ? ItemGPSAreaTool.getArea(heldItem) : null;
-                if (hovered != null) {
-                    // clicked an existing widget: update any area or coordinate widgets from the held item
-                    if (areaToolWidget != null && hovered instanceof ProgWidgetArea) {
-                        CompoundNBT tag = new CompoundNBT();
-                        areaToolWidget.writeToNBT(tag);
-                        tag.putInt("x", hovered.getX());
-                        tag.putInt("y", hovered.getY());
-                        hovered.readFromNBT(tag);
-                        NetworkHandler.sendToServer(new PacketProgrammerUpdate(te));
-                    } else if (heldItem.getItem() == ModItems.GPS_TOOL.get()) {
-                        if (hovered instanceof ProgWidgetCoordinate) {
-                            ((ProgWidgetCoordinate) hovered).loadFromGPSTool(heldItem);
-                        } else if (hovered instanceof ProgWidgetArea) {
-                            BlockPos pos = ItemGPSTool.getGPSLocation(heldItem);
-                            String var = ItemGPSTool.getVariable(heldItem);
-                            ProgWidgetArea areaHovered = (ProgWidgetArea) hovered;
-                            if (pos != null) areaHovered.setP1(pos);
-                            areaHovered.setP2(BlockPos.ZERO);
-                            areaHovered.setCoord1Variable(var);
-                            areaHovered.setCoord2Variable("");
-                        }
-                        NetworkHandler.sendToServer(new PacketProgrammerUpdate(te));
-                    }
-                } else {
-                    // clicked on an empty area: create a new area or coordinate widget(s)
-                    List<IProgWidget> toCreate = new ArrayList<>();
-                    if (areaToolWidget != null) {
-                        if (Screen.hasShiftDown()) {
-                            ProgWidgetCoordinate pc = new ProgWidgetCoordinate();
-                            pc.setCoordinate(new BlockPos(areaToolWidget.x1, areaToolWidget.y1, areaToolWidget.z1));
-                            toCreate.add(pc);
-                            if (areaToolWidget.x2 != 0 && areaToolWidget.y2 != 0 && areaToolWidget.z2 != 0) {
-                                ProgWidgetCoordinate pc2 = new ProgWidgetCoordinate();
-                                pc2.setCoordinate(new BlockPos(areaToolWidget.x2, areaToolWidget.y2, areaToolWidget.z2));
-                                toCreate.add(pc2);
-                            }
-                        } else {
-                            toCreate.add(areaToolWidget);
-                        }
-                    } else if (heldItem.getItem() == ModItems.GPS_TOOL.get()) {
-                        if (Screen.hasShiftDown()) {
-                            BlockPos pos = ItemGPSTool.getGPSLocation(heldItem);
-                            ProgWidgetArea areaWidget = ProgWidgetArea.fromPositions(pos, BlockPos.ZERO);
-                            String var = ItemGPSTool.getVariable(heldItem);
-                            if (!var.isEmpty()) areaWidget.setCoord1Variable(var);
-                            toCreate.add(areaWidget);
-                        } else {
-                            ProgWidgetCoordinate coordWidget = new ProgWidgetCoordinate();
-                            coordWidget.loadFromGPSTool(heldItem);
-                            toCreate.add(coordWidget);
-                        }
-                    }
-                    for (int i = 0; i < toCreate.size(); i++) {
-                        IProgWidget p = toCreate.get(i);
-                        p.setX((int) (mouseX - guiLeft - p.getWidth() / 3d));
-                        p.setY((int) (mouseY - guiTop - p.getHeight() / 4d) + i * p.getHeight());
-                        if (!programmerUnit.isOutsideProgrammingArea(p)) {
-                            te.progWidgets.add(p);
-                        }
-                    }
-                }
-                return true;
+                return mouseClickedWithPosProvider(mouseX, mouseY, hovered, heldItem);
+            } if (!heldItem.isEmpty()) {
+                return mouseClickedWithItem(mouseX, mouseY, hovered, heldItem);
             } else {
-                // just a regular click, nothing of interest held
-                if (showingAllWidgets || origX > guiLeft + getProgrammerBounds().getX() + getProgrammerBounds().getWidth()) {
-                    // clicking on a widget in the tray?
-                    for (IProgWidget widget : visibleSpawnWidgets) {
-                        if (origX >= widget.getX() + guiLeft
-                                && origY >= widget.getY() + guiTop
-                                && origX <= widget.getX() + guiLeft + widget.getWidth() / 2f
-                                && origY <= widget.getY() + guiTop + widget.getHeight() / 2f)
-                        {
-                            draggingWidget = widget.copy();
-                            te.progWidgets.add(draggingWidget);
-                            dragMouseStartX = mouseX - (int) (guiLeft / scale);
-                            dragMouseStartY = mouseY - (int) (guiTop / scale);
-                            dragWidgetStartX = (int) ((widget.getX() - programmerUnit.getTranslatedX()) / scale);
-                            dragWidgetStartY = (int) ((widget.getY() - programmerUnit.getTranslatedY()) / scale);
-                            return true;
-                        }
-                    }
-                }
-                if (hovered != null) {
-                    // clicking on a widget in the main area
-                    draggingWidget = hovered;
-                    dragMouseStartX = mouseX - guiLeft;
-                    dragMouseStartY = mouseY - guiTop;
-                    dragWidgetStartX = hovered.getX();
-                    dragWidgetStartY = hovered.getY();
+                if (mouseClickedEmpty(mouseX, mouseY, origX, origY, scale, hovered))
                     return true;
-                } else if (getProgrammerBounds().contains((int)origX - guiLeft, (int)origY - guiTop)) {
-                    draggingBG = true;
-                }
             }
         } else if (button == 2) {
             // middle-click: copy widget, or show docs if clicked on widget tray
@@ -1117,6 +1027,127 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
             return true;
         }
         return super.mouseClicked(origX, origY, button);
+    }
+
+    private boolean mouseClickedWithPosProvider(double mouseX, double mouseY, IProgWidget hovered, ItemStack heldItem) {
+        ProgWidgetArea areaToolWidget = heldItem.getItem() instanceof ItemGPSAreaTool ? ItemGPSAreaTool.getArea(heldItem) : null;
+        if (hovered != null) {
+            // clicked an existing widget: update any area or coordinate widgets from the held item
+            if (areaToolWidget != null && hovered instanceof ProgWidgetArea) {
+                CompoundNBT tag = new CompoundNBT();
+                areaToolWidget.writeToNBT(tag);
+                tag.putInt("x", hovered.getX());
+                tag.putInt("y", hovered.getY());
+                hovered.readFromNBT(tag);
+                NetworkHandler.sendToServer(new PacketProgrammerUpdate(te));
+            } else if (heldItem.getItem() == ModItems.GPS_TOOL.get()) {
+                if (hovered instanceof ProgWidgetCoordinate) {
+                    ((ProgWidgetCoordinate) hovered).loadFromGPSTool(heldItem);
+                } else if (hovered instanceof ProgWidgetArea) {
+                    BlockPos pos = ItemGPSTool.getGPSLocation(heldItem);
+                    String var = ItemGPSTool.getVariable(heldItem);
+                    ProgWidgetArea areaHovered = (ProgWidgetArea) hovered;
+                    if (pos != null) areaHovered.setP1(pos);
+                    areaHovered.setP2(BlockPos.ZERO);
+                    areaHovered.setCoord1Variable(var);
+                    areaHovered.setCoord2Variable("");
+                }
+                NetworkHandler.sendToServer(new PacketProgrammerUpdate(te));
+            }
+        } else {
+            // clicked on an empty area: create a new area or coordinate widget(s)
+            List<IProgWidget> toCreate = new ArrayList<>();
+            if (areaToolWidget != null) {
+                if (Screen.hasShiftDown()) {
+                    ProgWidgetCoordinate pc = new ProgWidgetCoordinate();
+                    pc.setCoordinate(new BlockPos(areaToolWidget.x1, areaToolWidget.y1, areaToolWidget.z1));
+                    toCreate.add(pc);
+                    if (areaToolWidget.x2 != 0 && areaToolWidget.y2 != 0 && areaToolWidget.z2 != 0) {
+                        ProgWidgetCoordinate pc2 = new ProgWidgetCoordinate();
+                        pc2.setCoordinate(new BlockPos(areaToolWidget.x2, areaToolWidget.y2, areaToolWidget.z2));
+                        toCreate.add(pc2);
+                    }
+                } else {
+                    toCreate.add(areaToolWidget);
+                }
+            } else if (heldItem.getItem() == ModItems.GPS_TOOL.get()) {
+                if (Screen.hasShiftDown()) {
+                    BlockPos pos = ItemGPSTool.getGPSLocation(heldItem);
+                    ProgWidgetArea areaWidget = ProgWidgetArea.fromPositions(pos, BlockPos.ZERO);
+                    String var = ItemGPSTool.getVariable(heldItem);
+                    if (!var.isEmpty()) areaWidget.setCoord1Variable(var);
+                    toCreate.add(areaWidget);
+                } else {
+                    ProgWidgetCoordinate coordWidget = new ProgWidgetCoordinate();
+                    coordWidget.loadFromGPSTool(heldItem);
+                    toCreate.add(coordWidget);
+                }
+            }
+            for (int i = 0; i < toCreate.size(); i++) {
+                IProgWidget p = toCreate.get(i);
+                p.setX((int) (mouseX - guiLeft - p.getWidth() / 3d));
+                p.setY((int) (mouseY - guiTop - p.getHeight() / 4d) + i * p.getHeight());
+                if (!programmerUnit.isOutsideProgrammingArea(p)) {
+                    te.progWidgets.add(p);
+                }
+            }
+        }
+        return true;
+    }
+
+    private boolean mouseClickedWithItem(double mouseX, double mouseY, IProgWidget hovered, ItemStack heldItem) {
+        // mouse clicked with an item on the cursor, maybe create or update an item filter widget
+        if (hovered == null) {
+            ProgWidgetItemFilter p = new ProgWidgetItemFilter();
+            p.setFilter(heldItem.copy());
+            p.setX((int) (mouseX - guiLeft - p.getWidth() / 3d));
+            p.setY((int) (mouseY - guiTop - p.getHeight() / 4d));
+            if (!programmerUnit.isOutsideProgrammingArea(p)) {
+                te.progWidgets.add(p);
+            }
+            NetworkHandler.sendToServer(new PacketProgrammerUpdate(te));
+            return true;
+        } else if (hovered instanceof ProgWidgetItemFilter) {
+            ProgWidgetItemFilter p = (ProgWidgetItemFilter) hovered;
+            p.setFilter(heldItem.copy());
+            NetworkHandler.sendToServer(new PacketProgrammerUpdate(te));
+            return true;
+        }
+        return false;
+    }
+
+    private boolean mouseClickedEmpty(double mouseX, double mouseY, double origX, double origY, float scale, IProgWidget hovered) {
+        // just a regular click, nothing of interest held
+        if (showingAllWidgets || origX > guiLeft + getProgrammerBounds().getX() + getProgrammerBounds().getWidth()) {
+            // clicking on a widget in the tray?
+            for (IProgWidget widget : visibleSpawnWidgets) {
+                if (origX >= widget.getX() + guiLeft
+                        && origY >= widget.getY() + guiTop
+                        && origX <= widget.getX() + guiLeft + widget.getWidth() / 2f
+                        && origY <= widget.getY() + guiTop + widget.getHeight() / 2f)
+                {
+                    draggingWidget = widget.copy();
+                    te.progWidgets.add(draggingWidget);
+                    dragMouseStartX = mouseX - (int) (guiLeft / scale);
+                    dragMouseStartY = mouseY - (int) (guiTop / scale);
+                    dragWidgetStartX = (int) ((widget.getX() - programmerUnit.getTranslatedX()) / scale);
+                    dragWidgetStartY = (int) ((widget.getY() - programmerUnit.getTranslatedY()) / scale);
+                    return true;
+                }
+            }
+        }
+        if (hovered != null) {
+            // clicking on a widget in the main area
+            draggingWidget = hovered;
+            dragMouseStartX = mouseX - guiLeft;
+            dragMouseStartY = mouseY - guiTop;
+            dragWidgetStartX = hovered.getX();
+            dragWidgetStartY = hovered.getY();
+            return true;
+        } else if (getProgrammerBounds().contains((int) origX - guiLeft, (int) origY - guiTop)) {
+            draggingBG = true;
+        }
+        return false;
     }
 
     @Override
