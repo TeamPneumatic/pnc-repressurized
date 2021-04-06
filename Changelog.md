@@ -15,14 +15,28 @@ PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
   * Greatly reduces the need for auxiliary input/output inventories and tanks when using logistics with machines
   * The side can no longer be changed via the GUI; you will need to detach and replace a frame to change its side
   * Rendering has changed to show a frame only on the side that the frame was placed on
+* Logistics Frames now have independently-settable item and fluid white/blacklisting
+  * In addition, the button to switch white/blacklisting is now on the main GUI, not the Filter side tab
+* Logistics Frames GUI: clicking a fluid-containing item (e.g. bucket or tank) on a liquid filter slot will now copy the contained fluid into that slot
+* Logistics Drones will now completely ignore any frames whose facing side is obstructed by any solid (non-pathfindable) block
+  * This means that drones won't attempt to handle any frame which already has a Logistics Module on it, so drones and modules now co-exist better
 * Breaking machines with a pickaxe now "rewards" the player a new advancement (hinting that using a wrench is preferable)
   * Pickaxing pressurized machines now causes particles and a sound to played, indicating that air has been lost
 * Thermopneumatic Processing Plant now consumes air and/or heat as it runs, not once when the current recipe run has completed
   * Overall air/heat usage has not been changed 
+* In the Programmer GUI, clicking with an item (other than GPS tools) on the background area now creates an Item Filter widget for that item
+  * Clicking an existing Item Filter widgets with an item updates the item for that widget
+* All numeric-entry textfields in all GUI's can now be modified by scrolling the mouse wheel
+  * Hold Shift while scrolling for a faster adjustment
+  * The actual modification depends on the context but should make sense for each situation
+* Drones can now repair their held item with experience orbs if the item is enchanted with Mending
+  * Reminder: use an Import Entity widget with an `@orb` filter to import experience orbs (excess XP fluid can be dropped with the Export Fluid widget)
 
 ### Fixes
 * Fixed Blood Magic Lava Crystals (and other container-like items) being consumed by the (Advanced) Air Compressor
   * Note that Lava Buckets are still not accepted by Air Compressors (use Liquid Compressors for lava fuel)
+* Fixed north & west temperature widgets being swapped in the Thermal Compressor GUI
+
 
 ## 2.11.4-170 (31 Mar 2021)
 
