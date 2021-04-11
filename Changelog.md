@@ -14,7 +14,7 @@ PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 * Logistics Frames are now sided, meaning multiple frames can be placed on one block!
   * Greatly reduces the need for auxiliary input/output inventories and tanks when using logistics with machines
   * The side can no longer be changed via the GUI; you will need to detach and replace a frame to change its side
-  * Rendering has changed to show a frame only on the side that the frame was placed on
+  * Rendering has been altered to show a frame only on the side that the frame was placed on
 * Logistics Frames now have independently-settable item and fluid white/blacklisting
   * In addition, the button to switch white/blacklisting is now on the main GUI, not the Filter side tab
 * Logistics Frames GUI: clicking a fluid-containing item (e.g. bucket or tank) on a liquid filter slot will now copy the contained fluid into that slot
@@ -29,14 +29,14 @@ PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 * All numeric-entry textfields in all GUI's can now be modified by scrolling the mouse wheel
   * Hold Shift while scrolling for a faster adjustment
   * The actual modification depends on the context but should make sense for each situation
-* Drones can now repair their held item with experience orbs if the item is enchanted with Mending
-  * Reminder: use an Import Entity widget with an `@orb` filter to import experience orbs (excess XP fluid can be dropped with the Export Fluid widget)
+* Drones will now repair their held item with imported experience orbs if the item is enchanted with Mending
+  * Reminder: use an Import Entity widget with an `@orb` filter to import experience orbs (excess Memory Essence fluid can be put in a tank with the Export Fluid widget)
 
 ### Fixes
 * Fixed Blood Magic Lava Crystals (and other container-like items) being consumed by the (Advanced) Air Compressor
   * Note that Lava Buckets are still not accepted by Air Compressors (use Liquid Compressors for lava fuel)
 * Fixed north & west temperature widgets being swapped in the Thermal Compressor GUI
-
+* Fixed Amadron player-player trading not paying the seller
 
 ## 2.11.4-170 (31 Mar 2021)
 
