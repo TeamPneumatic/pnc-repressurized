@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.util;
 
+import me.desht.pneumaticcraft.client.gui.GuiPneumaticContainerBase;
 import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetOptionBase;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.EntityTrackerClientHandler;
@@ -186,8 +187,12 @@ public class ClientUtils {
         return Minecraft.getInstance().getRenderManager().getFontRenderer().getStringWidth(line);
     }
 
-    public static boolean isGuiOpen() {
-        return Minecraft.getInstance().currentScreen != null;
+    public static boolean isGuiOpen(TileEntity te) {
+        if (Minecraft.getInstance().currentScreen instanceof GuiPneumaticContainerBase) {
+            return ((GuiPneumaticContainerBase<?,?>) Minecraft.getInstance().currentScreen).te == te;
+        } else {
+            return false;
+        }
     }
 
     public static float[] getTextureUV(BlockState state, Direction face) {
@@ -267,4 +272,5 @@ public class ClientUtils {
     public static boolean isFirstPersonCamera() {
         return Minecraft.getInstance().gameSettings.getPointOfView().func_243192_a();
     }
+
 }

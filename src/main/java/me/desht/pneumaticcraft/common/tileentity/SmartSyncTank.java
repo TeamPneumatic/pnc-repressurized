@@ -4,7 +4,7 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
@@ -24,7 +24,7 @@ public class SmartSyncTank extends FluidTank {
 
     private boolean pending = false;
 
-    private int syncTimer = -1;
+    private int syncTimer = 0;  // will cause immediate sync to client on initial placement
     private final WeakReference<TileEntity> owner;
     private final int threshold;
 
@@ -42,7 +42,18 @@ public class SmartSyncTank extends FluidTank {
         TileEntity te = owner.get();
         if (te != null) {
             if (te.getWorld().isRemote) {
-                super.setFluid(ClientUtils.isGuiOpen() ? syncedFluidStackGui : syncedFluidStackDesc);
+                if (ClientUtils.isGuiOpen(te)) {
+                    super.setFluid(syncedFluidStackGui);
+                } else {
+                    int currAmount = getFluidAmount();
+                    FluidStack tgt = syncedFluidStackDesc;
+                    int delta = tgt.getAmount() - currAmount;
+                    if (delta != 0) {
+                        int newAmount = Math.abs(delta) < capacity / 200 ? tgt.getAmount() : currAmount + delta / 20;
+                        Fluid newFluid = fluid.isEmpty() ? tgt.getFluid() : fluid.getFluid();
+                        super.setFluid(new FluidStack(newFluid.getFluid(), newAmount));
+                    }
+                }
             } else {
                 if (syncTimer > 0) {
                     syncTimer--;
@@ -125,13 +136,5 @@ public class SmartSyncTank extends FluidTank {
         onFluidChange(stack);
 
         super.setFluid(stack);
-    }
-
-    @Override
-    public FluidTank readFromNBT(CompoundNBT nbt) {
-        FluidTank tank = super.readFromNBT(nbt);
-        syncedFluidStackGui = tank.getFluid().copy();
-        syncedFluidStackDesc = tank.getFluid().copy();
-        return tank;
     }
 }
