@@ -25,18 +25,23 @@ PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 * Thermopneumatic Processing Plant now consumes air and/or heat as it runs, not once when the current recipe run has completed
   * Overall air/heat usage has not been changed 
 * In the Programmer GUI, clicking with an item (other than GPS tools) on the background area now creates an Item Filter widget for that item
-  * Clicking an existing Item Filter widgets with an item updates the item for that widget
+  * Clicking an existing Item Filter widget with an item updates the item for that widget
 * All numeric-entry textfields in all GUI's can now be modified by scrolling the mouse wheel
   * Hold Shift while scrolling for a faster adjustment
   * The actual modification depends on the context but should make sense for each situation
 * Drones will now repair their held item with imported experience orbs if the item is enchanted with Mending
   * Reminder: use an Import Entity widget with an `@orb` filter to import experience orbs (excess Memory Essence fluid can be put in a tank with the Export Fluid widget)
+* Changes to rendered fluid levels in fluid-containing tile entities are now interpolated smoothly on the client (for a nicer visual appearance)
 
 ### Fixes
 * Fixed Blood Magic Lava Crystals (and other container-like items) being consumed by the (Advanced) Air Compressor
   * Note that Lava Buckets are still not accepted by Air Compressors (use Liquid Compressors for lava fuel)
 * Fixed north & west temperature widgets being swapped in the Thermal Compressor GUI
 * Fixed Amadron player-player trading not paying the seller
+* Fixed NPE when placing down Pressure Chamber blocks with a Building Gadget
+  * Fix actually applies to any situation where multiple PNC tile entities are placed in a single tick
+* Fixed fluid-containing tile entities not rendering their fluid when any GUI is open  
+* Placing an item on a Display Table in creative mode no longer removes the item from the player
 
 ## 2.11.4-170 (31 Mar 2021)
 

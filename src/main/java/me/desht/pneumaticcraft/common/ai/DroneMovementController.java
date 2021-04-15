@@ -40,6 +40,12 @@ public class DroneMovementController extends MovementController {
                     Math.max(-speed, Math.min(speed, z - entity.getPosZ()))
             );
 
+            if (!(entity.getNavigator() instanceof EntityPathNavigateDrone)) {
+                // this could be the case if the drone's path navigator has been replaced
+                // https://github.com/TeamPneumatic/pnc-repressurized/issues/794
+                return;
+            }
+
             EntityPathNavigateDrone navigator = (EntityPathNavigateDrone)entity.getNavigator();
             
             // When teleporting already, the drone stands still for a bit, so don't expect movement in this case.
