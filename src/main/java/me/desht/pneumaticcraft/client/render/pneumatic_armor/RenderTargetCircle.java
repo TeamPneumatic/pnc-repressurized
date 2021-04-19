@@ -21,6 +21,8 @@ public class RenderTargetCircle {
     private static final float[] HOSTILE = { 1f, 0f, 0f };
     private static final float[] DEFAULT = { 0f, 1f, 0f };
 
+    private static final double MAX_ROTATION = 8.0D;
+
     private double oldRotationAngle;
     private double rotationAngle = 0;
     private double rotationSpeed = 0;
@@ -41,12 +43,11 @@ public class RenderTargetCircle {
 
     public void update() {
         oldRotationAngle = rotationAngle;
-        if (rand.nextInt(15) == 0) rotationAcceleration = (rand.nextDouble() - 0.5D) / 2.5D;
-        rotationSpeed += rotationAcceleration;// * 0.05D;
-        double maxSpeed = 8.0D;
-        if (rotationSpeed >= maxSpeed) rotationSpeed = maxSpeed;
-        if (rotationSpeed <= -maxSpeed) rotationSpeed = -maxSpeed;
-        rotationAngle += rotationSpeed;// * 0.05D;
+        if (rand.nextInt(15) == 0) {
+            rotationAcceleration = (rand.nextDouble() - 0.5D) / 2.5D;
+        }
+        rotationSpeed = MathHelper.clamp(rotationSpeed + rotationAcceleration, -MAX_ROTATION, MAX_ROTATION);
+        rotationAngle += rotationSpeed;
     }
 
     public void render(MatrixStack matrixStack, IRenderTypeBuffer buffer, float size, float partialTicks, float alpha) {

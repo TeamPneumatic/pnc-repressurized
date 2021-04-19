@@ -7,23 +7,24 @@ import me.desht.pneumaticcraft.common.network.PacketSyncRedstoneModuleToClient;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.stream.IntStream;
 
 // since this is both a receiver and an emitter, we won't use either redstone superclass here
@@ -325,13 +326,13 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
     }
 
     private int readInputLevel() {
+        World world = Objects.requireNonNull(pressureTube.getWorld());
         if (comparatorInput && upgraded) {
-            TileEntity te = pressureTube.getCachedNeighbor(getDirection());
-            if (te == null) return 0;
-            return te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, getDirection().getOpposite())
-                    .map(ItemHandlerHelper::calcRedstoneFromInventory).orElse(0);
+            BlockPos pos2 = pressureTube.getPos().offset(getDirection());
+            BlockState state = world.getBlockState(pos2);
+            return state.hasComparatorInputOverride() ? state.getComparatorInputOverride(world, pos2) : 0;
         } else {
-            return pressureTube.getWorld().getRedstonePower(pressureTube.getPos().offset(getDirection()), getDirection());
+            return world.getRedstonePower(pressureTube.getPos().offset(getDirection()), getDirection());
         }
     }
 
