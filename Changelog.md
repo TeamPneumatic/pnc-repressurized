@@ -8,6 +8,18 @@ Changes are in reverse chronological order; newest changes at the top.
 
 PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 
+## 2.12.1-?? (unreleased)
+
+### Updates
+* Added config setting `plastic_in_world_solidification` (default: true) to control in-world coversion of Molten Plastic to Plastic Sheets
+  * Useful for modpack makers who wish to add alternative mechanisms or require that only Heat Frame cooling is used to produce plastic
+  
+### Fixes
+* Fixed Redstone Module comparator input mode only working for measuring items in the adjacent inventory
+  * Now any & all comparator conditions are properly measured (fluid levels, refinery "has work" etc.)
+* Fixed comparators on Refinery Output blocks not being notified when the Refinery's "has work" condition changed
+  * Only the Refinery Controller was properly notifying its attached comparator
+
 ## 2.12.0-177 (16 Apr 2021)
 
 ### Updates
