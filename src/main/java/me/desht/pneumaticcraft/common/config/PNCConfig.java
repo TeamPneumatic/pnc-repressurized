@@ -64,7 +64,6 @@ public class PNCConfig {
             public static Set<String> oilWorldGenCategoryBlacklist;
             public static int surfaceOilGenerationChance;
             public static boolean droneDebuggerPathParticles;
-            public static boolean plasticInWorldSolidification;
         }
 
         public static class Machines {
@@ -158,6 +157,7 @@ public class PNCConfig {
         public static class Recipes {
             public static boolean explosionCrafting;
             public static boolean coalToDiamondsRecipe;
+            public static boolean plasticInWorldSolidification;
         }
 
         public static class Amadron {

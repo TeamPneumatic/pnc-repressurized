@@ -23,7 +23,6 @@ public class CommonConfig {
         ForgeConfigSpec.BooleanValue useUpDyesWhenColoring;
         ForgeConfigSpec.BooleanValue dronesRenderHeldItem;
         ForgeConfigSpec.BooleanValue dronesCanImportXPOrbs;
-        ForgeConfigSpec.BooleanValue plasticInWorldSolidification;
     }
     public static class Machines {
         ForgeConfigSpec.BooleanValue aerialInterfaceArmorCompat;
@@ -110,6 +109,7 @@ public class CommonConfig {
     public static class Recipes {
         ForgeConfigSpec.BooleanValue coalToDiamondsRecipe;
         ForgeConfigSpec.BooleanValue explosionCrafting;
+        ForgeConfigSpec.BooleanValue plasticInWorldSolidification;
     }
 
     public static class Amadron {
@@ -224,10 +224,6 @@ public class CommonConfig {
                 .comment("Blacklisted entity ID's, which the Vacuum Trap will not try to absorb. Note that players, tamed entities, boss entities, and PneumaticCraft drones may never be absorbed, regardless of config settings.")
                 .translation("pneumaticcraft.config.common.general.vacuum_trap_blacklist")
                 .define("vacuum_trap_blacklist", Lists.newArrayList());
-        general.plasticInWorldSolidification = builder
-                .comment("Does Molten Plastic solidify to Plastic Sheets when poured into the world? If set to false, then Heat Frame cooling is the only other default way to make Plastic Sheets.")
-                .translation("pneumaticcraft.config.common.general.plastic_in_world_solidification")
-                .define("plastic_in_world_solidification", true);
         builder.pop();
 
         builder.push("Machine Properties");
@@ -532,13 +528,17 @@ public class CommonConfig {
 
         builder.push("Recipes");
         recipes.explosionCrafting = builder
-                .comment("Enable/disable explosion crafting (iron->compressed iron).  If you disable this, you'll need another way to get compressed iron initially.")
+                .comment("Enable/disable explosion crafting (iron->compressed iron).  If you disable this, you'll need another way to get compressed iron initially. NOTE: this should be considered deprecated, and will be removed in a future release. You should control this via data pack recipes (recipe type 'pneumaticcraft:explosion_crafting').")
                 .translation("pneumaticcraft.config.common.general.explosion_crafting")
                 .define("explosion_crafting", true);
         recipes.coalToDiamondsRecipe = builder
-                .comment("Enable crafting diamonds from coal blocks in the pressure chamber")
+                .comment("Enable crafting diamonds from coal blocks in the pressure chamber?  NOTE: this should be considered deprecated, and will be removed in a future release. You should control this via datapack recipe (default recipe ID: 'pneumaticcraft:pressure_chamber/coal_to_diamond').")
                 .translation("pneumaticcraft.config.common.recipes.coal_to_diamonds")
                 .define("coal_to_diamonds", true);
+        recipes.plasticInWorldSolidification = builder
+                .comment("Does Molten Plastic solidify to Plastic Sheets when poured into the world? If set to false, then Heat Frame cooling is the only other default way to make Plastic Sheets.")
+                .translation("pneumaticcraft.config.common.recipes.plastic_in_world_solidification")
+                .define("plastic_in_world_solidification", true);
         builder.pop();
 
         builder.push("Amadron");
