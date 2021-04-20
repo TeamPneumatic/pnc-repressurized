@@ -41,7 +41,7 @@ public class EntityTrackOptions extends IOptionPage.SimpleToggleableOptions<Enti
         gui.addWidget(new WidgetButtonExtended(30, 128, 150, 20,
                 xlate("pneumaticcraft.armor.gui.misc.moveStatScreen"), b -> {
             Minecraft.getInstance().player.closeScreen();
-            Minecraft.getInstance().displayGuiScreen(new GuiMoveStat(getClientUpgradeHandler(), ArmorHUDLayout.LayoutTypes.ENTITY_TRACKER));
+            Minecraft.getInstance().displayGuiScreen(new GuiMoveStat(getClientUpgradeHandler(), ArmorHUDLayout.LayoutType.ENTITY_TRACKER));
         }));
 
         textField = new TextFieldWidget(gui.getFontRenderer(), 35, 60, 140, 10, StringTextComponent.EMPTY);

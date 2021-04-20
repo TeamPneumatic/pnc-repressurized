@@ -37,7 +37,7 @@ public class SearchOptions extends IOptionPage.SimpleToggleableOptions<SearchCli
                 xlate("pneumaticcraft.gui.misc.searchItem"), b -> openSearchGui()));
 
         gui.addWidget(new Button(30, 128, 150, 20, xlate("pneumaticcraft.armor.gui.misc.moveStatScreen"),
-                b -> Minecraft.getInstance().displayGuiScreen(new GuiMoveStat(getClientUpgradeHandler(), ArmorHUDLayout.LayoutTypes.ITEM_SEARCH))));
+                b -> Minecraft.getInstance().displayGuiScreen(new GuiMoveStat(getClientUpgradeHandler(), ArmorHUDLayout.LayoutType.ITEM_SEARCH))));
 
         if (searchGui != null && !player.getItemStackFromSlot(EquipmentSlotType.HEAD).isEmpty()) {
             ItemStack helmetStack = ClientUtils.getWornArmor(EquipmentSlotType.HEAD);
