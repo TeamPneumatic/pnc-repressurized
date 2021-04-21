@@ -149,8 +149,8 @@ public class EntityTransferGadget extends EntitySemiblockBase implements IDirect
     }
 
     @Override
-    public AxisAlignedBB getBlockBounds() {
-        AxisAlignedBB b = super.getBlockBounds();
+    protected AxisAlignedBB calculateBlockBounds() {
+        AxisAlignedBB b = super.calculateBlockBounds();
         switch (getSide()) {
             case UP:
                 return new AxisAlignedBB(b.minX - THICKNESS, b.maxY - INDENT, b.minZ - THICKNESS,

@@ -139,7 +139,7 @@ public class BlockDisplayTable extends BlockPneumaticCraft {
                 if (teDT.getPrimaryInventory().getStackInSlot(0).isEmpty()) {
                     // try to put the player's held item onto the table
                     ItemStack excess = teDT.getPrimaryInventory().insertItem(0, player.getHeldItem(hand), false);
-                    player.setHeldItem(hand, excess);
+                    if (!player.isCreative()) player.setHeldItem(hand, excess);
                 } else {
                     // try to remove whatever is on the table
                     ItemStack stack = teDT.getPrimaryInventory().extractItem(0, 64, false);

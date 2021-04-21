@@ -160,7 +160,7 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
 
             if (areaTypeWidget instanceof AreaTypeWidgetInteger) {
                 AreaTypeWidgetInteger intWidget = (AreaTypeWidgetInteger) areaTypeWidget;
-                WidgetTextFieldNumber intField = new WidgetTextFieldNumber(font, x, curY, 40, font.FONT_HEIGHT + 1);
+                WidgetTextFieldNumber intField = new WidgetTextFieldNumber(font, x, curY, 40, font.FONT_HEIGHT + 1).setRange(0, Integer.MAX_VALUE);
                 intField.setValue(intWidget.readAction.get());
                 addButton(intField);
                 areaTypeValueWidgets.add(new ImmutablePair<>(areaTypeWidget, intField));

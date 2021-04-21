@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.util;
 
+import me.desht.pneumaticcraft.client.gui.GuiPneumaticContainerBase;
 import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetOptionBase;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.EntityTrackerClientHandler;
@@ -57,12 +58,16 @@ public class ClientUtils {
      * @param pos the block pos
      * @param particle the particle type
      */
-    public static void emitParticles(World world, BlockPos pos, IParticleData particle) {
+    public static void emitParticles(World world, BlockPos pos, IParticleData particle, double yOffset) {
         float xOff = world.rand.nextFloat() * 0.6F + 0.2F;
         float zOff = world.rand.nextFloat() * 0.6F + 0.2F;
         getClientWorld().addParticle(particle,
-                pos.getX() + xOff, pos.getY() + 1.2, pos.getZ() + zOff,
+                pos.getX() + xOff, pos.getY() + yOffset, pos.getZ() + zOff,
                 0, 0, 0);
+    }
+
+    public static void emitParticles(World world, BlockPos pos, IParticleData particle) {
+        emitParticles(world, pos, particle, 1.2);
     }
 
     @Nonnull
@@ -182,8 +187,12 @@ public class ClientUtils {
         return Minecraft.getInstance().getRenderManager().getFontRenderer().getStringWidth(line);
     }
 
-    public static boolean isGuiOpen() {
-        return Minecraft.getInstance().currentScreen != null;
+    public static boolean isGuiOpen(TileEntity te) {
+        if (Minecraft.getInstance().currentScreen instanceof GuiPneumaticContainerBase) {
+            return ((GuiPneumaticContainerBase<?,?>) Minecraft.getInstance().currentScreen).te == te;
+        } else {
+            return false;
+        }
     }
 
     public static float[] getTextureUV(BlockState state, Direction face) {
@@ -263,4 +272,5 @@ public class ClientUtils {
     public static boolean isFirstPersonCamera() {
         return Minecraft.getInstance().gameSettings.getPointOfView().func_243192_a();
     }
+
 }

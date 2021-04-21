@@ -4,7 +4,9 @@ import mcp.mobius.waila.api.IComponentProvider;
 import mcp.mobius.waila.api.IDataAccessor;
 import mcp.mobius.waila.api.IPluginConfig;
 import mcp.mobius.waila.api.IServerDataProvider;
+import me.desht.pneumaticcraft.api.semiblock.IDirectionalSemiblock;
 import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
+import me.desht.pneumaticcraft.common.entity.semiblock.EntitySemiblockBase;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -44,12 +46,13 @@ public class SemiblockProvider {
                 try {
                     int entityId = Integer.parseInt(name);
                     ISemiBlock entity = ISemiBlock.byTrackingId(accessor.getWorld(), entityId);
-                    if (entity != null) {
-                        tooltip.add(new StringTextComponent("[")
-                                .append(entity.getDisplayName())
-                                .append(new StringTextComponent("]"))
-                                .mergeStyle(TextFormatting.YELLOW));
-                        entity.addTooltip(tooltip, accessor.getPlayer(), tag.getCompound(name), accessor.getPlayer().isSneaking());
+                    if (entity instanceof EntitySemiblockBase) {
+                        if (!(entity instanceof IDirectionalSemiblock) || ((IDirectionalSemiblock) entity).getSide() == accessor.getSide()) {
+                            ITextComponent title = new StringTextComponent(TextFormatting.YELLOW.toString() + "[")
+                                    .append(entity.getDisplayName()).appendString("]");
+                            tooltip.add(title);
+                            entity.addTooltip(tooltip, accessor.getPlayer(), tag.getCompound(name), accessor.getPlayer().isSneaking());
+                        }
                     }
                 } catch (NumberFormatException ignored) {
                 }

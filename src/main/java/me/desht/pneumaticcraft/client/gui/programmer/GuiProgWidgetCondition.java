@@ -74,8 +74,8 @@ public class GuiProgWidgetCondition<T extends ProgWidgetCondition> extends GuiPr
                 radioButton.otherChoices = radioButtons;
             }
 
-            textField = new WidgetTextFieldNumber(font, guiLeft + baseX, guiTop + baseY + 40, 50, 11);
-            textField.setText(progWidget.getRequiredCount() + "");
+            textField = new WidgetTextFieldNumber(font, guiLeft + baseX, guiTop + baseY + 40, 50, 11)
+                    .setValue(progWidget.getRequiredCount()).setRange(0, Integer.MAX_VALUE);
             textField.setFocused2(true);
             textField.setResponder(s -> progWidget.setRequiredCount(textField.getValue()));
             addButton(textField);

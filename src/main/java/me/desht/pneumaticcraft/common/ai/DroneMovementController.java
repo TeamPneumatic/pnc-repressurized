@@ -33,6 +33,13 @@ public class DroneMovementController extends MovementController {
 
     @Override
     public void tick() {
+        if (!(entity.getNavigator() instanceof EntityPathNavigateDrone)) {
+            // this could be the case if the drone's path navigator has been replaced, e.g. if it's been picked
+            // up by something, in which case just bail - nothing else to do here
+            // https://github.com/TeamPneumatic/pnc-repressurized/issues/794
+            return;
+        }
+
         if (entity.isAccelerating()) {
             entity.setMotion(
                     Math.max(-speed, Math.min(speed, x - entity.getPosX())),

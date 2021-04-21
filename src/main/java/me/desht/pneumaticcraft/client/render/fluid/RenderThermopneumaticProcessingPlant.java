@@ -10,7 +10,7 @@ import java.util.Collection;
 
 public class RenderThermopneumaticProcessingPlant extends AbstractFluidTER<TileEntityThermopneumaticProcessingPlant> {
     private static final AxisAlignedBB TANK_BOUNDS_1 = new AxisAlignedBB(10 / 16f, 1 / 16f, 1 / 16f, 15 / 16f, 11 / 16f, 6 / 16f);
-    private static final AxisAlignedBB TANK_BOUNDS_2 = new AxisAlignedBB(2 / 16f, 1 / 16f, 1 / 16f, 7 / 16f, 11 / 16f, 6 / 16f);
+    private static final AxisAlignedBB TANK_BOUNDS_2 = new AxisAlignedBB( 1 / 16f, 1 / 16f, 1 / 16f,  6 / 16f, 11 / 16f, 6 / 16f);
 
     private static final AxisAlignedBB[] BOUNDS_IN = new AxisAlignedBB[4];
     static {

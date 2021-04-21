@@ -8,6 +8,53 @@ Changes are in reverse chronological order; newest changes at the top.
 
 PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 
+## 2.12.1-?? (unreleased)
+
+### Updates
+* Added config setting `plastic_in_world_solidification` (default: true) to control in-world coversion of Molten Plastic to Plastic Sheets
+  * Useful for modpack makers who wish to add alternative mechanisms or require that only Heat Frame cooling is used to produce plastic
+  
+### Fixes
+* Fixed Redstone Module comparator input mode only working for measuring items in the adjacent inventory
+  * Now any & all comparator conditions are properly measured (fluid levels, refinery "has work" etc.)
+* Fixed comparators on Refinery Output blocks not being notified when the Refinery's "has work" condition changed
+  * Only the Refinery Controller was properly notifying its attached comparator
+
+## 2.12.0-177 (16 Apr 2021)
+
+### Updates
+* Logistics Frames are now sided, meaning multiple frames can be placed on one block!
+  * Greatly reduces the need for auxiliary input/output inventories and tanks when using logistics with machines
+  * The side can no longer be changed via the GUI; you will need to detach and replace a frame to change its side
+  * Rendering has been altered to show a frame only on the side that the frame was placed on
+* Logistics Frames now have independently-settable item and fluid white/blacklisting
+  * In addition, the button to switch white/blacklisting is now on the main GUI, not the Filter side tab
+* Logistics Frames GUI: clicking a fluid-containing item (e.g. bucket or tank) on a liquid filter slot will now copy the contained fluid into that slot
+* Logistics Drones will now completely ignore any frames whose facing side is obstructed by any solid (non-pathfindable) block
+  * This means that drones won't attempt to handle any frame which already has a Logistics Module on it, so drones and modules now co-exist better
+* Breaking machines with a pickaxe now "rewards" the player a new advancement (hinting that using a wrench is preferable)
+  * Pickaxing pressurized machines now causes particles and a sound to played, indicating that air has been lost
+* Thermopneumatic Processing Plant now consumes air and/or heat as it runs, not once when the current recipe run has completed
+  * Overall air/heat usage has not been changed 
+* In the Programmer GUI, clicking with an item (other than GPS tools) on the background area now creates an Item Filter widget for that item
+  * Clicking an existing Item Filter widget with an item updates the item for that widget
+* All numeric-entry textfields in all GUI's can now be modified by scrolling the mouse wheel
+  * Hold Shift while scrolling for a faster adjustment
+  * The actual modification depends on the context but should make sense for each situation
+* Drones will now repair their held item with imported experience orbs if the item is enchanted with Mending
+  * Reminder: use an Import Entity widget with an `@orb` filter to import experience orbs (excess Memory Essence fluid can be put in a tank with the Export Fluid widget)
+* Changes to rendered fluid levels in fluid-containing tile entities are now interpolated smoothly on the client (for a nicer visual appearance)
+
+### Fixes
+* Fixed Blood Magic Lava Crystals (and other container-like items) being consumed by the (Advanced) Air Compressor
+  * Note that Lava Buckets are still not accepted by Air Compressors (use Liquid Compressors for lava fuel)
+* Fixed north & west temperature widgets being swapped in the Thermal Compressor GUI
+* Fixed Amadron player-player trading not paying the seller
+* Fixed NPE when placing down Pressure Chamber blocks with a Building Gadget
+  * Fix actually applies to any situation where multiple PNC tile entities are placed in a single tick
+* Fixed fluid-containing tile entities not rendering their fluid when any GUI is open  
+* Placing an item on a Display Table in creative mode no longer removes the item from the player
+
 ## 2.11.4-170 (31 Mar 2021)
 
 ### Fixes

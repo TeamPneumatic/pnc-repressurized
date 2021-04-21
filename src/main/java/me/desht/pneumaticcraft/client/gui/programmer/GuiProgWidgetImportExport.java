@@ -41,7 +41,7 @@ public class GuiProgWidgetImportExport<P extends IProgWidget & ISidedWidget & IC
         ).setTooltipKey("pneumaticcraft.gui.progWidget.itemFilter.useItemCount.tooltip").setChecked(progWidget.useCount());
         addButton(useItemCount);
 
-        textField = new WidgetTextFieldNumber(font, guiLeft + 10, guiTop + (showSides() ? 128 : 43), 50, 11);
+        textField = new WidgetTextFieldNumber(font, guiLeft + 10, guiTop + (showSides() ? 128 : 43), 50, 11).setRange(0, Integer.MAX_VALUE);
         textField.setValue(progWidget.getCount());
         textField.setEnabled(useItemCount.checked);
         textField.setResponder(s -> progWidget.setCount(textField.getValue()));

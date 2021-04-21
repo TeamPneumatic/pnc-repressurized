@@ -1,0 +1,19 @@
+{
+  "display": {
+    "icon": {
+      "item": "minecraft:stone_pickaxe"
+    },
+    "title": {
+      "translate": "pneumaticcraft.achievement.machineVandal"
+    },
+    "description": {
+      "translate": "pneumaticcraft.achievement.machineVandal.desc"
+    }
+  },
+  "parent": "pneumaticcraft:pneumatic_wrench",
+  "criteria": {
+    "equipped": {
+      "trigger": "pneumaticcraft:machine_vandal"
+    }
+  }
+}

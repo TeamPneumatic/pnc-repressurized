@@ -198,6 +198,8 @@ public class Textures {
     public static final ResourceLocation GUI_CHARGING = guiIconTexture("gui_charging.png");
     public static final ResourceLocation GUI_DISCHARGING = guiIconTexture("gui_discharging.png");
     public static final ResourceLocation GUI_CHARGE_IDLE = guiIconTexture("gui_charge_idle.png");
+    public static final ResourceLocation GUI_WHITELIST = guiIconTexture("gui_whitelist.png");
+    public static final ResourceLocation GUI_BLACKLIST = guiIconTexture("gui_blacklist.png");
 
     // widget textures
     public static final ResourceLocation WIDGET_ENERGY = guiTexture("widget/widget_energy.png");

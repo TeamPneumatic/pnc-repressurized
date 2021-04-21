@@ -77,8 +77,8 @@ public abstract class ItemLogisticsFrame extends ItemSemiBlock implements ColorH
                     curInfo.add(bullet().append(xlate("pneumaticcraft.gui.logistics_frame.matchModId")).mergeStyle(TextFormatting.YELLOW));
                 }
 
-                boolean whitelist = tag.getBoolean(EntityLogisticsFrame.NBT_WHITELIST);
-                curInfo.add(xlate("pneumaticcraft.gui.logistics_frame." + (whitelist ? "whitelist" : "blacklist"))
+                boolean whitelist = tag.getBoolean(EntityLogisticsFrame.NBT_ITEM_WHITELIST);
+                curInfo.add(xlate("pneumaticcraft.gui.logistics_frame." + (whitelist ? "itemWhitelist" : "itemBlacklist"))
                         .appendString(":").mergeStyle(TextFormatting.YELLOW));
 
                 ItemStackHandler handler = new ItemStackHandler();
@@ -88,19 +88,24 @@ public abstract class ItemLogisticsFrame extends ItemSemiBlock implements ColorH
                     stacks[i] = handler.getStackInSlot(i);
                 }
                 int l = curInfo.size();
-                PneumaticCraftUtils.summariseItemStacks(curInfo, stacks, TextFormatting.YELLOW.toString() + GuiConstants.BULLET + " ");
-                if (curInfo.size() == l) curInfo.add(bullet().mergeStyle(TextFormatting.YELLOW).append(xlate("pneumaticcraft.gui.misc.no_items").mergeStyle(TextFormatting.GOLD, TextFormatting.ITALIC)));
+                PneumaticCraftUtils.summariseItemStacks(curInfo, stacks, TextFormatting.GOLD.toString() + GuiConstants.BULLET + " ");
+                if (curInfo.size() == l) curInfo.add(bullet().mergeStyle(TextFormatting.GOLD).append(xlate("pneumaticcraft.gui.misc.no_items").mergeStyle(TextFormatting.GOLD, TextFormatting.ITALIC)));
                 l = curInfo.size();
+
+
+                whitelist = tag.getBoolean(EntityLogisticsFrame.NBT_FLUID_WHITELIST);
+                curInfo.add(xlate("pneumaticcraft.gui.logistics_frame." + (whitelist ? "fluidWhitelist" : "fluidBlacklist"))
+                        .appendString(":").mergeStyle(TextFormatting.YELLOW));
 
                 EntityLogisticsFrame.FluidFilter fluidFilter = new EntityLogisticsFrame.FluidFilter();
                 fluidFilter.deserializeNBT(tag.getCompound(EntityLogisticsFrame.NBT_FLUID_FILTERS));
                 for (int i = 0; i < fluidFilter.size(); i++) {
                     FluidStack fluid = fluidFilter.get(i);
                     if (!fluid.isEmpty()) {
-                        curInfo.add(bullet().appendString(fluid.getAmount() + "mB ").append(fluid.getDisplayName()).mergeStyle(TextFormatting.YELLOW));
+                        curInfo.add(bullet().appendString(fluid.getAmount() + "mB ").append(fluid.getDisplayName()).mergeStyle(TextFormatting.GOLD));
                     }
                 }
-                if (curInfo.size() == l) curInfo.add(bullet().mergeStyle(TextFormatting.YELLOW).append(xlate("pneumaticcraft.gui.misc.no_fluids").mergeStyle(TextFormatting.GOLD, TextFormatting.ITALIC)));
+                if (curInfo.size() == l) curInfo.add(bullet().mergeStyle(TextFormatting.GOLD).append(xlate("pneumaticcraft.gui.misc.no_fluids").mergeStyle(TextFormatting.GOLD, TextFormatting.ITALIC)));
             } else {
                 curInfo.add(xlate("pneumaticcraft.gui.logistics_frame.hasFilters"));
             }

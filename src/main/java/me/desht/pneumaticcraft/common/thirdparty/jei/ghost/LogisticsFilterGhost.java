@@ -57,7 +57,7 @@ public class LogisticsFilterGhost implements IGhostIngredientHandler<GuiLogistic
 
         @Override
         public void accept(ItemStack ingredient) {
-            gui.updateItemFilter(slot.slotNumber, ingredient);
+            gui.updateItemFilter(slot.slotNumber, ingredient.copy());
         }
     }
 
@@ -78,7 +78,7 @@ public class LogisticsFilterGhost implements IGhostIngredientHandler<GuiLogistic
 
         @Override
         public void accept(FluidStack ingredient) {
-            gui.updateFluidFilter(slotNumber, ingredient);
+            gui.updateFluidFilter(slotNumber, ingredient.copy());
         }
     }
 }

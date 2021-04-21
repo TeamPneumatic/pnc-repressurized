@@ -33,6 +33,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceContext;
+import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
@@ -225,21 +226,35 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
     }
 
     /**
+     * Get the bounding box for this entity. Override {@link #calculateBlockBounds()} if you need a custom bounding box.
+     *
+     * @return a bounding box
+     */
+    public final AxisAlignedBB getBlockBounds() {
+        // we can cache this because the bounding box won't change after placement
+        if (blockBounds == null) {
+            blockBounds = calculateBlockBounds();
+        }
+        return blockBounds;
+    }
+
+    /**
      * Get the bounding box for this entity, which by default is the bounding box of the block we're on.  This should
      * be in a 0->1 coordinate space; it will be offset by the block's blockpos to get the actual entity bounding box
      * as returned by {@link Entity#getBoundingBox()}.
      *
      * @return a bounding box
      */
-    public AxisAlignedBB getBlockBounds() {
-        if (blockBounds == null) {
-            if (world == null || world.getBlockState(blockPos).isAir(world, blockPos)) {
-                blockBounds = VoxelShapes.fullCube().getBoundingBox();
-            } else {
-                blockBounds = world.getBlockState(blockPos).getShape(world, blockPos).getBoundingBox();
-            }
+    protected AxisAlignedBB calculateBlockBounds() {
+        // default behaviour: try & fit around the block in this blockpos
+        AxisAlignedBB aabb;
+        if (world != null) {
+            VoxelShape shape = world.getBlockState(blockPos).getShape(world, blockPos);
+            aabb = shape.isEmpty() ? VoxelShapes.fullCube().getBoundingBox() : shape.getBoundingBox();
+        } else {
+            aabb = VoxelShapes.fullCube().getBoundingBox();
         }
-        return blockBounds;
+        return aabb;
     }
 
     /**
@@ -341,7 +356,7 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
 
     @Override
     public boolean attackEntityFrom(DamageSource source, float amount) {
-        if (this.isInvulnerableTo(source)) {
+        if (this.isInvulnerableTo(source) || !(source.getImmediateSource() instanceof PlayerEntity)) {
             return false;
         } else if (!this.world.isRemote && this.isAlive()) {
             this.setTimeSinceHit(10);

@@ -64,6 +64,7 @@ public class PNCConfig {
             public static Set<String> oilWorldGenCategoryBlacklist;
             public static int surfaceOilGenerationChance;
             public static boolean droneDebuggerPathParticles;
+            public static boolean plasticInWorldSolidification;
         }
 
         public static class Machines {

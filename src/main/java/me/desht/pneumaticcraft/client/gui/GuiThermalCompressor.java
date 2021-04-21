@@ -19,10 +19,11 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 
 import java.util.List;
+import java.util.Objects;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiThermalCompressor extends GuiPneumaticContainerBase<ContainerThermalCompressor,TileEntityThermalCompressor> {
+public class GuiThermalCompressor extends GuiPneumaticContainerBase<ContainerThermalCompressor, TileEntityThermalCompressor> {
     private final WidgetTemperatureSided[] tempWidgets = new WidgetTemperatureSided[4];
 
     public GuiThermalCompressor(ContainerThermalCompressor container, PlayerInventory inv, ITextComponent displayString) {
@@ -33,11 +34,9 @@ public class GuiThermalCompressor extends GuiPneumaticContainerBase<ContainerThe
     public void init() {
         super.init();
 
-        addButton(tempWidgets[0] = new WidgetTemperatureSided(Direction.SOUTH, 56).setDrawText(false));
-        addButton(tempWidgets[1] = new WidgetTemperatureSided(Direction.NORTH, 66).setDrawText(false));
-
-        addButton(tempWidgets[2] = new WidgetTemperatureSided(Direction.WEST, 89).setDrawText(true));
-        addButton(tempWidgets[3] = new WidgetTemperatureSided(Direction.EAST, 99).setDrawText(false));
+        for (Direction d : DirectionUtil.HORIZONTALS) {
+            addButton(tempWidgets[d.getHorizontalIndex()] = new WidgetTemperatureSided(d).setDrawText(false));
+        }
     }
 
     @Override
@@ -49,7 +48,7 @@ public class GuiThermalCompressor extends GuiPneumaticContainerBase<ContainerThe
     protected PointXY getGaugeLocation() {
         int xStart = (width - xSize) / 2;
         int yStart = (height - ySize) / 2;
-        return new PointXY(xStart + (int)(xSize * 0.82), yStart + ySize / 4 + 4);
+        return new PointXY(xStart + (int) (xSize * 0.82), yStart + ySize / 4 + 4);
     }
 
     private int getTemperatureDifferential(Direction side) {
@@ -95,7 +94,7 @@ public class GuiThermalCompressor extends GuiPneumaticContainerBase<ContainerThe
 
         int min = Integer.MAX_VALUE, max = Integer.MIN_VALUE;
         for (Direction d : DirectionUtil.HORIZONTALS) {
-            int t = te.getHeatExchanger(d).getTemperatureAsInt();
+            int t = Objects.requireNonNull(te.getHeatExchanger(d)).getTemperatureAsInt();
             tempWidgets[d.getHorizontalIndex()].setTemperature(t);
             min = Math.min(min, t);
             max = Math.max(max, t);
@@ -109,7 +108,6 @@ public class GuiThermalCompressor extends GuiPneumaticContainerBase<ContainerThe
         for (WidgetTemperatureSided temp : tempWidgets) {
             temp.setTotalRange(range);
             temp.setTickInterval(interval);
-//            temp.autoScaleForTemperature();
         }
     }
 
@@ -120,11 +118,26 @@ public class GuiThermalCompressor extends GuiPneumaticContainerBase<ContainerThe
         else return 100;
     }
 
+    static int getWidgetX(Direction side) {
+        switch (side) {
+            case SOUTH:
+                return 56;
+            case NORTH:
+                return 66;
+            case WEST:
+                return 89;
+            case EAST:
+                return 99;
+            default:
+                throw new IllegalArgumentException("invalid side " + side);
+        }
+    }
+
     private class WidgetTemperatureSided extends WidgetTemperature {
         private final Direction side;
 
-        WidgetTemperatureSided(Direction side, int x) {
-            super(guiLeft + x, guiTop + 20, TemperatureRange.of(0, 2000), 273, 200);
+        WidgetTemperatureSided(Direction side) {
+            super(guiLeft + getWidgetX(side), guiTop + 20, TemperatureRange.of(0, 2000), 273, 200);
             this.side = side;
         }
 
