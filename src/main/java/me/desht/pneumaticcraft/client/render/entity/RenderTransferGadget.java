@@ -41,21 +41,12 @@ public class RenderTransferGadget extends RenderSemiblockBase<EntityTransferGadg
         matrixStackIn.translate(0, side.getAxis() == Axis.Y ? 1.2 : -1.1, 0);
         switch (side) {
             case UP:
-<<<<<<< HEAD
                 matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(90));
-                matrixStackIn.translate(-1.5, -1.5, 0);
-                break;
-            case DOWN:
-                matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(-90));
-                matrixStackIn.translate(1.5, -1.5, 0);
-=======
-                matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(90));
                 matrixStackIn.translate(-1.1, -1.1, 0);
                 break;
             case DOWN:
-                matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(-90));
+                matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(-90));
                 matrixStackIn.translate(1.3, -1.1, 0);
->>>>>>> Initial Push
                 break;
             case NORTH:
                 matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(90));
@@ -68,8 +59,8 @@ public class RenderTransferGadget extends RenderSemiblockBase<EntityTransferGadg
                 break;
         }
 
-        IVertexBuilder builder = bufferIn.getBuffer(RenderType.entitySolid(getTextureLocation(entity)));
-        model.renderToBuffer(matrixStackIn, builder, kludgeLightingLevel(entity, packedLightIn), OverlayTexture.pack(0F, false), 1f, 1f, 1f, 1f);
+        IVertexBuilder builder = bufferIn.getBuffer(RenderType.getEntityCutout(getTextureLocation(entity)));
+        model.renderToBuffer(matrixStackIn, builder, kludgeLightingLevel(entity, packedLightIn), OverlayTexture.getPackedUV(0F, false), 1f, 1f, 1f, 1f);
 
         IVertexBuilder builder = bufferIn.getBuffer(RenderType.getEntityCutout(getEntityTexture(entity)));
         model.renderToBuffer(matrixStackIn, builder, l, OverlayTexture.pack(0F, false), 1f, 1f, 1f, 1f);
