@@ -59,7 +59,7 @@ public class RenderTransferGadget extends RenderSemiblockBase<EntityTransferGadg
                 break;
         }
 
-        IVertexBuilder builder = bufferIn.getBuffer(RenderType.getEntitySolid(getEntityTexture(entity)));
+        IVertexBuilder builder = bufferIn.getBuffer(RenderType.getEntityCutout(getEntityTexture(entity)));
         model.render(matrixStackIn, builder, kludgeLightingLevel(entity, packedLightIn), OverlayTexture.getPackedUV(0F, false), 1f, 1f, 1f, 1f);
 
         matrixStackIn.pop();
