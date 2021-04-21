@@ -14,9 +14,6 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiProgWidgetCondition<T extends ProgWidgetCondition> extends GuiProgWidgetAreaShow<T> {
@@ -44,35 +41,28 @@ public class GuiProgWidgetCondition<T extends ProgWidgetCondition> extends GuiPr
         int baseX = isSidedWidget() ? 90 : 8;
         int baseY = isUsingAndOr() ? 60 : 30;
 
-        List<WidgetRadioButton> radioButtons;
         WidgetRadioButton radioButton;
+        WidgetRadioButton.Builder<WidgetRadioButton> builder = WidgetRadioButton.Builder.create();
         if (isUsingAndOr()) {
-            radioButtons = new ArrayList<>();
-            radioButton = new WidgetRadioButton(guiLeft + baseX, guiTop + 30, 0xFF404040, xlate("pneumaticcraft.gui.progWidget.condition.anyBlock"),
-                    b -> progWidget.setAndFunction(false));
-            radioButton.checked = !progWidget.isAndFunction();
-            addButton(radioButton);
-            radioButtons.add(radioButton);
-            radioButton.otherChoices = radioButtons;
-
-            radioButton = new WidgetRadioButton(guiLeft + baseX, guiTop + 42, 0xFF404040, xlate("pneumaticcraft.gui.progWidget.condition.allBlocks"),
-                    b -> progWidget.setAndFunction(true));
-            radioButton.checked = progWidget.isAndFunction();
-            addButton(radioButton);
-            radioButtons.add(radioButton);
-            radioButton.otherChoices = radioButtons;
+            WidgetRadioButton.Builder.create()
+                    .addRadioButton(new WidgetRadioButton(guiLeft + baseX, guiTop + 30, 0xFF404040,
+                                    xlate("pneumaticcraft.gui.progWidget.condition.anyBlock"),
+                                    b -> progWidget.setAndFunction(false)),
+                            !progWidget.isAndFunction())
+                    .addRadioButton(new WidgetRadioButton(guiLeft + baseX, guiTop + 42, 0xFF404040,
+                                    xlate("pneumaticcraft.gui.progWidget.condition.allBlocks"),
+                                    b -> progWidget.setAndFunction(true)),
+                            progWidget.isAndFunction())
+                    .build(this::addButton);
         }
 
         if (requiresNumber()) {
-            radioButtons = new ArrayList<>();
             for (ICondition.Operator op : ICondition.Operator.values()) {
                 radioButton = new WidgetRadioButton(guiLeft + baseX, guiTop + baseY + op.ordinal() * 12, 0xFF404040,
                         new StringTextComponent(op.toString()), b -> progWidget.setOperator(op));
-                radioButton.checked = progWidget.getOperator() == op;
-                addButton(radioButton);
-                radioButtons.add(radioButton);
-                radioButton.otherChoices = radioButtons;
+                builder.addRadioButton(radioButton, progWidget.getOperator() == op);
             }
+            builder.build(this::addButton);
 
             textField = new WidgetTextFieldNumber(font, guiLeft + baseX, guiTop + baseY + 40, 50, 11)
                     .setValue(progWidget.getRequiredCount()).setRange(0, Integer.MAX_VALUE);

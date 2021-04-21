@@ -17,9 +17,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.StringTextComponent;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiProgWidgetCoordinate extends GuiProgWidgetAreaShow<ProgWidgetCoordinate> {
@@ -40,21 +37,14 @@ public class GuiProgWidgetCoordinate extends GuiProgWidgetAreaShow<ProgWidgetCoo
             progWidget.setCoordinate(invSearchGui.getBlockPos());
         }
 
-        List<WidgetRadioButton> radioButtons = new ArrayList<>();
-
-        WidgetRadioButton radioButton = new WidgetRadioButton(guiLeft + 7, guiTop + 51, 0xFF404040,
-                xlate("pneumaticcraft.gui.progWidget.coordinate.constant"), b -> setUsingVariable(false));
-        if (!progWidget.isUsingVariable()) radioButton.checked = true;
-        radioButtons.add(radioButton);
-        radioButton.otherChoices = radioButtons;
-        addButton(radioButton);
-
-        radioButton = new WidgetRadioButton(guiLeft + 7, guiTop + 100, 0xFF404040,
-                xlate("pneumaticcraft.gui.progWidget.coordinate.variable"), b -> setUsingVariable(true));
-        if (progWidget.isUsingVariable()) radioButton.checked = true;
-        radioButtons.add(radioButton);
-        radioButton.otherChoices = radioButtons;
-        addButton(radioButton);
+        WidgetRadioButton.Builder.create()
+                .addRadioButton(new WidgetRadioButton(guiLeft + 7, guiTop + 51, 0xFF404040,
+                                xlate("pneumaticcraft.gui.progWidget.coordinate.constant"), b -> setUsingVariable(false)),
+                        !progWidget.isUsingVariable())
+                .addRadioButton(new WidgetRadioButton(guiLeft + 7, guiTop + 100, 0xFF404040,
+                                xlate("pneumaticcraft.gui.progWidget.coordinate.variable"), b -> setUsingVariable(true)),
+                        progWidget.isUsingVariable())
+                .build(this::addButton);
 
         gpsButton = new WidgetButtonExtended(guiLeft + 100, guiTop + 20, 20, 20, StringTextComponent.EMPTY, b -> openGPSSearcher());
         gpsButton.setRenderStacks(new ItemStack(ModItems.GPS_TOOL.get()));

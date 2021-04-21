@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
+import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
@@ -13,7 +14,6 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.text.ITextComponent;
-import org.apache.commons.lang3.Validate;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
@@ -25,13 +25,13 @@ public class WidgetRadioButton extends Widget implements ITooltipProvider {
     private static final int BUTTON_WIDTH = 10;
     private static final int BUTTON_HEIGHT = 10;
 
-    public boolean checked;
+    private boolean checked;
     public boolean enabled = true;
     public final int color;
     private final Consumer<WidgetRadioButton> pressable;
     private final FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
     private List<ITextComponent> tooltip = new ArrayList<>();
-    public List<WidgetRadioButton> otherChoices;
+    List<? extends WidgetRadioButton> otherChoices;
 
     public WidgetRadioButton(int x, int y, int color, ITextComponent text, Consumer<WidgetRadioButton> pressable) {
         super(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, text);
@@ -55,6 +55,15 @@ public class WidgetRadioButton extends Widget implements ITooltipProvider {
         }
         fontRenderer.func_238422_b_(matrixStack, getMessage().func_241878_f(), x + 1 + BUTTON_WIDTH,
                 y + BUTTON_HEIGHT / 2f - fontRenderer.FONT_HEIGHT / 2f, enabled ? color : 0xFF888888);
+    }
+
+    public boolean isChecked() {
+        return checked;
+    }
+
+    void setChecked(boolean checked) {
+        // only intended to be called by the builder (see below)
+        this.checked = checked;
     }
 
     private static final float N_POINTS = 12f;
@@ -83,8 +92,7 @@ public class WidgetRadioButton extends Widget implements ITooltipProvider {
 
     @Override
     public void onClick(double mouseX, double mouseY) {
-        if (enabled) {
-            Validate.notNull(otherChoices, "A radio button needs more than one choice! You need to set the GuiRadioButton#otherChoices field!");
+        if (enabled && !checked) {
             for (WidgetRadioButton radioButton : otherChoices) {
                 radioButton.checked = false;
             }
@@ -93,16 +101,53 @@ public class WidgetRadioButton extends Widget implements ITooltipProvider {
         }
     }
 
-    public void setTooltip(ITextComponent tooltip) {
-        setTooltip(Collections.singletonList(tooltip));
+    public WidgetRadioButton setTooltip(ITextComponent tooltip) {
+        return setTooltip(Collections.singletonList(tooltip));
     }
 
-    public void setTooltip(List<ITextComponent> tooltip) {
+    public WidgetRadioButton setTooltip(List<ITextComponent> tooltip) {
         this.tooltip = tooltip;
+        return this;
     }
 
     @Override
     public void addTooltip(double mouseX, double mouseY, List<ITextComponent> curTooltip, boolean shiftPressed) {
         curTooltip.addAll(tooltip);
+    }
+
+    /**
+     * Builder to manage creating a collection of related radio buttons.
+     */
+    public static class Builder<T extends WidgetRadioButton> {
+        private final List<T> buttons = new ArrayList<>();
+
+        private Builder() {
+        }
+
+        public static <T extends WidgetRadioButton> Builder<T> create() {
+            return new Builder<>();
+        }
+
+        public Builder<T> addRadioButton(T rb, boolean initiallyChecked) {
+            rb.setChecked(initiallyChecked);
+            buttons.add(rb);
+            return this;
+        }
+
+        public List<T> build() {
+            return build(c -> {});
+        }
+
+        public List<T> build(Consumer<T> c) {
+            List<T> res = ImmutableList.copyOf(buttons);
+            int checked = 0;
+            for (T rb : res) {
+                if (rb.isChecked()) checked++;
+                rb.otherChoices = res;
+                c.accept(rb);
+            }
+            if (checked != 1) throw new IllegalStateException("one and only one radio button should be checked!");
+            return res;
+        }
     }
 }

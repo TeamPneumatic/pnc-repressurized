@@ -59,7 +59,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
     private WidgetButtonExtended importButton;
     private WidgetButtonExtended exportButton;
     private WidgetButtonExtended allWidgetsButton;
-    private List<WidgetRadioButton> difficultyButtons;
+    private List<DifficultyButton> difficultyButtons;
     private WidgetCheckBox showInfo, showFlow;
     private WidgetTextField nameField;
     private WidgetTextField filterField;
@@ -152,16 +152,14 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         allWidgetsButton.setTooltipText(xlate("pneumaticcraft.gui.programmer.button.openPanel.tooltip"));
         addButton(allWidgetsButton);
 
-        difficultyButtons = new ArrayList<>();
+        WidgetRadioButton.Builder<DifficultyButton> rbb = WidgetRadioButton.Builder.create();
         for (WidgetDifficulty difficulty : WidgetDifficulty.values()) {
             DifficultyButton dButton = new DifficultyButton(xStart + xRight - 36, yStart + yBottom + 29 + difficulty.ordinal() * 12,
                     0xFF404040, difficulty, b -> updateDifficulty(difficulty));
-            dButton.checked = difficulty == PNCConfig.Client.programmerDifficulty;
-            addButton(dButton);
-            difficultyButtons.add(dButton);
-            dButton.otherChoices = difficultyButtons;
             dButton.setTooltip(xlate(difficulty.getTooltipTranslationKey()));
+            rbb.addRadioButton(dButton, difficulty == PNCConfig.Client.programmerDifficulty);
         }
+        difficultyButtons = rbb.build(this::addButton);
 
         addButton(new WidgetButtonExtended(xStart + 5, yStart + yBottom + 4, 87, 20,
                 xlate("pneumaticcraft.gui.programmer.button.showStart"), b -> gotoStart())
@@ -255,18 +253,11 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
 
         maxPage = 0;
         visibleSpawnWidgets.clear();
-        int difficulty = 0;
-        for (int i = 0; i < difficultyButtons.size(); i++) {
-            if (difficultyButtons.get(i).checked) {
-                difficulty = i;
-                break;
-            }
-        }
-        int i = 0;
+        int idx = 0;
         int nWidgets = ModProgWidgets.PROG_WIDGETS.get().getValues().size();
         for (ProgWidgetType<?> type : ModProgWidgets.PROG_WIDGETS.get().getValues()) {
             IProgWidget widget = IProgWidget.create(type);
-            if (widget.isAvailable() && difficulty >= widget.getDifficulty().ordinal()) {
+            if (widget.isAvailable() && widget.isDifficultyOK(PNCConfig.Client.programmerDifficulty)) {
                 widget.setY(y + 40);
                 widget.setX(showAllWidgets ? x : getWidgetTrayRight());
                 int widgetHeight = widget.getHeight() / 2 + (widget.hasStepOutput() ? 5 : 0) + 1;
@@ -279,10 +270,10 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
                     y = 0;
                     x += WIDGET_X_SPACING;
                     page++;
-                    if (i < nWidgets - 1) maxPage++;
+                    if (idx < nWidgets - 1) maxPage++;
                 }
             }
-            i++;
+            idx++;
         }
         maxPage++;
 

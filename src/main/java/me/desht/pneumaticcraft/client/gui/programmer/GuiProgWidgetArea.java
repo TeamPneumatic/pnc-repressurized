@@ -80,7 +80,7 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
         // type selector radio buttons
         addLabel(xlate("pneumaticcraft.gui.progWidget.area.type"), guiLeft + 8, guiTop + 88);
         final int widgetsPerColumn = 5;
-        List<WidgetRadioButton> radioButtons = new ArrayList<>();
+        WidgetRadioButton.Builder<WidgetRadioButton> builder = WidgetRadioButton.Builder.create();
         for (int i = 0; i < allAreaTypes.size(); i++) {
             final AreaType areaType = allAreaTypes.get(i);
             WidgetRadioButton radioButton = new WidgetRadioButton(guiLeft + widgetsPerColumn + i / widgetsPerColumn * 80, guiTop + 100 + i % widgetsPerColumn * 12, 0xFF404040, xlate(areaType.getTranslationKey()), b -> {
@@ -89,13 +89,10 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
             });
             if (progWidget.type.getClass() == areaType.getClass()) {
                 allAreaTypes.set(i, progWidget.type);
-                radioButton.checked = true;
             }
-
-            addButton(radioButton);
-            radioButtons.add(radioButton);
-            radioButton.otherChoices = radioButtons;
+            builder.addRadioButton(radioButton, progWidget.type.getClass() == areaType.getClass());
         }
+        builder.build(this::addButton);
         switchToWidgets(progWidget.type);
 
         if (invSearchGui != null) {

@@ -9,9 +9,6 @@ import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetCoordinateCondition;
 import net.minecraft.util.Direction;
 import net.minecraft.util.text.StringTextComponent;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class GuiProgWidgetCoordinateCondition extends GuiProgWidgetOptionBase<ProgWidgetCoordinateCondition> {
 
     public GuiProgWidgetCoordinateCondition(ProgWidgetCoordinateCondition widget, GuiProgrammer guiProgrammer) {
@@ -29,15 +26,13 @@ public class GuiProgWidgetCoordinateCondition extends GuiProgWidgetOptionBase<Pr
             checkBox.setChecked(progWidget.getAxisOptions().shouldCheck(axis));
         }
 
-        List<WidgetRadioButton> radioButtons = new ArrayList<>();
+        WidgetRadioButton.Builder<WidgetRadioButton> builder = WidgetRadioButton.Builder.create();
         for (Operator op : Operator.values()) {
-            WidgetRadioButton radioButton = new WidgetRadioButton(guiLeft + 80, guiTop + 30 + op.ordinal() * 12, 0xFF404040,
-                    new StringTextComponent(op.toString()), b -> progWidget.setOperator(op));
-            radioButton.checked = progWidget.getOperator() == op;
-            addButton(radioButton);
-            radioButtons.add(radioButton);
-            radioButton.otherChoices = radioButtons;
+            builder.addRadioButton(new WidgetRadioButton(guiLeft + 80, guiTop + 30 + op.ordinal() * 12, 0xFF404040,
+                            new StringTextComponent(op.toString()), b -> progWidget.setOperator(op)),
+                    progWidget.getOperator() == op);
         }
+        builder.build(this::addButton);
     }
 
     @Override
