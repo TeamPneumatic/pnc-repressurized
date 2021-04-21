@@ -1,26 +1,12 @@
 {
-  "parent": "forge:block/default",
+  "parent": "block/cube",
   "textures": {
-    "particle": "pneumaticcraft:block/programmable_controller",
-    "north": "pneumaticcraft:block/programmable_controller",
-    "south": "pneumaticcraft:block/generic/back_panel",
-    "up": "pneumaticcraft:block/generic/top_panel",
-    "down": "pneumaticcraft:block/generic/top_panel",
+    "particle": "pneumaticcraft:block/programmable_controller_front",
+    "north": "pneumaticcraft:block/programmable_controller_front",
+    "south": "pneumaticcraft:block/generic/side_panel",
+    "up": "pneumaticcraft:block/programmable_controller_top",
+    "down": "pneumaticcraft:block/generic/bottom_panel",
     "east": "pneumaticcraft:block/generic/side_panel",
     "west": "pneumaticcraft:block/generic/side_panel"
-  },
-  "elements": [
-    {
-      "from": [ 0, 0, 0 ],
-      "to": [ 16, 16, 16 ],
-      "faces": {
-        "down":  { "texture": "#down", "cullface": "down" },
-        "up":    { "texture": "#up", "cullface": "up" },
-        "north": { "texture": "#north", "cullface": "north" },
-        "south": { "texture": "#south", "cullface": "south" },
-        "west":  { "texture": "#west", "cullface": "west" },
-        "east":  { "texture": "#east", "cullface": "east" }
-      }
-    }
-  ]
+  }
 }
