@@ -1266,7 +1266,7 @@
    "pneumaticcraft.gui.tab.info.aerialInterface.interfacingItems" : "Interfacing Items",
    "pneumaticcraft.gui.tab.info.aerialInterface.interfacingRF.info" : "The Aerial Interface accepts Forge Energy (compatible with RF and many other mods). The energy stored in its internal buffer (100,000 FE) is used to charge any chargeable item in the player's inventory at up to 1,000 FE/tick.${br}Note: Energy is always interfaced regardless of whether or not a Dispenser Upgrade is inserted.",
    "pneumaticcraft.gui.tab.info.aerialInterface.interfacingRF.info.title" : "Interfacing Energy",
-   "pneumaticcraft.gui.tab.info.aerialInterface.linked" : "§0Machine linked with %s.",
+   "pneumaticcraft.gui.tab.info.aerialInterface.linked" : "§0Linked with: %s",
    "pneumaticcraft.gui.tab.info.aerialInterface.liquidXp.info" : "With a Dispenser Upgrade installed in the Aerial Interface, you can pump liquid XP into or out of the Interface, directly filling or draining the player's stored experience. You can select which type of liquid XP to use with the above button; clicking it cycles through the available types, as well as the (default) disabled setting.${br}${br}Available XP types:",
    "pneumaticcraft.gui.tab.info.aerialInterface.liquidXp.info.title" : "Interfacing XP",
    "pneumaticcraft.gui.tab.info.aerialInterface.removeDispenser" : "Remove the Dispenser Upgrade to switch to interfacing items.",

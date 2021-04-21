@@ -12,6 +12,7 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.FakePlayer;
 
 public class BlockAerialInterface extends BlockPneumaticCraft {
     public BlockAerialInterface() {
@@ -34,12 +35,14 @@ public class BlockAerialInterface extends BlockPneumaticCraft {
     }
 
     @Override
-    public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity entity, ItemStack par6ItemStack) {
+    public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity entity, ItemStack stack) {
         PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityAerialInterface.class).ifPresent(teAI -> {
-            if (entity instanceof PlayerEntity) teAI.setPlayer((PlayerEntity) entity);
+            if (entity instanceof PlayerEntity && !(entity instanceof FakePlayer)) {
+                teAI.setPlayerId(entity.getUniqueID());
+            }
         });
 
-        super.onBlockPlacedBy(world, pos, state, entity, par6ItemStack);
+        super.onBlockPlacedBy(world, pos, state, entity, stack);
     }
 
     @Override

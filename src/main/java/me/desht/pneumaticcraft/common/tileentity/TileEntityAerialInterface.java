@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.authlib.GameProfile;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.XPFluidManager;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
@@ -8,6 +9,7 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerAerialInterface;
+import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
@@ -19,6 +21,7 @@ import me.desht.pneumaticcraft.common.tileentity.SideConfigurator.RelativeFace;
 import me.desht.pneumaticcraft.common.util.EnchantmentUtils;
 import me.desht.pneumaticcraft.common.util.GlobalTileEntityCacheManager;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
+import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -35,6 +38,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.SkullTileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
@@ -77,8 +81,8 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
                     te -> te.isConnectedToPlayer)
     );
 
-    @GuiSynced
-    public String playerName = "";
+    @DescSynced
+    private String playerName = "";
     private UUID playerUUID = NO_PLAYER;
 
     private Fluid curXpFluid = Fluids.EMPTY;
@@ -111,6 +115,7 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
     private final List<Integer> chargeableSlots = new ArrayList<>();
 
     private final List<PlayerInvHandler> invHandlers = new ArrayList<>();
+    public GameProfile gameProfileClient;  // for rendering
 
     public TileEntityAerialInterface() {
         super(ModTileEntities.AERIAL_INTERFACE.get(), PneumaticValues.DANGER_PRESSURE_AERIAL_INTERFACE, PneumaticValues.MAX_PRESSURE_AERIAL_INTERFACE, PneumaticValues.VOLUME_AERIAL_INTERFACE, 4);
@@ -149,6 +154,10 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
 //        }
     }
 
+    public String getPlayerName() {
+        return playerName;
+    }
+
     @Override
     public void validate() {
         super.validate();
@@ -176,10 +185,11 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
         boolean wasConnected = isConnectedToPlayer;
         if (player == null) {
             isConnectedToPlayer = false;
+            playerName = "";
         } else {
-            setPlayerId(player.getGameProfile().getName(), player.getGameProfile().getId());
-            scanForChargeableItems(player);
             isConnectedToPlayer = true;
+            playerName = player.getGameProfile().getName();
+            scanForChargeableItems(player);
         }
         if (wasConnected != isConnectedToPlayer) {
             needUpdateNeighbours = true;
@@ -187,9 +197,18 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
         }
     }
 
-    private void setPlayerId(String username, UUID uuid) {
+    public void setPlayerId(UUID uuid) {
         playerUUID = uuid;
-        playerName = username;
+    }
+
+    @Override
+    public void onDescUpdate() {
+        super.onDescUpdate();
+
+        Log.info("synced player: '" + playerName + "'");
+        gameProfileClient = playerName.isEmpty() ? null :
+                SkullTileEntity.updateGameProfile(new GameProfile(null, playerName));
+        Log.info("profile: " + gameProfileClient);
     }
 
     @Override
@@ -205,6 +224,8 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
 
     @Override
     public void tick() {
+        super.tick();
+
         if (!getWorld().isRemote) {
             if (needUpdateNeighbours) {
                 needUpdateNeighbours = false;
@@ -229,8 +250,6 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
                 needUpdateNeighbours = true;
             }
         }
-
-        super.tick();
     }
 
     @Override
@@ -293,8 +312,8 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
     public void read(BlockState state, CompoundNBT tag) {
         super.read(state, tag);
 
+        playerUUID = UUID.fromString(tag.getString("playerUUID"));
         feedMode = FeedMode.valueOf(tag.getString("feedMode"));
-        setPlayerId(tag.getString("playerName"), UUID.fromString(tag.getString("playerUUID")));
         curXpFluid = tag.contains("curXpFluid") ? ForgeRegistries.FLUIDS.getValue(new ResourceLocation(tag.getString("curXpFluid"))) : Fluids.EMPTY;
         curXpRatio = XPFluidManager.getInstance().getXPRatio(curXpFluid);
         energyStorage.readFromNBT(tag);
@@ -307,9 +326,8 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
     public CompoundNBT write(CompoundNBT tag) {
         super.write(tag);
 
-        tag.putString("feedMode", feedMode.toString());
-        tag.putString("playerName", playerName);
         tag.putString("playerUUID", playerUUID.toString());
+        tag.putString("feedMode", feedMode.toString());
         tag.putString("curXpFluid", curXpFluid.getRegistryName().toString());
         energyStorage.writeToNBT(tag);
 
