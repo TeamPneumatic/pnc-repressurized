@@ -1,28 +1,29 @@
 {
-  "parent" : "item/generated",
-  "textures" : {
-     "layer0" : "pneumaticcraft:item/gps_tool"
-  },
-  "display": {
-    "thirdperson_lefthand": {
-       "rotation": [ 0, 0, 0 ],
-       "translation": [ 0, 4, 0 ],
-       "scale": [ 0.6, 0.6, 0.6 ]
-    },
-    "thirdperson_righthand": {
-       "rotation": [ 0, 0, 0 ],
-       "translation": [ 0, 4, 0 ],
-       "scale": [ 0.6, 0.6, 0.6 ]
-    },
-    "firstperson_lefthand": {
-       "rotation": [ 0, 0, 0 ],
-       "translation": [ 4, 1, -6],
-       "scale": [ 0.6, 0.6, 0.6 ]
-    },
-    "firstperson_righthand": {
-       "rotation": [ 0, 0, 0 ],
-       "translation": [ 4, 1, -6],
-       "scale": [ 0.6, 0.6, 0.6 ]
-    }
-  }
+	"credit": "Made with Blockbench",
+	"parent": "item/generated",
+	"textures": {
+		"layer0": "pneumaticcraft:item/gps_tool"
+	},
+	"display": {
+		"thirdperson_righthand": {
+			"translation": [0, 4, 0],
+			"scale": [0.6, 0.6, 0.6]
+		},
+		"thirdperson_lefthand": {
+			"translation": [0, 4, 0],
+			"scale": [0.6, 0.6, 0.6]
+		},
+		"firstperson_righthand": {
+			"translation": [4, -1, -6],
+			"scale": [0.6, 0.6, 0.6]
+		},
+		"firstperson_lefthand": {
+			"translation": [4, -1, -6],
+			"scale": [0.6, 0.6, 0.6]
+		},
+		"ground": {
+			"translation": [0, 2, 0],
+			"scale": [0.5, 0.5, 0.5]
+		}
+	}
 }

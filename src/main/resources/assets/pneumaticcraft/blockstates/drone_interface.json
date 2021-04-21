@@ -1,10 +1,34 @@
 {
   "variants": {
-    "connected=true": {
+    "connected=true,facing=north": {
       "model": "pneumaticcraft:block/drone_interface_on"
     },
-    "connected=false": {
+    "connected=true,facing=south": {
+      "model": "pneumaticcraft:block/drone_interface_on",
+      "y": 180
+    },
+    "connected=true,facing=west": {
+      "model": "pneumaticcraft:block/drone_interface_on",
+      "y": 270
+    },
+    "connected=true,facing=east": {
+      "model": "pneumaticcraft:block/drone_interface_on",
+      "y": 90
+    },
+    "connected=false,facing=north": {
       "model": "pneumaticcraft:block/drone_interface_off"
+    },
+    "connected=false,facing=south": {
+      "model": "pneumaticcraft:block/drone_interface_off",
+      "y": 180
+    },
+    "connected=false,facing=west": {
+      "model": "pneumaticcraft:block/drone_interface_off",
+      "y": 270
+    },
+    "connected=false,facing=east": {
+      "model": "pneumaticcraft:block/drone_interface_off",
+      "y": 90
     }
   }
 }
