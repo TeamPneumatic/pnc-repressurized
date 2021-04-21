@@ -1,11 +1,11 @@
 {
   "parent": "block/cube",
   "textures": {
-    "particle": "pneumaticcraft:block/generic/top_panel",
+    "particle": "pneumaticcraft:block/aerial_interface_front",
     "north": "pneumaticcraft:block/aerial_interface_front",
-    "south": "pneumaticcraft:block/generic/back_panel",
-    "up": "pneumaticcraft:block/generic/top_panel",
-    "down": "pneumaticcraft:block/generic/top_panel",
+    "south": "pneumaticcraft:block/generic/side_panel",
+    "up": "pneumaticcraft:block/aerial_interface_top",
+    "down": "pneumaticcraft:block/generic/bottom_panel",
     "east": "pneumaticcraft:block/generic/side_panel",
     "west": "pneumaticcraft:block/generic/side_panel"
   }
