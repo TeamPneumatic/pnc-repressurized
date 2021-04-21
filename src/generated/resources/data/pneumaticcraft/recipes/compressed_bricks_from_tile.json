@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "pneumaticcraft:compressed_brick_tile"
+    }
+  ],
+  "result": {
+    "item": "pneumaticcraft:compressed_bricks"
+  }
+}

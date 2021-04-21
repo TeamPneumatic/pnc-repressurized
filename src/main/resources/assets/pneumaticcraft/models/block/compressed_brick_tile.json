@@ -1,0 +1,6 @@
+{
+  "parent": "block/cube_all",
+  "textures": {
+    "all": "pneumaticcraft:block/compressed_brick_tile"
+  }
+}

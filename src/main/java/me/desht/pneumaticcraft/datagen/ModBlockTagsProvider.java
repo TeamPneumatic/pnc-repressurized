@@ -33,6 +33,18 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
                 ModBlocks.REINFORCED_BRICK_SLAB, ModBlocks.REINFORCED_STONE_SLAB);
         createAndAppend(PneumaticCraftTags.Blocks.STAIRS, BlockTags.STAIRS,
                 ModBlocks.REINFORCED_BRICK_STAIRS);
+
+        createAndAppend(PneumaticCraftTags.Blocks.COMPRESSED_STONE, Tags.Blocks.STONE,
+                ModBlocks.COMPRESSED_STONE);
+        createAndAppend(PneumaticCraftTags.Blocks.COMPRESSED_STONE_BRICKS, BlockTags.STONE_BRICKS,
+                ModBlocks.COMPRESSED_BRICKS);
+        createAndAppend(PneumaticCraftTags.Blocks.WALLS, BlockTags.WALLS,
+                ModBlocks.COMPRESSED_BRICK_WALL);
+        createAndAppend(PneumaticCraftTags.Blocks.SLABS, BlockTags.SLABS,
+                ModBlocks.COMPRESSED_BRICK_SLAB, ModBlocks.COMPRESSED_STONE_SLAB);
+        createAndAppend(PneumaticCraftTags.Blocks.STAIRS, BlockTags.STAIRS,
+                ModBlocks.COMPRESSED_BRICK_STAIRS);
+
         createAndAppend(PneumaticCraftTags.Blocks.DOORS, BlockTags.DOORS,
                 ModBlocks.PNEUMATIC_DOOR);
         createAndAppend(PneumaticCraftTags.Blocks.CHESTS, Tags.Blocks.CHESTS,

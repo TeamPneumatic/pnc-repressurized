@@ -32,23 +32,27 @@ public class RenderItemMinigun extends ItemStackTileEntityRenderer {
                 if (!mc.gameSettings.getPointOfView().func_243192_a() || player.getEntityId() != owningPlayer.getEntityId()) {
                     // rendering our own gun in 3rd person, or rendering someone else's gun
                     matrixStack.scale(1f, -1f, -1f);
-                    matrixStack.rotate(Vector3f.XP.rotationDegrees(-90f));
-                    matrixStack.translate(0.5, -1, -0.3);
+                    matrixStack.rotate(Vector3f.XP.rotationDegrees(75f));
+                    matrixStack.rotate(Vector3f.YP.rotationDegrees(180));
+                    matrixStack.rotate(Vector3f.ZP.rotationDegrees(0f));
+                    matrixStack.translate(-0.5, -2, -0.3);
                 } else if (mc.currentScreen instanceof InventoryScreen) {
                     // our own gun in the rendered player model in inventory screen
-                    matrixStack.rotate(Vector3f.XP.rotationDegrees(90f));
+                    matrixStack.rotate(Vector3f.XP.rotationDegrees(-180f));
                     matrixStack.translate(0.5, -1, -0.5);
                 } else {
                     // our own gun in 1st person
                     matrixStack.scale(1.5f, 1.5f, 1.5f);
-                    matrixStack.rotate(Vector3f.ZP.rotationDegrees(-90f));
+                    matrixStack.rotate(Vector3f.XP.rotationDegrees(0));
+                    matrixStack.rotate(Vector3f.YP.rotationDegrees(0));
+                    matrixStack.rotate(Vector3f.ZP.rotationDegrees(180));
                     if (mc.gameSettings.mainHand == HandSide.RIGHT) {
-                        matrixStack.translate(0, -0.6, -0.1);
+                        matrixStack.translate(-1, -1.7, 0.1);
                     } else {
-                        matrixStack.translate(0, -1.9, -0.05);
+                        matrixStack.translate(0, 0, 0);
                     }
                 }
-                model.renderMinigun(matrixStack, buffer, combinedLightIn, combinedOverlayIn, minigun, mc.getRenderPartialTicks(), false);
+                model.renderMinigun(matrixStack, buffer, combinedLightIn, combinedOverlayIn, minigun, mc.getRenderPartialTicks(), true);
                 matrixStack.pop();
             }
         }
