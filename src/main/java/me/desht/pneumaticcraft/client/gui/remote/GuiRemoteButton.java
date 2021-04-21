@@ -46,12 +46,14 @@ public class GuiRemoteButton extends GuiRemoteVariable<ActionWidgetButton> {
         zValueField.setTooltip(valueTooltip);
         addButton(zValueField);
 
-        widthField = new WidgetTextFieldNumber(font, guiLeft + 100, guiTop + 123, 60, 10);
+        widthField = new WidgetTextFieldNumber(font, guiLeft + 100, guiTop + 123, 60, 10)
+                .setRange(10, Integer.MAX_VALUE).setAdjustments(1, 10);
         widthField.setValue(actionWidget.getWidth());
         widthField.minValue = 10;
         addButton(widthField);
 
-        heightField = new WidgetTextFieldNumber(font, guiLeft + 100, guiTop + 138, 60, 10);
+        heightField = new WidgetTextFieldNumber(font, guiLeft + 100, guiTop + 138, 60, 10)
+                .setRange(10, Integer.MAX_VALUE).setAdjustments(1, 10);
         heightField.setValue(actionWidget.getHeight());
         heightField.minValue = 10;
         heightField.maxValue = 20;

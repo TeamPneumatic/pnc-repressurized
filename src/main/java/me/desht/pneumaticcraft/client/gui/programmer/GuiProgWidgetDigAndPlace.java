@@ -40,7 +40,9 @@ public abstract class GuiProgWidgetDigAndPlace<P extends ProgWidgetDigAndPlace> 
                     .setChecked(progWidget.useMaxActions());
             addButton(useMaxActions);
 
-            textField = new WidgetTextFieldNumber(font, guiLeft + 20, guiTop + 128, 30, 11);
+            textField = new WidgetTextFieldNumber(font, guiLeft + 20, guiTop + 128, 30, 11)
+                    .setRange(1, Integer.MAX_VALUE)
+                    .setAdjustments(1, 10);
             textField.setValue(progWidget.getMaxActions());
             textField.setVisible(useMaxActions.checked);
             addButton(textField);

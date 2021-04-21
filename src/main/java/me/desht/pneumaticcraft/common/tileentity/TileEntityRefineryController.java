@@ -154,7 +154,7 @@ public class TileEntityRefineryController extends TileEntityTickableBase
             }));
 
             prevOutputCount = outputCount;
-            updateComparatorValue(outputCount, hasWork);
+            maybeUpdateComparatorValue(outputCount, hasWork);
         } else {
             // client
             if (lastProgress > 0) {
@@ -228,7 +228,7 @@ public class TileEntityRefineryController extends TileEntityTickableBase
         while (output != null) {
             // direction DOWN is important here to get the unwrapped cap
             LazyOptional<IFluidHandler> handler = output.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, Direction.DOWN);
-            handler.addListener(l -> cacheRefineryOutputs());
+            if (handler.isPresent()) handler.addListener(l -> cacheRefineryOutputs());
             cache.add(handler);
             TileEntity te = output.getCachedNeighbor(Direction.UP);
             output = te instanceof TileEntityRefineryOutput ? (TileEntityRefineryOutput) te : null;
@@ -313,16 +313,23 @@ public class TileEntityRefineryController extends TileEntityTickableBase
         rsController.parseRedstoneMode(tag);
     }
 
-    private void updateComparatorValue(int outputCount, boolean didWork) {
-        int value;
+    private void maybeUpdateComparatorValue(int outputCount, boolean hasWork) {
+        int newValue;
         if (inputTank.getFluidAmount() < 10 || outputCount < 2 || currentRecipe == null || outputCount > currentRecipe.getOutputs().size()) {
-            value = 0;
+            newValue = 0;
         } else {
-            value = didWork ? 15 : 0;
+            newValue = hasWork ? 15 : 0;
         }
-        if (value != comparatorValue) {
-            comparatorValue = value;
+        if (newValue != comparatorValue) {
+            // update comparator output for the controller AND all known outputs
+            comparatorValue = newValue;
             getWorld().updateComparatorOutputLevel(getPos(), getBlockState().getBlock());
+            TileEntityRefineryOutput output = findAdjacentOutput();
+            while (output != null && !output.getBlockState().isAir(getWorld(), output.getPos())) {
+                getWorld().updateComparatorOutputLevel(output.getPos(), output.getBlockState().getBlock());
+                TileEntity te = output.getCachedNeighbor(Direction.UP);
+                output = te instanceof TileEntityRefineryOutput ? (TileEntityRefineryOutput) te : null;
+            }
         }
     }
 

@@ -23,6 +23,7 @@ public class CommonConfig {
         ForgeConfigSpec.BooleanValue useUpDyesWhenColoring;
         ForgeConfigSpec.BooleanValue dronesRenderHeldItem;
         ForgeConfigSpec.BooleanValue dronesCanImportXPOrbs;
+        ForgeConfigSpec.BooleanValue plasticInWorldSolidification;
     }
     public static class Machines {
         ForgeConfigSpec.BooleanValue aerialInterfaceArmorCompat;
@@ -223,6 +224,10 @@ public class CommonConfig {
                 .comment("Blacklisted entity ID's, which the Vacuum Trap will not try to absorb. Note that players, tamed entities, boss entities, and PneumaticCraft drones may never be absorbed, regardless of config settings.")
                 .translation("pneumaticcraft.config.common.general.vacuum_trap_blacklist")
                 .define("vacuum_trap_blacklist", Lists.newArrayList());
+        general.plasticInWorldSolidification = builder
+                .comment("Does Molten Plastic solidify to Plastic Sheets when poured into the world? If set to false, then Heat Frame cooling is the only other default way to make Plastic Sheets.")
+                .translation("pneumaticcraft.config.common.general.plastic_in_world_solidification")
+                .define("plastic_in_world_solidification", true);
         builder.pop();
 
         builder.push("Machine Properties");

@@ -146,20 +146,20 @@ public class TooltipEventHandler {
 
     private static void handleFluidContainerTooltip(ItemTooltipEvent event) {
         FluidUtil.getFluidContained(event.getItemStack()).ifPresent(fluidStack -> {
-            String key = "gui.tooltip.item.pneumaticcraft." + event.getItemStack().getItem().getRegistryName().getPath();
+            String key = ICustomTooltipName.getTranslationKey(event.getItemStack(), true);
             if (I18n.hasKey(key)) {
-                if (event.getToolTip().get(event.getToolTip().size() - 1).getString().contains("Minecraft Forge")) {
-                    // bit of a kludge!  otherwise the blue "Minecraft Forge" string gets shown twice
-                    event.getToolTip().remove(event.getToolTip().size() - 1);
-                }
-                String prefix = "";
-                if (!fluidStack.getFluid().getRegistryName().getNamespace().equals(Names.MOD_ID)) {
-                    // fluid is owned by another mod; let's make it clear that this tooltip applies to PneumaticCraft
-                    prefix = TextFormatting.DARK_AQUA + "" + TextFormatting.ITALIC + "[" + Names.MOD_NAME + "] ";
-                }
+//                if (event.getToolTip().get(event.getToolTip().size() - 1).getString().contains("Minecraft Forge")) {
+//                    // bit of a kludge!  otherwise the blue "Minecraft Forge" string gets shown twice
+//                    event.getToolTip().remove(event.getToolTip().size() - 1);
+//                }
+//                String prefix = "";
+//                if (!fluidStack.getFluid().getRegistryName().getNamespace().equals(Names.MOD_ID)) {
+//                    // fluid is owned by another mod; let's make it clear that this tooltip applies to PneumaticCraft
+//                    prefix = TextFormatting.DARK_AQUA + "" + TextFormatting.ITALIC + "[" + Names.MOD_NAME + "] ";
+//                }
                 if (Screen.hasShiftDown()) {
                     String translatedInfo = TextFormatting.AQUA + I18n.format(key);
-                    event.getToolTip().addAll(PneumaticCraftUtils.asStringComponent(PneumaticCraftUtils.splitString(prefix + translatedInfo)));
+                    event.getToolTip().addAll(PneumaticCraftUtils.asStringComponent(PneumaticCraftUtils.splitString(/*prefix +*/ translatedInfo)));
                 } else {
                     event.getToolTip().add(xlate("pneumaticcraft.gui.tooltip.sneakForInfo").mergeStyle(TextFormatting.AQUA));
                 }

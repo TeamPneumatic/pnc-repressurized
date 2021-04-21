@@ -1,8 +1,11 @@
 package me.desht.pneumaticcraft.common.fluid;
 
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.item.ICustomTooltipName;
+import me.desht.pneumaticcraft.common.item.ItemBucketPneumaticCraft;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.item.ItemEntity;
@@ -38,9 +41,11 @@ public abstract class FluidPlastic {
 
         @Override
         public void tick(World worldIn, BlockPos pos, FluidState state) {
-            ItemEntity item = new ItemEntity(worldIn, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, new ItemStack(ModItems.PLASTIC.get()));
-            worldIn.addEntity(item);
-            worldIn.setBlockState(pos, Blocks.AIR.getDefaultState(), Constants.BlockFlags.DEFAULT);
+            if (PNCConfig.Common.General.plasticInWorldSolidification) {
+                ItemEntity item = new ItemEntity(worldIn, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, new ItemStack(ModItems.PLASTIC.get()));
+                worldIn.addEntity(item);
+                worldIn.setBlockState(pos, Blocks.AIR.getDefaultState(), Constants.BlockFlags.DEFAULT);
+            }
             super.tick(worldIn, pos, state);
         }
     }
@@ -48,6 +53,17 @@ public abstract class FluidPlastic {
     public static class Flowing extends ForgeFlowingFluid.Flowing {
         public Flowing() {
             super(PROPS);
+        }
+    }
+
+    public static class Bucket extends ItemBucketPneumaticCraft implements ICustomTooltipName {
+        public Bucket() {
+            super(ModFluids.PLASTIC);
+        }
+
+        @Override
+        public String getCustomTooltipTranslationKey() {
+            return PNCConfig.Common.General.plasticInWorldSolidification ? getTranslationKey() : getTranslationKey() + ".not_in_world";
         }
     }
 }

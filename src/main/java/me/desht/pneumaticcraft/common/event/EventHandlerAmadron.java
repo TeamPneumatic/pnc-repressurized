@@ -79,16 +79,16 @@ public class EventHandlerAmadron {
             if (drone.getAmadronAction() == AmadronAction.TAKING_PAYMENT) {
                 // Drone has just taken payment for player offer
                 // Add a pending payment, and remove Amadron stock
-                playerOffer.addPayment(drone.getOfferTimes());
+                if (offer instanceof AmadronPlayerOffer) ((AmadronPlayerOffer) offer).addPayment(drone.getOfferTimes());
                 playerOffer.onTrade(drone.getOfferTimes(), drone.getBuyingPlayer());
                 doDelivery(drone, offer);
             } else if (drone.getAmadronAction() == AmadronAction.RESTOCKING) {
                 // Drone is restocking Amadron - add stock
                 playerOffer.addStock(drone.getOfferTimes());
                 NetworkHandler.sendNonLocal(new PacketAmadronStockUpdate(playerOffer.getId(), playerOffer.getStock()));
-                AmadronPlayerOffers.save();
                 playerOffer.notifyRestock();
             }
+            AmadronPlayerOffers.save();
         }
     }
 

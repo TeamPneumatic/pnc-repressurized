@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.common.semiblock.ISpecificProvider;
 import me.desht.pneumaticcraft.common.semiblock.ISpecificRequester;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import net.minecraft.item.ItemStack;
+import net.minecraft.pathfinding.PathType;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
@@ -34,14 +35,16 @@ public class LogisticsManager {
         logistics.get(frame.getPriority()).add(frame);
     }
 
-    public PriorityQueue<LogisticsTask> getTasks(Object holdingStack) {
+    public PriorityQueue<LogisticsTask> getTasks(Object holdingStack, boolean droneAccess) {
         ItemStack item = holdingStack instanceof ItemStack ? (ItemStack) holdingStack : ItemStack.EMPTY;
         FluidStack fluid = holdingStack instanceof FluidStack ? (FluidStack) holdingStack : FluidStack.EMPTY;
         PriorityQueue<LogisticsTask> tasks = new PriorityQueue<>();
         for (int priority = logistics.size() - 1; priority >= 0; priority--) {
             for (EntityLogisticsFrame requester : logistics.get(priority)) {
+                if (droneAccess && requester.isObstructed(PathType.AIR)) continue;
                 for (int i = 0; i < priority; i++) {
                     for (EntityLogisticsFrame provider : logistics.get(i)) {
+                        if (droneAccess && provider.isObstructed(PathType.AIR)) continue;
                         if (provider.shouldProvideTo(priority)) {
                             if (!item.isEmpty()) {
                                 int requestedAmount = getRequestedAmount(requester, item, false);
@@ -76,9 +79,9 @@ public class LogisticsManager {
         if (provider.getCachedTileEntity() == null) return;
 
         if (tryItems) {
-            provider.getCachedTileEntity().getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, provider.getFacing()).ifPresent(itemHandler -> {
+            provider.getCachedTileEntity().getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, provider.getSide()).ifPresent(itemHandler -> {
                 if (requester instanceof IProvidingInventoryListener)
-                    ((IProvidingInventoryListener) requester).notify(new TileEntityAndFace(provider.getCachedTileEntity(), provider.getFacing()));
+                    ((IProvidingInventoryListener) requester).notify(new TileEntityAndFace(provider.getCachedTileEntity(), provider.getSide()));
                 for (int i = 0; i < itemHandler.getSlots(); i++) {
                     ItemStack providingStack = itemHandler.getStackInSlot(i);
                     if (!providingStack.isEmpty() && (!(provider instanceof ISpecificProvider) || ((ISpecificProvider) provider).canProvide(providingStack))) {
@@ -94,7 +97,7 @@ public class LogisticsManager {
         }
 
         if (tryFluids) {
-            provider.getCachedTileEntity().getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, provider.getFacing()).ifPresent(fluidHandler -> {
+            provider.getCachedTileEntity().getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, provider.getSide()).ifPresent(fluidHandler -> {
                 FluidStack providingStack = fluidHandler.drain(16000, IFluidHandler.FluidAction.SIMULATE);
                 if (!providingStack.isEmpty()) {
                     boolean canDrain = IntStream.range(0, fluidHandler.getTanks()).anyMatch(i -> fluidHandler.isFluidValid(i, providingStack));
@@ -124,7 +127,7 @@ public class LogisticsManager {
         if (requestedAmount < providingStack.getCount()) providingStack.setCount(requestedAmount);
         ItemStack remainder = providingStack.copy();
         remainder.grow(requester.getIncomingItems(providingStack));
-        remainder = IOHelper.insert(te, remainder, requester.getFacing(), true);
+        remainder = IOHelper.insert(te, remainder, requester.getSide(), true);
         providingStack.shrink(remainder.getCount());
         return providingStack.getCount() < minOrderSize ? 0 : Math.max(providingStack.getCount(), 0);
     }
@@ -141,7 +144,7 @@ public class LogisticsManager {
         if (requestedAmount < providingStack.getAmount()) providingStack.setAmount(requestedAmount);
         FluidStack remainder = providingStack.copy();
         remainder.grow(requester.getIncomingFluid(remainder.getFluid()));
-        te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, requester.getFacing()).ifPresent(fluidHandler -> {
+        te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, requester.getSide()).ifPresent(fluidHandler -> {
             int fluidFilled = fluidHandler.fill(remainder, IFluidHandler.FluidAction.SIMULATE);
             if (fluidFilled > 0) {
                 remainder.shrink(fluidFilled);

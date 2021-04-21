@@ -5,9 +5,14 @@ import me.desht.pneumaticcraft.api.block.IPneumaticWrenchable;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.core.ModItems;
+import me.desht.pneumaticcraft.common.core.ModSounds;
+import me.desht.pneumaticcraft.common.heat.TemperatureCategory;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketBlockDestroyed;
+import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
+import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.tileentity.IComparatorSupport;
 import me.desht.pneumaticcraft.common.tileentity.IHeatExchangingTE;
@@ -33,6 +38,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.pathfinding.PathType;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.DirectionProperty;
+import net.minecraft.state.EnumProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
@@ -50,6 +56,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.fml.network.NetworkHooks;
@@ -73,6 +80,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
     public static final BooleanProperty SOUTH = BooleanProperty.create("south");
     public static final BooleanProperty WEST = BooleanProperty.create("west");
     public static final BooleanProperty[] CONNECTION_PROPERTIES = new BooleanProperty[]{DOWN, UP, NORTH, SOUTH, WEST, EAST};
+    public static final EnumProperty<TemperatureCategory> TEMPERATURE = EnumProperty.create("temperature", TemperatureCategory.class);
 
     protected BlockPneumaticCraft(Properties props) {
         super(props);
@@ -396,6 +404,16 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
                 NonNullList<ItemStack> drops = NonNullList.create();
                 ((TileEntityBase) te).getContentsToDrop(drops);
                 drops.forEach(stack -> PneumaticCraftUtils.dropItemOnGround(stack, world, pos));
+
+                if (!((TileEntityBase) te).shouldPreserveStateOnBreak()) {
+                    te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).ifPresent(handler -> {
+                        if (handler.getAir() > 0) {
+                            NetworkHandler.sendToAllTracking(new PacketSpawnParticle(AirParticleData.DENSE, pos.getX(), pos.getY(), pos.getZ(), 0, 0, 0, (int) (5 * handler.getPressure()), 1, 1, 1), world, pos);
+                            world.playSound(null, pos, ModSounds.SHORT_HISS.get(), SoundCategory.BLOCKS, 0.3f, 0.8f);
+                        }
+                    });
+                }
+
             }
             super.onReplaced(state, world, pos, newState, isMoving);
         }
@@ -420,12 +438,20 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
         return getCollisionShape(state, worldIn, pos, ISelectionContext.dummy()).isEmpty();
     }
 
-
     static void removeBlockSneakWrenched(World world, BlockPos pos) {
         if (!world.isRemote()) {
             world.removeBlock(pos, false);
             // this only gets called server-side, but the client needs to be informed too, to update neighbour states
             NetworkHandler.sendToAllTracking(new PacketBlockDestroyed(pos), world, pos);
         }
+    }
+
+    @Override
+    public void harvestBlock(World worldIn, PlayerEntity player, BlockPos pos, BlockState state, @Nullable TileEntity te, ItemStack stack) {
+        if (player instanceof ServerPlayerEntity && !(player instanceof FakePlayer)
+                && te instanceof TileEntityBase && !(((TileEntityBase) te).shouldPreserveStateOnBreak())) {
+            AdvancementTriggers.MACHINE_VANDAL.trigger((ServerPlayerEntity) player);
+        }
+        super.harvestBlock(worldIn, player, pos, state, te, stack);
     }
 }

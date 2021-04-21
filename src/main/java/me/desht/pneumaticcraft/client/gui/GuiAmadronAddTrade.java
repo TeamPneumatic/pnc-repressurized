@@ -124,8 +124,10 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadr
                 .setTooltipKey(tip)
         );
 
+        int coarse = fluidFilters[slot].getFluid() == Fluids.EMPTY ? 10 : 1000;
+        int max = fluidFilters[slot].getFluid() == Fluids.EMPTY ? 64 : Integer.MAX_VALUE;
         amountFields[slot] = new WidgetTextFieldNumber(font, guiLeft + 22 + xOffset, guiTop + 145, 40, font.FONT_HEIGHT)
-                .setValue(amountFields[slot] != null ? amountFields[slot].getValue() : 1);
+                .setValue(amountFields[slot] != null ? amountFields[slot].getValue() : 1).setRange(1, max).setAdjustments(1, coarse);
         addButton(amountFields[slot]);
 
         addButton(new WidgetLabel(guiLeft + 65 + xOffset, guiTop + 145,

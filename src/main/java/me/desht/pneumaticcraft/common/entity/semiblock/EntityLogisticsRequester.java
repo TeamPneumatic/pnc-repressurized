@@ -144,7 +144,7 @@ public class EntityLogisticsRequester extends EntityLogisticsFrame implements IS
     public int amountRequested(ItemStack stack) {
         int totalRequestingAmount = getTotalRequestedAmount(stack);
         if (totalRequestingAmount > 0) {
-            return IOHelper.getInventoryForTE(getCachedTileEntity(), getFacing()).map(itemHandler -> {
+            return IOHelper.getInventoryForTE(getCachedTileEntity(), getSide()).map(itemHandler -> {
                 int count = 0;
                 for (int i = 0; i < itemHandler.getSlots(); i++) {
                     ItemStack s = itemHandler.getStackInSlot(i);
@@ -165,7 +165,7 @@ public class EntityLogisticsRequester extends EntityLogisticsFrame implements IS
     public int amountRequested(FluidStack stack) {
         int totalRequestingAmount = getTotalRequestedAmount(stack);
         if (totalRequestingAmount > 0) {
-            return getCachedTileEntity().getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, getFacing()).map(fluidHandler -> {
+            return getCachedTileEntity().getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, getSide()).map(fluidHandler -> {
                 int count = 0;
                 for (int i = 0; i < fluidHandler.getTanks(); i++) {
                     FluidStack contents = fluidHandler.getFluidInTank(i);

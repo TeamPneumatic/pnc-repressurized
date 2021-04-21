@@ -4,7 +4,6 @@ import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
@@ -67,8 +66,9 @@ public class ItemGunAmmoStandard extends ItemGunAmmo {
 
     @Override
     public int getAmmoColor(ItemStack ammo) {
-        ItemStack potion = getPotion(ammo);
-        return potion.isEmpty() ? 0x00FFFF00 : Minecraft.getInstance().getItemColors().getColor(potion, 0);
+        return 0x00FFFF00;
+//        ItemStack potion = getPotion(ammo);
+//        return potion.isEmpty() ? 0x00FFFF00 : Minecraft.getInstance().getItemColors().getColor(potion, 0);
     }
 
     @Override

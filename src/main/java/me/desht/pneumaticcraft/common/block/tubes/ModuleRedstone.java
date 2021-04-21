@@ -7,23 +7,24 @@ import me.desht.pneumaticcraft.common.network.PacketSyncRedstoneModuleToClient;
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.ItemHandlerHelper;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.stream.IntStream;
 
 // since this is both a receiver and an emitter, we won't use either redstone superclass here
@@ -325,13 +326,13 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
     }
 
     private int readInputLevel() {
+        World world = Objects.requireNonNull(pressureTube.getWorld());
         if (comparatorInput && upgraded) {
-            TileEntity te = pressureTube.getCachedNeighbor(getDirection());
-            if (te == null) return 0;
-            return te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, getDirection().getOpposite())
-                    .map(ItemHandlerHelper::calcRedstoneFromInventory).orElse(0);
+            BlockPos pos2 = pressureTube.getPos().offset(getDirection());
+            BlockState state = world.getBlockState(pos2);
+            return state.hasComparatorInputOverride() ? state.getComparatorInputOverride(world, pos2) : 0;
         } else {
-            return pressureTube.getWorld().getRedstonePower(pressureTube.getPos().offset(getDirection()), getDirection());
+            return world.getRedstonePower(pressureTube.getPos().offset(getDirection()), getDirection());
         }
     }
 
@@ -374,20 +375,28 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
         AND(true, false),
         OR(true, false),
         XOR(true, false),
-        CLOCK(false, true),
+        CLOCK(false, true, 4, Integer.MAX_VALUE),
         COMPARATOR(true, false),
         SUBTRACT(true, false),
-        COMPARE(false, true),
+        COMPARE(false, true, 0, 15),
         TOGGLE(false, false),
-        CONSTANT(false, true),
-        COUNTER(false, true);
+        CONSTANT(false, true, 0, 15),
+        COUNTER(false, true, 0, 15);
 
         private final boolean useOtherColor;
         private final boolean useConst;
+        private final int min;
+        private final int max;
 
         Operation(boolean useOtherColor, boolean useConst) {
+            this(useOtherColor, useConst, 0, 0);
+        }
+
+        Operation(boolean useOtherColor, boolean useConst, int min, int max) {
             this.useOtherColor = useOtherColor;
             this.useConst = useConst;
+            this.min = min;
+            this.max = max;
         }
 
         @Override
@@ -401,6 +410,14 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
 
         public boolean useConst() {
             return useConst;
+        }
+
+        public int getMin() {
+            return min;
+        }
+
+        public int getMax() {
+            return max;
         }
     }
 }

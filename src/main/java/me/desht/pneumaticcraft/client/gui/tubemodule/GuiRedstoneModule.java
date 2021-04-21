@@ -147,6 +147,7 @@ public class GuiRedstoneModule extends GuiTubeModule<ModuleRedstone> {
         Operation op = getSelectedOp();
         constLabel.visible = op.useConst();
         textField.setVisible(op.useConst());
+        textField.setRange(op.getMin(), op.getMax());
         otherColorLabel.visible = op.useOtherColor();
         otherColorButton.visible = op.useOtherColor();
         otherColorButton.setVisible(op.useOtherColor());

@@ -57,7 +57,7 @@ public abstract class TileEntityBase extends TileEntity
     private final UpgradeHandler upgradeHandler;
     private boolean firstTick = true;
     private List<SyncedField<?>> descriptionFields;
-    private CachedTileNeighbours neighbourCache;
+    private final CachedTileNeighbours neighbourCache = new CachedTileNeighbours(this);
     private boolean preserveStateOnBreak = false; // set to true if shift-wrenched to keep upgrades in the block
     private float actualSpeedMult = PneumaticValues.DEF_SPEED_UPGRADE_MULTIPLIER;
     private float actualUsageMult = PneumaticValues.DEF_SPEED_UPGRADE_USAGE_MULTIPLIER;
@@ -312,13 +312,6 @@ public abstract class TileEntityBase extends TileEntity
     }
 
     @Override
-    public void validate() {
-        super.validate();
-
-        neighbourCache = new CachedTileNeighbours(this);
-    }
-
-    @Override
     public void onDescUpdate() {
         if (shouldRerenderChunkOnDescUpdate()) {
             rerenderTileEntity();
@@ -378,7 +371,7 @@ public abstract class TileEntityBase extends TileEntity
     }
 
     public TileEntity getCachedNeighbor(Direction dir) {
-        return neighbourCache == null ? null : neighbourCache.getCachedNeighbour(dir);
+        return neighbourCache.getCachedNeighbour(dir);
     }
 
     /**

@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe.AssemblyProgra
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.block.tubes.*;
 import me.desht.pneumaticcraft.common.entity.living.*;
+import me.desht.pneumaticcraft.common.fluid.FluidPlastic;
 import me.desht.pneumaticcraft.common.item.*;
 import me.desht.pneumaticcraft.common.item.ItemDrillBit.DrillBitType;
 import me.desht.pneumaticcraft.common.item.ItemNetworkComponent.NetworkComponentType;
@@ -192,8 +193,9 @@ public class ModItems {
             ModFluids.OIL);
     public static final RegistryObject<ItemBucketPneumaticCraft> ETCHING_ACID_BUCKET = registerBucket("etching_acid_bucket",
             ModFluids.ETCHING_ACID);
-    public static final RegistryObject<ItemBucketPneumaticCraft> PLASTIC_BUCKET = registerBucket("plastic_bucket",
-            ModFluids.PLASTIC);
+    public static final RegistryObject<ItemBucketPneumaticCraft> PLASTIC_BUCKET = register("plastic_bucket", FluidPlastic.Bucket::new);
+//    public static final RegistryObject<ItemBucketPneumaticCraft> PLASTIC_BUCKET = registerBucket("plastic_bucket",
+//            ModFluids.PLASTIC);
     public static final RegistryObject<ItemBucketPneumaticCraft> DIESEL_BUCKET = registerBucket("diesel_bucket",
             ModFluids.DIESEL);
     public static final RegistryObject<ItemBucketPneumaticCraft> KEROSENE_BUCKET = registerBucket("kerosene_bucket",

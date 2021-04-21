@@ -23,13 +23,20 @@ class CachedTileNeighbours {
 
     public TileEntity getCachedNeighbour(Direction dir) {
         if (owner.getWorld() == null) return null;
-        if (!known.get(dir.getIndex())) {
-            BlockPos pos2 = owner.getPos().offset(dir);
-            TileEntity te = owner.getWorld().isAreaLoaded(pos2, 0) ? owner.getWorld().getTileEntity(pos2) : null;
-            neighbours.put(dir, new WeakReference<>(te));
-            known.set(dir.getIndex());
+        TileEntity res = known.get(dir.getIndex()) ? neighbours.get(dir).get() : findNeighbour(dir);
+        if (res != null && res.isRemoved()) {
+            // shouldn't happen, but let's be defensive
+            res = findNeighbour(dir);
         }
-        return neighbours.get(dir).get();
+        return res;
+    }
+
+    private TileEntity findNeighbour(Direction dir) {
+        BlockPos pos2 = owner.getPos().offset(dir);
+        TileEntity te = owner.getWorld().isAreaLoaded(pos2, 0) ? owner.getWorld().getTileEntity(pos2) : null;
+        neighbours.put(dir, new WeakReference<>(te));
+        known.set(dir.getIndex());
+        return te;
     }
 
     public void purge() {

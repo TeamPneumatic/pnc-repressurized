@@ -92,6 +92,7 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
 
     private final ThermopneumaticFluidHandler fluidHandler = new ThermopneumaticFluidHandler();
     private final LazyOptional<IFluidHandler> fluidCap = LazyOptional.of(() -> fluidHandler);
+    private double airUsage;
 
     public TileEntityThermopneumaticProcessingPlant() {
         super(ModTileEntities.THERMOPNEUMATIC_PROCESSING_PLANT.get(), 5, 7, 3000, 4);
@@ -133,9 +134,18 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
                     problem = TPProblem.TOO_COLD;
                 } else {
                     if (rsController.shouldRun() && hasEnoughPressure()) {
-                        double inc = minTemperature > 0 ? Math.min(MAX_SPEED_UP, heatExchanger.getTemperature() / minTemperature) : 1.0;
+                        double speedBoost = minTemperature > 0 ? Math.min(MAX_SPEED_UP, heatExchanger.getTemperature() / minTemperature) : 1.0;
                         if (craftingProgress < CRAFTING_TIME) {
-                            craftingProgress += inc * currentRecipe.getRecipeSpeed() * 100;
+                            double progressInc = speedBoost * currentRecipe.getRecipeSpeed() * 100;
+                            craftingProgress += progressInc;
+                            double progressDivider = progressInc / CRAFTING_TIME;
+                            airUsage += currentRecipe.airUsed() * progressDivider * speedBoost;
+                            if (airUsage > 1) {
+                                int i = (int) airUsage;
+                                addAir(-i);
+                                airUsage -= i;
+                            }
+                            heatExchanger.addHeat(-currentRecipe.heatUsed(heatExchanger.getAmbientTemperature()) * speedBoost * 0.75 * progressDivider);
                         }
                         if (craftingProgress >= CRAFTING_TIME) {
                             int filled = outputTank.fill(currentRecipe.getOutputFluid().copy(), FluidAction.SIMULATE);
@@ -145,8 +155,6 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
                                 outputItemHandler.insertItem(0, currentRecipe.getOutputItem().copy(), false);
                                 inputTank.drain(currentRecipe.getInputFluid().getAmount(), FluidAction.EXECUTE);
                                 inputItemHandler.extractItem(0, 1, false);
-                                addAir(-currentRecipe.airUsed());
-                                heatExchanger.addHeat(-currentRecipe.heatUsed(heatExchanger.getAmbientTemperature()) * inc * 0.75);
                                 craftingProgress -= CRAFTING_TIME;
                             } else {
                                 problem = TPProblem.OUTPUT_BLOCKED;
@@ -164,7 +172,7 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
             }
         } else {
             if (didWork && getWorld().rand.nextBoolean()) {
-                ClientUtils.emitParticles(getWorld(), getPos(), ParticleTypes.SMOKE);
+                ClientUtils.emitParticles(getWorld(), getPos(), ParticleTypes.SMOKE, 0.9);
             }
         }
     }

@@ -46,9 +46,20 @@ public class TileEntityHeatPipe extends TileEntityTickableBase implements ICamou
     }
 
     @Override
+    protected void onFirstServerTick() {
+        super.onFirstServerTick();
+
+        updateConnections();
+    }
+
+    @Override
     public void onNeighborBlockUpdate(BlockPos fromPos) {
         super.onNeighborBlockUpdate(fromPos);
 
+        updateConnections();
+    }
+
+    public void updateConnections() {
         BlockState state = getBlockState();
         boolean changed = false;
         for (Direction dir : DirectionUtil.VALUES) {
