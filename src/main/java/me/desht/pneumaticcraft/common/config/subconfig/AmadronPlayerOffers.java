@@ -8,7 +8,6 @@ import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
 import net.minecraft.util.ResourceLocation;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,11 +34,7 @@ public class AmadronPlayerOffers extends AuxConfigJson {
     }
 
     public static void save() {
-        try {
-            INSTANCE.writeToFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        INSTANCE.tryWriteToFile();
     }
 
     @Override

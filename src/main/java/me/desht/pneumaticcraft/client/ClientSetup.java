@@ -190,8 +190,9 @@ public class ClientSetup {
 
     private static void registerTileEntityRenderers() {
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.ADVANCED_PRESSURE_TUBE.get(), RenderPressureTubeModule::new);
-        ClientRegistry.bindTileEntityRenderer(ModTileEntities.APHORISM_TILE.get(), RenderAphorismTile::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.AIR_CANNON.get(), RenderAirCannon::new);
+        ClientRegistry.bindTileEntityRenderer(ModTileEntities.AERIAL_INTERFACE.get(), RenderAerialInterface::new);
+        ClientRegistry.bindTileEntityRenderer(ModTileEntities.APHORISM_TILE.get(), RenderAphorismTile::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.PNEUMATIC_DOOR.get(), RenderPneumaticDoor::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.PNEUMATIC_DOOR_BASE.get(), RenderPneumaticDoorBase::new);
         ClientRegistry.bindTileEntityRenderer(ModTileEntities.ASSEMBLY_CONTROLLER.get(), RenderAssemblyController::new);

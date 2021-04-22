@@ -33,7 +33,7 @@ public class GuiMoveStat extends GuiPneumaticScreenBase {
     private boolean clicked = false;
     private final List<IGuiAnimatedStat> otherStats = new ArrayList<>();
     private final List<ITextComponent> helpText = new ArrayList<>();
-    private final ArmorHUDLayout.LayoutTypes layoutItem;
+    private final ArmorHUDLayout.LayoutType layoutItem;
 
     private WidgetCheckBox snapToGrid;
     private Slider gridSlider;
@@ -41,11 +41,11 @@ public class GuiMoveStat extends GuiPneumaticScreenBase {
     private static boolean snap = false;
     private static int gridSize = 4;
 
-    public GuiMoveStat(IArmorUpgradeClientHandler renderHandler, ArmorHUDLayout.LayoutTypes layoutItem) {
+    public GuiMoveStat(IArmorUpgradeClientHandler renderHandler, ArmorHUDLayout.LayoutType layoutItem) {
         this(renderHandler, layoutItem, renderHandler.getAnimatedStat());
     }
 
-    public GuiMoveStat(IArmorUpgradeClientHandler renderHandler, ArmorHUDLayout.LayoutTypes layoutItem, @Nonnull IGuiAnimatedStat movedStat) {
+    public GuiMoveStat(IArmorUpgradeClientHandler renderHandler, ArmorHUDLayout.LayoutType layoutItem, @Nonnull IGuiAnimatedStat movedStat) {
         super(new StringTextComponent("Move Gui"));
 
         this.movedStat = movedStat;

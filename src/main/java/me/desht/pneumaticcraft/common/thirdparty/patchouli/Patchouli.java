@@ -87,7 +87,7 @@ public class Patchouli implements IThirdParty, IDocsProvider {
     }
 
     private void setConfigFlags() {
-        PatchouliAPI.instance.setConfigFlag(Names.MOD_ID + ":" + "plasticInWorldSolidification", PNCConfig.Common.General.plasticInWorldSolidification);
+        PatchouliAPI.instance.setConfigFlag(Names.MOD_ID + ":" + "plasticInWorldSolidification", PNCConfig.Common.Recipes.plasticInWorldSolidification);
         PatchouliAPI.instance.setConfigFlag(Names.MOD_ID + ":" + "liquidHopperDispenser", PNCConfig.Common.Machines.liquidHopperDispenser);
         PatchouliAPI.instance.setConfigFlag(Names.MOD_ID + ":" + "omniHopperDispenser", PNCConfig.Common.Machines.omniHopperDispenser);
         PatchouliAPI.instance.setConfigFlag(Names.MOD_ID + ":" + "electricCompressorEnabled",  false); // PNCConfig.Common.Recipes.enableElectricCompressorRecipe && Loader.isModLoaded(ModIds.INDUSTRIALCRAFT));

@@ -48,7 +48,7 @@ public class JetBootsOptions extends AbstractSliderOptions<JetBootsClientHandler
         gui.addWidget(new WidgetButtonExtended(30, 128, 150, 20,
                 xlate("pneumaticcraft.armor.gui.misc.moveStatScreen"), b -> {
             Minecraft.getInstance().player.closeScreen();
-            Minecraft.getInstance().displayGuiScreen(new GuiMoveStat(getClientUpgradeHandler(), ArmorHUDLayout.LayoutTypes.JET_BOOTS));
+            Minecraft.getInstance().displayGuiScreen(new GuiMoveStat(getClientUpgradeHandler(), ArmorHUDLayout.LayoutType.JET_BOOTS));
         }));
     }
 

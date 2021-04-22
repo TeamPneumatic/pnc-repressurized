@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.config.subconfig;
 
 import com.google.common.base.Charsets;
 import com.google.gson.*;
+import me.desht.pneumaticcraft.lib.Log;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -53,6 +54,14 @@ public abstract class AuxConfigJson implements IAuxConfig {
 
         JsonElement el = parser.parse(jsonString);
         FileUtils.write(file, gson.toJson(el), Charsets.UTF_8);
+    }
+
+    public void tryWriteToFile() {
+        try {
+            writeToFile();
+        } catch (IOException e) {
+            Log.stacktrace("Failed to save config", e);
+        }
     }
 
     private void readFromFile() throws IOException {

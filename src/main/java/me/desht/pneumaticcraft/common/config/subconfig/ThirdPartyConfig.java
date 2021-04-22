@@ -5,7 +5,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
@@ -46,11 +45,7 @@ public class ThirdPartyConfig extends AuxConfigJson {
         for (String modid : modids) {
             MODS.putIfAbsent(modid, true);
         }
-        try {
-            INSTANCE.writeToFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        INSTANCE.tryWriteToFile();
     }
 
     public static boolean isEnabled(String modId) {

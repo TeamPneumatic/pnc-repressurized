@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.client.gui.programmer;
 
-import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.client.gui.GuiInventorySearcher;
@@ -49,16 +48,15 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase<ProgWidgetI
         boolean advancedMode = PNCConfig.Client.programmerDifficulty == WidgetDifficulty.ADVANCED;
 
         // radio buttons to select between filtering by item or variable
-        addButton(itemRad = new WidgetRadioButton(guiLeft + 8, guiTop + 22, 0x404040, xlate("pneumaticcraft.gui.progWidget.itemFilter.itemLabel")));
-        addButton(varRad = new WidgetRadioButton(guiLeft + 8, guiTop + 34, 0x404040, xlate("pneumaticcraft.gui.progWidget.itemFilter.variableLabel")));
-        itemRad.otherChoices = ImmutableList.of(itemRad, varRad);
-        varRad.otherChoices = ImmutableList.of(itemRad, varRad);
-
-        if (progWidget.getVariable().isEmpty() || !advancedMode) {
-            itemRad.checked = true;
-        } else {
-            varRad.checked = true;
-        }
+        boolean useItemFilter = progWidget.getVariable().isEmpty() || !advancedMode;
+        WidgetRadioButton.Builder.create()
+                .addRadioButton(itemRad = new WidgetRadioButton(guiLeft + 8, guiTop + 22, 0x404040,
+                                xlate("pneumaticcraft.gui.progWidget.itemFilter.itemLabel")),
+                        useItemFilter)
+                .addRadioButton(varRad = new WidgetRadioButton(guiLeft + 8, guiTop + 34, 0x404040,
+                                xlate("pneumaticcraft.gui.progWidget.itemFilter.variableLabel")),
+                        !useItemFilter)
+                .build(this::addButton);
         itemRad.visible = varRad.visible = advancedMode;
 
         // buttons to open item & inv search when in item filter mode
@@ -127,25 +125,25 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase<ProgWidgetI
     public void tick() {
         super.tick();
 
-        itemSearchButton.visible = itemRad.checked;
-        invSearchButton.visible = itemRad.checked;
-        variableLabel.visible = varRad.checked && PNCConfig.Client.programmerDifficulty == WidgetDifficulty.ADVANCED;
+        itemSearchButton.visible = itemRad.isChecked();
+        invSearchButton.visible = itemRad.isChecked();
+        variableLabel.visible = varRad.isChecked() && PNCConfig.Client.programmerDifficulty == WidgetDifficulty.ADVANCED;
         itemLabel.visible = !variableLabel.visible;
-        variableField.visible = varRad.checked && PNCConfig.Client.programmerDifficulty == WidgetDifficulty.ADVANCED;
+        variableField.visible = varRad.isChecked() && PNCConfig.Client.programmerDifficulty == WidgetDifficulty.ADVANCED;
 
-        if (itemRad.checked) {
+        if (itemRad.isChecked()) {
             itemX = itemLabel.getWidth() + 9;
         } else {
             itemX = -1;
         }
         ItemStack filter = progWidget.getRawFilter();
-        checkBoxUseDurability.active = varRad.checked || filter.getMaxDamage() > 0 && !checkBoxUseModSimilarity.checked;
-        checkBoxUseNBT.active = varRad.checked || !filter.isEmpty() && !checkBoxUseModSimilarity.checked && !checkBoxMatchBlock.checked;
-        checkBoxUseModSimilarity.active = varRad.checked || !filter.isEmpty() && !checkBoxMatchBlock.checked;
+        checkBoxUseDurability.active = varRad.isChecked() || filter.getMaxDamage() > 0 && !checkBoxUseModSimilarity.checked;
+        checkBoxUseNBT.active = varRad.isChecked() || !filter.isEmpty() && !checkBoxUseModSimilarity.checked && !checkBoxMatchBlock.checked;
+        checkBoxUseModSimilarity.active = varRad.isChecked() || !filter.isEmpty() && !checkBoxMatchBlock.checked;
         TranslationTextComponent msg = xlate("pneumaticcraft.gui.logistics_frame.matchModId");
         String modName = StringUtils.abbreviate(ModNameCache.getModName(filter.getItem()), 22);
         checkBoxUseModSimilarity.setMessage(filter.isEmpty() ? msg : msg.appendString(" (" + modName + ")"));
-        checkBoxMatchBlock.active = varRad.checked || filter.getItem() instanceof BlockItem && !checkBoxUseNBT.checked && !checkBoxUseModSimilarity.checked;
+        checkBoxMatchBlock.active = varRad.isChecked() || filter.getItem() instanceof BlockItem && !checkBoxUseNBT.checked && !checkBoxUseModSimilarity.checked;
     }
 
     @Override
@@ -154,12 +152,12 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase<ProgWidgetI
 
         super.onClose();
     }
-    
+
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         super.render(matrixStack, mouseX, mouseY, partialTicks);
 
-        if (itemRad.checked) {
+        if (itemRad.isChecked()) {
             minecraft.getTextureManager().bindTexture(getTexture());
             RenderSystem.enableTexture();
             RenderSystem.color4f(1, 1, 1, 1);

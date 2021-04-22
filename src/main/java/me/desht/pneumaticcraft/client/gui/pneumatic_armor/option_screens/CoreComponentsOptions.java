@@ -29,7 +29,7 @@ public class CoreComponentsOptions extends IOptionPage.SimpleToggleableOptions<C
     public void populateGui(IGuiScreen gui) {
         gui.addWidget(new WidgetButtonExtended(30, 128, 150, 20,
                 xlate("pneumaticcraft.armor.gui.misc.movePressureScreen"),
-                b -> Minecraft.getInstance().displayGuiScreen(new GuiMoveStat(getClientUpgradeHandler(), ArmorHUDLayout.LayoutTypes.POWER)))
+                b -> Minecraft.getInstance().displayGuiScreen(new GuiMoveStat(getClientUpgradeHandler(), ArmorHUDLayout.LayoutType.POWER)))
         );
 
         gui.addWidget(new WidgetButtonExtended(30, 150, 150, 20,
@@ -38,7 +38,7 @@ public class CoreComponentsOptions extends IOptionPage.SimpleToggleableOptions<C
                     WidgetAnimatedStat.StatIcon.NONE, HUDHandler.getInstance().getStatOverlayColor(), null, ArmorHUDLayout.INSTANCE.messageStat);
             getClientUpgradeHandler().testMessageStat.openStat();
             Minecraft.getInstance().displayGuiScreen(
-                    new GuiMoveStat(getClientUpgradeHandler(), ArmorHUDLayout.LayoutTypes.MESSAGE, getClientUpgradeHandler().testMessageStat));
+                    new GuiMoveStat(getClientUpgradeHandler(), ArmorHUDLayout.LayoutType.MESSAGE, getClientUpgradeHandler().testMessageStat));
         }));
 
         gui.addWidget(new WidgetButtonExtended(30, 194, 150, 20,

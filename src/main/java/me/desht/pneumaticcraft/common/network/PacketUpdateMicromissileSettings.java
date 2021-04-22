@@ -15,7 +15,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.SoundCategory;
 import net.minecraftforge.fml.network.NetworkEvent;
 
-import java.io.IOException;
 import java.util.function.Supplier;
 
 /**
@@ -92,17 +91,12 @@ public class PacketUpdateMicromissileSettings {
         tag.putString(ItemMicromissiles.NBT_FIRE_MODE, fireMode.toString());
 
         if (saveDefault) {
-            try {
-                // TODO player capability?
-                MicromissileDefaults.INSTANCE.setDefaults(player,
-                        new MicromissileDefaults.Entry(topSpeed, accel, damage, point, entityFilter, fireMode)
-                );
-                MicromissileDefaults.INSTANCE.writeToFile();
-                NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.CHIRP.get(), SoundCategory.PLAYERS, player.getPosX(), player.getPosY(), player.getPosZ(), 1.0f, 1.0f, false), (ServerPlayerEntity) player);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            // TODO 1.17 player capability would be a better way to handle this
+            MicromissileDefaults.INSTANCE.setDefaults(player,
+                    new MicromissileDefaults.Entry(topSpeed, accel, damage, point, entityFilter, fireMode)
+            );
+            MicromissileDefaults.INSTANCE.tryWriteToFile();
+            NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.CHIRP.get(), SoundCategory.PLAYERS, player.getPosX(), player.getPosY(), player.getPosZ(), 1.0f, 1.0f, false), (ServerPlayerEntity) player);
         }
     }
-
 }

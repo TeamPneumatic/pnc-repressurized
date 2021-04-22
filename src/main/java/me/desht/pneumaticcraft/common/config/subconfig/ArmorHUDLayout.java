@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.config.subconfig;
 
 import com.google.gson.JsonObject;
 
-import java.io.IOException;
+import java.util.function.BiConsumer;
 
 public class ArmorHUDLayout extends AuxConfigJson {
     private static final LayoutItem POWER_DEF = new LayoutItem(0.995f, 0.005f, true);
@@ -65,22 +65,9 @@ public class ArmorHUDLayout extends AuxConfigJson {
         return "PneumaticArmorHUDLayout";
     }
 
-    public void updateLayout(LayoutTypes what, float x, float y, boolean leftSided) {
-        LayoutItem l = new LayoutItem(x, y, leftSided);
-        switch (what) {
-            case POWER: powerStat = l; break;
-            case MESSAGE: messageStat = l; break;
-            case ENTITY_TRACKER: entityTrackerStat = l; break;
-            case BLOCK_TRACKER: blockTrackerStat = l; break;
-            case ITEM_SEARCH: itemSearchStat = l; break;
-            case AIR_CON: airConStat = l; break;
-            case JET_BOOTS: jetBootsStat = l; break;
-        }
-        try {
-            writeToFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void updateLayout(LayoutType layoutType, float x, float y, boolean leftSided) {
+        layoutType.update(this, new LayoutItem(x, y, leftSided));
+        tryWriteToFile();
     }
 
     public static class LayoutItem {
@@ -123,13 +110,23 @@ public class ArmorHUDLayout extends AuxConfigJson {
         }
     }
 
-    public enum LayoutTypes {
-        POWER,
-        MESSAGE,
-        ENTITY_TRACKER,
-        BLOCK_TRACKER,
-        ITEM_SEARCH,
-        AIR_CON,
-        JET_BOOTS
+    public enum LayoutType {
+        POWER((layout, item) -> layout.powerStat = item),
+        MESSAGE((layout, item) -> layout.messageStat = item),
+        ENTITY_TRACKER((layout, item) -> layout.entityTrackerStat = item),
+        BLOCK_TRACKER((layout, item) -> layout.blockTrackerStat = item),
+        ITEM_SEARCH((layout, item) -> layout.itemSearchStat = item),
+        AIR_CON((layout, item) -> layout.airConStat = item),
+        JET_BOOTS((layout, item) -> layout.jetBootsStat = item);
+
+        private final BiConsumer<ArmorHUDLayout, LayoutItem> consumer;
+
+        LayoutType(BiConsumer<ArmorHUDLayout, LayoutItem> consumer) {
+            this.consumer = consumer;
+        }
+
+        void update(ArmorHUDLayout layout, LayoutItem item) {
+            consumer.accept(layout, item);
+        }
     }
 }
