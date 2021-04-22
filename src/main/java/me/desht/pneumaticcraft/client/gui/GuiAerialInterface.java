@@ -178,17 +178,17 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<ContainerAeria
     protected void addProblems(List<ITextComponent> textList) {
         super.addProblems(textList);
 
-        if (te.playerName.equals("")) {
+        if (te.getPlayerName().isEmpty()) {
             textList.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.aerialInterface.noPlayer"));
         } else if (!te.isConnectedToPlayer) {
-            textList.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.aerialInterface.playerOffline", te.playerName));
+            textList.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.aerialInterface.playerOffline", te.getPlayerName()));
         }
     }
 
     @Override
     protected void addInformation(List<ITextComponent> curInfo) {
-        if (te.playerName != null && !te.playerName.isEmpty()) {
-            curInfo.add(xlate("pneumaticcraft.gui.tab.info.aerialInterface.linked", te.playerName));
+        if (te.getPlayerName() != null && !te.getPlayerName().isEmpty()) {
+            curInfo.add(xlate("pneumaticcraft.gui.tab.info.aerialInterface.linked", te.getPlayerName()));
         }
     }
 }

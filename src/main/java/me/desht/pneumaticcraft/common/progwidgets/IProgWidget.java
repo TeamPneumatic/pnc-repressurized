@@ -152,6 +152,10 @@ public interface IProgWidget extends IProgWidgetBase {
 
     boolean canBeRunByComputers(IDroneBase drone, IProgWidget widget);
 
+    default boolean isDifficultyOK(WidgetDifficulty difficulty) {
+        return getDifficulty().isNotMoreDifficult(difficulty);
+    }
+
     WidgetDifficulty getDifficulty();
 
     ProgWidgetType<?> getType();
@@ -164,12 +168,16 @@ public interface IProgWidget extends IProgWidgetBase {
     List<ITextComponent> getExtraStringInfo();
 
     enum WidgetDifficulty {
-        EASY("easy"), MEDIUM("medium"), ADVANCED("advanced");
+        EASY("easy", 0),
+        MEDIUM("medium", 1),
+        ADVANCED("advanced", 2);
 
         private final String name;
+        private final int difficultyLevel;
 
-        WidgetDifficulty(String name) {
+        WidgetDifficulty(String name, int difficultyLevel) {
             this.name = name;
+            this.difficultyLevel = difficultyLevel;
         }
 
         public String getTranslationKey() {
@@ -177,6 +185,10 @@ public interface IProgWidget extends IProgWidgetBase {
         }
 
         public String getTooltipTranslationKey() { return "pneumaticcraft.gui.programmer.difficulty." + name + ".tooltip"; }
+
+        public boolean isNotMoreDifficult(WidgetDifficulty other) {
+            return this.difficultyLevel <= other.difficultyLevel;
+        }
     }
 
     /**
@@ -185,7 +197,7 @@ public interface IProgWidget extends IProgWidgetBase {
      * @param type type of the progwidget
      * @return the internal non-API progwidget type
      */
-    static IProgWidget create(ProgWidgetType type) {
+    static IProgWidget create(ProgWidgetType<?> type) {
         IProgWidgetBase base = type.create();
         Validate.isTrue(base instanceof IProgWidget);
         return (IProgWidget) base;

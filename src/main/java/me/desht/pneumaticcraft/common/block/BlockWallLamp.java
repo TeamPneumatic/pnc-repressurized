@@ -97,6 +97,7 @@ public class BlockWallLamp extends BlockPneumaticCraft implements ColorHandlers.
         }
     }
 
+    @Override
     @Nullable
     public BlockState getStateForPlacement(BlockItemUseContext context) {
         return getDefaultState()

@@ -68,7 +68,6 @@ public class JEIPlugin implements IModPlugin {
                 new JEIUVLightBoxCategory(),
                 new JEIAmadronTradeCategory(),
                 new JEIHeatFrameCoolingCategory(),
-                new JEIPlasticSolidifyingCategory(),
                 new JEIEtchingTankCategory(),
                 new JEIYeastCraftingCategory(),
                 new JEISpawnerExtractionCategory(),
@@ -77,6 +76,9 @@ public class JEIPlugin implements IModPlugin {
         );
         if (PNCConfig.Common.Recipes.explosionCrafting) {
             registry.addRecipeCategories(new JEIExplosionCraftingCategory());
+        }
+        if (PNCConfig.Common.Recipes.plasticInWorldSolidification) {
+            registry.addRecipeCategories(new JEIPlasticSolidifyingCategory());
         }
     }
 
@@ -98,11 +100,13 @@ public class JEIPlugin implements IModPlugin {
 
         // these have their own pseudo-recipes
         registration.addRecipes(JEIUVLightBoxCategory.getAllRecipes(), ModCategoryUid.UV_LIGHT_BOX);
-        registration.addRecipes(JEIPlasticSolidifyingCategory.getAllRecipes(), ModCategoryUid.PLASTIC_SOLIDIFYING);
         registration.addRecipes(JEIEtchingTankCategory.getAllRecipes(), ModCategoryUid.ETCHING_TANK);
         registration.addRecipes(JEIYeastCraftingCategory.getAllRecipes(), ModCategoryUid.YEAST_CRAFTING);
         registration.addRecipes(JEISpawnerExtractionCategory.getAllRecipes(), ModCategoryUid.SPAWNER_EXTRACTION);
         registration.addRecipes(JEIMemoryEssenceCategory.getAllRecipes(), ModCategoryUid.MEMORY_ESSENCE);
+        if (PNCConfig.Common.Recipes.plasticInWorldSolidification) {
+            registration.addRecipes(JEIPlasticSolidifyingCategory.getAllRecipes(), ModCategoryUid.PLASTIC_SOLIDIFYING);
+        }
 
         // even though heat properties are in the vanilla recipe system, we use a custom registration here
         // so we can pull extra entries from the BlockHeatProperties manager (auto-registered fluids etc.)

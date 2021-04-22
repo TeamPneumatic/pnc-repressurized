@@ -73,7 +73,6 @@ public class ConfigHelper {
         PNCConfig.Common.General.dronesRenderHeldItem = common.general.dronesRenderHeldItem.get();
         PNCConfig.Common.General.dronesCanImportXPOrbs = common.general.dronesCanImportXPOrbs.get();
         PNCConfig.Common.General.droneDebuggerPathParticles = common.general.droneDebuggerPathParticles.get();
-        PNCConfig.Common.General.plasticInWorldSolidification = common.general.plasticInWorldSolidification.get();
         PNCConfig.Common.General.vacuumTrapBlacklist = common.general.vacuumTrapBlacklist.get()
                 .stream().map(resourceName -> new ResourceLocation(resourceName.toLowerCase())).collect(Collectors.toSet());
 
@@ -157,6 +156,7 @@ public class ConfigHelper {
 
         PNCConfig.Common.Recipes.coalToDiamondsRecipe = common.recipes.coalToDiamondsRecipe.get();
         PNCConfig.Common.Recipes.explosionCrafting = common.recipes.explosionCrafting.get();
+        PNCConfig.Common.Recipes.plasticInWorldSolidification = common.recipes.plasticInWorldSolidification.get();
 
         PNCConfig.Common.Heat.defaultBlockThermalResistance = common.heat.blockThermalResistance.get();
         PNCConfig.Common.Heat.defaultFluidThermalResistance = common.heat.fluidThermalResistance.get();

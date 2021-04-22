@@ -68,7 +68,7 @@ public class ExplosionCraftingRecipeImpl extends ExplosionCraftingRecipe {
 
     public static NonNullList<ItemStack> tryToCraft(World world, ItemStack stack) {
         ExplosionCraftingRecipe recipe = PneumaticCraftRecipeType.EXPLOSION_CRAFTING.findFirst(world, r -> r.matches(stack));
-        return recipe == null ? EMPTY_RESULT : createOutput(recipe, stack);
+        return recipe == null || recipe.getAmount() == 0 ? EMPTY_RESULT : createOutput(recipe, stack);
     }
 
     /**

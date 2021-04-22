@@ -31,7 +31,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.lwjgl.glfw.GLFW;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -143,11 +142,7 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
             super.onClick(mouseX, mouseY);
 
             ArmorFeatureStatus.INSTANCE.setUpgradeEnabled(upgradeID, checked);
-            try {
-                ArmorFeatureStatus.INSTANCE.writeToFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            ArmorFeatureStatus.INSTANCE.tryWriteToFile();
 
             if (entry != null) {
                 EquipmentSlotType slot = entry.getSlot();

@@ -9,9 +9,6 @@ import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetCoordinateOperator.E
 import net.minecraft.util.Direction;
 import net.minecraft.util.text.StringTextComponent;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiProgWidgetCoordinateOperator extends GuiProgWidgetAreaShow<ProgWidgetCoordinateOperator> {
@@ -30,17 +27,14 @@ public class GuiProgWidgetCoordinateOperator extends GuiProgWidgetAreaShow<ProgW
         addLabel(xlate("pneumaticcraft.gui.progWidget.coordinateOperator.axes"), guiLeft + 100, guiTop + 30);
         addLabel(xlate("pneumaticcraft.gui.progWidget.coordinate.variableName"), guiLeft + 7, guiTop + 88);
 
-        List<WidgetRadioButton> radioButtons = new ArrayList<>();
+        WidgetRadioButton.Builder<WidgetRadioButton> builder = WidgetRadioButton.Builder.create();
         for (EnumOperator op : EnumOperator.values()) {
-            String key = op.getTranslationKey();
-            WidgetRadioButton radioButton = new WidgetRadioButton(guiLeft + 7, guiTop + 42 + 12 * op.ordinal(), 0xFF404040,
-                    xlate(op.getTranslationKey()), b -> progWidget.setOperator(op));
-            radioButtons.add(radioButton);
-            radioButton.checked = progWidget.getOperator() == op;
-            radioButton.otherChoices = radioButtons;
-            radioButton.setTooltip(xlate(key + ".hint"));
-            addButton(radioButton);
+            builder.addRadioButton(new WidgetRadioButton(guiLeft + 7, guiTop + 42 + 12 * op.ordinal(), 0xFF404040,
+                            xlate(op.getTranslationKey()), b -> progWidget.setOperator(op))
+                            .setTooltip(xlate(op.getTranslationKey() + ".hint")),
+                    progWidget.getOperator() == op);
         }
+        builder.build(this::addButton);
 
         for (Direction.Axis axis : Direction.Axis.values()) {
             WidgetCheckBox checkBox = new WidgetCheckBox(guiLeft + 100, guiTop + 42 + axis.ordinal() * 12, 0xFF404040,

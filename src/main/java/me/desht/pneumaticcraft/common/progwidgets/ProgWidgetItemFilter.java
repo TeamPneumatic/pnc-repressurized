@@ -76,6 +76,7 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
         }
     }
 
+    @Override
     public List<ITextComponent> getExtraStringInfo() {
         return Collections.singletonList(varAsTextComponent(variable));
     }

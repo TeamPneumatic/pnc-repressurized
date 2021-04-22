@@ -41,7 +41,7 @@ public abstract class FluidPlastic {
 
         @Override
         public void tick(World worldIn, BlockPos pos, FluidState state) {
-            if (PNCConfig.Common.General.plasticInWorldSolidification) {
+            if (PNCConfig.Common.Recipes.plasticInWorldSolidification) {
                 ItemEntity item = new ItemEntity(worldIn, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, new ItemStack(ModItems.PLASTIC.get()));
                 worldIn.addEntity(item);
                 worldIn.setBlockState(pos, Blocks.AIR.getDefaultState(), Constants.BlockFlags.DEFAULT);
@@ -63,7 +63,7 @@ public abstract class FluidPlastic {
 
         @Override
         public String getCustomTooltipTranslationKey() {
-            return PNCConfig.Common.General.plasticInWorldSolidification ? getTranslationKey() : getTranslationKey() + ".not_in_world";
+            return PNCConfig.Common.Recipes.plasticInWorldSolidification ? getTranslationKey() : getTranslationKey() + ".not_in_world";
         }
     }
 }
