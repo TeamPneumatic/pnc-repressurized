@@ -18,20 +18,59 @@ import net.minecraft.util.math.MathHelper;
 import static me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberInterface.MAX_PROGRESS;
 
 public class RenderPressureChamberInterface extends AbstractTileModelRenderer<TileEntityPressureChamberInterface> {
-    private final ModelRenderer input;
-    private final ModelRenderer output;
+
+    private final ModelRenderer inputLeft;
+    private final ModelRenderer inputRight;
+    private final ModelRenderer inputBottom;
+    private final ModelRenderer inputTop;
+    private final ModelRenderer outputLeft;
+    private final ModelRenderer outputRight;
+    private final ModelRenderer outputBottom;
+    private final ModelRenderer outputTop;
 
     public RenderPressureChamberInterface(TileEntityRendererDispatcher dispatcher) {
         super(dispatcher);
 
-        input = new ModelRenderer(128, 128, 0, 84);
-        input.addBox(0F, 0F, 0F, 10, 10, 2);
-        input.setRotationPoint(-5F, 11F, -7.2F);
-        input.mirror = true;
-        output = new ModelRenderer(128, 128, 24, 84);
-        output.addBox(0F, 0F, 0F, 10, 10, 2);
-        output.setRotationPoint(-5F, 11F, 5.2F);
-        output.mirror = true;
+        inputLeft = new ModelRenderer(32, 32, 0, 0);
+        inputLeft.addBox(-4.0F, -12.0F, -6.0F, 4.0F, 8.0F, 1.0F);
+        inputLeft.setRotationPoint(0.0F, 24.0F, 0.0F);
+        inputLeft.mirror = true;
+
+        inputRight = new ModelRenderer(32, 32, 10, 0);
+        inputRight.addBox(0.0F, -12.0F, -6.0F, 4.0F, 8.0F, 1.0F);
+        inputRight.setRotationPoint(0.0F, 24.0F, 0.0F);
+        inputRight.mirror = true;
+
+        inputBottom = new ModelRenderer(32, 32, 0, 9);
+        inputBottom.addBox(-4.0F, -8.0F, -5.0F, 8.0F, 4.0F, 1.0F);
+        inputBottom.setRotationPoint(0.0F, 24.0F, 0.0F);
+        inputBottom.mirror = false;
+
+        inputTop = new ModelRenderer(32, 32, 0, 14);
+        inputTop.addBox(-4.0F, -12.0F, -5.0F, 8.0F, 4.0F, 1.0F);
+        inputTop.setRotationPoint(0.0F, 24.0F, 0.0F);
+        inputTop.mirror = false;
+
+        outputLeft = new ModelRenderer(32, 32, 0, 19);
+        outputLeft.addBox(-4.0F, -12.0F, 5.0F, 4.0F, 8.0F, 1.0F);
+        outputLeft.setRotationPoint(0.0F, 24.0F, 0.0F);
+        outputLeft.mirror = true;
+
+        outputRight = new ModelRenderer(32, 32, 10, 19);
+        outputRight.addBox(0.0F, -12.0F, 5.0F, 4.0F, 8.0F, 1.0F);
+        outputRight.setRotationPoint(0.0F, 24.0F, 0.0F);
+        outputRight.mirror = true;
+
+        outputBottom = new ModelRenderer(32, 32, 0, 9);
+        outputBottom.addBox(-4.0F, -8.0F, 4.0F, 8.0F, 4.0F, 1.0F);
+        outputBottom.setRotationPoint(0.0F, 24.0F, 0.0F);
+        outputBottom.mirror = false;
+
+        outputTop = new ModelRenderer(32, 32, 0, 14);
+        outputTop.addBox(-4.0F, -12.0F, 4.0F, 8.0F, 4.0F, 1.0F);
+        outputTop.setRotationPoint(0.0F, 24.0F, 0.0F);
+        outputTop.mirror = false;
+
     }
 
     @Override
@@ -42,18 +81,47 @@ public class RenderPressureChamberInterface extends AbstractTileModelRenderer<Ti
 
         float inputProgress = MathHelper.lerp(partialTicks, te.oldInputProgress, te.inputProgress) / MAX_PROGRESS;
         float outputProgress = MathHelper.lerp(partialTicks, te.oldOutputProgress, te.outputProgress) / MAX_PROGRESS;
-        if (inputProgress < 1f) {
+        if (inputProgress <= 1f) {
+            // REMOVED:           matrixStackIn.scale(1F - inputProgress, 1, 1);
             matrixStackIn.push();
-            matrixStackIn.translate((1F - (float) Math.cos(inputProgress * Math.PI)) * 0.37F, 0, 0);
-            matrixStackIn.scale(1F - inputProgress, 1, 1);
-            input.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
+            matrixStackIn.translate((1F - (float) Math.cos(inputProgress * Math.PI)) * 0.122F + 0.25, 0, 0);
+            inputLeft.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
+            matrixStackIn.pop();
+
+            matrixStackIn.push();
+            matrixStackIn.translate((-1F + (float) Math.cos(inputProgress * Math.PI)) * 0.122F - 0.25, 0, 0);
+            inputRight.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
+            matrixStackIn.pop();
+
+            matrixStackIn.push();
+            matrixStackIn.translate(0, (1F - (float) Math.cos(inputProgress * Math.PI)) * 0.122F, 0);
+            inputBottom.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
+            matrixStackIn.pop();
+
+            matrixStackIn.push();
+            matrixStackIn.translate(0, (-1F + (float) Math.cos(inputProgress * Math.PI)) * 0.122F, 0);
+            inputTop.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
             matrixStackIn.pop();
         }
         if (outputProgress < 1f) {
             matrixStackIn.push();
-            matrixStackIn.translate((1F - (float) Math.cos(outputProgress * Math.PI)) * 0.37F, 0, 0);
-            matrixStackIn.scale(1F - outputProgress, 1, 1);
-            output.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
+            matrixStackIn.translate((1F - (float) Math.cos(outputProgress * Math.PI)) * 0.122F + 0.25, 0, 0);
+            outputLeft.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
+            matrixStackIn.pop();
+
+            matrixStackIn.push();
+            matrixStackIn.translate((-1F + (float) Math.cos(outputProgress * Math.PI)) * 0.122F - 0.25, 0, 0);
+            outputRight.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
+            matrixStackIn.pop();
+
+            matrixStackIn.push();
+            matrixStackIn.translate(0, (1F - (float) Math.cos(outputProgress * Math.PI)) * 0.122F, 0);
+            outputBottom.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
+            matrixStackIn.pop();
+
+            matrixStackIn.push();
+            matrixStackIn.translate(0, (-1F + (float) Math.cos(outputProgress * Math.PI)) * 0.122F, 0);
+            outputTop.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
             matrixStackIn.pop();
         }
     }
