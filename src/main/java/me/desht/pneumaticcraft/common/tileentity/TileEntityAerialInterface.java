@@ -21,7 +21,6 @@ import me.desht.pneumaticcraft.common.tileentity.SideConfigurator.RelativeFace;
 import me.desht.pneumaticcraft.common.util.EnchantmentUtils;
 import me.desht.pneumaticcraft.common.util.GlobalTileEntityCacheManager;
 import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
-import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -205,10 +204,8 @@ public class TileEntityAerialInterface extends TileEntityPneumaticBase
     public void onDescUpdate() {
         super.onDescUpdate();
 
-        Log.info("synced player: '" + playerName + "'");
         gameProfileClient = playerName.isEmpty() ? null :
                 SkullTileEntity.updateGameProfile(new GameProfile(null, playerName));
-        Log.info("profile: " + gameProfileClient);
     }
 
     @Override
