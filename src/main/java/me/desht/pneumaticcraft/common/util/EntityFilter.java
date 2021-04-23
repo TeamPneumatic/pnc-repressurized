@@ -25,10 +25,11 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.IForgeShearable;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
-import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -135,61 +136,104 @@ public class EntityFilter implements Predicate<Entity>, com.google.common.base.P
     }
 
     private enum Modifier implements BiPredicate<Entity,String> {
-        AGE(ImmutableSet.of("adult", "baby")),
-        BREEDABLE(ImmutableSet.of("yes", "no")),
-        SHEARABLE(ImmutableSet.of("yes", "no")),
-        COLOR(DYE_COLORS);
+        AGE(ImmutableSet.of("adult", "baby"),
+                Modifier::testAge
+        ),
+        BREEDABLE(ImmutableSet.of("yes", "no"),
+                Modifier::testBreedable
+        ),
+        SHEARABLE(ImmutableSet.of("yes", "no"),
+                Modifier::testShearable
+        ),
+        COLOR(DYE_COLORS,
+                Modifier::hasColor
+        ),
+        HOLDING((item) -> ForgeRegistries.ITEMS.containsKey(new ResourceLocation(item)),
+                "any valid item registry name, e.g. 'minecraft:cobblestone'",
+                (entity, val) -> isHeldItem(entity, val, true)
+        ),
+        HOLDING_OFFHAND((item) -> ForgeRegistries.ITEMS.containsKey(new ResourceLocation(item)),
+                "any valid item registry name, e.g. 'minecraft:cobblestone'",
+                (entity, val) -> isHeldItem(entity, val, false)
+        );
 
-        private final Set<String> vals;
+        private final Set<String> validationSet;
+        private final Predicate<String> validationPredicate;
+        private final String valText;
+        private final BiPredicate<Entity,String> testPredicate;
 
-        Modifier(Set<String> v) {
-            vals = v;
+        Modifier(Predicate<String> validationPredicate, String valText, BiPredicate<Entity, String> testPredicate) {
+            this.validationPredicate = validationPredicate;
+            this.valText = valText;
+            this.testPredicate = testPredicate;
+            this.validationSet = Collections.emptySet();
+        }
+
+        Modifier(Set<String> validationSet, BiPredicate<Entity, String> testPredicate) {
+            this.validationPredicate = null;
+            this.valText = "";
+            this.testPredicate = testPredicate;
+            this.validationSet = validationSet;
+        }
+
+        private static boolean testShearable(Entity entity, String val) {
+            return entity instanceof IForgeShearable
+                    && ((IForgeShearable) entity).isShearable(new ItemStack(Items.SHEARS), entity.getEntityWorld(), entity.getPosition()) ?
+                    val.equalsIgnoreCase("yes") : val.equalsIgnoreCase("no");
+        }
+
+        private static boolean testBreedable(Entity entity, String val) {
+            return entity instanceof AnimalEntity && (((AnimalEntity) entity).getGrowingAge() == 0 ?
+                    val.equalsIgnoreCase("yes") : val.equalsIgnoreCase("no")
+            );
+        }
+
+        private static boolean testAge(Entity entity, String val) {
+            return entity instanceof AgeableEntity && (((AgeableEntity) entity).getGrowingAge() >= 0 ?
+                    val.equalsIgnoreCase("adult") : val.equalsIgnoreCase("baby"));
         }
 
         boolean isValid(String s) {
-            return vals.contains(s);
+            return validationPredicate == null ? validationSet.contains(s) : validationPredicate.test(s);
         }
 
         @Override
         public boolean test(Entity entity, String val) {
-            switch (this) {
-                case AGE:
-                    if (entity instanceof AgeableEntity) {
-                        return ((AgeableEntity) entity).getGrowingAge() >= 0 ?
-                                val.equalsIgnoreCase("adult") : val.equalsIgnoreCase("baby");
-                    }
-                    break;
-                case BREEDABLE:
-                    if (entity instanceof AnimalEntity) {
-                        return ((AnimalEntity) entity).getGrowingAge() == 0 ?
-                                val.equalsIgnoreCase("yes") : val.equalsIgnoreCase("no");
-                    }
-                    break;
-                case SHEARABLE:
-                    if (entity instanceof IForgeShearable) {
-                        return ((IForgeShearable) entity).isShearable(new ItemStack(Items.SHEARS), entity.getEntityWorld(), entity.getPosition()) ?
-                                val.equalsIgnoreCase("yes") : val.equalsIgnoreCase("no");
-                    }
-                    break;
-                case COLOR:
-                    if (entity instanceof SheepEntity) {
-                        return ((SheepEntity) entity).getFleeceColor().getTranslationKey().equalsIgnoreCase(val);
-                    } else if (entity instanceof WolfEntity) {
-                        return ((WolfEntity) entity).getCollarColor().getTranslationKey().equalsIgnoreCase(val);
-                    } else if (entity instanceof CatEntity) {
-                        return ((CatEntity) entity).getCollarColor().getTranslationKey().equalsIgnoreCase(val);
-                    }
-                    break;
+            return testPredicate.test(entity, val);
+        }
+
+        public String displayValidOptions() {
+            return validationSet.isEmpty() ? valText : Strings.join(validationSet, ",");
+        }
+
+        private static boolean hasColor(Entity entity, String val) {
+            if (entity instanceof SheepEntity) {
+                return ((SheepEntity) entity).getFleeceColor().getTranslationKey().equalsIgnoreCase(val);
+            } else if (entity instanceof WolfEntity) {
+                return ((WolfEntity) entity).getCollarColor().getTranslationKey().equalsIgnoreCase(val);
+            } else if (entity instanceof CatEntity) {
+                return ((CatEntity) entity).getCollarColor().getTranslationKey().equalsIgnoreCase(val);
+            } else {
+                return false;
+            }
+        }
+
+        private static boolean isHeldItem(Entity entity, String name, boolean mainHand) {
+            if (entity instanceof LivingEntity) {
+                if (!name.contains(":")) {
+                    name = "minecraft:" + name;
+                }
+                ItemStack stack = mainHand ? ((LivingEntity) entity).getHeldItemMainhand() : ((LivingEntity) entity).getHeldItemOffhand();
+                return stack.getItem().getRegistryName() != null && stack.getItem().getRegistryName().toString().equals(name);
             }
             return false;
         }
-
     }
 
     private static class EntityMatcher implements Predicate<Entity> {
         private final Pattern regex;
         private final Class<?> typeClass;
-        private final List<Pair<Modifier,String>> modifiers = new ArrayList<>();
+        private final List<ModifierEntry> modifiers = new ArrayList<>();
 
         private EntityMatcher(String element) {
             String[] splits = ELEMENT_SUBDIVIDER.split(element);
@@ -213,16 +257,24 @@ public class EntityFilter implements Predicate<Entity>, com.google.common.base.P
             }
 
             for (int i = 1; i < splits.length; i++) {
-                String[] modifier = splits[i].split("=");
-                Validate.isTrue(modifier.length == 2, "Invalid modifier syntax: " + splits[i]);
-                Modifier m;
-                try {
-                    m = Modifier.valueOf(modifier[0].toUpperCase(Locale.ROOT));
-                } catch (Exception e) {
-                    throw new IllegalArgumentException("Unknown modifier: " + modifier[0]);
+                String[] parts = splits[i].split("=");
+                Validate.isTrue(parts.length == 2, "Invalid modifier syntax: " + splits[i]);
+                boolean sense = true;
+                if (parts[0].endsWith("!")) {
+                    parts[0] = parts[0].substring(0, parts[0].length() - 1);
+                    sense = false;
                 }
-                Validate.isTrue(m.isValid(modifier[1]), "'" + modifier[1] + "' is not a valid value for modifier '" + modifier[0] + "'.  Valid values are: " + Strings.join(m.vals, ","));
-                modifiers.add(Pair.of(m, modifier[1]));
+                Modifier modifier;
+                try {
+                    modifier = Modifier.valueOf(parts[0].toUpperCase(Locale.ROOT));
+                } catch (Exception e) {
+                    throw new IllegalArgumentException("Unknown modifier: " + parts[0]);
+                }
+                if (!modifier.isValid(parts[1])) {
+                    throw new IllegalArgumentException(String.format("Invalid value '%s' for modifier '%s'. Valid values: %s",
+                            parts[1], parts[0], modifier.displayValidOptions()));
+                }
+                modifiers.add(new ModifierEntry(modifier, parts[1], sense));
             }
         }
 
@@ -236,7 +288,41 @@ public class EntityFilter implements Predicate<Entity>, com.google.common.base.P
                 ok = m.matches();
             }
             // modifiers test is a match-all (e.g. "sheep(sheared=false,color=black)" matches sheep which are unsheared AND black)
-            return ok && modifiers.stream().allMatch(pair -> pair.getLeft().test(entity, pair.getRight()));
+            return ok && modifiers.stream().allMatch(modifierEntry -> modifierEntry.test(entity));
+        }
+    }
+
+    private static class ModifierEntry implements Predicate<Entity> {
+        final Modifier modifier;
+        final String value;
+        final boolean sense;
+
+        private ModifierEntry(Modifier modifier, String value, boolean sense) {
+            this.modifier = modifier;
+            this.value = value;
+            this.sense = sense;
+        }
+
+        @Override
+        public boolean test(Entity e) {
+            return modifier.test(e, value) == sense;
+        }
+    }
+
+    public static class ConstantEntityFilter extends EntityFilter {
+        static final ConstantEntityFilter ALLOW = new ConstantEntityFilter(true);
+        static final ConstantEntityFilter DENY = new ConstantEntityFilter(false);
+
+        private final boolean allow;
+
+        private ConstantEntityFilter(boolean allow) {
+            super("");
+            this.allow = allow;
+        }
+
+        @Override
+        public boolean test(Entity entity) {
+            return allow;
         }
     }
 
@@ -272,22 +358,5 @@ public class EntityFilter implements Predicate<Entity>, com.google.common.base.P
         }
         s.append('$');
         return (s.toString());
-    }
-
-    public static class ConstantEntityFilter extends EntityFilter {
-        static final ConstantEntityFilter ALLOW = new ConstantEntityFilter(true);
-        static final ConstantEntityFilter DENY = new ConstantEntityFilter(false);
-
-        private final boolean allow;
-
-        private ConstantEntityFilter(boolean allow) {
-            super("");
-            this.allow = allow;
-        }
-
-        @Override
-        public boolean test(Entity entity) {
-            return allow;
-        }
     }
 }
