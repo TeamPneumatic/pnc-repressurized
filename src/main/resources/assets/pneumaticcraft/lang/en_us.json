@@ -1153,7 +1153,7 @@
    "pneumaticcraft.gui.redstoneModule.constant" : "Constant",
    "pneumaticcraft.gui.redstoneModule.input" : "Receiving Redstone",
    "pneumaticcraft.gui.redstoneModule.comparatorInput" : "Comparator Input?",
-   "pneumaticcraft.gui.redstoneModule.comparatorInput.tooltip" : "Makes the Redstone Module act like a vanilla Comparator, measuring the contents of the inventory the module faces.",
+   "pneumaticcraft.gui.redstoneModule.comparatorInput.tooltip" : "Make the Redstone Module behave like a vanilla Comparator",
    "pneumaticcraft.gui.redstoneModule.invert" : "Invert Output?",
    "pneumaticcraft.gui.redstoneModule.invert.tooltip" : "Invert the output signal, as if a Redstone Torch were used",
    "pneumaticcraft.gui.redstoneModule.operation_and" : "And",

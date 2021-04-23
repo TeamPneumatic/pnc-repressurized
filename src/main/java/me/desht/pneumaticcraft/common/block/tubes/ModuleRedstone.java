@@ -276,7 +276,7 @@ public class ModuleRedstone extends TubeModule implements INetworkedModule {
     private void addAdvancedInfo(List<ITextComponent> curInfo) {
         IFormattableTextComponent s = new TranslationTextComponent("pneumaticcraft.waila.redstoneModule.op", PneumaticCraftUtils.xlate(operation.getTranslationKey()));
         if (operation.useOtherColor) {
-            s = s.appendString(" (").append(PneumaticCraftUtils.xlate(PneumaticCraftUtils.dyeColorDesc(otherColor)).appendString(")"));
+            s = s.appendString(" (").append(PneumaticCraftUtils.dyeColorDesc(otherColor)).appendString(")");
         }
         if (operation.useConst) {
             s = s.appendString(" (" + constantVal + ")");
