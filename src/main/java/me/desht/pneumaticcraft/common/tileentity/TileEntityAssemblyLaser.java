@@ -9,7 +9,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
 import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
@@ -28,7 +27,7 @@ public class TileEntityAssemblyLaser extends TileEntityAssemblyRobot {
     public void tick() {
         super.tick();
         if (laserStep > 0) {
-            Direction[] platformDirection = getPlatformDirection();
+            TargetDirections platformDirection = getPlatformDirection();
             if (platformDirection == null) {
                 laserStep = 105;
             }
@@ -39,14 +38,14 @@ public class TileEntityAssemblyLaser extends TileEntityAssemblyRobot {
                     //                    gotoHomePosition();
                     break;
                 case 2:
-                    hoverOverNeighbour(platformDirection[0], platformDirection[1]);
+                    hoverOverNeighbour(platformDirection);
                     break;
                 case 3:
                     slowMode = true;
-                    gotoNeighbour(platformDirection[0], platformDirection[1]);
+                    gotoNeighbour(platformDirection);
                     break;
                 case 104:
-                    hoverOverNeighbour(platformDirection[0], platformDirection[1]);
+                    hoverOverNeighbour(platformDirection);
                     isLaserOn = false;
                     slowMode = true;
                     TileEntity te = getTileEntityForCurrentDirection();
@@ -86,8 +85,8 @@ public class TileEntityAssemblyLaser extends TileEntityAssemblyRobot {
     }
 
     @Override
-    public boolean gotoNeighbour(Direction primaryDir, Direction secondaryDir) {
-        boolean diagonal = super.gotoNeighbour(primaryDir, secondaryDir);
+    public boolean gotoNeighbour(TargetDirections targetDirections) {
+        boolean diagonal = super.gotoNeighbour(targetDirections);
         targetAngles[EnumAngles.TURN.getIndex()] -= ITEM_SIZE * 0.45D;
         return diagonal;
     }

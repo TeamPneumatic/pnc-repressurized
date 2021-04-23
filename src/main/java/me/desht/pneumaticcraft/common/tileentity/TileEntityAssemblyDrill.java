@@ -11,7 +11,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.Direction;
 import net.minecraftforge.items.IItemHandler;
 
 public class TileEntityAssemblyDrill extends TileEntityAssemblyRobot {
@@ -43,7 +42,7 @@ public class TileEntityAssemblyDrill extends TileEntityAssemblyRobot {
         }
 
         if (!getWorld().isRemote && drillStep > 0) {
-            Direction[] platformDirection = getPlatformDirection();
+            TargetDirections platformDirection = getPlatformDirection();
             if (platformDirection == null) drillStep = 1;
             switch (drillStep) {
                 case 1:
@@ -52,17 +51,17 @@ public class TileEntityAssemblyDrill extends TileEntityAssemblyRobot {
                     gotoHomePosition();
                     break;
                 case 2:
-                    hoverOverNeighbour(platformDirection[0], platformDirection[1]);
+                    hoverOverNeighbour(platformDirection);
                     break;
                 case 3:
                     isDrillOn = true;
                     break;
                 case 4:
                     slowMode = true;
-                    gotoNeighbour(platformDirection[0], platformDirection[1]);
+                    gotoNeighbour(platformDirection);
                     break;
                 case 5:
-                    hoverOverNeighbour(platformDirection[0], platformDirection[1]);
+                    hoverOverNeighbour(platformDirection);
                     isDrillOn = false;
                     TileEntity te = getTileEntityForCurrentDirection();
                     if (te instanceof TileEntityAssemblyPlatform) {
