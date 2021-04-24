@@ -23,9 +23,9 @@ public class PressureGaugeRenderer2D {
     static final float STOP_ANGLE = -60F / 180F * PI_F;
     static final int GAUGE_POINTS = (int) ((START_ANGLE - STOP_ANGLE) / (2F * PI_F) * CIRCLE_POINTS);
 
-    static final float[] RED = new float[] { 0.7f, 0f, 0f, 1f };
-    static final float[] GREEN = new float[] { 0f, 0.7f, 0f, 1f };
-    static final float[] YELLOW = new float[] { 0.9f, 0.9f, 0f, 1f };
+    static final float[] RED = new float[] { 0.722f, 0.255f, 0.255f, 1f };
+    static final float[] GREEN = new float[] { 0.475f, 0.678f, 0.224f, 1f };
+    static final float[] YELLOW = new float[] { 0.922f, 0.635f, 0.239f, 1f };
 
     public static void drawPressureGauge(MatrixStack matrixStack, FontRenderer fontRenderer, float minPressure, float maxPressure, float dangerPressure, float minWorkingPressure, float currentPressure, int xPos, int yPos) {
         drawPressureGauge(matrixStack, fontRenderer, minPressure, maxPressure, dangerPressure, minWorkingPressure, currentPressure, xPos, yPos, 0xFF000000);
