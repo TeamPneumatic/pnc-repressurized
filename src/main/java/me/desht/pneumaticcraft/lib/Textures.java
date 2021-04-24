@@ -59,13 +59,19 @@ public class Textures {
 
     // Tube Module textures
     public static final ResourceLocation MODEL_FLOW_DETECTOR = tubeModuleTexture("flow_detector.png");
-    public static final ResourceLocation MODEL_GAUGE = tubeModuleTexture("gauge_module.png");
-    public static final ResourceLocation MODEL_AIR_GRATE = tubeModuleTexture("air_grate.png");
-    public static final ResourceLocation MODEL_CHARGING_MODULE = tubeModuleTexture("charging_module.png");
     public static final ResourceLocation MODEL_LOGISTICS_MODULE = tubeModuleTexture("logistics_module.png");
+    public static final ResourceLocation MODEL_GAUGE = tubeModuleTexture("gauge_module.png");
+    public static final ResourceLocation MODEL_GAUGE_UPGRADED = tubeModuleTexture("gauge_module_upgraded.png");
+    public static final ResourceLocation MODEL_AIR_GRATE = tubeModuleTexture("air_grate.png");
+    public static final ResourceLocation MODEL_AIR_GRATE_UPGRADED = tubeModuleTexture("air_grate_upgraded.png");
+    public static final ResourceLocation MODEL_CHARGING_MODULE = tubeModuleTexture("charging_module.png");
+    public static final ResourceLocation MODEL_CHARGING_MODULE_UPGRADED = tubeModuleTexture("charging_module_upgraded.png");
     public static final ResourceLocation MODEL_SAFETY_VALVE = tubeModuleTexture("safety_valve.png");
+    public static final ResourceLocation MODEL_SAFETY_VALVE_UPGRADED = tubeModuleTexture("safety_valve_upgraded.png");
     public static final ResourceLocation MODEL_REGULATOR_MODULE = tubeModuleTexture("regulator.png");
+    public static final ResourceLocation MODEL_REGULATOR_MODULE_UPGRADED = tubeModuleTexture("regulator_upgraded.png");
     public static final ResourceLocation MODEL_REDSTONE_MODULE = tubeModuleTexture("redstone.png");
+    public static final ResourceLocation MODEL_REDSTONE_MODULE_UPGRADED = tubeModuleTexture("redstone_upgraded.png");
 
     // Progwidget textures
     public static final ResourceLocation PROG_WIDGET_COMMENT = progWidgetTexture("comment_piece.png");
