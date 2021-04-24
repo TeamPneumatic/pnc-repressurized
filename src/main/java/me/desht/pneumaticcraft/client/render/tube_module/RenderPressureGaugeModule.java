@@ -32,49 +32,42 @@ public class RenderPressureGaugeModule extends TubeModuleRendererBase<ModulePres
     public RenderPressureGaugeModule() {
         tubeConnector1 = new ModelRenderer(64, 32, 0, 0);
         tubeConnector1.addBox(0.0F, 0.0F, 0.0F, 3.0F, 3.0F, 3.0F);
-        tubeConnector1.setPos(-1.5F, 14.5F, 2.0F);
+        tubeConnector1.setRotationPoint(-1.5F, 14.5F, 2.0F);
         tubeConnector1.mirror = true;
         tubeConnector2 = new ModelRenderer(64, 32, 22, 6);
         tubeConnector2.addBox(-2.0F, -2.0F, 2.0F, 7.0F, 7.0F, 1.0F);
-        tubeConnector2.setPos(-1.5F, 14.5F, 2.0F);
+        tubeConnector2.setRotationPoint(-1.5F, 14.5F, 2.0F);
         tubeConnector2.mirror = true;
 
         faceplate = new ModelRenderer(64, 32, 0, 6);
         faceplate.addBox(-1.0F, -1.0F, 0.0F, 10.0F, 10.0F, 1.0F);
-        faceplate.setPos(-4.0F, 12.0F, 5.0F);
+        faceplate.setRotationPoint(-4.0F, 12.0F, 5.0F);
         faceplate.mirror = true;
 
         gauge1 = new ModelRenderer(64, 32, 0, 17);
         gauge1.addBox(-3.0F, -2.0F, 0.0F, 1.0F, 4.0F, 1.0F);
-        gauge1.setPos(-1.0F, 16.0F, 5.5F);
-
+        gauge1.setRotationPoint(-1.0F, 16.0F, 5.5F);
         gauge2 = new ModelRenderer(64, 32, 4, 17);
         gauge2.addBox(4.0F, -2.0F, 0.0F, 1.0F, 4.0F, 1.0F);
-        gauge2.setPos(-1.0F, 16.0F, 5.5F);
-
+        gauge2.setRotationPoint(-1.0F, 16.0F, 5.5F);
         gauge3 = new ModelRenderer(64, 32, 8, 17);
         gauge3.addBox(3.0F, -3.0F, 0.0F, 1.0F, 1.0F, 1.0F);
-        gauge3.setPos(-1.0F, 16.0F, 5.5F);
-
+        gauge3.setRotationPoint(-1.0F, 16.0F, 5.5F);
         gauge4 = new ModelRenderer(64, 32, 12, 17);
         gauge4.addBox(3.0F, 2.0F, 0.0F, 1.0F, 1.0F, 1.0F);
-        gauge4.setPos(-1.0F, 16.0F, 5.5F);
-
+        gauge4.setRotationPoint(-1.0F, 16.0F, 5.5F);
         gauge5 = new ModelRenderer(64, 32, 8, 19);
         gauge5.addBox(-2.0F, -3.0F, 0.0F, 1.0F, 1.0F, 1.0F);
-        gauge5.setPos(-1.0F, 16.0F, 5.5F);
-
+        gauge5.setRotationPoint(-1.0F, 16.0F, 5.5F);
         gauge6 = new ModelRenderer(64, 32, 12, 19);
         gauge6.addBox(-2.0F, 2.0F, 0.0F, 1.0F, 1.0F, 1.0F);
-        gauge6.setPos(-1.0F, 16.0F, 5.5F);
-
+        gauge6.setRotationPoint(-1.0F, 16.0F, 5.5F);
         gauge7 = new ModelRenderer(64, 32, 0, 24);
         gauge7.addBox(-1.0F, 3.0F, 0.0F, 4.0F, 1.0F, 1.0F);
-        gauge7.setPos(-1.0F, 16.0F, 5.5F);
-
+        gauge7.setRotationPoint(-1.0F, 16.0F, 5.5F);
         gauge8 = new ModelRenderer(64, 32, 0, 22);
         gauge8.addBox(-1.0F, -4.0F, 0.0F, 4.0F, 1.0F, 1.0F);
-        gauge8.setPos(-1.0F, 16.0F, 5.5F);
+        gauge8.setRotationPoint(-1.0F, 16.0F, 5.5F);
     }
 
     @Override
@@ -94,22 +87,25 @@ public class RenderPressureGaugeModule extends TubeModuleRendererBase<ModulePres
 
     @Override
     public void renderExtras(ModulePressureGauge module, MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks, int combinedLight, int combinedOverlay) {
-        BlockPos pos = module.getTube().getBlockPos();
-        if (ClientUtils.getClientPlayer().distanceToSqr(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) > 256) return;
+        BlockPos pos = module.getTube().getPos();
+        if (ClientUtils.getClientPlayer().getDistanceSq(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) > 256) return;
 
-        matrixStack.pushPose();
+        TileEntityPressureTube base = module.getTube();
+        float pressure = base.getPressure();
+        float critPressure = base.criticalPressure;
+        float dangerPressure = base.dangerPressure;
+
+        matrixStack.push();
 
         matrixStack.translate(0.5, 1.5, 0.5);
         matrixStack.scale(1f, -1f, -1f);
         RenderUtils.rotateMatrixForDirection(matrixStack, module.getDirection());
         matrixStack.translate(0, 1.01, 0.378);
         matrixStack.scale(GAUGE_SCALE, GAUGE_SCALE, GAUGE_SCALE);
-        matrixStack.mulPose(Vector3f.YP.rotationDegrees(180));
-        TileEntityPressureTube te = module.getTube();
-        PressureGaugeRenderer3D.drawPressureGauge(matrixStack, buffer, -1, te.getCriticalPressure(), te.getDangerPressure(),
-                0, te.getPressure(), 0, 0, 0xFF000000);
+        matrixStack.rotate(Vector3f.YP.rotationDegrees(180));
+        PressureGaugeRenderer3D.drawPressureGauge(matrixStack, buffer, -1, critPressure, dangerPressure, 0, pressure, 0, 0, 0xFF000000);
 
-        matrixStack.popPose();
+        matrixStack.pop();
     }
 
     @Override
