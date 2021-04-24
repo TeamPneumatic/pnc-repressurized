@@ -13,13 +13,13 @@ public abstract class TubeModuleRendererBase<T extends TubeModule> {
     private boolean isUpgraded;
 
     protected final void setRotation(ModelRenderer model, float x, float y, float z) {
-        model.xRot = x;
-        model.yRot = y;
-        model.zRot = z;
+        model.rotateAngleX = x;
+        model.rotateAngleY = y;
+        model.rotateAngleZ = z;
     }
 
     public final void renderModule(T module, MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks, int combinedLight, int combinedOverlay) {
-        matrixStack.pushPose();
+        matrixStack.push();
 
         // transforms to get model orientation right
         matrixStack.translate(0.5, 1.5, 0.5);
@@ -30,11 +30,11 @@ public abstract class TubeModuleRendererBase<T extends TubeModule> {
         float a = module.isFake() ? 0.3f : 1f;
 
         IVertexBuilder builder = module.isFake() ?
-                buffer.getBuffer(RenderType.entityTranslucent(getTexture())) :
-                buffer.getBuffer(RenderType.entityCutout(getTexture()));
+                buffer.getBuffer(RenderType.getEntityTranslucent(getTexture())) :
+                buffer.getBuffer(RenderType.getEntityCutout(getTexture()));
         renderDynamic(module, matrixStack, builder, partialTicks, combinedLight, combinedOverlay, 1, 1, 1, a);
 
-        matrixStack.popPose();
+        matrixStack.pop();
 
         renderExtras(module, matrixStack, buffer, partialTicks, combinedLight, combinedOverlay);
     }
