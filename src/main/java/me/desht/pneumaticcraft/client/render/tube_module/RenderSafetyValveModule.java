@@ -15,24 +15,24 @@ public class RenderSafetyValveModule extends TubeModuleRendererBase<ModuleSafety
 
     public RenderSafetyValveModule(){
         tubeConnector = new ModelRenderer(32, 32, 0, 0);
-        tubeConnector.setRotationPoint(-1.5F, 14.5F, 2.0F);
+        tubeConnector.setPos(-1.5F, 14.5F, 2.0F);
         tubeConnector.addBox(-0.5F, -0.5F, 0.0F, 4.0F, 4.0F, 2.0F);
         tubeConnector.mirror = true;
 
         valve = new ModelRenderer(32, 32, 0, 6);
-        valve.setRotationPoint(-1.0F, 15.0F, 4.0F);
+        valve.setPos(-1.0F, 15.0F, 4.0F);
         valve.addBox(0.0F, 0.0F, 0.0F, 2.0F, 2.0F, 4.0F);
         valve.mirror = true;
 
         valveHandle = new ModelRenderer(32, 32, 0, 16);
-        valveHandle.setRotationPoint(2.0F, 15.5F, 4.0F);
+        valveHandle.setPos(2.0F, 15.5F, 4.0F);
         setRotation(valveHandle, 0.0F, -0.5934F, 0.0F);
         valveHandle.addBox(0.5592F, 0.0F, 0.829F, 1.0F, 1.0F, 3.0F);
         valveHandle.mirror = true;
 
         valveLid = new ModelRenderer(32, 32, 0, 12);
-        valveLid.setRotationPoint(1.5F, 15.5F, 7.25F);
-        valveLid.setTextureOffset(0, 12).addBox(-3.0F, -1.0F, 0.0F, 3.0F, 3.0F, 1.0F);
+        valveLid.setPos(1.5F, 15.5F, 7.25F);
+        valveLid.texOffs(0, 12).addBox(-3.0F, -1.0F, 0.0F, 3.0F, 3.0F, 1.0F);
     }
 
     @Override
