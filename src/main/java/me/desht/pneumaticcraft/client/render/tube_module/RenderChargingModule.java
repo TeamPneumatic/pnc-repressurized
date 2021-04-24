@@ -8,37 +8,69 @@ import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.util.ResourceLocation;
 
 public class RenderChargingModule extends TubeModuleRendererBase<ModuleCharging> {
-    private final ModelRenderer shape1;
-    private final ModelRenderer shape2;
-    private final ModelRenderer shape3;
+    private final ModelRenderer tip;
+    private final ModelRenderer body;
+    private final ModelRenderer tubeConnector;
+    private final ModelRenderer tipBottom;
+    private final ModelRenderer tipTop;
+    private final ModelRenderer tipRight;
+    private final ModelRenderer tipLeft;
 
     public RenderChargingModule() {
-        shape1 = new ModelRenderer(64, 32, 22, 0);
-        shape1.addBox(0F, 0F, 0F, 2, 2, 2);
-        shape1.setPos(1F, 15F, 8F);
-        shape1.mirror = true;
-        setRotation(shape1, 0F, 3.141593F, 0F);
-        shape2 = new ModelRenderer(64, 32, 12, 0);
-        shape2.addBox(0F, 0F, 0F, 3, 3, 2);
-        shape2.setPos(1.5F, 14.5F, 6F);
-        shape2.mirror = true;
-        setRotation(shape2, 0F, 3.141593F, 0F);
-        shape3 = new ModelRenderer(64, 32, 0, 0);
-        shape3.addBox(0F, 0F, 0F, 4, 4, 2);
-        shape3.setPos(2F, 14F, 4F);
-        shape3.mirror = true;
-        setRotation(shape3, 0F, 3.141593F, 0F);
+        tip = new ModelRenderer(32, 32, 0, 11);
+        tip.setPos(1.0F, 15.0F, 8.0F);
+        setRotation(tip, 0.0F, 3.1416F, 0.0F);
+        tip.addBox(0.0F, 0.0F, 1.5F, 2.0F, 2.0F, 1.0F);
+        tip.mirror = true;
+
+        body = new ModelRenderer(32, 32, 0, 6);
+        body.setPos(1.5F, 14.5F, 6.0F);
+        setRotation(body, 0.0F, 3.1416F, 0.0F);
+        body.addBox(0.0F, 0.0F, 0.0F, 3.0F, 3.0F, 2.0F);
+        body.mirror = true;
+
+        tubeConnector = new ModelRenderer(32, 32, 0, 0);
+        tubeConnector.setPos(2.0F, 14.0F, 4.0F);
+        setRotation(tubeConnector, 0.0F, 3.1416F, 0.0F);
+        tubeConnector.addBox(0.0F, 0.0F, 0.0F, 4.0F, 4.0F, 2.0F);
+        tubeConnector.mirror = true;
+
+        tipBottom = new ModelRenderer(32, 32, 0, 18);
+        tipBottom.setPos(-1.0F, 15.0F, 7.0F);
+        tipBottom.addBox(0.0F, 2.0F, -0.5F, 2.0F, 0.0F, 1.0F);
+
+        tipTop = new ModelRenderer(32, 32, 0, 14);
+        tipTop.setPos(-1.0F, 15.0F, 7.0F);
+        tipTop.addBox(0.0F, 0.0F, -0.5F, 2.0F, 0.0F, 1.0F);
+
+        tipRight = new ModelRenderer(32, 32, 2, 15);
+        tipRight.setPos(-1.0F, 16.0F, 7.0F);
+        tipRight.addBox(0.0F, -1.0F, -0.5F, 0.0F, 2.0F, 1.0F);
+
+        tipLeft = new ModelRenderer(32, 32, 0, 15);
+        tipLeft.setPos(1.0F, 16.0F, 7.0F);
+        tipLeft.addBox(0.0F, -1.0F, -0.5F, 0.0F, 2.0F, 1.0F);
     }
 
     @Override
     protected void renderDynamic(ModuleCharging module, MatrixStack matrixStack, IVertexBuilder builder, float partialTicks, int combinedLight, int combinedOverlay, float r, float g, float b, float a) {
-        shape1.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
-        shape2.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
-        shape3.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
+        tip.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
+        body.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
+        tubeConnector.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
+        tipBottom.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
+        tipTop.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
+        tipRight.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
+        tipLeft.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
     }
 
     @Override
     protected ResourceLocation getTexture() {
-        return Textures.MODEL_CHARGING_MODULE;
+        ResourceLocation texture;
+        if (isUpgraded()) {
+            texture = Textures.MODEL_CHARGING_MODULE_UPGRADED;
+        } else {
+            texture = Textures.MODEL_CHARGING_MODULE;
+        }
+        return texture;
     }
 }

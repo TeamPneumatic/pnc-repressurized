@@ -8,32 +8,42 @@ import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.util.ResourceLocation;
 
 public class RenderRegulatorModule extends TubeModuleRendererBase<ModuleRegulatorTube> {
-    private final ModelRenderer shape1;
-    private final ModelRenderer valve;
+    private final ModelRenderer tubeConnector;
+    private final ModelRenderer valve1;
+    private final ModelRenderer valve2;
 
     public RenderRegulatorModule() {
-        shape1 = new ModelRenderer(64, 32, 0, 0);
-        shape1.addBox(0F, 0F, 0F, 7, 7, 7);
-        shape1.setPos(-3.5F, 12.5F, -3F);
-        shape1.setTexSize(64, 32);
-        shape1.mirror = true;
-        setRotation(shape1, 0F, 0F, 0F);
-        valve = new ModelRenderer(64, 32, 0, 16);
-        valve.addBox(0F, 0F, 0F, 4, 4, 4);
-        valve.setPos(-2F, 14F, 4F);
-        valve.setTexSize(64, 32);
-        valve.mirror = true;
-        setRotation(valve, 0F, 0F, 0F);
+        tubeConnector = new ModelRenderer(32, 32, 0, 0);
+        tubeConnector.setPos(-3.5F, 12.5F, -3.0F);
+        tubeConnector.addBox(0.0F, 0.0F, 0.0F, 7.0F, 7.0F, 4.0F);
+        tubeConnector.mirror = true;
+
+        valve1 = new ModelRenderer(32, 32, 0, 11);
+        valve1.setPos(-2.0F, 14.0F, 4.0F);
+        valve1.addBox(-0.5F, -0.5F, -3.0F, 5.0F, 5.0F, 4.0F);
+        valve1.mirror = true;
+
+        valve2 = new ModelRenderer(32, 32, 0, 21);
+        valve2.setPos(-2.0F, 14.0F, 4.0F);
+        valve2.addBox(-1.0F, -1.0F, 1.0F, 6.0F, 6.0F, 2.0F);
+        valve2.mirror = true;
     }
 
     @Override
     protected void renderDynamic(ModuleRegulatorTube module, MatrixStack matrixStack, IVertexBuilder builder, float partialTicks, int combinedLight, int combinedOverlay, float r, float g, float b, float a) {
-        shape1.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
-        valve.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
+        tubeConnector.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
+        valve1.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
+        valve2.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
     }
 
     @Override
     protected ResourceLocation getTexture() {
-        return Textures.MODEL_REGULATOR_MODULE;
+        ResourceLocation texture;
+        if (isUpgraded()) {
+            texture = Textures.MODEL_REGULATOR_MODULE_UPGRADED;
+        } else {
+            texture = Textures.MODEL_REGULATOR_MODULE;
+        }
+        return texture;
     }
 }
