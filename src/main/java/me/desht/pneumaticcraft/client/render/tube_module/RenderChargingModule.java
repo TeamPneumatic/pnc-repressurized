@@ -18,37 +18,37 @@ public class RenderChargingModule extends TubeModuleRendererBase<ModuleCharging>
 
     public RenderChargingModule() {
         tip = new ModelRenderer(32, 32, 0, 11);
-        tip.setRotationPoint(1.0F, 15.0F, 8.0F);
+        tip.setPos(1.0F, 15.0F, 8.0F);
         setRotation(tip, 0.0F, 3.1416F, 0.0F);
         tip.addBox(0.0F, 0.0F, 1.5F, 2.0F, 2.0F, 1.0F);
         tip.mirror = true;
 
         body = new ModelRenderer(32, 32, 0, 6);
-        body.setRotationPoint(1.5F, 14.5F, 6.0F);
+        body.setPos(1.5F, 14.5F, 6.0F);
         setRotation(body, 0.0F, 3.1416F, 0.0F);
         body.addBox(0.0F, 0.0F, 0.0F, 3.0F, 3.0F, 2.0F);
         body.mirror = true;
 
         tubeConnector = new ModelRenderer(32, 32, 0, 0);
-        tubeConnector.setRotationPoint(2.0F, 14.0F, 4.0F);
+        tubeConnector.setPos(2.0F, 14.0F, 4.0F);
         setRotation(tubeConnector, 0.0F, 3.1416F, 0.0F);
         tubeConnector.addBox(0.0F, 0.0F, 0.0F, 4.0F, 4.0F, 2.0F);
         tubeConnector.mirror = true;
 
         tipBottom = new ModelRenderer(32, 32, 0, 18);
-        tipBottom.setRotationPoint(-1.0F, 15.0F, 7.0F);
+        tipBottom.setPos(-1.0F, 15.0F, 7.0F);
         tipBottom.addBox(0.0F, 2.0F, -0.5F, 2.0F, 0.0F, 1.0F);
 
         tipTop = new ModelRenderer(32, 32, 0, 14);
-        tipTop.setRotationPoint(-1.0F, 15.0F, 7.0F);
+        tipTop.setPos(-1.0F, 15.0F, 7.0F);
         tipTop.addBox(0.0F, 0.0F, -0.5F, 2.0F, 0.0F, 1.0F);
 
         tipRight = new ModelRenderer(32, 32, 2, 15);
-        tipRight.setRotationPoint(-1.0F, 16.0F, 7.0F);
+        tipRight.setPos(-1.0F, 16.0F, 7.0F);
         tipRight.addBox(0.0F, -1.0F, -0.5F, 0.0F, 2.0F, 1.0F);
 
         tipLeft = new ModelRenderer(32, 32, 0, 15);
-        tipLeft.setRotationPoint(1.0F, 16.0F, 7.0F);
+        tipLeft.setPos(1.0F, 16.0F, 7.0F);
         tipLeft.addBox(0.0F, -1.0F, -0.5F, 0.0F, 2.0F, 1.0F);
     }
 
