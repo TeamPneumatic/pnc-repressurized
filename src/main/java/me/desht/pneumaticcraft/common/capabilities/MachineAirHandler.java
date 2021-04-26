@@ -358,6 +358,7 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
             return maxDispersion;
         }
 
+        @Override
         public void setMaxDispersion(int maxDispersion) {
             this.maxDispersion = maxDispersion;
         }
@@ -367,6 +368,7 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
             return toDisperse;
         }
 
+        @Override
         public void setAirToDisperse(int toDisperse) {
             this.toDisperse = toDisperse;
         }
