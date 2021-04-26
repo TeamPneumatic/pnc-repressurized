@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.fluid;
 
+import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModItems;
@@ -42,17 +43,19 @@ public class FluidYeastCulture {
 
         @Override
         public void tick(World worldIn, BlockPos pos, FluidState state) {
-            List<ItemEntity> entities = worldIn.getEntitiesWithinAABB(ItemEntity.class, new AxisAlignedBB(pos), e -> e.getItem().getItem() == Items.SUGAR);
-            if (!entities.isEmpty()) {
-                for (Direction d : DirectionUtil.VALUES) {
-                    FluidState fluidState = worldIn.getFluidState(pos.offset(d));
-                    if (fluidState.isSource() && fluidState.getFluid() == Fluids.WATER) {
-                        worldIn.setBlockState(pos.offset(d), ModFluids.YEAST_CULTURE.get().getDefaultState().getBlockState(), Constants.BlockFlags.DEFAULT);
-                        entities.get(0).getItem().shrink(1);
-                        if (entities.get(0).getItem().isEmpty()) {
-                            entities.get(0).remove();
+            if (PNCConfig.Common.Recipes.inWorldYeastCrafting) {
+                List<ItemEntity> entities = worldIn.getEntitiesWithinAABB(ItemEntity.class, new AxisAlignedBB(pos), e -> e.getItem().getItem() == Items.SUGAR);
+                if (!entities.isEmpty()) {
+                    for (Direction d : DirectionUtil.VALUES) {
+                        FluidState fluidState = worldIn.getFluidState(pos.offset(d));
+                        if (fluidState.isSource() && fluidState.getFluid() == Fluids.WATER) {
+                            worldIn.setBlockState(pos.offset(d), ModFluids.YEAST_CULTURE.get().getDefaultState().getBlockState(), Constants.BlockFlags.DEFAULT);
+                            entities.get(0).getItem().shrink(1);
+                            if (entities.get(0).getItem().isEmpty()) {
+                                entities.get(0).remove();
+                            }
+                            break;
                         }
-                        break;
                     }
                 }
             }

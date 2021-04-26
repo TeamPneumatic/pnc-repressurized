@@ -109,7 +109,8 @@ public class CommonConfig {
     public static class Recipes {
         ForgeConfigSpec.BooleanValue coalToDiamondsRecipe;
         ForgeConfigSpec.BooleanValue explosionCrafting;
-        ForgeConfigSpec.BooleanValue plasticInWorldSolidification;
+        ForgeConfigSpec.BooleanValue inWorldPlasticSolidification;
+        ForgeConfigSpec.BooleanValue inWorldYeastCrafting;
     }
 
     public static class Amadron {
@@ -535,10 +536,14 @@ public class CommonConfig {
                 .comment("Enable crafting diamonds from coal blocks in the pressure chamber?  NOTE: this should be considered deprecated, and will be removed in a future release. You should control this via datapack recipe (default recipe ID: 'pneumaticcraft:pressure_chamber/coal_to_diamond').")
                 .translation("pneumaticcraft.config.common.recipes.coal_to_diamonds")
                 .define("coal_to_diamonds", true);
-        recipes.plasticInWorldSolidification = builder
+        recipes.inWorldPlasticSolidification = builder
                 .comment("Does Molten Plastic solidify to Plastic Sheets when poured into the world? If set to false, then Heat Frame cooling is the only other default way to make Plastic Sheets.")
-                .translation("pneumaticcraft.config.common.recipes.plastic_in_world_solidification")
-                .define("plastic_in_world_solidification", true);
+                .translation("pneumaticcraft.config.common.recipes.in_world_plastic_solidification")
+                .define("in_world_plastic_solidification", true);
+        recipes.inWorldYeastCrafting = builder
+                .comment("Is in-world Yeast crafting allowed (making more Yeast Culture by pouring Water next to a Yeast Culture block with Sugar in it)? If set to false, then the default TPP Mushroom & Water -> Yeast Culture recipe is the only way to get Yeast Culture.")
+                .translation("pneumaticcraft.config.common.recipes.in_world_yeast_crafting")
+                .define("in_world_yeast_crafting", true);
         builder.pop();
 
         builder.push("Amadron");

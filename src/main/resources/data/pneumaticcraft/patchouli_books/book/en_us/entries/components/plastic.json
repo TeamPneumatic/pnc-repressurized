@@ -27,7 +27,7 @@
       "type": "spotlight",
       "title": "Plastic Sheet",
       "item": "pneumaticcraft:plastic",
-      "flag": "!pneumaticcraft:plasticInWorldSolidification",
+      "flag": "!pneumaticcraft:inWorldPlasticSolidification",
       "text": "$(item)Plastic Sheets/$ are produced by placing a bucket or $(l:machines/tanks)tank/$ of $(item)Molten Plastic/$ into an inventory with a $(l:semiblocks/heat_frame)Heat Frame/$ attached, and chilling the Heat Frame, ideally to below -80C (the colder the better). $(item)Molten Plastic/$ will be consumed from the bucket or tank, and you will have a chance for a second $(item)Plastic Sheet/$ for each 1000mB of Molten Plastic consumed."
     },
     {

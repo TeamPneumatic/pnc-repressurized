@@ -69,7 +69,6 @@ public class JEIPlugin implements IModPlugin {
                 new JEIAmadronTradeCategory(),
                 new JEIHeatFrameCoolingCategory(),
                 new JEIEtchingTankCategory(),
-                new JEIYeastCraftingCategory(),
                 new JEISpawnerExtractionCategory(),
                 new JEIBlockHeatPropertiesCategory(),
                 new JEIMemoryEssenceCategory()
@@ -77,8 +76,11 @@ public class JEIPlugin implements IModPlugin {
         if (PNCConfig.Common.Recipes.explosionCrafting) {
             registry.addRecipeCategories(new JEIExplosionCraftingCategory());
         }
-        if (PNCConfig.Common.Recipes.plasticInWorldSolidification) {
+        if (PNCConfig.Common.Recipes.inWorldPlasticSolidification) {
             registry.addRecipeCategories(new JEIPlasticSolidifyingCategory());
+        }
+        if (PNCConfig.Common.Recipes.inWorldYeastCrafting) {
+            registry.addRecipeCategories(new JEIYeastCraftingCategory());
         }
     }
 
@@ -101,11 +103,13 @@ public class JEIPlugin implements IModPlugin {
         // these have their own pseudo-recipes
         registration.addRecipes(JEIUVLightBoxCategory.getAllRecipes(), ModCategoryUid.UV_LIGHT_BOX);
         registration.addRecipes(JEIEtchingTankCategory.getAllRecipes(), ModCategoryUid.ETCHING_TANK);
-        registration.addRecipes(JEIYeastCraftingCategory.getAllRecipes(), ModCategoryUid.YEAST_CRAFTING);
         registration.addRecipes(JEISpawnerExtractionCategory.getAllRecipes(), ModCategoryUid.SPAWNER_EXTRACTION);
         registration.addRecipes(JEIMemoryEssenceCategory.getAllRecipes(), ModCategoryUid.MEMORY_ESSENCE);
-        if (PNCConfig.Common.Recipes.plasticInWorldSolidification) {
+        if (PNCConfig.Common.Recipes.inWorldPlasticSolidification) {
             registration.addRecipes(JEIPlasticSolidifyingCategory.getAllRecipes(), ModCategoryUid.PLASTIC_SOLIDIFYING);
+        }
+        if (PNCConfig.Common.Recipes.inWorldYeastCrafting) {
+            registration.addRecipes(JEIYeastCraftingCategory.getAllRecipes(), ModCategoryUid.YEAST_CRAFTING);
         }
 
         // even though heat properties are in the vanilla recipe system, we use a custom registration here
