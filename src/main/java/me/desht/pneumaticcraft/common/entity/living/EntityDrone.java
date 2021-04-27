@@ -37,6 +37,7 @@ import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetGoToLocation;
 import me.desht.pneumaticcraft.common.thirdparty.RadiationSourceCheck;
 import me.desht.pneumaticcraft.common.tileentity.PneumaticEnergyStorage;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
+import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
@@ -85,6 +86,7 @@ import net.minecraft.particles.BlockParticleData;
 import net.minecraft.particles.IParticleData;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.pathfinding.*;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
@@ -174,7 +176,7 @@ public class EntityDrone extends EntityDroneBase implements
     private BasicAirHandler airHandler;
     private final LazyOptional<IAirHandler> airCap = LazyOptional.of(this::getAirHandler);
 
-    private final int[] emittingRedstoneValues = new int[6];
+    private final Map<Direction,Integer> emittingRedstoneValues = new EnumMap<>(Direction.class);
     private float propSpeed;
 
     private ProgressingLine targetLine;
@@ -513,7 +515,7 @@ public class EntityDrone extends EntityDroneBase implements
     }
 
     private void handleRedstoneEmission() {
-        for (Direction d : Direction.values()) {
+        for (Direction d : DirectionUtil.VALUES) {
             if (getEmittingRedstone(d) > 0) {
                 BlockPos emitterPos = new BlockPos((int) Math.floor(getPosX() + getWidth() / 2), (int) Math.floor(getPosY()), (int) Math.floor(getPosZ() + getWidth() / 2));
                 if (world.isAirBlock(emitterPos)) {
@@ -1095,13 +1097,13 @@ public class EntityDrone extends EntityDroneBase implements
     }
 
     public int getEmittingRedstone(Direction side) {
-        return emittingRedstoneValues[side.getIndex()];
+        return emittingRedstoneValues.getOrDefault(side, 0);
     }
 
     @Override
     public void setEmittingRedstone(Direction side, int value) {
-        if (emittingRedstoneValues[side.getIndex()] != value) {
-            emittingRedstoneValues[side.getIndex()] = value;
+        if (emittingRedstoneValues.getOrDefault(side, 0) != value) {
+            emittingRedstoneValues.put(side, value);
             BlockPos pos = new BlockPos((int) Math.floor(getPosX() + getWidth() / 2), (int) Math.floor(getPosY()), (int) Math.floor(getPosZ() + getWidth() / 2));
             BlockState state = world.getBlockState(pos);
             world.notifyBlockUpdate(pos, state, state, 3);
@@ -1214,8 +1216,10 @@ public class EntityDrone extends EntityDroneBase implements
         return fluidTank;
     }
 
+    @Override
     public PlayerEntity getOwner() {
-        return world.getServer().getPlayerList().getPlayerByUUID(ownerUUID);
+        MinecraftServer server = world.getServer();
+        return server != null ? server.getPlayerList().getPlayerByUUID(ownerUUID) : null;
     }
 
     public void setStandby(boolean standby) {
