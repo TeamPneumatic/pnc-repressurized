@@ -20,6 +20,8 @@ PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
   * Also added negations for modifiers, e.g. `@player(holding!=stick)` will only match players *not* holding a Stick
   * The item is an item ID in the usual form; the mod prefix can be omitted if it's `minecraft:`
 * The Aerial Interface now renders the owning player's actual head on the front of its block, when the player is online
+* Player left-clicks on **invisible** Logistics Frames are now passed through to the framed blocks
+  * This means left-clicking blocks like Storage Drawers or Mekanism Bins now works as expected when there's a frame on the front of the block
 
 ### Fixes
 * Fixed Redstone Module comparator input mode only working for measuring items in the adjacent inventory

@@ -493,10 +493,12 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
         @SubscribeEvent
         public static void onPlayerLeftClick(AttackEntityEvent event) {
             if (event.getTarget() instanceof EntityLogisticsFrame) {
-                // pass a left-click on the logistics frame through to the block it's on
+                // pass a left-click on invisible logistics frame through to the block it's on
                 EntityLogisticsFrame frame = (EntityLogisticsFrame) event.getTarget();
-                frame.getBlockState().onBlockClicked(frame.getWorld(), frame.getBlockPos(), event.getPlayer());
-                event.setCanceled(true);
+                if (frame.isSemiblockInvisible()) {
+                    frame.getBlockState().onBlockClicked(frame.getWorld(), frame.getBlockPos(), event.getPlayer());
+                    event.setCanceled(true);
+                }
             }
         }
     }
