@@ -12,6 +12,7 @@ import me.desht.pneumaticcraft.common.semiblock.ItemSemiBlock;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.NBTKeys;
+import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -38,8 +39,11 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraftforge.event.entity.player.AttackEntityEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.network.NetworkHooks;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
@@ -147,6 +151,7 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
         return bounds;
     }
 
+    @Override
     public abstract int getColor();
 
     public abstract int getPriority();
@@ -481,6 +486,19 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
     public boolean isObstructed(PathType pathType) {
         BlockPos pos = getBlockPos().offset(getSide());
         return !world.getBlockState(pos).allowsMovement(world, pos, pathType);
+    }
+
+    @Mod.EventBusSubscriber(modid = Names.MOD_ID)
+    public static class Listener {
+        @SubscribeEvent
+        public static void onPlayerLeftClick(AttackEntityEvent event) {
+            if (event.getTarget() instanceof EntityLogisticsFrame) {
+                // pass a left-click on the logistics frame through to the block it's on
+                EntityLogisticsFrame frame = (EntityLogisticsFrame) event.getTarget();
+                frame.getBlockState().onBlockClicked(frame.getWorld(), frame.getBlockPos(), event.getPlayer());
+                event.setCanceled(true);
+            }
+        }
     }
 
     /**
