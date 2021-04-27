@@ -28,10 +28,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.LazyOptional;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -48,15 +45,15 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
     private Direction prevLeakDir = null;
     private boolean safetyLeak;
     private int prevAir;
-    private final List<LazyOptional<IAirHandlerMachine>> neighbourAirHandlers = new ArrayList<>();
+    private final Map<Direction, LazyOptional<IAirHandlerMachine>> neighbourAirHandlers = new EnumMap<>(Direction.class);
 
     public MachineAirHandler(float dangerPressure, float criticalPressure, int volume) {
         super(volume);
 
         this.dangerPressure = dangerPressure;
         this.criticalPressure = criticalPressure;
-        for (Direction ignored : DirectionUtil.VALUES) {
-            this.neighbourAirHandlers.add(LazyOptional.empty());
+        for (Direction dir : DirectionUtil.VALUES) {
+            this.neighbourAirHandlers.put(dir, LazyOptional.empty());
         }
     }
 
@@ -102,8 +99,8 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
         sides.forEach(side -> connectedFaces.set(side.getIndex()));
 
         // invalidate cached neighbour data
-        for (int i = 0; i < neighbourAirHandlers.size(); i++) {
-            neighbourAirHandlers.set(i, LazyOptional.empty());
+        for (Direction dir : DirectionUtil.VALUES) {
+            this.neighbourAirHandlers.put(dir, LazyOptional.empty());
         }
     }
 
@@ -221,23 +218,21 @@ public class MachineAirHandler extends BasicAirHandler implements IAirHandlerMac
     }
 
     private LazyOptional<IAirHandlerMachine> getNeighbourAirHandler(TileEntity ownerTE, Direction dir) {
-        final int idx = dir.getIndex();
+        if (!connectedFaces.get(dir.getIndex())) return LazyOptional.empty();
 
-        if (!connectedFaces.get(idx)) return LazyOptional.empty();
-
-        if (!neighbourAirHandlers.get(idx).isPresent()) {
+        if (!neighbourAirHandlers.get(dir).isPresent()) {
             TileEntity te1 = ownerTE.getWorld().getTileEntity(ownerTE.getPos().offset(dir));
             if (te1 != null) {
                 LazyOptional<IAirHandlerMachine> cap = te1.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, dir.getOpposite());
                 if (cap.isPresent()) {
-                    neighbourAirHandlers.set(idx, cap);
-                    neighbourAirHandlers.get(idx).addListener(l -> neighbourAirHandlers.set(idx, LazyOptional.empty()));
+                    neighbourAirHandlers.put(dir, cap);
+                    neighbourAirHandlers.get(dir).addListener(l -> neighbourAirHandlers.put(dir, LazyOptional.empty()));
                 }
             } else {
-                neighbourAirHandlers.set(idx, LazyOptional.empty());
+                neighbourAirHandlers.put(dir, LazyOptional.empty());
             }
         }
-        return neighbourAirHandlers.get(idx);
+        return neighbourAirHandlers.get(dir);
     }
 
     private void disperseAir(TileEntity ownerTE) {
