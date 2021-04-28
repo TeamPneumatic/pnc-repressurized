@@ -15,6 +15,7 @@ import me.desht.pneumaticcraft.common.network.PacketJetBootsStateSync;
 import me.desht.pneumaticcraft.common.network.PacketSendArmorHUDMessage;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
+import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker.JetBootsState;
@@ -201,8 +202,10 @@ public class EventHandlerPneumaticArmor {
                 return;
             }
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
-            if (!handler.isJetBootsEnabled() && handler.isArmorReady(EquipmentSlotType.LEGS)
-                    && handler.isJumpBoostEnabled() && handler.hasMinPressure(EquipmentSlotType.LEGS)) {
+               if (!handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().jetBootsHandler, true)
+                    && handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().jumpBoostHandler, true)
+                    && handler.isJumpBoostEnabled()
+                    && handler.hasMinPressure(EquipmentSlotType.LEGS)) {
                 float power = ItemPneumaticArmor.getIntData(stack, ItemPneumaticArmor.NBT_JUMP_BOOST, 100, 0, 100) / 100.0f;
                 int rangeUpgrades = handler.getUpgradeCount(EquipmentSlotType.LEGS, EnumUpgrade.JUMPING,
                         player.isSneaking() ? 1 : PneumaticValues.PNEUMATIC_LEGS_MAX_JUMP);

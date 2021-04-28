@@ -594,6 +594,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         }
 
         // record the number of upgrades of every type
+        upgradeMatrix.get(slot.getIndex()).clear();
         for (ItemStack stack : upgradeStacks) {
             if (stack.getItem() instanceof ItemMachineUpgrade) {
                 ItemMachineUpgrade upgrade = (ItemMachineUpgrade) stack.getItem();
