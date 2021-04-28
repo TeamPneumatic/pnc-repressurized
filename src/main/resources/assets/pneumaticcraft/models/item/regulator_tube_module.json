@@ -1,6 +1,77 @@
 {
-   "textures" : {
-      "layer0" : "pneumaticcraft:item/module/regulator"
-   },
-   "parent" : "item/generated"
+	"credit": "Made with Blockbench",
+	"texture_size": [32, 32],
+	"textures": {
+		"0": "pneumaticcraft:model/modules/regulator",
+		"particle": "pneumaticcraft:model/modules/regulator"
+	},
+	"elements": [
+		{
+			"from": [4.5, 0, 9],
+			"to": [11.5, 7, 13],
+			"faces": {
+				"north": {"uv": [7.5, 2, 11, 5.5], "texture": "#0"},
+				"east": {"uv": [5.5, 2, 7.5, 5.5], "texture": "#0"},
+				"south": {"uv": [2, 2, 5.5, 5.5], "texture": "#0"},
+				"west": {"uv": [0, 2, 2, 5.5], "texture": "#0"},
+				"up": {"uv": [2, 0, 5.5, 2], "texture": "#0"},
+				"down": {"uv": [9, 0, 5.5, 2], "rotation": 180, "texture": "#0"}
+			}
+		},
+		{
+			"from": [5.5, 1, 5],
+			"to": [10.5, 6, 9],
+			"faces": {
+				"north": {"uv": [0, 0, 5, 5], "texture": "#0"},
+				"east": {"uv": [4.5, 7.5, 6.5, 10], "texture": "#0"},
+				"south": {"uv": [0, 0, 5, 5], "texture": "#0"},
+				"west": {"uv": [0, 7.5, 2, 10], "texture": "#0"},
+				"up": {"uv": [2, 5.5, 4.5, 7.5], "texture": "#0"},
+				"down": {"uv": [2, 5.5, 4.5, 7.5], "rotation": 180, "texture": "#0"}
+			}
+		},
+		{
+			"from": [5, 0.5, 3],
+			"to": [11, 6.5, 5],
+			"faces": {
+				"north": {"uv": [5, 11.5, 8, 14.5], "texture": "#0"},
+				"east": {"uv": [4, 11.5, 5, 14.5], "texture": "#0"},
+				"south": {"uv": [1, 11.5, 4, 14.5], "texture": "#0"},
+				"west": {"uv": [0, 11.5, 1, 14.5], "texture": "#0"},
+				"up": {"uv": [1, 10.5, 4, 11.5], "texture": "#0"},
+				"down": {"uv": [7, 10.5, 4, 11.5], "rotation": 180, "texture": "#0"}
+			}
+		}
+	],
+	"display": {
+		"thirdperson_righthand": {
+			"rotation": [75, 45, 0],
+			"translation": [-1.25, 2.75, 1.25],
+			"scale": [0.5, 0.5, 0.5]
+		},
+		"thirdperson_lefthand": {
+			"rotation": [75, 45, 0],
+			"translation": [-1.25, 2.75, 1.25],
+			"scale": [0.5, 0.5, 0.48]
+		},
+		"firstperson_righthand": {
+			"translation": [0, 3.5, 0.5],
+			"scale": [0.6, 0.6, 0.6]
+		},
+		"firstperson_lefthand": {
+			"translation": [0, 3.5, 0.5],
+			"scale": [0.6, 0.6, 0.6]
+		},
+		"ground": {
+			"translation": [0, 3, 0],
+			"scale": [0.5, 0.5, 0.5]
+		},
+		"gui": {
+			"rotation": [30, 225, 0],
+			"translation": [0, 3.75, 0]
+		},
+		"fixed": {
+			"translation": [0, 5.25, -5]
+		}
+	}
 }
