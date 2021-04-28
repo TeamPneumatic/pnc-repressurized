@@ -47,24 +47,31 @@ public class RenderPressureGaugeModule extends TubeModuleRendererBase<ModulePres
         gauge1 = new ModelRenderer(64, 32, 0, 17);
         gauge1.addBox(-3.0F, -2.0F, 0.0F, 1.0F, 4.0F, 1.0F);
         gauge1.setPos(-1.0F, 16.0F, 5.5F);
+
         gauge2 = new ModelRenderer(64, 32, 4, 17);
         gauge2.addBox(4.0F, -2.0F, 0.0F, 1.0F, 4.0F, 1.0F);
         gauge2.setPos(-1.0F, 16.0F, 5.5F);
+
         gauge3 = new ModelRenderer(64, 32, 8, 17);
         gauge3.addBox(3.0F, -3.0F, 0.0F, 1.0F, 1.0F, 1.0F);
         gauge3.setPos(-1.0F, 16.0F, 5.5F);
+
         gauge4 = new ModelRenderer(64, 32, 12, 17);
         gauge4.addBox(3.0F, 2.0F, 0.0F, 1.0F, 1.0F, 1.0F);
         gauge4.setPos(-1.0F, 16.0F, 5.5F);
+
         gauge5 = new ModelRenderer(64, 32, 8, 19);
         gauge5.addBox(-2.0F, -3.0F, 0.0F, 1.0F, 1.0F, 1.0F);
         gauge5.setPos(-1.0F, 16.0F, 5.5F);
+
         gauge6 = new ModelRenderer(64, 32, 12, 19);
         gauge6.addBox(-2.0F, 2.0F, 0.0F, 1.0F, 1.0F, 1.0F);
         gauge6.setPos(-1.0F, 16.0F, 5.5F);
+
         gauge7 = new ModelRenderer(64, 32, 0, 24);
         gauge7.addBox(-1.0F, 3.0F, 0.0F, 4.0F, 1.0F, 1.0F);
         gauge7.setPos(-1.0F, 16.0F, 5.5F);
+
         gauge8 = new ModelRenderer(64, 32, 0, 22);
         gauge8.addBox(-1.0F, -4.0F, 0.0F, 4.0F, 1.0F, 1.0F);
         gauge8.setPos(-1.0F, 16.0F, 5.5F);
