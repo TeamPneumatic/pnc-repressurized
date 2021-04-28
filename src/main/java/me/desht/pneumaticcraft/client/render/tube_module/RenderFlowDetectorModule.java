@@ -16,7 +16,7 @@ public class RenderFlowDetectorModule extends TubeModuleRendererBase<ModuleFlowD
     public RenderFlowDetectorModule() {
         face = new ModelRenderer(32, 32, 0, 0);
         face.addBox(-2.0F, -3.0F, -2.0F, 4.0F, 1.0F, 5.0F);
-        face.setRotationPoint(0.0F, 16.0F, 4.5F);
+        face.setPos(0.0F, 16.0F, 4.5F);
         face.mirror = true;
     }
 
@@ -24,7 +24,7 @@ public class RenderFlowDetectorModule extends TubeModuleRendererBase<ModuleFlowD
     protected void renderDynamic(ModuleFlowDetector module, MatrixStack matrixStack, IVertexBuilder builder, float partialTicks, int combinedLight, int combinedOverlay, float r, float g, float b, float a) {
         float rot = module != null ? MathHelper.lerp(partialTicks, module.oldRotation, module.rotation) : 0f;
         for (int i = 0; i < TUBE_PARTS; i++) {
-            face.rotateAngleZ = (float)i / TUBE_PARTS * 2 * (float)Math.PI + rot;
+            face.zRot = (float)i / TUBE_PARTS * 2 * (float)Math.PI + rot;
             face.render(matrixStack, builder, combinedLight, combinedOverlay);
         }
     }
