@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.LazySynced;
 import me.desht.pneumaticcraft.common.recipes.assembly.AssemblyProgram;
+import me.desht.pneumaticcraft.common.util.CountedItemStacks;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.lib.TileEntityConstants;
@@ -15,6 +16,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.NonNullList;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
@@ -22,6 +24,15 @@ import net.minecraftforge.items.ItemHandlerHelper;
 import java.util.Collection;
 
 public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
+    private static final byte SLEEP_TICKS = 50;
+
+    private static final byte STATE_IDLE = 0;
+    private static final byte STATE_SEARCH_SRC = 1;
+    private static final byte STATE_CLOSECLAW_AFTER_PICKUP = 5;
+    private static final byte STATE_RESET_CLOSECLAW_AFTER_PICKUP = 20;
+    private static final byte STATE_RESET_GOTO_IDLE = 26;
+    private static final byte STATE_MAX = 127;
+
     @DescSynced
     private boolean shouldClawClose;
     @DescSynced
@@ -35,15 +46,6 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
     private ItemStack searchedItemStack = ItemStack.EMPTY;
     private byte state = 0;
     private byte tickCounter = 0;
-
-    private final static byte SLEEP_TICKS = 50;
-
-    private final static byte STATE_IDLE = 0;
-    private final static byte STATE_SEARCH_SRC = 1;
-    private final static byte STATE_CLOSECLAW_AFTER_PICKUP = 5;
-    private final static byte STATE_RESET_CLOSECLAW_AFTER_PICKUP = 20;
-    private final static byte STATE_RESET_GOTO_IDLE = 26;
-    private final static byte STATE_MAX = 127;
 
     public TileEntityAssemblyIOUnit() {
         super(ModTileEntities.ASSEMBLY_IO_UNIT.get());
@@ -142,18 +144,15 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
     private boolean findPickupLocation() {
         if (shouldSleep()) return false;
 
-        Direction[] inventoryDir = null;
+        TargetDirections inventoryDir = null;
 
         if (isImportUnit()) {
             searchedItemStack = ItemStack.EMPTY;
             if (recipeList != null) {
-                for (AssemblyRecipe recipe : recipeList) {
-                    ItemImport result = getInventoryDirectionForItem(recipe);
-                    if (result != null) {
-                        searchedItemStack = result.stack;
-                        inventoryDir = result.dirs;
-                        break;
-                    }
+                ItemImportResult result = findImportInventory();
+                if (result != null) {
+                    searchedItemStack = result.stack;
+                    inventoryDir = result.targetDirs;
                 }
             }
         } else {
@@ -164,9 +163,49 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
 
         if (targetDirection == null) {
             sleepBeforeNextSearch();
-
             return false;
         } else return true;
+    }
+
+    private ItemImportResult findImportInventory() {
+        for (Direction dir : DirectionUtil.HORIZONTALS) {
+            TileEntity te = getCachedNeighbor(dir);
+            if (te != null) {
+                ItemStack res = searchImportInventory(te);
+                if (!res.isEmpty()) {
+                    return new ItemImportResult(dir, res);
+                }
+            }
+        }
+        for (Direction secDir : new Direction[]{Direction.WEST, Direction.EAST}) {
+            for (Direction primDir : new Direction[]{Direction.NORTH, Direction.SOUTH}) {
+                TileEntity te = getWorld().getTileEntity(getPos().offset(primDir).offset(secDir));
+                if (te != null) {
+                    ItemStack res = searchImportInventory(te);
+                    if (!res.isEmpty()) {
+                        return new ItemImportResult(primDir, secDir, res);
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    private ItemStack searchImportInventory(TileEntity te) {
+        CountedItemStacks counted = IOHelper.getInventoryForTE(te, Direction.UP)
+                .map(CountedItemStacks::new)
+                .orElse(null);
+        if (counted != null) {
+            NonNullList<ItemStack> stacks = counted.coalesce();
+            for (AssemblyRecipe recipe : recipeList) {
+                for (ItemStack stack : stacks) {
+                    if (recipe.matches(stack)) {
+                        return ItemHandlerHelper.copyStackWithSize(stack, recipe.getInputAmount());
+                    }
+                }
+            }
+        }
+        return ItemStack.EMPTY;
     }
 
     private boolean isSleeping() {
@@ -208,33 +247,29 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
             if (searchedItemStack.isEmpty()) { // we don't know what we're supposed to pick up
                 reset();
             } else {
-                extracted = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, Direction.UP).map(otherInv -> {
-                    ItemStack currentStack = itemHandler.getStackInSlot(0);
-                    int oldStackSize = currentStack.getCount();
-
-                    boolean ret = false;
-                    for (int i = 0; i < otherInv.getSlots(); i++) {
-                        if (!otherInv.getStackInSlot(i).isEmpty()) {
-                            if (currentStack.isEmpty()) {
-                                if (otherInv.getStackInSlot(i).isItemEqual(searchedItemStack)) {
-                                    ItemStack exStack = otherInv.extractItem(i, 1, false);
-                                    itemHandler.insertItem(0, exStack, false);
-                                }
-                            } else if (ItemHandlerHelper.canItemStacksStack(currentStack, otherInv.getStackInSlot(i))) {
-                                ItemStack exStack = otherInv.extractItem(i, 1, false);
-                                itemHandler.insertItem(0, exStack, false);
-                            }
-                            ret = itemHandler.getStackInSlot(0).getCount() >= searchedItemStack.getCount();
-                            if (ret) {
-                                break;
-                            }
+                extracted = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, Direction.UP).map(sourceInv -> {
+                    ItemStack heldStack = itemHandler.getStackInSlot(0);
+                    int initialHeldAmount = heldStack.getCount();
+                    boolean foundIt = false;
+                    int needed = searchedItemStack.getCount() - heldStack.getCount();
+                    for (int i = 0; i < sourceInv.getSlots() && !foundIt; i++) {
+                        ItemStack stack = sourceInv.getStackInSlot(i);
+                        if (stack.isEmpty()) continue;
+                        if (heldStack.isEmpty() && stack.isItemEqual(searchedItemStack)
+                                || ItemHandlerHelper.canItemStacksStack(heldStack, stack)) {
+                            ItemStack takenStack = sourceInv.extractItem(i, needed, false);
+                            ItemStack excess = itemHandler.insertItem(0, takenStack, false);
+                            needed -= (takenStack.getCount() - excess.getCount());
+                            // excess will be empty under all normal circumstances, but let's be careful...
+                            ItemHandlerHelper.insertItem(sourceInv, excess, false);
                         }
+                        foundIt = needed <= 0;
                     }
 
-                    if (oldStackSize == (itemHandler.getStackInSlot(0).getCount())) { // nothing picked up, search for different inventory
+                    if (initialHeldAmount == itemHandler.getStackInSlot(0).getCount()) { // nothing picked up, search for different inventory
                         state = STATE_SEARCH_SRC;
                     }
-                    return ret;
+                    return foundIt;
                 }).orElseGet(() -> {
                     state = STATE_SEARCH_SRC; // inventory gone
                     return false;
@@ -347,62 +382,33 @@ public class TileEntityAssemblyIOUnit extends TileEntityAssemblyRobot {
         return isImportUnit() ? AssemblyProgram.EnumMachine.IO_UNIT_IMPORT : AssemblyProgram.EnumMachine.IO_UNIT_EXPORT;
     }
 
-    private ItemImport getInventoryDirectionForItem(AssemblyRecipe recipe) {
-        ItemStack heldStack = itemHandler.getStackInSlot(0);
-        if (heldStack.isEmpty() || recipe.getInput().test(heldStack)) {
-            for (Direction dir : DirectionUtil.HORIZONTALS) {
-                ItemStack found = IOHelper.getInventoryForTE(getCachedNeighbor(dir), Direction.UP)
-                        .map(h -> findIngredientInInventory(h, recipe)).orElse(ItemStack.EMPTY);
-                if (!found.isEmpty()) return new ItemImport(new Direction[]{dir, null}, found);
-            }
-            if (canMoveToDiagonalNeighbours()) {
-                for (Direction secDir : new Direction[]{Direction.WEST, Direction.EAST}) {
-                    for (Direction primDir : new Direction[]{Direction.NORTH, Direction.SOUTH}) {
-                        TileEntity te = getWorld().getTileEntity(getPos().offset(primDir).offset(secDir));
-                        ItemStack found = IOHelper.getInventoryForTE(te, Direction.UP)
-                                .map(h -> findIngredientInInventory(h, recipe)).orElse(ItemStack.EMPTY);
-                        if (!found.isEmpty()) return new ItemImport(new Direction[]{primDir, secDir}, found);
-                    }
-                }
-            }
-        }
-
-        return null;
-    }
-
-    private ItemStack findIngredientInInventory(IItemHandler handler, AssemblyRecipe recipe) {
-        for (int i = 0; i < handler.getSlots(); i++) {
-            ItemStack stack = handler.getStackInSlot(i);
-            if (stack.getCount() >= recipe.getInputAmount() && recipe.getInput().test(stack)) {
-                return ItemHandlerHelper.copyStackWithSize(stack, recipe.getInputAmount());
-            }
-        }
-        return ItemStack.EMPTY;
-    }
-
-    private static class ItemImport {
-        final Direction[] dirs;
+    private static class ItemImportResult {
+        final TargetDirections targetDirs;
         final ItemStack stack;
 
-        ItemImport(Direction[] dirs, ItemStack stack) {
-            this.dirs = dirs;
+        ItemImportResult(Direction targetDirs, ItemStack stack) {
+            this(targetDirs, null, stack);
+        }
+
+        ItemImportResult(Direction primDir, Direction secDir, ItemStack stack) {
+            this.targetDirs = new TargetDirections(primDir, secDir);
             this.stack = stack;
         }
     }
 
-    private Direction[] getExportLocationForItem(ItemStack exportedItem) {
+    private TargetDirections getExportLocationForItem(ItemStack exportedItem) {
         if (!exportedItem.isEmpty()) {
             for (Direction dir : DirectionUtil.HORIZONTALS) {
                 TileEntity te = getWorld().getTileEntity(getPos().offset(dir));
                 int slot = getPlacementSlot(exportedItem, te);
-                if (slot >= 0) return new Direction[]{dir, null};
+                if (slot >= 0) return new TargetDirections(dir);
             }
             if (canMoveToDiagonalNeighbours()) {
                 for (Direction secDir : new Direction[]{Direction.WEST, Direction.EAST}) {
                     for (Direction primDir : new Direction[]{Direction.NORTH, Direction.SOUTH}) {
                         TileEntity te = getWorld().getTileEntity(getPos().offset(primDir).offset(secDir));
                         int slot = getPlacementSlot(exportedItem, te);
-                        if (slot >= 0) return new Direction[]{primDir, secDir};
+                        if (slot >= 0) return new TargetDirections(primDir, secDir);
                     }
                 }
             }

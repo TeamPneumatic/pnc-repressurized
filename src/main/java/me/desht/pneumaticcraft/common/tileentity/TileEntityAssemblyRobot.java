@@ -13,6 +13,8 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 
+import javax.annotation.Nonnull;
+
 public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase implements IAssemblyMachine, IResettable {
     public final float[] oldAngles = new float[EnumAngles.values().length];
     @DescSynced
@@ -20,9 +22,9 @@ public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase imp
     public final float[] angles = new float[EnumAngles.values().length];
     @DescSynced
     final float[] targetAngles = new float[EnumAngles.values().length];
-    Direction[] targetDirection = new Direction[]{null, null};
+    TargetDirections targetDirection = null;
     @DescSynced
-    boolean slowMode; //used for the drill when drilling, the slowmode moves the arm 10x as slow as normal.
+    boolean slowMode; // fine-adjustment mode: robot arm moves 10x slower than normal
     @DescSynced
     protected float speed = 1.0F;
     private BlockPos controllerPos;
@@ -44,15 +46,10 @@ public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase imp
     @Override
     public void onNeighborBlockUpdate(BlockPos fromPos) {
         super.onNeighborBlockUpdate(fromPos);
-        invalidateSystem();
-    }
 
-    void invalidateSystem() {
         if (controllerPos != null) {
-            TileEntity te = getWorld().getTileEntity(controllerPos);
-            if (te instanceof TileEntityAssemblyController) {
-                ((TileEntityAssemblyController) te).invalidateAssemblySystem();
-            }
+            PneumaticCraftUtils.getTileEntityAt(getWorld(), controllerPos, TileEntityAssemblyController.class)
+                    .ifPresent(TileEntityAssemblyController::invalidateAssemblySystem);
         }
     }
 
@@ -79,29 +76,39 @@ public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase imp
     }
 
     boolean gotoTarget() {
-        if (targetDirection == null) return false;
+        if (targetDirection != null) {
+            this.gotoNeighbour(targetDirection);
+            return isDoneMoving();
+        } else {
+            return false;
+        }
+    }
 
-        this.gotoNeighbour(targetDirection[0], targetDirection[1]);
-        return isDoneMoving();
+    boolean hoverOverTarget() {
+        if (targetDirection != null) {
+            hoverOverNeighbour(targetDirection);
+            return isDoneMoving();
+        } else {
+            return false;
+        }
     }
 
     /**
-     * Goes to the neighbour in the given direction(s).
+     * Instruct the robot arm to start moving to the neighbour in the given direction(s).
      *
-     * @param primaryDir the first horizontal direction to move in
-     * @param secondaryDir the second horizontal direction to move in (may be null)
+     * @param newDirections the direction(s) to move in
      * @return true if the neighbour is diagonal to this arm
      */
-    public boolean gotoNeighbour(Direction primaryDir, Direction secondaryDir) {
-        targetDirection = new Direction[]{primaryDir, secondaryDir};
+    public boolean gotoNeighbour(@Nonnull TargetDirections newDirections) {
+        targetDirection = newDirections;
         boolean diagonal = true;
         boolean diagonalAllowed = canMoveToDiagonalNeighbours();
-        switch (primaryDir) {
+        switch (targetDirection.primary) {
             case SOUTH:
-                if (secondaryDir == Direction.EAST && diagonalAllowed) {
+                if (targetDirection.secondary == Direction.EAST && diagonalAllowed) {
                     targetAngles[EnumAngles.TURN.getIndex()] = -45F;
                     targetAngles[EnumAngles.HEAD.getIndex()] = 40F;
-                } else if (secondaryDir == Direction.WEST && diagonalAllowed) {
+                } else if (targetDirection.secondary == Direction.WEST && diagonalAllowed) {
                     targetAngles[EnumAngles.TURN.getIndex()] = 45F;
                     targetAngles[EnumAngles.HEAD.getIndex()] = -40F;
                 } else {
@@ -109,6 +116,7 @@ public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase imp
                     targetAngles[EnumAngles.HEAD.getIndex()] = 90F;
                     diagonal = false;
                 }
+
                 break;
             case EAST:
                 targetAngles[EnumAngles.TURN.getIndex()] = -90F;
@@ -116,10 +124,10 @@ public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase imp
                 diagonal = false;
                 break;
             case NORTH:
-                if (secondaryDir == Direction.EAST && diagonalAllowed) {
+                if (targetDirection.secondary == Direction.EAST && diagonalAllowed) {
                     targetAngles[EnumAngles.TURN.getIndex()] = -135F;
                     targetAngles[EnumAngles.HEAD.getIndex()] = -40F;
-                } else if (secondaryDir == Direction.WEST && diagonalAllowed) {
+                } else if (targetDirection.secondary == Direction.WEST && diagonalAllowed) {
                     targetAngles[EnumAngles.TURN.getIndex()] = 135F;
                     targetAngles[EnumAngles.HEAD.getIndex()] = 40F;
                 } else {
@@ -127,6 +135,7 @@ public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase imp
                     targetAngles[EnumAngles.HEAD.getIndex()] = 90F;
                     diagonal = false;
                 }
+
                 break;
             case WEST:
                 targetAngles[EnumAngles.TURN.getIndex()] = 90F;
@@ -146,19 +155,13 @@ public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase imp
         return diagonal;
     }
 
-    boolean hoverOverTarget() {
-        if (targetDirection == null) return false;
-
-        return this.hoverOverNeighbour(targetDirection);
-    }
-
-    private boolean hoverOverNeighbour(Direction[] directions) {
-        hoverOverNeighbour(directions[0], directions[1]);
-        return isDoneMoving();
-    }
-
-    void hoverOverNeighbour(Direction primaryDir, Direction secondaryDir) {
-        boolean diagonal = gotoNeighbour(primaryDir, secondaryDir);
+    /**
+     * Like gotoNeighbour(), but hovers higher above the block.
+     *
+     * @param directions the direction(s) to move in
+     */
+    void hoverOverNeighbour(TargetDirections directions) {
+        boolean diagonal = gotoNeighbour(directions);
         if (diagonal) {
             targetAngles[EnumAngles.BASE.getIndex()] = 160F;
             targetAngles[EnumAngles.MIDDLE.getIndex()] = -95F;
@@ -171,12 +174,13 @@ public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase imp
     }
 
     TileEntity getTileEntityForCurrentDirection() {
-        return getTileEntityForDirection(targetDirection[0], targetDirection[1]);
-    }
-
-    private TileEntity getTileEntityForDirection(Direction firstDir, Direction secondDir) {
-        BlockPos pos = getPos().offset(firstDir);
-        return getWorld().getTileEntity(secondDir == null ? pos : pos.offset(secondDir));
+        if (targetDirection == null) {
+            return null;
+        } else if (targetDirection.secondary == null) {
+            return getCachedNeighbor(targetDirection.primary);
+        } else {
+            return getWorld().getTileEntity(targetDirection.offset(getPosition()));
+        }
     }
 
     boolean isDoneMoving() {
@@ -196,40 +200,36 @@ public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase imp
         }
         slowMode = tag.getBoolean("slowMode");
         speed = tag.getFloat("speed");
-        targetDirection[0] = tag.contains("targetDir1") ? DirectionUtil.VALUES[tag.getInt("targetDir1")] : null;
-        targetDirection[1] = tag.contains("targetDir2") ? DirectionUtil.VALUES[tag.getInt("targetDir2")] : null;
+        targetDirection = TargetDirections.readNBT(tag);
 
     }
 
     @Override
     public CompoundNBT write(CompoundNBT tag) {
         super.write(tag);
+
         for (int i = 0; i < 5; i++) {
             tag.putFloat("angle" + i, angles[i]);
             tag.putFloat("targetAngle" + i, targetAngles[i]);
         }
         tag.putBoolean("slowMode", slowMode);
         tag.putFloat("speed", speed);
-
-        if (targetDirection != null) {
-            if (targetDirection[0] != null) tag.putInt("targetDir1", targetDirection[0].getIndex());
-            if (targetDirection[1] != null) tag.putInt("targetDir2", targetDirection[1].getIndex());
-        }
+        if (targetDirection != null) targetDirection.writeNBT(tag);
         return tag;
     }
 
-    public abstract boolean canMoveToDiagonalNeighbours();
+    protected abstract boolean canMoveToDiagonalNeighbours();
 
-    Direction[] getPlatformDirection() {
+    TargetDirections getPlatformDirection() {
         for (Direction dir : DirectionUtil.HORIZONTALS) {
             if (getWorld().getTileEntity(getPos().offset(dir)) instanceof TileEntityAssemblyPlatform)
-                return new Direction[]{dir, null};
+                return new TargetDirections(dir);
         }
         if (canMoveToDiagonalNeighbours()) {
             for (Direction secDir : new Direction[]{Direction.WEST, Direction.EAST}) {
                 for (Direction primDir : new Direction[]{Direction.NORTH, Direction.SOUTH}) {
                     if (getWorld().getTileEntity(getPos().offset(primDir).offset(secDir)) instanceof TileEntityAssemblyPlatform) {
-                        return new Direction[]{primDir, secDir};
+                        return new TargetDirections(primDir, secDir);
                     }
                 }
             }
@@ -239,7 +239,10 @@ public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase imp
 
     @Override
     public AxisAlignedBB getRenderBoundingBox() {
-        return new AxisAlignedBB(getPos().getX() - 1, getPos().getY() - 1, getPos().getZ() - 1, getPos().getX() + 2, getPos().getY() + 2, getPos().getZ() + 2);
+        return new AxisAlignedBB(
+                getPos().getX() - 1, getPos().getY() - 1, getPos().getZ() - 1,
+                getPos().getX() + 2, getPos().getY() + 2, getPos().getZ() + 2
+        );
     }
 
     @Override
@@ -247,7 +250,7 @@ public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase imp
         this.speed = speed;
     }
 
-    protected enum EnumAngles {
+    enum EnumAngles {
         TURN(0),
         BASE(1),
         MIDDLE(2, 55f),
@@ -272,6 +275,41 @@ public abstract class TileEntityAssemblyRobot extends TileEntityTickableBase imp
 
         public float getHomeAngle() {
             return homeAngle;
+        }
+    }
+
+    /**
+     * A compound direction relative to the tile entity in question. First direction is always non-null, second
+     * direction may be null for an adjacent neighbour, or non-null for a diagonal neighbour.
+     */
+    static class TargetDirections {
+        final Direction primary;
+        final Direction secondary;
+
+        TargetDirections(@Nonnull Direction primary, Direction secondary) {
+            this.primary = primary;
+            this.secondary = secondary;
+        }
+
+        TargetDirections(@Nonnull Direction primary) {
+            this(primary, null);
+        }
+
+        BlockPos offset(BlockPos initial) {
+            return secondary == null ? initial.offset(primary) : initial.offset(primary).offset(secondary);
+        }
+
+        static TargetDirections readNBT(CompoundNBT tag) {
+            if (!tag.contains("targetDir1")) return null;
+            return new TargetDirections(
+                    DirectionUtil.VALUES[tag.getInt("targetDir1")],
+                    tag.contains("targetDir2") ? DirectionUtil.VALUES[tag.getInt("targetDir2")] : null
+            );
+        }
+
+        void writeNBT(CompoundNBT tag) {
+            tag.putInt("targetDir1", primary.getIndex());
+            if (secondary != null) tag.putInt("targetDir2", secondary.getIndex());
         }
     }
 }

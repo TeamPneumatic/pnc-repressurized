@@ -46,7 +46,6 @@ import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
-import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nonnull;
 import java.io.BufferedReader;
@@ -556,9 +555,9 @@ public class PneumaticCraftUtils {
         return new TranslationTextComponent(s, args);
     }
 
-    public static String dyeColorDesc(int c) {
-        // TODO 1.14 make this better
-        return TextFormatting.BOLD + StringUtils.capitalize(DyeColor.byId(c).getTranslationKey()) + TextFormatting.RESET;
+    public static ITextComponent dyeColorDesc(int c) {
+        return new TranslationTextComponent("color.minecraft." + DyeColor.byId(c).getTranslationKey())
+                .mergeStyle(TextFormatting.BOLD);
     }
 
     public static int getBurnTime(ItemStack stack) {
