@@ -1,20 +1,3 @@
-/*
- * This file is part of pnc-repressurized.
- *
- *     pnc-repressurized is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
- *
- *     pnc-repressurized is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
- *
- *     You should have received a copy of the GNU General Public License
- *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
- */
-
 package me.desht.pneumaticcraft.client.render.tube_module;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
@@ -36,49 +19,49 @@ public class RenderLogisticsModule extends TubeModuleRendererBase<ModuleLogistic
 
     public RenderLogisticsModule() {
         notPowered = new ModelRenderer(64, 64, 24, 8);
-        notPowered.addBox(0F, 0F, 0F, 6, 2, 6);
-        notPowered.setPos(-3F, 13F, 4F);
+        notPowered.addBox(0F, 0F, 0F, 6F, 2F, 6F);
+        notPowered.setRotationPoint(-3F, 13F, 4F);
         notPowered.mirror = true;
         setRotation(notPowered, -1.570796F, 0F, 0F);
         powered = new ModelRenderer(64, 64, 0, 8);
-        powered.addBox(0F, 0F, 0F, 6, 2, 6);
-        powered.setPos(-3F, 13F, 4F);
+        powered.addBox(0F, 0F, 0F, 6F, 2F, 6F);
+        powered.setRotationPoint(-3F, 13F, 4F);
         powered.mirror = true;
         setRotation(powered, -1.570796F, 0F, 0F);
         action = new ModelRenderer(64, 64, 24, 0);
-        action.addBox(0F, 0F, 0F, 6, 2, 6);
-        action.setPos(-3F, 13F, 4F);
+        action.addBox(0F, 0F, 0F, 6F, 2F, 6F);
+        action.setRotationPoint(-3F, 13F, 4F);
         action.mirror = true;
         setRotation(action, -1.570796F, 0F, 0F);
         notEnoughAir = new ModelRenderer(64, 64, 0, 0);
-        notEnoughAir.addBox(0F, 0F, 0F, 6, 2, 6);
-        notEnoughAir.setPos(-3F, 13F, 4F);
+        notEnoughAir.addBox(0F, 0F, 0F, 6F, 2F, 6F);
+        notEnoughAir.setRotationPoint(-3F, 13F, 4F);
         notEnoughAir.mirror = true;
         setRotation(notEnoughAir, -1.570796F, 0F, 0F);
 
         base2 = new ModelRenderer(64, 64, 0, 25);
-        base2.addBox(0F, 0F, 0F, 12, 2, 12);
-        base2.setPos(-6F, 10F, 6F);
+        base2.addBox(0F, 0F, 0F, 12F, 2F, 12F);
+        base2.setRotationPoint(-6F, 10F, 6F);
         base2.mirror = true;
         setRotation(base2, -1.570796F, 0F, 0F);
         shape1 = new ModelRenderer(64, 64, 0, 39);
-        shape1.addBox(0F, 0F, 0F, 1, 13, 1);
-        shape1.setPos(5.5F, 9.5F, 5.5F);
+        shape1.addBox(0F, 0F, 0F, 1F, 13F, 1F);
+        shape1.setRotationPoint(5.5F, 9.5F, 5.5F);
         shape1.mirror = true;
         setRotation(shape1, 0F, 0F, 0F);
         shape2 = new ModelRenderer(64, 64, 4, 39);
-        shape2.addBox(0F, 0F, 0F, 1, 13, 1);
-        shape2.setPos(-6.5F, 9.5F, 5.5F);
+        shape2.addBox(0F, 0F, 0F, 1F, 13F, 1F);
+        shape2.setRotationPoint(-6.5F, 9.5F, 5.5F);
         shape2.mirror = true;
         setRotation(shape2, 0F, 0F, 0F);
         shape3 = new ModelRenderer(64, 64, 8, 39);
-        shape3.addBox(0F, 0F, 0F, 11, 1, 1);
-        shape3.setPos(-5.5F, 9.5F, 5.5F);
+        shape3.addBox(0F, 0F, 0F, 11F, 1F, 1F);
+        shape3.setRotationPoint(-5.5F, 9.5F, 5.5F);
         shape3.mirror = true;
         setRotation(shape3, 0F, 0F, 0F);
         shape4 = new ModelRenderer(64, 64, 8, 41);
-        shape4.addBox(0F, 0F, 0F, 11, 1, 1);
-        shape4.setPos(-5.5F, 21.5F, 5.5F);
+        shape4.addBox(0F, 0F, 0F, 11F, 1F, 1F);
+        shape4.setRotationPoint(-5.5F, 21.5F, 5.5F);
         shape4.mirror = true;
         setRotation(shape4, 0F, 0F, 0F);
     }
