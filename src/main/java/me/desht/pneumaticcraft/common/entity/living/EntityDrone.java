@@ -1418,6 +1418,11 @@ public class EntityDrone extends EntityDroneBase implements
         }
     }
 
+    @Override
+    public DroneItemHandler getDroneItemHandler() {
+        return droneItemHandler;
+    }
+
     /**
      * Add an initial program to a drone that's about to be placed. This is called right before the entity is spawned.
      * Programmable drones don't do anything here (program is created by the programmer and stored in item NBT), but

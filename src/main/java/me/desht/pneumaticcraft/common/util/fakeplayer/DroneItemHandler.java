@@ -1,9 +1,12 @@
 package me.desht.pneumaticcraft.common.util.fakeplayer;
 
 import me.desht.pneumaticcraft.api.drone.IDrone;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.items.ItemStackHandler;
 
@@ -74,6 +77,29 @@ public class DroneItemHandler extends ItemStackHandler {
             fakePlayerReady = true;
             for (int slot = 0; slot < getSlots(); slot++) {
                 copyItemToFakePlayer(slot);
+            }
+        }
+    }
+
+    /**
+     * Copy of the contents of the fake player's inventory back to this inventory (other than the item in slot 0),
+     * dropping in the world any items which don't fit due to the drone's inventory being too small.  Also clears
+     * the fake player inventory.
+     */
+    public void copyFromFakePlayer() {
+        if (!fakePlayerReady) return;
+
+        PlayerInventory fakeInv = holder.getFakePlayer().inventory;
+        for (int slot = 1; slot < fakeInv.getSizeInventory(); slot++) {
+            ItemStack stack = fakeInv.getStackInSlot(slot);
+            if (!stack.isEmpty()) {
+                if (slot < useableSlots) {
+                    // using super method here to avoid unnecessary copy of the item back to the fake player again
+                    super.setStackInSlot(slot, stack);
+                } else {
+                    PneumaticCraftUtils.dropItemOnGround(stack, holder.world(), new BlockPos(holder.getDronePos()));
+                }
+                fakeInv.setInventorySlotContents(slot, ItemStack.EMPTY);
             }
         }
     }

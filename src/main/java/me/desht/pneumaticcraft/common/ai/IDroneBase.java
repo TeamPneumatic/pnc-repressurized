@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.api.drone.IDrone;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.debug.DroneDebugger;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
+import me.desht.pneumaticcraft.common.util.fakeplayer.DroneItemHandler;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.SoundCategory;
@@ -69,4 +70,6 @@ public interface IDroneBase extends IDrone {
     boolean isDroneStillValid();
 
     boolean canMoveIntoFluid(Fluid fluid);
+
+    DroneItemHandler getDroneItemHandler();
 }

@@ -214,7 +214,7 @@ public abstract class DroneAIBlockInteraction<W extends ProgWidgetAreaItemBase> 
                     return movedToBlockOK(pos);
                 }
                 if ((w == null || w.isSideSelected(dir))
-                        && blockAllowsMovement(worldCache, pos2, worldCache.getBlockState(pos))
+                        && blockAllowsMovement(worldCache, pos2, worldCache.getBlockState(pos2))
                         && drone.getPathNavigator().moveToXYZ(pos2.getX(), pos2.getY() + 0.5, pos2.getZ())) {
                     return movedToBlockOK(pos);
                 }

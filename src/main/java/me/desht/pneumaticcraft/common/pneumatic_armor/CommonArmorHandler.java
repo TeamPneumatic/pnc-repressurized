@@ -812,7 +812,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
     public boolean upgradeUsable(IArmorUpgradeHandler upgrade, boolean mustBeActive) {
         EquipmentSlotType slot = upgrade.getEquipmentSlot();
         int idx = ArmorUpgradeRegistry.getInstance().getIndexForHandler(upgrade);
-        return armorEnabled && isArmorReady(slot) && getArmorPressure(slot) > 0f
+        return armorEnabled && isArmorReady(slot) && hasMinPressure(slot)
                 && isUpgradeInserted(slot, idx) && (!mustBeActive || isUpgradeEnabled(slot, idx));
     }
 

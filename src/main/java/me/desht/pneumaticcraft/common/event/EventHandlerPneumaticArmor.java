@@ -68,12 +68,10 @@ public class EventHandlerPneumaticArmor {
             if (isPneumaticArmorPiece(player, EquipmentSlotType.HEAD)) {
                 if (!targetingTracker.containsKey(mobId) || targetingTracker.get(mobId) != event.getTarget().getEntityId()) {
                     CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
-                    if (handler.isArmorReady(EquipmentSlotType.HEAD) && handler.hasMinPressure(EquipmentSlotType.HEAD) && handler.isEntityTrackerEnabled()) {
+                    if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().entityTrackerHandler, true)) {
                         NetworkHandler.sendToPlayer(new PacketSendArmorHUDMessage(
                                         xlate("pneumaticcraft.armor.message.targetWarning", event.getEntityLiving().getName().getString()),
-                                        60, 0x70FF4000),
-                                player
-                        );
+                                        60, 0x70FF4000), player);
                     }
                 }
             }
@@ -105,7 +103,7 @@ public class EventHandlerPneumaticArmor {
                 event.setDamageMultiplier(0.2F);
                 return;
             }
-            if (handler.isArmorReady(EquipmentSlotType.LEGS) && handler.isJumpBoostEnabled() && handler.hasMinPressure(EquipmentSlotType.LEGS)) {
+            if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().jumpBoostHandler, true)) {
                 // straight fall distance reduction if jump upgrade operational in legs
                 event.setDistance(Math.max(0, event.getDistance() - 1.5f * handler.getUpgradeCount(EquipmentSlotType.LEGS, EnumUpgrade.JUMPING)));
                 if (event.getDistance() < 2) {
@@ -191,7 +189,7 @@ public class EventHandlerPneumaticArmor {
     }
 
     /**
-     * Jump boost due to leggings range upgrades
+     * Jump boost due to jump upgrades in leggings
      */
     @SubscribeEvent
     public void onPlayerJump(LivingEvent.LivingJumpEvent event) {
@@ -202,10 +200,11 @@ public class EventHandlerPneumaticArmor {
                 return;
             }
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
-               if (!handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().jetBootsHandler, true)
-                    && handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().jumpBoostHandler, true)
-                    && handler.isJumpBoostEnabled()
-                    && handler.hasMinPressure(EquipmentSlotType.LEGS)) {
+            if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().jetBootsHandler, true)) {
+                // enabled jet boots = no jumping
+                return;
+            }
+            if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().jumpBoostHandler, true)) {
                 float power = ItemPneumaticArmor.getIntData(stack, ItemPneumaticArmor.NBT_JUMP_BOOST, 100, 0, 100) / 100.0f;
                 int rangeUpgrades = handler.getUpgradeCount(EquipmentSlotType.LEGS, EnumUpgrade.JUMPING,
                         player.isSneaking() ? 1 : PneumaticValues.PNEUMATIC_LEGS_MAX_JUMP);
@@ -224,15 +223,15 @@ public class EventHandlerPneumaticArmor {
 
     /**
      * Allow the player to dig at improved speed if flying with builder mode active
-     * (need 10 upgrades for normal dig speed)
+     * (need tier 5 upgrade for normal dig speed)
      */
     @SubscribeEvent
     public void breakSpeedCheck(PlayerEvent.BreakSpeed event) {
         PlayerEntity player = event.getPlayer();
         int max = PneumaticValues.PNEUMATIC_JET_BOOTS_MAX_UPGRADES;
-        if (isPneumaticArmorPiece(player, EquipmentSlotType.FEET)) {
+        if (isPneumaticArmorPiece(player, EquipmentSlotType.FEET) && !player.isOnGround()) {
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(event.getPlayer());
-            if (handler.isJetBootsEnabled() && !player.isOnGround() && handler.isJetBootsBuilderMode()) {
+            if (handler.isJetBootsEnabled() && handler.isJetBootsBuilderMode()) {
                 int n = (max + 1) - handler.getUpgradeCount(EquipmentSlotType.FEET, EnumUpgrade.JET_BOOTS, max);
                 if (n < 4) {
                     float mult = 5.0f / n;   // default dig speed when not on ground is 1/5 of normal
@@ -262,7 +261,7 @@ public class EventHandlerPneumaticArmor {
         }
     }
 
-    private static final Vector3d IDLE_VEC = new Vector3d(0, -0.5, -0);
+    private static final Vector3d IDLE_VEC = new Vector3d(0, -0.5, 0);
 
     /**
      * Client-side: play particles for all (close enough) player entities with enabled jet boots, including the actual player.
