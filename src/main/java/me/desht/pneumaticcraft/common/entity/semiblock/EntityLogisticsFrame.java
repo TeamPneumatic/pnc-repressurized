@@ -33,6 +33,7 @@ import net.minecraft.pathfinding.PathType;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
@@ -153,6 +154,8 @@ public abstract class EntityLogisticsFrame extends EntitySemiblockBase implement
 
     @Override
     public abstract int getColor();
+
+    public abstract ResourceLocation getTexture();
 
     public abstract int getPriority();
 
