@@ -10,9 +10,11 @@ import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Names;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -52,7 +54,11 @@ public class EntityProvider {
                 tooltip.add(HeatUtil.formatHeatString(accessor.getServerData().getInt("Temperature")));
             }
             if (accessor.getEntity() instanceof ISemiBlock) {
-                ((ISemiBlock) accessor.getEntity()).addTooltip(tooltip, accessor.getPlayer(), accessor.getServerData(), accessor.getPlayer().isSneaking());
+                ISemiBlock semiBlock = (ISemiBlock) accessor.getEntity();
+                semiBlock.addTooltip(tooltip, accessor.getPlayer(), accessor.getServerData(), accessor.getPlayer().isSneaking());
+                BlockPos pos = semiBlock.getBlockPos();
+                BlockState state = accessor.getWorld().getBlockState(pos);
+                tooltip.add(state.getBlock().getTranslatedName().mergeStyle(TextFormatting.YELLOW));
             }
         }
 
