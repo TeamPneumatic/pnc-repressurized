@@ -25,6 +25,7 @@ import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketJetBootsActivate;
 import me.desht.pneumaticcraft.common.network.PacketShiftScrollWheel;
+import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
 import me.desht.pneumaticcraft.lib.Names;
@@ -269,15 +270,17 @@ public class ClientEventHandler {
     public static void jetBootsEvent(TickEvent.PlayerTickEvent event) {
         if (event.phase == TickEvent.Phase.START) {
             PlayerEntity player = event.player;
-            if (player == null || player.world == null) return;
+            if (player == null || player.world == null || !player.world.isRemote) return;
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
-            GameSettings settings = Minecraft.getInstance().gameSettings;
-            if (handler.isJetBootsActive() && (!handler.isJetBootsEnabled() || !settings.keyBindJump.isKeyDown())) {
-                NetworkHandler.sendToServer(new PacketJetBootsActivate(false));
-                handler.setJetBootsActive(false);
-            } else if (!handler.isJetBootsActive() && handler.isJetBootsEnabled() && settings.keyBindJump.isKeyDown()) {
-                NetworkHandler.sendToServer(new PacketJetBootsActivate(true));
-                handler.setJetBootsActive(true);
+            if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().jetBootsHandler, false)) {
+                GameSettings settings = Minecraft.getInstance().gameSettings;
+                if (handler.isJetBootsActive() && (!handler.isJetBootsEnabled() || !settings.keyBindJump.isKeyDown())) {
+                    NetworkHandler.sendToServer(new PacketJetBootsActivate(false));
+                    handler.setJetBootsActive(false);
+                } else if (!handler.isJetBootsActive() && handler.isJetBootsEnabled() && settings.keyBindJump.isKeyDown()) {
+                    NetworkHandler.sendToServer(new PacketJetBootsActivate(true));
+                    handler.setJetBootsActive(true);
+                }
             }
         }
     }

@@ -14,6 +14,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
@@ -44,6 +45,11 @@ public class EntityLogisticsRequester extends EntityLogisticsFrame implements IS
     @Override
     public int getColor() {
         return 0xFF0000FF;
+    }
+
+    @Override
+    public ResourceLocation getTexture() {
+        return null;  // TODO ridanisaurus
     }
 
     @Override

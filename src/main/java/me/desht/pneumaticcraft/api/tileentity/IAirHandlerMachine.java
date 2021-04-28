@@ -92,14 +92,6 @@ public interface IAirHandlerMachine extends IAirHandler, IManoMeasurable {
      */
     List<IAirHandlerMachine.Connection> getConnectedAirHandlers(TileEntity ownerTE);
 
-    /**
-     * Override this air handler's base volume (the volume with no upgrades installed).  Used for example by the
-     * Pressure Chamber, where the base volume is dependent on the multiblock size.
-     *
-     * @param baseVolume the new base volume
-     */
-    void setBaseVolume(int baseVolume);
-
     INBT serializeNBT();
 
     void deserializeNBT(CompoundNBT compound);

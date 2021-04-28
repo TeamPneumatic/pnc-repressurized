@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.common.semiblock.ISpecificRequester;
 import net.minecraft.entity.EntityType;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -20,6 +21,11 @@ public class EntityLogisticsStorage extends EntityLogisticsFrame implements ISpe
     @Override
     public int getColor() {
         return 0xFFFFFF00;
+    }
+
+    @Override
+    public ResourceLocation getTexture() {
+        return null;  // TODO ridanisaurus
     }
 
     @Override

@@ -594,6 +594,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         }
 
         // record the number of upgrades of every type
+        upgradeMatrix.get(slot.getIndex()).clear();
         for (ItemStack stack : upgradeStacks) {
             if (stack.getItem() instanceof ItemMachineUpgrade) {
                 ItemMachineUpgrade upgrade = (ItemMachineUpgrade) stack.getItem();
@@ -811,7 +812,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
     public boolean upgradeUsable(IArmorUpgradeHandler upgrade, boolean mustBeActive) {
         EquipmentSlotType slot = upgrade.getEquipmentSlot();
         int idx = ArmorUpgradeRegistry.getInstance().getIndexForHandler(upgrade);
-        return armorEnabled && isArmorReady(slot) && getArmorPressure(slot) > 0f
+        return armorEnabled && isArmorReady(slot) && hasMinPressure(slot)
                 && isUpgradeInserted(slot, idx) && (!mustBeActive || isUpgradeEnabled(slot, idx));
     }
 

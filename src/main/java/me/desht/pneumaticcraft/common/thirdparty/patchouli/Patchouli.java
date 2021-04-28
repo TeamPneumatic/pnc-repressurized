@@ -12,6 +12,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.Direction;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -26,15 +27,17 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 import static net.minecraft.state.properties.BlockStateProperties.FACING;
 
 public class Patchouli implements IThirdParty, IDocsProvider {
+    private static final ResourceLocation PNC_BOOK = RL("book");
+
     private static Screen prevGui;
 
     @Override
     public void clientInit() {
         MinecraftForge.EVENT_BUS.register(this);
 
-        PatchouliAPI.IPatchouliAPI papi = PatchouliAPI.instance;
+        PatchouliAPI.IPatchouliAPI papi = PatchouliAPI.get();
 
-        setConfigFlags();
+        setConfigFlags(papi);
 
         IStateMatcher edge = papi.predicateMatcher(ModBlocks.PRESSURE_CHAMBER_WALL.get(), this::validEdge);
         IStateMatcher wall = papi.predicateMatcher(ModBlocks.PRESSURE_CHAMBER_WALL.get(), this::validFace);
@@ -86,18 +89,19 @@ public class Patchouli implements IThirdParty, IDocsProvider {
                 || state.getBlock() == ModBlocks.PRESSURE_CHAMBER_INTERFACE.get() || state.getBlock() == ModBlocks.PRESSURE_CHAMBER_VALVE.get();
     }
 
-    private void setConfigFlags() {
-        PatchouliAPI.instance.setConfigFlag(Names.MOD_ID + ":" + "plasticInWorldSolidification", PNCConfig.Common.Recipes.plasticInWorldSolidification);
-        PatchouliAPI.instance.setConfigFlag(Names.MOD_ID + ":" + "liquidHopperDispenser", PNCConfig.Common.Machines.liquidHopperDispenser);
-        PatchouliAPI.instance.setConfigFlag(Names.MOD_ID + ":" + "omniHopperDispenser", PNCConfig.Common.Machines.omniHopperDispenser);
-        PatchouliAPI.instance.setConfigFlag(Names.MOD_ID + ":" + "electricCompressorEnabled",  false); // PNCConfig.Common.Recipes.enableElectricCompressorRecipe && Loader.isModLoaded(ModIds.INDUSTRIALCRAFT));
-        PatchouliAPI.instance.setConfigFlag(Names.MOD_ID + ":" + "pneumaticGeneratorEnabled", false); // PNCConfig.Common.Recipes.enablePneumaticGeneratorRecipe && Loader.isModLoaded(ModIds.INDUSTRIALCRAFT));
+    private void setConfigFlags(PatchouliAPI.IPatchouliAPI papi) {
+        papi.setConfigFlag(Names.MOD_ID + ":" + "inWorldPlasticSolidification", PNCConfig.Common.Recipes.inWorldPlasticSolidification);
+        papi.setConfigFlag(Names.MOD_ID + ":" + "inWorldYeastCrafting", PNCConfig.Common.Recipes.inWorldYeastCrafting);
+        papi.setConfigFlag(Names.MOD_ID + ":" + "liquidHopperDispenser", PNCConfig.Common.Machines.liquidHopperDispenser);
+        papi.setConfigFlag(Names.MOD_ID + ":" + "omniHopperDispenser", PNCConfig.Common.Machines.omniHopperDispenser);
+        papi.setConfigFlag(Names.MOD_ID + ":" + "electricCompressorEnabled",  false); // PNCConfig.Common.Recipes.enableElectricCompressorRecipe && Loader.isModLoaded(ModIds.INDUSTRIALCRAFT));
+        papi.setConfigFlag(Names.MOD_ID + ":" + "pneumaticGeneratorEnabled", false); // PNCConfig.Common.Recipes.enablePneumaticGeneratorRecipe && Loader.isModLoaded(ModIds.INDUSTRIALCRAFT));
     }
 
     @SubscribeEvent
     public void onConfigChange(ModConfig.Reloading event) {
         if (event.getConfig().getModId().equals(Names.MOD_ID)) {
-            setConfigFlags();
+            setConfigFlags(PatchouliAPI.get());
         }
     }
 
@@ -114,8 +118,8 @@ public class Patchouli implements IThirdParty, IDocsProvider {
     public void showWidgetDocs(String path) {
         Screen prev = Minecraft.getInstance().currentScreen;  // should be the programmer GUI
 
-        PatchouliAPI.instance.openBookEntry(RL("book"), RL("programming/" + path), 1);
-        if (PatchouliAPI.instance.getOpenBookGui().equals(RL("book"))) {
+        PatchouliAPI.get().openBookEntry(PNC_BOOK, RL("programming/" + path), 1);
+        if (PNC_BOOK.equals(PatchouliAPI.get().getOpenBookGui())) {
             prevGui = prev;
         }
     }

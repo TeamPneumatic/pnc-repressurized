@@ -772,6 +772,11 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     }
 
     @Override
+    public DroneItemHandler getDroneItemHandler() {
+        return droneItemHandler;
+    }
+
+    @Override
     public int getActiveWidgetIndex() {
         return activeWidgetIndex;
     }

@@ -6,14 +6,18 @@ import me.desht.pneumaticcraft.api.semiblock.IDirectionalSemiblock;
 import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
 import me.desht.pneumaticcraft.common.semiblock.SemiblockTracker;
+import me.desht.pneumaticcraft.common.thirdparty.ModNameCache;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
@@ -64,6 +68,15 @@ public class TOPInit implements Function<ITheOneProbe, Void> {
                     CompoundNBT tag = ((ISemiBlock) entity).serializeNBT(new CompoundNBT());
                     ((ISemiBlock) entity).addTooltip(tip, player, tag, player.isSneaking());
                     tip.forEach(probeInfo::text);
+                    BlockPos pos = ((ISemiBlock) entity).getBlockPos();
+                    BlockState state = world.getBlockState(pos);
+                    if (!state.isAir(world, pos)) {
+                        IProbeInfo h = probeInfo.horizontal();
+                        h.item(new ItemStack(state.getBlock()));
+                        IProbeInfo v = h.vertical();
+                        v.text(state.getBlock().getTranslatedName().mergeStyle(TextFormatting.YELLOW));
+                        v.text(new StringTextComponent(TextFormatting.BLUE.toString() + TextFormatting.ITALIC.toString() + ModNameCache.getModName(state.getBlock())));
+                    }
                 }
                 entity.getCapability(PNCCapabilities.AIR_HANDLER_CAPABILITY).ifPresent(h -> {
                     String p = PneumaticCraftUtils.roundNumberTo(h.getPressure(), 1);

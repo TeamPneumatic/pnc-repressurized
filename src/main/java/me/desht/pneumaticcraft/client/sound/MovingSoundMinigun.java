@@ -1,12 +1,12 @@
 package me.desht.pneumaticcraft.client.sound;
 
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.tileentity.TileEntitySentryTurret;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.TickableSound;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -18,7 +18,6 @@ public class MovingSoundMinigun extends TickableSound {
     private final Entity entity;
     private final TileEntity tileEntity;
     private boolean finished = false;
-    private static long lastSpinDown = 0L;
 
     MovingSoundMinigun(Entity entity) {
         super(ModSounds.MINIGUN.get(), SoundCategory.NEUTRAL);
@@ -46,6 +45,7 @@ public class MovingSoundMinigun extends TickableSound {
     @Override
     public void tick() {
         Minigun minigun = null;
+        boolean wasFinished = finished;
         if (entity != null) {
             if (!entity.isAlive()) {
                 finished = true;
@@ -73,9 +73,8 @@ public class MovingSoundMinigun extends TickableSound {
             }
         }
         finished = minigun == null || !minigun.isMinigunActivated() || minigun.getMinigunSpeed() < Minigun.MAX_GUN_SPEED * 0.9;
-        if (finished && Minecraft.getInstance().world.getGameTime() - lastSpinDown > 20) {
-            Minecraft.getInstance().player.playSound(ModSounds.MINIGUN_STOP.get(), 1f, 0.5F);
-            lastSpinDown = Minecraft.getInstance().world.getGameTime();
+        if (finished && !wasFinished) {
+            ClientUtils.getClientWorld().playSound(ClientUtils.getClientPlayer(), x, y, z, ModSounds.MINIGUN_STOP.get(), SoundCategory.NEUTRAL, volume, 1f);
         }
     }
 

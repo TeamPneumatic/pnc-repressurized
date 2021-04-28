@@ -157,7 +157,8 @@ public class PNCConfig {
         public static class Recipes {
             public static boolean explosionCrafting;
             public static boolean coalToDiamondsRecipe;
-            public static boolean plasticInWorldSolidification;
+            public static boolean inWorldPlasticSolidification;
+            public static boolean inWorldYeastCrafting;
         }
 
         public static class Amadron {

@@ -156,7 +156,8 @@ public class ConfigHelper {
 
         PNCConfig.Common.Recipes.coalToDiamondsRecipe = common.recipes.coalToDiamondsRecipe.get();
         PNCConfig.Common.Recipes.explosionCrafting = common.recipes.explosionCrafting.get();
-        PNCConfig.Common.Recipes.plasticInWorldSolidification = common.recipes.plasticInWorldSolidification.get();
+        PNCConfig.Common.Recipes.inWorldPlasticSolidification = common.recipes.inWorldPlasticSolidification.get();
+        PNCConfig.Common.Recipes.inWorldYeastCrafting = common.recipes.inWorldYeastCrafting.get();
 
         PNCConfig.Common.Heat.defaultBlockThermalResistance = common.heat.blockThermalResistance.get();
         PNCConfig.Common.Heat.defaultFluidThermalResistance = common.heat.fluidThermalResistance.get();

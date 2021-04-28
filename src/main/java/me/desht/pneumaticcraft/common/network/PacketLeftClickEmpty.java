@@ -7,6 +7,10 @@ import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
+/**
+ * Received on: SERVER
+ * Sent by client when certain items are left-clicked in the air (which is a client-only event)
+ */
 public class PacketLeftClickEmpty {
     public PacketLeftClickEmpty() {
     }

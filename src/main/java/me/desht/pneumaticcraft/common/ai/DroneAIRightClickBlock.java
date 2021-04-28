@@ -3,14 +3,12 @@ package me.desht.pneumaticcraft.common.ai;
 import me.desht.pneumaticcraft.common.progwidgets.IBlockRightClicker;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetAreaItemBase;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetBlockRightClick;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CommandBlockBlock;
 import net.minecraft.block.StructureBlock;
 import net.minecraft.command.arguments.EntityAnchorArgument;
-import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
@@ -68,28 +66,40 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetAr
     @Override
     protected boolean doBlockInteraction(BlockPos pos, double squareDistToBlock) {
         visitedPositions.add(pos);
-        rightClick(pos);
-        if (drone.getFakePlayer().getHeldItemMainhand().getCount() <= 0) {
-            drone.getFakePlayer().setHeldItem(Hand.MAIN_HAND, ItemStack.EMPTY);
+
+        if (rightClick(pos)) {
+            // Successful click. Clear the mainhand item if necessary.
+            if (drone.getFakePlayer().getHeldItemMainhand().getCount() <= 0) {
+                drone.getFakePlayer().setHeldItem(Hand.MAIN_HAND, ItemStack.EMPTY);
+            }
+
+            // Copy mainhand item back from fake player inv to slot 0 of drone's inventory (which always exists)
+            drone.getInv().setStackInSlot(0, drone.getFakePlayer().getHeldItemMainhand());
+
+            // Fake player's inventory may have been modified by the right-click action
+            // Copy the rest of the fake player's inventory back to the drone's actual inventory,
+            // dropping items which don't fit (based on the inventory upgrades the drone has)
+            drone.getDroneItemHandler().copyFromFakePlayer();
         }
-        drone.getInv().setStackInSlot(0, drone.getFakePlayer().getHeldItemMainhand());
 
         // always return false here; the block's been clicked and we don't care about the operation result
         // - just move on to the next block in the area next time
         return false;
     }
 
-    private void rightClick(BlockPos pos) {
+    private boolean rightClick(BlockPos pos) {
         if (clickType == IBlockRightClicker.RightClickType.CLICK_ITEM) {
-            rightClickItem(drone.getFakePlayer(), pos);
+            return rightClickItem(drone.getFakePlayer(), pos);
         } else {
-            rightClickBlock(drone.getFakePlayer(), pos);
+            return rightClickBlock(drone.getFakePlayer(), pos);
         }
     }
 
-    private void rightClickItem(FakePlayer fakePlayer, BlockPos pos) {
+    private boolean rightClickItem(FakePlayer fakePlayer, BlockPos pos) {
         // if necessary, find a filter-matching item in the inventory, and swap it into slot 0 (drone's held item)
-        if (!progWidget.isItemValidForFilters(drone.getInv().getStackInSlot(0)) && !trySwapItem()) return;
+        if (!progWidget.isItemValidForFilters(drone.getInv().getStackInSlot(0)) && !trySwapItem()) {
+            return false;
+        }
 
         ItemStack stack = fakePlayer.getHeldItemMainhand();
         World world = fakePlayer.getEntityWorld();
@@ -97,24 +107,24 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetAr
         // this is adapted from PlayerInteractionManager#processRightClickBlock()
         try {
             BlockRayTraceResult brtr = doTrace(world, pos, fakePlayer);
-            if (brtr == null) return;
+            if (brtr == null) return false;
 
             PlayerInteractEvent.RightClickBlock event = ForgeHooks.onRightClickBlock(fakePlayer, Hand.MAIN_HAND, pos, brtr);
             if (event.isCanceled() || event.getUseItem() == Event.Result.DENY) {
-                return;
+                return false;
             }
 
             ActionResultType ret = stack.onItemUseFirst(new ItemUseContext(fakePlayer, Hand.MAIN_HAND, brtr));
-            if (ret != ActionResultType.PASS) return;
+            if (ret != ActionResultType.PASS) return ret.isSuccessOrConsume();
 
             if (stack.isEmpty() || fakePlayer.getCooldownTracker().hasCooldown(stack.getItem())) {
-                return;
+                return false;
             }
 
             if (stack.getItem() instanceof BlockItem) {
                 Block block = ((BlockItem)stack.getItem()).getBlock();
                 if (block instanceof CommandBlockBlock || block instanceof StructureBlock) {
-                    return;
+                    return false;
                 }
             }
 
@@ -128,47 +138,37 @@ public class DroneAIRightClickBlock extends DroneAIBlockInteraction<ProgWidgetAr
                 if (fakePlayer.getHeldItem(Hand.MAIN_HAND).isEmpty()) {
                     net.minecraftforge.event.ForgeEventFactory.onPlayerDestroyItem(fakePlayer, copyBeforeUse, Hand.MAIN_HAND);
                 }
-            }
-
-            // At this point, it's possible that something the drone has done has added items to the fake player's inventory
-            // in slots beyond the drone's effective inventory size.
-            // We can't prevent this, so look for any such items, and drop them on the ground.
-            PlayerInventory fakeInv = fakePlayer.inventory;
-            if (drone.getInv().getSlots() < fakeInv.getSizeInventory() && !fakeInv.getStackInSlot(drone.getInv().getSlots()).isEmpty()) {
-                for (int slot = drone.getInv().getSlots(); slot < fakeInv.getSizeInventory(); slot++) {
-                    ItemStack stack1 = fakeInv.getStackInSlot(slot);
-                    if (!stack1.isEmpty()) {
-                        PneumaticCraftUtils.dropItemOnGround(stack1, drone.world(), new BlockPos(drone.getDronePos()));
-                        fakeInv.setInventorySlotContents(slot, ItemStack.EMPTY);
-                    }
-                }
+                return true;
             }
         } catch (Throwable e) {
             // crash could happen in right-click logic of item, which could be from any mod...
             Log.error("DroneAIRightClickBlock crashed! Stacktrace: ");
             e.printStackTrace();
         }
+        return false;
     }
 
-    private void rightClickBlock(FakePlayer fakePlayer, BlockPos pos) {
+    private boolean rightClickBlock(FakePlayer fakePlayer, BlockPos pos) {
         World world = fakePlayer.getEntityWorld();
         BlockState state = world.getBlockState(pos);
         BlockRayTraceResult brtr = doTrace(world, pos, fakePlayer);
-        if (brtr == null) return;
-        PlayerInteractEvent.RightClickBlock event = ForgeHooks.onRightClickBlock(fakePlayer, Hand.MAIN_HAND, pos, brtr);
-
-        try {
-            if (!event.isCanceled() && event.getUseItem() != Event.Result.DENY && event.getUseBlock() != Event.Result.DENY) {
-                ActionResultType res = state.onBlockActivated(world, fakePlayer, Hand.MAIN_HAND, brtr);
-                if (res.isSuccessOrConsume()) {
-                    world.notifyBlockUpdate(pos, state, state, Constants.BlockFlags.DEFAULT);
+        if (brtr != null) {
+            PlayerInteractEvent.RightClickBlock event = ForgeHooks.onRightClickBlock(fakePlayer, Hand.MAIN_HAND, pos, brtr);
+            try {
+                if (!event.isCanceled() && event.getUseItem() != Event.Result.DENY && event.getUseBlock() != Event.Result.DENY) {
+                    ActionResultType res = state.onBlockActivated(world, fakePlayer, Hand.MAIN_HAND, brtr);
+                    if (res.isSuccessOrConsume()) {
+                        world.notifyBlockUpdate(pos, state, state, Constants.BlockFlags.DEFAULT);
+                        return true;
+                    }
                 }
+            } catch (Throwable e) {
+                // crash could happen in activated logic of block, which could be from any mod...
+                Log.error("DroneAIRightClickBlock crashed! Stacktrace: ");
+                e.printStackTrace();
             }
-        } catch (Throwable e) {
-            // crash could happen in activated logic of block, which could be from any mod...
-            Log.error("DroneAIRightClickBlock crashed! Stacktrace: ");
-            e.printStackTrace();
         }
+        return false;
     }
 
     private boolean trySwapItem() {

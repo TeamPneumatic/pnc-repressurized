@@ -14,6 +14,9 @@ public class RenderLogisticsFrame extends RenderSemiblockBase<EntityLogisticsFra
 
     private static final float FRAME_WIDTH = 1 / 32F;
 
+    // TODO ridanisaurus uncomment
+//    private final ModelLogisticsFrame model = new ModelLogisticsFrame();
+
     private RenderLogisticsFrame(EntityRendererManager rendererManager) {
         super(rendererManager);
     }
@@ -37,8 +40,30 @@ public class RenderLogisticsFrame extends RenderSemiblockBase<EntityLogisticsFra
         matrixStackIn.pop();
     }
 
+    // TODO ridanisaurus replace above method with this
+//    @Override
+//    public void render(EntityLogisticsFrame entity, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
+//        float alpha = entity.getAlpha() / 255F;
+//        if (alpha == 0f) return;
+//
+//        AxisAlignedBB aabb = entity.getBlockBounds().offset(entity.antiZfight, entity.antiZfight, entity.antiZfight);
+//
+//        matrixStackIn.push();
+//        matrixStackIn.scale((float) aabb.getXSize(), (float) aabb.getYSize(), (float) aabb.getZSize());
+//        matrixStackIn.translate(-0.5, 0, -0.5);
+//        if (entity.getTimeSinceHit() > 0) {
+//            wobble(entity, partialTicks, matrixStackIn);
+//        }
+//        IVertexBuilder builder = bufferIn.getBuffer(RenderType.getEntityCutout(getEntityTexture(entity)));
+//        model.render(matrixStackIn, builder, kludgeLightingLevel(entity, packedLightIn), OverlayTexture.getPackedUV(0F, false), 1.0f, 1.0f, 1.0f, alpha);
+//
+//        matrixStackIn.pop();
+//    }
+
     @Override
     public ResourceLocation getEntityTexture(EntityLogisticsFrame entityLogisticsFrame) {
         return null;
+        // TODO ridanisaurus uncomment
+//        return entityLogisticsFrame.getTexture();
     }
 }

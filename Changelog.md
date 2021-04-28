@@ -11,14 +11,30 @@ PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 ## 2.12.1-?? (unreleased)
 
 ### Updates
-* Added config setting `plastic_in_world_solidification` (default: true) to control in-world coversion of Molten Plastic to Plastic Sheets
-  * Useful for modpack makers who wish to add alternative mechanisms or require that only Heat Frame cooling is used to produce plastic
-  
+* Added config setting `in_world_plastic_solidification` (default: true) to control in-world conversion of Molten Plastic to Plastic Sheets
+* Added config setting `in_world_yeast_crafting` (default: true) to control in-world creation of Yeast Culture
+* Both of the above settings are intended to be useful to modpack makers who may wish to control how these things are produced
+* A couple of entity filter additions:
+  * Added `holding=` and `holding_offhand=` modifiers to require an entity to be holding a specific item
+  * E.g. `@player(holding=pneumaticcraft:minigun)` will only match players holding a Minigun
+  * Also added negations for modifiers, e.g. `@player(holding!=stick)` will only match players *not* holding a Stick
+  * The item is an item ID in the usual form; the mod prefix can be omitted if it's `minecraft:`
+* The Aerial Interface now renders the owning player's actual head on the front of its block, when the player is online
+* Player left-clicks on **invisible** Logistics Frames are now passed through to the framed blocks
+  * This means left-clicking blocks like Storage Drawers or Mekanism Bins now works as expected when there's a frame on the front of the block
+* Hywla & The One Probe now show the framed inventory name when looking at Logistics Frames
+
 ### Fixes
 * Fixed Redstone Module comparator input mode only working for measuring items in the adjacent inventory
   * Now any & all comparator conditions are properly measured (fluid levels, refinery "has work" etc.)
 * Fixed comparators on Refinery Output blocks not being notified when the Refinery's "has work" condition changed
   * Only the Refinery Controller was properly notifying its attached comparator
+* Fixed Drone & Sentry Turret's Minigun spin-down sound being played at player's location instead of at Drone or Sentry Turret
+  * That's why it sounded much too loud...
+* Fixed the Assembly IO Unit (input) not handling split stacks in the input inventory in cases where the recipe requires a stack of multiple input items
+* Fixed some drone Right Click behaviour, around actions that modify the drone's inventory
+  * Specifically, drones which right click beehives with a stack of bottles no longer void the bottles but instead correctly harvest the honey
+* Fixed a couple of pneumatic armor inconsistencies relating to removing upgrades from armor when the upgrade is still switched on
 
 ## 2.12.0-177 (16 Apr 2021)
 
