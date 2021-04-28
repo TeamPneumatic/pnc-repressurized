@@ -22,6 +22,7 @@ PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 * The Aerial Interface now renders the owning player's actual head on the front of its block, when the player is online
 * Player left-clicks on **invisible** Logistics Frames are now passed through to the framed blocks
   * This means left-clicking blocks like Storage Drawers or Mekanism Bins now works as expected when there's a frame on the front of the block
+* Hywla & The One Probe now show the framed inventory name when looking at Logistics Frames
 
 ### Fixes
 * Fixed Redstone Module comparator input mode only working for measuring items in the adjacent inventory
@@ -31,6 +32,9 @@ PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 * Fixed Drone & Sentry Turret's Minigun spin-down sound being played at player's location instead of at Drone or Sentry Turret
   * That's why it sounded much too loud...
 * Fixed the Assembly IO Unit (input) not handling split stacks in the input inventory in cases where the recipe requires a stack of multiple input items
+* Fixed some drone Right Click behaviour, around actions that modify the drone's inventory
+  * Specifically, drones which right click beehives with a stack of bottles no longer void the bottles but instead correctly harvest the honey
+* Fixed a couple of pneumatic armor inconsistencies relating to removing upgrades from armor when the upgrade is still switched on
 
 ## 2.12.0-177 (16 Apr 2021)
 
