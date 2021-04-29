@@ -36,7 +36,7 @@ public class RenderLogisticsFrame extends RenderSemiblockBase<EntityLogisticsFra
             return;
         }
 
-        matrixStackIn.pushPose();
+        matrixStackIn.push();
 
         if (entity.getTimeSinceHit() > 0) {
             wobble(entity, partialTicks, matrixStackIn);
@@ -46,49 +46,49 @@ public class RenderLogisticsFrame extends RenderSemiblockBase<EntityLogisticsFra
         matrixStackIn.translate(0, side.getAxis() == Direction.Axis.Y ? 0.5 : -0.5, 0);
         switch (side) {
             case UP:
-                matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(90));
+                matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(90));
                 matrixStackIn.translate(0, -1, 0);
                 break;
             case DOWN:
-                matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(-90));
+                matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(-90));
                 matrixStackIn.translate(0, -1, 0);
                 break;
             case NORTH:
-                matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(90));
+                matrixStackIn.rotate(Vector3f.YP.rotationDegrees(90));
                 break;
             case SOUTH:
-                matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(-90));
+                matrixStackIn.rotate(Vector3f.YP.rotationDegrees(-90));
                 break;
             case WEST:
-                matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(180));
+                matrixStackIn.rotate(Vector3f.YP.rotationDegrees(180));
                 break;
             case EAST:
                 break;
         }
 
-        IVertexBuilder builder = bufferIn.getBuffer(RenderType.entityCutout(getTextureLocation(entity)));
-        model.renderToBuffer(matrixStackIn, builder, kludgeLightingLevel(entity, packedLightIn), OverlayTexture.pack(0F, false), 1f, 1f, 1f, alpha);
+        IVertexBuilder builder = bufferIn.getBuffer(RenderType.getEntityCutout(getEntityTexture(entity)));
+        model.render(matrixStackIn, builder, kludgeLightingLevel(entity, packedLightIn), OverlayTexture.getPackedUV(0F, false), 1f, 1f, 1f, alpha);
 
-        matrixStackIn.popPose();
+        matrixStackIn.pop();
     }
 
     @Override
     public Vector3d getRenderOffset(EntityLogisticsFrame entityIn, float partialTicks) {
         VoxelShape shape = entityIn.getBlockState().getShape(entityIn.getWorld(), entityIn.getBlockPos());
-        double yOff = (shape.max(Direction.Axis.Y) - shape.min(Direction.Axis.Y)) / 2.0;
+        double yOff = (shape.getEnd(Direction.Axis.Y) - shape.getStart(Direction.Axis.Y)) / 2.0;
         switch (entityIn.getSide()) {
-            case DOWN: return new Vector3d(0, shape.min(Direction.Axis.Y), 0);
-            case UP: return new Vector3d(0, shape.max(Direction.Axis.Y) - 1, 0);
-            case NORTH: return new Vector3d(0, yOff - 0.5, shape.min(Direction.Axis.Z));
-            case SOUTH: return new Vector3d(0, yOff - 0.5, shape.max(Direction.Axis.Z) - 1);
-            case WEST: return new Vector3d(shape.min(Direction.Axis.X), yOff - 0.5, 0);
-            case EAST: return new Vector3d(shape.max(Direction.Axis.X) - 1, yOff - 0.5, 0);
+            case DOWN: return new Vector3d(0, shape.getStart(Direction.Axis.Y), 0);
+            case UP: return new Vector3d(0, shape.getEnd(Direction.Axis.Y) - 1, 0);
+            case NORTH: return new Vector3d(0, yOff - 0.5, shape.getStart(Direction.Axis.Z));
+            case SOUTH: return new Vector3d(0, yOff - 0.5, shape.getEnd(Direction.Axis.Z) - 1);
+            case WEST: return new Vector3d(shape.getStart(Direction.Axis.X), yOff - 0.5, 0);
+            case EAST: return new Vector3d(shape.getEnd(Direction.Axis.X) - 1, yOff - 0.5, 0);
             default: return Vector3d.ZERO;
         }
     }
 
     @Override
-    public ResourceLocation getTextureLocation(EntityLogisticsFrame entityLogisticsFrame) {
+    public ResourceLocation getEntityTexture(EntityLogisticsFrame entityLogisticsFrame) {
         return entityLogisticsFrame.getTexture();
     }
 }
