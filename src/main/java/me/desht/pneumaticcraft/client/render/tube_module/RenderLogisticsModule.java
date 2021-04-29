@@ -76,7 +76,7 @@ public class RenderLogisticsModule extends TubeModuleRendererBase<ModuleLogistic
         } else {
             base = module.hasPower() ? powered : notPowered;
         }
-        base.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
+        base.render(matrixStack, builder, RenderUtils.FULL_BRIGHT, combinedOverlay, r, g, b, a);
         base2.render(matrixStack, builder, combinedLight, combinedOverlay, r, g, b, a);
 
         // the coloured frame
