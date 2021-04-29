@@ -36,7 +36,7 @@ public class RenderLogisticsFrame extends RenderSemiblockBase<EntityLogisticsFra
             return;
         }
 
-        matrixStackIn.push();
+        matrixStackIn.pushPose();
 
         if (entity.getTimeSinceHit() > 0) {
             wobble(entity, partialTicks, matrixStackIn);
@@ -46,21 +46,21 @@ public class RenderLogisticsFrame extends RenderSemiblockBase<EntityLogisticsFra
         matrixStackIn.translate(0, side.getAxis() == Direction.Axis.Y ? 0.5 : -0.5, 0);
         switch (side) {
             case UP:
-                matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(90));
+                matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(90));
                 matrixStackIn.translate(0, -1, 0);
                 break;
             case DOWN:
-                matrixStackIn.rotate(Vector3f.ZP.rotationDegrees(-90));
+                matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(-90));
                 matrixStackIn.translate(0, -1, 0);
                 break;
             case NORTH:
-                matrixStackIn.rotate(Vector3f.YP.rotationDegrees(90));
+                matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(90));
                 break;
             case SOUTH:
-                matrixStackIn.rotate(Vector3f.YP.rotationDegrees(-90));
+                matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(-90));
                 break;
             case WEST:
-                matrixStackIn.rotate(Vector3f.YP.rotationDegrees(180));
+                matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(180));
                 break;
             case EAST:
                 break;
@@ -69,7 +69,7 @@ public class RenderLogisticsFrame extends RenderSemiblockBase<EntityLogisticsFra
         IVertexBuilder builder = bufferIn.getBuffer(RenderType.getEntityCutout(getEntityTexture(entity)));
         model.render(matrixStackIn, builder, kludgeLightingLevel(entity, packedLightIn), OverlayTexture.getPackedUV(0F, false), 1f, 1f, 1f, alpha);
 
-        matrixStackIn.pop();
+        matrixStackIn.popPose();
     }
 
     @Override
@@ -88,7 +88,7 @@ public class RenderLogisticsFrame extends RenderSemiblockBase<EntityLogisticsFra
     }
 
     @Override
-    public ResourceLocation getEntityTexture(EntityLogisticsFrame entityLogisticsFrame) {
+    public ResourceLocation getTextureLocation(EntityLogisticsFrame entityLogisticsFrame) {
         return entityLogisticsFrame.getTexture();
     }
 }
