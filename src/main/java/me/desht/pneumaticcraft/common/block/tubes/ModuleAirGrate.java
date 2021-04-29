@@ -188,6 +188,7 @@ public class ModuleAirGrate extends TubeModule {
             if (te instanceof TileEntityHeatSink) heatSinks.add((TileEntityHeatSink) te);
 
             Iterator<TileEntityHeatSink> iterator = heatSinks.iterator();
+            int tubesCooled = 0;
             while (iterator.hasNext()) {
                 TileEntityHeatSink heatSink = iterator.next();
                 if (heatSink.isRemoved()) {
@@ -196,7 +197,11 @@ public class ModuleAirGrate extends TubeModule {
                     for (int i = 0; i < 4; i++) {
                         heatSink.onFannedByAirGrate();
                     }
+                    tubesCooled++;
                 }
+            }
+            if (tubesCooled > 0) {
+                pressureTube.addAir(-(5 + (tubesCooled / 3)));
             }
         }
     }
