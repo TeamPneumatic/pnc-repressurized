@@ -955,8 +955,8 @@ public class ModRecipeProvider extends RecipeProvider {
         standardUpgrade(EnumUpgrade.RANGE, Items.BOW, ItemTags.ARROWS).build(consumer);
         standardUpgrade(EnumUpgrade.SEARCH, Items.GOLDEN_CARROT, Items.ENDER_EYE).build(consumer);
         standardUpgrade(EnumUpgrade.SECURITY, ModItems.SAFETY_TUBE_MODULE.get(), Tags.Items.OBSIDIAN).build(consumer);
-        standardUpgrade(EnumUpgrade.SPEED, FluidIngredient.of(1000, ModFluids.LUBRICANT.get()), Items.SUGAR).build(consumer);
-        standardUpgrade(EnumUpgrade.SPEED, 2, FluidIngredient.of(1000, ModFluids.LUBRICANT.get()), ModItems.GLYCEROL.get()).build(consumer, RL("speed_upgrade_from_glycerol"));
+        standardUpgrade(EnumUpgrade.SPEED, FluidIngredient.of(1000, PneumaticCraftTags.Fluids.LUBRICANT), Items.SUGAR).build(consumer);
+        standardUpgrade(EnumUpgrade.SPEED, 2, FluidIngredient.of(1000, PneumaticCraftTags.Fluids.LUBRICANT), ModItems.GLYCEROL.get()).build(consumer, RL("speed_upgrade_from_glycerol"));
         standardUpgrade(EnumUpgrade.STANDBY, ItemTags.BEDS, Items.REDSTONE_TORCH).build(consumer);
         standardUpgrade(EnumUpgrade.VOLUME, ModItems.AIR_CANISTER.get(), PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON).build(consumer);
 

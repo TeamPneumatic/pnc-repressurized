@@ -406,7 +406,7 @@ public abstract class TileEntityBase extends TileEntity
     void processFluidItem(int inputSlot, int outputSlot) {
         getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(itemHandler -> {
             ItemStack inputStack = itemHandler.getStackInSlot(inputSlot);
-            if (inputStack.getCount() > 1) return;
+            if (inputStack.getCount() != 1) return;
 
             FluidUtil.getFluidHandler(inputStack).ifPresent(fluidHandlerItem -> {
                 FluidStack itemContents = fluidHandlerItem.drain(1000, IFluidHandler.FluidAction.SIMULATE);
@@ -425,7 +425,7 @@ public abstract class TileEntityBase extends TileEntity
                             }
                         }
                     } else if (itemHandler.getStackInSlot(outputSlot).isEmpty()) {
-                        // input item(s) is/are empty: drain from tank to one input item, move to output
+                        // input item is empty: drain from tank to item, move to output
                         FluidStack transferred = FluidUtil.tryFluidTransfer(fluidHandlerItem, fluidHandler, Integer.MAX_VALUE, true);
                         if (!transferred.isEmpty()) {
                             itemHandler.extractItem(inputSlot, 1, false);

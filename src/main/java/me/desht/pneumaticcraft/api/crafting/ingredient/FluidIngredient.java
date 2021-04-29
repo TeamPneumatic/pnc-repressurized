@@ -118,6 +118,7 @@ public class FluidIngredient extends Ingredient {
                 maybeAddTank(l, ModBlocks.TANK_SMALL.get(), fluidStack);
                 maybeAddTank(l, ModBlocks.TANK_MEDIUM.get(), fluidStack);
                 maybeAddTank(l, ModBlocks.TANK_LARGE.get(), fluidStack);
+                maybeAddTank(l, ModBlocks.TANK_HUGE.get(), fluidStack);
             }
             cachedStacks = l.toArray(new ItemStack[0]);
         }
