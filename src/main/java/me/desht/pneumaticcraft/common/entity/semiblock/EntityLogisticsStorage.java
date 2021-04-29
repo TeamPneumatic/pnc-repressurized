@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.entity.semiblock;
 import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.semiblock.ISpecificProvider;
 import me.desht.pneumaticcraft.common.semiblock.ISpecificRequester;
+import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.EntityType;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.ItemStack;
@@ -25,7 +26,7 @@ public class EntityLogisticsStorage extends EntityLogisticsFrame implements ISpe
 
     @Override
     public ResourceLocation getTexture() {
-        return null;  // TODO ridanisaurus
+        return Textures.MODEL_LOGISTICS_FRAME_STORAGE;  // TODO ridanisaurus
     }
 
     @Override

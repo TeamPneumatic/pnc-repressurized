@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.common.semiblock.ISpecificRequester;
 import me.desht.pneumaticcraft.common.thirdparty.ae2.AE2Integration;
 import me.desht.pneumaticcraft.common.thirdparty.ae2.AE2RequesterIntegration;
 import me.desht.pneumaticcraft.common.util.IOHelper;
+import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.ContainerType;
@@ -49,7 +50,7 @@ public class EntityLogisticsRequester extends EntityLogisticsFrame implements IS
 
     @Override
     public ResourceLocation getTexture() {
-        return null;  // TODO ridanisaurus
+        return Textures.MODEL_LOGISTICS_FRAME_REQUESTER;  // TODO ridanisaurus
     }
 
     @Override

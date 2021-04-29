@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.entity.semiblock;
 
+import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
@@ -21,7 +22,7 @@ public class EntityLogisticsDefaultStorage extends EntityLogisticsStorage {
 
     @Override
     public ResourceLocation getTexture() {
-        return null;  // TODO ridanisaurus
+        return Textures.MODEL_LOGISTICS_FRAME_DEFAULT_STORAGE;  // TODO ridanisaurus
     }
 
 }
