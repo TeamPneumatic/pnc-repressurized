@@ -51,6 +51,11 @@ public class Textures {
     public static final ResourceLocation MODEL_UNIVERSAL_SENSOR = modelTexture("universal_sensor.png");
     public static final ResourceLocation MODEL_DRONE_MINIGUN = modelTexture("drone_minigun.png");
     public static final ResourceLocation MODEL_HEAT_FRAME = modelTexture("heat_frame.png");
+    public static final ResourceLocation MODEL_LOGISTICS_FRAME_ACTIVE_PROVIDER = modelTexture("logistics_frame_active_provider.png");
+    public static final ResourceLocation MODEL_LOGISTICS_FRAME_PASSIVE_PROVIDER = modelTexture("logistics_frame_passive_provider.png");
+    public static final ResourceLocation MODEL_LOGISTICS_FRAME_DEFAULT_STORAGE = modelTexture("logistics_frame_default_storage.png");
+    public static final ResourceLocation MODEL_LOGISTICS_FRAME_STORAGE = modelTexture("logistics_frame_storage.png");
+    public static final ResourceLocation MODEL_LOGISTICS_FRAME_REQUESTER = modelTexture("logistics_frame_requester.png");
     public static final ResourceLocation MODEL_CROP_SUPPORT = modelTexture("crop_support.png");
     public static final ResourceLocation MODEL_SPAWNER_EXTRACTOR = modelTexture("spawner_extractor_top.png");
     public static final ResourceLocation MODEL_SPAWNER_AGITATOR = modelTexture("spawner_agitator.png");

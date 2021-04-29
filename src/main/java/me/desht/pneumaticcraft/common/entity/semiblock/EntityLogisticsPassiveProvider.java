@@ -17,6 +17,7 @@
 
 package me.desht.pneumaticcraft.common.entity.semiblock;
 
+import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
@@ -38,7 +39,7 @@ public class EntityLogisticsPassiveProvider extends EntityLogisticsActiveProvide
 
     @Override
     public ResourceLocation getTexture() {
-        return null;  // TODO ridanisaurus
+        return Textures.MODEL_LOGISTICS_FRAME_PASSIVE_PROVIDER;  // TODO ridanisaurus
     }
 
 }
