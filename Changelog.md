@@ -23,6 +23,11 @@ PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 * Player left-clicks on **invisible** Logistics Frames are now passed through to the framed blocks
   * This means left-clicking blocks like Storage Drawers or Mekanism Bins now works as expected when there's a frame on the front of the block
 * Hywla & The One Probe now show the framed inventory name when looking at Logistics Frames
+* The recipe for Speed Upgrades now accepts Lubricant by fluid tag (`forge:lubricant`) instead of specifically PneumaticCraft's Lubricant
+  * This makes for better cross-mod compat, e.g. Immersive Petroleum's Lubricant can be used
+* Air Grates now use a small amount of air to cool Heat Sinks
+  * It was previously free, which was a mistake; air is supposed to be used up for this
+  * Usage is 5mL/t + 3mL/t (rounded down) for every three Heat Sinks cooled
 
 ### Fixes
 * Fixed Redstone Module comparator input mode only working for measuring items in the adjacent inventory
@@ -35,7 +40,9 @@ PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 * Fixed some drone Right Click behaviour, around actions that modify the drone's inventory
   * Specifically, drones which right click beehives with a stack of bottles no longer void the bottles but instead correctly harvest the honey
 * Fixed a couple of pneumatic armor inconsistencies relating to removing upgrades from armor when the upgrade is still switched on
-
+* Fixed Fluid Tanks not allowing an empty bucket (or other fluid container item) to be inserted via the GUI
+  * It has always worked to pipe a bucket/tank in, but the GUI slot wasn't configured to allow empty containers
+  
 ## 2.12.0-177 (16 Apr 2021)
 
 ### Updates
