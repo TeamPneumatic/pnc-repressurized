@@ -96,6 +96,9 @@ public class ItemPneumaticArmor extends ArmorItem implements
     public static final String NBT_BUILDER_MODE = "JetBootsBuilderMode";
     public static final String NBT_JET_BOOTS_POWER = "JetBootsPower";
     public static final String NBT_FLIGHT_STABILIZERS = "JetBootsStabilizers";
+    public static final int DEFAULT_PRIMARY_COLOR = 0xFF969696;
+    public static final int DEFAULT_SECONDARY_COLOR = 0xFFC0C0C0;
+    public static final int DEFAULT_EYEPIECE_COLOR = 0xFF00AA00;
 
     public ItemPneumaticArmor(EquipmentSlotType equipmentSlotIn) {
         super(PNEUMATIC_ARMOR_MATERIAL, equipmentSlotIn, ModItems.defaultProps());
@@ -358,10 +361,11 @@ public class ItemPneumaticArmor extends ArmorItem implements
         }
     }
 
+    @Override
     public int getColor(ItemStack stack) {
         // default IDyeableArmor gives undyed items a leather-brown colour... override for compressed-iron-grey
         CompoundNBT nbt = stack.getChildTag("display");
-        return nbt != null && nbt.contains("color", Constants.NBT.TAG_ANY_NUMERIC) ? nbt.getInt("color") : 0xFF969696;
+        return nbt != null && nbt.contains("color", Constants.NBT.TAG_ANY_NUMERIC) ? nbt.getInt("color") : DEFAULT_PRIMARY_COLOR;
     }
 
     /**
@@ -371,7 +375,7 @@ public class ItemPneumaticArmor extends ArmorItem implements
      */
     public int getSecondaryColor(ItemStack stack) {
         CompoundNBT nbt = stack.getChildTag("display");
-        return nbt != null && nbt.contains("color2", Constants.NBT.TAG_ANY_NUMERIC) ? nbt.getInt("color2") : 0xFFC0C0C0;
+        return nbt != null && nbt.contains("color2", Constants.NBT.TAG_ANY_NUMERIC) ? nbt.getInt("color2") : DEFAULT_SECONDARY_COLOR;
     }
 
     public void setSecondaryColor(ItemStack stack, int color) {
@@ -380,7 +384,7 @@ public class ItemPneumaticArmor extends ArmorItem implements
 
     public int getEyepieceColor(ItemStack stack) {
         CompoundNBT nbt = stack.getChildTag("display");
-        return nbt != null && nbt.contains("color_eye", Constants.NBT.TAG_ANY_NUMERIC) ? nbt.getInt("color_eye") : 0xFF00AA00;
+        return nbt != null && nbt.contains("color_eye", Constants.NBT.TAG_ANY_NUMERIC) ? nbt.getInt("color_eye") : DEFAULT_EYEPIECE_COLOR;
     }
 
     public void setEyepieceColor(ItemStack stack, int color) {

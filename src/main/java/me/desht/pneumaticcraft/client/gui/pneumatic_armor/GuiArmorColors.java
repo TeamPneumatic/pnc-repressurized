@@ -270,9 +270,9 @@ public class GuiArmorColors extends GuiPneumaticScreenBase implements Slider.ISl
     }
 
     public enum SelectorType {
-        PRIMARY(0, "1", 0xFF969696),
-        SECONDARY(22, "2", 0xFFC0C0C0),
-        EYEPIECE(44, "E", 0xFF00AA00);
+        PRIMARY(0, "1", ItemPneumaticArmor.DEFAULT_PRIMARY_COLOR),
+        SECONDARY(22, "2", ItemPneumaticArmor.DEFAULT_SECONDARY_COLOR),
+        EYEPIECE(44, "E", ItemPneumaticArmor.DEFAULT_EYEPIECE_COLOR);
 
         private final int xOffset;
         private final String label;
