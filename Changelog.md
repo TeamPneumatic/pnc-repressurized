@@ -8,7 +8,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 
-## 2.12.1-182 (3 May 2021)
+## 2.12.1-184 (3 May 2021)
 
 ### Updates
 * Added config setting `in_world_plastic_solidification` (default: true) to control in-world conversion of Molten Plastic to Plastic Sheets
