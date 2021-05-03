@@ -23,6 +23,11 @@ public class EntityInRangeSensor extends EntityPollSensor {
     }
 
     @Override
+    public boolean isEntityFilter() {
+        return true;
+    }
+
+    @Override
     public int getRedstoneValue(List<Entity> entities, String textboxText) {
         if (filter == null) {
             filter = new EntityFilter(textboxText);

@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.api.universal_sensor.ISensorSetting;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetRangeToggleButton;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetTextFieldNumber;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
@@ -25,20 +26,25 @@ import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.RangedInteger;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 import static me.desht.pneumaticcraft.lib.GuiConstants.*;
 
 public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUniversalSensor,TileEntityUniversalSensor> {
+    private static final int MAX_TEXTFIELD_LENGTH = 256;
+
     private WidgetAnimatedStat sensorInfoStat;
     private TextFieldWidget nameFilterField;
     private int page;
@@ -76,6 +82,7 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
         sensorInfoStat.setForegroundColor(0xFF000000);
 
         nameFilterField = new TextFieldWidget(font, xStart + 70, yStart + 58, 98, 10, StringTextComponent.EMPTY);
+        nameFilterField.setMaxStringLength(MAX_TEXTFIELD_LENGTH);
         nameFilterField.setText(te.getText(0));
         nameFilterField.setResponder(s -> sendDelayed(5));
         addButton(nameFilterField);
@@ -120,9 +127,10 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
                 font.func_238422_b_(matrixStack, line.func_241878_f(), 70, 48 + yOff, 0x404040);
                 yOff += font.FONT_HEIGHT;
             }
+            nameFilterField.y = guiTop + 48 + yOff + 2;
         }
 
-        if (nameFilterField.visible) {
+        if (nameFilterField.visible && sensor != null && sensor.isEntityFilter()) {
             if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {
                 GuiUtils.showPopupHelpScreen(matrixStack, this, font,
                         GuiUtils.xlateAndSplit("pneumaticcraft.gui.entityFilter.helpText"));
@@ -220,8 +228,30 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
         nameFilterField.setVisible(textboxEnabled);
         if (textboxEnabled) {
             setListener(nameFilterField);
+            RangedInteger range = sensor.getTextboxIntRange();
+            if (range != null) {
+                nameFilterField.setValidator(s -> validateTextValue(s, range));
+                String max = Integer.toString(range.getMax());
+                nameFilterField.setMaxStringLength(max.length() + 1);
+                nameFilterField.setWidth(font.getStringWidth(max) + 10);
+            } else {
+                nameFilterField.setValidator(Objects::nonNull);
+                nameFilterField.setWidth(98);
+                nameFilterField.setMaxStringLength(MAX_TEXTFIELD_LENGTH);
+            }
         }
         nameFilterField.setFocused2(textboxEnabled);
+    }
+
+    private boolean validateTextValue(String s, RangedInteger r) {
+        if (s == null || s.isEmpty() || s.equals("-")) {
+            return true;  // treat as numeric zero
+        }
+        if (WidgetTextFieldNumber.isInteger(s)) {
+            int n = NumberUtils.createInteger(s);
+            return n >= r.getMinInclusive() && n < r.getMax();
+        }
+        return false;
     }
 
     private void addButtonLocal(Widget w) {

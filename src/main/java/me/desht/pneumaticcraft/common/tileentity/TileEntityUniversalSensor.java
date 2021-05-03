@@ -62,6 +62,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
     );
     private static final byte RS_MODE_NORMAL = 0;
     private static final byte RS_MODE_INVERTED = 1;
+    private static final int BASE_RANGE = 8;  // range with no upgrades installed
 
     @GuiSynced
     private String sensorSetting = "";
@@ -105,8 +106,6 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
         dishRotation += dishSpeed;
 
         super.tick();
-
-        rangeManager.setRange(getUpgrades(EnumUpgrade.RANGE) + 8);
 
         if (!getWorld().isRemote) {
             boolean invertedRedstone = rsController.getCurrentMode() == RS_MODE_INVERTED;
@@ -307,6 +306,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
     public void onUpgradesChanged() {
         super.onUpgradesChanged();
 
+        rangeManager.setRange(getUpgrades(EnumUpgrade.RANGE) + BASE_RANGE);
         setupGPSPositions();
     }
 
@@ -340,7 +340,6 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
                     .collect(Collectors.toList());
             positions.addAll(gpsPositions);
             outOfRange = posList.size() - gpsPositions.size();
-            updateStatus(SensorHandler.getInstance().getSensorFromPath(sensorSetting));
         }
         if (getWorld() != null && getWorld().isRemote) GuiUniversalSensor.maybeUpdateButtons();
     }

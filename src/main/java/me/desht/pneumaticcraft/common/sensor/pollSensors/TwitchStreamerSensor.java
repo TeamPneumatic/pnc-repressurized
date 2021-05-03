@@ -15,10 +15,10 @@ import net.minecraft.world.World;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class TwitchStreamerSensor implements IPollSensorSetting {
 
@@ -53,7 +53,7 @@ public class TwitchStreamerSensor implements IPollSensorSetting {
     }
 
     static class TwitchStream extends Thread {
-        private static final Map<String, TwitchStream> trackedTwitchers = new HashMap<>();
+        private static final Map<String, TwitchStream> trackedTwitchers = new ConcurrentHashMap<>();
 
         private final String channel;
         private boolean keptAlive = true;
@@ -75,7 +75,7 @@ public class TwitchStreamerSensor implements IPollSensorSetting {
                     refresh();
                     Thread.sleep(5000);
                 }
-                trackedTwitchers.remove(this);
+                trackedTwitchers.remove(channel);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -86,21 +86,10 @@ public class TwitchStreamerSensor implements IPollSensorSetting {
             try {
                 url = new URL("https://api.twitch.tv/kraken/streams/" + channel);
                 BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
-
-                // while((s = reader.readLine()) != null) {
-                //   Log.info(s);
                 JsonElement json = new JsonParser().parse(reader);
                 JsonObject obj = json.getAsJsonObject();
-                //   String title = obj.get("status").getAsString();
                 JsonElement streaming = obj.get("stream");
                 online = !streaming.isJsonNull();
-                /* JsonArray array = json.getAsJsonArray();
-                 for(int i = 0; i < array.size(); i++) {
-                     Log.info(array.get(i).getAsString());
-                 }*/
-                // Log.info(json.toString());
-                // }
-
             } catch (Throwable e) {
                 // e.printStackTrace();
             }
@@ -111,11 +100,7 @@ public class TwitchStreamerSensor implements IPollSensorSetting {
         }
 
         static boolean isOnline(String name) {
-            TwitchStream stream = trackedTwitchers.get(name);
-            if (stream == null) {
-                stream = new TwitchStream(name);
-                trackedTwitchers.put(name, stream);
-            }
+            TwitchStream stream = trackedTwitchers.computeIfAbsent(name, TwitchStream::new);
             stream.keptAlive = true;
             return stream.online;
         }

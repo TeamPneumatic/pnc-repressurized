@@ -1701,6 +1701,7 @@
    "pneumaticcraft.gui.universalSensor.desc.world_time" : "Emits a redstone signal of which the strength is proportional to the day time of the world (0..23999):${br}strength = time / 1500${br}Example: If the time is 6000 (noon), the redstone strength will be 4.",
    "pneumaticcraft.gui.universalSensor.desc.world_twitch" : "Emits a redstone signal when the name of the streamer in the textfield is streaming at this moment.",
    "pneumaticcraft.gui.universalSensor.desc.world_weather_forecast" : "Emits a redstone signal of which the strength gets higher how closer the rain gets. The strength increases by one for every minute.${br}strength = 15 - time till rain (min)${br}Example: If it will rain in 10 minutes, the strength is 5.",
+   "pneumaticcraft.gui.universalSensor.text.thresholdTemp" : "Threshold temp.",
    "pneumaticcraft.gui.universalSensor.outOfRange" : "§fBlock positions out of range!${br}§0%d block position(s) are out of range of the sensor.  Add more Range Upgrades.",
    "pneumaticcraft.gui.universalSensor.sensorException" : "§fSensor Exception Detected!${br}%s",
    "pneumaticcraft.gui.universalSensor.status.missing_gps" : "§fMissing GPS Tool${br}§0The selected sensor requires a configured GPS or Area GPS Tool to be inserted in the GPS slot.",

@@ -10,14 +10,16 @@ import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.RangedInteger;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import java.util.List;
 import java.util.Set;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class BlockHeatSensor implements IBlockAndCoordinatePollSensor {
 
@@ -42,6 +44,11 @@ public class BlockHeatSensor implements IBlockAndCoordinatePollSensor {
     }
 
     @Override
+    public RangedInteger getTextboxIntRange() {
+        return new RangedInteger(-273, 2000);  // 0K - 2273K
+    }
+
+    @Override
     public int getRedstoneValue(World world, BlockPos pos, int sensorRange, String textBoxText, Set<BlockPos> positions) {
         double temperature = 0D;
         for (BlockPos p : positions) {
@@ -63,6 +70,6 @@ public class BlockHeatSensor implements IBlockAndCoordinatePollSensor {
 
     @Override
     public void getAdditionalInfo(List<ITextComponent> info) {
-        info.add(new StringTextComponent("Threshold temp."));
+        info.add(xlate("pneumaticcraft.gui.universalSensor.text.thresholdTemp"));
     }
 }

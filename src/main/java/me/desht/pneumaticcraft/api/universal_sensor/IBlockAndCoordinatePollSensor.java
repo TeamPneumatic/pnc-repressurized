@@ -1,71 +1,30 @@
 package me.desht.pneumaticcraft.api.universal_sensor;
 
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 
-import java.util.List;
 import java.util.Set;
 
-public interface IBlockAndCoordinatePollSensor {
+public interface IBlockAndCoordinatePollSensor extends IBaseSensor {
     /**
-     * See {@link ISensorSetting#getSensorPath()}
+     * Similar to {@link IPollSensorSetting#getRedstoneValue(World, BlockPos, int, String)}, but this has the GPS tracked
+     * coordinates as extra parameters. This method will only invoke with a valid GPS tool, and when all the coordinates
+     * are within range.
      *
-     * @return
-     */
-    String getSensorPath();
-
-    /**
-     * See {@link ISensorSetting#getRequiredUpgrades()}
-     *
-     * @return
-     */
-    Set<EnumUpgrade> getRequiredUpgrades();
-
-    /**
-     * See {@link ISensorSetting#needsTextBox()}
-     *
-     * @return
-     */
-    boolean needsTextBox();
-
-    /**
-     * See {@link ISensorSetting#getDescription()}
-     *
-     * @return
-     */
-    default List<String> getDescription() {
-        return ISensorSetting._getDescription(getSensorPath());
-    }
-
-    /**
-     * See {@link IPollSensorSetting#getRedstoneValue(World, BlockPos, int, String)} , but this has the GPS tracked coordinates
-     * as extra parameters. This method will only invoke with a valid GPS tool, and when all the coordinates are within range.
-     *
-     * @param world
-     * @param pos
-     * @param sensorRange
-     * @param textBoxText
+     * @param world the sensor's world
+     * @param pos the sensor's position
+     * @param sensorRange the sensor's current range, based on installed range upgrades
+     * @param textBoxText text in the sensor GUI's textbox (may be an empty string)
      * @param positions   When only one GPS Tool is inserted this contains the position of just that tool. If two GPS Tools are inserted, These are both corners of a box, and every coordinate in this box is added to the positions argument.
-     * @return
+     * @return the redstone signal level to be emitted
      */
     int getRedstoneValue(World world, BlockPos pos, int sensorRange, String textBoxText, Set<BlockPos> positions);
 
     /**
      * See {@link IPollSensorSetting#getPollFrequency(TileEntity)}
      *
-     * @return
+     * @return a poll frequency, in ticks
      */
     int getPollFrequency();
-
-//    /**
-//     * Called by GuiScreen#drawScreen this method can be used to render additional things like status/info text.
-//     *
-//     * @param matrixStack
-//     * @param fontRenderer
-//     */
-//    void drawAdditionalInfo(MatrixStack matrixStack, FontRenderer fontRenderer);
-    default void getAdditionalInfo(List<ITextComponent> info) {}
 }

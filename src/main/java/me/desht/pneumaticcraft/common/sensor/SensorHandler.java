@@ -11,6 +11,7 @@ import me.desht.pneumaticcraft.common.sensor.pollSensors.entity.EntityInRangeSen
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUniversalSensor;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.RangedInteger;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
@@ -172,6 +173,16 @@ public class SensorHandler implements ISensorRegistry {
         }
 
         @Override
+        public RangedInteger getTextboxIntRange() {
+            return coordinateSensor.getTextboxIntRange();
+        }
+
+        @Override
+        public boolean isEntityFilter() {
+            return coordinateSensor.isEntityFilter();
+        }
+
+        @Override
         public List<String> getDescription() {
             return coordinateSensor.getDescription();
         }
@@ -219,6 +230,16 @@ public class SensorHandler implements ISensorRegistry {
         @Override
         public boolean needsTextBox() {
             return coordinateSensor.needsTextBox();
+        }
+
+        @Override
+        public RangedInteger getTextboxIntRange() {
+            return coordinateSensor.getTextboxIntRange();
+        }
+
+        @Override
+        public boolean isEntityFilter() {
+            return coordinateSensor.isEntityFilter();
         }
 
         @Override

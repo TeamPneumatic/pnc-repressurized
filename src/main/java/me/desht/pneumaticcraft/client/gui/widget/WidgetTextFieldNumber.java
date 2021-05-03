@@ -6,7 +6,10 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.util.math.MathHelper;
 import org.apache.commons.lang3.math.NumberUtils;
 
+import java.util.regex.Pattern;
+
 public class WidgetTextFieldNumber extends WidgetTextField {
+    private static final Pattern INT_PAT = Pattern.compile("^-?\\d+$");
 
     public int minValue = Integer.MIN_VALUE;
     public int maxValue = Integer.MAX_VALUE;
@@ -22,7 +25,8 @@ public class WidgetTextFieldNumber extends WidgetTextField {
             if (input == null || input.isEmpty() || input.equals("-")) {
                 return true;  // treat as numeric zero
             }
-            return NumberUtils.isCreatable(input);
+            return isInteger(input);
+//            return NumberUtils.isCreatable(input);
         });
     }
 
@@ -67,5 +71,9 @@ public class WidgetTextFieldNumber extends WidgetTextField {
             setValue(MathHelper.clamp(getValue() + (delta > 0 ? adj : -adj), minValue, maxValue));
         }
         return true;
+    }
+
+    public static boolean isInteger(String s) {
+        return INT_PAT.matcher(s).matches();
     }
 }
