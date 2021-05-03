@@ -8,7 +8,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 
-## 2.12.1-?? (unreleased)
+## 2.12.1-182 (3 May 2021)
 
 ### Updates
 * Added config setting `in_world_plastic_solidification` (default: true) to control in-world conversion of Molten Plastic to Plastic Sheets
@@ -22,7 +22,8 @@ PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 * The Aerial Interface now renders the owning player's actual head on the front of its block, when the player is online
 * Player left-clicks on **invisible** Logistics Frames are now passed through to the framed blocks
   * This means left-clicking blocks like Storage Drawers or Mekanism Bins now works as expected when there's a frame on the front of the block
-* Hywla & The One Probe now show the framed inventory name when looking at Logistics Frames
+  * When the frame is **visible**, left-clicks cause the player to punch the frame (eventually knocking it off in the same way that punching a boat breaks it)
+* Hwyla & The One Probe now show the framed inventory name when looking at Logistics Frames
 * The recipe for Speed Upgrades now accepts Lubricant by fluid tag (`forge:lubricant`) instead of specifically PneumaticCraft's Lubricant
   * This makes for better cross-mod compat, e.g. Immersive Petroleum's Lubricant can be used
 * Air Grates now use a small amount of air to cool Heat Sinks
@@ -42,6 +43,7 @@ PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 * Fixed a couple of pneumatic armor inconsistencies relating to removing upgrades from armor when the upgrade is still switched on
 * Fixed Fluid Tanks not allowing an empty bucket (or other fluid container item) to be inserted via the GUI
   * It has always worked to pipe a bucket/tank in, but the GUI slot wasn't configured to allow empty containers
+* Fixed Universal Sensor not always correctly calculating its range on world reload
   
 ## 2.12.0-177 (16 Apr 2021)
 
