@@ -20,6 +20,11 @@
       "text": "With a $(l:base_concepts/upgrades#security)Security Upgrade/$ installed, the chestplate grants you protection from fire and lava, at a significant air cost: air is rapidly dumped from the chestplate to extinguish nearby flames and keep you cool.  It will even slowly solidify nearby lava."
     },
     {
+      "type": "text",
+      "title": "Security Upgrade (cont)",
+      "text": "Note: this protection activates if you are about to take fire damage, so if you are already protected (e.g. via a potion), this upgrade won't do anything."
+    },
+    {
       "type": "spotlight",
       "flag": "mod:immersiveengineering",
       "title": "Immersive Engineering",
