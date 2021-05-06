@@ -8,6 +8,17 @@ Changes are in reverse chronological order; newest changes at the top.
 
 PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 
+## 2.12.2-?? (unreleased)
+
+### Updates
+* Clarified Chestplate & Security Upgrade fire protection behaviour in Charging Station side tab & manual
+  * Note that the Chestplate Security upgrade only dumps air (to extinguish fire & solidify lava) if the player doesn't already have fire protection
+  
+### Fixes
+* Fixed client crash when opening Pneumatic Armor GUI and there are no armor pieces with an upgrade GUI available
+  * E.g. wearing only chestplate with no upgrades
+  * Now the Core Components page is always visible, regardless of which armor pieces & upgrades are in use
+
 ## 2.12.1-184 (3 May 2021)
 
 ### Updates
