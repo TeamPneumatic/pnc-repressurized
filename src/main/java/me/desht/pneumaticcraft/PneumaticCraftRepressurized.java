@@ -78,7 +78,6 @@ public class PneumaticCraftRepressurized {
 
         Reflections.init();
         PneumaticRegistry.init(PneumaticCraftAPIHandler.getInstance());
-        AdvancementTriggers.registerTriggers();
 
         ModLootFunctions.init();
 
@@ -135,6 +134,7 @@ public class PneumaticCraftRepressurized {
 
         event.enqueueWork(() -> {
             ModWorldGen.registerConfiguredFeatures();
+            AdvancementTriggers.registerTriggers();
 
             DispenserBlock.registerDispenseBehavior(ModItems.DRONE.get(), new BehaviorDispenseDrone());
             DispenserBlock.registerDispenseBehavior(ModItems.LOGISTICS_DRONE.get(), new BehaviorDispenseDrone());
@@ -193,6 +193,7 @@ public class PneumaticCraftRepressurized {
                 generator.addProvider(blockTagsProvider);
                 generator.addProvider(new ModItemTagsProvider(generator, blockTagsProvider, event.getExistingFileHelper()));
                 generator.addProvider(new ModFluidTagsProvider(generator, event.getExistingFileHelper()));
+                generator.addProvider(new ModAdvancementProvider(generator));
             }
         }
     }

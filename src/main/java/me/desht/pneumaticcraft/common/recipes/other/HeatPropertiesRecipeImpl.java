@@ -169,6 +169,7 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
         return PneumaticCraftRecipeType.HEAT_PROPERTIES;
     }
 
+    @Override
     public boolean matchState(BlockState state) {
         if (predicates.isEmpty()) return true;
         for (Map.Entry<String, String> entry : predicates.entrySet()) {

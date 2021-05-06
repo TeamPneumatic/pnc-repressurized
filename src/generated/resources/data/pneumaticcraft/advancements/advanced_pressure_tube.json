@@ -1,0 +1,39 @@
+{
+  "parent": "pneumaticcraft:assembly_controller",
+  "display": {
+    "icon": {
+      "item": "pneumaticcraft:advanced_pressure_tube"
+    },
+    "title": {
+      "translate": "pneumaticcraft.advancement.advanced_pressure_tube"
+    },
+    "description": {
+      "translate": "pneumaticcraft.advancement.advanced_pressure_tube.desc"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false,
+    "background": "pneumaticcraft:textures/gui/advancement_bg.png"
+  },
+  "rewards": {
+    "experience": 10
+  },
+  "criteria": {
+    "0": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:advanced_pressure_tube"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ]
+}

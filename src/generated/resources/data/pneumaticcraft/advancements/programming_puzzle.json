@@ -1,0 +1,36 @@
+{
+  "parent": "pneumaticcraft:programmer",
+  "display": {
+    "icon": {
+      "item": "pneumaticcraft:programming_puzzle"
+    },
+    "title": {
+      "translate": "pneumaticcraft.advancement.programming_puzzle"
+    },
+    "description": {
+      "translate": "pneumaticcraft.advancement.programming_puzzle.desc"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false,
+    "background": "pneumaticcraft:textures/gui/advancement_bg.png"
+  },
+  "criteria": {
+    "0": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:programming_puzzle"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ]
+}

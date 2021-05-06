@@ -1,0 +1,36 @@
+{
+  "parent": "pneumaticcraft:tp_plant",
+  "display": {
+    "icon": {
+      "item": "pneumaticcraft:lubricant_bucket"
+    },
+    "title": {
+      "translate": "pneumaticcraft.advancement.lubricant_bucket"
+    },
+    "description": {
+      "translate": "pneumaticcraft.advancement.lubricant_bucket.desc"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false,
+    "background": "pneumaticcraft:textures/gui/advancement_bg.png"
+  },
+  "criteria": {
+    "0": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:lubricant_bucket"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ]
+}

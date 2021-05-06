@@ -1,0 +1,39 @@
+{
+  "parent": "pneumaticcraft:jackhammer",
+  "display": {
+    "icon": {
+      "item": "pneumaticcraft:drill_bit_netherite"
+    },
+    "title": {
+      "translate": "pneumaticcraft.advancement.drill_bit_netherite"
+    },
+    "description": {
+      "translate": "pneumaticcraft.advancement.drill_bit_netherite.desc"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false,
+    "background": "pneumaticcraft:textures/gui/advancement_bg.png"
+  },
+  "rewards": {
+    "experience": 50
+  },
+  "criteria": {
+    "0": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:drill_bit_netherite"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ]
+}

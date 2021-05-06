@@ -1,0 +1,33 @@
+{
+  "parent": "pneumaticcraft:pneumatic_armor",
+  "display": {
+    "icon": {
+      "item": "pneumaticcraft:jet_boots_upgrade_1"
+    },
+    "title": {
+      "translate": "pneumaticcraft.advancement.flight"
+    },
+    "description": {
+      "translate": "pneumaticcraft.advancement.flight.desc"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false,
+    "background": "pneumaticcraft:textures/gui/advancement_bg.png"
+  },
+  "rewards": {
+    "experience": 50
+  },
+  "criteria": {
+    "0": {
+      "trigger": "pneumaticcraft:flight",
+      "conditions": {}
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ]
+}

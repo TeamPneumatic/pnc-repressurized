@@ -1,0 +1,33 @@
+{
+  "parent": "pneumaticcraft:root",
+  "display": {
+    "icon": {
+      "item": "pneumaticcraft:pressure_chamber_wall"
+    },
+    "title": {
+      "translate": "pneumaticcraft.advancement.pressure_chamber"
+    },
+    "description": {
+      "translate": "pneumaticcraft.advancement.pressure_chamber.desc"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false,
+    "background": "pneumaticcraft:textures/gui/advancement_bg.png"
+  },
+  "rewards": {
+    "experience": 20
+  },
+  "criteria": {
+    "0": {
+      "trigger": "pneumaticcraft:pressure_chamber",
+      "conditions": {}
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ]
+}

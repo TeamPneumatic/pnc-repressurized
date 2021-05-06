@@ -18,8 +18,6 @@ import java.util.function.Supplier;
  * Sent by server to play a trail of particles between two points
  */
 public class PacketSpawnParticleTrail extends LocationDoublePacket {
-    private static final int DENSITY = 15;
-
     private final IParticleData particle;
     private final double x2;
     private final double y2;
@@ -43,6 +41,7 @@ public class PacketSpawnParticleTrail extends LocationDoublePacket {
         particle = readParticle(type, buffer);
     }
 
+    @Override
     public void toBytes(PacketBuffer buffer) {
         super.toBytes(buffer);
         buffer.writeResourceLocation(Objects.requireNonNull(particle.getType().getRegistryName()));

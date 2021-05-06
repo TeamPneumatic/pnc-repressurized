@@ -1,0 +1,39 @@
+{
+  "parent": "pneumaticcraft:ethanol",
+  "display": {
+    "icon": {
+      "item": "pneumaticcraft:biodiesel_bucket"
+    },
+    "title": {
+      "translate": "pneumaticcraft.advancement.biodiesel"
+    },
+    "description": {
+      "translate": "pneumaticcraft.advancement.biodiesel.desc"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false,
+    "background": "pneumaticcraft:textures/gui/advancement_bg.png"
+  },
+  "rewards": {
+    "experience": 25
+  },
+  "criteria": {
+    "0": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:biodiesel_bucket"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "0"
+    ]
+  ]
+}
