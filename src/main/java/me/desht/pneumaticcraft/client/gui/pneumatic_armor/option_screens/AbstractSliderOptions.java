@@ -47,6 +47,7 @@ public abstract class AbstractSliderOptions<T extends IArmorUpgradeClientHandler
         return getClientUpgradeHandler().getCommonHandler().getEquipmentSlot();
     }
 
+    @Override
     public void populateGui(IGuiScreen gui) {
         Pair<Integer,Integer> range = getRange();
         int initVal = range.getRight();

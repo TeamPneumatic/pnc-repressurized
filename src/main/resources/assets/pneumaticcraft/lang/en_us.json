@@ -600,6 +600,7 @@
    "pneumaticcraft.armor.gui.misc.moveStatScreen":  "Move Stat Screen...",
    "pneumaticcraft.armor.gui.misc.movePressureScreen": "Move Pressure Screen...",
    "pneumaticcraft.armor.gui.misc.moveMessageScreen": "Move Message Screen...",
+   "pneumaticcraft.armor.gui.misc.noUpgrades": "No Configurable Upgrades Installed!",
    "pneumaticcraft.armor.gui.misc.reset": "Reset",
    "pneumaticcraft.armor.gui.misc.save": "Save",
    "pneumaticcraft.armor.gui.misc.showPressureNumerically": "Show Pressure Numerically",
