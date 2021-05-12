@@ -42,6 +42,7 @@ public class GuiPressureModuleSimple extends GuiTubeModule<TubeModule> {
                 .setAdjustments(0.1, 1.0);
         addButton(thresholdField);
         setListener(thresholdField);
+        thresholdField.setWidth(40);
         thresholdField.setFocused2(true);
 
         if (module instanceof TubeModuleRedstoneReceiving) {
@@ -59,7 +60,7 @@ public class GuiPressureModuleSimple extends GuiTubeModule<TubeModule> {
             );
             addButton(moreOrLessButton);
         }
-        addLabel(xlate("pneumaticcraft.gui.general.bar"), guiLeft + 137, guiTop + 37);
+        addLabel(xlate("pneumaticcraft.gui.general.bar"), thresholdField.x + thresholdField.getWidth() + 3, thresholdField.y + 1);
     }
 
     private void flipThreshold() {

@@ -6,7 +6,6 @@ import me.desht.pneumaticcraft.api.universal_sensor.ISensorSetting;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetRangeToggleButton;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetTextFieldNumber;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
@@ -17,6 +16,7 @@ import me.desht.pneumaticcraft.common.network.PacketUpdateTextfield;
 import me.desht.pneumaticcraft.common.sensor.SensorHandler;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUniversalSensor;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityUniversalSensor.SensorStatus;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
@@ -31,7 +31,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
@@ -236,19 +235,16 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
                 nameFilterField.setWidth(font.getStringWidth(max) + 10);
             } else {
                 nameFilterField.setValidator(Objects::nonNull);
-                nameFilterField.setWidth(98);
                 nameFilterField.setMaxStringLength(MAX_TEXTFIELD_LENGTH);
+                nameFilterField.setWidth(98);
             }
         }
         nameFilterField.setFocused2(textboxEnabled);
     }
 
     private boolean validateTextValue(String s, RangedInteger r) {
-        if (s == null || s.isEmpty() || s.equals("-")) {
-            return true;  // treat as numeric zero
-        }
-        if (WidgetTextFieldNumber.isInteger(s)) {
-            int n = NumberUtils.createInteger(s);
+        if (PneumaticCraftUtils.isInteger(s)) {
+            int n = s.isEmpty() ? 0 : Integer.parseInt(s);
             return n >= r.getMinInclusive() && n < r.getMax();
         }
         return false;
