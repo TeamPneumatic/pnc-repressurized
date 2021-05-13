@@ -1,0 +1,22 @@
+{
+  "display": {
+    "icon": {
+      "item": "pneumaticcraft:entity_tracker_upgrade"
+    },
+    "title": {
+      "translate": "pneumaticcraft.achievement.entityHack"
+    },
+    "description": {
+      "translate": "pneumaticcraft.achievement.entityHack.desc"
+    }
+  },
+  "parent": "pneumaticcraft:pneumatic_armor",
+  "criteria": {
+    "hacked": {
+      "trigger": "pneumaticcraft:entity_hack"
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "item": "pneumaticcraft:aphorism_tile"
+    },
+    "title": {
+      "translate": "pneumaticcraft.achievement.aphorismTile"
+    },
+    "description": {
+      "translate": "pneumaticcraft.achievement.aphorismTile.desc"
+    }
+  },
+  "parent": "pneumaticcraft:assembly_controller",
+  "criteria": {
+    "taken": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:aphorism_tile"
+          }
+        ]
+      }
+    }
+  }
+}

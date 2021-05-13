@@ -1,0 +1,29 @@
+{
+  "display": {
+    "icon": {
+      "item": "pneumaticcraft:ethanol_bucket"
+    },
+    "title": {
+      "translate": "pneumaticcraft.achievement.ethanol"
+    },
+    "description": {
+      "translate": "pneumaticcraft.achievement.ethanol.desc"
+    }
+  },
+  "parent": "pneumaticcraft:yeast_culture",
+  "criteria": {
+    "pressure_tube": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:ethanol_bucket"
+          }
+        ]
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

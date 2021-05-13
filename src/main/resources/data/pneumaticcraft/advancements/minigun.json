@@ -1,0 +1,29 @@
+{
+  "display": {
+    "icon": {
+      "item": "pneumaticcraft:minigun"
+    },
+    "title": {
+      "translate": "pneumaticcraft.achievement.minigun"
+    },
+    "description": {
+      "translate": "pneumaticcraft.achievement.minigun.desc"
+    }
+  },
+  "parent": "pneumaticcraft:pressure_tube",
+  "criteria": {
+    "taken": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:minigun"
+          }
+        ]
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

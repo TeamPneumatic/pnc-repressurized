@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "item": "pneumaticcraft:advanced_pressure_tube"
+    },
+    "title": {
+      "translate": "pneumaticcraft.achievement.advancedPressureTube"
+    },
+    "description": {
+      "translate": "pneumaticcraft.achievement.advancedPressureTube.desc"
+    }
+  },
+  "parent": "pneumaticcraft:assembly_controller",
+  "criteria": {
+    "pressure_tube": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:advanced_pressure_tube"
+          }
+        ]
+      }
+    }
+  }
+}

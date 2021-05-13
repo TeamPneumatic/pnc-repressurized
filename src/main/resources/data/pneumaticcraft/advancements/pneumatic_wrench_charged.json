@@ -1,0 +1,22 @@
+{
+  "display": {
+    "icon": {
+      "item": "pneumaticcraft:pneumatic_wrench"
+    },
+    "title": {
+      "translate": "pneumaticcraft.achievement.pneumaticWrenchCharged"
+    },
+    "description": {
+      "translate": "pneumaticcraft.achievement.pneumaticWrenchCharged.desc"
+    }
+  },
+  "parent": "pneumaticcraft:pneumatic_wrench",
+  "criteria": {
+    "equipped": {
+      "trigger": "pneumaticcraft:charged_wrench"
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

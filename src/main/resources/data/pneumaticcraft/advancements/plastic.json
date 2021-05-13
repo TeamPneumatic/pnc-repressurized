@@ -1,0 +1,30 @@
+{
+  "display": {
+    "icon": {
+      "item": "pneumaticcraft:plastic"
+    },
+    "title": {
+      "translate": "pneumaticcraft.achievement.plastic"
+    },
+    "description": {
+      "translate": "pneumaticcraft.achievement.plastic.desc"
+    },
+    "frame": "goal"
+  },
+  "parent": "pneumaticcraft:tp_plant",
+  "criteria": {
+    "plastic": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:plastic"
+          }
+        ]
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

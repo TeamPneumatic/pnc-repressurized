@@ -1,0 +1,29 @@
+{
+  "display": {
+    "icon": {
+      "item": "pneumaticcraft:speed_upgrade"
+    },
+    "title": {
+      "translate": "pneumaticcraft.achievement.speedUpgrade"
+    },
+    "description": {
+      "translate": "pneumaticcraft.achievement.speedUpgrade.desc"
+    }
+  },
+  "parent": "pneumaticcraft:lubricant_bucket",
+  "criteria": {
+    "air_compressor": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:speed_upgrade"
+          }
+        ]
+      }
+    }
+  },
+  "rewards": {
+    "experience": 15
+  }
+}

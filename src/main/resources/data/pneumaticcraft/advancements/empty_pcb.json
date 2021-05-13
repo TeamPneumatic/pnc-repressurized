@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "item": "pneumaticcraft:empty_pcb"
+    },
+    "title": {
+      "translate": "pneumaticcraft.achievement.emptyPCB"
+    },
+    "description": {
+      "translate": "pneumaticcraft.achievement.emptyPCB.desc"
+    }
+  },
+  "parent": "pneumaticcraft:etchacid_bucket",
+  "criteria": {
+    "taken": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:empty_pcb"
+          }
+        ]
+      }
+    }
+  }
+}

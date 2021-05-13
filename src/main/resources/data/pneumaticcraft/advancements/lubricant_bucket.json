@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "item": "pneumaticcraft:lubricant_bucket"
+    },
+    "title": {
+      "translate": "pneumaticcraft.achievement.lubricantBucket"
+    },
+    "description": {
+      "translate": "pneumaticcraft.achievement.lubricantBucket.desc"
+    }
+  },
+  "parent": "pneumaticcraft:tp_plant",
+  "criteria": {
+    "lpg_bucket": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:lubricant_bucket"
+          }
+        ]
+      }
+    }
+  }
+}

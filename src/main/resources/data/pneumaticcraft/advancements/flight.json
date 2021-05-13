@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "item": "pneumaticcraft:jet_boots_upgrade_1"
+    },
+    "title": {
+      "translate": "pneumaticcraft.achievement.flight"
+    },
+    "description": {
+      "translate": "pneumaticcraft.achievement.flight.desc"
+    },
+    "frame" : "challenge"
+  },
+  "parent": "pneumaticcraft:pneumatic_armor",
+  "criteria": {
+    "equipped": {
+      "trigger": "pneumaticcraft:flight"
+    }
+  },
+  "rewards": {
+    "experience": 50
+  }
+}

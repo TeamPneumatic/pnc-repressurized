@@ -1,0 +1,27 @@
+{
+  "display": {
+    "icon": {
+      "item": "pneumaticcraft:pneumatic_wrench"
+    },
+    "title": {
+      "translate": "pneumaticcraft.achievement.pneumaticWrench"
+    },
+    "description": {
+      "translate": "pneumaticcraft.achievement.pneumaticWrench.desc"
+    }
+  },
+  "parent": "pneumaticcraft:pressure_tube",
+  "criteria": {
+    "pressure_tube": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:pneumatic_wrench",
+            "nbt": "{}"
+          }
+        ]
+      }
+    }
+  }
+}

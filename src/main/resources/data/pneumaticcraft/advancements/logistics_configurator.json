@@ -1,0 +1,29 @@
+{
+  "display": {
+    "icon": {
+      "item": "pneumaticcraft:logistics_configurator"
+    },
+    "title": {
+      "translate": "pneumaticcraft.achievement.logisticsConfigurator"
+    },
+    "description": {
+      "translate": "pneumaticcraft.achievement.logisticsConfigurator.desc"
+    }
+  },
+  "parent": "pneumaticcraft:logistics_frame",
+  "criteria": {
+    "taken": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:logistics_configurator"
+          }
+        ]
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

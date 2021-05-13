@@ -1,0 +1,32 @@
+{
+  "display": {
+    "icon": {
+      "item": "pneumaticcraft:logistics_frame_passive_provider"
+    },
+    "title": {
+      "translate": "pneumaticcraft.achievement.logisticsFrame"
+    },
+    "description": {
+      "translate": "pneumaticcraft.achievement.logisticsFrame.desc"
+    }
+  },
+  "parent": "pneumaticcraft:root",
+  "criteria": {
+    "taken": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:logistics_frame_passive_provider"
+          },
+          {
+            "item": "pneumaticcraft:logistics_frame_requester"
+          }
+        ]
+      }
+    }
+  },
+  "rewards": {
+    "experience": 20
+  }
+}
