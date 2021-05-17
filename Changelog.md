@@ -8,6 +8,13 @@ Changes are in reverse chronological order; newest changes at the top.
 
 PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 
+## 2.12.3-187 (17 May 2021)
+
+### Fixes
+* Fixed mod compat problem causing crashes with new TheOneProbe (3.1.x) versions
+* Fixed potential item dupes with Thermopneumatic Processing Plant in conjunction with the logistics system
+* Fixed a couple of broken links in the Patchouli manual
+
 ## 2.12.2-186 (13 May 2021)
 
 ### Updates
