@@ -7,7 +7,7 @@
 
     {
       "type": "text",
-      "text": "The $(item)Pneumatic Chestplate/$ is one of the four $(thing)Pneumatic Armor/$ pieces.$(p)It has a larger $(base_concepts/pressure)air volume/$ than the other three pieces."
+      "text": "The $(item)Pneumatic Chestplate/$ is one of the four $(thing)Pneumatic Armor/$ pieces.$(p)It has a larger $(l:base_concepts/pressure)air volume/$ than the other three pieces."
     },
     {
       "type": "crafting",

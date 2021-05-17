@@ -5,7 +5,7 @@
   "pages": [
     {
       "type": "text",
-      "text": "$(pncr) adds a $(thing)heat/$ system. It spreads from block to block similarly to how heat spreads in real-life. It has some similarities with how $(base_concepts/pressure)pressure disperses/$ too:$(li)Heat disperses from hotter objects to colder objects.$(li)Blocks will only spread heat to adjacent blocks that support the concept of heat (see $(l:base_concepts/heat_sources)Heat Sources/$)."
+      "text": "$(pncr) adds a $(thing)heat/$ system. It spreads from block to block similarly to how heat spreads in real-life. It has some similarities with how $(l:base_concepts/pressure)pressure disperses/$ too:$(li)Heat disperses from hotter objects to colder objects.$(li)Blocks will only spread heat to adjacent blocks that support the concept of heat (see $(l:base_concepts/heat_sources)Heat Sources/$)."
     },
     {
       "type": "text",
