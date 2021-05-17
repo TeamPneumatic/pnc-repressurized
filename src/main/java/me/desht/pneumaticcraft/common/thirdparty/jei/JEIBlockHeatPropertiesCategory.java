@@ -23,7 +23,6 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag.TooltipFlags;
-import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
@@ -115,7 +114,8 @@ public class JEIBlockHeatPropertiesCategory implements IRecipeCategory<HeatPrope
     private void setOutputIngredient(BlockState state, IIngredients ingredients) {
         if (state != null) {
             if (state.getBlock() instanceof FlowingFluidBlock) {
-                FluidStack stack = new FluidStack(((FlowingFluidBlock) state.getBlock()).getFluid(), 1000);
+                int level = state.hasProperty(FlowingFluidBlock.LEVEL) ? state.get(FlowingFluidBlock.LEVEL) : 0;
+                FluidStack stack = new FluidStack(((FlowingFluidBlock) state.getBlock()).getFluid(), 1000 * level / 15);
                 ingredients.setOutput(VanillaTypes.FLUID, stack);
             } else {
                 ingredients.setOutput(VanillaTypes.ITEM, new ItemStack(state.getBlock()));
@@ -227,8 +227,9 @@ public class JEIBlockHeatPropertiesCategory implements IRecipeCategory<HeatPrope
     private void renderBlock(BlockState state, MatrixStack matrixStack, int x, int y) {
         if (state != null) {
             if (state.getBlock() instanceof FlowingFluidBlock) {
-                Fluid fluid = ((FlowingFluidBlock) state.getBlock()).getFluid();
-                GuiUtils.drawFluid(matrixStack, new Rectangle2d(x - 7, y - 2, 16, 16), new FluidStack(fluid, 1000), new FluidTank(1000));
+                int level = state.hasProperty(FlowingFluidBlock.LEVEL) ? state.get(FlowingFluidBlock.LEVEL) : 0;
+                FluidStack stack = new FluidStack(((FlowingFluidBlock) state.getBlock()).getFluid(), 1000 * level / 15);
+                GuiUtils.drawFluid(matrixStack, new Rectangle2d(x - 7, y - 2, 16, 16), stack, new FluidTank(1000));
             } else if (state.getBlock() == Blocks.AIR) {
                 air.draw(matrixStack, x - 8, y - 2);
             } else {

@@ -48,7 +48,7 @@ public class TOPInit implements Function<ITheOneProbe, Void> {
             @Override
             public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
                 if (blockState.getBlock() instanceof BlockPneumaticCraft) {
-                    TOPInfoProvider.handle(mode, probeInfo, player, world, blockState, data);
+                    TOPInfoProvider.handleBlock(mode, probeInfo, player, world, blockState, data);
                 }
                 SemiblockTracker.getInstance().getAllSemiblocks(world, data.getPos(), data.getSideHit())
                         .filter(sb -> !(sb instanceof IDirectionalSemiblock) || ((IDirectionalSemiblock) sb).getSide() == data.getSideHit())

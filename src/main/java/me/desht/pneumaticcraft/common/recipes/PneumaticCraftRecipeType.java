@@ -17,6 +17,7 @@ import me.desht.pneumaticcraft.common.recipes.other.HeatPropertiesRecipeImpl;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityFluidMixer;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureChamberInterface;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityThermopneumaticProcessingPlant;
+import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.item.crafting.RecipeManager;
@@ -112,12 +113,20 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
 
     public Map<ResourceLocation, T> getRecipes(World world) {
         if (world == null) {
-            // we should pretty much always have a world, but here's a fallback: the overworld
+            // we should pretty much always have a world, but use the overworld as a fallback
             MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
             if (server != null) world = server.getWorld(World.OVERWORLD);
-            // no server? let's hope this is the client, then...
-            if (world == null) world = ClientUtils.getClientWorld();
-            if (world == null) return Collections.emptyMap();
+            if (world == null) {
+                try {
+                    // no server? let's hope this is the client, then...
+                    world = ClientUtils.getClientWorld();
+                } catch (Exception e) {
+                    // not much else we can do at this point
+                    Log.error("detected someone trying to get recipes with no world available (maybe calling too early on the server side?)");
+                    e.printStackTrace();
+                    return Collections.emptyMap();
+                }
+            }
         }
 
         if (cachedRecipes.isEmpty()) {

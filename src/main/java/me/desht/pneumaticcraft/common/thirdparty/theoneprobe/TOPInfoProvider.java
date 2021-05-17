@@ -1,6 +1,8 @@
 package me.desht.pneumaticcraft.common.thirdparty.theoneprobe;
 
-import mcjty.theoneprobe.api.*;
+import mcjty.theoneprobe.api.IProbeHitData;
+import mcjty.theoneprobe.api.IProbeInfo;
+import mcjty.theoneprobe.api.ProbeMode;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.semiblock.ISemiBlock;
 import me.desht.pneumaticcraft.common.block.BlockPressureTube;
@@ -10,9 +12,12 @@ import me.desht.pneumaticcraft.common.heat.HeatUtil;
 import me.desht.pneumaticcraft.common.heat.TemperatureData;
 import me.desht.pneumaticcraft.common.item.ItemCamoApplicator;
 import me.desht.pneumaticcraft.common.thirdparty.waila.IInfoForwarder;
-import me.desht.pneumaticcraft.common.tileentity.*;
+import me.desht.pneumaticcraft.common.tileentity.ICamouflageableTE;
+import me.desht.pneumaticcraft.common.tileentity.IRedstoneControl;
+import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.GuiConstants;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -35,33 +40,46 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class TOPInfoProvider {
     private static final TextFormatting COLOR = TextFormatting.GRAY;
 
-    public static void handle(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
+    static void handleBlock(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
         TileEntity te = world.getTileEntity(data.getPos());
-        if (te == null) return;
-
         if (te instanceof IInfoForwarder) {
             te = ((IInfoForwarder)te).getInfoTileEntity();
-            if (te == null) return;
         }
 
+        if (te == null) return;
+
         if (te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).isPresent()) {
-            TOPInfoProvider.handlePneumatic(mode, probeInfo, te);
+            handlePneumatic(mode, probeInfo, te);
         }
         if (te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY).isPresent()) {
-            TOPInfoProvider.handleHeat(mode, probeInfo, te);
+            handleHeat(mode, probeInfo, te);
         }
         if (PNCConfig.Client.topShowsFluids) {
             te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, data.getSideHit())
-                    .ifPresent(handler -> TOPInfoProvider.handleFluidTanks(mode, probeInfo, handler));
+                    .ifPresent(handler -> handleFluidTanks(mode, probeInfo, handler));
         }
-        if (te instanceof TileEntityBase) {
-            TOPInfoProvider.handleRedstoneMode(mode, probeInfo, (TileEntityBase) te);
+        if (te instanceof IRedstoneControl) {
+            handleRedstoneMode(mode, probeInfo, (IRedstoneControl<?>) te);
         }
         if (te instanceof TileEntityPressureTube) {
-            TOPInfoProvider.handlePressureTube(mode, probeInfo, (TileEntityPressureTube) te, data.getSideHit(), player);
+            handlePressureTube(mode, probeInfo, (TileEntityPressureTube) te, data.getSideHit(), player);
         }
         if (te instanceof ICamouflageableTE) {
-            TOPInfoProvider.handleCamo(mode, probeInfo, ((ICamouflageableTE) te).getCamouflage());
+            handleCamo(mode, probeInfo, ((ICamouflageableTE) te).getCamouflage());
+        }
+    }
+
+    static void handleSemiblock(PlayerEntity player, ProbeMode mode, IProbeInfo probeInfo, ISemiBlock semiBlock) {
+        IProbeInfo vert = probeInfo.vertical(probeInfo.defaultLayoutStyle().borderColor(semiBlock.getColor()));
+        IProbeInfo horiz = vert.horizontal();
+        NonNullList<ItemStack> drops = semiBlock.getDrops();
+        if (!drops.isEmpty()) {
+            ItemStack stack = drops.get(0);
+            horiz.item(stack);
+            horiz.text(stack.getDisplayName());
+            List<ITextComponent> currenttip = new ArrayList<>();
+            semiBlock.addTooltip(currenttip, player, stack.getTag(), player.isSneaking());
+            currenttip.forEach(vert::text);
         }
     }
 
@@ -76,7 +94,7 @@ public class TOPInfoProvider {
                         .element(new ElementPressure(pneumaticMachine, airHandler))
                         .vertical()
                         .text(StringTextComponent.EMPTY)
-                        .text(new StringTextComponent("  \u2b05 " + pressure + " bar"));
+                        .text(new StringTextComponent(" " + GuiConstants.ARROW_LEFT_SHORT + " " + pressure + " bar"));
             } else {
                 probeInfo.text(xlate("pneumaticcraft.gui.tooltip.pressure", pressure));
             }
@@ -96,25 +114,8 @@ public class TOPInfoProvider {
         }
     }
 
-    static void handleSemiblock(PlayerEntity player, ProbeMode mode, IProbeInfo probeInfo, ISemiBlock semiBlock) {
-        IProbeInfo vert = probeInfo.vertical(new Layout(semiBlock.getColor()));
-        IProbeInfo horiz = vert.horizontal();
-        NonNullList<ItemStack> drops = semiBlock.getDrops();
-        if (!drops.isEmpty()) {
-            ItemStack stack = drops.get(0);
-            horiz.item(stack);
-            horiz.text(stack.getDisplayName());
-            List<ITextComponent> currenttip = new ArrayList<>();
-            semiBlock.addTooltip(currenttip, player, stack.getTag(), player.isSneaking());
-            currenttip.forEach(vert::text);
-        }
-    }
-
-    private static void handleRedstoneMode(ProbeMode mode, IProbeInfo probeInfo, TileEntityBase te) {
-        if (te instanceof IRedstoneControl) {
-            RedstoneController<?> rsController = ((IRedstoneControl<?>) te).getRedstoneController();
-            probeInfo.text(rsController.getDescription());
-        }
+    private static void handleRedstoneMode(ProbeMode mode, IProbeInfo probeInfo, IRedstoneControl<?> redstoneControl) {
+        probeInfo.text(redstoneControl.getRedstoneController().getDescription());
     }
 
     private static void handlePressureTube(ProbeMode mode, IProbeInfo probeInfo, TileEntityPressureTube te, Direction face, PlayerEntity player) {
@@ -123,7 +124,7 @@ public class TOPInfoProvider {
             List<ITextComponent> currenttip = new ArrayList<>();
             module.addInfo(currenttip);
             if (!currenttip.isEmpty()) {
-                IProbeInfo vert = probeInfo.vertical(new Layout(0xFF4040FF));
+                IProbeInfo vert = probeInfo.vertical(probeInfo.defaultLayoutStyle().borderColor(0xFF4040FF));
                 currenttip.forEach(vert::text);
             }
         }
@@ -151,46 +152,4 @@ public class TOPInfoProvider {
         }
     }
 
-    private static String L(String s) {
-        return IProbeInfo.STARTLOC + s + IProbeInfo.ENDLOC;
-    }
-
-    private static class Layout implements ILayoutStyle {
-        private int borderColor;
-
-        Layout(int borderColor) {
-            this.borderColor = borderColor;
-        }
-
-        @Override
-        public ILayoutStyle borderColor(Integer borderColor) {
-            this.borderColor = borderColor;
-            return this;
-        }
-
-        @Override
-        public ILayoutStyle spacing(int i) {
-            return this;
-        }
-
-        @Override
-        public ILayoutStyle alignment(ElementAlignment elementAlignment) {
-            return this;
-        }
-
-        @Override
-        public Integer getBorderColor() {
-            return borderColor;
-        }
-
-        @Override
-        public int getSpacing() {
-            return 3;
-        }
-
-        @Override
-        public ElementAlignment getAlignment() {
-            return ElementAlignment.ALIGN_TOPLEFT;
-        }
-    }
 }
