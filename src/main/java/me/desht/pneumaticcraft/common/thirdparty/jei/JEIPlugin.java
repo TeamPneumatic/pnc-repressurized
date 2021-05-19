@@ -18,7 +18,6 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityUVLightBox;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.VanillaTypes;
-import mezz.jei.api.gui.handlers.IGhostIngredientHandler;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.ingredients.subtypes.ISubtypeInterpreter;
 import mezz.jei.api.recipe.IRecipeManager;
@@ -163,12 +162,12 @@ public class JEIPlugin implements IModPlugin {
         CustomRecipeClickArea.add(registration, GuiThermopneumaticProcessingPlant.class, 30, 36, 48, 30, ModCategoryUid.THERMO_PLANT);
         CustomRecipeClickArea.add(registration, GuiFluidMixer.class, 50, 40, 47, 24, ModCategoryUid.FLUID_MIXER);
 
-        registration.addGlobalGuiHandler(new GuiTabHandler());
+        registration.addGenericGuiContainerHandler(GuiPneumaticContainerBase.class, new GuiTabHandler());
 
         registration.addGuiScreenHandler(GuiProgWidgetItemFilter.class, Helpers::getGuiProperties);
 
         registration.addGhostIngredientHandler(GuiAmadronAddTrade.class, new AmadronAddTradeGhost());
-        registration.addGhostIngredientHandler(GuiLogisticsBase.class, (IGhostIngredientHandler) new LogisticsFilterGhost());
+        registration.addGhostIngredientHandler(GuiLogisticsBase.class, new LogisticsFilterGhost());
         registration.addGhostIngredientHandler(GuiProgWidgetItemFilter.class, new ProgWidgetItemFilterGhost());
     }
 
