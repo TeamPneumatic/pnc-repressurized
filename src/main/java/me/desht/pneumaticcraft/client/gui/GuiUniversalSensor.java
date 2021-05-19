@@ -244,7 +244,7 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
 
     private boolean validateTextValue(String s, RangedInteger r) {
         if (PneumaticCraftUtils.isInteger(s)) {
-            int n = s.isEmpty() ? 0 : Integer.parseInt(s);
+            int n = s.isEmpty() || s.equals("-") ? 0 : Integer.parseInt(s);
             return n >= r.getMinInclusive() && n < r.getMax();
         }
         return false;

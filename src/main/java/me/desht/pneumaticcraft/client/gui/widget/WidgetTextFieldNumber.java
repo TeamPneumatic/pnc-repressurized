@@ -36,7 +36,7 @@ public class WidgetTextFieldNumber extends WidgetTextField {
     }
 
     public WidgetTextFieldNumber setValue(double value) {
-        setText(PneumaticCraftUtils.roundNumberTo(value, decimals));
+        setText(PneumaticCraftUtils.roundNumberTo(MathHelper.clamp(value, minValue, maxValue), decimals));
         return this;
     }
 

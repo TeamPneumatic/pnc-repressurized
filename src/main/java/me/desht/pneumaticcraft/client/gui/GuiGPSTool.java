@@ -21,7 +21,7 @@ import net.minecraft.util.text.StringTextComponent;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiGPSTool extends GuiPneumaticScreenBase {
-    private static final int TEXTFIELD_WIDTH = 40;
+    private static final int TEXTFIELD_WIDTH = 60;
 
     protected final WidgetTextFieldNumber[] textFields = new WidgetTextFieldNumber[3];
     protected WidgetTextField variableField;

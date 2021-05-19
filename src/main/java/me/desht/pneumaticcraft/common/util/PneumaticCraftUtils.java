@@ -653,6 +653,7 @@ public class PneumaticCraftUtils {
         if (str.isEmpty() || str.equals("-")) {
             return true;  // treat as numeric zero
         }
+        if (str.startsWith("-")) str = str.substring(1);
         return NumberUtils.isDigits(str);
     }
 
@@ -667,6 +668,7 @@ public class PneumaticCraftUtils {
         if (str.isEmpty() || str.equals("-")) {
             return true;  // treat as numeric zero
         }
+        if (str.startsWith("-")) str = str.substring(1);
         if (str.endsWith(".")) str = str + "0";
         return NumberUtils.isParsable(str);
     }
