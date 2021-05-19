@@ -8,6 +8,12 @@ Changes are in reverse chronological order; newest changes at the top.
 
 PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 
+## 2.12.3-187 (18 May 2021)
+
+### Fixes
+* Fixed dumb GUI bug making it impossible to enter negative numbers in numeric textfields
+  * Caused problems with GPS Tool coordinates in particular
+
 ## 2.12.3-187 (17 May 2021)
 
 ### Fixes
