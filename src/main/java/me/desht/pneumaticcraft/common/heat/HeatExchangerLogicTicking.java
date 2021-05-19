@@ -31,7 +31,7 @@ public class HeatExchangerLogicTicking implements IHeatExchangerLogic {
     private final BitSet connections = new BitSet(6);
 
     // prevent infinite recursion when adding/removing a connected exchanger
-    private static boolean isAddingOrRemovingLogic;
+//    private static boolean isAddingOrRemovingLogic;
 
     @Override
     public void initializeAsHull(World world, BlockPos pos, BiPredicate<IWorld,BlockPos> blockFilter, Direction... validSides) {
@@ -65,23 +65,29 @@ public class HeatExchangerLogicTicking implements IHeatExchangerLogic {
     }
 
     @Override
-    public void addConnectedExchanger(IHeatExchangerLogic exchanger) {
+    public void addConnectedExchanger(IHeatExchangerLogic exchanger, boolean reciprocate) {
         connectedExchangers.add(exchanger);
-        if (!isAddingOrRemovingLogic) {
-            isAddingOrRemovingLogic = true;
-            exchanger.addConnectedExchanger(this);
-            isAddingOrRemovingLogic = false;
+        if (reciprocate) {
+            exchanger.addConnectedExchanger(this, false);
         }
+//        if (!isAddingOrRemovingLogic) {
+//            isAddingOrRemovingLogic = true;
+//            exchanger.addConnectedExchanger(this);
+//            isAddingOrRemovingLogic = false;
+//        }
     }
 
     @Override
-    public void removeConnectedExchanger(IHeatExchangerLogic exchanger) {
+    public void removeConnectedExchanger(IHeatExchangerLogic exchanger, boolean reciprocate) {
         connectedExchangers.remove(exchanger);
-        if (!isAddingOrRemovingLogic) {
-            isAddingOrRemovingLogic = true;
-            exchanger.removeConnectedExchanger(this);
-            isAddingOrRemovingLogic = false;
+        if (reciprocate) {
+            exchanger.removeConnectedExchanger(this, false);
         }
+//        if (!isAddingOrRemovingLogic) {
+//            isAddingOrRemovingLogic = true;
+//            exchanger.removeConnectedExchanger(this);
+//            isAddingOrRemovingLogic = false;
+//        }
     }
 
     @Override
