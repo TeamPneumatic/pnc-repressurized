@@ -13,7 +13,7 @@ import java.util.function.BiPredicate;
  * systems.  An implementation of this can be attached to other mods' tile entities to make them appear like PNC heat
  * exchanging blocks, while internally adapting the PNC heat API to the block's actual heat API.
  */
-public interface IHeatExhangerAdapter extends IHeatExchangerLogic {
+public interface IHeatExchangerAdapter extends IHeatExchangerLogic {
     @Override
     default void tick() {
     }
@@ -49,7 +49,7 @@ public interface IHeatExhangerAdapter extends IHeatExchangerLogic {
      *
      * @param <CAP> the interface object for the other mod's heat capability object
      */
-    abstract class Simple<CAP> implements IHeatExhangerAdapter {
+    abstract class Simple<CAP> implements IHeatExchangerAdapter {
         protected final Direction side;
         protected final LazyOptional<CAP> foreignHeatCap;
         protected final double ambientTemperature;

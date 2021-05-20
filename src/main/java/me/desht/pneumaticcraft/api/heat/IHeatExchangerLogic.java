@@ -20,7 +20,7 @@ import java.util.function.BiPredicate;
  * {@link #initializeAsHull(World, BlockPos, BiPredicate, Direction...)} as documented in those methods.
  * <p>
  * If you want to attach this capability as an <em>adapater</em> to other mods' heat systems, see
- * {@link IHeatExhangerAdapter} and {@link IHeatExhangerAdapter.Simple} which are convenience extensions and
+ * {@link IHeatExchangerAdapter} and {@link IHeatExchangerAdapter.Simple} which are convenience extensions and
  * implementations of this interface.
  *
  * @author MineMaarten, desht

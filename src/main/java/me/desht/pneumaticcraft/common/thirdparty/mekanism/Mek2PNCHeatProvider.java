@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.common.thirdparty.mekanism;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
+import me.desht.pneumaticcraft.api.heat.IHeatExchangerAdapter;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
-import me.desht.pneumaticcraft.api.heat.IHeatExhangerAdapter;
 import me.desht.pneumaticcraft.common.config.PNCConfig.Common.Integration;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicAmbient;
 import mekanism.api.heat.IHeatHandler;
@@ -82,7 +82,7 @@ public class Mek2PNCHeatProvider implements ICapabilityProvider {
         }
     }
 
-    public static class Mek2PNCHeatAdapter extends IHeatExhangerAdapter.Simple<IHeatHandler> {
+    public static class Mek2PNCHeatAdapter extends IHeatExchangerAdapter.Simple<IHeatHandler> {
         private final double thermalResistanceMult;
 
         public Mek2PNCHeatAdapter(Direction side, LazyOptional<IHeatHandler> heatHandler, double ambientTemperature, double thermalResistanceMult) {
