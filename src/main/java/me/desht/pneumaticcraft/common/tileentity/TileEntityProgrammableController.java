@@ -309,7 +309,8 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
         MinecraftForge.EVENT_BUS.unregister(this);
     }
 
-    private UUID getOwnerUUID() {
+    @Override
+    public UUID getOwnerUUID() {
         if (ownerID == null) {
             ownerID = UUID.randomUUID();
             ownerName = new StringTextComponent("[Programmable Controller]");

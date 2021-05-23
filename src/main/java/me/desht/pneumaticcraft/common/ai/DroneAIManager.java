@@ -180,6 +180,8 @@ public class DroneAIManager implements IVariableProvider {
     public void setCoordinate(String varName, BlockPos coord) {
         if (varName.startsWith("#")) {
             GlobalVariableManager.getInstance().set(varName.substring(1), coord);
+        } else if (varName.startsWith("%")) {
+            GlobalVariableManager.getInstance().set(drone.getOwnerUUID(), varName, coord);
         } else if (!varName.startsWith("$")) {
             coordinateVariables.put(varName, coord);
             drone.onVariableChanged(varName, true);
@@ -200,6 +202,8 @@ public class DroneAIManager implements IVariableProvider {
             item = event.getItem();
         } else if (varName.startsWith("#")) {
             item = GlobalVariableManager.getInstance().getItem(varName.substring(1));
+        } else if (varName.startsWith("%")) {
+            item = GlobalVariableManager.getInstance().getStack(drone.getOwnerUUID(), varName.substring(1));
         } else {
             item = itemVariables.getOrDefault(varName, ItemStack.EMPTY);
         }

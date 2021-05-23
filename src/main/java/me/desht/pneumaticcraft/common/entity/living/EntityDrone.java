@@ -1008,6 +1008,7 @@ public class EntityDrone extends EntityDroneBase implements
         return ownerName;
     }
 
+    @Override
     public UUID getOwnerUUID() {
         if (ownerUUID == null) {
             Log.warning(String.format("Drone with owner '%s' has no UUID! Substituting the Drone's UUID (%s).", ownerName, getUniqueID().toString()));
