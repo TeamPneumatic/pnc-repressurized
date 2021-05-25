@@ -10,7 +10,6 @@ import me.desht.pneumaticcraft.common.core.ModContainers;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ItemGPSTool;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetCoordinate;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
@@ -53,9 +52,7 @@ public class GuiProgWidgetCoordinate extends GuiProgWidgetAreaShow<ProgWidgetCoo
         addButton(gpsButton);
         coordFields = new WidgetTextFieldNumber[3];
         for (int i = 0; i < 3; i++) {
-            int min = i == 1 ? PneumaticCraftUtils.getMinHeight(ClientUtils.getClientWorld()) : Integer.MIN_VALUE;
-            int max = i == 1 ? ClientUtils.getClientWorld().getHeight() : Integer.MAX_VALUE;
-            coordFields[i] = new WidgetTextFieldNumber(font, guiLeft + 100, guiTop + 50 + 13 * i, 40, font.FONT_HEIGHT + 1).setRange(min, max);
+            coordFields[i] = new WidgetTextFieldNumber(font, guiLeft + 100, guiTop + 50 + 13 * i, 40, font.FONT_HEIGHT + 1);
             addButton(coordFields[i]);
             coordFields[i].setEnabled(gpsButton.active);
         }
