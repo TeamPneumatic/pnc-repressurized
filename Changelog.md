@@ -8,12 +8,14 @@ Changes are in reverse chronological order; newest changes at the top.
 
 PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 
-## 2.12.5-?? (unreleased)
+## 2.12.5-190 (25 May 2021)
 
 ### Updates
 * Added new `$owner_look` drone special variable
   * Returns a vector where X/Y/Z can be any of -1, 0 or 1 based on the direction the drone's owner is currently facing
-  
+* Programmer GUI: better tooltip data on the "Export Program" button
+  * Tooltip now shows both required and available puzzle pieces for the current program, and greys out the button if insufficient pieces
+
 ### Fixes
 * Fixed Remote layouts export from older PNC versions not importing
 * Fixed negative numbers not working in Coordinate widget GUI
