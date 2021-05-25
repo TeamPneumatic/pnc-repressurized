@@ -14,6 +14,8 @@ import net.minecraftforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.IntStream;
 
 /*
  * This file is part of Blue Power.
@@ -146,7 +148,7 @@ public class IOHelper {
                 .map(handler -> ItemHandlerHelper.insertItem(handler, itemStack, simulate))
                 .orElse(itemStack);
     }
-    
+
     /**
      * Try to transfer a single item between two item handlers
      *
@@ -170,4 +172,12 @@ public class IOHelper {
         return false;
     }
 
+    public static int countItems(LazyOptional<IItemHandler> cap, Predicate<ItemStack> pred) {
+        return cap.map(handler -> IntStream.range(0, handler.getSlots())
+                .mapToObj(handler::getStackInSlot)
+                .filter(pred)
+                .mapToInt(ItemStack::getCount)
+                .sum())
+                .orElse(0);
+    }
 }

@@ -8,6 +8,7 @@ import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicAmbient;
+import me.desht.pneumaticcraft.common.inventory.ContainerPneumaticBase;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethod;
@@ -571,6 +572,18 @@ public abstract class TileEntityBase extends TileEntity
      * @param preserveState true when dropped with a wrench, false when broken with a pickaxe etc.
      */
     public void serializeExtraItemData(CompoundNBT blockEntityTag, boolean preserveState) {
+    }
+
+    /**
+     * Get the number of players who have a GUI open for this tile entity.  Only use this server-side.
+     *
+     * @return the player count
+     */
+    public int countPlayersUsing() {
+        return (int) world.getPlayers().stream()
+                .filter(player -> player.openContainer instanceof ContainerPneumaticBase)
+                .filter(player -> ((ContainerPneumaticBase<?>) player.openContainer).te == this)
+                .count();
     }
 
     public class UpgradeHandler extends BaseItemStackHandler {

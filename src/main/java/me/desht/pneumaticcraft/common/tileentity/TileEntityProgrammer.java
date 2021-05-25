@@ -16,6 +16,7 @@ import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.network.PacketProgrammerUpdate;
 import me.desht.pneumaticcraft.common.progwidgets.*;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
+import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Log;
@@ -70,6 +71,8 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
     public boolean canRedo;
     @GuiSynced
     public boolean programOnInsert; // false = program drone on button click, true = program when inserted
+    @GuiSynced
+    public int availablePuzzlePieces;  // puzzle pieces in adjacent inventories (pieces in player inv are counted in programmer gui)
 
     private ListNBT history = new ListNBT(); //Used to undo/redo.
     private int historyIndex;
@@ -489,6 +492,18 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
     @Override
     public void tick() {
         super.tick();
+
+        if (!world.isRemote && (world.getGameTime() & 0xf) == 0 && countPlayersUsing() > 0) {
+            int total = 0;
+            for (Direction dir : DirectionUtil.VALUES) {
+                TileEntity te = getCachedNeighbor(dir);
+                if (te != null) {
+                    total += IOHelper.countItems(te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir.getOpposite()),
+                            stack -> stack.getItem() == ModItems.PROGRAMMING_PUZZLE.get());
+                }
+            }
+            availablePuzzlePieces = total;
+        }
     }
 
     public void previewArea(IProgWidget progWidget) {
