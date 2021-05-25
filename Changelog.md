@@ -8,7 +8,23 @@ Changes are in reverse chronological order; newest changes at the top.
 
 PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 
-## 2.12.3-187 (18 May 2021)
+## 2.12.5-?? (unreleased)
+
+### Updates
+* Added new `$owner_look` drone special variable
+  * Returns a vector where X/Y/Z can be any of -1, 0 or 1 based on the direction the drone's owner is currently facing
+  
+### Fixes
+* Fixed Remote layouts export from older PNC versions not importing
+* Fixed negative numbers not working in Coordinate widget GUI
+* Fixed server reload crash when Minecolonies also present
+  * Related to timing issue of Minecolonies furnace fuel discovery triggering PNC fuel recipe searching too early
+* Fixed fluids not rendering in JEI heat properties views
+  * Also sorted heat properties output (when viewing all properties) by temperature then display name
+* Fixed typo'd API class: `IHeatExhangerAdapter` -> `IHeatExchangerAdapter`
+  * Class was only added in 2.12.4, getting in quick...
+
+## 2.12.4-188 (18 May 2021)
 
 ### Fixes
 * Fixed dumb GUI bug making it impossible to enter negative numbers in numeric textfields
