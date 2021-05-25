@@ -28,6 +28,8 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.LogicalSide;
+import net.minecraftforge.fml.common.thread.EffectiveSide;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import net.minecraftforge.registries.IForgeRegistry;
 
@@ -115,18 +117,19 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
         if (world == null) {
             // we should pretty much always have a world, but use the overworld as a fallback
             MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
-            if (server != null) world = server.getWorld(World.OVERWORLD);
-            if (world == null) {
-                try {
-                    // no server? let's hope this is the client, then...
-                    world = ClientUtils.getClientWorld();
-                } catch (Exception e) {
-                    // not much else we can do at this point
-                    Log.error("detected someone trying to get recipes with no world available (maybe calling too early on the server side?)");
-                    e.printStackTrace();
-                    return Collections.emptyMap();
-                }
+            if (server != null) {
+                world = server.getWorld(World.OVERWORLD);
+            } else if (EffectiveSide.get() == LogicalSide.CLIENT) {
+                // no server? let's hope this is the client, then...
+                world = ClientUtils.getClientWorld();
             }
+        }
+
+        if (world == null) {
+            // still no world?  oh well
+            Log.error("detected someone trying to get recipes with no world available (maybe calling too early?)");
+            Thread.dumpStack();
+            return Collections.emptyMap();
         }
 
         if (cachedRecipes.isEmpty()) {
