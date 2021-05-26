@@ -83,7 +83,7 @@ public class LogisticsManager {
                 if (requester instanceof IProvidingInventoryListener)
                     ((IProvidingInventoryListener) requester).notify(new TileEntityAndFace(provider.getCachedTileEntity(), provider.getSide()));
                 for (int i = 0; i < itemHandler.getSlots(); i++) {
-                    ItemStack providingStack = itemHandler.getStackInSlot(i);
+                    ItemStack providingStack = itemHandler.extractItem(i, 64, true);
                     if (!providingStack.isEmpty() && (!(provider instanceof ISpecificProvider) || ((ISpecificProvider) provider).canProvide(providingStack))) {
                         int requestedAmount = getRequestedAmount(requester, providingStack, true);
                         if (requestedAmount > 0) {

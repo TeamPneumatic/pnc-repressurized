@@ -46,6 +46,7 @@ import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import javax.annotation.Nonnull;
 import java.io.BufferedReader;
@@ -639,5 +640,36 @@ public class PneumaticCraftUtils {
      */
     public static int getMinHeight(@SuppressWarnings("unused") World world) {
         return 0;
+    }
+
+    /**
+     * Check if a given string encodes a valid integer (negative included). Also intended to work for
+     * partial strings, so useful for textfield validation.
+     *
+     * @param str the string to test
+     * @return true if the string encodes an integer (i.e. Integer.parseInt(str) won't throw an exception)
+     */
+    public static boolean isInteger(String str) {
+        if (str.isEmpty() || str.equals("-")) {
+            return true;  // treat as numeric zero
+        }
+        if (str.startsWith("-")) str = str.substring(1);
+        return NumberUtils.isDigits(str);
+    }
+
+    /**
+     * Check if a given string encodes a valid number (negative & decimal point included). Also intended to work for
+     * partial strings, so useful for textfield validation.
+     *
+     * @param str the string to test
+     * @return true if the string encodes a number (i.e. NumberUtils.createNumber(str) won't throw an exception)
+     */
+    public static boolean isNumber(String str) {
+        if (str.isEmpty() || str.equals("-")) {
+            return true;  // treat as numeric zero
+        }
+        if (str.startsWith("-")) str = str.substring(1);
+        if (str.endsWith(".")) str = str + "0";
+        return NumberUtils.isParsable(str);
     }
 }

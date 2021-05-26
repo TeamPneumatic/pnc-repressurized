@@ -40,7 +40,7 @@
     {
       "type": "text",
       "title": "Auto-Charging",
-      "text": "By pointing a $(l:tubes/charging_module)Charging Module/$ at the $(item)Aerial Interface/$, you can charge any $(base_concepts/pressure)pressurizable/$ items in your inventory.$(p)Note that to charge any worn $(l:armor/overview)Pneumatic Armor/$ items, the Charging Module must be pointed at a side of the Interface which is connected to your armor slots."
+      "text": "By pointing a $(l:tubes/charging_module)Charging Module/$ at the $(item)Aerial Interface/$, you can charge any $(l:base_concepts/pressure)pressurizable/$ items in your inventory.$(p)Note that to charge any worn $(l:armor/overview)Pneumatic Armor/$ items, the Charging Module must be pointed at a side of the Interface which is connected to your armor slots."
     },
     {
       "type": "crafting",

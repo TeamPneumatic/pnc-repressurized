@@ -8,7 +8,50 @@ Changes are in reverse chronological order; newest changes at the top.
 
 PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 
-## 2.12.1-?? (unreleased)
+## 2.12.5-190 (25 May 2021)
+
+### Updates
+* Added new `$owner_look` drone special variable
+  * Returns a vector where X/Y/Z can be any of -1, 0 or 1 based on the direction the drone's owner is currently facing
+* Programmer GUI: better tooltip data on the "Export Program" button
+  * Tooltip now shows both required and available puzzle pieces for the current program, and greys out the button if insufficient pieces
+
+### Fixes
+* Fixed Remote layouts export from older PNC versions not importing
+* Fixed negative numbers not working in Coordinate widget GUI
+* Fixed server reload crash when Minecolonies also present
+  * Related to timing issue of Minecolonies furnace fuel discovery triggering PNC fuel recipe searching too early
+* Fixed fluids not rendering in JEI heat properties views
+  * Also sorted heat properties output (when viewing all properties) by temperature then display name
+* Fixed typo'd API class: `IHeatExhangerAdapter` -> `IHeatExchangerAdapter`
+  * Class was only added in 2.12.4, getting in quick...
+
+## 2.12.4-188 (18 May 2021)
+
+### Fixes
+* Fixed dumb GUI bug making it impossible to enter negative numbers in numeric textfields
+  * Caused problems with GPS Tool coordinates in particular
+
+## 2.12.3-187 (17 May 2021)
+
+### Fixes
+* Fixed mod compat problem causing crashes with new TheOneProbe (3.1.x) versions
+* Fixed potential item dupes with Thermopneumatic Processing Plant in conjunction with the logistics system
+* Fixed a couple of broken links in the Patchouli manual
+
+## 2.12.2-186 (13 May 2021)
+
+### Updates
+* Clarified Chestplate & Security Upgrade fire protection behaviour in Charging Station side tab & manual
+  * Note that the Chestplate Security upgrade only dumps air (to extinguish fire & solidify lava) if the player doesn't already have fire protection
+  
+### Fixes
+* Fixed client crash when opening Pneumatic Armor GUI and there are no armor pieces with an upgrade GUI available
+  * E.g. wearing only chestplate with no upgrades
+  * Now the Core Components page is always visible, regardless of which armor pieces & upgrades are in use
+* Fixed dumb bug introduced in last update which broke the pressure textfield in the Pressure Gauge GUI (Advanced PCB)
+
+## 2.12.1-184 (3 May 2021)
 
 ### Updates
 * Added config setting `in_world_plastic_solidification` (default: true) to control in-world conversion of Molten Plastic to Plastic Sheets
@@ -22,7 +65,13 @@ PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 * The Aerial Interface now renders the owning player's actual head on the front of its block, when the player is online
 * Player left-clicks on **invisible** Logistics Frames are now passed through to the framed blocks
   * This means left-clicking blocks like Storage Drawers or Mekanism Bins now works as expected when there's a frame on the front of the block
-* Hywla & The One Probe now show the framed inventory name when looking at Logistics Frames
+  * When the frame is **visible**, left-clicks cause the player to punch the frame (eventually knocking it off in the same way that punching a boat breaks it)
+* Hwyla & The One Probe now show the framed inventory name when looking at Logistics Frames
+* The recipe for Speed Upgrades now accepts Lubricant by fluid tag (`forge:lubricant`) instead of specifically PneumaticCraft's Lubricant
+  * This makes for better cross-mod compat, e.g. Immersive Petroleum's Lubricant can be used
+* Air Grates now use a small amount of air to cool Heat Sinks
+  * It was previously free, which was a mistake; air is supposed to be used up for this
+  * Usage is 5mL/t + 3mL/t (rounded down) for every three Heat Sinks cooled
 
 ### Fixes
 * Fixed Redstone Module comparator input mode only working for measuring items in the adjacent inventory
@@ -35,7 +84,10 @@ PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 * Fixed some drone Right Click behaviour, around actions that modify the drone's inventory
   * Specifically, drones which right click beehives with a stack of bottles no longer void the bottles but instead correctly harvest the honey
 * Fixed a couple of pneumatic armor inconsistencies relating to removing upgrades from armor when the upgrade is still switched on
-
+* Fixed Fluid Tanks not allowing an empty bucket (or other fluid container item) to be inserted via the GUI
+  * It has always worked to pipe a bucket/tank in, but the GUI slot wasn't configured to allow empty containers
+* Fixed Universal Sensor not always correctly calculating its range on world reload
+  
 ## 2.12.0-177 (16 Apr 2021)
 
 ### Updates

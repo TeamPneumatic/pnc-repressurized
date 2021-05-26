@@ -18,12 +18,10 @@ public class WidgetTextFieldNumber extends WidgetTextField {
         super(fontRenderer, x, y, width, height);
         setValue(0);
 
-        setValidator(input -> {
-            if (input == null || input.isEmpty() || input.equals("-")) {
-                return true;  // treat as numeric zero
-            }
-            return NumberUtils.isCreatable(input);
-        });
+        setValidator(input -> decimals == 0 ?
+                PneumaticCraftUtils.isInteger(input) :
+                PneumaticCraftUtils.isNumber(input)
+        );
     }
 
     public WidgetTextFieldNumber setRange(int min, int max) {
@@ -38,7 +36,7 @@ public class WidgetTextFieldNumber extends WidgetTextField {
     }
 
     public WidgetTextFieldNumber setValue(double value) {
-        setText(PneumaticCraftUtils.roundNumberTo(value, decimals));
+        setText(PneumaticCraftUtils.roundNumberTo(MathHelper.clamp(value, minValue, maxValue), decimals));
         return this;
     }
 
@@ -68,4 +66,5 @@ public class WidgetTextFieldNumber extends WidgetTextField {
         }
         return true;
     }
+
 }

@@ -14,8 +14,14 @@ import java.util.function.BiPredicate;
  * can use {@link me.desht.pneumaticcraft.api.PNCCapabilities#HEAT_EXCHANGER_CAPABILITY} or get your own
  * instance with {@code @CapabilityInject}.
  * <p>
- * <strong>Do not implement this interface yourself!</strong> You can create instances of it for your tile entities
- * with {@link IHeatRegistry#makeHeatExchangerLogic()} and store those as fields in your tile entities.
+ * If you are implementing a tile entity with a heat exchanger, you should <strong>not</strong> implement this
+ * interface yourself; get an instance of it via {@link IHeatRegistry#makeHeatExchangerLogic()}, store it as field
+ * in your TE, and provide via capability as described above. Your TE should also call {@link #tick()} and
+ * {@link #initializeAsHull(World, BlockPos, BiPredicate, Direction...)} as documented in those methods.
+ * <p>
+ * If you want to attach this capability as an <em>adapater</em> to other mods' heat systems, see
+ * {@link IHeatExchangerAdapter} and {@link IHeatExchangerAdapter.Simple} which are convenience extensions and
+ * implementations of this interface.
  *
  * @author MineMaarten, desht
  */
@@ -27,13 +33,13 @@ public interface IHeatExchangerLogic extends INBTSerializable<CompoundNBT> {
     void tick();
 
     /**
-     * When called (ideally on tile entity first tick and neighbor block updates), this will add all heat
+     * When called (on tile entity first tick and on neighbor block updates), this discovers all heat
      * exchanging neighbor tile entities as connected heat exchangers (i.e. tile entities who provide the
      * {@link IHeatExchangerLogic} capability on that side).  It will also account for neighbouring blocks with
-     * special heat properties, like Magma or Lava.
+     * special heat properties, like Magma or Lava, and other special cases like Heat Frames (which are entities).
      * <p>
      * You don't need to call this method if this heat exchanger is not connected to the outside world (e.g.
-     * the connecting heat exchanger inside a Vortex Tube).
+     * the connecting heat exchanger within a Vortex Tube).
      *
      * @param world the world
      * @param pos  the position
@@ -58,22 +64,43 @@ public interface IHeatExchangerLogic extends INBTSerializable<CompoundNBT> {
      * be used when your TE contains more than one heat exchanger and you need a thermal connection between them;
      * an example is the Vortex Tube.
      * <p>
-     * You don't need to call this method if your TE just has one heat exchanger to
+     * You <strong>don't</strong> need to call this method if your TE just has one heat exchanger to
      * expose to the world; in that case {@link #initializeAsHull(World, BlockPos, BiPredicate, Direction...)} will
-     * handle all that's needed.
+     * handle connecting your TE's heat exchanger to neighbouring blocks.
      * <p>
-     * You should only call this method on one of the two heat exchangers.
+     * You should only call this method on one of the two heat exchangers being connected; a reciprocal connection
+     * on the target heat exchanger will automatically be added.
      *
      * @param exchanger the other heat exchanger
      */
-    void addConnectedExchanger(IHeatExchangerLogic exchanger);
+    default void addConnectedExchanger(IHeatExchangerLogic exchanger) {
+        addConnectedExchanger(exchanger, true);
+    }
+
+    /**
+     * @param exchanger the other heat exchanger
+     * @param reciprocate whether the other exchanger should also add this one
+     * @apiNote non-api; don't call directly
+     */
+    default void addConnectedExchanger(IHeatExchangerLogic exchanger, boolean reciprocate) {
+    }
 
     /**
      * Disconnect a connected heat exchanger which was connected via {@link #addConnectedExchanger(IHeatExchangerLogic)}
      *
      * @param exchanger the other heat exchanger
      */
-    void removeConnectedExchanger(IHeatExchangerLogic exchanger);
+    default void removeConnectedExchanger(IHeatExchangerLogic exchanger) {
+        removeConnectedExchanger(exchanger, true);
+    }
+
+    /**
+     * @param exchanger the other heat exchanger
+     * @param reciprocate whether the other exchanger should also add this one
+     * @apiNote non-api; don't call directly
+     */
+    default void removeConnectedExchanger(IHeatExchangerLogic exchanger, boolean reciprocate) {
+    }
 
     /**
      * Set the temperature of this heat exchanger.  By default, heat exchangers start with a temperature equal to
@@ -162,5 +189,12 @@ public interface IHeatExchangerLogic extends INBTSerializable<CompoundNBT> {
      */
     boolean isSideConnected(Direction side);
 
-    BiPredicate<IWorld,BlockPos> ALL_BLOCKS = (world,pos) -> true;
+    @Override
+    default CompoundNBT serializeNBT() { return new CompoundNBT(); }
+
+    @Override
+    default void deserializeNBT(CompoundNBT nbt) {
+    }
+
+    BiPredicate<IWorld,BlockPos> ALL_BLOCKS = (world, pos) -> true;
 }

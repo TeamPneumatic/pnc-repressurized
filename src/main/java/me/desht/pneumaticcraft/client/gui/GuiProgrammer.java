@@ -821,20 +821,36 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         List<ITextComponent> exportButtonTooltip = new ArrayList<>();
         exportButtonTooltip.add(xlate("pneumaticcraft.gui.programmer.button.export"));
         exportButtonTooltip.add(xlate("pneumaticcraft.gui.programmer.button.export.programmingWhen",
-                xlate("pneumaticcraft.gui.programmer.button.export." + (te.programOnInsert ? "onItemInsert" : "pressingButton"))));
-        exportButtonTooltip.add(xlate("pneumaticcraft.gui.programmer.button.export.pressRToChange"));
+                xlate("pneumaticcraft.gui.programmer.button.export." + (te.programOnInsert ? "onItemInsert" : "pressingButton")))
+                .mergeStyle(TextFormatting.AQUA));
+        exportButtonTooltip.add(xlate("pneumaticcraft.gui.programmer.button.export.pressRToChange")
+                .mergeStyle(TextFormatting.ITALIC, TextFormatting.GRAY));
+
         if (!programmedItem.isEmpty()) {
             int required = te.getRequiredPuzzleCount();
             if (required != 0) exportButtonTooltip.add(StringTextComponent.EMPTY);
-            int r = minecraft.player.isCreative() ? 0 : required;
+            int effectiveRequired = minecraft.player.isCreative() ? 0 : required;
+            int available = te.availablePuzzlePieces + countPlayerPuzzlePieces();
+            exportButton.active = effectiveRequired <= available;
             if (required > 0) {
-                exportButtonTooltip.add(xlate("pneumaticcraft.gui.tooltip.programmable.requiredPieces", r));
+                exportButtonTooltip.add(xlate("pneumaticcraft.gui.tooltip.programmable.requiredPieces", effectiveRequired)
+                        .mergeStyle(TextFormatting.YELLOW));
+                exportButtonTooltip.add(xlate("pneumaticcraft.gui.tooltip.programmable.availablePieces", available)
+                        .mergeStyle(TextFormatting.YELLOW));
             } else if (required < 0) {
-                exportButtonTooltip.add(xlate("pneumaticcraft.gui.tooltip.programmable.returnedPieces", -r));
+                exportButtonTooltip.add(xlate("pneumaticcraft.gui.tooltip.programmable.returnedPieces", -effectiveRequired)
+                        .mergeStyle(TextFormatting.GREEN));
             }
-            if (required != 0 && minecraft.player.isCreative()) exportButtonTooltip.add(new StringTextComponent("(Creative mode)"));
+            if (required != 0 && minecraft.player.isCreative()) {
+                exportButtonTooltip.add(new StringTextComponent("(Creative mode)").mergeStyle(TextFormatting.LIGHT_PURPLE));
+            }
+            if (effectiveRequired > available) {
+                exportButtonTooltip.add(xlate("pneumaticcraft.gui.tooltip.programmable.notEnoughPieces")
+                        .mergeStyle(TextFormatting.RED));
+            }
         } else {
-            exportButtonTooltip.add(xlate("pneumaticcraft.gui.programmer.button.export.noProgrammableItem").mergeStyle(TextFormatting.GOLD));
+            exportButtonTooltip.add(xlate("pneumaticcraft.gui.programmer.button.export.noProgrammableItem")
+                    .mergeStyle(TextFormatting.GOLD));
         }
 
         if (programmerUnit.getTotalErrors() > 0) {
@@ -844,6 +860,16 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
             exportButtonTooltip.add(xlate("pneumaticcraft.gui.programmer.warningCount", programmerUnit.getTotalWarnings()).mergeStyle(TextFormatting.YELLOW));
 
         exportButton.setTooltipText(exportButtonTooltip);
+    }
+
+    private int countPlayerPuzzlePieces() {
+        int count = 0;
+        for (ItemStack stack : ClientUtils.getClientPlayer().inventory.mainInventory) {
+            if (stack.getItem() == ModItems.PROGRAMMING_PUZZLE.get()) {
+                count += stack.getCount();
+            }
+        }
+        return count;
     }
 
     private void updateConvertRelativeState() {

@@ -14,7 +14,7 @@
     },
     "C": {
       "type": "pneumaticcraft:fluid",
-      "fluid": "pneumaticcraft:lubricant",
+      "tag": "forge:lubricant",
       "amount": 1000
     }
   },

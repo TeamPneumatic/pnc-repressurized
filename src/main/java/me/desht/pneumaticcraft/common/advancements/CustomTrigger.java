@@ -36,6 +36,10 @@ public class CustomTrigger extends AbstractCriterionTrigger<CustomTrigger.Instan
         return new CustomTrigger.Instance(this.getId());
     }
 
+    public Instance getInstance() {
+        return new CustomTrigger.Instance(this.getId());
+    }
+
     public static class Instance extends CriterionInstance {
         public Instance(ResourceLocation parID) {
             super(parID, EntityPredicate.AndPredicate.ANY_AND);

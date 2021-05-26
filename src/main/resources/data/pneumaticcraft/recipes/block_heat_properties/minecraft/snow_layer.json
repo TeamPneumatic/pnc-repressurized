@@ -5,6 +5,6 @@
   "thermalResistance": 300,
   "heatCapacity": 250,
   "transformHot": {
-    "block": "minecraft:air"
+    "block": "minecraft:water[level=1]"
   }
 }

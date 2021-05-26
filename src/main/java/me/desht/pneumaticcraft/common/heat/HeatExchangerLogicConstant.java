@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.common.heat;
 
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
@@ -32,14 +31,6 @@ public class HeatExchangerLogicConstant implements IHeatExchangerLogic {
 
     @Override
     public void initializeAmbientTemperature(World world, BlockPos pos) {
-    }
-
-    @Override
-    public void addConnectedExchanger(IHeatExchangerLogic exchanger) {
-    }
-
-    @Override
-    public void removeConnectedExchanger(IHeatExchangerLogic exchanger) {
     }
 
     @Override
@@ -87,14 +78,5 @@ public class HeatExchangerLogicConstant implements IHeatExchangerLogic {
     @Override
     public boolean isSideConnected(Direction side) {
         return true;
-    }
-
-    @Override
-    public CompoundNBT serializeNBT() {
-        return new CompoundNBT();
-    }
-
-    @Override
-    public void deserializeNBT(CompoundNBT nbt) {
     }
 }

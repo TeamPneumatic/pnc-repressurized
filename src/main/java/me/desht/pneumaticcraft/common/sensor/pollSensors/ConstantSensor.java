@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.universal_sensor.IPollSensorSetting;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.RangedInteger;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -32,6 +33,11 @@ public class ConstantSensor implements IPollSensorSetting {
     @Override
     public boolean needsTextBox() {
         return true;
+    }
+
+    @Override
+    public RangedInteger getTextboxIntRange() {
+        return RangedInteger.createRangedInteger(0, 16);
     }
 
     @Override

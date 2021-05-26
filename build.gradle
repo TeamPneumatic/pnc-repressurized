@@ -144,7 +144,9 @@ minecraft {
             // recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
 
-            property 'mixin.env.disableRefMap', 'true'
+//            property 'mixin.env.disableRefMap', 'true'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
             ideaModule "${project.name}.main"
             workingDirectory project.file('run').canonicalPath
             mods {

@@ -441,13 +441,13 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
         @Nonnull
         @Override
         public ItemStack insertItem(int slot, @Nonnull ItemStack stack, boolean simulate) {
-            return inputItemHandler.insertItem(0, stack, simulate);
+            return slot == 0 ? inputItemHandler.insertItem(0, stack, simulate) : stack;
         }
 
         @Nonnull
         @Override
         public ItemStack extractItem(int slot, int amount, boolean simulate) {
-            return outputItemHandler.extractItem(0, amount, simulate);
+            return slot == 1 ? outputItemHandler.extractItem(0, amount, simulate) : ItemStack.EMPTY;
         }
 
         @Override

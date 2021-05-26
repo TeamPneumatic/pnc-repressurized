@@ -17,7 +17,9 @@ import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
+import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Represents a drone or drone-like object (e.g. a Programmable Controller).
@@ -169,9 +171,19 @@ public interface IDrone extends ICapabilityProvider {
     void onItemPickupEvent(ItemEntity curPickingUpEntity, int stackSize);
 
     /**
-     * Retrieve the owning player of this drone.
+     * Retrieve the owning player of this drone; i.e. the player who deployed the drone. A drone deployed by a
+     * Dispenser does not have a valid player owner.
      *
-     * @return the owning player; will be null if the owner is offline
+     * @return the owning player; will be null if the owner is offline or the drone was not player-deployed
      */
     PlayerEntity getOwner();
+
+    /**
+     * Get the UUID of the drone's owner.  This will be non-null even if the owning player is offline. A drone
+     * deployed by a Dispenser has an arbitrary owner UUID that was assigned to it when it was spawned.
+     *
+     * @return the owner's UUID
+     */
+    @Nonnull
+    UUID getOwnerUUID();
 }

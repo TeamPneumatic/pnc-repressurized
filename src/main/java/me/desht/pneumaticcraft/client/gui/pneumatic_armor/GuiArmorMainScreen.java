@@ -8,6 +8,7 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticScreenBase;
+import me.desht.pneumaticcraft.client.gui.pneumatic_armor.option_screens.NullOptions;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetKeybindCheckBox;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
@@ -22,6 +23,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -30,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiArmorMainScreen extends GuiPneumaticScreenBase implements IGuiScreen {
@@ -41,9 +44,11 @@ public class GuiArmorMainScreen extends GuiPneumaticScreenBase implements IGuiSc
             new ItemStack(ModItems.PNEUMATIC_CHESTPLATE.get()),
             new ItemStack(ModItems.PNEUMATIC_HELMET.get())
     };
+
     private final List<UpgradeOption> upgradeOptions = new ArrayList<>();
     private static int pageNumber;
     private boolean inInitPhase = true;
+    private final UpgradeOption nullOptionsPage = new UpgradeOption(new NullOptions(this), RL("null"), new ItemStack(Items.BARRIER));
 
     // A static instance which can handle keybinds when the GUI is closed.
     private static GuiArmorMainScreen instance;
@@ -103,19 +108,26 @@ public class GuiArmorMainScreen extends GuiPneumaticScreenBase implements IGuiSc
                 xPos += buttonWidth + 55;
             }
         }
-        if (pageNumber > upgradeOptions.size() - 1) {
-            pageNumber = upgradeOptions.size() - 1;
-        }
-        WidgetKeybindCheckBox checkBox = WidgetKeybindCheckBox.getOrCreate(upgradeOptions.get(pageNumber).upgradeID, 40, 25, 0xFFFFFFFF, null);
-        if (upgradeOptions.get(pageNumber).page.isToggleable()) {
+        pageNumber = Math.min(pageNumber, upgradeOptions.size() - 1);
+        if (pageNumber < 0 && !upgradeOptions.isEmpty()) pageNumber = 0;
+        WidgetKeybindCheckBox checkBox = WidgetKeybindCheckBox.getOrCreate(getCurrentOptionsPage().upgradeID, 40, 25, 0xFFFFFFFF, null);
+        if (getCurrentOptionsPage().page.isToggleable()) {
             addButton(checkBox);
         }
-        upgradeOptions.get(pageNumber).page.populateGui(this);
+        getCurrentOptionsPage().page.populateGui(this);
     }
 
     private void setPage(int newPage) {
         pageNumber = newPage;
         init();
+    }
+
+    private UpgradeOption getCurrentOptionsPage() {
+        if (pageNumber >= 0 && pageNumber < upgradeOptions.size()) {
+            return upgradeOptions.get(pageNumber);
+        } else {
+            return nullOptionsPage;
+        }
     }
 
     @Override
@@ -127,7 +139,7 @@ public class GuiArmorMainScreen extends GuiPneumaticScreenBase implements IGuiSc
         for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
             List<IArmorUpgradeHandler> renderHandlers = ArmorUpgradeRegistry.getInstance().getHandlersForSlot(slot);
             for (int i = 0; i < renderHandlers.size(); i++) {
-                if (inInitPhase || CommonArmorHandler.getHandlerForPlayer().isUpgradeInserted(slot, i)) {
+                if (inInitPhase || CommonArmorHandler.getHandlerForPlayer().isUpgradeInserted(slot, i) || slot == EquipmentSlotType.HEAD && i == 0) {
                     IArmorUpgradeHandler handler = renderHandlers.get(i);
                     if (inInitPhase
                             || ItemPneumaticArmor.isPneumaticArmorPiece(Minecraft.getInstance().player, slot)
@@ -149,9 +161,9 @@ public class GuiArmorMainScreen extends GuiPneumaticScreenBase implements IGuiSc
     @Override
     public void render(MatrixStack matrixStack, int x, int y, float partialTicks) {
         renderBackground(matrixStack);
-        IOptionPage optionPage = upgradeOptions.get(pageNumber).page;
+        IOptionPage optionPage = getCurrentOptionsPage().page;
         optionPage.renderPre(matrixStack, x, y, partialTicks);
-        drawCenteredString(matrixStack, font, upgradeOptions.get(pageNumber).page.getPageName().deepCopy().mergeStyle(TITLE_PREFIX), 100, 12, 0xFFFFFFFF);
+        drawCenteredString(matrixStack, font, getCurrentOptionsPage().page.getPageName().deepCopy().mergeStyle(TITLE_PREFIX), 100, 12, 0xFFFFFFFF);
         if (optionPage.displaySettingsHeader()) {
             drawCenteredString(matrixStack, font, xlate("pneumaticcraft.armor.gui.misc.settings").mergeStyle(TextFormatting.DARK_AQUA), 100, optionPage.settingsYposition(), 0xFFFFFFFF);
         }
@@ -163,31 +175,31 @@ public class GuiArmorMainScreen extends GuiPneumaticScreenBase implements IGuiSc
     public void tick() {
         super.tick();
 
-        IOptionPage optionPage = upgradeOptions.get(pageNumber).page;
+        IOptionPage optionPage = getCurrentOptionsPage().page;
         optionPage.tick();
     }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        return upgradeOptions.get(pageNumber).page.keyPressed(keyCode, scanCode, modifiers)
+        return getCurrentOptionsPage().page.keyPressed(keyCode, scanCode, modifiers)
                 || super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
-        return upgradeOptions.get(pageNumber).page.mouseClicked(mouseX, mouseY, mouseButton)
+        return getCurrentOptionsPage().page.mouseClicked(mouseX, mouseY, mouseButton)
                 || super.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double dir) {
-        return upgradeOptions.get(pageNumber).page.mouseScrolled(mouseX, mouseY, dir)
+        return getCurrentOptionsPage().page.mouseScrolled(mouseX, mouseY, dir)
                 || super.mouseScrolled(mouseX, mouseY, dir);
     }
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        return upgradeOptions.get(pageNumber).page.mouseDragged(mouseX, mouseY, button, dragX, dragY)
+        return getCurrentOptionsPage().page.mouseDragged(mouseX, mouseY, button, dragX, dragY)
                 || super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
     }
 

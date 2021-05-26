@@ -19,6 +19,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 
@@ -47,7 +48,7 @@ public class TOPInit implements Function<ITheOneProbe, Void> {
             @Override
             public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
                 if (blockState.getBlock() instanceof BlockPneumaticCraft) {
-                    TOPInfoProvider.handle(mode, probeInfo, player, world, blockState, data);
+                    TOPInfoProvider.handleBlock(mode, probeInfo, player, world, blockState, data);
                 }
                 SemiblockTracker.getInstance().getAllSemiblocks(world, data.getPos(), data.getSideHit())
                         .filter(sb -> !(sb instanceof IDirectionalSemiblock) || ((IDirectionalSemiblock) sb).getSide() == data.getSideHit())
@@ -74,7 +75,8 @@ public class TOPInit implements Function<ITheOneProbe, Void> {
                         IProbeInfo h = probeInfo.horizontal();
                         h.item(new ItemStack(state.getBlock()));
                         IProbeInfo v = h.vertical();
-                        v.text(state.getBlock().getTranslatedName().mergeStyle(TextFormatting.YELLOW));
+                        ITextComponent text = new TranslationTextComponent(state.getBlock().getTranslationKey());
+                        v.text(text.deepCopy().mergeStyle(TextFormatting.YELLOW));
                         v.text(new StringTextComponent(TextFormatting.BLUE.toString() + TextFormatting.ITALIC.toString() + ModNameCache.getModName(state.getBlock())));
                     }
                 }

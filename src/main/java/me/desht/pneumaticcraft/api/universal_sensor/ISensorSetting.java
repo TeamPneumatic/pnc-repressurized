@@ -1,60 +1,13 @@
 package me.desht.pneumaticcraft.api.universal_sensor;
 
 import com.google.common.collect.ImmutableList;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
-public interface ISensorSetting {
-    /**
-     * Should return the button path the player has to follow in which this setting is stored.
-     * For instance, when the sensor should be located in player and is called speed, you should return "player/speed".
-     *
-     * @return a string path to the sensor
-     */
-    String getSensorPath();
-
-    /**
-     * Should return the required items in the upgrade slots of a Universal Sensor. This will automatically include a
-     * GPS Tool for sensors that require a location.
-     *
-     * @return a set of upgrades
-     */
-    Set<EnumUpgrade> getRequiredUpgrades();
-
-    /**
-     * Should this sensor's GUI display a text box for extra information to be entered?
-     *
-     * @return true if this sensor needs a text box, false otherwise
-     */
-    boolean needsTextBox();
-
-    default void getAdditionalInfo(List<ITextComponent> info) {}
-
-//    /**
-//     * Called by GuiScreen#drawScreen this method can be used to render additional things like status/info text.
-//     *
-//     * @param matrixStack the matrix stack
-//     * @param fontRenderer the font renderer
-//     */
-//    // FIXME: move to external rendering class.  ISensorSetting can be loaded on server too.
-//    void drawAdditionalInfo(MatrixStack matrixStack, FontRenderer fontRenderer);
-
-    /**
-     * Should return the description of this sensor displayed in the GUI stat. Information should at least include
-     * when this sensor emits redstone and how (analog (1 through 15), or digital).
-     *
-     * @return some description text for this sensor (translation keys will be auto-processed)
-     */
-    default List<String> getDescription() {
-        return _getDescription(getSensorPath());
-    }
-
+public interface ISensorSetting extends IBaseSensor {
     /**
      * Get the air usage for this sensor.
      * 

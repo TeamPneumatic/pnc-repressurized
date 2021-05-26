@@ -8,6 +8,7 @@ import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.heat.HeatExchangerLogicAmbient;
+import me.desht.pneumaticcraft.common.inventory.ContainerPneumaticBase;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.*;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethod;
@@ -406,7 +407,7 @@ public abstract class TileEntityBase extends TileEntity
     void processFluidItem(int inputSlot, int outputSlot) {
         getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(itemHandler -> {
             ItemStack inputStack = itemHandler.getStackInSlot(inputSlot);
-            if (inputStack.getCount() > 1) return;
+            if (inputStack.getCount() != 1) return;
 
             FluidUtil.getFluidHandler(inputStack).ifPresent(fluidHandlerItem -> {
                 FluidStack itemContents = fluidHandlerItem.drain(1000, IFluidHandler.FluidAction.SIMULATE);
@@ -425,7 +426,7 @@ public abstract class TileEntityBase extends TileEntity
                             }
                         }
                     } else if (itemHandler.getStackInSlot(outputSlot).isEmpty()) {
-                        // input item(s) is/are empty: drain from tank to one input item, move to output
+                        // input item is empty: drain from tank to item, move to output
                         FluidStack transferred = FluidUtil.tryFluidTransfer(fluidHandlerItem, fluidHandler, Integer.MAX_VALUE, true);
                         if (!transferred.isEmpty()) {
                             itemHandler.extractItem(inputSlot, 1, false);
@@ -571,6 +572,18 @@ public abstract class TileEntityBase extends TileEntity
      * @param preserveState true when dropped with a wrench, false when broken with a pickaxe etc.
      */
     public void serializeExtraItemData(CompoundNBT blockEntityTag, boolean preserveState) {
+    }
+
+    /**
+     * Get the number of players who have a GUI open for this tile entity.  Only use this server-side.
+     *
+     * @return the player count
+     */
+    public int countPlayersUsing() {
+        return (int) world.getPlayers().stream()
+                .filter(player -> player.openContainer instanceof ContainerPneumaticBase)
+                .filter(player -> ((ContainerPneumaticBase<?>) player.openContainer).te == this)
+                .count();
     }
 
     public class UpgradeHandler extends BaseItemStackHandler {

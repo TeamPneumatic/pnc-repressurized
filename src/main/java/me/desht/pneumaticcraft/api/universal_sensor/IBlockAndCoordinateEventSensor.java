@@ -1,37 +1,22 @@
 package me.desht.pneumaticcraft.api.universal_sensor;
 
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.eventbus.api.Event;
 
-import java.util.List;
 import java.util.Set;
 
-public interface IBlockAndCoordinateEventSensor {
+public interface IBlockAndCoordinateEventSensor extends IBaseSensor {
     /**
-     * See {@link ISensorSetting#getSensorPath()}
+     * Extended version of the normal emitRedstoneOnEvent. This method will only invoke with a valid GPS tool, and when
+     * all the coordinates are within range.
      *
-     * @return
-     */
-    String getSensorPath();
-
-    /**
-     * See {@link ISensorSetting#getRequiredUpgrades()}
-     *
-     * @return
-     */
-    Set<EnumUpgrade> getRequiredUpgrades();
-
-    /**
-     * Extended version of the normal emitRedstoneOnEvent. This method will only invoke with a valid GPS tool, and when all the coordinates are within range.
-     *
-     * @param event
-     * @param sensor
-     * @param range
-     * @param positions When only one GPS Tool is inserted this contains the position of just that tool. If two GPS Tools are inserted, These are both corners of a box, and every coordinate in this box is added to the positions argument.
-     * @return
+     * @param event the Forge event (one of PlayerInteractEvent, EntityItemPickupEvent or AttackEntityEvent)
+     * @param sensor the Universal Sensor tile entity
+     * @param range the Universal Sensor's range, in blocks
+     * @param positions When a GPS Tool is inserted this contains the position of that tool. If a GPS Area Tool is
+     *                  inserted this is set of all positions in that area.
+     * @return the redstone level that should be emitted
      */
     int emitRedstoneOnEvent(Event event, TileEntity sensor, int range, Set<BlockPos> positions);
 
@@ -41,29 +26,4 @@ public interface IBlockAndCoordinateEventSensor {
      * @return
      */
     int getRedstonePulseLength();
-
-    /**
-     * See {@link ISensorSetting#needsTextBox()}
-     *
-     * @return
-     */
-    boolean needsTextBox();
-
-    /**
-     * See {@link ISensorSetting#getDescription()}
-     *
-     * @return
-     */
-    default List<String> getDescription() {
-        return ISensorSetting._getDescription(getSensorPath());
-    }
-
-//    /**
-//     * Called by GuiScreen#drawScreen this method can be used to render additional things like status/info text.
-//     *
-//     * @param matrixStack
-//     * @param fontRenderer
-//     */
-//    void drawAdditionalInfo(MatrixStack matrixStack, FontRenderer fontRenderer);
-    default void getAdditionalInfo(List<ITextComponent> info) {}
 }

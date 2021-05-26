@@ -14,9 +14,9 @@ import net.minecraftforge.fluids.FluidStack;
 import java.util.Collections;
 import java.util.List;
 
-public class LogisticsFilterGhost implements IGhostIngredientHandler<GuiLogisticsBase<?>> {
+public class LogisticsFilterGhost<T extends EntityLogisticsFrame> implements IGhostIngredientHandler<GuiLogisticsBase<T>> {
     @Override
-    public <I> List<Target<I>> getTargets(GuiLogisticsBase<?> gui, I ingredient, boolean doStart) {
+    public <I> List<Target<I>> getTargets(GuiLogisticsBase<T> gui, I ingredient, boolean doStart) {
         if (ingredient instanceof ItemStack) {
             ImmutableList.Builder<Target<I>> builder = ImmutableList.builder();
             for (Slot slot : gui.getContainer().inventorySlots) {

@@ -23,20 +23,16 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag.TooltipFlags;
-import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
 
 import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -51,6 +47,7 @@ public class JEIBlockHeatPropertiesCategory implements IRecipeCategory<HeatPrope
     private static final Rectangle2d INPUT_AREA = new Rectangle2d(65, 44, 18, 18);
     private static final Rectangle2d COLD_AREA = new Rectangle2d(5, 44, 18, 18);
     private static final Rectangle2d HOT_AREA = new Rectangle2d(125, 44, 18, 18);
+    private static final Rectangle2d[] OUTPUT_AREAS = new Rectangle2d[] { COLD_AREA, HOT_AREA };
 
     public JEIBlockHeatPropertiesCategory() {
         this.localizedName = I18n.format("pneumaticcraft.gui.jei.title.heatProperties");
@@ -65,8 +62,10 @@ public class JEIBlockHeatPropertiesCategory implements IRecipeCategory<HeatPrope
     }
 
     public static Collection<HeatPropertiesRecipe> getAllRecipes() {
+        List<HeatPropertiesRecipe> l = new ArrayList<>(BlockHeatProperties.getInstance().getAllEntries(Minecraft.getInstance().world));
+        l.sort(Comparator.comparingInt(HeatPropertiesRecipe::getTemperature).thenComparing(o -> o.getInputDisplayName().getString()));
         ImmutableList.Builder<HeatPropertiesRecipe> res = ImmutableList.builder();
-        res.addAll(BlockHeatProperties.getInstance().getAllEntries(Minecraft.getInstance().world));
+        res.addAll(l);
         return res.build();
     }
 
@@ -99,8 +98,33 @@ public class JEIBlockHeatPropertiesCategory implements IRecipeCategory<HeatPrope
     public void setIngredients(HeatPropertiesRecipe recipe, IIngredients ingredients) {
         setInputIngredient(recipe.getBlock(), ingredients);
 
-        setOutputIngredient(recipe.getTransformHot(), ingredients);
-        setOutputIngredient(recipe.getTransformCold(), ingredients);
+        List<ItemStack> items = new ArrayList<>();
+        List<FluidStack> fluids = new ArrayList<>();
+
+        collectOutputs(recipe.getTransformCold(), items, fluids);
+        collectOutputs(recipe.getTransformHot(), items, fluids);
+
+        ingredients.setOutputLists(VanillaTypes.ITEM, items.stream().map(Collections::singletonList).collect(Collectors.toList()));
+        ingredients.setOutputLists(VanillaTypes.FLUID, fluids.stream().map(Collections::singletonList).collect(Collectors.toList()));
+    }
+
+    private void collectOutputs(BlockState state, List<ItemStack> items, List<FluidStack> fluids) {
+        if (state != null) {
+            if (state.getBlock() instanceof FlowingFluidBlock) {
+                int level = state.hasProperty(FlowingFluidBlock.LEVEL) ? state.get(FlowingFluidBlock.LEVEL) : 15;
+                if (level == 0) level = 15;
+                FluidStack stack = new FluidStack(((FlowingFluidBlock) state.getBlock()).getFluid(), 1000 * level / 15);
+                fluids.add(stack);
+                items.add(new ItemStack(Blocks.BARRIER));
+            } else {
+                ItemStack stack = new ItemStack(state.getBlock());
+                items.add(stack.isEmpty() ? new ItemStack(Blocks.BARRIER) : stack);
+                fluids.add(FluidStack.EMPTY);
+            }
+        } else {
+            items.add(new ItemStack(Blocks.BARRIER));
+            fluids.add(FluidStack.EMPTY);
+        }
     }
 
     private void setInputIngredient(Block block, IIngredients ingredients) {
@@ -112,20 +136,21 @@ public class JEIBlockHeatPropertiesCategory implements IRecipeCategory<HeatPrope
         }
     }
 
-    private void setOutputIngredient(BlockState state, IIngredients ingredients) {
-        if (state != null) {
-            if (state.getBlock() instanceof FlowingFluidBlock) {
-                FluidStack stack = new FluidStack(((FlowingFluidBlock) state.getBlock()).getFluid(), 1000);
-                ingredients.setOutput(VanillaTypes.FLUID, stack);
-            } else {
-                ingredients.setOutput(VanillaTypes.ITEM, new ItemStack(state.getBlock()));
-            }
-        }
-    }
-
     @Override
     public void setRecipe(IRecipeLayout layout, HeatPropertiesRecipe recipe, IIngredients ingredients) {
-        // no-op: we're not using slots, since we draw inputs/outputs with the block renderer
+        List<List<FluidStack>> in = ingredients.getInputs(VanillaTypes.FLUID);
+        if (!in.isEmpty()) {
+            layout.getFluidStacks().init(0, true, INPUT_AREA.getX() + 2, INPUT_AREA.getY() - 1);
+            layout.getFluidStacks().set(0, in.get(0));
+        }
+
+        List<List<FluidStack>> out = ingredients.getOutputs(VanillaTypes.FLUID);
+        for (int idx = 0; idx < out.size(); idx++) {
+            if (!out.get(idx).isEmpty() && !out.get(idx).get(0).isEmpty()) {
+                layout.getFluidStacks().init(idx, false, OUTPUT_AREAS[idx].getX() + 2, OUTPUT_AREAS[idx].getY() - 1);
+                layout.getFluidStacks().set(idx, out.get(idx).get(0));
+            }
+        }
     }
 
     @Override
@@ -200,36 +225,25 @@ public class JEIBlockHeatPropertiesCategory implements IRecipeCategory<HeatPrope
     }
 
     private IFocus<?> makeFocus(Block block, IFocus.Mode mode) {
-        if (block == Blocks.AIR) {
-            return null;
-        } else if (block instanceof FlowingFluidBlock) {
-            FluidStack stack = new FluidStack(((FlowingFluidBlock) block).getFluid(), 1000);
-            return JEIPlugin.recipeManager.createFocus(mode, stack);
-        } else {
-            ItemStack stack = new ItemStack(block);
-            return JEIPlugin.recipeManager.createFocus(mode, stack);
-        }
+        return block == Blocks.AIR || block instanceof FlowingFluidBlock ?
+                null :
+                JEIPlugin.recipeManager.createFocus(mode, new ItemStack(block));
     }
 
     private void addTooltip(Block block, List<ITextComponent> list) {
-        if (block instanceof FlowingFluidBlock) {
-            FluidStack stack = new FluidStack(((FlowingFluidBlock) block).getFluid(), 1000);
-            list.add(stack.getDisplayName());
-            list.add(new StringTextComponent(ModNameCache.getModName(stack.getFluid())).mergeStyle(TextFormatting.BLUE, TextFormatting.ITALIC));
-        } else {
-            ItemStack stack = new ItemStack(block);
-            list.add(stack.getDisplayName());
-            stack.getItem().addInformation(stack, ClientUtils.getClientWorld(), list, ClientUtils.hasShiftDown() ? TooltipFlags.ADVANCED : TooltipFlags.NORMAL);
-            list.add(new StringTextComponent(ModNameCache.getModName(stack.getItem())).mergeStyle(TextFormatting.BLUE, TextFormatting.ITALIC));
+        ItemStack stack = new ItemStack(block);
+        list.add(stack.getDisplayName());
+        stack.getItem().addInformation(stack, ClientUtils.getClientWorld(), list, ClientUtils.hasShiftDown() ? TooltipFlags.ADVANCED : TooltipFlags.NORMAL);
+        if (Minecraft.getInstance().gameSettings.advancedItemTooltips) {
+            list.add(new StringTextComponent(stack.getItem().getRegistryName().toString()).mergeStyle(TextFormatting.DARK_GRAY));
         }
+        list.add(new StringTextComponent(ModNameCache.getModName(stack.getItem())).mergeStyle(TextFormatting.BLUE, TextFormatting.ITALIC));
     }
 
     private void renderBlock(BlockState state, MatrixStack matrixStack, int x, int y) {
+        // note: fluid rendering is done by JEI (fluidstacks are registered in the recipe layout)
         if (state != null) {
-            if (state.getBlock() instanceof FlowingFluidBlock) {
-                Fluid fluid = ((FlowingFluidBlock) state.getBlock()).getFluid();
-                GuiUtils.drawFluid(matrixStack, new Rectangle2d(x - 7, y - 2, 16, 16), new FluidStack(fluid, 1000), new FluidTank(1000));
-            } else if (state.getBlock() == Blocks.AIR) {
+            if (state.getBlock() == Blocks.AIR) {
                 air.draw(matrixStack, x - 8, y - 2);
             } else {
                 float rot = Minecraft.getInstance().world.getGameTime() % 360;

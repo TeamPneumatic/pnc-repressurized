@@ -560,7 +560,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         return guiTop;
     }
 
-    public Collection<Rectangle2d> getTabRectangles() {
+    public List<Rectangle2d> getTabRectangles() {
         return getStatWidgets().stream()
                 .map(IGuiAnimatedStat::getBounds)
                 .collect(Collectors.toList());

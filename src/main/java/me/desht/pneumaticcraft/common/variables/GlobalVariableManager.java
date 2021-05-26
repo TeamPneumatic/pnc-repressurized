@@ -1,5 +1,7 @@
 package me.desht.pneumaticcraft.common.variables;
 
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Table;
 import me.desht.pneumaticcraft.common.progwidgets.IVariableProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -14,10 +16,7 @@ import net.minecraftforge.fml.common.thread.EffectiveSide;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 import javax.annotation.Nonnull;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Manages global variables. These are prefixed with '#'.
@@ -28,9 +27,12 @@ public class GlobalVariableManager extends WorldSavedData implements IVariablePr
     private static final String DATA_KEY = "PneumaticCraftGlobalVariables";
     private static final GlobalVariableManager CLIENT_INSTANCE = new GlobalVariableManager();
 
+    private static ServerWorld overworld;
+
     private final Map<String, BlockPos> globalVars = new HashMap<>();
     private final Map<String, ItemStack> globalItemVars = new HashMap<>();
-    private static ServerWorld overworld;
+    private final Table<UUID, String, BlockPos> playerVars = HashBasedTable.create();
+    private final Table<UUID, String, ItemStack> playerItemVars = HashBasedTable.create();
 
     public static GlobalVariableManager getInstance() {
         if (EffectiveSide.get() == LogicalSide.CLIENT) {
@@ -67,13 +69,31 @@ public class GlobalVariableManager extends WorldSavedData implements IVariablePr
     }
 
     public void set(String varName, BlockPos pos) {
-        globalVars.put(varName, pos);
-        markDirty();
+        if (!varName.isEmpty()) {
+            globalVars.put(varName, pos);
+            markDirty();
+        }
+    }
+
+    public void set(UUID ownerUUID, String varName, BlockPos coord) {
+        if (!varName.isEmpty()) {
+            playerVars.put(ownerUUID, varName, coord);
+            markDirty();
+        }
     }
 
     public void set(String varName, ItemStack item) {
-        globalItemVars.put(varName, item);
-        markDirty();
+        if (!varName.isEmpty()) {
+            globalItemVars.put(varName, item);
+            markDirty();
+        }
+    }
+
+    public void set(UUID ownerUUID, String varName, ItemStack item) {
+        if (!varName.isEmpty()) {
+            playerItemVars.put(ownerUUID, varName, item);
+            markDirty();
+        }
     }
 
     public boolean getBoolean(String varName) {
@@ -96,8 +116,18 @@ public class GlobalVariableManager extends WorldSavedData implements IVariablePr
         return globalVars.getOrDefault(varName, BlockPos.ZERO);
     }
 
+    public BlockPos getPos(UUID ownerUUID, String varName) {
+        BlockPos pos = playerVars.get(ownerUUID, varName);
+        return pos == null ? BlockPos.ZERO : pos;
+    }
+
     public ItemStack getItem(String varName) {
         return globalItemVars.getOrDefault(varName, ItemStack.EMPTY);
+    }
+
+    private ItemStack getItem(UUID ownerUUID, String varName) {
+        ItemStack stack = playerItemVars.get(ownerUUID, varName);
+        return stack == null ? ItemStack.EMPTY : stack;
     }
 
     @Override
@@ -178,5 +208,9 @@ public class GlobalVariableManager extends WorldSavedData implements IVariablePr
     @Override
     public ItemStack getStack(String varName) {
         return getItem(varName);
+    }
+
+    public ItemStack getStack(UUID ownerUUID, String varName) {
+        return getItem(ownerUUID, varName);
     }
 }

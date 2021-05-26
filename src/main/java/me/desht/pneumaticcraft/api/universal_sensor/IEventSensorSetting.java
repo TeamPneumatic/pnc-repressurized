@@ -14,7 +14,6 @@ public interface IEventSensorSetting extends ISensorSetting {
      *     <li>{@link EntityItemPickupEvent}</li>
      *     <li>{@link AttackEntityEvent}</li>
      * </ul>
-     *
      * @param event the Forge event (one of PlayerInteractEvent, EntityItemPickupEvent or AttackEntityEvent)
      * @param sensor the Universal Sensor tile entity
      * @param range the Universal Sensor's range, in blocks
