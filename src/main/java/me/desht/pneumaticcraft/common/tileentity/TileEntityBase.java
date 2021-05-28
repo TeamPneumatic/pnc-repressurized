@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.heat.IHeatExchangerLogic;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraft;
 import me.desht.pneumaticcraft.common.block.BlockPneumaticCraftCamo;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
@@ -34,6 +35,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraftforge.client.model.ModelDataManager;
 import net.minecraftforge.client.model.data.IModelData;
 import net.minecraftforge.client.model.data.ModelDataMap;
 import net.minecraftforge.common.capabilities.Capability;
@@ -584,6 +586,15 @@ public abstract class TileEntityBase extends TileEntity
                 .filter(player -> player.openContainer instanceof ContainerPneumaticBase)
                 .filter(player -> ((ContainerPneumaticBase<?>) player.openContainer).te == this)
                 .count();
+    }
+
+    @Override
+    public void requestModelDataUpdate() {
+        // it is possible for the TE's client world to be a fake one, e.g. Create schematicannon previews
+        // https://github.com/TeamPneumatic/pnc-repressurized/issues/812
+        if (world != null && world.isRemote && world == ClientUtils.getClientWorld()) {
+            ModelDataManager.requestModelDataRefresh(this);
+        }
     }
 
     public class UpgradeHandler extends BaseItemStackHandler {
