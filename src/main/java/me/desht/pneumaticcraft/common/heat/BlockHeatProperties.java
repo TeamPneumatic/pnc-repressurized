@@ -6,7 +6,6 @@ import me.desht.pneumaticcraft.api.heat.HeatRegistrationEvent;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.recipes.other.HeatPropertiesRecipeImpl;
-import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -69,36 +68,21 @@ public enum BlockHeatProperties implements Iterable<HeatPropertiesRecipe> {
     private void registerDefaultFluidValues() {
         // add defaulted values for all fluids which don't already have a custom entry
         for (Fluid fluid : ForgeRegistries.FLUIDS.getValues()) {
-            if (fluid == Fluids.EMPTY) continue;
-            BlockState state = fluid.getDefaultState().getBlockState();
-            // block must be a fluid block and not already have a custom heat entry
-            if (!(state.getBlock() instanceof FlowingFluidBlock) || customHeatEntries.containsKey(state.getBlock())) {
+            if (fluid == Fluids.EMPTY) {
+                continue;
+            } else if (!PNCConfig.Common.Heat.addDefaultFluidEntries && !fluid.getRegistryName().getNamespace().equals("minecraft")) {
                 continue;
             }
-            if (!BlockHeatProperties.getInstance().getOrCreateCustomFluidEntry(fluid)) {
-                Log.warning("unable to build custom heat entry for fluid %s (block %s) ",
-                        fluid.getRegistryName(), state.getBlock().getRegistryName());
+            Block block = fluid.getDefaultState().getBlockState().getBlock();
+            if (!(block instanceof FlowingFluidBlock) || customHeatEntries.containsKey(block)) {
+                // block must be a fluid block and not already have a custom heat entry
+                continue;
+            }
+            List<HeatPropertiesRecipe> entry = customHeatEntries.get(block);
+            if (entry.isEmpty()) {
+                customHeatEntries.put(block, buildDefaultFluidEntry(block, fluid));
             }
         }
-    }
-
-    /**
-     * Get or create a custom heat entry for the given fluid.  If a matching fluid entry already exists, return it.
-     * Otherwise, build a defaulted fluid entry based on the fluid's temperature and default thermal properties and
-     * add it to the custom entries.
-     *
-     * @param fluid a fluid
-     * @return the custom heat entry, or null if the fluid doesn't have a block
-     */
-    private boolean getOrCreateCustomFluidEntry(Fluid fluid) {
-        BlockState state = fluid.getDefaultState().getBlockState();
-        if (!(state.getBlock() instanceof FlowingFluidBlock)) return false;
-
-        List<HeatPropertiesRecipe> entry = customHeatEntries.get(state.getBlock());
-        if (entry.isEmpty()) {
-            customHeatEntries.put(state.getBlock(), buildDefaultFluidEntry(state.getBlock(), fluid));
-        }
-        return true;
     }
 
     /**

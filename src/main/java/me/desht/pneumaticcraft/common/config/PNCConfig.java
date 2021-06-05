@@ -178,6 +178,7 @@ public class PNCConfig {
             public static int defaultFluidHeatCapacity;
             public static double ambientTempBiomeModifier;
             public static double ambientTempHeightModifier;
+            public static boolean addDefaultFluidEntries;
         }
 
         public static class Logistics {

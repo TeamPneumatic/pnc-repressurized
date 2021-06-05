@@ -124,6 +124,7 @@ public class CommonConfig {
     }
 
     public static class Heat {
+        ForgeConfigSpec.BooleanValue addDefaultFluidEntries;
         ForgeConfigSpec.DoubleValue blockThermalResistance;
         ForgeConfigSpec.DoubleValue fluidThermalResistance;
         ForgeConfigSpec.IntValue defaultFluidHeatCapacity;
@@ -602,6 +603,10 @@ public class CommonConfig {
                 .comment("Ambient temperature increase by altitude, in degrees per block below 48 (or 75% of sea level). Note that temperature decrease per block above 64 is handled by vanilla.")
                 .translation("pneumaticcraft.config.common.blockHeatDefaults.ambientTemperatureHeightModifier")
                 .defineInRange("ambientTemperatureHeightModifier", 0.1, 0.0, 10.0);
+        heat.addDefaultFluidEntries = builder
+                .comment("Automatically register heat properties for all detected modded fluids based on their self-defined temperature? (note: vanilla lava and water are always added)")
+                .translation("pneumaticcraft.config.common.blockHeatDefaults.addDefaultFluidEntries")
+                .define("addDefaultFluidEntries", true);
         builder.pop();
 
         builder.push("Logistics");
