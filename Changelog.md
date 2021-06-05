@@ -8,6 +8,18 @@ Changes are in reverse chronological order; newest changes at the top.
 
 PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 
+## 2.12.6-?? (unreleased)
+
+### Updates
+* Updated ru_ru translations
+* Added config setting pneumaticcraft-common.toml -> Heat -> `addDefaultFluidEntries` which controls whether heat properties for modded fluids will be automatically added
+  * Note that vanilla water and lava are still always auto-added; this setting is for modded fluids
+  * If set to no, the intention is that heat properties for modded fluids should be added by the modpack maker as required (see https://github.com/TeamPneumatic/pnc-repressurized/wiki/Block-Heat-Properties)
+  
+### Fixes
+* Work around a client crash when Pressure Glass is part of a Create schematicannon preview
+  * Actually a Create issue which will be fixed in next Create release, but this is a bandaid fix for now
+
 ## 2.12.5-190 (25 May 2021)
 
 ### Updates
