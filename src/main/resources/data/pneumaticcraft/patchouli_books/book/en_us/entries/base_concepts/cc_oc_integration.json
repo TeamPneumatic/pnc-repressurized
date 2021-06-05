@@ -59,6 +59,11 @@
       "text": "$(li)$(#800)getMinWorkingPressure()/$: Get the minimal pressure needed to extend the Elevator. Making the Elevator descend is free.$(li)$(#800)setTargetHeight(<height>)/$: Sets the Elevator's target height to the height parsed (in meters/blocks, floating point).$(li)$(#800)getTargetHeight()/$: Get the Elevator's target height (in meters/blocks, floating point).$(li)$(#800)getCurrentHeight()/$: Get the Elevator's current height (in meters/blocks, floating point)."
     },
     {
+      "type": "text",
+      "title": "Elevator (cont.)",
+      "text": "$(li)$(#800)getVelocity()/$: Gets the elevator's current velocity, in blocks per tick (where there are 20 ticks in a second). Negative values indicate that the elevator is descending."
+    },
+    {
       "type": "spotlight",
       "anchor": "universal_sensor",
       "item": "pneumaticcraft:universal_sensor",
