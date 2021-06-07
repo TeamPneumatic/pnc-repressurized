@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.authlib.GameProfile;
+import me.desht.pneumaticcraft.api.DamageSourcePneumaticCraft;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
@@ -466,7 +467,7 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
     }
 
     public void retaliate(PlayerEntity hacker) {
-        hacker.attackEntityFrom(DamageSource.OUT_OF_WORLD, hacker.getMaxHealth() - 0.5f);
+        hacker.attackEntityFrom(DamageSourcePneumaticCraft.SECURITY_STATION, hacker.getMaxHealth() - 0.5f);
         hacker.addPotionEffect(new EffectInstance(Effects.NAUSEA, 100));
         hacker.addPotionEffect(new EffectInstance(Effects.BLINDNESS, 200));
         hacker.addPotionEffect(new EffectInstance(Effects.SLOWNESS, 300, 3));

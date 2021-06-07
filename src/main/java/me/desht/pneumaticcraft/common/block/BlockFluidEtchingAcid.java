@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.block;
 
-import me.desht.pneumaticcraft.common.DamageSourcePneumaticCraft;
+import me.desht.pneumaticcraft.api.DamageSourcePneumaticCraft;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FlowingFluidBlock;

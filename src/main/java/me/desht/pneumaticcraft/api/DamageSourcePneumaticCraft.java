@@ -1,6 +1,5 @@
-package me.desht.pneumaticcraft.common;
+package me.desht.pneumaticcraft.api;
 
-import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.DamageSource;
@@ -8,11 +7,15 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
 public class DamageSourcePneumaticCraft extends DamageSource {
-    public static final DamageSourcePneumaticCraft PRESSURE = (DamageSourcePneumaticCraft) new DamageSourcePneumaticCraft("pressure", 2).setDamageBypassesArmor();
-    public static final DamageSourcePneumaticCraft ETCHING_ACID = new DamageSourcePneumaticCraft("acid", 2);
-    public static final DamageSourcePneumaticCraft SECURITY_STATION = (DamageSourcePneumaticCraft) new DamageSourcePneumaticCraft("securityStation").setDamageBypassesArmor();
-    public static final DamageSourcePneumaticCraft FREEZING = new DamageSourcePneumaticCraft("freezing", 2);
-    public static final DamageSourcePneumaticCraft PLASTIC_BLOCK = new DamageSourcePneumaticCraft("plastic_block", 2);
+    public static final DamageSource PRESSURE = new DamageSourcePneumaticCraft("pressure", 2).setDamageBypassesArmor();
+    public static final DamageSource ETCHING_ACID = new DamageSourcePneumaticCraft("acid", 2);
+    public static final DamageSource SECURITY_STATION = new DamageSourcePneumaticCraft("securityStation").setDamageBypassesArmor();
+    public static final DamageSource FREEZING = new DamageSourcePneumaticCraft("freezing", 2);
+    public static final DamageSource PLASTIC_BLOCK = new DamageSourcePneumaticCraft("plastic_block", 2);
+
+    public static boolean isDroneOverload(DamageSource src) {
+        return src instanceof DamageSourceDroneOverload;
+    }
 
     private final int deathMessageCount;
 
@@ -26,26 +29,11 @@ public class DamageSourcePneumaticCraft extends DamageSource {
     }
 
     @Override
-    public DamageSource setDamageBypassesArmor() {
-        return super.setDamageBypassesArmor();
-    }
-
-    @Override
-    public DamageSource setDamageAllowedInCreativeMode() {
-        return super.setDamageAllowedInCreativeMode();
-    }
-
-    @Override
-    public DamageSource setFireDamage() {
-        return super.setFireDamage();
-    }
-
-    @Override
     public ITextComponent getDeathMessage(LivingEntity dyingEntity) {
         int messageNumber = dyingEntity.getRNG().nextInt(deathMessageCount) + 1;
 
         LivingEntity killer = dyingEntity.getAttackingEntity();
-        String s = Names.MOD_ID + ".death.attack." + damageType + messageNumber;
+        String s = PneumaticRegistry.MOD_ID + ".death.attack." + damageType + messageNumber;
         String s1 = s + ".player";
         return killer != null && I18n.hasKey(s1) ?
                 new TranslationTextComponent(s1, dyingEntity.getDisplayName(), killer.getDisplayName()) :

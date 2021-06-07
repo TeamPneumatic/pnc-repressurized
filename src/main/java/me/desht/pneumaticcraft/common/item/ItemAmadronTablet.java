@@ -33,7 +33,6 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -185,7 +184,6 @@ public class ItemAmadronTablet extends ItemPressurizable implements IPositionPro
                 return playerIn.getHeldItem(handIn).getDisplayName();
             }
 
-            @Nullable
             @Override
             public Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity playerEntity) {
                 return new ContainerAmadron(windowId, playerInventory, handIn);

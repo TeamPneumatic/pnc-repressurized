@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.entity.living;
 
 import com.mojang.authlib.GameProfile;
+import me.desht.pneumaticcraft.api.DamageSourcePneumaticCraft.DamageSourceDroneOverload;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.block.IPneumaticWrenchable;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
@@ -13,7 +14,6 @@ import me.desht.pneumaticcraft.api.semiblock.SemiblockEvent;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
 import me.desht.pneumaticcraft.client.util.ProgressingLine;
-import me.desht.pneumaticcraft.common.DamageSourcePneumaticCraft.DamageSourceDroneOverload;
 import me.desht.pneumaticcraft.common.DroneRegistry;
 import me.desht.pneumaticcraft.common.ai.*;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager.EntityAITaskEntry;

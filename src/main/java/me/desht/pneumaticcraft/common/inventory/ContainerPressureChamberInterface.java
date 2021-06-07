@@ -21,18 +21,5 @@ public class ContainerPressureChamberInterface extends ContainerPneumaticBase<Ti
         addUpgradeSlots(20, 26);
 
         addPlayerSlots(playerInventory, 84);
-
-        // add the export filter slots
-        //  - after the player slots so they won't be shift-clicked.
-//        for (int i = 0; i < 3; i++) {
-//            for (int j = 0; j < 3; j++) {
-//                addSlot(new SlotPhantomUnstackable(te.getFilterHandler(), i * 3 + j, 115 + j * 18, 25 + i * 18) {
-//                    @Override
-//                    public boolean isItemValid(@Nonnull ItemStack stack) {
-//                        return true;
-//                    }
-//                });
-//            }
-//        }
     }
 }

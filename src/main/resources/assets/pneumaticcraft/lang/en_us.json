@@ -734,7 +734,7 @@
    "pneumaticcraft.death.attack.plastic_block2" : "%1$s should have worn some footwear!",
    "pneumaticcraft.death.attack.pressure1" : "%1$s is as flat as a pancake!",
    "pneumaticcraft.death.attack.pressure2" : "%1$s was compressed to death!",
-   "pneumaticcraft.death.attack.securityStation1" : "%1$s failed to hack a Security Station and died!",
+   "pneumaticcraft.death.attack.securityStation1" : "%1$s failed to hack a Security Station and suffered the consequences!",
    "pneumaticcraft.death.drone.named" : "Your Drone named \"%s\" has died at X: %s, Y: %s, Z: %s",
    "pneumaticcraft.death.drone.overload.areaTooLarge" : "Area too large (> %d blocks)",
    "pneumaticcraft.death.drone.overload.jumpStackTooLarge" : "Jump stack too large (> %d)",
