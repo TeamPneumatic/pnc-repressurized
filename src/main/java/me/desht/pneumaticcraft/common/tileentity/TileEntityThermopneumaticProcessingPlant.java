@@ -13,6 +13,7 @@ import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
+import me.desht.pneumaticcraft.common.util.ITranslatableEnum;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -461,18 +462,23 @@ public class TileEntityThermopneumaticProcessingPlant extends TileEntityPneumati
         }
     }
 
-    public enum TPProblem {
+    public enum TPProblem implements ITranslatableEnum {
         OK(""),
-        NO_RECIPE("pneumaticcraft.gui.tab.problems.noRecipe"),
-        NOT_ENOUGH_FLUID("pneumaticcraft.gui.tab.problems.notEnoughFluid"),
-        TOO_HOT("pneumaticcraft.gui.tab.problems.tooMuchHeat"),
-        TOO_COLD("pneumaticcraft.gui.tab.problems.notEnoughHeat"),
-        OUTPUT_BLOCKED("pneumaticcraft.gui.tab.problems.outputBlocked");
+        NO_RECIPE("noRecipe"),
+        NOT_ENOUGH_FLUID("notEnoughFluid"),
+        TOO_HOT("tooMuchHeat"),
+        TOO_COLD("notEnoughHeat"),
+        OUTPUT_BLOCKED("outputBlocked");
 
-        public final String key;
+        private final String key;
 
         TPProblem(String key) {
             this.key = key;
+        }
+
+        @Override
+        public String getTranslationKey() {
+            return "pneumaticcraft.gui.tab.problems." + key;
         }
     }
 }
