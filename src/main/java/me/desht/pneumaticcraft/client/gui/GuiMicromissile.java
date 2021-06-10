@@ -147,6 +147,7 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
     @Override
     public void render(MatrixStack matrixStack, int x, int y, float partialTicks) {
         renderBackground(matrixStack);
+
         super.render(matrixStack, x, y, partialTicks);
 
         if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {
@@ -156,14 +157,14 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
             String str = I18n.format("pneumaticcraft.gui.entityFilter.holdF1");
             font.drawString(matrixStack, str, guiLeft + (xSize - font.getStringWidth(str)) / 2f, guiTop + ySize + 5, 0x808080);
         }
+    }
 
+    @Override
+    protected void drawForeground(MatrixStack matrixStack, int x, int y, float partialTicks) {
         if (fireMode == FireMode.DUMB) {
             return;
         }
 
-        RenderSystem.disableTexture();
-        RenderSystem.disableLighting();
-        BufferBuilder wr = Tessellator.getInstance().getBuffer();
         if (point != null) {
             float px = point.x;
             float py = point.y;
@@ -174,6 +175,7 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
             int size = dragging ? 5 : 3;
             RenderSystem.lineWidth(2);
 
+            BufferBuilder wr = Tessellator.getInstance().getBuffer();
             Matrix4f posMat = matrixStack.getLast().getMatrix();
             wr.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR);
             wr.pos(posMat, px - size, py, 0).color(32, 32, 32, 255).endVertex();
@@ -207,10 +209,6 @@ public class GuiMicromissile extends GuiPneumaticScreenBase {
         fill(matrixStack, 125, 68, 125 + (int) (49 * turnSpeed), 74, 0xFF00C000);
         fill(matrixStack, 125, 88, 125 + (int) (49 * damage), 94, 0xFF00C000);
         matrixStack.pop();
-
-        RenderSystem.enableLighting();
-
-        RenderSystem.enableTexture();
     }
 
     @Override

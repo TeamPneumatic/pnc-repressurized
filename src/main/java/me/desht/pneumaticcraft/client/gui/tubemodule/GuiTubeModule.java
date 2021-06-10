@@ -20,6 +20,7 @@ public abstract class GuiTubeModule<M extends TubeModule> extends GuiPneumaticSc
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         renderBackground(matrixStack);
+
         super.render(matrixStack, mouseX, mouseY, partialTicks);
     }
 

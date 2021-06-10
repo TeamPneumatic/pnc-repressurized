@@ -27,7 +27,6 @@ import org.lwjgl.opengl.GL11;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiPressureModule extends GuiTubeModule<TubeModule> {
-
     private TextFieldWidget lowerBoundField;
     private TextFieldWidget higherBoundField;
     private int graphLowY;
@@ -36,6 +35,10 @@ public class GuiPressureModule extends GuiTubeModule<TubeModule> {
     private int graphRight;
     private Rectangle2d lowerBoundArea, higherBoundArea;
     private boolean grabLower, grabHigher;
+
+    public static GuiTubeModule<?> createGUI(TubeModule module) {
+        return module.advancedConfig ? new GuiPressureModule(module) : new GuiPressureModuleSimple(module);
+    }
 
     public GuiPressureModule(TubeModule module) {
         super(module);
@@ -52,7 +55,6 @@ public class GuiPressureModule extends GuiTubeModule<TubeModule> {
         addLabel(new StringTextComponent("bar"), guiLeft + 50, guiTop + 44);
         addLabel(new StringTextComponent("higher"), guiLeft + 140, guiTop + 33);
 
-//        String titleText = title.getFormattedText();
         addLabel(title, width / 2 - font.getStringPropertyWidth(title) / 2, guiTop + 5);
 
         lowerBoundField = new TextFieldWidget(font, xStart + 15, yStart + 43, 30, 10,
@@ -96,12 +98,10 @@ public class GuiPressureModule extends GuiTubeModule<TubeModule> {
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        super.render(matrixStack, mouseX, mouseY, partialTicks);
-
+    public void drawForeground(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         minecraft.getTextureManager().bindTexture(getTexture());
-        int scrollbarLowerBoundX = (int) (guiLeft + 16 + (158 - 11) * (module.lowerBound / (TubeModule.MAX_VALUE + 1)));
-        int scrollbarHigherBoundX = (int) (guiLeft + 16 + (158 - 11) * (module.higherBound / (TubeModule.MAX_VALUE + 1)));
+        int scrollbarLowerBoundX = (int) (guiLeft + 16 + (157 - 11) * (module.lowerBound / (TubeModule.MAX_VALUE + 1)));
+        int scrollbarHigherBoundX = (int) (guiLeft + 16 + (157 - 11) * (module.higherBound / (TubeModule.MAX_VALUE + 1)));
 
         blit(matrixStack, scrollbarLowerBoundX, guiTop + 73, 183, 0, 15, 12);
         blit(matrixStack, scrollbarHigherBoundX, guiTop + 59, 183, 0, 15, 12);

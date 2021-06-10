@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.client.ITickableWidget;
 import me.desht.pneumaticcraft.client.gui.widget.ITooltipProvider;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
@@ -52,14 +51,14 @@ public abstract class GuiPneumaticScreenBase extends Screen {
 
     @Override
     public void render(MatrixStack matrixStack, int x, int y, float partialTicks) {
-        RenderSystem.color4f(1f, 1f, 1f, 1.0f);
-
         if (getTexture() != null) {
             minecraft.getTextureManager().bindTexture(getTexture());
             blit(matrixStack, guiLeft, guiTop, 0, 0, xSize, ySize);
         }
 
         super.render(matrixStack, x, y, partialTicks);
+
+        drawForeground(matrixStack, x, y, partialTicks);
 
         List<ITextComponent> tooltip = new ArrayList<>();
         boolean shift = Screen.hasShiftDown();
@@ -73,4 +72,15 @@ public abstract class GuiPneumaticScreenBase extends Screen {
         }
     }
 
+    /**
+     * Do GUI-specific foreground drawing here rather than overriding render(), so that tooltips drawn by render are
+     * drawn last and stay on top.
+     *
+     * @param matrixStack the matrix stack
+     * @param x mouse X
+     * @param y mouse Y
+     * @param partialTicks partial ticks
+     */
+    protected void drawForeground(MatrixStack matrixStack, int x, int y, float partialTicks) {
+    }
 }
