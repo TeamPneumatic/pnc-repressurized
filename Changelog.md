@@ -10,15 +10,27 @@ PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 
 ## 2.12.6-?? (unreleased)
 
+### New
+
+* Added back CraftTweaker support!
+  * Docs will be added to https://docs.blamejared.com/ but in the short term can be browsed at https://github.com/TeamPneumatic/CraftTweaker-Documentation/tree/pncr-docs-1.16/docs/mods/PneumaticCraft-Repressurized
+  
 ### Updates
+* Air Grate Module is now able to absorb XP orbs
+  * If there's an adjacent fluid tank, orbs will be converted to Memory Essence and stored in the tank (20mB fluid per XP point)
 * Updated ru_ru translations
 * Added config setting pneumaticcraft-common.toml -> Heat -> `addDefaultFluidEntries` which controls whether heat properties for modded fluids will be automatically added
   * Note that vanilla water and lava are still always auto-added; this setting is for modded fluids
   * If set to no, the intention is that heat properties for modded fluids should be added by the modpack maker as required (see https://github.com/TeamPneumatic/pnc-repressurized/wiki/Block-Heat-Properties)
+* Elevator now has a `getVelocity()` Lua method for ComputerCraft purpose
+  * Returns current velocity in blocks/tick; negative values indicate elevator is descending
   
 ### Fixes
+* Fixed Air Grate Module ignoring item entities
+* Fixed machines in "redstone low" mode ignoring that mode on world reload  
 * Work around a client crash when Pressure Glass is part of a Create schematicannon preview
   * Actually a Create issue which will be fixed in next Create release, but this is a bandaid fix for now
+* Fixed pressure module (Pressure Gauge/Regulator/Safety Valve) GUIs flicking from large to small on open when the module has an Advanced PCB installed
 
 ## 2.12.5-190 (25 May 2021)
 
