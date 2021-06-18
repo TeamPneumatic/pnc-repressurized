@@ -84,7 +84,8 @@ public class ModuleAirGrate extends TubeModule {
         }
 
         if (!world.isRemote) coolHeatSinks();
-        pushEntities(world, pos, new Vector3d(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D));
+        Vector3d tileVec = Vector3d.copyCentered(pos).add(getDirection().getXOffset() * 0.49, getDirection().getYOffset() * 0.49, getDirection().getZOffset() * 0.49);
+        pushEntities(world, pos, tileVec);
     }
 
     @Override
@@ -95,7 +96,7 @@ public class ModuleAirGrate extends TubeModule {
 
     private AxisAlignedBB getAffectedAABB() {
         BlockPos pos = pressureTube.getPos().offset(getDirection(), grateRange + 1);
-        return new AxisAlignedBB(pos, pos).grow(grateRange);
+        return new AxisAlignedBB(pos).grow(grateRange);
     }
 
     private int calculateRange() {
@@ -105,17 +106,17 @@ public class ModuleAirGrate extends TubeModule {
         return (int) range;
     }
 
-    private void pushEntities(World world, BlockPos pos, Vector3d tileVec) {
+    private void pushEntities(World world, BlockPos pos, Vector3d traceVec) {
         AxisAlignedBB bbBox = getAffectedAABB();
         List<Entity> entities = world.getEntitiesWithinAABB(Entity.class, bbBox, entityFilter);
         double d0 = grateRange * 3;
         int entitiesMoved = 0;
         for (Entity entity : entities) {
-            if (ignoreEntity(entity) || !entity.isAlive() || !rayTraceOK(entity, tileVec)) {
+            if (ignoreEntity(entity) || !entity.isAlive() || !rayTraceOK(entity, traceVec)) {
                 continue;
             }
             if (!entity.world.isRemote) {
-                tryInsertion(pos, entity);
+                tryInsertion(traceVec, entity);
             }
             double x = (entity.getPosX() - pos.getX() - 0.5D) / d0;
             double y = (entity.getPosY() + entity.getEyeHeight() - pos.getY() - 0.5D) / d0;
@@ -130,6 +131,7 @@ public class ModuleAirGrate extends TubeModule {
             if (d5 > 0.0D) {
                 d5 *= d5;
                 if (vacuum) d5 *= -1;
+                if (entity.isOnGround()) entity.setMotion(entity.getMotion().add(0, 0.25, 0));
                 entity.move(MoverType.SELF, new Vector3d(x * d5, y * d5, z * d5));
                 entitiesMoved++;
                 if (world.isRemote && world.rand.nextDouble() < 0.2) {
@@ -146,10 +148,10 @@ public class ModuleAirGrate extends TubeModule {
         }
     }
 
-    private void tryInsertion(BlockPos ourPos, Entity entity) {
-        if (entity instanceof ItemEntity && isCloseEnough(entity, ourPos)) {
+    private void tryInsertion(Vector3d traceVec, Entity entity) {
+        if (entity instanceof ItemEntity && isCloseEnough(entity, traceVec)) {
             tryItemInsertion((ItemEntity) entity);
-        } else if (entity instanceof ExperienceOrbEntity && isCloseEnough(entity, ourPos)) {
+        } else if (entity instanceof ExperienceOrbEntity && isCloseEnough(entity, traceVec)) {
             tryOrbInsertion((ExperienceOrbEntity) entity);
         }
     }
@@ -174,8 +176,8 @@ public class ModuleAirGrate extends TubeModule {
         });
     }
 
-    private boolean isCloseEnough(Entity entity, BlockPos pos) {
-        return entity.getDistanceSq(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D) < 1D;
+    private boolean isCloseEnough(Entity entity, Vector3d traceVec) {
+        return entity.getDistanceSq(traceVec) < 1D;
     }
 
     private boolean ignoreEntity(Entity entity) {
@@ -189,11 +191,11 @@ public class ModuleAirGrate extends TubeModule {
         return !entity.canBePushed() || entity instanceof EntitySemiblockBase;
     }
 
-    private boolean rayTraceOK(Entity entity, Vector3d tileVec) {
+    private boolean rayTraceOK(Entity entity, Vector3d traceVec) {
         BlockPos pos = new BlockPos(entity.getEyePosition(0f));
         return traceabilityCache.computeIfAbsent(pos, k -> {
             Vector3d entityVec = new Vector3d(entity.getPosX(), entity.getPosY() + entity.getEyeHeight(), entity.getPosZ());
-            RayTraceContext ctx = new RayTraceContext(entityVec, tileVec, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, entity);
+            RayTraceContext ctx = new RayTraceContext(entityVec, traceVec, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, entity);
             BlockRayTraceResult trace = entity.getEntityWorld().rayTraceBlocks(ctx);
             return trace.getPos().equals(pressureTube.getPos());
         });
