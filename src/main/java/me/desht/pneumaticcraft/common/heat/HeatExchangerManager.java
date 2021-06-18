@@ -63,7 +63,7 @@ public enum HeatExchangerManager implements IHeatRegistry {
 
     @Override
     public void registerBlockExchanger(Block block, double temperature, double thermalResistance) {
-        BlockHeatProperties.getInstance().register(block, new HeatPropertiesRecipeImpl(block, (int) temperature, thermalResistance));
+        BlockHeatProperties.getInstance().register(block, new HeatPropertiesRecipeImpl(block.getRegistryName(), block, (int) temperature, thermalResistance));
     }
 
     @Override

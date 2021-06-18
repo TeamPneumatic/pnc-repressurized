@@ -210,6 +210,8 @@ dependencies {
     runtimeOnly fg.deobf("curse.maven:cofh_core-69162:${cofh_core_curse_id}")
     compileOnly fg.deobf("appeng:appliedenergistics2:${ae2_version}:api")
     runtimeOnly fg.deobf("appeng:appliedenergistics2:${ae2_version}")
+    compileOnly fg.deobf("com.blamejared.crafttweaker:CraftTweaker-1.16.5:${crafttweaker_version}")
+    runtimeOnly fg.deobf("com.blamejared.crafttweaker:CraftTweaker-1.16.5:${crafttweaker_version}")
 
     // Locally sourced extra mods for runtime (i.e. testing) - thanks AE2 for this idea
     for (extraModJar in fileTree(dir: extraModsDir, include: '*.jar')) {

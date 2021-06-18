@@ -31,6 +31,6 @@ public class FluidSetup {
                         && e.getEntityWorld().getFluidState(e.getPosition()).getFluid() == ModFluids.ETCHING_ACID.get()
         );
 
-        api.registerXPFluid(ModFluids.MEMORY_ESSENCE.get(), 20);
+        // note: default "forge:experience" now added in EventHandlerPneumaticCraft#onTagsUpdated
     }
 }

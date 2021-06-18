@@ -15,12 +15,10 @@ import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
 import net.minecraftforge.common.crafting.IIngredientSerializer;
+import net.minecraftforge.items.ItemHandlerHelper;
 
 import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Stream;
 
 /**
@@ -46,6 +44,14 @@ public class StackedIngredient extends Ingredient {
         return fromItemListStream(Arrays.stream(itemsIn).map((itemProvider) -> new StackedItemList(new ItemStack(itemProvider, count))));
     }
 
+    public static Ingredient fromIngredient(int count, Ingredient wrappedIngredient) {
+        List<ItemStack> l = new ArrayList<>();
+        for (ItemStack stack : wrappedIngredient.getMatchingStacks()) {
+            l.add(ItemHandlerHelper.copyStackWithSize(stack, count));
+        }
+        return fromStacks(l.toArray(new ItemStack[0]));
+    }
+
     public static StackedIngredient fromItemListStream(Stream<? extends Ingredient.IItemList> stream) {
         StackedIngredient ingredient = new StackedIngredient(stream);
         return ingredient.hasNoMatchingItems() ? StackedIngredient.EMPTY : ingredient;
@@ -61,12 +67,8 @@ public class StackedIngredient extends Ingredient {
         if (checkingStack == null || checkingStack.isEmpty()) {
             return super.test(checkingStack);
         } else {
-            for (ItemStack stack : this.getMatchingStacks()) {
-                if (stack.getItem() == checkingStack.getItem() && stack.getCount() <= checkingStack.getCount()) {
-                    return true;
-                }
-            }
-            return false;
+            return Arrays.stream(this.getMatchingStacks())
+                    .anyMatch(stack -> stack.getItem() == checkingStack.getItem() && stack.getCount() <= checkingStack.getCount());
         }
     }
 

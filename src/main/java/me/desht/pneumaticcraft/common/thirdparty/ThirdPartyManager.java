@@ -53,6 +53,7 @@ public enum ThirdPartyManager {
             thirdPartyClasses.put(ModIds.MEKANISM, () -> new Mekanism());
             thirdPartyClasses.put(ModIds.AE2, () -> IMPLICIT_INIT);
             thirdPartyClasses.put(ModIds.COFH_CORE, () -> new CoFHCore());
+            thirdPartyClasses.put(ModIds.CRAFTTWEAKER, () -> IMPLICIT_INIT);
 
             // these were supported in 1.12.2 and may or may not come back...
 
@@ -64,7 +65,6 @@ public enum ThirdPartyManager {
 //            thirdPartyClasses.put(ModIds.FORESTRY, Forestry.class);
 //            thirdPartyClasses.put(ModIds.EIO, EnderIO.class);
 //            thirdPartyClasses.put(ModIds.COFH_CORE, CoFHCore.class);
-//            thirdPartyClasses.put(ModIds.CRAFTTWEAKER, CraftTweaker.class);
 //            thirdPartyClasses.put(ModIds.INDUSTRIALCRAFT, IC2.class);
 //            thirdPartyClasses.put(ModIds.THAUMCRAFT, Thaumcraft.class);
 //            thirdPartyClasses.put(ModIds.BAUBLES, Baubles.class);

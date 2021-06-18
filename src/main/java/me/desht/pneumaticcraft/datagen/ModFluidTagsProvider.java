@@ -32,7 +32,7 @@ public class ModFluidTagsProvider extends FluidTagsProvider {
         createTag(PneumaticCraftTags.Fluids.ETHANOL, ModFluids.ETHANOL);
         createTag(PneumaticCraftTags.Fluids.PLANT_OIL, ModFluids.VEGETABLE_OIL);
         createTag(PneumaticCraftTags.Fluids.BIODIESEL, ModFluids.BIODIESEL);
-        createTag(PneumaticCraftTags.Fluids.MEMORY_ESSENCE, ModFluids.MEMORY_ESSENCE);
+        createTag(PneumaticCraftTags.Fluids.EXPERIENCE, ModFluids.MEMORY_ESSENCE);
     }
 
     @Override

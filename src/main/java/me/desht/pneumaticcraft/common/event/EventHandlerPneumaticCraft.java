@@ -3,9 +3,11 @@ package me.desht.pneumaticcraft.common.event;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.block.IPneumaticWrenchable;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.InventoryTrackEvent;
+import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import me.desht.pneumaticcraft.api.drone.DroneConstructingEvent;
 import me.desht.pneumaticcraft.api.item.IPositionProvider;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
+import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.ai.EntityAINoAIWhenRidingDrone;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
@@ -293,6 +295,7 @@ public class EventHandlerPneumaticCraft {
     @SubscribeEvent
     public void onTagsUpdated(TagsUpdatedEvent event) {
         PneumaticHelmetRegistry.getInstance().resolveBlockTags(event.getTagManager().getBlockTags());
-    }
 
+        PneumaticRegistry.getInstance().registerXPFluid(FluidIngredient.of(1, PneumaticCraftTags.Fluids.EXPERIENCE), 20);
+    }
 }

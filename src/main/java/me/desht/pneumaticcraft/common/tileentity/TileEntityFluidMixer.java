@@ -64,8 +64,6 @@ public class TileEntityFluidMixer extends TileEntityPneumaticBase implements
     @GuiSynced
     private float requiredPressure;
     @GuiSynced
-    private int redstoneMode;
-    @GuiSynced
     public int craftingProgress = 0;
     @GuiSynced
     public int maxProgress; // 0 when no recipe, recipe's process time * 100 when there is a recipe

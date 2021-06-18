@@ -151,15 +151,12 @@ public class GuiUtils {
         matrixStack.rotate(Vector3f.YP.rotationDegrees(rotate));
         matrixStack.translate(-0.5F, 0, 0.5F);
 
-        matrixStack.push();
-        RenderSystem.color4f(1F, 1F, 1F, 1F);
         matrixStack.translate(0, 0, -1);
 
         mc.getTextureManager().bindTexture(PlayerContainer.LOCATION_BLOCKS_TEXTURE);
-        final IRenderTypeBuffer.Impl buffers = Minecraft.getInstance().getRenderTypeBuffers().getBufferSource();
+        final IRenderTypeBuffer.Impl buffers = mc.getRenderTypeBuffers().getBufferSource();
         mc.getBlockRendererDispatcher().renderBlock(block, matrixStack, buffers, RenderUtils.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, EmptyModelData.INSTANCE);
         buffers.finish();
-        matrixStack.pop();
 
         matrixStack.pop();
     }
