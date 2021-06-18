@@ -66,7 +66,7 @@ public class GuiAirGrateModule extends GuiTubeModule<ModuleAirGrate> {
                 .setRenderedIcon(Textures.GUI_PROBLEMS_TEXTURE);
         addButton(warningButton);
 
-        rangeButton = new WidgetButtonExtended(this.guiLeft + this.xSize - 20, this.guiTop + this.ySize - 20, 16, 16, (ITextComponent)getRangeButtonText(), b -> {
+        rangeButton = new WidgetButtonExtended(this.guiLeft + this.xSize - 20, this.guiTop + this.ySize - 20, 16, 16, getRangeButtonText(), b -> {
             module.setShowRange(!this.module.isShowRange());
             rangeButton.setMessage(getRangeButtonText());
         });
