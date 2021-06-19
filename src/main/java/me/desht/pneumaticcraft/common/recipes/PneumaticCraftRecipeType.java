@@ -121,7 +121,10 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
                 world = server.getWorld(World.OVERWORLD);
             } else if (EffectiveSide.get() == LogicalSide.CLIENT) {
                 // no server? let's hope this is the client, then...
-                world = ClientUtils.getClientWorld();
+                try {
+                    world = ClientUtils.getClientWorld();
+                } catch (Exception ignored) {
+                }
             }
         }
 
