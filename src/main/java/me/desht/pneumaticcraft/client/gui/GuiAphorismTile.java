@@ -239,12 +239,12 @@ public class GuiAphorismTile extends Screen implements Slider.ISlider {
             if (Screen.hasAltDown()) {
                 if (ch >= 'a' && ch <= 'f' || ch >= 'l' && ch <= 'o' || ch == 'r' || ch >= '0' && ch <= '9') {
                     textLines[cursorY] = textLines[cursorY].substring(0, cursorX) + "\u00a7" + ch + textLines[cursorY].substring(cursorX);
+                    cursorX += 2;
                 }
-                cursorX++;
             } else {
                 textLines[cursorY] = textLines[cursorY].substring(0, cursorX) + ch + textLines[cursorY].substring(cursorX);
+                cursorX++;
             }
-            cursorX++;
             tile.setTextLines(textLines);
         }
         return super.charTyped(ch, keyCode);
