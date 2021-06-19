@@ -26,7 +26,11 @@ PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
   * Returns current velocity in blocks/tick; negative values indicate elevator is descending
   
 ### Fixes
+* Fixed another dedicated server crash related to mods which query fuels before world is available
+  * It's a workaround; mods which query fuels very early (e.g. Minecolonies & Simple Generators) just won't see PNC:R fuel buckets, but no crash!
+* Fixed client crash in Aphorism Tile GUI when typing alt-characters outside normal Minecraft format code ranges (0-9, a-f, l, m, n, o, r)  
 * Fixed Air Grate Module ignoring item entities
+  * Also fixed a slight bounding box misaligment for grates facing west & north which caused entities very near the grate to be ignored
 * Fixed machines in "redstone low" mode ignoring that mode on world reload  
 * Work around a client crash when Pressure Glass is part of a Create schematicannon preview
   * Actually a Create issue which will be fixed in next Create release, but this is a bandaid fix for now
