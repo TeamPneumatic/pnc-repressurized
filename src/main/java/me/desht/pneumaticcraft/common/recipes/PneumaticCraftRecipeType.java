@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.common.recipes;
 import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipeTypes;
 import me.desht.pneumaticcraft.api.crafting.recipe.AssemblyRecipe;
 import me.desht.pneumaticcraft.api.crafting.recipe.PneumaticCraftRecipe;
-import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.fluid.FuelRegistry;
 import me.desht.pneumaticcraft.common.heat.BlockHeatProperties;
 import me.desht.pneumaticcraft.common.item.ItemSeismicSensor;
@@ -28,8 +27,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.LogicalSide;
-import net.minecraftforge.fml.common.thread.EffectiveSide;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import net.minecraftforge.registries.IForgeRegistry;
 
@@ -119,20 +116,12 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
             MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
             if (server != null) {
                 world = server.getWorld(World.OVERWORLD);
-            } else if (EffectiveSide.get() == LogicalSide.CLIENT) {
-                // no server? let's hope this is the client, then...
-                try {
-                    world = ClientUtils.getClientWorld();
-                } catch (Exception ignored) {
-                }
             }
-        }
-
-        if (world == null) {
-            // still no world?  oh well
-            Log.error("detected someone trying to get recipes with no world available (maybe calling too early?)");
-            Thread.dumpStack();
-            return Collections.emptyMap();
+            if (world == null) {
+                // still no world?  oh well
+                Log.error("detected someone trying to get recipes for %s with no world available - returning empty recipe list", registryName.toString());
+                return Collections.emptyMap();
+            }
         }
 
         if (cachedRecipes.isEmpty()) {
