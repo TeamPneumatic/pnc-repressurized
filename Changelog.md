@@ -8,7 +8,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 
-## 2.12.6-?? (unreleased)
+## 2.13.0-?? (unreleased)
 
 ### New
 
@@ -28,6 +28,11 @@ PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
   * Use the `pneumaticcraft:block_tracker_misc_blocks` tag
   * Defaults are the same as before: TNT, Tripwires, Bee Nests and all silverfish-infested stone blocks
   * **Important**: resist the temptation to add very common blocks to this (e.g. `#forge:ores`) since excessive results can cause severe client-side FPS drops
+* Right-clicking a Crop Support which doesn't have a block in its space now does a right-click on the block below
+  * This makes it easy to plant crops in an empty Crop Support
+* Right-clicking an Aphorism Tile which is invisible now does a right-click on the block behind
+  * This makes invisible Aphorism Tiles useful for labelling chests etc. with text or displayed items; the chest behind can now be opened with a right-click
+  * Sneak+right-click an invisible Aphorism Tile with an empty hand to open the editor GUI
   
 ### Fixes
 * Fixed another dedicated server crash related to mods which query fuels before world is available
