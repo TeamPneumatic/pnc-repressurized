@@ -14,6 +14,7 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -91,7 +92,7 @@ public class ProgWidgetForEachItem extends ProgWidget implements IJumpBackWidget
     public IProgWidget getOutputWidget(IDroneBase drone, List<IProgWidget> allWidgets) {
         List<String> locations = getPossibleJumpLocations();
         ItemStack filter = getFilterForIndex(curIndex++);
-        if (locations.size() > 0 && filter != null && (curIndex == 1 || !aiManager.getStack(elementVariable).isEmpty())) {
+        if (locations.size() > 0 && !filter.isEmpty() && (curIndex == 1 || !aiManager.getStack(elementVariable).isEmpty())) {
             aiManager.setItem(elementVariable, filter);
             return ProgWidgetJump.jumpToLabel(drone, allWidgets, locations.get(0));
         }
@@ -99,13 +100,14 @@ public class ProgWidgetForEachItem extends ProgWidget implements IJumpBackWidget
         return super.getOutputWidget(drone, allWidgets);
     }
 
+    @Nonnull
     private ItemStack getFilterForIndex(int index) {
         ProgWidgetItemFilter widget = (ProgWidgetItemFilter) getConnectedParameters()[0];
         for (int i = 0; i < index; i++) {
-            if (widget == null) return null;
+            if (widget == null) return ItemStack.EMPTY;
             widget = (ProgWidgetItemFilter) widget.getConnectedParameters()[0];
         }
-        return widget != null ? widget.getFilter() : null;
+        return widget != null ? widget.getFilter() : ItemStack.EMPTY;
     }
 
     @Override
