@@ -104,6 +104,7 @@ public class Textures {
     public static final ResourceLocation PROG_WIDGET_CONDITION_DRONE_ITEM_INVENTORY = progWidgetTexture("condition_drone_inventory_piece.png");
     public static final ResourceLocation PROG_WIDGET_CONDITION_DRONE_RF = progWidgetTexture("condition_drone_rf_piece.png");
     public static final ResourceLocation PROG_WIDGET_CONDITION_DRONE_PRESSURE = progWidgetTexture("condition_drone_pressure_piece.png");
+    public static final ResourceLocation PROG_WIDGET_CONDITION_DRONE_UPGRADES = progWidgetTexture("condition_drone_upgrades_piece.png");
     public static final ResourceLocation PROG_WIDGET_VOID_ITEM = progWidgetTexture("void_item_piece.png");
     public static final ResourceLocation PROG_WIDGET_VOID_LIQUID = progWidgetTexture("void_fluid_piece.png");
 

@@ -127,6 +127,8 @@ public class ModProgWidgets {
             = register("drone_condition_entity", ProgWidgetDroneConditionEntity::new);
     public static final RegistryObject<ProgWidgetType<ProgWidgetDroneConditionPressure>> DRONE_CONDITION_PRESSURE
             = register("drone_condition_pressure", ProgWidgetDroneConditionPressure::new);
+    public static final RegistryObject<ProgWidgetType<ProgWidgetDroneConditionUpgrades>> DRONE_CONDITION_UPGRADES
+            = register("drone_condition_upgrades", ProgWidgetDroneConditionUpgrades::new);
     public static final RegistryObject<ProgWidgetType<ProgWidgetEnergyCondition>> CONDITION_RF
             = register("condition_rf", ProgWidgetEnergyCondition::new);
     public static final RegistryObject<ProgWidgetType<ProgWidgetDroneConditionEnergy>> DRONE_CONDITION_RF

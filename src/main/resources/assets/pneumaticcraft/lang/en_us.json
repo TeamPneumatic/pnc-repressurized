@@ -1826,6 +1826,7 @@
    "programmingPuzzle.pneumaticcraft.drone_condition_liquid.name" : "Drone Condition: Fluid",
    "programmingPuzzle.pneumaticcraft.drone_condition_pressure.name" : "Drone Condition: Pressure",
    "programmingPuzzle.pneumaticcraft.drone_condition_rf.name" : "Drone Condition: RF",
+   "programmingPuzzle.pneumaticcraft.drone_condition_upgrades.name" : "Drone Condition: Upgrades",
    "programmingPuzzle.pneumaticcraft.drop_item.name" : "Drop Items",
    "programmingPuzzle.pneumaticcraft.edit_sign.name" : "Edit Sign",
    "programmingPuzzle.pneumaticcraft.emit_redstone.name" : "Emit Redstone",

@@ -65,6 +65,7 @@ public abstract class GuiProgWidgetDroneCondition<T extends ProgWidgetDroneCondi
             textField.setFocused2(true);
             textField.setResponder(s -> progWidget.setRequiredCount(textField.getValue()));
             addButton(textField);
+            setFocusedDefault(textField);
         }
 
         WidgetLabel label = addLabel(xlate("pneumaticcraft.gui.progWidget.condition.measure"), guiLeft + 8, guiTop + 152);
@@ -100,8 +101,8 @@ public abstract class GuiProgWidgetDroneCondition<T extends ProgWidgetDroneCondi
     }
 
     public static class Item extends GuiProgWidgetDroneCondition<ProgWidgetDroneConditionItem> {
-        public Item(ProgWidgetDroneConditionItem widget, GuiProgrammer guiProgrammer) {
-            super(widget, guiProgrammer);
+        public Item(ProgWidgetDroneConditionItem progWidget, GuiProgrammer guiProgrammer) {
+            super(progWidget, guiProgrammer);
         }
     }
 
@@ -110,16 +111,20 @@ public abstract class GuiProgWidgetDroneCondition<T extends ProgWidgetDroneCondi
             super(progWidget, guiProgrammer);
         }
     }
-
     public static class Pressure extends GuiProgWidgetDroneCondition<ProgWidgetDroneConditionPressure> {
         public Pressure(ProgWidgetDroneConditionPressure progWidget, GuiProgrammer guiProgrammer) {
             super(progWidget, guiProgrammer);
         }
     }
-
     public static class Energy extends GuiProgWidgetDroneCondition<ProgWidgetDroneConditionEnergy> {
         public Energy(ProgWidgetDroneConditionEnergy progWidget, GuiProgrammer guiProgrammer) {
             super(progWidget, guiProgrammer);
+        }
+    }
+
+    public static class Upgrades extends GuiProgWidgetDroneCondition<ProgWidgetDroneConditionUpgrades> {
+        public Upgrades(ProgWidgetDroneConditionUpgrades widget, GuiProgrammer guiProgrammer) {
+            super(widget, guiProgrammer);
         }
     }
 }
