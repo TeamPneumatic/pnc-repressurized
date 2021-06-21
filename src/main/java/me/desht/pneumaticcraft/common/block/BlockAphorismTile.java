@@ -38,6 +38,7 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockDisplayReader;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nullable;
@@ -111,7 +112,7 @@ public class BlockAphorismTile extends BlockPneumaticCraft implements ColorHandl
         CompoundNBT tag = stack.getChildTag(BLOCK_ENTITY_TAG);
         if (tag != null && tag.contains(NBT_EXTRA)) {
             CompoundNBT subTag = tag.getCompound(NBT_EXTRA);
-            if (subTag != null && (subTag.contains(NBT_BORDER_COLOR) || subTag.contains(NBT_BACKGROUND_COLOR))) {
+            if (subTag.contains(NBT_BORDER_COLOR) || subTag.contains(NBT_BACKGROUND_COLOR)) {
                 ListNBT l = subTag.getList(TileEntityAphorismTile.NBT_TEXT_LINES, Constants.NBT.TAG_STRING);
                 if (!l.isEmpty()) {
                     curInfo.add(xlate("gui.tooltip.block.pneumaticcraft.aphorism_tile.text").mergeStyle(TextFormatting.YELLOW));
@@ -141,29 +142,47 @@ public class BlockAphorismTile extends BlockPneumaticCraft implements ColorHandl
 
     @Override
     public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
-        if (world.isRemote && hand == Hand.MAIN_HAND && player.getHeldItem(hand).isEmpty() && !player.isSneaking()) {
-            PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityAphorismTile.class).ifPresent(teAT -> {
-                GuiAphorismTile.openGui(teAT, false);
-                sendEditorMessage(player);
-            });
-        } else if (!world.isRemote) {
+        TileEntity te = world.getTileEntity(pos);
+        if (!(te instanceof TileEntityAphorismTile)) return ActionResultType.FAIL;
+        TileEntityAphorismTile teAT = (TileEntityAphorismTile) te;
+
+        if (!world.isRemote && player.getHeldItem(hand).getItem().isIn(Tags.Items.DYES) && !teAT.isInvisible()) {
             DyeColor color =  DyeColor.getColor(player.getHeldItem(hand));
             if (color != null) {
-                PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityAphorismTile.class).ifPresent(teAT -> {
-                    if (clickedBorder(state, brtr.getHitVec())) {
-                        if (teAT.getBorderColor() != color.getId()) {
-                            teAT.setBorderColor(color.getId());
-                            if (PNCConfig.Common.General.useUpDyesWhenColoring) player.getHeldItem(hand).shrink(1);
-                        }
-                    } else {
-                        if (teAT.getBackgroundColor() != color.getId()) {
-                            teAT.setBackgroundColor(color.getId());
-                            if (PNCConfig.Common.General.useUpDyesWhenColoring) player.getHeldItem(hand).shrink(1);
-                        }
+                if (clickedBorder(state, brtr.getHitVec())) {
+                    if (teAT.getBorderColor() != color.getId()) {
+                        teAT.setBorderColor(color.getId());
+                        if (PNCConfig.Common.General.useUpDyesWhenColoring) player.getHeldItem(hand).shrink(1);
                     }
-                });
+                } else {
+                    if (teAT.getBackgroundColor() != color.getId()) {
+                        teAT.setBackgroundColor(color.getId());
+                        if (PNCConfig.Common.General.useUpDyesWhenColoring) player.getHeldItem(hand).shrink(1);
+                    }
+                }
             }
+        } else if (hand == Hand.MAIN_HAND) {
+            if (teAT.isInvisible()) {
+                if (world.isRemote && player.isSneaking() && player.getHeldItem(hand).isEmpty()) {
+                    return openEditorGui(player, teAT);
+                } else if (!player.isSneaking()) {
+                    // pass click to block behind
+                    BlockPos pos2 = pos.offset(teAT.getRotation());
+                    BlockRayTraceResult brtr2 = new BlockRayTraceResult(brtr.getHitVec(), brtr.getFace(), pos2, brtr.isInside());
+                    return world.getBlockState(pos2).onBlockActivated(world, player, hand, brtr2);
+                }
+            } else if (world.isRemote && player.getHeldItem(hand).isEmpty()) {
+                return openEditorGui(player, teAT);
+            }
+            return ActionResultType.PASS;
         }
+
+        return ActionResultType.SUCCESS;
+    }
+
+    private ActionResultType openEditorGui(PlayerEntity player, TileEntityAphorismTile teAT) {
+        GuiAphorismTile.openGui(teAT, false);
+        sendEditorMessage(player);
         return ActionResultType.SUCCESS;
     }
 
