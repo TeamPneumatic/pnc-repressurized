@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker;
 
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IBlockTrackEntry;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetKeybindCheckBox;
+import net.minecraft.block.BlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
@@ -27,9 +28,10 @@ public enum BlockTrackEntryList {
     }
 
     public List<IBlockTrackEntry> getEntriesForCoordinate(IBlockReader blockAccess, BlockPos pos, TileEntity te) {
+        final BlockState state = blockAccess.getBlockState(pos);
         return trackList.stream()
                 .filter(entry -> WidgetKeybindCheckBox.get(entry.getEntryID()).checked
-                        && entry.shouldTrackWithThisEntry(blockAccess, pos, blockAccess.getBlockState(pos), te))
+                        && entry.shouldTrackWithThisEntry(blockAccess, pos, state, te))
                 .collect(Collectors.toList());
     }
 }

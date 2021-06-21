@@ -24,6 +24,10 @@ PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
   * If set to no, the intention is that heat properties for modded fluids should be added by the modpack maker as required (see https://github.com/TeamPneumatic/pnc-repressurized/wiki/Block-Heat-Properties)
 * Elevator now has a `getVelocity()` Lua method for ComputerCraft purpose
   * Returns current velocity in blocks/tick; negative values indicate elevator is descending
+* Blocks found by the Pneumatic Helmet Block Tracker misc mode can now be controlled by block tag
+  * Use the `pneumaticcraft:block_tracker_misc_blocks` tag
+  * Defaults are the same as before: TNT, Tripwires, Bee Nests and all silverfish-infested stone blocks
+  * **Important**: resist the temptation to add very common blocks to this (e.g. `#forge:ores`) since excessive results can cause severe client-side FPS drops
   
 ### Fixes
 * Fixed another dedicated server crash related to mods which query fuels before world is available

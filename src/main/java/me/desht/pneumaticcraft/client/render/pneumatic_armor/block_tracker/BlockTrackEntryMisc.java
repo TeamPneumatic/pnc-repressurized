@@ -1,10 +1,8 @@
 package me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker;
 
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IBlockTrackEntry;
-import net.minecraft.block.Block;
+import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.SilverfishBlock;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
@@ -23,8 +21,7 @@ public class BlockTrackEntryMisc implements IBlockTrackEntry {
 
     @Override
     public boolean shouldTrackWithThisEntry(IBlockReader world, BlockPos pos, BlockState state, TileEntity te) {
-        Block block = state.getBlock();
-        return block == Blocks.TNT || block == Blocks.TRIPWIRE || block instanceof SilverfishBlock || block == Blocks.BEE_NEST;
+        return state.getBlock().isIn(PneumaticCraftTags.Blocks.BLOCK_TRACKER_MISC);
     }
 
     @Override
