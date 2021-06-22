@@ -261,7 +261,7 @@ public class TileEntityVacuumTrap extends TileEntityPneumaticBase implements
 
         @Override
         public boolean isFluidValid(FluidStack stack) {
-            return stack.getFluid().isIn(PneumaticCraftTags.Fluids.MEMORY_ESSENCE);
+            return stack.getFluid().isIn(PneumaticCraftTags.Fluids.EXPERIENCE);
         }
     }
 

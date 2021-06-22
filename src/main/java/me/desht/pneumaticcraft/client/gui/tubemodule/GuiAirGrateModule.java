@@ -66,7 +66,7 @@ public class GuiAirGrateModule extends GuiTubeModule<ModuleAirGrate> {
                 .setRenderedIcon(Textures.GUI_PROBLEMS_TEXTURE);
         addButton(warningButton);
 
-        rangeButton = new WidgetButtonExtended(this.guiLeft + this.xSize - 20, this.guiTop + this.ySize - 20, 16, 16, (ITextComponent)getRangeButtonText(), b -> {
+        rangeButton = new WidgetButtonExtended(this.guiLeft + this.xSize - 20, this.guiTop + this.ySize - 20, 16, 16, getRangeButtonText(), b -> {
             module.setShowRange(!this.module.isShowRange());
             rangeButton.setMessage(getRangeButtonText());
         });
@@ -94,8 +94,6 @@ public class GuiAirGrateModule extends GuiTubeModule<ModuleAirGrate> {
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         super.render(matrixStack, mouseX, mouseY, partialTicks);
 
-        if (!textfield.isFocused()) textfield.setText(module.getEntityFilterString());
-
         if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1) && module.isUpgraded()) {
             GuiUtils.showPopupHelpScreen(matrixStack, this, font,
                     GuiUtils.xlateAndSplit("pneumaticcraft.gui.entityFilter.helpText"));
@@ -105,6 +103,9 @@ public class GuiAirGrateModule extends GuiTubeModule<ModuleAirGrate> {
     @Override
     public void tick() {
         super.tick();
+
+        if (!textfield.isFocused()) textfield.setText(module.getEntityFilterString());
+
         if (sendTimer > 0 && --sendTimer == 0) {
             module.setEntityFilter(textfield.getText());
             NetworkHandler.sendToServer(new PacketUpdateAirGrateModule(module, textfield.getText()));

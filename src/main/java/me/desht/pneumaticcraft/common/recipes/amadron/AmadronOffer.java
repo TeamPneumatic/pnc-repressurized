@@ -61,6 +61,7 @@ public class AmadronOffer extends AmadronRecipe {
         return output;
     }
 
+    @Override
     public boolean isStaticOffer() {
         return isStaticOffer;
     }

@@ -109,7 +109,6 @@ public class CommonArmorHandler implements ICommonArmorHandler {
     private float flightAccel = 1.0F;  // increases while diving, decreases while climbing
     private int prevJetBootsAirUsage;  // so we know when the jet boots are starting up
     private int jetBootsActiveTicks;
-    private boolean wasNightVisionEnabled;
     private float speedBoostMult;
     private boolean jetBootsBuilderMode;
     private float jetBootsPower;
@@ -238,7 +237,9 @@ public class CommonArmorHandler implements ICommonArmorHandler {
     private void onArmorRemoved(EquipmentSlotType slot) {
         switch (slot) {
             case HEAD:
-                if (nightVisionEnabled) player.removeActivePotionEffect(Effects.NIGHT_VISION);
+                if (nightVisionEnabled) {
+                    player.removePotionEffect(Effects.NIGHT_VISION);
+                }
                 break;
             case CHEST:
                 ModifiableAttributeInstance attr = player.getAttribute(ForgeMod.REACH_DISTANCE.get());
@@ -289,17 +290,13 @@ public class CommonArmorHandler implements ICommonArmorHandler {
     }
 
     private void handleNightVision() {
-        // checking every 8 ticks should be enough
-        if (!player.world.isRemote && (getTicksSinceEquipped(EquipmentSlotType.HEAD) & 0x7) == 0) {
-            boolean shouldEnable = hasMinPressure(EquipmentSlotType.HEAD)
-                    && getUpgradeCount(EquipmentSlotType.HEAD, EnumUpgrade.NIGHT_VISION) > 0
-                    && nightVisionEnabled;
-            if (shouldEnable) {
+        if (!player.world.isRemote && hasMinPressure(EquipmentSlotType.HEAD) && getUpgradeCount(EquipmentSlotType.HEAD, EnumUpgrade.NIGHT_VISION) > 0) {
+            EffectInstance nvInstance = player.getActivePotionEffect(Effects.NIGHT_VISION);
+            if (nightVisionEnabled && (nvInstance == null || nvInstance.getDuration() <= 220)) {
                 player.addPotionEffect(new EffectInstance(Effects.NIGHT_VISION, 500, 0, false, false));
-            } else if (wasNightVisionEnabled) {
+            } else if (!nightVisionEnabled && nvInstance != null) {
                 player.removePotionEffect(Effects.NIGHT_VISION);
             }
-            wasNightVisionEnabled = shouldEnable;
         }
     }
 
@@ -668,7 +665,6 @@ public class CommonArmorHandler implements ICommonArmorHandler {
             entityTrackerEnabled = state;
         } else if (handler instanceof NightVisionHandler) {
             nightVisionEnabled = state;
-            if (!nightVisionEnabled) player.removeActivePotionEffect(Effects.NIGHT_VISION);
         } else if (handler instanceof ScubaHandler) {
             scubaEnabled = state;
         } else if (handler instanceof ReachDistanceHandler) {

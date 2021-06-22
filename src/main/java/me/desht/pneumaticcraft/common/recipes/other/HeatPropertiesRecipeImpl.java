@@ -69,8 +69,8 @@ public class HeatPropertiesRecipeImpl extends HeatPropertiesRecipe {
         this.inputState = makeInputState();
     }
 
-    public HeatPropertiesRecipeImpl(Block block, int temperature, double thermalResistance) {
-        this(block.getRegistryName(), block, null, null, null, null, 0, temperature, thermalResistance, Collections.emptyMap(), "");
+    public HeatPropertiesRecipeImpl(ResourceLocation id, Block block, int temperature, double thermalResistance) {
+        this(id, block, null, null, null, null, 0, temperature, thermalResistance, Collections.emptyMap(), "");
     }
 
     private BlockState makeInputState() {

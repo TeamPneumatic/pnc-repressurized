@@ -13,6 +13,7 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistryEntry;
+import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nullable;
 
@@ -24,8 +25,10 @@ public class FuelQualityRecipeImpl extends FuelQualityRecipe {
     public FuelQualityRecipeImpl(ResourceLocation id, FluidIngredient fuel, int airPerBucket, float burnRate) {
         super(id);
 
+        Validate.isTrue(fuel.getAmount() > 0);
+
         this.fuel = fuel;
-        this.airPerBucket = airPerBucket;
+        this.airPerBucket = airPerBucket * (1000 / fuel.getAmount());
         this.burnRate = burnRate;
     }
 

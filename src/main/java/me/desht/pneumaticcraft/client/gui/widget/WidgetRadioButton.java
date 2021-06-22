@@ -31,7 +31,7 @@ public class WidgetRadioButton extends Widget implements ITooltipProvider {
     private final Consumer<WidgetRadioButton> pressable;
     private final FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
     private List<ITextComponent> tooltip = new ArrayList<>();
-    List<? extends WidgetRadioButton> otherChoices;
+    private List<? extends WidgetRadioButton> otherChoices = null;
 
     public WidgetRadioButton(int x, int y, int color, ITextComponent text, Consumer<WidgetRadioButton> pressable) {
         super(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, text);
@@ -115,6 +115,11 @@ public class WidgetRadioButton extends Widget implements ITooltipProvider {
         curTooltip.addAll(tooltip);
     }
 
+    void setOtherChoices(List<? extends WidgetRadioButton> choices) {
+        if (otherChoices != null) throw new IllegalStateException("otherChoices has already been init'ed!");
+        otherChoices = choices;
+    }
+
     /**
      * Builder to manage creating a collection of related radio buttons.
      */
@@ -143,7 +148,7 @@ public class WidgetRadioButton extends Widget implements ITooltipProvider {
             int checked = 0;
             for (T rb : res) {
                 if (rb.isChecked()) checked++;
-                rb.otherChoices = res;
+                rb.setOtherChoices(res);
                 c.accept(rb);
             }
             if (checked != 1) throw new IllegalStateException("one and only one radio button should be checked!");

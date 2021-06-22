@@ -31,4 +31,9 @@ public class WidgetTooltipArea extends Widget implements ITooltipProvider {
     public void addTooltip(double mouseX, double mouseY, List<ITextComponent> curTip, boolean shiftPressed) {
         Collections.addAll(curTip, tooltip);
     }
+
+    @Override
+    public boolean changeFocus(boolean focus) {
+        return false;  // not focusable
+    }
 }

@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.data.BlockTagsProvider;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.tags.BlockTags;
@@ -56,6 +57,15 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
         createTag(PneumaticCraftTags.Blocks.WALL_LAMPS, ModBlocks.WALL_LAMPS.toArray(new Supplier[0]));
         createTag(PneumaticCraftTags.Blocks.WALL_LAMPS_INVERTED, ModBlocks.WALL_LAMPS_INVERTED.toArray(new Supplier[0]));
         createTag(PneumaticCraftTags.Blocks.FLUID_TANKS, ModBlocks.TANK_SMALL, ModBlocks.TANK_MEDIUM, ModBlocks.TANK_LARGE);
+
+        createTag(PneumaticCraftTags.Blocks.BLOCK_TRACKER_MISC,
+                () -> Blocks.TNT,
+                () -> Blocks.TRIPWIRE,
+                () -> Blocks.BEE_NEST,
+                () -> Blocks.INFESTED_CHISELED_STONE_BRICKS, () -> Blocks.INFESTED_CRACKED_STONE_BRICKS,
+                () -> Blocks.INFESTED_COBBLESTONE, () -> Blocks.INFESTED_STONE,
+                () -> Blocks.INFESTED_MOSSY_STONE_BRICKS, () -> Blocks.INFESTED_STONE_BRICKS
+        );
 
         getOrCreateBuilder(Tags.Blocks.ORES);
         getOrCreateBuilder(BlockTags.LOGS);

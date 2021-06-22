@@ -13,6 +13,7 @@ public class ModIds {
     public static final String CURIOS = "curios";
     public static final String COFH_CORE = "cofh_core";
     public static final String WAILA = "waila";
+    public static final String CRAFTTWEAKER = "crafttweaker";
 
     // the mods we have integrated with in the past but not in 1.16
 //    public static final String BUILDCRAFT = "buildcraftcore";
@@ -27,5 +28,4 @@ public class ModIds {
 //    public static final String IMMERSIVE_PETROLEUM = "immersivepetroleum";
 //    public static final String BAUBLES = "baubles";
 //    public static final String TOUGH_AS_NAILS = "toughasnails";
-//    public static final String CRAFTTWEAKER = "crafttweaker";
 }

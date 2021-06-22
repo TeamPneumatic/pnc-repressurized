@@ -20,6 +20,8 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.util.ArrayList;
@@ -121,8 +123,11 @@ public class JEIFluidMixerCategory implements IRecipeCategory<FluidMixerRecipe> 
     @Override
     public List<ITextComponent> getTooltipStrings(FluidMixerRecipe recipe, double mouseX, double mouseY) {
         List<ITextComponent> res = new ArrayList<>();
-        if (recipe.getRequiredPressure() > 0 && mouseX >= 116 && mouseY >= 22 && mouseX <= 156 && mouseY <= 62) {
+        if (recipe.getRequiredPressure() > 0 && mouseX >= 117 && mouseY >= 15 && mouseX <= 157 && mouseY <= 55) {
             res.add(xlate("pneumaticcraft.gui.tooltip.pressure", recipe.getRequiredPressure()));
+        } else if (mouseX >= 45 && mouseY >= 20 && mouseX <= 89 && mouseY <= 50) {
+            res.add(new StringTextComponent((recipe.getProcessingTime()) / 20f + "s"));
+            res.add(xlate("pneumaticcraft.gui.jei.tooltip.processingTime").mergeStyle(TextFormatting.GRAY, TextFormatting.ITALIC));
         }
         return res;
     }

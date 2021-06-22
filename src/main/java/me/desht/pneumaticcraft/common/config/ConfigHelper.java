@@ -165,6 +165,7 @@ public class ConfigHelper {
         PNCConfig.Common.Heat.defaultFluidHeatCapacity = common.heat.defaultFluidHeatCapacity.get();
         PNCConfig.Common.Heat.ambientTempBiomeModifier = common.heat.ambientTemperatureBiomeModifier.get();
         PNCConfig.Common.Heat.ambientTempHeightModifier = common.heat.ambientTemperatureHeightModifier.get();
+        PNCConfig.Common.Heat.addDefaultFluidEntries = common.heat.addDefaultFluidEntries.get();
 
         PNCConfig.Common.Amadron.numPeriodicOffers = common.amadron.numPeriodicOffers.get();
         PNCConfig.Common.Amadron.numVillagerOffers = common.amadron.numVillagerOffers.get();

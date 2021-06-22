@@ -2,10 +2,14 @@ package me.desht.pneumaticcraft.common.entity.semiblock;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemUseContext;
 import net.minecraft.particles.ParticleTypes;
+import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.Hand;
+import net.minecraft.util.math.*;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.IPlantable;
@@ -53,5 +57,22 @@ public class EntityCropSupport extends EntitySemiblockBase {
         BlockPos posBelow = getBlockPos().offset(Direction.DOWN);
         BlockState stateBelow = world.getBlockState(posBelow);
         return !stateBelow.getBlock().isAir(stateBelow, world, posBelow);
+    }
+
+    @Override
+    public ActionResultType applyPlayerInteraction(PlayerEntity player, Vector3d hitVec, Hand hand) {
+        BlockState state = getBlockState();
+        if (state.getBlock().isAir(state, world, getBlockPos())) {
+            // try a right click on the block below - makes it easier to plant crops in an empty crop support
+            BlockPos below = getBlockPos().down();
+            Vector3d eye = player.getEyePosition(0f);
+            Vector3d end = Vector3d.copyCentered(below).add(0, 0.25, 0);
+            RayTraceContext ctx = new RayTraceContext(eye, end, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, player);
+            BlockRayTraceResult brtr = player.world.rayTraceBlocks(ctx);
+            if (brtr.getType() == RayTraceResult.Type.BLOCK && brtr.getPos().equals(below)) {
+                return player.getHeldItem(hand).onItemUse(new ItemUseContext(player, hand, brtr));
+            }
+        }
+        return super.applyPlayerInteraction(player, hitVec, hand);
     }
 }

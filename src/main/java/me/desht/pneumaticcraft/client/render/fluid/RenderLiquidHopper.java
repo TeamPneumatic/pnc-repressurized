@@ -29,7 +29,7 @@ public class RenderLiquidHopper extends AbstractFluidTER<TileEntityLiquidHopper>
 
     @Override
     Collection<TankRenderInfo> getTanksToRender(TileEntityLiquidHopper te) {
-        return ImmutableList.of(new TankRenderInfo(te.getTank(), BOUNDS[te.getInputDirection().getIndex()]).without(te.getInputDirection().getOpposite()));
+        return ImmutableList.of(new TankRenderInfo(te.getTank(), BOUNDS[te.getInputDirection().getIndex()]));
     }
 
     public static class ItemRenderInfoProvider implements IFluidItemRenderInfoProvider {

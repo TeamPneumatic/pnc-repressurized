@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.client.IClientRegistry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IPneumaticHelmetRegistry;
 import me.desht.pneumaticcraft.api.crafting.IPneumaticRecipeRegistry;
+import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import me.desht.pneumaticcraft.api.drone.IDroneRegistry;
 import me.desht.pneumaticcraft.api.fuel.IFuelRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatRegistry;
@@ -78,8 +79,14 @@ public class PneumaticCraftAPIHandler implements PneumaticRegistry.IPneumaticCra
     }
 
     @Override
+    @Deprecated
     public void registerXPFluid(Fluid fluid, int liquidToPointRatio) {
         XPFluidManager.getInstance().registerXPFluid(fluid, liquidToPointRatio);
+    }
+
+    @Override
+    public void registerXPFluid(FluidIngredient tag, int liquidToPointRatio) {
+        XPFluidManager.getInstance().registerXPFluid(tag, liquidToPointRatio);
     }
 
     @Override

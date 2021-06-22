@@ -59,7 +59,7 @@ public class TemperatureRange {
      * @return a temperature range
      */
     public static TemperatureRange of(int minTemp, int maxTemp) {
-        return new TemperatureRange(minTemp, maxTemp);
+        return minTemp == 0 && maxTemp == Integer.MAX_VALUE ? any() : new TemperatureRange(minTemp, maxTemp);
     }
 
     /**

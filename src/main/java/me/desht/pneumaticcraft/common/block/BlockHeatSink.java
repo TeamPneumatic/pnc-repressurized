@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.block;
 
+import me.desht.pneumaticcraft.api.DamageSourcePneumaticCraft;
 import me.desht.pneumaticcraft.client.ColorHandlers;
-import me.desht.pneumaticcraft.common.DamageSourcePneumaticCraft;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityHeatSink;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;

@@ -621,6 +621,13 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
                 return new Object[] { getCoreElevator().targetExtension };
             }
         });
+        registry.registerLuaMethod(new LuaMethod("getVelocity") {
+            @Override
+            public Object[] call(Object[] args) {
+                requireNoArgs(args);
+                return new Object[] { getCoreElevator().extension - getCoreElevator().oldExtension };
+            }
+        });
 
         registry.registerLuaMethod(new LuaMethod("setExternalControl") {
             @Override

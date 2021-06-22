@@ -35,7 +35,7 @@ public class RedstoneController<T extends TileEntity & IRedstoneControl<T>> {
     @GuiSynced
     private int currentMode;
     @GuiSynced
-    private int currentRedstonePower; // current power level for the tile entity's block
+    private int currentRedstonePower = -1; // current power level for the tile entity's block (< 0 means "unknown")
 
     public RedstoneController(T te) {
         this.teRef = new WeakReference<>(te);
@@ -72,6 +72,9 @@ public class RedstoneController<T extends TileEntity & IRedstoneControl<T>> {
     }
 
     public int getCurrentRedstonePower() {
+        if (currentRedstonePower < 0) {
+            updateRedstonePower();
+        }
         return currentRedstonePower;
     }
 

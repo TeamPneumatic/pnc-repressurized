@@ -8,6 +8,46 @@ Changes are in reverse chronological order; newest changes at the top.
 
 PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 
+## 2.13.0-?? (unreleased)
+
+### New
+
+* Added back CraftTweaker support!
+  * Docs will be added to https://docs.blamejared.com/ but in the short term can be browsed at https://github.com/TeamPneumatic/CraftTweaker-Documentation/tree/pncr-docs-1.16/docs/mods/PneumaticCraft-Repressurized
+  
+### Updates
+* Air Grate Module is now able to absorb XP orbs
+  * If there's an adjacent fluid tank, orbs will be converted to Memory Essence and stored in the tank (20mB fluid per XP point)
+* Updated ru_ru translations
+* Added config setting pneumaticcraft-common.toml -> Heat -> `addDefaultFluidEntries` which controls whether heat properties for modded fluids will be automatically added
+  * Note that vanilla water and lava are still always auto-added; this setting is for modded fluids
+  * If set to no, the intention is that heat properties for modded fluids should be added by the modpack maker as required (see https://github.com/TeamPneumatic/pnc-repressurized/wiki/Block-Heat-Properties)
+* Elevator now has a `getVelocity()` Lua method for ComputerCraft purpose
+  * Returns current velocity in blocks/tick; negative values indicate elevator is descending
+* Blocks found by the Pneumatic Helmet Block Tracker misc mode can now be controlled by block tag
+  * Use the `pneumaticcraft:block_tracker_misc_blocks` tag
+  * Defaults are the same as before: TNT, Tripwires, Bee Nests and all silverfish-infested stone blocks
+  * **Important**: resist the temptation to add very common blocks to this (e.g. `#forge:ores`) since excessive results can cause severe client-side FPS drops
+* Right-clicking a Crop Support which doesn't have a block in its space now does a right-click on the block below
+  * This makes it easy to plant crops in an empty Crop Support
+* Right-clicking an Aphorism Tile which is invisible now does a right-click on the block behind
+  * This makes invisible Aphorism Tiles useful for labelling chests etc. with text or displayed items; the chest behind can now be opened with a right-click
+  * Sneak+right-click an invisible Aphorism Tile with an empty hand to open the editor GUI
+  
+### Fixes
+* Fixed another dedicated server crash related to mods which query fuels before world is available
+  * It's a workaround; mods which query fuels very early (e.g. Minecolonies & Simple Generators) just won't see PNC:R fuel buckets, but no crash!
+* Fixed Pneumatic Helmet night vision occasionally failing to deactivate properly
+  * Note that when a Helmet with an installed Night Vision Upgrade is equipped, other sources of night vision (e.g. potions) will not function 
+* Fixed client crash in Aphorism Tile GUI when typing alt-characters outside normal Minecraft format code ranges (0-9, a-f, l, m, n, o, r)  
+* Fixed Air Grate Module ignoring item entities
+  * Also fixed a slight bounding box misalignment for grates facing west & north which caused entities very near the grate to be ignored
+* Fixed machines not always properly recalculating their incoming redstone signal on world reload
+  * Caused problems with machines running when they shouldn't and vice versa
+* Work around a client crash when Pressure Glass is part of a Create schematicannon preview
+  * Actually a Create issue which will be fixed in next Create release, but this is a bandaid fix for now
+* Fixed pressure module (Pressure Gauge/Regulator/Safety Valve) GUIs flicking from large to small on open when the module has an Advanced PCB installed
+
 ## 2.12.5-190 (25 May 2021)
 
 ### Updates

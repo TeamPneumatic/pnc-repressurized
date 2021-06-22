@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.api;
 import me.desht.pneumaticcraft.api.client.IClientRegistry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IPneumaticHelmetRegistry;
 import me.desht.pneumaticcraft.api.crafting.IPneumaticRecipeRegistry;
+import me.desht.pneumaticcraft.api.crafting.ingredient.FluidIngredient;
 import me.desht.pneumaticcraft.api.drone.IDroneRegistry;
 import me.desht.pneumaticcraft.api.fuel.IFuelRegistry;
 import me.desht.pneumaticcraft.api.heat.IHeatRegistry;
@@ -97,16 +98,32 @@ public final class PneumaticRegistry {
         /**
          * Register a fluid that represents liquid XP (e.g. PneumaticCraft Memory Essence, CoFH Essence of
          * Knowledge, or OpenBlocks Liquid XP). This is used in the Aerial Interface to transfer experience to/from
-         * the player.
+         * the player. See also {@link #registerXPFluid(FluidIngredient, int)}.
          *
          * @param fluid the fluid to register
-         * @param liquidToPointRatio the amount of liquid (in mB) used to get one XP point; use a value of 0 or less to
+         * @param liquidToPointRatio the amount of fluid (in mB) for one XP point; use a value of 0 or less to
          *                          unregister this fluid
+         * @deprecated use {@link #registerXPFluid(FluidIngredient, int)}
          */
+        @Deprecated
         void registerXPFluid(Fluid fluid, int liquidToPointRatio);
 
         /**
-         * Get a resource location in PneumaticCraft: Repressurized's namespace.
+         * Register a fluid ingredient that represents liquid XP. This ingredient could be a fluid, or a fluid tag,
+         * or even a stream of fluid ingredients.
+         *
+         * Note that a fluid ingredient of the "forge:experience" fluid tag is registered by default with a ratio of
+         * 20mb per XP; this tag includes PneumaticCraft Memory Essence, and possibly other modded XP fluids too.
+         *
+         * @param fluid the fluid tag to register; all fluids in this tag will have the given XP value
+         * @param liquidToPointRatio the amount of fluid (in mB) for one XP point; use a value of 0 or less to
+         *                          unregister all fluids matching this fluid ingredient
+         */
+        void registerXPFluid(FluidIngredient fluid, int liquidToPointRatio);
+
+        /**
+         * Convenience method to get a resource location in PneumaticCraft: Repressurized's namespace.
+         *
          * @param path a path
          * @return a resource location
          */

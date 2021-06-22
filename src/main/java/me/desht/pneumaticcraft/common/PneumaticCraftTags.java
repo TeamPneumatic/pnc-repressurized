@@ -25,6 +25,7 @@ public class PneumaticCraftTags {
         public static final ITag.INamedTag<Block> COMPRESSED_STONE_BRICKS = modTag("compressed_stone_bricks");
         public static final ITag.INamedTag<Block> WALL_LAMPS = modTag("wall_lamps");
         public static final ITag.INamedTag<Block> WALL_LAMPS_INVERTED = modTag("wall_lamps_inverted");
+        public static final ITag.INamedTag<Block> BLOCK_TRACKER_MISC = modTag("block_tracker_misc_blocks");
 
         public static final ITag.INamedTag<Block> STORAGE_BLOCKS_COMPRESSED_IRON = forgeTag("storage_blocks/compressed_iron");
 
@@ -93,7 +94,7 @@ public class PneumaticCraftTags {
         public static final ITag.INamedTag<Fluid> LPG = forgeTag("lpg");
         public static final ITag.INamedTag<Fluid> BIODIESEL = forgeTag("biodiesel");
         public static final ITag.INamedTag<Fluid> PLANT_OIL = forgeTag("plantoil");
-        public static final ITag.INamedTag<Fluid> MEMORY_ESSENCE = forgeTag("experience");
+        public static final ITag.INamedTag<Fluid> EXPERIENCE = forgeTag("experience");
 
         public static final ITag.INamedTag<Fluid> ETCHING_ACID = modTag("etching_acid");
         public static final ITag.INamedTag<Fluid> PLASTIC = modTag("plastic");

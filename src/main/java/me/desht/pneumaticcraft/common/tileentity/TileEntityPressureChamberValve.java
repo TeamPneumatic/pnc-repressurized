@@ -2,11 +2,11 @@ package me.desht.pneumaticcraft.common.tileentity;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.math.IntMath;
+import me.desht.pneumaticcraft.api.DamageSourcePneumaticCraft;
 import me.desht.pneumaticcraft.api.crafting.recipe.PressureChamberRecipe;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachine;
 import me.desht.pneumaticcraft.api.tileentity.IAirListener;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.DamageSourcePneumaticCraft;
 import me.desht.pneumaticcraft.common.block.BlockPressureChamberGlass;
 import me.desht.pneumaticcraft.common.block.BlockPressureChamberValve;
 import me.desht.pneumaticcraft.common.block.IBlockPressureChamber;

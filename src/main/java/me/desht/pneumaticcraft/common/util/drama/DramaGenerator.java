@@ -11,7 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Adapted from the Ruby code at https://github.com/elifoster/drama-rb
+ * Adapted (with permission) from the Ruby code at https://github.com/elifoster/drama-rb
  */
 public class DramaGenerator {
     private static final Pattern KEYWORD = Pattern.compile("^%\\{(\\w+)}");

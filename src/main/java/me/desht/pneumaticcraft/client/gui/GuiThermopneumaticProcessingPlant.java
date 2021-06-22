@@ -119,7 +119,7 @@ public class GuiThermopneumaticProcessingPlant extends
         super.addProblems(curInfo);
 
         if (te.problem != null && te.problem != TPProblem.OK) {
-            curInfo.addAll(GuiUtils.xlateAndSplit(te.problem.key));
+            curInfo.addAll(GuiUtils.xlateAndSplit(te.problem.getTranslationKey()));
         }
     }
 

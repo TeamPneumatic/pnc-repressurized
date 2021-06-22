@@ -11,7 +11,6 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.ITag;
 import net.minecraft.tags.TagCollectionManager;
 import net.minecraft.util.JSONUtils;
@@ -36,62 +35,50 @@ public class FluidIngredient extends Ingredient {
     private List<Fluid> fluids;
     private final int amount;
     private ItemStack[] cachedStacks;
-    private final ResourceLocation tagId;
     private final ResourceLocation fluidId;
+    private final ITag<Fluid> fluidTag;
 
-    public static final FluidIngredient EMPTY = new FluidIngredient();
+    public static final FluidIngredient EMPTY = new FluidIngredient(Collections.emptyList(), 0, null, null);
 
-    private FluidIngredient() {
+    protected FluidIngredient(List<Fluid> fluids, int amount, ResourceLocation fluidId, ITag<Fluid> fluidTag) {
         super(Stream.empty());
-        this.fluids = Collections.emptyList();
-        this.amount = 0;
-        this.tagId = null;
-        this.fluidId = null;
+        this.fluids = fluids;
+        this.amount = amount;
+        this.fluidId = fluidId;
+        this.fluidTag = fluidTag;
     }
 
-    public FluidIngredient(Collection<Fluid> fluids, int amount) {
-        super(Stream.empty());
-        this.fluids = ImmutableList.copyOf(fluids);
-        this.amount = amount;
-        this.tagId = null;
-        this.fluidId = null;
-    }
-
-    private FluidIngredient(ResourceLocation fluidId, int amount, boolean isFluid) {
-        super(Stream.empty());
-        this.fluids = null; // will be filled out lazily
-        this.amount = amount;
-        if (isFluid) {
-            this.tagId = null;
-            this.fluidId = fluidId;
-        } else {
-            this.tagId = fluidId;
-            this.fluidId = null;
-        }
+    public static FluidIngredient of(FluidStack fluidStack) {
+        return of(fluidStack.getAmount(), fluidStack.getFluid());
     }
 
     public static FluidIngredient of(int amount, Fluid... fluids) {
-        return new FluidIngredient(Arrays.asList(fluids), amount);
+        return new FluidIngredient(Arrays.asList(fluids), amount, null, null);
     }
 
-    public static FluidIngredient of(int amount, ITag.INamedTag<Fluid> fluid) {
-        return new FluidIngredient(fluid.getName(), amount, false);
+    public static FluidIngredient of(int amount, ITag<Fluid> fluidTag) {
+        return new FluidIngredient(null, amount, null, fluidTag);
     }
 
     public static FluidIngredient of(int amount, ResourceLocation fluidId) {
-        return new FluidIngredient(fluidId, amount, true);
+        return new FluidIngredient(null, amount, fluidId, null);
     }
 
-    private Collection<Fluid> getFluidList() {
-        if (fluids == null && (tagId != null || fluidId != null)) {
-            if (tagId != null) {
-                ITag<Fluid> tag = FluidTags.getCollection().get(tagId);
-                fluids = tag == null ? Collections.emptyList() : ImmutableList.copyOf(tag.getAllElements());
-            }  else {
+    public static FluidIngredient of(Stream<FluidIngredient> stream) {
+        return new CompoundFluidIngredient(stream);
+    }
+
+    protected Collection<Fluid> getFluidList() {
+        if (fluids == null) {
+            if (fluidId != null) {
                 Fluid f = ForgeRegistries.FLUIDS.getValue(fluidId);
                 if (f != null && f != Fluids.EMPTY) {
                     fluids = Collections.singletonList(f);
                 }
+            } else if (fluidTag != null) {
+                fluids = ImmutableList.copyOf(fluidTag.getAllElements());
+            } else {
+                throw new IllegalStateException("no fluid ID or fluid tag is available?");
             }
         }
         return fluids;
@@ -134,7 +121,7 @@ public class FluidIngredient extends Ingredient {
     }
 
     public boolean testFluid(FluidStack fluidStack) {
-        return getFluidList().stream().anyMatch(f -> fluidStack.getFluid() == f && fluidStack.getAmount() >= amount);
+        return getFluidList().stream().anyMatch(f -> fluidStack.getFluid() == f && fluidStack.getAmount() >= getAmount());
     }
 
     public boolean testFluid(Fluid otherFluid) {
@@ -145,7 +132,8 @@ public class FluidIngredient extends Ingredient {
     public JsonElement serialize() {
         JsonObject json = new JsonObject();
         json.addProperty("type", Serializer.ID.toString());
-        if (tagId != null) {
+        if (fluidTag != null) {
+            ResourceLocation tagId = TagCollectionManager.getManager().getFluidTags().getValidatedIdFromTag(fluidTag);
             json.addProperty("tag", tagId.toString());
         } else if (fluidId != null) {
             json.addProperty("fluid", fluidId.toString());
@@ -154,7 +142,7 @@ public class FluidIngredient extends Ingredient {
         } else {
             throw new IllegalStateException("ingredient has no ID, tag or fluid!");
         }
-        json.addProperty("amount", amount);
+        json.addProperty("amount", getAmount());
         return json;
     }
 
@@ -168,7 +156,7 @@ public class FluidIngredient extends Ingredient {
     }
 
     public List<FluidStack> getFluidStacks() {
-        return getFluidList().stream().map(f -> new FluidStack(f, amount)).collect(Collectors.toList());
+        return getFluidList().stream().map(f -> new FluidStack(f, getAmount())).collect(Collectors.toList());
     }
 
     public static class Serializer implements IIngredientSerializer<FluidIngredient> {
@@ -183,7 +171,7 @@ public class FluidIngredient extends Ingredient {
             for (int i = 0; i < n; i++) {
                 fluids.add(buffer.readRegistryId());
             }
-            return new FluidIngredient(fluids, amount);
+            return FluidIngredient.of(amount, fluids.toArray(new Fluid[0]));
         }
 
         @Override
@@ -191,13 +179,14 @@ public class FluidIngredient extends Ingredient {
             int amount = JSONUtils.getInt(json, "amount", 1000);
             if (json.has("tag")) {
                 ResourceLocation rl = new ResourceLocation(JSONUtils.getString(json, "tag"));
-                if (TagCollectionManager.getManager().getFluidTags().get(rl) == null) throw new JsonSyntaxException("Unknown fluid tag '" + rl + "'");
-                return new FluidIngredient(rl, amount, false);
+                ITag<Fluid> tag = TagCollectionManager.getManager().getFluidTags().get(rl);
+                if (tag == null) throw new JsonSyntaxException("Unknown fluid tag '" + rl + "'");
+                return FluidIngredient.of(amount, tag);
             } else if (json.has("fluid")) {
                 ResourceLocation fluidName = new ResourceLocation(JSONUtils.getString(json, "fluid"));
                 Fluid fluid = ForgeRegistries.FLUIDS.getValue(fluidName);
                 if (fluid == null || fluid == Fluids.EMPTY) throw new JsonSyntaxException("Unknown fluid '" + fluidName + "'");
-                return new FluidIngredient(Collections.singletonList(fluid), amount);
+                return FluidIngredient.of(amount, fluid);
             } else {
                 throw new JsonSyntaxException("fluid ingredient must have 'fluid' or 'tag' field!");
             }
@@ -206,7 +195,7 @@ public class FluidIngredient extends Ingredient {
         @Override
         public void write(PacketBuffer buffer, FluidIngredient ingredient) {
             buffer.writeVarInt(ingredient.getFluidList().size());
-            buffer.writeVarInt(ingredient.amount);
+            buffer.writeVarInt(ingredient.getAmount());
             for (Fluid fluid : ingredient.getFluidList()) {
                 buffer.writeRegistryId(fluid);
             }

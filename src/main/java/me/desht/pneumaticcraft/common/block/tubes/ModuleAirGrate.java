@@ -11,11 +11,12 @@ import me.desht.pneumaticcraft.common.tileentity.RangeManager;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityHeatSink;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import me.desht.pneumaticcraft.common.util.EntityFilter;
-import me.desht.pneumaticcraft.common.util.IOHelper;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MoverType;
+import net.minecraft.entity.item.ExperienceOrbEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -31,7 +32,12 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemHandlerHelper;
 
 import java.util.*;
 
@@ -41,9 +47,10 @@ public class ModuleAirGrate extends TubeModule {
     private final Set<TileEntityHeatSink> heatSinks = new HashSet<>();
     private boolean showRange;
     private EntityFilter entityFilter = null;
-    private TileEntity adjacentInsertionTE = null;
-    private Direction adjacentInsertionSide;
     private final Map<BlockPos,Boolean> traceabilityCache = new HashMap<>();
+
+    private LazyOptional<IItemHandler> itemInsertionCap = null; // null = "unknown", LazyOptional.empty() = "known absent"
+    private LazyOptional<IFluidHandler> fluidInsertionCap = null;
 
     public ModuleAirGrate(ItemTubeModule itemTubeModule) {
         super(itemTubeModule);
@@ -77,12 +84,19 @@ public class ModuleAirGrate extends TubeModule {
         }
 
         if (!world.isRemote) coolHeatSinks();
-        pushEntities(world, pos, new Vector3d(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D));
+        Vector3d tileVec = Vector3d.copyCentered(pos).add(getDirection().getXOffset() * 0.49, getDirection().getYOffset() * 0.49, getDirection().getZOffset() * 0.49);
+        pushEntities(world, pos, tileVec);
+    }
+
+    @Override
+    public void onNeighborBlockUpdate() {
+        itemInsertionCap = null;
+        fluidInsertionCap = null;
     }
 
     private AxisAlignedBB getAffectedAABB() {
         BlockPos pos = pressureTube.getPos().offset(getDirection(), grateRange + 1);
-        return new AxisAlignedBB(pos, pos).grow(grateRange);
+        return new AxisAlignedBB(pos).grow(grateRange);
     }
 
     private int calculateRange() {
@@ -92,37 +106,39 @@ public class ModuleAirGrate extends TubeModule {
         return (int) range;
     }
 
-    private void pushEntities(World world, BlockPos pos, Vector3d tileVec) {
+    private void pushEntities(World world, BlockPos pos, Vector3d traceVec) {
         AxisAlignedBB bbBox = getAffectedAABB();
         List<Entity> entities = world.getEntitiesWithinAABB(Entity.class, bbBox, entityFilter);
         double d0 = grateRange * 3;
         int entitiesMoved = 0;
         for (Entity entity : entities) {
-            if (!entity.world.isRemote && entity instanceof ItemEntity && entity.isAlive()
-                    && entity.getDistanceSq(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D) < 1D) {
-                tryItemInsertion((ItemEntity) entity);
-            } else if (!ignoreEntity(entity) && rayTraceOK(entity, tileVec)) {
-                double x = (entity.getPosX() - pos.getX() - 0.5D) / d0;
-                double y = (entity.getPosY() + entity.getEyeHeight() - pos.getY() - 0.5D) / d0;
-                BlockPos entityPos = entity.getPosition();
-                if (!Block.hasEnoughSolidSide(world, entityPos, Direction.UP) && !world.isAirBlock(entityPos)) {
-                    y -= 0.15;  // kludge: avoid entities getting stuck on edges, e.g. farmland->full block
-                }
-                double z = (entity.getPosZ() - pos.getZ() - 0.5D) / d0;
-                double d4 = Math.sqrt(x * x + y * y + z * z);
-                double d5 = 1.0D - d4;
+            if (ignoreEntity(entity) || !entity.isAlive() || !rayTraceOK(entity, traceVec)) {
+                continue;
+            }
+            if (!entity.world.isRemote) {
+                tryInsertion(traceVec, entity);
+            }
+            double x = (entity.getPosX() - pos.getX() - 0.5D) / d0;
+            double y = (entity.getPosY() + entity.getEyeHeight() - pos.getY() - 0.5D) / d0;
+            BlockPos entityPos = entity.getPosition();
+            if (!Block.hasEnoughSolidSide(world, entityPos, Direction.UP) && !world.isAirBlock(entityPos)) {
+                y -= 0.15;  // kludge: avoid entities getting stuck on edges, e.g. farmland->full block
+            }
+            double z = (entity.getPosZ() - pos.getZ() - 0.5D) / d0;
+            double d4 = Math.sqrt(x * x + y * y + z * z);
+            double d5 = 1.0D - d4;
 
-                if (d5 > 0.0D) {
-                    d5 *= d5;
-                    if (vacuum) d5 *= -1;
-                    entity.move(MoverType.SELF, new Vector3d(x * d5, y * d5, z * d5));
-                    entitiesMoved++;
-                    if (world.isRemote && world.rand.nextDouble() < 0.2) {
-                        if (vacuum) {
-                            world.addParticle(AirParticleData.DENSE, entity.getPosX(), entity.getPosY(), entity.getPosZ(), -x, -y, -z);
-                        } else {
-                            world.addParticle(AirParticleData.DENSE, pos.getX() + 0.5 + getDirection().getXOffset(), pos.getY() + 0.5 + getDirection().getYOffset(), pos.getZ() + 0.5 + getDirection().getZOffset(), x, y, z);
-                        }
+            if (d5 > 0.0D) {
+                d5 *= d5;
+                if (vacuum) d5 *= -1;
+                if (entity.isOnGround()) entity.setMotion(entity.getMotion().add(0, 0.25, 0));
+                entity.move(MoverType.SELF, new Vector3d(x * d5, y * d5, z * d5));
+                entitiesMoved++;
+                if (world.isRemote && world.rand.nextDouble() < 0.2) {
+                    if (vacuum) {
+                        world.addParticle(AirParticleData.DENSE, entity.getPosX(), entity.getPosY(), entity.getPosZ(), -x, -y, -z);
+                    } else {
+                        world.addParticle(AirParticleData.DENSE, pos.getX() + 0.5 + getDirection().getXOffset(), pos.getY() + 0.5 + getDirection().getYOffset(), pos.getZ() + 0.5 + getDirection().getZOffset(), x, y, z);
                     }
                 }
             }
@@ -132,52 +148,94 @@ public class ModuleAirGrate extends TubeModule {
         }
     }
 
-    private boolean ignoreEntity(Entity entity) {
-        if (entity instanceof PlayerEntity) {
-            return ((PlayerEntity) entity).isCreative() || entity.isSneaking() || entity.isSpectator();
-        } else {
-            // don't touch semiblocks, at all
-            return !entity.canBePushed() || entity instanceof EntitySemiblockBase;
+    private void tryInsertion(Vector3d traceVec, Entity entity) {
+        if (entity instanceof ItemEntity && isCloseEnough(entity, traceVec)) {
+            tryItemInsertion((ItemEntity) entity);
+        } else if (entity instanceof ExperienceOrbEntity && isCloseEnough(entity, traceVec)) {
+            tryOrbInsertion((ExperienceOrbEntity) entity);
         }
     }
 
-    private boolean rayTraceOK(Entity entity, Vector3d tileVec) {
-        BlockPos pos = new BlockPos(entity.getEyePosition(0f));
-        return traceabilityCache.computeIfAbsent(pos, k -> {
-            Vector3d entityVec = new Vector3d(entity.getPosX(), entity.getPosY() + entity.getEyeHeight(), entity.getPosZ());
-            RayTraceContext ctx = new RayTraceContext(entityVec, tileVec, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, entity);
-            BlockRayTraceResult trace = entity.getEntityWorld().rayTraceBlocks(ctx);
-            return trace.getPos().equals(pressureTube.getPos());
-        });
-    }
-
     private void tryItemInsertion(ItemEntity entity) {
-        if (getAdjacentInventory() != null) {
-            ItemStack stack = entity.getItem();
-            ItemStack excess = IOHelper.insert(getAdjacentInventory(), stack, adjacentInsertionSide, false);
+        ItemStack stack = entity.getItem();
+        getItemInsertionCap().ifPresent(handler -> {
+            ItemStack excess = ItemHandlerHelper.insertItem(handler, stack, false);
             if (excess.isEmpty()) {
                 entity.remove();
             } else {
                 entity.setItem(excess);
             }
-        }
+        });
     }
 
-    private TileEntity getAdjacentInventory() {
-        if (adjacentInsertionTE != null && !adjacentInsertionTE.isRemoved()) {
-            return adjacentInsertionTE;
-        }
-
-        adjacentInsertionTE = null;
-        for (Direction dir : DirectionUtil.VALUES) {
-            TileEntity inv = pressureTube.getWorld().getTileEntity(pressureTube.getPos().offset(dir));
-            if (inv != null && inv.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir.getOpposite()).isPresent()) {
-                adjacentInsertionTE = inv;
-                adjacentInsertionSide = dir.getOpposite();
-                break;
+    private void tryOrbInsertion(ExperienceOrbEntity entity) {
+        getFluidInsertionCap().ifPresent(handler -> {
+            if (PneumaticCraftUtils.fillTankWithOrb(handler, entity, IFluidHandler.FluidAction.EXECUTE)) {
+                entity.remove();
             }
+        });
+    }
+
+    private boolean isCloseEnough(Entity entity, Vector3d traceVec) {
+        return entity.getDistanceSq(traceVec) < 1D;
+    }
+
+    private boolean ignoreEntity(Entity entity) {
+        if (entity instanceof PlayerEntity) {
+            return ((PlayerEntity) entity).isCreative() || entity.isSneaking() || entity.isSpectator();
         }
-        return adjacentInsertionTE;
+        if (entity instanceof ItemEntity || entity instanceof ExperienceOrbEntity) {
+            return false;
+        }
+        // don't touch semiblocks, at all
+        return !entity.canBePushed() || entity instanceof EntitySemiblockBase;
+    }
+
+    private boolean rayTraceOK(Entity entity, Vector3d traceVec) {
+        BlockPos pos = new BlockPos(entity.getEyePosition(0f));
+        return traceabilityCache.computeIfAbsent(pos, k -> {
+            Vector3d entityVec = new Vector3d(entity.getPosX(), entity.getPosY() + entity.getEyeHeight(), entity.getPosZ());
+            RayTraceContext ctx = new RayTraceContext(entityVec, traceVec, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, entity);
+            BlockRayTraceResult trace = entity.getEntityWorld().rayTraceBlocks(ctx);
+            return trace.getPos().equals(pressureTube.getPos());
+        });
+    }
+
+    private LazyOptional<IItemHandler> getItemInsertionCap() {
+        if (itemInsertionCap == null) {
+            for (Direction dir : DirectionUtil.VALUES) {
+                TileEntity te = pressureTube.getWorld().getTileEntity(pressureTube.getPos().offset(dir));
+                if (te != null) {
+                    LazyOptional<IItemHandler> cap = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir.getOpposite());
+                    // bit of a kludge: exclude TE's which also offer a fluid capability on this side
+                    if (cap.isPresent() && !te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dir.getOpposite()).isPresent()) {
+                        itemInsertionCap = cap;
+                        itemInsertionCap.addListener(l -> itemInsertionCap = null);
+                        break;
+                    }
+                }
+            }
+            if (itemInsertionCap == null) itemInsertionCap = LazyOptional.empty();
+        }
+        return itemInsertionCap;
+    }
+
+    private LazyOptional<IFluidHandler> getFluidInsertionCap() {
+        if (fluidInsertionCap == null) {
+            for (Direction dir : DirectionUtil.VALUES) {
+                TileEntity te = pressureTube.getWorld().getTileEntity(pressureTube.getPos().offset(dir));
+                if (te != null) {
+                    LazyOptional<IFluidHandler> cap = te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dir.getOpposite());
+                    if (cap.isPresent()) {
+                        fluidInsertionCap = cap;
+                        fluidInsertionCap.addListener(l -> fluidInsertionCap = null);
+                        break;
+                    }
+                }
+            }
+            if (fluidInsertionCap == null) fluidInsertionCap = LazyOptional.empty();
+        }
+        return fluidInsertionCap;
     }
 
     private void coolHeatSinks() {
@@ -250,11 +308,6 @@ public class ModuleAirGrate extends TubeModule {
 
     public void setEntityFilter(String filter) {
         entityFilter = EntityFilter.fromString(filter);
-    }
-
-    @Override
-    public void onPlaced() {
-//        showRange = true;
     }
 
     public boolean isShowRange() {
