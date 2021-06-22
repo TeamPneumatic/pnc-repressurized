@@ -2,7 +2,7 @@
 	"variants": {
 		"facing=north": { "model" :  "pneumaticcraft:block/refinery_output", "y": 180 },
 		"facing=south": { "model" :  "pneumaticcraft:block/refinery_output" },
-		"facing=west": { "model" :  "pneumaticcraft:block/refinery_output", "y": 270 },
-		"facing=east": { "model" :  "pneumaticcraft:block/refinery_output", "y": 90 }
+		"facing=west": { "model" :  "pneumaticcraft:block/refinery_output", "y": 90 },
+		"facing=east": { "model" :  "pneumaticcraft:block/refinery_output", "y": 270 }
 	}
 }
