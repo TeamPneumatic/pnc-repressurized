@@ -23,16 +23,16 @@ import javax.annotation.Nullable;
 
 public class BlockThermalLagging extends BlockPneumaticCraft {
     private static final VoxelShape[] SHAPES = new VoxelShape[] {
-            Block.box(0, 0, 0, 16,  0.5, 16),
-            Block.box(0, 15.5, 0, 16, 16, 16),
-            Block.box(0, 0, 0, 16, 16,  0.5),
-            Block.box(0, 0, 15.5, 16, 16, 16),
-            Block.box(0, 0, 0,  0.5, 16, 16),
-            Block.box(15.5, 0, 0, 16, 16, 16),
+            Block.makeCuboidShape(0, 0, 0, 16,  0.5, 16),
+            Block.makeCuboidShape(0, 15.5, 0, 16, 16, 16),
+            Block.makeCuboidShape(0, 0, 0, 16, 16,  0.5),
+            Block.makeCuboidShape(0, 0, 15.5, 16, 16, 16),
+            Block.makeCuboidShape(0, 0, 0,  0.5, 16, 16),
+            Block.makeCuboidShape(15.5, 0, 0, 16, 16, 16),
     };
 
     public BlockThermalLagging() {
-        super(ModBlocks.defaultProps().noOcclusion().noCollission());
+        super(ModBlocks.defaultProps().notSolid().doesNotBlockMovement());
     }
 
     @Override
@@ -43,37 +43,37 @@ public class BlockThermalLagging extends BlockPneumaticCraft {
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext selectionContext) {
         if (selectionContext.getEntity() instanceof LivingEntity) {
-            ItemStack stack = ((LivingEntity) selectionContext.getEntity()).getMainHandItem();
+            ItemStack stack = ((LivingEntity) selectionContext.getEntity()).getHeldItemMainhand();
             return ModdedWrenchUtils.getInstance().isWrench(stack)
                     || stack.getToolTypes().contains(ToolType.PICKAXE)
-                    || selectionContext.getEntity().isShiftKeyDown() ?
-                    SHAPES[getRotation(state).get3DDataValue()] : VoxelShapes.empty();
+                    || selectionContext.getEntity().isSneaking() ?
+                    SHAPES[getRotation(state).getIndex()] : VoxelShapes.empty();
         }
-        return SHAPES[getRotation(state).get3DDataValue()];
+        return SHAPES[getRotation(state).getIndex()];
     }
 
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockItemUseContext ctx) {
-        return defaultBlockState().setValue(directionProperty(), ctx.getClickedFace().getOpposite());
+        return getDefaultState().with(directionProperty(), ctx.getFace().getOpposite());
     }
 
     @Override
-    public boolean canSurvive(BlockState state, IWorldReader worldIn, BlockPos pos) {
+    public boolean isValidPosition(BlockState state, IWorldReader worldIn, BlockPos pos) {
         Direction dir = getRotation(state);
-        return !worldIn.getBlockState(pos.relative(dir)).isAir(worldIn, pos.relative(dir));
+        return !worldIn.getBlockState(pos.offset(dir)).isAir(worldIn, pos.offset(dir));
     }
 
     @Override
-    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
-        if (!canSurvive(stateIn, worldIn, currentPos)) {
-            return Blocks.AIR.defaultBlockState();
+    public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
+        if (!isValidPosition(stateIn, worldIn, currentPos)) {
+            return Blocks.AIR.getDefaultState();
         }
-        return super.updateShape(stateIn, facing, facingState, worldIn, currentPos, facingPos);
+        return super.updatePostPlacement(stateIn, facing, facingState, worldIn, currentPos, facingPos);
     }
 
     @Override
-    public boolean skipRendering(BlockState state, BlockState adjacentBlockState, Direction side) {
+    public boolean isSideInvisible(BlockState state, BlockState adjacentBlockState, Direction side) {
         return adjacentBlockState.getBlock() == state.getBlock();
     }
 
