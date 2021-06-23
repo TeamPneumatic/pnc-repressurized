@@ -1108,6 +1108,9 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
                     te.progWidgets.add(p);
                 }
             }
+            if (!toCreate.isEmpty()) {
+                NetworkHandler.sendToServer(new PacketProgrammerUpdate(te));
+            }
         }
         return true;
     }

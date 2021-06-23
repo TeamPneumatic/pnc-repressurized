@@ -59,7 +59,7 @@ public class ProgWidgetDig extends ProgWidgetDigAndPlace implements IToolUser {
     @Override
     public void writeToNBT(CompoundNBT tag){
         super.writeToNBT(tag);
-        tag.putBoolean("requireDiggingTool", requireDiggingTool);
+        if (requireDiggingTool) tag.putBoolean("requireDiggingTool", true);
     }
 
     @Override

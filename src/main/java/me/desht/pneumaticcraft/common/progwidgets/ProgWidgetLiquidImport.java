@@ -84,7 +84,7 @@ public class ProgWidgetLiquidImport extends ProgWidgetInventoryBase implements I
     public void writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
         tag.putInt("order", order.ordinal());
-        tag.putBoolean("voidExcess", voidExcess);
+        if (voidExcess) tag.putBoolean("voidExcess", true);
     }
 
     @Override

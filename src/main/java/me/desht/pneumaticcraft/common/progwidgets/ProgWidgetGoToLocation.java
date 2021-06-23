@@ -87,7 +87,7 @@ public class ProgWidgetGoToLocation extends ProgWidget implements IGotoWidget, I
     @Override
     public void writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
-        tag.putBoolean("doneWhenDeparting", doneWhenDeparting);
+        if (doneWhenDeparting) tag.putBoolean("doneWhenDeparting", true);
     }
 
     @Override

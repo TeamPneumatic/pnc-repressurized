@@ -111,9 +111,9 @@ public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase imp
     public void writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
         for (int i = 0; i < 6; i++) {
-            tag.putBoolean(Direction.byIndex(i).name(), accessingSides[i]);
+            if (accessingSides[i]) tag.putBoolean(Direction.byIndex(i).name(), true);
         }
-        tag.putBoolean("useCount", useCount);
+        if (useCount) tag.putBoolean("useCount", true);
         tag.putInt("count", count);
     }
 

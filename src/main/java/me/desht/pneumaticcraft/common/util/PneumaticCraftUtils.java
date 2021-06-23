@@ -672,4 +672,24 @@ public class PneumaticCraftUtils {
         if (str.endsWith(".")) str = str + "0";
         return NumberUtils.isParsable(str);
     }
+
+    /**
+     * Get a resource location from the given string, defaulting to "pneumaticcraft:" namespace
+     *
+     * @param str a string
+     * @return a resource location
+     */
+    public static ResourceLocation modDefaultedRL(String str) {
+        return str.indexOf(':') > 0 ? new ResourceLocation(str) : new ResourceLocation(Names.MOD_ID, str);
+    }
+
+    /**
+     * Stringify a resource location, omitting the namespace if it's "pneumaticcraft:"
+     *
+     * @param rl a resource location
+     * @return stringified resource location
+     */
+    public static String modDefaultedString(ResourceLocation rl) {
+        return rl.getNamespace().equals(Names.MOD_ID) ? rl.getPath() : rl.toString();
+    }
 }

@@ -85,8 +85,8 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
         tag.putInt("posX", x);
         tag.putInt("posY", y);
         tag.putInt("posZ", z);
-        tag.putString("variable", variable);
-        tag.putBoolean("useVariable", useVariable);
+        if (!variable.isEmpty()) tag.putString("variable", variable);
+        if (useVariable) tag.putBoolean("useVariable", true);
     }
 
     @Override

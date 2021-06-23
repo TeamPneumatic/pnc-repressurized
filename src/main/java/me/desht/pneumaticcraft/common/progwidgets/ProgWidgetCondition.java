@@ -138,7 +138,7 @@ public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implem
     @Override
     public void writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
-        tag.putBoolean("isAndFunction", isAndFunction);
+        if (isAndFunction) tag.putBoolean("isAndFunction", true);
         tag.putByte("operator", (byte) operator.ordinal());
         if (!measureVar.isEmpty()) tag.putString("measureVar", measureVar);
     }

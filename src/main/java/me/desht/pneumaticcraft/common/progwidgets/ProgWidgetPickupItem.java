@@ -45,7 +45,7 @@ public class ProgWidgetPickupItem extends ProgWidgetAreaItemBase implements IIte
     @Override
     public void writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
-        tag.putBoolean("canSteal", canSteal);
+        if (canSteal) tag.putBoolean("canSteal", true);
     }
 
     @Override

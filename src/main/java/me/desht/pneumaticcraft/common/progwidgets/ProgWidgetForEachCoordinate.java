@@ -60,7 +60,7 @@ public class ProgWidgetForEachCoordinate extends ProgWidgetAreaItemBase implemen
 
     @Override
     public void writeToNBT(CompoundNBT tag) {
-        tag.putString("variable", elementVariable);
+        if (!elementVariable.isEmpty()) tag.putString("variable", elementVariable);
         super.writeToNBT(tag);
     }
 
