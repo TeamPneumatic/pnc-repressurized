@@ -18,6 +18,7 @@ import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.shapes.IBooleanFunction;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
@@ -28,15 +29,25 @@ import net.minecraftforge.common.util.Constants;
 import javax.annotation.Nullable;
 import java.util.Random;
 import java.util.function.ToIntFunction;
+import java.util.stream.Stream;
 
 import static net.minecraft.state.properties.BlockStateProperties.LIT;
 
 public class BlockWallLamp extends BlockPneumaticCraft implements ColorHandlers.ITintableBlock {
-    private static final VoxelShape BASE1 = makeCuboidShape(3, 0, 2, 13, 1, 14);
-    private static final VoxelShape BASE2 = makeCuboidShape(2, 0, 3, 14, 1, 13);
-    private static final VoxelShape BASE3 = makeCuboidShape(4, 1, 3, 12, 2, 13);
-    private static final VoxelShape BASE4 = makeCuboidShape(3, 1, 4, 13, 2, 12);
-    private static final VoxelShape SHAPE_UP = VoxelShapes.or(BASE1, BASE2, BASE3, BASE4);
+//    private static final VoxelShape BASE1 = makeCuboidShape(3, 0, 2, 13, 1, 14);
+//    private static final VoxelShape BASE2 = makeCuboidShape(2, 0, 3, 14, 1, 13);
+//    private static final VoxelShape BASE3 = makeCuboidShape(4, 1, 3, 12, 2, 13);
+//    private static final VoxelShape BASE4 = makeCuboidShape(3, 1, 4, 13, 2, 12);
+    private static final VoxelShape SHAPE_UP = Stream.of(
+            Block.makeCuboidShape(3, 0, 3, 13, 1, 13),
+            Block.makeCuboidShape(4, 1, 4, 12, 2, 12),
+            Block.makeCuboidShape(6.15, 2.25, 4.75, 6.65, 3.5, 11.25),
+            Block.makeCuboidShape(5, 2.25, 5, 11, 3.25, 11),
+            Block.makeCuboidShape(4.75, 1.25, 4.75, 11.25, 2.5, 11.25),
+            Block.makeCuboidShape(9.35, 2.25, 4.75, 9.85, 3.5, 11.25),
+            Block.makeCuboidShape(4.75, 2.25, 9.35, 11.25, 3.5, 9.85),
+            Block.makeCuboidShape(4.75, 2.25, 6.15, 11.25, 3.5, 6.65)
+        ).reduce((v1, v2) -> {return VoxelShapes.combineAndSimplify(v1, v2, IBooleanFunction.OR);}).get();
     private static final VoxelShape SHAPE_NORTH = VoxelShapeUtils.rotateX(SHAPE_UP, 270);
     private static final VoxelShape SHAPE_DOWN = VoxelShapeUtils.rotateX(SHAPE_NORTH, 270);
     private static final VoxelShape SHAPE_SOUTH = VoxelShapeUtils.rotateX(SHAPE_UP, 90);

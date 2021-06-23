@@ -25,7 +25,7 @@ public class RenderRefineryController extends AbstractFluidTER<TileEntityRefiner
     Collection<TankRenderInfo> getTanksToRender(TileEntityRefineryController te) {
         int rot = te.getRotation().getHorizontalIndex();
         if (rot >= 0 && rot < 4) {
-            return Collections.singletonList(new TankRenderInfo(te.getInputTank(), BOUNDS[te.getRotation().getHorizontalIndex()], te.getRotation().getOpposite(), Direction.UP));
+            return Collections.singletonList(new TankRenderInfo(te.getInputTank(), BOUNDS[te.getRotation().getHorizontalIndex()]).without(Direction.DOWN));
         } else {
             return Collections.emptyList();
         }
