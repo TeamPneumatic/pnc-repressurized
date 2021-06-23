@@ -3,8 +3,8 @@
 	"parent": "forge:block/default",
 	"texture_size": [64, 64],
 	"textures": {
-		"particle": "pneumaticcraft:model/refinery_output",
-		"base": "pneumaticcraft:model/refinery_output"
+		"particle": "pneumaticcraft:model/refinery",
+		"base": "pneumaticcraft:model/refinery"
 	},
 	"elements": [
 		{

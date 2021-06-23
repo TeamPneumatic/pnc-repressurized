@@ -1,20 +1,3 @@
-/*
- * This file is part of pnc-repressurized.
- *
- *     pnc-repressurized is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
- *
- *     pnc-repressurized is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
- *
- *     You should have received a copy of the GNU General Public License
- *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
- */
-
 package me.desht.pneumaticcraft.client.render.fluid;
 
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefineryController;
@@ -40,9 +23,9 @@ public class RenderRefineryController extends AbstractFluidTER<TileEntityRefiner
 
     @Override
     Collection<TankRenderInfo> getTanksToRender(TileEntityRefineryController te) {
-        int rot = te.getRotation().get2DDataValue();
+        int rot = te.getRotation().getHorizontalIndex();
         if (rot >= 0 && rot < 4) {
-            return Collections.singletonList(new TankRenderInfo(te.getInputTank(), BOUNDS[te.getRotation().get2DDataValue()], te.getRotation().getOpposite(), Direction.UP));
+            return Collections.singletonList(new TankRenderInfo(te.getInputTank(), BOUNDS[te.getRotation().getHorizontalIndex()]).without(Direction.DOWN));
         } else {
             return Collections.emptyList();
         }
