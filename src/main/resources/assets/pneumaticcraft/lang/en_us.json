@@ -718,7 +718,6 @@
    "pneumaticcraft.blockTracker.info.thaumcraft.nodetype" : "Node Type:",
    "pneumaticcraft.blockTracker.info.thaumcraft.none" : "No Aspects",
    "pneumaticcraft.blockTracker.info.trackedBlocks" : "Tracked Blocks:",
-   "pneumaticcraft.blockTracker.message.stopSpam" : "Stopped spam on %s",
    "pneumaticcraft.boots.kick" : "Pneumatic Boots Kick",
    "pneumaticcraft.chestplate.launcher" : "Pneumatic Chestplate Launcher",
    "pneumaticcraft.command.deliverAmazon.noInventory" : "No inventory at %s.",

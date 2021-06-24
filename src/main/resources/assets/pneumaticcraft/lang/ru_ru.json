@@ -718,7 +718,6 @@
   "pneumaticcraft.blockTracker.info.thaumcraft.nodetype": "Тип узла:",
   "pneumaticcraft.blockTracker.info.thaumcraft.none": "Нет аспектов",
   "pneumaticcraft.blockTracker.info.trackedBlocks": "Отслеженные блоки:",
-  "pneumaticcraft.blockTracker.message.stopSpam": "Остановлено появление %s",
   "pneumaticcraft.boots.kick": "Пневмоудар ботинками",
   "pneumaticcraft.chestplate.launcher": "Пусковая установка Пневмоброни",
   "pneumaticcraft.command.deliverAmazon.noInventory": "Нет инвентаря на %s.",
