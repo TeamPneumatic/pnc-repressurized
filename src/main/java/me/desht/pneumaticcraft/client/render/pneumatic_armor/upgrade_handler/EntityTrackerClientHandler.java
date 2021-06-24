@@ -27,6 +27,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.HangingEntity;
+import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
@@ -206,7 +207,7 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
         @Override
         public boolean apply(Entity entity) {
             return entity != player
-                    && (entity instanceof LivingEntity || entity instanceof HangingEntity)
+                    && (entity instanceof LivingEntity || entity instanceof HangingEntity || entity instanceof AbstractMinecartEntity)
                     && entity.isAlive()
                     && player.getDistance(entity) < threshold
                     && !MinecraftForge.EVENT_BUS.post(new EntityTrackEvent(entity))

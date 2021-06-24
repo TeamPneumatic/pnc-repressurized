@@ -27,6 +27,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemFrameEntity;
 import net.minecraft.entity.item.PaintingEntity;
 import net.minecraft.entity.item.PaintingType;
+import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
 import net.minecraft.entity.monster.CreeperEntity;
 import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.entity.monster.SlimeEntity;
@@ -63,6 +64,7 @@ public class EntityTrackHandler {
         manager.registerEntityTrackEntry(EntityTrackEntryMob::new);
         manager.registerEntityTrackEntry(EntityTrackEntryItemFrame::new);
         manager.registerEntityTrackEntry(EntityTrackEntryPainting::new);
+        manager.registerEntityTrackEntry(EntityTrackEntryMinecart::new);
     }
 
     public static void init() {
@@ -348,6 +350,18 @@ public class EntityTrackHandler {
             if (art != null) {
                 curInfo.add(xlate("pneumaticcraft.entityTracker.info.painting.art", art.getRegistryName().getPath()));
             }
+        }
+    }
+
+    public static class EntityTrackEntryMinecart implements IEntityTrackEntry {
+        @Override
+        public boolean isApplicable(Entity entity) {
+            return entity instanceof AbstractMinecartEntity;
+        }
+
+        @Override
+        public void addInfo(Entity entity, List<ITextComponent> curInfo, boolean isLookingAtTarget) {
+            // TODO 1.17 implement an entity syncing protocol (probably as part of a general pneumatic helmet tracker overhaul)
         }
     }
 

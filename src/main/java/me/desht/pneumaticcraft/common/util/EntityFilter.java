@@ -15,7 +15,7 @@ import net.minecraft.entity.item.BoatEntity;
 import net.minecraft.entity.item.ExperienceOrbEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.item.PaintingEntity;
-import net.minecraft.entity.item.minecart.MinecartEntity;
+import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.CatEntity;
@@ -49,7 +49,7 @@ public class EntityFilter implements Predicate<Entity>, com.google.common.base.P
             .put("item", ItemEntity.class)
             .put("drone", EntityDrone.class)
             .put("boat", BoatEntity.class)
-            .put("minecart", MinecartEntity.class)
+            .put("minecart", AbstractMinecartEntity.class)
             .put("painting", PaintingEntity.class)
             .put("orb", ExperienceOrbEntity.class)
             .build();

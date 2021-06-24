@@ -8,6 +8,7 @@ import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.HangingEntity;
+import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3f;
@@ -94,7 +95,7 @@ public class RenderTargetCircle {
             return DRONE;
         } else if (entity instanceof IMob) {
             return HOSTILE;
-        } else if (entity instanceof HangingEntity) {
+        } else if (entity instanceof HangingEntity || entity instanceof AbstractMinecartEntity) {
             return HANGING;
         } else {
             return DEFAULT;
