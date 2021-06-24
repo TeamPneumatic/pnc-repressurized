@@ -20,7 +20,7 @@ PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
   * If there's an adjacent fluid tank, orbs will be converted to Memory Essence and stored in the tank (20mB fluid per XP point)
 * Updated ru_ru translations
 * Added config setting pneumaticcraft-common.toml -> Heat -> `addDefaultFluidEntries` which controls whether heat properties for modded fluids will be automatically added
-  * Note that vanilla water and lava are still always auto-added; this setting is for modded fluids
+  * Note that vanilla water and lava are still always auto-added; this setting is just for modded fluids
   * If set to no, the intention is that heat properties for modded fluids should be added by the modpack maker as required (see https://github.com/TeamPneumatic/pnc-repressurized/wiki/Block-Heat-Properties)
 * Elevator now has a `getVelocity()` Lua method for ComputerCraft purpose
   * Returns current velocity in blocks/tick; negative values indicate elevator is descending
@@ -28,12 +28,20 @@ PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
   * Use the `pneumaticcraft:block_tracker_misc_blocks` tag
   * Defaults are the same as before: TNT, Tripwires, Bee Nests and all silverfish-infested stone blocks
   * **Important**: resist the temptation to add very common blocks to this (e.g. `#forge:ores`) since excessive results can cause severe client-side FPS drops
-* Right-clicking a Crop Support which doesn't have a block in its space now does a right-click on the block below
-  * This makes it easy to plant crops in an empty Crop Support
-* Right-clicking an Aphorism Tile which is invisible now does a right-click on the block behind
-  * This makes invisible Aphorism Tiles useful for labelling chests etc. with text or displayed items; the chest behind can now be opened with a right-click
+* Crop Supports now pass player right-clicks along to the enclosed block more intelligently
+  * Makes planting and bone-mealing crops in a Crop Support far easier
+* Right-clicking an Aphorism Tile which is invisible now passes the right-click to the block behind
+  * This makes invisible Aphorism Tiles useful for labelling chests etc. with text or displayed items; the chest behind can now easily be opened with a right-click
   * Sneak+right-click an invisible Aphorism Tile with an empty hand to open the editor GUI
-  
+* All minecart types are now tracked with the Pneumatic Helmet Entity Tracker
+  * Note that Chest & Hopper Minecart inventories are *not* displayed
+  * Note that `@minecart` can be useful here as an entity filter to match all minecarts
+* Significantly reduced Pneumatic Helmet Block Tracker network chatter, especially in areas with many inventories
+  * Was sync'ing more inventory data from server to client than really necessary
+* Pneumatic Helmet Entity Tracker mob targeting warnings are now coalesced by mob type, where feasible
+  * Reduces HUD message spam when there are many hostiles about
+  * Also got rid of the "Stopped spam on Entity Tracker!" message since it's not very useful to players
+
 ### Fixes
 * Fixed another dedicated server crash related to mods which query fuels before world is available
   * It's a workaround; mods which query fuels very early (e.g. Minecolonies & Simple Generators) just won't see PNC:R fuel buckets, but no crash!
@@ -47,6 +55,8 @@ PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 * Work around a client crash when Pressure Glass is part of a Create schematicannon preview
   * Actually a Create issue which will be fixed in next Create release, but this is a bandaid fix for now
 * Fixed pressure module (Pressure Gauge/Regulator/Safety Valve) GUIs flicking from large to small on open when the module has an Advanced PCB installed
+* Fixed player pose not being reset when flying with Jet Boots and running out of air
+* Fixed client crash when closing inventory search window from GPS Area Tool GUI
 
 ## 2.12.5-190 (25 May 2021)
 
@@ -57,7 +67,7 @@ PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
   * Tooltip now shows both required and available puzzle pieces for the current program, and greys out the button if insufficient pieces
 
 ### Fixes
-* Fixed Remote layouts export from older PNC versions not importing
+* Fixed Remote layouts exported from older PNC versions not importing
 * Fixed negative numbers not working in Coordinate widget GUI
 * Fixed server reload crash when Minecolonies also present
   * Related to timing issue of Minecolonies furnace fuel discovery triggering PNC fuel recipe searching too early
