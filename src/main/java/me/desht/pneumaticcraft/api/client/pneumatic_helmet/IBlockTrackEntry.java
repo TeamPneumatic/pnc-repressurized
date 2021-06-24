@@ -14,6 +14,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -41,13 +42,13 @@ public interface IBlockTrackEntry {
      * second intervals). This is specifically aimed at Tile Entities, as the server will
      * send an NBT packet. Return an empty list if no updates are needed, otherwise a
      * list of the block positions for which updates should be sent (in most cases,
-     * only the te's own block pos, but potentially others for multiblocks like the
+     * only the TE's own block pos, but potentially others for multiblocks like the
      * vanilla double chest)
      *
-     * @param te The TileEntity at the currently checked location.
-     * @return true a list of the block positions that should be updated
+     * @param te the tile entity at the currently checked location, may be null
+     * @return a list of the block positions for which update request packets should be sent
      */
-    List<BlockPos> getServerUpdatePositions(TileEntity te);
+    List<BlockPos> getServerUpdatePositions(@Nullable TileEntity te);
 
     /**
      * The return of this method defines at how many tracked blocks of this type
