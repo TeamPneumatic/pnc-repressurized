@@ -87,7 +87,9 @@ public class EntityHeatFrame extends EntitySemiblockBase {
 
     @Override
     public boolean canPlace(Direction facing) {
-        return getCachedTileEntity() != null && getCachedTileEntity().getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent();
+        return getCachedTileEntity() != null
+                && getCachedTileEntity().getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent()
+                && !getCachedTileEntity().getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).isPresent();
     }
 
     private void setStatus(byte status) {
