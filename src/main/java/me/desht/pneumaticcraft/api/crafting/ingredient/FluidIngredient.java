@@ -91,7 +91,10 @@ public class FluidIngredient extends Ingredient {
 
     @Override
     public boolean test(@Nullable ItemStack stack) {
-        return stack != null && FluidUtil.getFluidContained(stack).map(this::testFluid).orElse(false);
+        // an item can be used as fluid ingredient (e.g. speed upgrade crafting using bucket or tank of lubricant) iff
+        // 1. it provides a fluid handler capability, AND
+        // 2. it acts a container item so it doesn't just get voided when crafted with
+        return stack != null && stack.hasContainerItem() && FluidUtil.getFluidContained(stack).map(this::testFluid).orElse(false);
     }
 
     @Override
