@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.util.DirectionUtil;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -47,9 +48,10 @@ public class FluidYeastCulture {
                 List<ItemEntity> entities = worldIn.getEntitiesWithinAABB(ItemEntity.class, new AxisAlignedBB(pos), e -> e.getItem().getItem() == Items.SUGAR);
                 if (!entities.isEmpty()) {
                     for (Direction d : DirectionUtil.VALUES) {
-                        FluidState fluidState = worldIn.getFluidState(pos.offset(d));
-                        if (fluidState.isSource() && fluidState.getFluid() == Fluids.WATER) {
-                            worldIn.setBlockState(pos.offset(d), ModFluids.YEAST_CULTURE.get().getDefaultState().getBlockState(), Constants.BlockFlags.DEFAULT);
+                        BlockPos pos1 = pos.offset(d);
+                        FluidState fluidState = worldIn.getFluidState(pos1);
+                        if (fluidState.isSource() && fluidState.getFluid() == Fluids.WATER && worldIn.getBlockState(pos1).getBlock() == Blocks.WATER) {
+                            worldIn.setBlockState(pos1, ModFluids.YEAST_CULTURE.get().getDefaultState().getBlockState(), Constants.BlockFlags.DEFAULT);
                             entities.get(0).getItem().shrink(1);
                             if (entities.get(0).getItem().isEmpty()) {
                                 entities.get(0).remove();
