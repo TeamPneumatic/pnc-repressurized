@@ -2,8 +2,6 @@ package me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker;
 
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IBlockTrackEntry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.InventoryTrackEvent;
-import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketDescriptionPacketRequest;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.block.BlockState;
@@ -49,7 +47,6 @@ public class BlockTrackEntryInventory implements IBlockTrackEntry {
         if (te instanceof ChestTileEntity && te.getBlockState().get(ChestBlock.TYPE) == ChestType.LEFT) {
             Direction dir = ChestBlock.getDirectionToAttached(te.getBlockState());
             res.add(te.getPos().offset(dir));
-            NetworkHandler.sendToServer(new PacketDescriptionPacketRequest(te.getPos().offset(dir)));
         }
         res.add(te.getPos());
         return res;

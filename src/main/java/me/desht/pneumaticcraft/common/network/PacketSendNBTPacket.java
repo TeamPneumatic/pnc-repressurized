@@ -25,21 +25,12 @@ public class PacketSendNBTPacket extends LocationIntPacket {
     public PacketSendNBTPacket(PacketBuffer buffer) {
         super(buffer);
         tag = buffer.readCompoundTag();
-//        try {
-//        } catch (Exception e) {
-//            Log.error("An exception occurred when trying to decode a Send NBT Packet.");
-//            e.printStackTrace();
-//        }
     }
 
+    @Override
     public void toBytes(PacketBuffer buffer) {
         super.toBytes(buffer);
         buffer.writeCompoundTag(tag);
-//        try {
-//        } catch (Exception e) {
-//            Log.error("An exception occurred when trying to encode a Send NBT Packet.");
-//            e.printStackTrace();
-//        }
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {

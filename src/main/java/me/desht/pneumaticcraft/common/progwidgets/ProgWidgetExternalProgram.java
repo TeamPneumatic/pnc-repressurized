@@ -44,7 +44,7 @@ public class ProgWidgetExternalProgram extends ProgWidgetAreaItemBase {
     @Override
     public void writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
-        tag.putBoolean("shareVariables", shareVariables);
+        if (shareVariables) tag.putBoolean("shareVariables", true);
     }
 
     @Override

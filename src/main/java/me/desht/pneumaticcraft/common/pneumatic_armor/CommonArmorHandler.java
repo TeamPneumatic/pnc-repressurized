@@ -433,11 +433,13 @@ public class CommonArmorHandler implements ICommonArmorHandler {
                 flightAccel = 1.0F;
             }
         } else {
+            // insufficient pressure!
             if (isJetBootsEnabled() && !player.isOnGround() && !player.isElytraFlying()) {
-                // insufficient pressure but still active and in the air: using minimal air here keeps the boots running
+                // still active and in the air: using minimal air here keeps the boots running
                 // and thus avoids triggering multiple looping sounds (see "jet boots starting up" code below)
                 jetbootsAirUsage = 1;
             }
+            setJetBootsActive(false);
         }
 
         if (jetbootsAirUsage != 0 && !player.world.isRemote) {

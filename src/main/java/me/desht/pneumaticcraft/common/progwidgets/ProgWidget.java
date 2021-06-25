@@ -4,6 +4,8 @@ import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.config.subconfig.ProgWidgetConfig;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
@@ -223,29 +225,31 @@ public abstract class ProgWidget implements IProgWidget {
 
     @Override
     public void writeToNBT(CompoundNBT tag) {
-        tag.putString("name", getTypeID().toString());
+        tag.putString("name", PneumaticCraftUtils.modDefaultedString(getTypeID()));
         tag.putInt("x", x);
         tag.putInt("y", y);
     }
 
     @Override
     public void readFromNBT(CompoundNBT tag) {
+        // note: widget type ID is not read here (see ProgWidget.fromNBT() static method)
         x = tag.getInt("x");
         y = tag.getInt("y");
     }
 
     @Override
     public void writeToPacket(PacketBuffer buf) {
-        buf.writeResourceLocation(getTypeID());
-        buf.writeVarInt(x);
-        buf.writeVarInt(y);
+        // since most or all widgets have a 'pneumaticcraft:' namespace, omitting that saves 15 bytes per widget
+        buf.writeString(PneumaticCraftUtils.modDefaultedString(getTypeID()));
+        buf.writeInt(x);
+        buf.writeInt(y);
     }
 
     @Override
     public void readFromPacket(PacketBuffer buf) {
-        // note: widget type ID is not read here (see fromPacket() static method)
-        x = buf.readVarInt();
-        y = buf.readVarInt();
+        // note: widget type ID is not read here (see ProgWidget.fromPacket() static method)
+        x = buf.readInt();
+        y = buf.readInt();
     }
 
     static <T extends IProgWidget> List<T> getConnectedWidgetList(IProgWidget widget, int parameterIndex, ProgWidgetType<T> type) {
@@ -274,15 +278,27 @@ public abstract class ProgWidget implements IProgWidget {
     }
 
     public static IProgWidget fromPacket(PacketBuffer buf) {
-        ResourceLocation typeID = buf.readResourceLocation();
+        ResourceLocation typeID = PneumaticCraftUtils.modDefaultedRL(buf.readString(256));
         ProgWidgetType<?> type = ModProgWidgets.PROG_WIDGETS.get().getValue(typeID);
         if (type != null) {
             IProgWidget newWidget = IProgWidget.create(type);
             newWidget.readFromPacket(buf);
             return newWidget;
         } else {
-            throw new IllegalStateException("unknown widget type found: " + typeID);
+            throw new IllegalStateException("can't read progwidget from packet: bad widget ID: " + typeID);
         }
+    }
+
+    public static IProgWidget fromNBT(CompoundNBT widgetTag) {
+        ResourceLocation typeID = PneumaticCraftUtils.modDefaultedRL(widgetTag.getString("name"));
+        ProgWidgetType<?> type = ModProgWidgets.PROG_WIDGETS.get().getValue(typeID);
+        if (type == null) {
+            Log.warning("can't read progwidget from NBT: bad widget ID: " + typeID);
+            return null;
+        }
+        IProgWidget widget = IProgWidget.create(type);
+        widget.readFromNBT(widgetTag);
+        return widget;
     }
 
     @Override

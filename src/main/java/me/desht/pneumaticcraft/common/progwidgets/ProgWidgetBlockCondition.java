@@ -55,8 +55,8 @@ public class ProgWidgetBlockCondition extends ProgWidgetCondition {
     @Override
     public void writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
-        tag.putBoolean("checkingForAir", checkingForAir);
-        tag.putBoolean("checkingForLiquids", checkingForLiquids);
+        if (checkingForAir) tag.putBoolean("checkingForAir", true);
+        if (checkingForLiquids) tag.putBoolean("checkingForLiquids", true);
     }
 
     @Override

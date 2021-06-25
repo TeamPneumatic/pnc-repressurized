@@ -5,7 +5,6 @@ import me.desht.pneumaticcraft.api.item.IProgrammable;
 import me.desht.pneumaticcraft.client.render.area.AreaRenderManager;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerProgrammer;
@@ -32,7 +31,6 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -184,19 +182,13 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
         List<IProgWidget> newWidgets = new ArrayList<>();
         ListNBT widgetTags = tag.getList(IProgrammable.NBT_WIDGETS, NBT.TAG_COMPOUND);
         for (int i = 0; i < widgetTags.size(); i++) {
-            CompoundNBT widgetTag = widgetTags.getCompound(i);
-            ResourceLocation typeID = new ResourceLocation(widgetTag.getString("name"));
-            ProgWidgetType<?> type = ModProgWidgets.PROG_WIDGETS.get().getValue(typeID);
-            if (type != null) {
-                IProgWidget addedWidget = IProgWidget.create(type);
+            IProgWidget addedWidget = ProgWidget.fromNBT(widgetTags.getCompound(i));
+            if (addedWidget != null) {
                 if (addedWidget.isAvailable()) {
-                    addedWidget.readFromNBT(widgetTag);
                     newWidgets.add(addedWidget);
                 } else {
-                    Log.warning("ignoring unavailable widget type: " + typeID);
+                    Log.warning("ignoring unavailable widget type: " + addedWidget.getType());
                 }
-            } else {
-                Log.warning("unknown widget type found: " + typeID);
             }
         }
         return newWidgets;

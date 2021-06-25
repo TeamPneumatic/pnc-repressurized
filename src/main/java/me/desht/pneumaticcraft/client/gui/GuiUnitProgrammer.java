@@ -107,7 +107,7 @@ public class GuiUnitProgrammer extends Screen {
                     addMessages(tooltip, widgetWarnings.get(idx), "pneumaticcraft.gui.programmer.warnings", TextFormatting.YELLOW);
                 addAdditionalInfoToTooltip(progWidget, tooltip);
                 if (!tooltip.isEmpty()) {
-                    renderTooltip(matrixStack, GuiUtils.wrapTextComponentList(tooltip, areaWidth, font), x - guiLeft, y - guiTop);
+                    renderTooltip(matrixStack, GuiUtils.wrapTextComponentList(tooltip, areaWidth * 2 / 3, font), x - guiLeft, y - guiTop);
                 }
             }
         }

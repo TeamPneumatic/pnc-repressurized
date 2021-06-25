@@ -60,7 +60,7 @@ public class ProgWidgetHarvest extends ProgWidgetDigAndPlace implements IToolUse
     @Override
     public void writeToNBT(CompoundNBT tag){
         super.writeToNBT(tag);
-        tag.putBoolean("requireHoe", requireHoe);
+        if (requireHoe) tag.putBoolean("requireHoe", true);
     }
     
     @Override

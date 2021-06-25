@@ -98,7 +98,7 @@ public abstract class ProgWidgetDroneCondition extends ProgWidgetConditionBase i
     @Override
     public void writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
-        tag.putBoolean("isAndFunction", isAndFunction);
+        if (isAndFunction) tag.putBoolean("isAndFunction", true);
         tag.putByte("operator", (byte) operator.ordinal());
         tag.putInt("requiredCount", requiredCount);
         if (!measureVar.isEmpty()) tag.putString("measureVar", measureVar);

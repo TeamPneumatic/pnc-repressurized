@@ -32,12 +32,15 @@ import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static me.desht.pneumaticcraft.common.network.ILargePayload.MAX_PAYLOAD_SIZE;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 import static net.minecraftforge.fml.network.NetworkDirection.PLAY_TO_CLIENT;
 import static net.minecraftforge.fml.network.NetworkDirection.PLAY_TO_SERVER;
@@ -203,47 +206,33 @@ public class NetworkHandler {
 	}
 
     public static void sendToAll(Object message) {
-		if (message instanceof ILargePayload) {
-			getSplitMessages((ILargePayload) message).forEach(part -> NETWORK.send(PacketDistributor.ALL.noArg(), part));
-		} else {
-			NETWORK.send(PacketDistributor.ALL.noArg(), message);
-		}
+		sendMessage(message, msg -> NETWORK.send(PacketDistributor.ALL.noArg(), msg));
     }
 
     public static void sendToPlayer(Object message, ServerPlayerEntity player) {
-		if (message instanceof ILargePayload) {
-			getSplitMessages((ILargePayload) message).forEach(part -> NETWORK.send(PacketDistributor.PLAYER.with(() -> player), part));
-		} else {
-			NETWORK.send(PacketDistributor.PLAYER.with(() -> player), message);
-		}
+		sendMessage(message, msg -> NETWORK.send(PacketDistributor.PLAYER.with(() -> player), msg));
     }
 
 	public static void sendToAllTracking(Object message, Entity entity) {
-		NETWORK.send(PacketDistributor.TRACKING_ENTITY.with(() -> entity), message);
+    	sendMessage(message, msg -> NETWORK.send(PacketDistributor.TRACKING_ENTITY.with(() -> entity), msg));
 	}
 
 	public static void sendToAllTracking(Object message, World world, BlockPos pos) {
-		NETWORK.send(PacketDistributor.TRACKING_CHUNK.with(() -> world.getChunkAt(pos)), message);
+		sendMessage(message, msg -> NETWORK.send(PacketDistributor.TRACKING_CHUNK.with(() -> world.getChunkAt(pos)), msg));
 	}
 
 	public static void sendToAllTracking(Object message, TileEntity te) {
-    	if (te.getWorld() != null) sendToAllTracking(message, te.getWorld(), te.getPos());
-    }
-
-	public static void sendToDimension(Object message, RegistryKey<World> world) {
-		if (message instanceof ILargePayload) {
-			getSplitMessages((ILargePayload) message).forEach(part -> NETWORK.send(PacketDistributor.DIMENSION.with(() -> world), part));
-		} else {
-			NETWORK.send(PacketDistributor.DIMENSION.with(() -> world), message);
+    	if (te.getWorld() != null) {
+    		sendToAllTracking(message, te.getWorld(), te.getPos());
 		}
     }
 
+	public static void sendToDimension(Object message, RegistryKey<World> world) {
+		sendMessage(message, msg -> NETWORK.send(PacketDistributor.DIMENSION.with(() -> world), msg));
+    }
+
     public static void sendToServer(Object message) {
-        if (message instanceof ILargePayload) {
-            getSplitMessages((ILargePayload) message).forEach(NETWORK::sendToServer);
-        } else {
-            NETWORK.sendToServer(message);
-        }
+		sendMessage(message, NETWORK::sendToServer);
     }
 
 	/**
@@ -255,7 +244,7 @@ public class NetworkHandler {
 		MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
 		if (server != null) {
 			if (server.isDedicatedServer()) {
-				NetworkHandler.sendToAll(packet);
+				sendToAll(packet);
 			} else {
 				for (ServerPlayerEntity player : server.getPlayerList().getPlayers()) {
 					if (!player.server.isServerOwner(player.getGameProfile())) {
@@ -277,21 +266,25 @@ public class NetworkHandler {
 		}
 	}
 
-    private static List<Object> getSplitMessages(ILargePayload message) {
-		// see PacketMultiHeader#receivePayload for message reassembly
-		PacketBuffer buf = message.dumpToBuffer();
-        byte[] bytes = buf.array();
-        if (buf.writerIndex() < MAX_PAYLOAD_SIZE) {
-            return Collections.singletonList(message);
-        } else {
-            List<Object> messages = new ArrayList<>();
-            messages.add(new PacketMultiHeader(buf.writerIndex(), message.getClass().getName()));
-            int offset = 0;
-            while (offset < buf.writerIndex()) {
-                messages.add(new PacketMultiPart(Arrays.copyOfRange(bytes, offset, Math.min(offset + MAX_PAYLOAD_SIZE, buf.writerIndex()))));
-                offset += MAX_PAYLOAD_SIZE;
-            }
-            return messages;
-        }
-    }
+	private static void sendMessage(Object message, Consumer<Object> consumer) {
+		if (message instanceof ILargePayload) {
+			// see PacketMultiHeader#receivePayload for message reassembly
+			PacketBuffer buf = ((ILargePayload) message).dumpToBuffer();
+			if (buf.writerIndex() < ILargePayload.MAX_PAYLOAD_SIZE) {
+				consumer.accept(message);
+			} else {
+				List<Object> messageParts = new ArrayList<>();
+				messageParts.add(new PacketMultiHeader(buf.writerIndex(), message.getClass().getName()));
+				int offset = 0;
+				byte[] bytes = buf.array();
+				while (offset < buf.writerIndex()) {
+					messageParts.add(new PacketMultiPart(Arrays.copyOfRange(bytes, offset, Math.min(offset + ILargePayload.MAX_PAYLOAD_SIZE, buf.writerIndex()))));
+					offset += ILargePayload.MAX_PAYLOAD_SIZE;
+				}
+				messageParts.forEach(consumer);
+			}
+		} else {
+			consumer.accept(message);
+		}
+	}
 }

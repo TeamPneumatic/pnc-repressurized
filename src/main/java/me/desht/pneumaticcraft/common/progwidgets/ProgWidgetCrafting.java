@@ -292,7 +292,7 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
     @Override
     public void writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
-        tag.putBoolean("useCount", useCount);
+        if (useCount) tag.putBoolean("useCount", true);
         tag.putInt("count", count);
     }
 

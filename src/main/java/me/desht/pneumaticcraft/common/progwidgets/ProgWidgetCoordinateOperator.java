@@ -148,7 +148,7 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
     @Override
     public void writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
-        tag.putString("variable", variable);
+        if (!variable.isEmpty()) tag.putString("variable", variable);
         tag.putByte("operator", (byte) operator.ordinal());
         axisOptions.writeToNBT(tag);
     }
