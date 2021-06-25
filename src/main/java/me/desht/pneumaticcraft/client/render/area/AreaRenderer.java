@@ -15,6 +15,7 @@ import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.world.World;
 
+import java.util.Collections;
 import java.util.Set;
 
 public class AreaRenderer {
@@ -23,25 +24,31 @@ public class AreaRenderer {
     private final float size;
     private final boolean disableDepthTest;
     private final boolean drawShapes;
+    private final boolean drawFaces;
+    private final boolean disableWriteMask;
 
-    AreaRenderer(Set<BlockPos> area, int color, float size, boolean disableDepthTest, boolean drawShapes) {
+    private AreaRenderer(Set<BlockPos> area, int color, float size, boolean disableDepthTest, boolean drawShapes, boolean disableWriteMask, boolean drawFaces) {
         this.showingPositions = area;
         this.color = color;
         this.size = size;
         this.disableDepthTest = disableDepthTest;
+        this.disableWriteMask = disableWriteMask;
         this.drawShapes = drawShapes;
+        this.drawFaces = drawFaces;
     }
 
-    AreaRenderer(Set<BlockPos> area, int color, boolean disableDepthTest) {
-        this(area, color, 0.5f, disableDepthTest, false);
-    }
+//    AreaRenderer(Set<BlockPos> area, int color, boolean disableDepthTest) {
+//        this(area, color, 0.5f, disableDepthTest, false, disableDepthTest);
+//    }
 
     public void render(MatrixStack matrixStack, IRenderTypeBuffer buffer) {
-        RenderType type = ModRenderTypes.getBlockHilightFace(disableDepthTest);
-        render(matrixStack, buffer.getBuffer(type));
-        RenderUtils.finishBuffer(buffer, type);
+        if (drawFaces) {
+            RenderType type = ModRenderTypes.getBlockHilightFace(disableDepthTest, disableWriteMask);
+            render(matrixStack, buffer.getBuffer(type));
+            RenderUtils.finishBuffer(buffer, type);
+        }
 
-        type = ModRenderTypes.getBlockHilightLine(disableDepthTest);
+        RenderType type = ModRenderTypes.getBlockHilightLine(disableDepthTest, disableWriteMask);
         render(matrixStack, buffer.getBuffer(type));
         RenderUtils.finishBuffer(buffer, type);
     }
@@ -65,7 +72,8 @@ public class AreaRenderer {
     private void addVertices(IVertexBuilder wr, Matrix4f posMat, BlockPos pos, int[] cols) {
         World world = Minecraft.getInstance().world;
         BlockState state = world.getBlockState(pos);
-        if (!disableDepthTest && !state.getMaterial().isReplaceable()) return;
+        boolean xray = disableDepthTest || disableWriteMask;
+        if (!xray && !state.getMaterial().isReplaceable() || disableWriteMask && state.getMaterial().isReplaceable()) return;
         if (drawShapes) {
             VoxelShape shape = state.getBlock() instanceof BlockPneumaticCraftCamo ?
                     ((BlockPneumaticCraftCamo) state.getBlock()).getUncamouflagedShape(state, world, pos, ISelectionContext.dummy()) :
@@ -137,6 +145,62 @@ public class AreaRenderer {
             wr.pos(posMat, size, size, size).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
             wr.pos(posMat, size, size, 0).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
             wr.pos(posMat, 0, size, 0).color(cols[1], cols[2], cols[3], cols[0]).endVertex();
+        }
+    }
+
+    static Builder builder() {
+        return new AreaRenderer.Builder();
+    }
+
+    static class Builder {
+        private int color = 0x40808080;
+        private float size = 0.5f;
+        private boolean disableDepthTest = false;
+        private boolean drawShapes = false;
+        private boolean disableWriteMask = false;
+        private boolean drawFaces = true;
+
+        Builder withColor(int color) {
+            this.color = color;
+            return this;
+        }
+
+        Builder withSize(float size) {
+            this.size = size;
+            return this;
+        }
+
+        Builder disableDepthTest() {
+            this.disableDepthTest = true;
+            return this;
+        }
+
+        Builder disableWriteMask() {
+            this.disableWriteMask = true;
+            return this;
+        }
+
+        Builder xray() {
+            this.disableWriteMask = disableDepthTest = true;
+            return this;
+        }
+
+        Builder drawShapes() {
+            this.drawShapes = true;
+            return this;
+        }
+
+        Builder outlineOnly() {
+            this.drawFaces = false;
+            return this;
+        }
+
+        AreaRenderer build(Set<BlockPos> area) {
+            return new AreaRenderer(area, color, size, disableDepthTest, drawShapes, disableWriteMask, drawFaces);
+        }
+
+        AreaRenderer build(BlockPos pos) {
+            return build(Collections.singleton(pos));
         }
     }
 }

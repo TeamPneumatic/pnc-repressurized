@@ -236,7 +236,7 @@ public class ItemJackHammer extends ItemPressurizable
         }
     }
 
-    private Set<BlockPos> getBreakPositions(World world, BlockPos pos, Direction dir, Direction playerHoriz, DigMode digMode) {
+    public static Set<BlockPos> getBreakPositions(World world, BlockPos pos, Direction dir, Direction playerHoriz, DigMode digMode) {
         if (digMode.isVeinMining()) {
             return new HashSet<>(getVeinPositions(world, pos, digMode));
         }
@@ -295,7 +295,7 @@ public class ItemJackHammer extends ItemPressurizable
         return res;
     }
 
-    private List<BlockPos> getVeinPositions(World world, BlockPos startPos, DigMode mode) {
+    private static List<BlockPos> getVeinPositions(World world, BlockPos startPos, DigMode mode) {
         BlockState state = world.getBlockState(startPos);
 
         if (!mode.okToVeinMine(state)) {

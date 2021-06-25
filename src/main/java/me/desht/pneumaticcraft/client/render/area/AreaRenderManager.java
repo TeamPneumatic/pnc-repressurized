@@ -10,15 +10,20 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ItemCamoApplicator;
 import me.desht.pneumaticcraft.common.item.ItemGPSAreaTool;
+import me.desht.pneumaticcraft.common.item.ItemJackHammer;
 import me.desht.pneumaticcraft.common.tileentity.ICamouflageableTE;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
@@ -42,6 +47,8 @@ public enum AreaRenderManager {
 
     private List<AreaRenderer> cachedPositionProviderShowers;
     private AreaRenderer camoPositionShower;
+    private AreaRenderer jackhammerPositionShower;
+    private LastJackhammerDetails lastJackhammerDetails = new LastJackhammerDetails(BlockPos.ZERO, null, null);
     private BlockPos lastPlayerPos;
     private int lastItemHashCode = 0;
 
@@ -72,6 +79,7 @@ public enum AreaRenderManager {
         maybeRenderCamo(matrixStack, buffer, player);
         maybeRenderDroneDebug(matrixStack, buffer, player);
         maybeRenderAreaTool(matrixStack, buffer, player);
+        maybeRenderJackhammer(matrixStack, buffer, player);
 
         matrixStack.pop();
     }
@@ -97,8 +105,8 @@ public enum AreaRenderManager {
             // show the raw P1/P2 positions; the area is shown by getHeldPositionProvider()
             BlockPos p1 = ItemGPSAreaTool.getGPSLocation(player.getEntityWorld(), curItem, 0);
             BlockPos p2 = ItemGPSAreaTool.getGPSLocation(player.getEntityWorld(), curItem, 1);
-            new AreaRenderer(Collections.singleton(p1), 0x80FF6060, true).render(matrixStack, buffer);
-            new AreaRenderer(Collections.singleton(p2), 0x8060FF60, true).render(matrixStack, buffer);
+            AreaRenderer.builder().withColor(0x80FF6060).xray().build(p1).render(matrixStack, buffer);
+            AreaRenderer.builder().withColor(0x8060FF60).xray().build(p2).render(matrixStack, buffer);
         }
     }
 
@@ -110,8 +118,8 @@ public enum AreaRenderManager {
             }
             Set<BlockPos> posSet = droneDebugger.getShowingPositions();
             Set<BlockPos> areaSet = droneDebugger.getShownArea();
-            new AreaRenderer(posSet, 0x90FF0000, true).render(matrixStack, buffer);
-            new AreaRenderer(areaSet, 0x4040FFA0, true).render(matrixStack, buffer);
+            AreaRenderer.builder().withColor(0x90FF0000).xray().build(posSet).render(matrixStack, buffer);
+            AreaRenderer.builder().withColor(0x4040FFA0).xray().build(areaSet).render(matrixStack, buffer);
         }
     }
 
@@ -152,8 +160,12 @@ public enum AreaRenderManager {
                     }
                 }
                 cachedPositionProviderShowers = new ArrayList<>(colorsToPositions.size());
-                colorsToPositions.int2ObjectEntrySet().forEach((entry) ->
-                        cachedPositionProviderShowers.add(new AreaRenderer(entry.getValue(), entry.getIntKey(), positionProvider.disableDepthTest())));
+                colorsToPositions.int2ObjectEntrySet().forEach((entry) -> {
+                            AreaRenderer.Builder builder = AreaRenderer.builder().withColor(entry.getIntKey());
+                            if (positionProvider.disableDepthTest()) builder.xray();
+                            cachedPositionProviderShowers.add(builder.build(entry.getValue()));
+                        }
+                );
             }
 
             cachedPositionProviderShowers.forEach(renderer -> renderer.render(matrixStack, buffer));
@@ -170,12 +182,37 @@ public enum AreaRenderManager {
                     .filter(te -> te instanceof ICamouflageableTE && te.getPos().distanceSq(lastPlayerPos) < 144)
                     .map(TileEntity::getPos)
                     .collect(Collectors.toSet());
-            camoPositionShower = new AreaRenderer(s, 0x408080FF, 0.75f, true, true);
+            camoPositionShower = AreaRenderer.builder().withColor(0x408080FF).withSize(0.75f).xray().drawShapes().build(s);
         }
         if (camoPositionShower != null) {
             camoPositionShower.render(matrixStack, buffer);
         }
     }
+
+    private void maybeRenderJackhammer(MatrixStack matrixStack, IRenderTypeBuffer.Impl buffer, PlayerEntity player) {
+        if (world == null
+                || !(player.getHeldItemMainhand().getItem() instanceof ItemJackHammer)
+                || !((Minecraft.getInstance().objectMouseOver) instanceof BlockRayTraceResult)) {
+            return;
+        }
+        ItemJackHammer.DigMode digMode = ItemJackHammer.getDigMode(player.getHeldItemMainhand());
+        if (digMode == ItemJackHammer.DigMode.MODE_1X1) return;
+
+        BlockRayTraceResult brtr = (BlockRayTraceResult) Minecraft.getInstance().objectMouseOver;
+        if (!world.isAreaLoaded(brtr.getPos(), 1) || world.getBlockState(brtr.getPos()).isAir(world, brtr.getPos())) return;
+
+        if (!lastJackhammerDetails.matches(brtr.getPos(), brtr.getFace(), digMode)) {
+            BlockState state = world.getBlockState(brtr.getPos());
+            Set<BlockPos> posSet = world.getTileEntity(brtr.getPos()) == null && !(state.getBlock() instanceof FlowingFluidBlock) ?
+                    ItemJackHammer.getBreakPositions(world, brtr.getPos(), brtr.getFace(), player.getHorizontalFacing(), digMode) :
+                    Collections.emptySet();
+            if (!posSet.isEmpty()) posSet.add(brtr.getPos());
+            jackhammerPositionShower = AreaRenderer.builder().withColor(0x20FFFFFF).withSize(1.01f).disableWriteMask().build(posSet);
+            lastJackhammerDetails = new LastJackhammerDetails(brtr.getPos(), brtr.getFace(), digMode);
+        }
+        jackhammerPositionShower.render(matrixStack, buffer);
+    }
+
 
     public AreaRenderer showArea(BlockPos[] area, int color, TileEntity areaShower) {
         return showArea(new HashSet<>(Arrays.asList(area)), color, areaShower);
@@ -184,7 +221,9 @@ public enum AreaRenderManager {
     public AreaRenderer showArea(Set<BlockPos> area, int color, TileEntity areaShower, boolean depth) {
         if (areaShower == null) return null;
         removeHandlers(areaShower);
-        AreaRenderer handler = new AreaRenderer(area, color, depth);
+        AreaRenderer.Builder builder = AreaRenderer.builder().withColor(color);
+        if (depth) builder.xray();
+        AreaRenderer handler = builder.build(area);
         showHandlers.put(new BlockPos(areaShower.getPos().getX(), areaShower.getPos().getY(), areaShower.getPos().getZ()), handler);
         return handler;
     }
@@ -204,5 +243,24 @@ public enum AreaRenderManager {
     public void clearPosProviderCache() {
         // called on global variable sync, force a recalc of any cached position provider data
         lastItemHashCode = 0;
+    }
+
+    /**
+     * Used to determine when the jackhammer preview area needs to be recalculated.
+     */
+    private static class LastJackhammerDetails {
+        private final BlockPos pos;
+        private final Direction face;
+        private final ItemJackHammer.DigMode digMode;
+
+        private LastJackhammerDetails(BlockPos pos, Direction face, ItemJackHammer.DigMode digMode) {
+            this.pos = pos;
+            this.face = face;
+            this.digMode = digMode;
+        }
+
+        private boolean matches(BlockPos pos, Direction face, ItemJackHammer.DigMode digMode) {
+            return face == this.face && digMode == this.digMode && pos.equals(this.pos);
+        }
     }
 }

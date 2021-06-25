@@ -50,6 +50,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Hand;
 import net.minecraft.util.HandSide;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.api.distmarker.Dist;
@@ -131,19 +132,24 @@ public class ClientEventHandler {
     }
 
     private static void renderJackHamerOverlay(RenderGameOverlayEvent.Pre event, PlayerEntity player, ItemStack heldStack) {
-        Minecraft mc = Minecraft.getInstance();
-        MatrixStack matrixStack = event.getMatrixStack();
-        int w = event.getWindow().getScaledWidth();
-        int h = event.getWindow().getScaledHeight();
-
         long timedelta = player.world.getGameTime() - ItemJackHammer.getLastModeSwitchTime();
         ItemJackHammer.DigMode digMode = ItemJackHammer.getDigMode(heldStack);
         if (digMode != null && (digMode.atLeast(ItemJackHammer.DigMode.MODE_1X2) || timedelta < 30 || player.isCrouching())) {
+            Minecraft mc = Minecraft.getInstance();
+            MatrixStack matrixStack = event.getMatrixStack();
+            int w = event.getWindow().getScaledWidth();
+            int h = event.getWindow().getScaledHeight();
             mc.getTextureManager().bindTexture(digMode.getGuiIcon());
             RenderSystem.enableBlend();
             RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
             RenderSystem.color4f(1f, 1f, 1f, 0.25f);
-            AbstractGui.blit(matrixStack, w / 2 + 7, h / 2 - 7, 0, 0, 16, 16, 16, 16);
+            float scaleFactor = MathHelper.clamp((float) Minecraft.getInstance().getMainWindow().getGuiScaleFactor(), 2, 3);
+            matrixStack.push();
+            matrixStack.translate(w / 2.0, h / 2.0, 0);
+            matrixStack.scale(scaleFactor, scaleFactor, scaleFactor);
+            matrixStack.translate(8, -8, 0);
+            AbstractGui.blit(matrixStack, 0, 0, 0, 0, 16, 16, 16, 16);
+            matrixStack.pop();
         }
     }
 

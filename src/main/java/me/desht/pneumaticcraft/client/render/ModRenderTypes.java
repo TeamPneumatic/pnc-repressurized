@@ -171,7 +171,7 @@ public class ModRenderTypes extends RenderType {
         }
     }
 
-    public static RenderType getBlockHilightFace(boolean disableDepthTest) {
+    public static RenderType getBlockHilightFace(boolean disableDepthTest, boolean disableWriteMask) {
         return makeType("block_hilight",
                 DefaultVertexFormats.POSITION_COLOR, GL11.GL_QUADS, 256,
                 RenderType.State.getBuilder()
@@ -179,12 +179,12 @@ public class ModRenderTypes extends RenderType {
                         .texture(NO_TEXTURE)
                         .lightmap(LIGHTMAP_DISABLED)
                         .depthTest(disableDepthTest ? DEPTH_ALWAYS : DEPTH_LEQUAL)
-                        .writeMask(disableDepthTest ? COLOR_WRITE : COLOR_DEPTH_WRITE)
+                        .writeMask(disableWriteMask ? COLOR_WRITE : COLOR_DEPTH_WRITE)
                         .build(false));
     }
 
     private static final LineState LINE_3 = new LineState(OptionalDouble.of(3.0));
-    public static RenderType getBlockHilightLine(boolean disableDepthTest) {
+    public static RenderType getBlockHilightLine(boolean disableDepthTest, boolean disableWriteMask) {
         return makeType("block_hilight_line",
                 DefaultVertexFormats.POSITION_COLOR, GL11.GL_LINES, 256,
                 RenderType.State.getBuilder().line(LINE_3)
@@ -193,7 +193,7 @@ public class ModRenderTypes extends RenderType {
                         .depthTest(disableDepthTest ? DEPTH_ALWAYS : RenderState.DEPTH_LEQUAL)
                         .cull(CULL_DISABLED)
                         .lightmap(LIGHTMAP_DISABLED)
-                        .writeMask(disableDepthTest ? COLOR_WRITE : RenderState.COLOR_DEPTH_WRITE)
+                        .writeMask(disableWriteMask ? COLOR_WRITE : RenderState.COLOR_DEPTH_WRITE)
                         .build(false));
     }
 
