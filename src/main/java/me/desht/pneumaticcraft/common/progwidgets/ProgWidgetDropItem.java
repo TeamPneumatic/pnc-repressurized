@@ -58,8 +58,8 @@ public class ProgWidgetDropItem extends ProgWidgetInventoryBase implements IItem
     @Override
     public void writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
-        tag.putBoolean("dropStraight", dropStraight);
-        tag.putBoolean("pickupDelay", pickupDelay);
+        if (dropStraight) tag.putBoolean("dropStraight", true);
+        if (pickupDelay) tag.putBoolean("pickupDelay", true);
     }
 
     @Override

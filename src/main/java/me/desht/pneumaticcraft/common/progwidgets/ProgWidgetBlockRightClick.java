@@ -82,7 +82,7 @@ public class ProgWidgetBlockRightClick extends ProgWidgetPlace implements IBlock
     @Override
     public void writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
-        tag.putBoolean("sneaking", sneaking);
+        if (sneaking) tag.putBoolean("sneaking", true);
         tag.putInt("dir", clickSide.getIndex());
         tag.putString("clickType", clickType.toString());
     }

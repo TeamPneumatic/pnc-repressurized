@@ -92,7 +92,6 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
                 }
                 List<IBlockTrackEntry> entries = BlockTrackEntryList.INSTANCE.getEntriesForCoordinate(world, pos, te);
                 if (!entries.isEmpty()) {
-
                     entries.forEach(entry -> {
                         ResourceLocation k = entry.getEntryID();
                         blockTypeCountPartial.put(k, blockTypeCountPartial.getOrDefault(k, 0) + 1);
@@ -105,9 +104,8 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
                         blockTarget.ticksExisted = Math.abs(blockTarget.ticksExisted); // cancel possible "lost target" status
                         blockTarget.setTileEntity(te);
                     } else if (pos.distanceSq(player.getPosition()) < blockTrackRangeSq) {
-                        // no tracker currently active - add one
-                        RenderBlockTarget target = addBlockTarget(new RenderBlockTarget(world, player, pos.toImmutable(), te, this));
-                        target.maybeRefreshFromServer(entries);
+                        // no tracker currently active for this pos - add a new one
+                        addBlockTarget(new RenderBlockTarget(world, player, pos.toImmutable(), te, this));
                     }
                 }
             }
@@ -118,6 +116,8 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
         processTrackerEntries(player, blockTrackRange);
 
         updateTrackerText();
+
+        int nTargets = blockTargets.size();
     }
 
     private void checkBlockFocus(PlayerEntity player, int blockTrackRange) {
@@ -268,14 +268,14 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
     }
 
     private void updateTrackerText() {
-        List<ITextComponent> textList = new ArrayList<>();
 
         if (focusedTarget != null) {
-            blockTrackInfo.setTitle(focusedTarget.stat.getTitle());
-            textList.addAll(focusedTarget.textList);
+            blockTrackInfo.setTitle(xlate("pneumaticcraft.armor.upgrade.block_tracker"));
+            blockTrackInfo.setText(focusedTarget.stat.getTitle());
         } else {
-            blockTrackInfo.setTitle(xlate("pneumaticcraft.blockTracker.info.trackedBlocks")); //new StringTextComponent("Current tracked blocks:"));
+            blockTrackInfo.setTitle(xlate("pneumaticcraft.blockTracker.info.trackedBlocks"));
 
+            List<ITextComponent> textList = new ArrayList<>();
             blockTypeCount.forEach((k, v) -> {
                 if (v > 0 && WidgetKeybindCheckBox.get(k).checked) {
                     textList.add(new StringTextComponent(v + " ").append(xlate(ArmorUpgradeRegistry.getStringKey(k))));
@@ -283,15 +283,13 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
             });
 
             if (textList.size() == 0) textList.add(xlate("pneumaticcraft.blockTracker.info.noTrackedBlocks"));
+            blockTrackInfo.setText(textList);
         }
 
-        blockTrackInfo.setText(textList);
     }
 
-    private RenderBlockTarget addBlockTarget(RenderBlockTarget blockTarget) {
+    private void addBlockTarget(RenderBlockTarget blockTarget) {
         blockTargets.put(blockTarget.getPos(), blockTarget);
-
-        return blockTarget;
     }
 
     private void removeBlockTarget(RenderBlockTarget blockTarget) {

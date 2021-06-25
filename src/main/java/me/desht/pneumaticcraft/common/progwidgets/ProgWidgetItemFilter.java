@@ -149,11 +149,11 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
         if (!filter.isEmpty()) {
             filter.write(tag);
         }
-        tag.putBoolean("useMetadata", useItemDurability);
-        tag.putBoolean("useNBT", useNBT);
-        tag.putBoolean("useModSimilarity", useModSimilarity);
-        tag.putBoolean("matchBlock", matchBlock);
-        tag.putString("variable", variable);
+        if (useItemDurability) tag.putBoolean("useMetadata", true);
+        if (useNBT) tag.putBoolean("useNBT", true);
+        if (useModSimilarity) tag.putBoolean("useModSimilarity", true);
+        if (matchBlock) tag.putBoolean("matchBlock", true);
+        if (!variable.isEmpty()) tag.putString("variable", variable);
     }
 
     @Override

@@ -40,35 +40,36 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     private IVariableProvider variableProvider;
     public AreaType type = new AreaTypeBox();
 
-    private static final Map<String, Supplier<? extends AreaType>> areaTypes = new LinkedHashMap<>(); // We want to preserve order in the GUI
-    private static final Map<Class<? extends AreaType>, String> typeToIDs = new HashMap<>();
+    // map string area types to internal numeric ID's (for more efficient sync)
+    private static final Map<String, Integer> areaTypeToID = new HashMap<>();
+    // collection of area type factories, indexed by internal ID
+    private static final List<Supplier<? extends AreaType>> areaTypeFactories = new ArrayList<>();
 
     static {
-        register(AreaTypeBox.ID, AreaTypeBox.class, AreaTypeBox::new);
-        register(AreaTypeSphere.ID, AreaTypeSphere.class, AreaTypeSphere::new);
-        register(AreaTypeLine.ID, AreaTypeLine.class, AreaTypeLine::new);
-        register(AreaTypeWall.ID, AreaTypeWall.class, AreaTypeWall::new);
-        register(AreaTypeCylinder.ID, AreaTypeCylinder.class, AreaTypeCylinder::new);
-        register(AreaTypePyramid.ID, AreaTypePyramid.class, AreaTypePyramid::new);
-        register(AreaTypeGrid.ID, AreaTypeGrid.class, AreaTypeGrid::new);
-        register(AreaTypeRandom.ID, AreaTypeRandom.class, AreaTypeRandom::new);
+        register(AreaTypeBox.ID, AreaTypeBox::new);
+        register(AreaTypeSphere.ID, AreaTypeSphere::new);
+        register(AreaTypeLine.ID, AreaTypeLine::new);
+        register(AreaTypeWall.ID, AreaTypeWall::new);
+        register(AreaTypeCylinder.ID, AreaTypeCylinder::new);
+        register(AreaTypePyramid.ID, AreaTypePyramid::new);
+        register(AreaTypeGrid.ID, AreaTypeGrid::new);
+        register(AreaTypeRandom.ID, AreaTypeRandom::new);
     }
 
     public ProgWidgetArea() {
         super(ModProgWidgets.AREA.get());
     }
 
-    private static <T extends AreaType> void register(String id, Class<T> clazz, Supplier<T> creator) {
-        if (areaTypes.containsKey(id)) {
-            throw new IllegalStateException("Area type " + clazz + " could not be registered, duplicate id: " + id);
+    private static <T extends AreaType> void register(String id, Supplier<T> factory) {
+        if (areaTypeToID.containsKey(id)) {
+            throw new IllegalStateException("Area type " + id + " could not be registered, duplicate id");
         }
-
-        areaTypes.put(id, creator);
-        typeToIDs.put(clazz, id);
+        areaTypeFactories.add(factory);
+        areaTypeToID.put(id, areaTypeFactories.size() - 1);
     }
 
     public static List<AreaType> getAllAreaTypes() {
-        return areaTypes.values().stream().map(Supplier::get).collect(Collectors.toList());
+        return areaTypeFactories.stream().map(Supplier::get).collect(Collectors.toList());
     }
 
     public static ProgWidgetArea fromPosition(BlockPos p1) {
@@ -116,19 +117,21 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         super.getTooltip(curTooltip);
 
         String c1;
-        if (coord1Variable.equals("")) {
+        if (coord1Variable.isEmpty()) {
             c1 = x1 != 0 || y1 != 0 || z1 != 0 ? String.format("P1: [ %d, %d, %d ]", x1, y1, z1) : null;
         } else {
             c1 = "P1: var \"" + coord1Variable + "\"";
         }
         String c2;
-        if (coord2Variable.equals("")) {
+        if (coord2Variable.isEmpty()) {
             c2 = x2 != 0 || y2 != 0 || z2 != 0 ? String.format("P2: [ %d, %d, %d ]", x2, y2, z2) : null;
         } else {
             c2 = "P2: var \"" + coord2Variable + "\"";
         }
 
-        if (c1 != null) curTooltip.add(new StringTextComponent(c1));
+        if (c1 != null) {
+            curTooltip.add(new StringTextComponent(c1));
+        }
         if (c2 != null) {
             curTooltip.add(new StringTextComponent(c2));
             addAreaTypeTooltip(curTooltip);
@@ -148,7 +151,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     @Override
     public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
-        if (coord1Variable.equals("") && coord2Variable.equals("") && x1 == 0 && y1 == 0 && z1 == 0 && x2 == 0 && y2 == 0 && z2 == 0) {
+        if (coord1Variable.isEmpty() && coord2Variable.isEmpty() && x1 == 0 && y1 == 0 && z1 == 0 && x2 == 0 && y2 == 0 && z2 == 0) {
             curInfo.add(xlate("pneumaticcraft.gui.progWidget.area.error.noArea"));
         }
         if (!(type instanceof AreaTypeBox)) {
@@ -179,13 +182,13 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
 
     private BlockPos[] getAreaPoints() {
         BlockPos c1;
-        if (coord1Variable.equals("")) {
-            c1 =    x1 != 0 || y1 != 0 || z1 != 0 ? new BlockPos(x1, y1, z1) : null;
+        if (coord1Variable.isEmpty()) {
+            c1 = x1 != 0 || y1 != 0 || z1 != 0 ? new BlockPos(x1, y1, z1) : null;
         } else {
             c1 = variableProvider != null ? variableProvider.getCoordinate(coord1Variable) : null;
         }
         BlockPos c2;
-        if (coord2Variable.equals("")) {
+        if (coord2Variable.isEmpty()) {
             c2 = x2 != 0 || y2 != 0 || z2 != 0 ? new BlockPos(x2, y2, z2) : null;
         } else {
             c2 = variableProvider != null ? variableProvider.getCoordinate(coord2Variable) : null;
@@ -228,14 +231,10 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
 
     public void getArea(Set<BlockPos> area, AreaType areaType) {
         BlockPos[] areaPoints = getAreaPoints();
-        if (areaPoints[0] == null && areaPoints[1] == null) return;
+        if (areaPoints[0] == null) return;
 
-        int minX;
-        int minY;
-        int minZ;
-        int maxX;
-        int maxY;
-        int maxZ;
+        int minX, minY, minZ;
+        int maxX, maxY, maxZ;
         if (areaPoints[1] != null) {
             minX = Math.min(areaPoints[0].getX(), areaPoints[1].getX());
             minY = Math.min(areaPoints[0].getY(), areaPoints[1].getY());
@@ -260,7 +259,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
                 // 1) Drones programmed before the compile-time validation was added
                 // 2) Programs using variables where we don't necessarily have the values at compile-time
                 IDroneBase drone = aiManager.getDrone();
-                Log.warning(String.format("Drone @ %s (DIM %s) was killed due to excessively large area (%d > %d). See 'I:maxProgrammingArea' in config.",
+                Log.warning(String.format("Drone @ %s (DIM %s) was killed due to excessively large area (%d > %d). See 'maxProgrammingArea' in config.",
                         drone.getDronePos().toString(), drone.world().getDimensionKey().getLocation().toString(), size, maxSize));
                 drone.overload("areaTooLarge", maxSize);
                 return;
@@ -318,10 +317,12 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         buf.writeInt(x1);
         buf.writeInt(y1);
         buf.writeInt(z1);
-        buf.writeInt(x2);
-        buf.writeInt(y2);
-        buf.writeInt(z2);
-        buf.writeString(typeToIDs.get(type.getClass()));
+        // looks weird but this ensures the vast majority of offsets can be encoded into one byte
+        // (keep numbers positive for best varint results)
+        buf.writeVarInt(x1 - x2 + 127);
+        buf.writeVarInt(y1 - y2 + 127);
+        buf.writeVarInt(z1 - z2 + 127);
+        buf.writeVarInt(areaTypeToID.get(type.getName()));
         type.writeToPacket(buf);
         buf.writeString(coord1Variable);
         buf.writeString(coord2Variable);
@@ -333,10 +334,10 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         x1 = buf.readInt();
         y1 = buf.readInt();
         z1 = buf.readInt();
-        x2 = buf.readInt();
-        y2 = buf.readInt();
-        z2 = buf.readInt();
-        type = createType(buf.readString(32));
+        x2 = x1 - (buf.readVarInt() - 127);
+        y2 = y1 - (buf.readVarInt() - 127);
+        z2 = z1 - (buf.readVarInt() - 127);
+        type = createType(buf.readVarInt());
         type.readFromPacket(buf);
         coord1Variable = buf.readString(256);
         coord2Variable = buf.readString(256);
@@ -351,18 +352,10 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         tag.putInt("x2", x2);
         tag.putInt("y2", y2);
         tag.putInt("z2", z2);
-
-        String typeId = typeToIDs.get(type.getClass());
-        if (typeId == null) {
-            Log.error("No type id for area type " + type + "! Substituting Box.");
-            typeId = AreaTypeBox.ID;
-        } else {
-            type.writeToNBT(tag);
-        }
-        tag.putString("type", typeId);
-
-        tag.putString("coord1Variable", coord1Variable);
-        tag.putString("coord2Variable", coord2Variable);
+        tag.putString("type", type.getName());
+        type.writeToNBT(tag);
+        if (!coord1Variable.isEmpty()) tag.putString("coord1Variable", coord1Variable);
+        if (!coord2Variable.isEmpty()) tag.putString("coord2Variable", coord2Variable);
     }
 
     @Override
@@ -374,22 +367,22 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         x2 = tag.getInt("x2");
         y2 = tag.getInt("y2");
         z2 = tag.getInt("z2");
-
         type = createType(tag.getString("type"));
         type.readFromNBT(tag);
-
         coord1Variable = tag.getString("coord1Variable");
         coord2Variable = tag.getString("coord2Variable");
     }
 
     public static AreaType createType(String id) {
-        Supplier<? extends AreaType> creator = areaTypes.get(id);
-        if (creator != null) {
-            return creator.get();
-        } else {
+        if (!areaTypeToID.containsKey(id)) {
             Log.error("No Area type found for id '" + id + "'! Substituting Box!");
             return new AreaTypeBox();
         }
+        return createType(areaTypeToID.get(id));
+    }
+
+    public static AreaType createType(int id) {
+        return areaTypeFactories.get(id).get();
     }
 
     @Override

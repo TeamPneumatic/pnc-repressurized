@@ -51,7 +51,7 @@ public class ProgWidgetLiquidExport extends ProgWidgetInventoryBase implements I
     @Override
     public void writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
-        tag.putBoolean("placeFluidBlocks", placeFluidBlocks);
+        if (placeFluidBlocks) tag.putBoolean("placeFluidBlocks", true);
     }
 
     @Override

@@ -97,7 +97,7 @@ public class ProgWidgetEmitRedstone extends ProgWidget implements IRedstoneEmiss
     public void writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
         for (int i = 0; i < 6; i++) {
-            tag.putBoolean(Direction.byIndex(i).name(), accessingSides[i]);
+            if (accessingSides[i]) tag.putBoolean(Direction.byIndex(i).name(), true);
         }
     }
 

@@ -71,6 +71,6 @@ public abstract class GuiProgWidgetOptionBase<P extends IProgWidget> extends Gui
     }
 
     public Container getProgrammerContainer() {
-        return guiProgrammer.getContainer();
+        return guiProgrammer == null ? null : guiProgrammer.getContainer();
     }
 }

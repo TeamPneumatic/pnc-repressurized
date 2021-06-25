@@ -12,7 +12,6 @@ import me.desht.pneumaticcraft.client.gui.pneumatic_armor.option_screens.EntityT
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetKeybindCheckBox;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.ArmorMessage;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderEntityTarget;
 import me.desht.pneumaticcraft.common.ai.StringFilterEntitySelector;
@@ -23,10 +22,10 @@ import me.desht.pneumaticcraft.common.util.EntityFilter;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.HangingEntity;
+import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
@@ -47,7 +46,6 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
     private static final float ENTITY_TRACKING_RANGE = 16F;
 
     private final Map<Integer, RenderEntityTarget> targets = new HashMap<>();
-    private boolean shouldStopSpamOnEntityTracking = false;
 
     private IGuiAnimatedStat entityTrackInfo;
     @Nonnull
@@ -103,15 +101,6 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
         }
         toRemove.forEach(targets::remove);
 
-        if (targets.size() > ENTITY_TRACK_THRESHOLD) {
-            if (!shouldStopSpamOnEntityTracking) {
-                shouldStopSpamOnEntityTracking = true;
-                ITextComponent msg = xlate("pneumaticcraft.blockTracker.message.stopSpam", I18n.format("pneumaticcraft.armor.upgrade.entity_tracker"));
-                HUDHandler.getInstance().addMessage(new ArmorMessage(msg,60, 0x7700AA00));
-            }
-        } else {
-            shouldStopSpamOnEntityTracking = false;
-        }
         List<ITextComponent> text = new ArrayList<>();
         for (RenderEntityTarget target : targets.values()) {
             boolean wasNegative = target.ticksExisted < 0;
@@ -142,7 +131,7 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
 
     @Override
     public void render3D(MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks) {
-        targets.values().forEach(target -> target.render(matrixStack, buffer, partialTicks, shouldStopSpamOnEntityTracking));
+        targets.values().forEach(target -> target.render(matrixStack, buffer, partialTicks,  targets.size() > ENTITY_TRACK_THRESHOLD));
     }
 
     @Override
@@ -206,7 +195,7 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
         @Override
         public boolean apply(Entity entity) {
             return entity != player
-                    && (entity instanceof LivingEntity || entity instanceof HangingEntity)
+                    && (entity instanceof LivingEntity || entity instanceof HangingEntity || entity instanceof AbstractMinecartEntity)
                     && entity.isAlive()
                     && player.getDistance(entity) < threshold
                     && !MinecraftForge.EVENT_BUS.post(new EntityTrackEvent(entity))

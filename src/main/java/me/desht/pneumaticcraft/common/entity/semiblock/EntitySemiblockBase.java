@@ -119,7 +119,7 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
     public ActionResultType applyPlayerInteraction(PlayerEntity player, Vector3d hitVec, Hand hand) {
         Vector3d eye = player.getEyePosition(0f);
         Vector3d end = eye.add(player.getLookVec().normalize().scale(5f));
-        RayTraceContext ctx = new RayTraceContext(eye, end, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, player);
+        RayTraceContext ctx = new RayTraceContext(eye, end, RayTraceContext.BlockMode.OUTLINE, RayTraceContext.FluidMode.NONE, player);
         BlockRayTraceResult brtr = player.world.rayTraceBlocks(ctx);
 
         if (brtr == null) {
@@ -142,13 +142,11 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
             }
         } else {
             // allow right-clicks to pass through to the inventory block being covered
-            if (player.isSneaking()) {
-                ItemUseContext itemCtx = new ItemUseContext(player, hand, brtr);
-                ActionResultType res = player.getHeldItem(hand).onItemUseFirst(itemCtx);
-                return res == ActionResultType.PASS ? player.getHeldItem(hand).onItemUse(itemCtx) : res;
-            } else {
-                return getBlockState().onBlockActivated(world, player, hand, brtr);
-            }
+            ItemUseContext itemCtx = new ItemUseContext(player, hand, brtr);
+            ActionResultType res = player.isSneaking() ? ActionResultType.PASS : getBlockState().onBlockActivated(world, player, hand, brtr);
+            if (res.isSuccessOrConsume() || res == ActionResultType.FAIL) return res;
+            res = player.getHeldItem(hand).onItemUseFirst(itemCtx);
+            return res == ActionResultType.PASS ? player.getHeldItem(hand).onItemUse(itemCtx) : res;
         }
     }
 

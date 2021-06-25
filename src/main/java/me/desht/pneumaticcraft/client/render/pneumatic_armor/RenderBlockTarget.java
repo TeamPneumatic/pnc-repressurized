@@ -19,7 +19,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -39,24 +38,27 @@ import java.util.List;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class RenderBlockTarget {
-
+    private static final int SERVER_REQUEST_INTERVAL = 60; // ticks
     private static final float STAT_SCALE = 0.02F;
+
     private final World world;
     private final BlockPos pos;
-    public int ticksExisted = 0;
+    private final long posHash;
     public final IGuiAnimatedStat stat;
     private final PlayerEntity player;
-    public List<ITextComponent> textList = new ArrayList<>();
-    private int hackTime;
     private final BlockTrackerClientHandler blockTracker;
+    public int ticksExisted = 0;
+    private int hackTime;
     private TileEntity te;
     private int nEntries;
+    private boolean refreshSent = false;
 
     public RenderBlockTarget(World world, PlayerEntity player, BlockPos pos, TileEntity te,
                              BlockTrackerClientHandler blockTracker) {
         this.world = world;
         this.player = player;
         this.pos = pos;
+        this.posHash = pos.hashCode();
         this.te = te;
         this.blockTracker = blockTracker;
         ITextComponent title = xlate(world.getBlockState(pos).getBlock().getTranslationKey());
@@ -93,14 +95,11 @@ public class RenderBlockTarget {
         return pos;
     }
 
-    public double getDistanceToEntity(Entity entity) {
-        return Math.sqrt(entity.getDistanceSq(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D));
-    }
-
-    public void maybeRefreshFromServer(List<IBlockTrackEntry> applicableTrackEntries) {
+    public void requestServerUpdate(List<IBlockTrackEntry> applicableTrackEntries) {
         for (IBlockTrackEntry entry : applicableTrackEntries) {
             entry.getServerUpdatePositions(te).forEach(p -> NetworkHandler.sendToServer(new PacketDescriptionPacketRequest(p)));
         }
+        refreshSent = true;
     }
 
     public void tick() {
@@ -113,29 +112,25 @@ public class RenderBlockTarget {
         List<IBlockTrackEntry> applicableTrackEntries = getApplicableEntries();
         nEntries = applicableTrackEntries.size();
 
-        if (world.getGameTime() % 100 == 7) {
-            maybeRefreshFromServer(applicableTrackEntries);
+        if (isPlayerLookingAtTarget() && (!refreshSent || world.getGameTime() % SERVER_REQUEST_INTERVAL == posHash % SERVER_REQUEST_INTERVAL)) {
+            requestServerUpdate(applicableTrackEntries);
         }
 
         if (!world.isAirBlock(pos)) {
-            textList = new ArrayList<>();
+            List<ITextComponent> textList = new ArrayList<>();
             if (ticksExisted > 120) {
                 stat.closeStat();
-                for (IBlockTrackEntry entry : applicableTrackEntries) {
-                    if (blockTracker.countBlockTrackersOfType(entry) <= entry.spamThreshold()) {
-                        stat.openStat();
-                        break;
-                    }
+                if (applicableTrackEntries.stream().anyMatch(entry -> blockTracker.countBlockTrackersOfType(entry) <= entry.spamThreshold())) {
+                    stat.openStat();
                 }
                 if (isPlayerLookingAtTarget()) {
                     stat.openStat();
                     addBlockTrackInfo(textList, applicableTrackEntries);
                 }
-                stat.setText(textList);
             } else if (ticksExisted < -30) {
                 stat.closeStat();
-                stat.setText(textList);
             }
+            stat.setText(textList);
         }
 
         if (hackTime > 0) {

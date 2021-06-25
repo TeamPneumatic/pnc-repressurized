@@ -43,7 +43,7 @@ public abstract class ProgWidgetDigAndPlace extends ProgWidgetAreaItemBase imple
     public void writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
         tag.putInt("order", order.ordinal());
-        tag.putBoolean("useMaxActions", useMaxActions);
+        if (useMaxActions) tag.putBoolean("useMaxActions", true);
         tag.putInt("maxActions", maxActions);
     }
 

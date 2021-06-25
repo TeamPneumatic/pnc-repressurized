@@ -34,6 +34,7 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.Difficulty;
 import net.minecraftforge.event.AnvilUpdateEvent;
 import net.minecraftforge.event.TickEvent;
@@ -44,6 +45,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import static me.desht.pneumaticcraft.common.item.ItemPneumaticArmor.isPneumaticArmorPiece;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -53,6 +55,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
  */
 public class EventHandlerPneumaticArmor {
     private static final Map<Integer, Integer> targetingTracker = new HashMap<>();
+    private static final Map<UUID, Map<String, Integer>> targetWarnings = new HashMap<>();
 
     private static final int ARMOR_REPAIR_AMOUNT = 16;  // durability repaired per compressed iron ingot
 
@@ -69,9 +72,8 @@ public class EventHandlerPneumaticArmor {
                 if (!targetingTracker.containsKey(mobId) || targetingTracker.get(mobId) != event.getTarget().getEntityId()) {
                     CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
                     if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().entityTrackerHandler, true)) {
-                        NetworkHandler.sendToPlayer(new PacketSendArmorHUDMessage(
-                                        xlate("pneumaticcraft.armor.message.targetWarning", event.getEntityLiving().getName().getString()),
-                                        60, 0x70FF4000), player);
+                        Map<String, Integer> map = targetWarnings.computeIfAbsent(player.getUniqueID(), k -> new HashMap<>());
+                        map.merge(event.getEntityLiving().getName().getString(), 1, Integer::sum);
                     }
                 }
             }
@@ -267,30 +269,52 @@ public class EventHandlerPneumaticArmor {
      * Client-side: play particles for all (close enough) player entities with enabled jet boots, including the actual player.
      */
     @SubscribeEvent
-    public void handleJetbootsParticlesAndPose(TickEvent.PlayerTickEvent event) {
-        if (event.phase == TickEvent.Phase.END && event.player.world.isRemote) {
-            JetBootsStateTracker tracker = JetBootsStateTracker.getClientTracker();
-            int distThresholdSq = ClientUtils.getRenderDistanceThresholdSq();
-            for (PlayerEntity player : event.player.world.getPlayers()) {
-                if (!player.isOnGround() && isPneumaticArmorPiece(player, EquipmentSlotType.FEET)) {
-                    JetBootsState state = tracker.getJetBootsState(player);
-                    if (state != null && state.isEnabled() && (!player.isElytraFlying() || state.isActive()) && player.getDistanceSq(event.player) < distThresholdSq) {
-                        // reduce hovering particle density when in first person, to make looking downward less obscured
-                        if (state.isActive() || (player.world.getGameTime() & 0x3) == 0 || !ClientUtils.isFirstPersonCamera()) {
-                            int nParticles = state.isActive() ? 3 : 1;
-                            Vector3d jetVec = state.shouldRotatePlayer() ? player.getLookVec().scale(-0.5) : IDLE_VEC;
-                            double scale = player == ClientUtils.getClientPlayer() ? -4 : -2;
-                            Vector3d feet = state.shouldRotatePlayer() ? player.getPositionVec().add(player.getLookVec().scale(scale)) : player.getPositionVec().add(0, -0.25, 0);
-                            for (int i = 0; i < nParticles; i++) {
-                                player.world.addParticle(AirParticleData.DENSE, feet.x, feet.y, feet.z, jetVec.x, jetVec.y, jetVec.z);
-                            }
+    public void onPlayerTick(TickEvent.PlayerTickEvent event) {
+        if (event.phase == TickEvent.Phase.START) return;
+
+        if (event.player.world.isRemote) {
+            handleJetbootsPose(event.player);
+        } else if (event.player instanceof ServerPlayerEntity
+                && event.player.world.getGameTime() % 20 == 0
+                && ItemPneumaticArmor.isPneumaticArmorPiece(event.player, EquipmentSlotType.HEAD)) {
+            handleTargetWarnings((ServerPlayerEntity) event.player);
+        }
+    }
+
+    private void handleJetbootsPose(PlayerEntity thisPlayer) {
+        JetBootsStateTracker tracker = JetBootsStateTracker.getClientTracker();
+        int distThresholdSq = ClientUtils.getRenderDistanceThresholdSq();
+        for (PlayerEntity otherPlayer : thisPlayer.world.getPlayers()) {
+            if (!otherPlayer.isOnGround() && isPneumaticArmorPiece(otherPlayer, EquipmentSlotType.FEET)) {
+                JetBootsState state = tracker.getJetBootsState(otherPlayer);
+                if (state != null && state.isEnabled() && (!otherPlayer.isElytraFlying() || state.isActive()) && otherPlayer.getDistanceSq(thisPlayer) < distThresholdSq) {
+                    // reduce hovering particle density when in first person, to make looking downward less obscured
+                    if (state.isActive() || (otherPlayer.world.getGameTime() & 0x3) == 0 || !ClientUtils.isFirstPersonCamera()) {
+                        int nParticles = state.isActive() ? 3 : 1;
+                        Vector3d jetVec = state.shouldRotatePlayer() ? otherPlayer.getLookVec().scale(-0.5) : IDLE_VEC;
+                        double scale = otherPlayer == ClientUtils.getClientPlayer() ? -4 : -2;
+                        Vector3d feet = state.shouldRotatePlayer() ? otherPlayer.getPositionVec().add(otherPlayer.getLookVec().scale(scale)) : otherPlayer.getPositionVec().add(0, -0.25, 0);
+                        for (int i = 0; i < nParticles; i++) {
+                            otherPlayer.world.addParticle(AirParticleData.DENSE, feet.x, feet.y, feet.z, jetVec.x, jetVec.y, jetVec.z);
                         }
-                        if (player.getEntityId() != event.player.getEntityId() && state.shouldRotatePlayer()) {
-                            player.setPose(Pose.FALL_FLYING);
-                        }
+                    }
+                    if (otherPlayer.getEntityId() != thisPlayer.getEntityId() && state.shouldRotatePlayer()) {
+                        otherPlayer.setPose(Pose.FALL_FLYING);
                     }
                 }
             }
+        }
+    }
+
+    private void handleTargetWarnings(ServerPlayerEntity player) {
+        Map<String, Integer> map = targetWarnings.get(player.getUniqueID());
+        if (map != null) {
+            map.forEach((name, count) -> {
+                TranslationTextComponent msg = xlate("pneumaticcraft.armor.message.targetWarning", name);
+                if (count > 1) msg.appendString(" (x" + count + ")");
+                NetworkHandler.sendToPlayer(new PacketSendArmorHUDMessage(msg, 60, 0x70FF4000), player);
+            });
+            map.clear();
         }
     }
 
