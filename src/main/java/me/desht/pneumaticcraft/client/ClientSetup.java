@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.client;
 
-import me.desht.pneumaticcraft.client.event.ClientTickHandler;
+import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.client.gui.*;
 import me.desht.pneumaticcraft.client.gui.programmer.*;
 import me.desht.pneumaticcraft.client.gui.semiblock.GuiLogisticsProvider;
@@ -32,7 +32,6 @@ import me.desht.pneumaticcraft.common.item.ItemJackHammer;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.progwidgets.*;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
-import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;
@@ -57,7 +56,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 import java.util.Map;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class ClientSetup {
     public static void initEarly() {
@@ -67,7 +66,6 @@ public class ClientSetup {
 
     static void init(FMLClientSetupEvent event) {
         MinecraftForge.EVENT_BUS.register(HUDHandler.getInstance());
-        MinecraftForge.EVENT_BUS.register(ClientTickHandler.instance());
         MinecraftForge.EVENT_BUS.register(HackTickHandler.instance());
         MinecraftForge.EVENT_BUS.register(AreaRenderManager.getInstance());
         MinecraftForge.EVENT_BUS.register(KeyHandler.getInstance());
@@ -81,8 +79,8 @@ public class ClientSetup {
     }
 
     public static void registerParticleFactories(ParticleFactoryRegisterEvent event) {
-        Minecraft.getInstance().particles.registerFactory(ModParticleTypes.AIR_PARTICLE.get(), AirParticle.Factory::new);
-        Minecraft.getInstance().particles.registerFactory(ModParticleTypes.AIR_PARTICLE_2.get(), AirParticle.Factory::new);
+        Minecraft.getInstance().particleEngine.register(ModParticleTypes.AIR_PARTICLE.get(), AirParticle.Factory::new);
+        Minecraft.getInstance().particleEngine.register(ModParticleTypes.AIR_PARTICLE_2.get(), AirParticle.Factory::new);
     }
 
     public static void initLate() {
@@ -101,14 +99,14 @@ public class ClientSetup {
     }
 
     private static void addCustomArmorLayer() {
-        Map<String, PlayerRenderer> skinMap = Minecraft.getInstance().getRenderManager().getSkinMap();
+        Map<String, PlayerRenderer> skinMap = Minecraft.getInstance().getEntityRenderDispatcher().getSkinMap();
         PlayerRenderer render;
         render = skinMap.get("default");
         render.addLayer(new PneumaticArmorLayer<>(render, new BipedModel<>(0.5F), new BipedModel<>(1.0F)));
         render = skinMap.get("slim");
         render.addLayer(new PneumaticArmorLayer<>(render, new BipedModel<>(0.5F), new BipedModel<>(1.0F)));
 
-        EntityRenderer<?> r = Minecraft.getInstance().getRenderManager().renderers.get(EntityType.ARMOR_STAND);
+        EntityRenderer<?> r = Minecraft.getInstance().getEntityRenderDispatcher().renderers.get(EntityType.ARMOR_STAND);
         if (r instanceof ArmorStandRenderer) {
             ArmorStandRenderer ar = (ArmorStandRenderer) r;
             ar.addLayer(new PneumaticArmorLayer<>(ar, new ArmorStandArmorModel(0.5F), new ArmorStandArmorModel(1.0F)));
@@ -116,7 +114,7 @@ public class ClientSetup {
     }
 
     private static void registerItemModelProperties() {
-        ItemModelsProperties.registerProperty(ModItems.JACKHAMMER.get(), RL("drill_bit"), (stack, world, entity) -> {
+        ItemModelsProperties.register(ModItems.JACKHAMMER.get(), RL("drill_bit"), (stack, world, entity) -> {
             ItemDrillBit.DrillBitType type = ((ItemJackHammer) stack.getItem()).getDrillBit(stack);
             if (type == ItemDrillBit.DrillBitType.NONE) return 0f;
             if (world == null || !(entity instanceof PlayerEntity)) return 0.99f;
@@ -132,26 +130,26 @@ public class ClientSetup {
     }
 
     private static void setBlockRenderLayers() {
-        RenderTypeLookup.setRenderLayer(ModBlocks.APHORISM_TILE.get(), RenderType.getCutoutMipped());
-        RenderTypeLookup.setRenderLayer(ModBlocks.ELEVATOR_FRAME.get(), RenderType.getCutout());
-        RenderTypeLookup.setRenderLayer(ModBlocks.EMPTY_SPAWNER.get(), RenderType.getCutout());
-        RenderTypeLookup.setRenderLayer(ModBlocks.ETCHING_TANK.get(), RenderType.getCutoutMipped());
-        RenderTypeLookup.setRenderLayer(ModBlocks.FLUID_MIXER.get(), RenderType.getCutoutMipped());
-        RenderTypeLookup.setRenderLayer(ModBlocks.KEROSENE_LAMP.get(), RenderType.getCutoutMipped());
-        RenderTypeLookup.setRenderLayer(ModBlocks.LIQUID_HOPPER.get(), RenderType.getCutoutMipped());
-        RenderTypeLookup.setRenderLayer(ModBlocks.PRESSURE_CHAMBER_GLASS.get(), RenderType.getCutout());
-        RenderTypeLookup.setRenderLayer(ModBlocks.PRESSURE_TUBE.get(), RenderType.getCutout());
-        RenderTypeLookup.setRenderLayer(ModBlocks.PRESSURIZED_SPAWNER.get(), RenderType.getCutout());
-        RenderTypeLookup.setRenderLayer(ModBlocks.REFINERY.get(), RenderType.getCutoutMipped());
-        RenderTypeLookup.setRenderLayer(ModBlocks.REFINERY_OUTPUT.get(), RenderType.getCutoutMipped());
-        RenderTypeLookup.setRenderLayer(ModBlocks.TANK_SMALL.get(), RenderType.getCutoutMipped());
-        RenderTypeLookup.setRenderLayer(ModBlocks.TANK_MEDIUM.get(), RenderType.getCutoutMipped());
-        RenderTypeLookup.setRenderLayer(ModBlocks.TANK_LARGE.get(), RenderType.getCutoutMipped());
-        RenderTypeLookup.setRenderLayer(ModBlocks.TANK_HUGE.get(), RenderType.getCutoutMipped());
-        RenderTypeLookup.setRenderLayer(ModBlocks.VACUUM_PUMP.get(), RenderType.getTranslucent());
-        RenderTypeLookup.setRenderLayer(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.get(), RenderType.getCutoutMipped());
-        RenderTypeLookup.setRenderLayer(ModBlocks.UV_LIGHT_BOX.get(), layer -> layer == RenderType.getCutoutMipped() || layer == RenderType.getTranslucent());
-        RenderTypeLookup.setRenderLayer(ModBlocks.THERMAL_LAGGING.get(), RenderType.getTranslucent());
+        RenderTypeLookup.setRenderLayer(ModBlocks.APHORISM_TILE.get(), RenderType.cutoutMipped());
+        RenderTypeLookup.setRenderLayer(ModBlocks.ELEVATOR_FRAME.get(), RenderType.cutout());
+        RenderTypeLookup.setRenderLayer(ModBlocks.EMPTY_SPAWNER.get(), RenderType.cutout());
+        RenderTypeLookup.setRenderLayer(ModBlocks.ETCHING_TANK.get(), RenderType.cutoutMipped());
+        RenderTypeLookup.setRenderLayer(ModBlocks.FLUID_MIXER.get(), RenderType.cutoutMipped());
+        RenderTypeLookup.setRenderLayer(ModBlocks.KEROSENE_LAMP.get(), RenderType.cutoutMipped());
+        RenderTypeLookup.setRenderLayer(ModBlocks.LIQUID_HOPPER.get(), RenderType.cutoutMipped());
+        RenderTypeLookup.setRenderLayer(ModBlocks.PRESSURE_CHAMBER_GLASS.get(), RenderType.cutout());
+        RenderTypeLookup.setRenderLayer(ModBlocks.PRESSURE_TUBE.get(), RenderType.cutout());
+        RenderTypeLookup.setRenderLayer(ModBlocks.PRESSURIZED_SPAWNER.get(), RenderType.cutout());
+        RenderTypeLookup.setRenderLayer(ModBlocks.REFINERY.get(), RenderType.cutoutMipped());
+        RenderTypeLookup.setRenderLayer(ModBlocks.REFINERY_OUTPUT.get(), RenderType.cutoutMipped());
+        RenderTypeLookup.setRenderLayer(ModBlocks.TANK_SMALL.get(), RenderType.cutoutMipped());
+        RenderTypeLookup.setRenderLayer(ModBlocks.TANK_MEDIUM.get(), RenderType.cutoutMipped());
+        RenderTypeLookup.setRenderLayer(ModBlocks.TANK_LARGE.get(), RenderType.cutoutMipped());
+        RenderTypeLookup.setRenderLayer(ModBlocks.TANK_HUGE.get(), RenderType.cutoutMipped());
+        RenderTypeLookup.setRenderLayer(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.get(), RenderType.cutoutMipped());
+        RenderTypeLookup.setRenderLayer(ModBlocks.UV_LIGHT_BOX.get(), RenderType.cutoutMipped());
+        RenderTypeLookup.setRenderLayer(ModBlocks.THERMAL_LAGGING.get(), RenderType.translucent());
+        RenderTypeLookup.setRenderLayer(ModBlocks.VACUUM_PUMP.get(), RenderType.translucent());
 
         // camouflageable blocks need to render in all layers, since their camo could render in any layer
         for (RegistryObject<Block> ro: ModBlocks.BLOCKS.getEntries()) {
@@ -227,61 +225,62 @@ public class ClientSetup {
     }
 
     private static void registerScreenFactories() {
-        ScreenManager.registerFactory(ModContainers.ADVANCED_AIR_COMPRESSOR.get(), GuiAdvancedAirCompressor::new);
-        ScreenManager.registerFactory(ModContainers.ADVANCED_LIQUID_COMPRESSOR.get(), GuiAdvancedLiquidCompressor::new);
-        ScreenManager.registerFactory(ModContainers.AERIAL_INTERFACE.get(), GuiAerialInterface::new);
-        ScreenManager.registerFactory(ModContainers.AIR_CANNON.get(), GuiAirCannon::new);
-        ScreenManager.registerFactory(ModContainers.AIR_COMPRESSOR.get(), GuiAirCompressor::new);
-        ScreenManager.registerFactory(ModContainers.AMADRON.get(), GuiAmadron::new);
-        ScreenManager.registerFactory(ModContainers.AMADRON_ADD_TRADE.get(), GuiAmadronAddTrade::new);
-        ScreenManager.registerFactory(ModContainers.ASSEMBLY_CONTROLLER.get(), GuiAssemblyController::new);
-        ScreenManager.registerFactory(ModContainers.CHARGING_STATION.get(), GuiChargingStation::new);
-        ScreenManager.registerFactory(ModContainers.CHARGING_ARMOR.get(), GuiPneumaticArmor::new);
-        ScreenManager.registerFactory(ModContainers.CHARGING_DRONE.get(), GuiDrone::new);
-        ScreenManager.registerFactory(ModContainers.CHARGING_MINIGUN.get(), GuiMinigun::new);
-        ScreenManager.registerFactory(ModContainers.CHARGING_JACKHAMMER.get(), GuiJackhammer::new);
-        ScreenManager.registerFactory(ModContainers.CREATIVE_COMPRESSOR.get(), GuiCreativeCompressor::new);
-        ScreenManager.registerFactory(ModContainers.ELECTROSTATIC_COMPRESSOR.get(), GuiElectrostaticCompressor::new);
-        ScreenManager.registerFactory(ModContainers.ELEVATOR.get(), GuiElevator::new);
-        ScreenManager.registerFactory(ModContainers.ETCHING_TANK.get(), GuiEtchingTank::new);
-        ScreenManager.registerFactory(ModContainers.FLUID_TANK.get(), GuiFluidTank::new);
-        ScreenManager.registerFactory(ModContainers.FLUID_MIXER.get(), GuiFluidMixer::new);
-        ScreenManager.registerFactory(ModContainers.FLUX_COMPRESSOR.get(), GuiFluxCompressor::new);
-        ScreenManager.registerFactory(ModContainers.GAS_LIFT.get(), GuiGasLift::new);
-        ScreenManager.registerFactory(ModContainers.INVENTORY_SEARCHER.get(), GuiInventorySearcher::new);
-        ScreenManager.registerFactory(ModContainers.JACKHAMMER_SETUP.get(), GuiJackHammerSetup::new);
-        ScreenManager.registerFactory(ModContainers.KEROSENE_LAMP.get(), GuiKeroseneLamp::new);
-        ScreenManager.registerFactory(ModContainers.LIQUID_COMPRESSOR.get(), GuiLiquidCompressor::new);
-        ScreenManager.registerFactory(ModContainers.LIQUID_HOPPER.get(), GuiLiquidHopper::new);
-        ScreenManager.registerFactory(ModContainers.LOGISTICS_FRAME_PROVIDER.get(), GuiLogisticsProvider::new);
-        ScreenManager.registerFactory(ModContainers.LOGISTICS_FRAME_REQUESTER.get(), GuiLogisticsRequester::new);
-        ScreenManager.registerFactory(ModContainers.LOGISTICS_FRAME_STORAGE.get(), GuiLogisticsStorage::new);
-        ScreenManager.registerFactory(ModContainers.MINIGUN_MAGAZINE.get(), GuiMinigunMagazine::new);
-        ScreenManager.registerFactory(ModContainers.OMNIDIRECTIONAL_HOPPER.get(), GuiOmnidirectionalHopper::new);
-        ScreenManager.registerFactory(ModContainers.PNEUMATIC_DOOR_BASE.get(), GuiPneumaticDoorBase::new);
-        ScreenManager.registerFactory(ModContainers.PNEUMATIC_DYNAMO.get(), GuiPneumaticDynamo::new);
-        ScreenManager.registerFactory(ModContainers.PRESSURE_CHAMBER_VALVE.get(), GuiPressureChamber::new);
-        ScreenManager.registerFactory(ModContainers.PRESSURE_CHAMBER_INTERFACE.get(), GuiPressureChamberInterface::new);
-        ScreenManager.registerFactory(ModContainers.PRESSURIZED_SPAWNER.get(), GuiPressurizedSpawner::new);
-        ScreenManager.registerFactory(ModContainers.PROGRAMMER.get(), GuiProgrammer::new);
-        ScreenManager.registerFactory(ModContainers.PROGRAMMABLE_CONTROLLER.get(), GuiProgrammableController::new);
-        ScreenManager.registerFactory(ModContainers.REFINERY.get(), GuiRefineryController::new);
-        ScreenManager.registerFactory(ModContainers.REINFORCED_CHEST.get(), GuiReinforcedChest::new);
-        ScreenManager.registerFactory(ModContainers.REMOTE.get(), GuiRemote::new);
-        ScreenManager.registerFactory(ModContainers.REMOTE_EDITOR.get(), GuiRemoteEditor::new);
-        ScreenManager.registerFactory(ModContainers.ITEM_SEARCHER.get(), GuiItemSearcher::new);
-        ScreenManager.registerFactory(ModContainers.SECURITY_STATION_MAIN.get(), GuiSecurityStationInventory::new);
-        ScreenManager.registerFactory(ModContainers.SECURITY_STATION_HACKING.get(), GuiSecurityStationHacking::new);
-        ScreenManager.registerFactory(ModContainers.SENTRY_TURRET.get(), GuiSentryTurret::new);
-        ScreenManager.registerFactory(ModContainers.SMART_CHEST.get(), GuiSmartChest::new);
-        ScreenManager.registerFactory(ModContainers.SPAWNER_EXTRACTOR.get(), GuiSpawnerExtractor::new);
-        ScreenManager.registerFactory(ModContainers.TAG_MATCHER.get(), GuiTagWorkbench::new);
-        ScreenManager.registerFactory(ModContainers.THERMAL_COMPRESSOR.get(), GuiThermalCompressor::new);
-        ScreenManager.registerFactory(ModContainers.THERMOPNEUMATIC_PROCESSING_PLANT.get(), GuiThermopneumaticProcessingPlant::new);
-        ScreenManager.registerFactory(ModContainers.UNIVERSAL_SENSOR.get(), GuiUniversalSensor::new);
-        ScreenManager.registerFactory(ModContainers.UV_LIGHT_BOX.get(), GuiUVLightBox::new);
-        ScreenManager.registerFactory(ModContainers.VACUUM_PUMP.get(), GuiVacuumPump::new);
-        ScreenManager.registerFactory(ModContainers.VACUUM_TRAP.get(), GuiVacuumTrap::new);
+        ScreenManager.register(ModContainers.ADVANCED_AIR_COMPRESSOR.get(), GuiAdvancedAirCompressor::new);
+        ScreenManager.register(ModContainers.ADVANCED_LIQUID_COMPRESSOR.get(), GuiAdvancedLiquidCompressor::new);
+        ScreenManager.register(ModContainers.AERIAL_INTERFACE.get(), GuiAerialInterface::new);
+        ScreenManager.register(ModContainers.AIR_CANNON.get(), GuiAirCannon::new);
+        ScreenManager.register(ModContainers.AIR_COMPRESSOR.get(), GuiAirCompressor::new);
+        ScreenManager.register(ModContainers.AMADRON.get(), GuiAmadron::new);
+        ScreenManager.register(ModContainers.AMADRON_ADD_TRADE.get(), GuiAmadronAddTrade::new);
+        ScreenManager.register(ModContainers.ASSEMBLY_CONTROLLER.get(), GuiAssemblyController::new);
+        ScreenManager.register(ModContainers.CHARGING_STATION.get(), GuiChargingStation::new);
+        ScreenManager.register(ModContainers.CHARGING_ARMOR.get(), GuiPneumaticArmor::new);
+        ScreenManager.register(ModContainers.CHARGING_DRONE.get(), GuiDrone::new);
+        ScreenManager.register(ModContainers.CHARGING_MINIGUN.get(), GuiMinigun::new);
+        ScreenManager.register(ModContainers.CHARGING_JACKHAMMER.get(), GuiJackhammer::new);
+        ScreenManager.register(ModContainers.CREATIVE_COMPRESSOR.get(), GuiCreativeCompressor::new);
+        ScreenManager.register(ModContainers.CREATIVE_COMPRESSED_IRON_BLOCK.get(), GuiCreativeCompressedIronBlock::new);
+        ScreenManager.register(ModContainers.ELECTROSTATIC_COMPRESSOR.get(), GuiElectrostaticCompressor::new);
+        ScreenManager.register(ModContainers.ELEVATOR.get(), GuiElevator::new);
+        ScreenManager.register(ModContainers.ETCHING_TANK.get(), GuiEtchingTank::new);
+        ScreenManager.register(ModContainers.FLUID_TANK.get(), GuiFluidTank::new);
+        ScreenManager.register(ModContainers.FLUID_MIXER.get(), GuiFluidMixer::new);
+        ScreenManager.register(ModContainers.FLUX_COMPRESSOR.get(), GuiFluxCompressor::new);
+        ScreenManager.register(ModContainers.GAS_LIFT.get(), GuiGasLift::new);
+        ScreenManager.register(ModContainers.INVENTORY_SEARCHER.get(), GuiInventorySearcher::new);
+        ScreenManager.register(ModContainers.JACKHAMMER_SETUP.get(), GuiJackHammerSetup::new);
+        ScreenManager.register(ModContainers.KEROSENE_LAMP.get(), GuiKeroseneLamp::new);
+        ScreenManager.register(ModContainers.LIQUID_COMPRESSOR.get(), GuiLiquidCompressor::new);
+        ScreenManager.register(ModContainers.LIQUID_HOPPER.get(), GuiLiquidHopper::new);
+        ScreenManager.register(ModContainers.LOGISTICS_FRAME_PROVIDER.get(), GuiLogisticsProvider::new);
+        ScreenManager.register(ModContainers.LOGISTICS_FRAME_REQUESTER.get(), GuiLogisticsRequester::new);
+        ScreenManager.register(ModContainers.LOGISTICS_FRAME_STORAGE.get(), GuiLogisticsStorage::new);
+        ScreenManager.register(ModContainers.MINIGUN_MAGAZINE.get(), GuiMinigunMagazine::new);
+        ScreenManager.register(ModContainers.OMNIDIRECTIONAL_HOPPER.get(), GuiOmnidirectionalHopper::new);
+        ScreenManager.register(ModContainers.PNEUMATIC_DOOR_BASE.get(), GuiPneumaticDoorBase::new);
+        ScreenManager.register(ModContainers.PNEUMATIC_DYNAMO.get(), GuiPneumaticDynamo::new);
+        ScreenManager.register(ModContainers.PRESSURE_CHAMBER_VALVE.get(), GuiPressureChamber::new);
+        ScreenManager.register(ModContainers.PRESSURE_CHAMBER_INTERFACE.get(), GuiPressureChamberInterface::new);
+        ScreenManager.register(ModContainers.PRESSURIZED_SPAWNER.get(), GuiPressurizedSpawner::new);
+        ScreenManager.register(ModContainers.PROGRAMMER.get(), GuiProgrammer::new);
+        ScreenManager.register(ModContainers.PROGRAMMABLE_CONTROLLER.get(), GuiProgrammableController::new);
+        ScreenManager.register(ModContainers.REFINERY.get(), GuiRefineryController::new);
+        ScreenManager.register(ModContainers.REINFORCED_CHEST.get(), GuiReinforcedChest::new);
+        ScreenManager.register(ModContainers.REMOTE.get(), GuiRemote::new);
+        ScreenManager.register(ModContainers.REMOTE_EDITOR.get(), GuiRemoteEditor::new);
+        ScreenManager.register(ModContainers.ITEM_SEARCHER.get(), GuiItemSearcher::new);
+        ScreenManager.register(ModContainers.SECURITY_STATION_MAIN.get(), GuiSecurityStationInventory::new);
+        ScreenManager.register(ModContainers.SECURITY_STATION_HACKING.get(), GuiSecurityStationHacking::new);
+        ScreenManager.register(ModContainers.SENTRY_TURRET.get(), GuiSentryTurret::new);
+        ScreenManager.register(ModContainers.SMART_CHEST.get(), GuiSmartChest::new);
+        ScreenManager.register(ModContainers.SPAWNER_EXTRACTOR.get(), GuiSpawnerExtractor::new);
+        ScreenManager.register(ModContainers.TAG_MATCHER.get(), GuiTagWorkbench::new);
+        ScreenManager.register(ModContainers.THERMAL_COMPRESSOR.get(), GuiThermalCompressor::new);
+        ScreenManager.register(ModContainers.THERMOPNEUMATIC_PROCESSING_PLANT.get(), GuiThermopneumaticProcessingPlant::new);
+        ScreenManager.register(ModContainers.UNIVERSAL_SENSOR.get(), GuiUniversalSensor::new);
+        ScreenManager.register(ModContainers.UV_LIGHT_BOX.get(), GuiUVLightBox::new);
+        ScreenManager.register(ModContainers.VACUUM_PUMP.get(), GuiVacuumPump::new);
+        ScreenManager.register(ModContainers.VACUUM_TRAP.get(), GuiVacuumTrap::new);
     }
 
     private static void registerProgWidgetScreenFactories() {
@@ -300,7 +299,7 @@ public class ClientSetup {
         ProgWidgetGuiManager.registerProgWidgetGui(ProgWidgetDroneConditionEnergy.class, GuiProgWidgetDroneCondition.Energy::new);
         ProgWidgetGuiManager.registerProgWidgetGui(ProgWidgetDropItem.class, GuiProgWidgetDropItem::new);
         ProgWidgetGuiManager.registerProgWidgetGui(ProgWidgetEmitRedstone.class, GuiProgWidgetEmitRedstone::new);
-        ProgWidgetGuiManager.registerProgWidgetGui(ProgWidgetEntityAttack.class, GuiProgWidgetAreaShow::new);
+        ProgWidgetGuiManager.registerProgWidgetGui(ProgWidgetEntityAttack.class, GuiProgWidgetEntityAttack::new);
         ProgWidgetGuiManager.registerProgWidgetGui(ProgWidgetEntityCondition.class, GuiProgWidgetCondition.Entity::new);
         ProgWidgetGuiManager.registerProgWidgetGui(ProgWidgetEntityImport.class, GuiProgWidgetAreaShow::new);
         ProgWidgetGuiManager.registerProgWidgetGui(ProgWidgetEntityRightClick.class, GuiProgWidgetAreaShow::new);
