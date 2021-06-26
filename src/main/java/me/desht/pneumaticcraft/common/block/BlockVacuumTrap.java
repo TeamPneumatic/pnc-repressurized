@@ -25,6 +25,7 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.shapes.IBooleanFunction;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockReader;
@@ -35,15 +36,32 @@ import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 import static net.minecraft.state.properties.BlockStateProperties.*;
 
 public class BlockVacuumTrap extends BlockPneumaticCraft implements IWaterLoggable {
-    private static final VoxelShape FLAP1 = box(0, 11, 0, 16, 12, 5);
-    private static final VoxelShape FLAP2 = box(0, 11, 11, 16, 12, 16);
-    private static final VoxelShape SHAPE_EW_CLOSED = box(0, 0, 3, 16, 12, 13);
-    private static final VoxelShape SHAPE_EW_OPEN_BASE = box(0, 0, 3, 16, 11, 13);
+    private static final VoxelShape FLAP1 = Block.box(2, 11, 11, 14, 12, 16);
+    private static final VoxelShape FLAP2 = Block.box(2, 11, 0, 14, 12, 5);
+    private static final VoxelShape SHAPE_EW_CLOSED = Stream.of(
+            Block.box(0, 1, 3, 16, 11, 13),
+            Block.box(1, 0, 4, 15, 1, 12),
+            Block.box(0, 12, 7, 2, 14, 9),
+            Block.box(0, 11, 6, 2, 12, 10),
+            Block.box(14, 11, 6, 16, 12, 10),
+            Block.box(0, 14, 7, 8, 16, 9),
+            Block.box(2, 11, 8, 14, 12, 13),
+            Block.box(2, 11, 3, 14, 12, 8)
+    ).reduce((v1, v2) -> {return VoxelShapes.combineAndSimplify(v1, v2, IBooleanFunction.OR);}).get();
+    private static final VoxelShape SHAPE_EW_OPEN_BASE = Stream.of(
+            Block.box(0, 1, 3, 16, 11, 13),
+            Block.box(1, 0, 4, 15, 1, 12),
+            Block.box(0, 12, 7, 2, 14, 9),
+            Block.box(0, 11, 6, 2, 12, 10),
+            Block.box(14, 11, 6, 16, 12, 10),
+            Block.box(0, 14, 7, 8, 16, 9)
+    ).reduce((v1, v2) -> {return VoxelShapes.combineAndSimplify(v1, v2, IBooleanFunction.OR);}).get();
     private static final VoxelShape SHAPE_EW_OPEN = VoxelShapeUtils.combine(IBooleanFunction.OR, SHAPE_EW_OPEN_BASE, FLAP1, FLAP2);
     private static final VoxelShape SHAPE_NS_CLOSED = VoxelShapeUtils.rotateY(SHAPE_EW_CLOSED, 90);
     private static final VoxelShape SHAPE_NS_OPEN = VoxelShapeUtils.rotateY(SHAPE_EW_OPEN, 90);
