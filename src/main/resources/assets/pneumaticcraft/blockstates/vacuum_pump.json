@@ -1,7 +1,7 @@
 {
   "variants": {
-    "facing=north": { "model": "pneumaticcraft:block/vacuum_pump", "y":  90 },
-    "facing=south": { "model": "pneumaticcraft:block/vacuum_pump", "y":  270 },
+    "facing=north": { "model": "pneumaticcraft:block/vacuum_pump", "y":  270 },
+    "facing=south": { "model": "pneumaticcraft:block/vacuum_pump", "y":  90 },
     "facing=west": { "model": "pneumaticcraft:block/vacuum_pump", "y":  180 },
     "facing=east": { "model": "pneumaticcraft:block/vacuum_pump" }
   }
