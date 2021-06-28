@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
+import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorFeatureStatus;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -16,6 +17,7 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.inventory.EquipmentSlotType;
@@ -213,12 +215,16 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
     @Override
     public void addTooltip(double mouseX, double mouseY, List<ITextComponent> curTooltip, boolean shiftPressed) {
         KeyBinding keyBinding = ArmorUpgradeClientRegistry.getInstance().getKeybindingForUpgrade(upgradeID);
+        String k = IArmorUpgradeHandler.getStringKey(upgradeID) + ".desc";
+        if (I18n.hasKey(k)) {
+            curTooltip.addAll(GuiUtils.xlateAndSplit(k));
+        }
         if (keyBinding != null) {
-            curTooltip.add(xlate("pneumaticcraft.gui.keybindBoundKey", ClientUtils.translateKeyBind(keyBinding)));
+            curTooltip.add(xlate("pneumaticcraft.gui.keybindBoundKey", ClientUtils.translateKeyBind(keyBinding)).mergeStyle(TextFormatting.GOLD));
             if (!isListeningForBinding) {
-                curTooltip.add(xlate("pneumaticcraft.gui.keybindRightClickToSet").mergeStyle(TextFormatting.GRAY, TextFormatting.ITALIC));
+                curTooltip.add(xlate("pneumaticcraft.gui.keybindRightClickToSet").mergeStyle(TextFormatting.GRAY));
                 if (keyBinding.getKey().getKeyCode() != GLFW.GLFW_KEY_UNKNOWN) {
-                    curTooltip.add(xlate("pneumaticcraft.gui.keybindShiftRightClickToClear").mergeStyle(TextFormatting.GRAY, TextFormatting.ITALIC));
+                    curTooltip.add(xlate("pneumaticcraft.gui.keybindShiftRightClickToClear").mergeStyle(TextFormatting.GRAY));
                 }
             }
         }

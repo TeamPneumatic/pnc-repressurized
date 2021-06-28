@@ -96,6 +96,7 @@ public class ItemPneumaticArmor extends ArmorItem implements
     public static final String NBT_BUILDER_MODE = "JetBootsBuilderMode";
     public static final String NBT_JET_BOOTS_POWER = "JetBootsPower";
     public static final String NBT_FLIGHT_STABILIZERS = "JetBootsStabilizers";
+    public static final String NBT_SMART_HOVER = "SmartHover";
     public static final int DEFAULT_PRIMARY_COLOR = 0xFF969696;
     public static final int DEFAULT_SECONDARY_COLOR = 0xFFC0C0C0;
     public static final int DEFAULT_EYEPIECE_COLOR = 0xFF00AA00;

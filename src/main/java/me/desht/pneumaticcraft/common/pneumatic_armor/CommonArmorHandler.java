@@ -113,6 +113,8 @@ public class CommonArmorHandler implements ICommonArmorHandler {
     private boolean jetBootsBuilderMode;
     private float jetBootsPower;
     private boolean flightStabilizers;
+    private boolean smartHover;
+    private boolean hovering;
 
     private CommonArmorHandler(PlayerEntity player) {
         this.player = player;
@@ -137,6 +139,10 @@ public class CommonArmorHandler implements ICommonArmorHandler {
 
     public static CommonArmorHandler getHandlerForPlayer() {
         return getHandlerForPlayer(ClientUtils.getClientPlayer());
+    }
+
+    public boolean isSmartHover() {
+        return smartHover;
     }
 
     @Mod.EventBusSubscriber(modid = Names.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
@@ -419,22 +425,25 @@ public class CommonArmorHandler implements ICommonArmorHandler {
             } else if (isJetBootsEnabled() && !player.isOnGround() && !player.isElytraFlying()) {
                 // jetboots not firing, but enabled - slowly descend (or hover if enough upgrades)
                 // and bring player to complete halt if flight stabilizers and not actively moving forward/sideways
+                boolean reallyHovering = !smartHover || hovering;
                 boolean stopped = flightStabilizers && jetbootsCount >= JetBootsClientHandler.STABLIZERS_LEVEL
                         && PneumaticCraftUtils.epsilonEquals(player.moveForward, 0f)
                         && PneumaticCraftUtils.epsilonEquals(player.moveStrafing, 0f);
                 double xMotion = stopped ? 0 : player.getMotion().x;
-                double yMotion = player.isSneaking() ? -0.45 : -0.1 + 0.02 * jetbootsCount;
+                double yMotion = reallyHovering ? (player.isSneaking() ? -0.45 : -0.1 + 0.02 * jetbootsCount) : player.getMotion().y;
                 double zMotion = stopped ? 0 : player.getMotion().z;
                 player.setMotion(new Vector3d(xMotion, yMotion, zMotion));
-                player.fallDistance = 0;
-                jetbootsAirUsage = (int) (Armor.jetBootsAirUsage * (player.isSneaking() ? 0.25F : 0.5F));
+                if (reallyHovering) player.fallDistance = 0;
+                jetbootsAirUsage = reallyHovering ? (int) (Armor.jetBootsAirUsage * (player.isSneaking() ? 0.25F : 0.5F)) : 0;
                 flightAccel = 1.0F;
+            } else if (player.isOnGround()) {
+                hovering = false;
             } else {
                 flightAccel = 1.0F;
             }
         } else {
             // insufficient pressure!
-            if (isJetBootsEnabled() && !player.isOnGround() && !player.isElytraFlying()) {
+            if (isJetBootsEnabled() && !player.isOnGround() && !player.isElytraFlying() && hovering) {
                 // still active and in the air: using minimal air here keeps the boots running
                 // and thus avoids triggering multiple looping sounds (see "jet boots starting up" code below)
                 jetbootsAirUsage = 1;
@@ -616,6 +625,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
                 jetBootsBuilderMode = ItemPneumaticArmor.getBooleanData(armorStack, ItemPneumaticArmor.NBT_BUILDER_MODE, false);
                 flightStabilizers = ItemPneumaticArmor.getBooleanData(armorStack, ItemPneumaticArmor.NBT_FLIGHT_STABILIZERS, false);
                 jetBootsPower = ItemPneumaticArmor.getIntData(armorStack, ItemPneumaticArmor.NBT_JET_BOOTS_POWER, 100, 0, 100) / 100f;
+                smartHover = ItemPneumaticArmor.getBooleanData(armorStack, ItemPneumaticArmor.NBT_SMART_HOVER, false);
                 JetBootsStateTracker.getTracker(player).setJetBootsState(player, isJetBootsEnabled(), isJetBootsActive(), jetBootsBuilderMode);
                 break;
         }
@@ -755,6 +765,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         }
         this.jetBootsActive = jetBootsActive;
         this.player.setForcedPose(jetBootsActive && !jetBootsBuilderMode ? Pose.FALL_FLYING : null);
+        if (smartHover) hovering = true;
         JetBootsStateTracker.getTracker(player).setJetBootsState(player, isJetBootsEnabled(), jetBootsActive, isJetBootsBuilderMode());
     }
 
@@ -835,6 +846,9 @@ public class CommonArmorHandler implements ICommonArmorHandler {
                 break;
             case ItemPneumaticArmor.NBT_FLIGHT_STABILIZERS:
                 flightStabilizers = ((ByteNBT) dataTag).getByte() == 1;
+                break;
+            case ItemPneumaticArmor.NBT_SMART_HOVER:
+                smartHover = ((ByteNBT) dataTag).getByte() == 1;
                 break;
         }
     }

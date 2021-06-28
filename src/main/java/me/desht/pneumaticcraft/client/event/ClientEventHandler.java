@@ -6,6 +6,7 @@ import com.mojang.blaze3d.vertex.IVertexBuilder;
 import me.desht.pneumaticcraft.api.client.IFOVModifierItem;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.ICustomDurabilityBar;
+import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticContainerBase;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticScreenBase;
 import me.desht.pneumaticcraft.client.gui.IExtraGuiHandling;
@@ -30,7 +31,6 @@ import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
 import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.Textures;
-import net.minecraft.client.GameSettings;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.IGuiEventListener;
@@ -279,11 +279,10 @@ public class ClientEventHandler {
             if (player == null || player.world == null || !player.world.isRemote) return;
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
             if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().jetBootsHandler, false)) {
-                GameSettings settings = Minecraft.getInstance().gameSettings;
-                if (handler.isJetBootsActive() && (!handler.isJetBootsEnabled() || !settings.keyBindJump.isKeyDown())) {
+                if (handler.isJetBootsActive() && (!handler.isJetBootsEnabled() || !KeyHandler.getInstance().keybindJetBoots.isKeyDown())) {
                     NetworkHandler.sendToServer(new PacketJetBootsActivate(false));
                     handler.setJetBootsActive(false);
-                } else if (!handler.isJetBootsActive() && handler.isJetBootsEnabled() && settings.keyBindJump.isKeyDown()) {
+                } else if (!handler.isJetBootsActive() && handler.isJetBootsEnabled() && KeyHandler.getInstance().keybindJetBoots.isKeyDown()) {
                     NetworkHandler.sendToServer(new PacketJetBootsActivate(true));
                     handler.setJetBootsActive(true);
                 }

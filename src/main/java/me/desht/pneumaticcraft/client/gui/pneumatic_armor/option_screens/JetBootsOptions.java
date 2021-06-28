@@ -44,8 +44,12 @@ public class JetBootsOptions extends AbstractSliderOptions<JetBootsClientHandler
                 b -> setFlag(ItemPneumaticArmor.NBT_FLIGHT_STABILIZERS, JetBootsClientHandler.STABLIZERS_LEVEL, (WidgetKeybindCheckBox) b))
                 .withOwnerUpgradeID(getClientUpgradeHandler().getCommonHandler().getID());
         gui.addWidget(checkBoxStabilizers);
+        WidgetKeybindCheckBox hoverControl = WidgetKeybindCheckBox.getOrCreate(RL("jet_boots.module.smart_hover"), 5, 85, 0xFFFFFFFF,
+                b -> setFlag(ItemPneumaticArmor.NBT_SMART_HOVER, 1, (WidgetKeybindCheckBox) b))
+                .withOwnerUpgradeID(getClientUpgradeHandler().getCommonHandler().getID());
+        gui.addWidget(hoverControl);
 
-        gui.addWidget(new WidgetButtonExtended(30, 128, 150, 20,
+        gui.addWidget(new WidgetButtonExtended(30, 148, 150, 20,
                 xlate("pneumaticcraft.armor.gui.misc.moveStatScreen"), b -> {
             Minecraft.getInstance().player.closeScreen();
             Minecraft.getInstance().displayGuiScreen(new GuiMoveStat(getClientUpgradeHandler(), ArmorHUDLayout.LayoutType.JET_BOOTS));
@@ -54,7 +58,7 @@ public class JetBootsOptions extends AbstractSliderOptions<JetBootsClientHandler
 
     @Override
     protected PointXY getSliderPos() {
-        return new PointXY(30, 80);
+        return new PointXY(30, 100);
     }
 
     private void setFlag(String flagName, int minTier, WidgetKeybindCheckBox cb) {

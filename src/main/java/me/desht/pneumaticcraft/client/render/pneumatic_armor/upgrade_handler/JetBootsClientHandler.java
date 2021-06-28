@@ -40,6 +40,7 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
     private static final ItemStack PICK = new ItemStack(Items.DIAMOND_PICKAXE);
     private static final ItemStack ROTOR = new ItemStack(ModItems.TURBINE_ROTOR.get());
     private static final ItemStack ELYTRA = new ItemStack(Items.ELYTRA);
+    private static final ItemStack FEATHER = new ItemStack(Items.FEATHER);
 
     private static final String[] HEADINGS = new String[] { "S", "SW", "W", "NW", "N", "NE", "E", "SE" };
 
@@ -47,6 +48,7 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
     private int widestR;
     private boolean builderMode;
     private boolean flightStabilizers;
+    private boolean smartHover;
     private double prevX, prevY, prevZ;
 
     private IGuiAnimatedStat jbStat;
@@ -94,6 +96,7 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer();
             builderMode = handler.isJetBootsBuilderMode();
             flightStabilizers = handler.isFlightStabilizers();
+            smartHover = handler.isSmartHover();
         }
     }
 
@@ -128,6 +131,10 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
             }
             if (Minecraft.getInstance().player.isElytraFlying()) {
                 GuiUtils.renderItemStack(matrixStack, ELYTRA, iconX, jbStat.getBaseY());
+                iconX -= 16;
+            }
+            if (smartHover) {
+                GuiUtils.renderItemStack(matrixStack, FEATHER, iconX, jbStat.getBaseY());
 //                iconX -= 16;
             }
         }
@@ -161,6 +168,6 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
 
     @Override
     public Collection<ResourceLocation> getSubKeybinds() {
-        return ImmutableList.of(RL("jet_boots.module.builder_mode"), RL("jet_boots.module.flight_stabilizers"));
+        return ImmutableList.of(RL("jet_boots.module.builder_mode"), RL("jet_boots.module.flight_stabilizers"), RL("jet_boots.module.smart_hover"));
     }
 }

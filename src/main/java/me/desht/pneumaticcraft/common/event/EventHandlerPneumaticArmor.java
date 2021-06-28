@@ -202,7 +202,7 @@ public class EventHandlerPneumaticArmor {
                 return;
             }
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
-            if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().jetBootsHandler, true)) {
+            if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().jetBootsHandler, true) && !handler.isSmartHover()) {
                 // enabled jet boots = no jumping
                 return;
             }
