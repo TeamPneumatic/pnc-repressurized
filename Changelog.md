@@ -8,6 +8,30 @@ Changes are in reverse chronological order; newest changes at the top.
 
 PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 
+## 2.13.1-?? (unreleased)
+
+### New
+* Added a new Jet Boots Smart Hover mode
+  * Turn it off & on in the Jet Boots Armor GUI screen
+  * When off, Jet Boots behave exactly as before
+  * When on, hovering only engages when the thrust key is pressed. Stepping off an edge or jumping will *not* enable hovering.
+* Added new keybinding for Jet Boots thrust
+  * This used to just use the vanilla Jump key binding
+  * Default is Space, same as before
+  * Changing this to something other than the vanilla Jump keybinding is particularly useful in conjunction with Smart Hover Mode
+
+### Updates
+* Jackhammer now highlights to-be-broken blocks when in a multibreak mode
+  * Should reduce the risk of accidentally breaking half your house...
+
+### Fixes
+* Fixed in-world Yeast crafting destroying block if trying to spread to a waterlogged block
+* Fixed voiding of Mekanism fluid tanks when trying to craft Speed Upgrades with them
+  * Mekanism fluid tanks can no longer be used in PNC:R fluid crafting recipes
+* Heat Frames can no longer be placed on PNC:R fluid tanks (or any block with a fluid capability)  
+  * This was causing too much confusion: Heat Frames are intended for item inventories, not fluid tanks
+  * It only went on the PNC:R fluid tank because it has an item capability for the bucket slot
+
 ## 2.13.0-199 (24 Jun 2021)
 
 ### New
