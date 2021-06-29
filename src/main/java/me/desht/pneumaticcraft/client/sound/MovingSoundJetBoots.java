@@ -1,14 +1,18 @@
 package me.desht.pneumaticcraft.client.sound;
 
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModSounds;
+import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import net.minecraft.client.audio.TickableSound;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.vector.Vector3d;
 
 public class MovingSoundJetBoots extends TickableSound {
     private static final int END_TICKS = 20;
+    private static final Vector3d IDLE_VEC = new Vector3d(0, -0.5, 0);
 
     private final PlayerEntity player;
     private final CommonArmorHandler handler;
@@ -55,7 +59,8 @@ public class MovingSoundJetBoots extends TickableSound {
             targetPitch = 0.5F;
             volume = volumeFromConfig() - ((END_TICKS - endTimer) / 50F);
         } else {
-            if (handler.isJetBootsActive()) {
+            boolean jetBootsActive = handler.isJetBootsActive();
+            if (jetBootsActive) {
                 double vel = player.getMotion().length();
                 targetPitch = 0.9F + (float) vel / 15;
                 volume = volumeFromConfig() + (float) vel / 15;
@@ -63,11 +68,26 @@ public class MovingSoundJetBoots extends TickableSound {
                 targetPitch = 0.9F;
                 volume = volumeFromConfig() * 0.8F;
             }
+            handleParticles(jetBootsActive);
         }
         pitch += (targetPitch - pitch) / 10F;
         if (player.isInWater()) {
             pitch *= 0.75f;
             volume *= 0.5f;
+        }
+    }
+
+    private void handleParticles(boolean jetBootsActive) {
+        int distThresholdSq = ClientUtils.getRenderDistanceThresholdSq();
+        if ((jetBootsActive || (player.world.getGameTime() & 0x3) == 0 || !ClientUtils.isFirstPersonCamera()) && player.getDistanceSq(ClientUtils.getClientPlayer()) < distThresholdSq) {
+            int nParticles = jetBootsActive ? 3 : 1;
+            Vector3d jetVec = jetBootsActive && !handler.isJetBootsBuilderMode() ? player.getLookVec().scale(-0.5) : IDLE_VEC;
+            Vector3d feet = jetBootsActive && !handler.isJetBootsBuilderMode() ?
+                    player.getPositionVec().add(player.getLookVec().scale(player == ClientUtils.getClientPlayer() ? -4 : -2)) :
+                    player.getPositionVec().add(0, -0.25, 0);
+            for (int i = 0; i < nParticles; i++) {
+                player.world.addParticle(AirParticleData.DENSE, feet.x, feet.y, feet.z, jetVec.x, jetVec.y, jetVec.z);
+            }
         }
     }
 

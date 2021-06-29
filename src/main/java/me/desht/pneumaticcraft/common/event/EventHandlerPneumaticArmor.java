@@ -288,16 +288,7 @@ public class EventHandlerPneumaticArmor {
             if (!otherPlayer.isOnGround() && isPneumaticArmorPiece(otherPlayer, EquipmentSlotType.FEET)) {
                 JetBootsState state = tracker.getJetBootsState(otherPlayer);
                 if (state != null && state.isEnabled() && (!otherPlayer.isElytraFlying() || state.isActive()) && otherPlayer.getDistanceSq(thisPlayer) < distThresholdSq) {
-                    // reduce hovering particle density when in first person, to make looking downward less obscured
-                    if (state.isActive() || (otherPlayer.world.getGameTime() & 0x3) == 0 || !ClientUtils.isFirstPersonCamera()) {
-                        int nParticles = state.isActive() ? 3 : 1;
-                        Vector3d jetVec = state.shouldRotatePlayer() ? otherPlayer.getLookVec().scale(-0.5) : IDLE_VEC;
-                        double scale = otherPlayer == ClientUtils.getClientPlayer() ? -4 : -2;
-                        Vector3d feet = state.shouldRotatePlayer() ? otherPlayer.getPositionVec().add(otherPlayer.getLookVec().scale(scale)) : otherPlayer.getPositionVec().add(0, -0.25, 0);
-                        for (int i = 0; i < nParticles; i++) {
-                            otherPlayer.world.addParticle(AirParticleData.DENSE, feet.x, feet.y, feet.z, jetVec.x, jetVec.y, jetVec.z);
-                        }
-                    }
+                    // note: particles now played in MovingSoundJetboots
                     if (otherPlayer.getEntityId() != thisPlayer.getEntityId() && state.shouldRotatePlayer()) {
                         otherPlayer.setPose(Pose.FALL_FLYING);
                     }
