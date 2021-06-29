@@ -14,12 +14,13 @@ import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
 import me.desht.pneumaticcraft.lib.GuiConstants;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.AbstractGui;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Rectangle2d;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
@@ -27,15 +28,14 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.opengl.GL11;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class GuiUnitProgrammer extends Screen {
+public class ProgrammerWidgetAreaRenderer {
     private static final float SCALE_PER_STEP = 0.2F;
 
+    private final Screen parent;
     private final List<IProgWidget> progWidgets;
     private final int guiLeft, guiTop;
     private final int startX, startY, areaWidth, areaHeight;
@@ -47,14 +47,12 @@ public class GuiUnitProgrammer extends Screen {
     private int totalErrors = 0;
     private int totalWarnings = 0;
 
-    public GuiUnitProgrammer(List<IProgWidget> progWidgets, int guiLeft, int guiTop,
-                             int width, int height, Rectangle2d bounds, double translatedX,
-                             double translatedY, int lastZoom) {
-        super(new StringTextComponent(I18n.format("block.pneumaticcraft.programmer")));
+    public ProgrammerWidgetAreaRenderer(Screen parent, List<IProgWidget> progWidgets, int guiLeft, int guiTop,
+                                        Rectangle2d bounds, double translatedX, double translatedY, int lastZoom) {
+        this.parent = parent;
         this.progWidgets = progWidgets;
         this.guiLeft = guiLeft;
         this.guiTop = guiTop;
-        init(Minecraft.getInstance(), width, height);
         this.startX = bounds.getX();
         this.startY = bounds.getY();
         this.areaWidth = bounds.getWidth();
@@ -94,7 +92,7 @@ public class GuiUnitProgrammer extends Screen {
         }
     }
 
-    public void renderForeground(MatrixStack matrixStack, int x, int y, IProgWidget tooltipExcludingWidget) {
+    public void renderForeground(MatrixStack matrixStack, int x, int y, IProgWidget tooltipExcludingWidget, FontRenderer font) {
         int idx = getHoveredWidgetIndex(x, y);
         if (idx >= 0) {
             IProgWidget progWidget = progWidgets.get(idx);
@@ -107,7 +105,7 @@ public class GuiUnitProgrammer extends Screen {
                     addMessages(tooltip, widgetWarnings.get(idx), "pneumaticcraft.gui.programmer.warnings", TextFormatting.YELLOW);
                 addAdditionalInfoToTooltip(progWidget, tooltip);
                 if (!tooltip.isEmpty()) {
-                    renderTooltip(matrixStack, GuiUtils.wrapTextComponentList(tooltip, areaWidth * 2 / 3, font), x - guiLeft, y - guiTop);
+                    parent.renderTooltip(matrixStack, GuiUtils.wrapTextComponentList(tooltip, areaWidth * 2 / 3, font), x - guiLeft, y - guiTop);
                 }
             }
         }
@@ -135,7 +133,7 @@ public class GuiUnitProgrammer extends Screen {
 
     protected void addAdditionalInfoToTooltip(IProgWidget widget, List<ITextComponent> tooltip) {
         if (ProgWidgetGuiManager.hasGui(widget)) {
-            tooltip.add(new StringTextComponent("Right-click for options").mergeStyle(TextFormatting.GOLD));
+            tooltip.add(xlate("pneumaticcraft.gui.programmer.rightClickForOptions").mergeStyle(TextFormatting.GOLD));
         }
         ThirdPartyManager.instance().getDocsProvider().addTooltip(tooltip, false);
         if (Minecraft.getInstance().gameSettings.advancedItemTooltips) {
@@ -143,9 +141,8 @@ public class GuiUnitProgrammer extends Screen {
         }
     }
 
-    @Override
     public void tick() {
-        if ((getMinecraft().world.getGameTime() & 0xf) == 0 || widgetErrors.size() != progWidgets.size() || widgetWarnings.size() != progWidgets.size()) {
+        if ((Minecraft.getInstance().world.getGameTime() & 0xf) == 0 || widgetErrors.size() != progWidgets.size() || widgetWarnings.size() != progWidgets.size()) {
             widgetErrors.clear();
             widgetWarnings.clear();
             totalErrors = totalWarnings = 0;
@@ -171,7 +168,7 @@ public class GuiUnitProgrammer extends Screen {
         }
         lastZoom = scaleScroll.getState();
 
-        MainWindow mw = minecraft.getMainWindow();
+        MainWindow mw = Minecraft.getInstance().getMainWindow();
         double sf = mw.getGuiScaleFactor();
         GL11.glScissor((int)((guiLeft + startX) * mw.getGuiScaleFactor()), (int)(mw.getScaledHeight() * sf - areaHeight * sf - (guiTop + startY) * sf), (int)(areaWidth * sf), (int)(areaHeight * sf));
         GL11.glEnable(GL11.GL_SCISSOR_TEST);
@@ -224,7 +221,6 @@ public class GuiUnitProgrammer extends Screen {
         GL11.glDisable(GL11.GL_SCISSOR_TEST);
     }
 
-    @Override
     public boolean mouseDragged(double mouseX, double mouseY, int mouseButton, double dx, double dy) {
         if (mouseButton == 0 && !scaleScroll.isDragging() && new Rectangle2d(guiLeft + startX, guiTop + startY, areaWidth, areaHeight).contains((int)mouseX, (int)mouseY)) {
             translatedX += dx;
@@ -234,7 +230,6 @@ public class GuiUnitProgrammer extends Screen {
         return false;
     }
 
-    @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double dir) {
         return scaleScroll.mouseScrolled(mouseX, mouseY, dir);
     }
@@ -258,6 +253,20 @@ public class GuiUnitProgrammer extends Screen {
         matrixStack.pop();
     }
 
+    private void hLine(MatrixStack matrixStack, int minX, int maxX, int y, int color) {
+        if (maxX < minX) {
+            int i = minX; minX = maxX; maxX = i;
+        }
+        AbstractGui.fill(matrixStack, minX, y, maxX + 1, y + 1, color);
+    }
+
+    private void vLine(MatrixStack matrixStack, int x, int minY, int maxY, int color) {
+        if (maxY < minY) {
+            int i = minY; minY = maxY; maxY = i;
+        }
+        AbstractGui.fill(matrixStack, x, minY + 1, x + 1, maxY, color);
+    }
+
     private static final float ARROW_ANGLE = (float) Math.toRadians(30);
     private static final float ARROW_SIZE = 5;
 
@@ -268,31 +277,34 @@ public class GuiUnitProgrammer extends Screen {
         BufferBuilder wr = Tessellator.getInstance().getBuffer();
         wr.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION);
 
+        Map<String, List<IProgWidget>> labelWidgets = new HashMap<>();
+        for (IProgWidget w : progWidgets) {
+            if (w instanceof ILabel) {
+                labelWidgets.computeIfAbsent(((ILabel) w).getLabel(), k -> new ArrayList<>()).add(w);
+            }
+        }
+
         Matrix4f posMat = matrixStack.getLast().getMatrix();
         for (IProgWidget widget : progWidgets) {
             if (widget instanceof IJump) {
                 for (String jumpLocation : ((IJump) widget).getPossibleJumpLocations()) {
-                    if (jumpLocation != null) {
-                        for (IProgWidget w : progWidgets) {
-                            if (w instanceof ILabel && jumpLocation.equals(((ILabel) w).getLabel())) {
-                                int x1 = widget.getX() + widget.getWidth() / 4;
-                                int y1 = widget.getY() + widget.getHeight() / 4;
-                                int x2 = w.getX() + w.getWidth() / 4;
-                                int y2 = w.getY() + w.getHeight() / 4;
-                                float midX = (x2 + x1) / 2F;
-                                float midY = (y2 + y1) / 2F;
-                                wr.pos(posMat,guiLeft + x1, guiTop + y1, 0.0f).endVertex();
-                                wr.pos(posMat,guiLeft + x2, guiTop + y2, 0.0f).endVertex();
-                                Vector3d arrowVec = new Vector3d(x1 - x2, y1 - y2, 0).normalize();
-                                arrowVec = new Vector3d(arrowVec.x * ARROW_SIZE, 0, arrowVec.y * ARROW_SIZE);
-                                arrowVec = arrowVec.rotateYaw(ARROW_ANGLE);
-                                wr.pos(posMat,guiLeft + midX, guiTop + midY, 0.0f).endVertex();
-                                wr.pos(posMat,guiLeft + midX + (float)arrowVec.x, guiTop + midY + (float)arrowVec.z, 0.0f).endVertex();
-                                arrowVec = arrowVec.rotateYaw(-2 * ARROW_ANGLE);
-                                wr.pos(posMat,guiLeft + midX, guiTop + midY, 0.0f).endVertex();
-                                wr.pos(posMat,guiLeft + midX + (float)arrowVec.x, guiTop + midY + (float)arrowVec.z, 0.0f).endVertex();
-                            }
-                        }
+                    for (IProgWidget labelWidget : labelWidgets.getOrDefault(jumpLocation, Collections.emptyList())) {
+                        int x1 = widget.getX() + widget.getWidth() / 4;
+                        int y1 = widget.getY() + widget.getHeight() / 4;
+                        int x2 = labelWidget.getX() + labelWidget.getWidth() / 4;
+                        int y2 = labelWidget.getY() + labelWidget.getHeight() / 4;
+                        float midX = (x2 + x1) / 2F;
+                        float midY = (y2 + y1) / 2F;
+                        wr.pos(posMat,guiLeft + x1, guiTop + y1, 0.0f).endVertex();
+                        wr.pos(posMat,guiLeft + x2, guiTop + y2, 0.0f).endVertex();
+                        Vector3d arrowVec = new Vector3d(x1 - x2, y1 - y2, 0).normalize();
+                        arrowVec = new Vector3d(arrowVec.x * ARROW_SIZE, 0, arrowVec.y * ARROW_SIZE);
+                        arrowVec = arrowVec.rotateYaw(ARROW_ANGLE);
+                        wr.pos(posMat,guiLeft + midX, guiTop + midY, 0.0f).endVertex();
+                        wr.pos(posMat,guiLeft + midX + (float)arrowVec.x, guiTop + midY + (float)arrowVec.z, 0.0f).endVertex();
+                        arrowVec = arrowVec.rotateYaw(-2 * ARROW_ANGLE);
+                        wr.pos(posMat,guiLeft + midX, guiTop + midY, 0.0f).endVertex();
+                        wr.pos(posMat,guiLeft + midX + (float)arrowVec.x, guiTop + midY + (float)arrowVec.z, 0.0f).endVertex();
                     }
                 }
             }

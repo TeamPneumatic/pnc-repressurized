@@ -72,7 +72,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
     private final List<RemovingWidget> removingWidgets = new ArrayList<>();
     private BitSet filteredSpawnWidgets;
 
-    private GuiUnitProgrammer programmerUnit;
+    private ProgrammerWidgetAreaRenderer programmerUnit;
     private IProgWidget draggingWidget;
     private int lastMouseX, lastMouseY;
     private double dragMouseStartX, dragMouseStartY;
@@ -125,7 +125,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         }
 
         Rectangle2d bounds = getProgrammerBounds();
-        programmerUnit = new GuiUnitProgrammer(te.progWidgets, guiLeft, guiTop, width, height,
+        programmerUnit = new ProgrammerWidgetAreaRenderer(this, te.progWidgets, guiLeft, guiTop,
                 bounds, te.translatedX, te.translatedY, te.zoomState);
         addButton(programmerUnit.getScrollBar());
 
@@ -398,7 +398,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         font.func_238422_b_(matrixStack, xlate("pneumaticcraft.gui.programmer.difficulty").func_241878_f(), xRight - 36, yBottom + 20, 0x404040);
 
         if (showingWidgetProgress == 0) {
-            programmerUnit.renderForeground(matrixStack, x, y, draggingWidget);
+            programmerUnit.renderForeground(matrixStack, x, y, draggingWidget, font);
         }
 
         for (int i = 0; i < visibleSpawnWidgets.size(); i++) {

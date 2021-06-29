@@ -981,6 +981,7 @@
    "pneumaticcraft.gui.programmer.name" : "Name:",
    "pneumaticcraft.gui.programmer.pressIForInfo" : "§2Press 'I' for info",
    "pneumaticcraft.gui.programmer.pressIForInfoTrayOpen" : "§2Press 'I' or middle-click for info",
+   "pneumaticcraft.gui.programmer.rightClickForOptions" : "Right-click: widget options...",
    "pneumaticcraft.gui.programmer.warningCount" : "There are %s warnings in the program.",
    "pneumaticcraft.gui.programmer.warnings" : "Warnings:",
    "pneumaticcraft.gui.progWidget.area.error.areaTooBig" : "Over-large area: > %d blocks. See 'I:maxProgrammingArea' in config.",

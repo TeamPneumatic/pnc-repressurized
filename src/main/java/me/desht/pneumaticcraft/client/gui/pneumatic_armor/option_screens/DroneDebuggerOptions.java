@@ -6,7 +6,7 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.gui.GuiProgrammer;
-import me.desht.pneumaticcraft.client.gui.GuiUnitProgrammer;
+import me.desht.pneumaticcraft.client.gui.ProgrammerWidgetAreaRenderer;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.DroneDebugClientHandler;
@@ -40,7 +40,7 @@ public class DroneDebuggerOptions extends IOptionPage.SimpleToggleableOptions<Dr
     private static final int PROGRAMMING_START_Y = 40;
 
     private final IDroneBase selectedDrone;
-    private GuiUnitProgrammer programmerUnit;
+    private ProgrammerWidgetAreaRenderer programmerUnit;
     private int programmingStartX, programmingWidth, programmingHeight;
     private IProgWidget areaShowingWidget;
     private Button showActive;
@@ -81,8 +81,8 @@ public class DroneDebuggerOptions extends IOptionPage.SimpleToggleableOptions<Dr
         programmingStartX = PROGRAMMING_MARGIN;
         programmingWidth = guiScreen.width - PROGRAMMING_MARGIN * 2;
         programmingHeight = guiScreen.height - PROGRAMMING_MARGIN - PROGRAMMING_START_Y;
-        programmerUnit = new DebugInfoProgrammerUnit(selectedDrone != null ? selectedDrone.getProgWidgets() : new ArrayList<>(),
-                0, 0, guiScreen.width, guiScreen.height,
+        programmerUnit = new DebugWidgetAreaRenderer(guiScreen, selectedDrone != null ? selectedDrone.getProgWidgets() : new ArrayList<>(),
+                0, 0,
                 new Rectangle2d(programmingStartX, PROGRAMMING_START_Y, programmingWidth, programmingHeight),
                 0, 0, 0);
         if (isDroneValid()) {
@@ -116,7 +116,7 @@ public class DroneDebuggerOptions extends IOptionPage.SimpleToggleableOptions<Dr
         matrixStack.push();
         matrixStack.translate(0, 0, 300);
         programmerUnit.render(matrixStack, x, y, true, true);
-        programmerUnit.renderForeground(matrixStack, x, y, null);
+        programmerUnit.renderForeground(matrixStack, x, y, null, getGuiScreen().getFontRenderer());
         matrixStack.pop();
 
         followCheckbox.render(matrixStack, x, y, partialTicks);
@@ -187,12 +187,12 @@ public class DroneDebuggerOptions extends IOptionPage.SimpleToggleableOptions<Dr
         return isDroneValid() && programmerUnit.mouseDragged(mouseX, mouseY, button, dragX, dragY);
     }
 
-    private class DebugInfoProgrammerUnit extends GuiUnitProgrammer {
+    private class DebugWidgetAreaRenderer extends ProgrammerWidgetAreaRenderer {
 
-        DebugInfoProgrammerUnit(List<IProgWidget> progWidgets, int guiLeft,
-                                int guiTop, int width, int height, Rectangle2d bounds,
+        DebugWidgetAreaRenderer(Screen parent, List<IProgWidget> progWidgets,
+                                int guiLeft, int guiTop, Rectangle2d bounds,
                                 int translatedX, int translatedY, int lastZoom) {
-            super(progWidgets, guiLeft, guiTop, width, height, bounds, translatedX, translatedY, lastZoom);
+            super(parent, progWidgets, guiLeft, guiTop, bounds, translatedX, translatedY, lastZoom);
             TileEntityProgrammer.updatePuzzleConnections(progWidgets);
         }
 
