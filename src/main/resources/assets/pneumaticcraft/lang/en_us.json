@@ -15,6 +15,7 @@
    "block.pneumaticcraft.assembly_platform" : "Assembly Platform",
    "block.pneumaticcraft.biodiesel" : "Biodiesel",
    "block.pneumaticcraft.charging_station" : "Charging Station",
+   "block.pneumaticcraft.charging_station.upgrade_only" : "Charging Station (Upgrades Only)",
    "block.pneumaticcraft.compressed_iron_block" : "Block of Compressed Iron",
    "block.pneumaticcraft.creative_compressor" : "Creative Compressor",
    "block.pneumaticcraft.diesel" : "Diesel",

@@ -84,7 +84,7 @@ public class ModBlocks {
     public static final RegistryObject<BlockPressureChamberInterface> PRESSURE_CHAMBER_INTERFACE = register("pressure_chamber_interface",
             BlockPressureChamberInterface::new);
     public static final RegistryObject<BlockChargingStation> CHARGING_STATION = register("charging_station",
-            BlockChargingStation::new);
+            BlockChargingStation::new, block -> () -> new BlockChargingStation.ItemBlockChargingStation(block.get()));
     public static final RegistryObject<BlockDrillPipe> DRILL_PIPE = register("drill_pipe",
             BlockDrillPipe::new);
     public static final RegistryObject<BlockElevatorBase> ELEVATOR_BASE = register("elevator_base",

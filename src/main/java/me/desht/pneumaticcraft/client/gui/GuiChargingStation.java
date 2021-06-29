@@ -29,7 +29,11 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiChargingStation extends GuiPneumaticContainerBase<ContainerChargingStation,TileEntityChargingStation> {
     private WidgetButtonExtended guiSelectButton;
+    private WidgetButtonExtended upgradeOnlyButton;
     private float renderAirProgress;
+
+    private static final ITextComponent UPGRADE_ONLY_ON = new StringTextComponent("\u2b06").mergeStyle(TextFormatting.AQUA);
+    private static final ITextComponent UPGRADE_ONLY_OFF = new StringTextComponent("\u2b06").mergeStyle(TextFormatting.GRAY);
 
     public GuiChargingStation(ContainerChargingStation container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
@@ -41,12 +45,13 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<ContainerCharg
     public void init() {
         super.init();
 
-        int xStart = (width - xSize) / 2;
-        int yStart = (height - ySize) / 2;
-        guiSelectButton = new WidgetButtonExtended(xStart + 90, yStart + 22, 18, 19, StringTextComponent.EMPTY).withTag("open_upgrades");
+        guiSelectButton = new WidgetButtonExtended(guiLeft + 90, guiTop + 22, 18, 19, StringTextComponent.EMPTY).withTag("open_upgrades");
         guiSelectButton.setRenderedIcon(Textures.GUI_UPGRADES_LOCATION);
         guiSelectButton.visible = false;
         addButton(guiSelectButton);
+
+        addButton(upgradeOnlyButton = new WidgetButtonExtended(guiLeft + 129, guiTop + 80, 14, 14, "U")
+                .withTag("toggle_upgrade_only"));
     }
 
     @Override
@@ -63,12 +68,17 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<ContainerCharg
     protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float opacity, int x, int y) {
         super.drawGuiContainerBackgroundLayer(matrixStack, opacity, x, y);
 
-        renderAir(matrixStack);
+        if (te.upgradeOnly) {
+            blit(matrixStack, guiLeft + 102, guiTop + 76, 177, 0, 13, 16);
+        } else {
+            renderAir(matrixStack);
+        }
     }
 
     @Override
     public void tick() {
         super.tick();
+
         ItemStack stack = te.getPrimaryInventory().getStackInSlot(TileEntityChargingStation.CHARGE_INVENTORY_INDEX);
         guiSelectButton.visible = stack.getItem() instanceof IChargeableContainerProvider;
         if (guiSelectButton.visible) {
@@ -77,20 +87,22 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<ContainerCharg
 
         // multiplier of 25 is about the max that looks good (higher values can make the animation look like
         // it's going the wrong way)
-        if (te.charging) {
-            renderAirProgress += 0.001F * Math.min(25f, te.getSpeedMultiplierFromUpgrades());
-            if (renderAirProgress > 1f) renderAirProgress = 0f;
-        } else if (te.discharging) {
-            renderAirProgress -= 0.001F * Math.min(25f, te.getSpeedMultiplierFromUpgrades());
-            if (renderAirProgress < 0f) renderAirProgress = 1f;
+        if (!te.upgradeOnly) {
+            if (te.charging) {
+                renderAirProgress += 0.001F * Math.min(25f, te.getSpeedMultiplierFromUpgrades());
+                if (renderAirProgress > 1f) renderAirProgress = 0f;
+            } else if (te.discharging) {
+                renderAirProgress -= 0.001F * Math.min(25f, te.getSpeedMultiplierFromUpgrades());
+                if (renderAirProgress < 0f) renderAirProgress = 1f;
+            }
         }
+
+        upgradeOnlyButton.setMessage(te.upgradeOnly ? UPGRADE_ONLY_ON : UPGRADE_ONLY_OFF);
     }
 
     @Override
     protected PointXY getGaugeLocation() {
-        int xStart = (width - xSize) / 2;
-        int yStart = (height - ySize) / 2;
-        return new PointXY(xStart + xSize * 3 / 4 + 10, yStart + ySize / 4 + 10);
+        return new PointXY(guiLeft + xSize * 3 / 4 + 10, guiTop + ySize / 4 + 10);
     }
 
     @Override
@@ -121,7 +133,7 @@ public class GuiChargingStation extends GuiPneumaticContainerBase<ContainerCharg
         ItemStack chargeStack  = te.getPrimaryInventory().getStackInSlot(TileEntityChargingStation.CHARGE_INVENTORY_INDEX);
         if (chargeStack.isEmpty()) {
             curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.charging_station.no_item"));
-        } else {
+        } else if (!te.upgradeOnly) {
             chargeStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(h -> {
                 String name = chargeStack.getDisplayName().getString();
                 if (h.getPressure() > te.getPressure() + 0.01F && h.getPressure() <= 0) {

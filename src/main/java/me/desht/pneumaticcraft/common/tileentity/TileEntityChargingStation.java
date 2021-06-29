@@ -39,6 +39,7 @@ import net.minecraftforge.items.IItemHandler;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class TileEntityChargingStation extends TileEntityPneumaticBase implements IRedstoneControl<TileEntityChargingStation>, ICamouflageableTE, INamedContainerProvider {
@@ -72,6 +73,8 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     private int pendingRedstoneStatus = -1;
     @GuiSynced
     private final RedstoneController<TileEntityChargingStation> rsController = new RedstoneController<>(this, REDSTONE_MODES);
+    @GuiSynced
+    public boolean upgradeOnly = false;
 
     public TileEntityChargingStation() {
         super(ModTileEntities.CHARGING_STATION.get(), PneumaticValues.DANGER_PRESSURE_CHARGING_STATION, PneumaticValues.MAX_PRESSURE_CHARGING_STATION, PneumaticValues.VOLUME_CHARGING_STATION, 4);
@@ -136,7 +139,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
                 updateRedstoneOutput();
             }
 
-            airHandler.setSideLeaking(hasNoConnectedAirHandlers() ? getRotation() : null);
+            airHandler.setSideLeaking(!upgradeOnly && hasNoConnectedAirHandlers() ? getRotation() : null);
         }
     }
 
@@ -148,6 +151,8 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
     }
 
     private List<IAirHandler> findChargeable() {
+        if (upgradeOnly) return Collections.emptyList();
+
         List<IAirHandler> res = new ArrayList<>();
 
         if (getChargingStack().getCount() == 1) {
@@ -198,6 +203,9 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
             case "close_upgrades":
                 NetworkHooks.openGui((ServerPlayerEntity) player, this, getPos());
                 break;
+            case "toggle_upgrade_only":
+                upgradeOnly = !upgradeOnly;
+                break;
         }
     }
 
@@ -235,6 +243,7 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
         if (chargeSlot.getItem() instanceof IChargeableContainerProvider) {
             chargeableInventory = new ChargeableItemHandler(this);
         }
+        upgradeOnly = tag.getBoolean("UpgradeOnly");
     }
 
     @Override
@@ -244,7 +253,13 @@ public class TileEntityChargingStation extends TileEntityPneumaticBase implement
             chargeableInventory.writeToNBT();
         }
         tag.put("Items", itemHandler.serializeNBT());
+        if (upgradeOnly) tag.putBoolean("UpgradeOnly", true);
         return tag;
+    }
+
+    @Override
+    public void serializeExtraItemData(CompoundNBT blockEntityTag, boolean preserveState) {
+        if (upgradeOnly) blockEntityTag.putBoolean("UpgradeOnly", true);
     }
 
     @Override

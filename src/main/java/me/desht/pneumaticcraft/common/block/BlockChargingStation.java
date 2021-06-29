@@ -1,10 +1,15 @@
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.core.ModBlocks;
+import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.lib.NBTKeys;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
@@ -60,5 +65,31 @@ public class BlockChargingStation extends BlockPneumaticCraftCamo {
     public int getWeakPower(BlockState blockState, IBlockReader blockAccess, BlockPos pos, Direction side) {
         return PneumaticCraftUtils.getTileEntityAt(blockAccess, pos, TileEntityChargingStation.class)
                 .map(teCS -> teCS.getRedstoneController().shouldEmit() ? 15 : 0).orElse(0);
+    }
+
+    public static class ItemBlockChargingStation extends BlockItem {
+        public ItemBlockChargingStation(Block blockIn) {
+            super(blockIn, ModItems.defaultProps());
+        }
+
+        @Override
+        public String getTranslationKey(ItemStack stack) {
+            CompoundNBT tag = stack.getChildTag(NBTKeys.BLOCK_ENTITY_TAG);
+            if (tag != null && tag.getBoolean("UpgradeOnly")) {
+                return super.getTranslationKey(stack) + ".upgrade_only";
+            } else {
+                return super.getTranslationKey(stack);
+            }
+        }
+
+//        @Override
+//        public ITextComponent getDisplayName(ItemStack stack) {
+//            CompoundNBT tag = stack.getChildTag(NBTKeys.BLOCK_ENTITY_TAG);
+//            if (tag != null && tag.getBoolean("UpgradeOnly")) {
+//                return super.getDisplayName(stack).deepCopy().appendString(" ").append(xlate("pneumaticcraft.gui.tooltip.charging_station.upgradesOnly"));
+//            } else {
+//                return super.getDisplayName(stack);
+//            }
+//        }
     }
 }
