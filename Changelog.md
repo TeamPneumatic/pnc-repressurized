@@ -12,25 +12,29 @@ PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 
 ### New
 * Added a new Jet Boots Smart Hover mode
-  * Turn it off & on in the Jet Boots Armor GUI screen
+  * Toggle it off & on in the Jet Boots Armor GUI screen (no specific upgrade tier needed)
   * When off, Jet Boots behave exactly as before
   * When on, hovering only engages when the thrust key is pressed. Stepping off an edge or jumping will *not* enable hovering.
 * Added new keybinding for Jet Boots thrust
-  * This used to just use the vanilla Jump key binding
-  * Default is Space, same as before
+  * This used to share the vanilla Jump key binding (Space by default)
+  * Default for new keybinding Space, same as before
+  * Can be set via armor GUI (Jet Boots page) as well as vanilla Options -> Controls screen  
   * Changing this to something other than the vanilla Jump keybinding is particularly useful in conjunction with Smart Hover Mode
 
 ### Updates
-* Jackhammer now highlights to-be-broken blocks when in a multibreak mode
+* Jackhammer now highlights to-be-broken blocks when in any multibreak mode
   * Should reduce the risk of accidentally breaking half your house...
+* Charging Station GUI now has a button to toggle "upgrade only" mode
+  * In this mode, no transfer of air to/from items happens, and no air leaks for unconnected stations occur
+  * Useful if you want to carry a Charging Station around for on-the-go management of item upgrades
 
 ### Fixes
-* Fixed in-world Yeast crafting destroying block if trying to spread to a waterlogged block
+* Fixed in-world Yeast crafting destroying blocks if trying to spread to a waterlogged block
 * Fixed voiding of Mekanism fluid tanks when trying to craft Speed Upgrades with them
   * Mekanism fluid tanks can no longer be used in PNC:R fluid crafting recipes
 * Heat Frames can no longer be placed on PNC:R fluid tanks (or any block with a fluid capability)  
   * This was causing too much confusion: Heat Frames are intended for item inventories, not fluid tanks
-  * It only went on the PNC:R fluid tank because it has an item capability for the bucket slot
+  * It only went on the PNC:R fluid tank because the tank has an item capability for the bucket slot
 
 ## 2.13.0-199 (24 Jun 2021)
 
