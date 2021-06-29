@@ -4,9 +4,11 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.*;
 import me.desht.pneumaticcraft.api.hacking.IHacking;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
+import me.desht.pneumaticcraft.client.gui.pneumatic_armor.KeybindingButton;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker.BlockTrackEntryList;
 import net.minecraft.block.Block;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.tags.ITag;
@@ -16,6 +18,8 @@ import org.apache.commons.lang3.Validate;
 
 import java.util.*;
 import java.util.function.Supplier;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class PneumaticHelmetRegistry implements IPneumaticHelmetRegistry {
     private static final PneumaticHelmetRegistry INSTANCE = new PneumaticHelmetRegistry();
@@ -95,6 +99,11 @@ public class PneumaticHelmetRegistry implements IPneumaticHelmetRegistry {
     public void registerRenderHandler(IArmorUpgradeHandler handler, IArmorUpgradeClientHandler clientHandler) {
         Validate.notNull(clientHandler, "Render handler can't be null!");
         ArmorUpgradeClientRegistry.getInstance().registerHandler(handler, clientHandler);
+    }
+
+    @Override
+    public IKeybindingButton makeKeybindingButton(int yPos, KeyBinding keyBinding) {
+        return new KeybindingButton(30, yPos, 150, 20, xlate("pneumaticcraft.armor.gui.misc.setKey"), keyBinding);
     }
 
     public IHackableBlock getHackable(Block block) {

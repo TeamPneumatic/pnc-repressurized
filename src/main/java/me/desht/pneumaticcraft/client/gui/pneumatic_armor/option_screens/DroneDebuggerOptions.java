@@ -155,7 +155,7 @@ public class DroneDebuggerOptions extends IOptionPage.SimpleToggleableOptions<Dr
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
-        if (!isDroneValid()) return false;
+        if (!isDroneValid()) return super.mouseClicked(mouseX, mouseY, mouseButton);
 
         IProgWidget widget = programmerUnit.getHoveredWidget((int)mouseX, (int)mouseY);
         if (mouseButton == 0) {
@@ -174,7 +174,7 @@ public class DroneDebuggerOptions extends IOptionPage.SimpleToggleableOptions<Dr
                 }
             }
         }
-        return false;
+        return super.mouseClicked(mouseX, mouseY, mouseButton);
     }
 
     @Override

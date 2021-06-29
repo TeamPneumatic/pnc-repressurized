@@ -61,6 +61,7 @@ public class SearchOptions extends IOptionPage.SimpleToggleableOptions<SearchCli
         }
     }
 
+    @Override
     public boolean displaySettingsHeader() {
         return true;
     }

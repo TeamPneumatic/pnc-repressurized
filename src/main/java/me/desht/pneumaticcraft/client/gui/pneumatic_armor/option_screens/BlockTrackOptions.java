@@ -41,6 +41,7 @@ public class BlockTrackOptions extends IOptionPage.SimpleToggleableOptions<Block
         }
     }
 
+    @Override
     public boolean displaySettingsHeader() {
         return true;
     }

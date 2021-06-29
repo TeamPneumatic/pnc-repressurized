@@ -3,13 +3,16 @@ package me.desht.pneumaticcraft.api.client.pneumatic_helmet;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.util.InputMappings;
 import net.minecraft.util.text.IFormattableTextComponent;
+
+import java.util.Optional;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 /**
  * The Option Page is the page you see when you press 'F' (by default) with a Pneumatic Helmet equipped. You can
- * register this class by returning a new instance of this class at {@link IArmorUpgradeClientHandler#getGuiOptionsPage(IGuiScreen)}
+ * register this class by returning a new instance of it at {@link IArmorUpgradeClientHandler#getGuiOptionsPage(IGuiScreen)}
  */
 public interface IOptionPage {
 
@@ -64,6 +67,16 @@ public interface IOptionPage {
      * @return true if the event has been handled, false otherwise
      */
     boolean keyPressed(int keyCode, int scanCode, int modifiers);
+
+    /**
+     * Called by {@link Screen#keyReleased(int, int, int)} when a key is released.
+     *
+     * @param keyCode typed keycode
+     * @param scanCode the scan code (rarely useful)
+     * @param modifiers key modifiers
+     * @return true if the event has been handled, false otherwise
+     */
+    boolean keyReleased(int keyCode, int scanCode, int modifiers);
 
     /**
      * Called when mouse is clicked via {@link Screen#mouseClicked(double, double, int)}
@@ -124,7 +137,15 @@ public interface IOptionPage {
     default void tick() { }
 
     /**
-     * Convenience class for simple toggleable armor features with no additional settings.
+     * Get the keybinding button for this page, if any.
+     *
+     * @return the keybinding button, or {@code Optional.empty()} if there isn't one
+     */
+    default Optional<IKeybindingButton> getKeybindingButton() { return Optional.empty(); }
+
+    /**
+     * Convenience class for simple toggleable armor features with no additional settings, but an optional keybinding
+     * button.
      */
     class SimpleToggleableOptions<T extends IArmorUpgradeClientHandler> implements IOptionPage {
         private final IGuiScreen screen;
@@ -165,12 +186,17 @@ public interface IOptionPage {
 
         @Override
         public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-            return false;
+            return getKeybindingButton().map(b -> b.receiveKey(InputMappings.Type.KEYSYM, keyCode)).orElse(false);
+        }
+
+        @Override
+        public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+            return getKeybindingButton().map(b -> { b.receiveKeyReleased(); return true; }).orElse(false);
         }
 
         @Override
         public boolean mouseClicked(double x, double y, int button) {
-            return false;
+            return getKeybindingButton().map(b -> b.receiveKey(InputMappings.Type.MOUSE, button)).orElse(false);
         }
 
         @Override

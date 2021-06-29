@@ -83,7 +83,7 @@ public interface IArmorUpgradeClientHandler {
     void reset();
 
     /**
-     * When you have some options for your upgrade handler you could return a new instance of an IOptionsPage.
+     * When you have some options for your upgrade handler, return a new instance of an IOptionsPage.
      * When you do so, it will automatically get picked up by the options handler, and it will be added to the
      * options GUI when this upgrade returns true when calling isEnabled(). Returning null here is valid.
      *

@@ -66,6 +66,7 @@ public abstract class AbstractSliderOptions<T extends IArmorUpgradeClientHandler
         pendingVal = slider.getValueInt();
     }
 
+    @Override
     public void tick() {
         if (pendingVal != null && !slider.dragging) {
             // avoid sending a stream of update packets if player is dragging slider

@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.api.client.pneumatic_helmet;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import net.minecraft.block.Block;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.Entity;
 import net.minecraft.tags.ITag;
 
@@ -62,4 +63,15 @@ public interface IPneumaticHelmetRegistry {
      * @param clientHandler the handler to register
      */
     void registerRenderHandler(IArmorUpgradeHandler handler, IArmorUpgradeClientHandler clientHandler);
+
+    /**
+     * Create a new keybinding button for an {@link IOptionPage} armor GUI screen.  This is intended to be called from
+     * {@link IOptionPage#populateGui(IGuiScreen)} to set up a button which can be used to change a particular key
+     * binding.
+     *
+     * @param yPos y position of the button
+     * @param keyBinding the keybinding modified by the button
+     * @return the new button
+     */
+    IKeybindingButton makeKeybindingButton(int yPos, KeyBinding keyBinding);
 }

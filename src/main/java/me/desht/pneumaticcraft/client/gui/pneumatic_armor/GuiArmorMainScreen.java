@@ -186,6 +186,12 @@ public class GuiArmorMainScreen extends GuiPneumaticScreenBase implements IGuiSc
     }
 
     @Override
+    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+        return getCurrentOptionsPage().page.keyReleased(keyCode, scanCode, modifiers)
+                || super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    @Override
     public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
         return getCurrentOptionsPage().page.mouseClicked(mouseX, mouseY, mouseButton)
                 || super.mouseClicked(mouseX, mouseY, mouseButton);
