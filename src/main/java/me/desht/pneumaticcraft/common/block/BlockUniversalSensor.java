@@ -16,16 +16,16 @@ import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 
 public class BlockUniversalSensor extends BlockPneumaticCraft {
-    private static final VoxelShape SHAPE = VoxelShapes.combineAndSimplify(Block.makeCuboidShape(4, 2, 4, 12, 7, 12), Block.makeCuboidShape(1, 0, 1, 15, 2, 15), IBooleanFunction.OR);
+    private static final VoxelShape SHAPE = VoxelShapes.join(Block.box(4, 2, 4, 12, 7, 12), Block.box(1, 0, 1, 15, 2, 15), IBooleanFunction.OR);
 
     public BlockUniversalSensor() {
         super(ModBlocks.defaultProps());
 
-        setDefaultState(getStateContainer().getBaseState()
-                .with(NORTH, false)
-                .with(SOUTH, false)
-                .with(WEST, false)
-                .with(EAST, false)
+        registerDefaultState(getStateDefinition().any()
+                .setValue(NORTH, false)
+                .setValue(SOUTH, false)
+                .setValue(WEST, false)
+                .setValue(EAST, false)
         );
     }
 
@@ -35,8 +35,8 @@ public class BlockUniversalSensor extends BlockPneumaticCraft {
     }
 
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        super.fillStateContainer(builder);
+    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
 
         builder.add(BlockPneumaticCraft.NORTH, BlockPneumaticCraft.SOUTH, BlockPneumaticCraft.WEST, BlockPneumaticCraft.EAST);
     }
@@ -47,20 +47,20 @@ public class BlockUniversalSensor extends BlockPneumaticCraft {
     }
 
     @Override
-    public int getStrongPower(BlockState blockState, IBlockReader blockAccess, BlockPos pos, Direction side) {
+    public int getDirectSignal(BlockState blockState, IBlockReader blockAccess, BlockPos pos, Direction side) {
         return PneumaticCraftUtils.getTileEntityAt(blockAccess, pos, TileEntityUniversalSensor.class)
                 .map(te -> side == Direction.UP ? te.redstoneStrength : 0)
                 .orElse(0);
     }
 
     @Override
-    public int getWeakPower(BlockState blockState, IBlockReader blockAccess, BlockPos pos, Direction side) {
+    public int getSignal(BlockState blockState, IBlockReader blockAccess, BlockPos pos, Direction side) {
         return PneumaticCraftUtils.getTileEntityAt(blockAccess, pos, TileEntityUniversalSensor.class)
                 .map(te -> te.redstoneStrength).orElse(0);
     }
 
     @Override
-    public boolean canProvidePower(BlockState state) {
+    public boolean isSignalSource(BlockState state) {
         return true;
     }
 }
