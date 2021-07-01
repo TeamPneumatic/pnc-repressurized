@@ -1,49 +1,61 @@
-/*
- * This file is part of pnc-repressurized.
- *
- *     pnc-repressurized is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
- *
- *     pnc-repressurized is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
- *
- *     You should have received a copy of the GNU General Public License
- *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
- */
-
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityVacuumPump;
+import me.desht.pneumaticcraft.common.util.VoxelShapeUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.shapes.IBooleanFunction;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 
+import java.util.stream.Stream;
+
 public class BlockVacuumPump extends BlockPneumaticCraft {
-    private static final VoxelShape BASE_SHAPE = Block.box(2, 0, 2, 14, 11, 14);
-    private static final VoxelShape COLLISION_SHAPE = Block.box(2, 2, 2, 14, 14, 14);
+    private static final VoxelShape SHAPE_N = Stream.of(
+            Block.makeCuboidShape(3, 7.75, 7.75, 9, 8.25, 8.25),
+            Block.makeCuboidShape(15, 5, 5, 16, 11, 11),
+            Block.makeCuboidShape(9, 5, 4, 15, 12, 12),
+            Block.makeCuboidShape(3, 11, 5, 9, 11, 11),
+            Block.makeCuboidShape(0, 1, 3, 16, 5, 13),
+            Block.makeCuboidShape(13, 0, 4, 15, 1, 6),
+            Block.makeCuboidShape(13, 0, 10, 15, 1, 12),
+            Block.makeCuboidShape(1, 0, 4, 3, 1, 6),
+            Block.makeCuboidShape(1, 0, 10, 3, 1, 12),
+            Block.makeCuboidShape(3, 5, 5, 9, 11, 5),
+            Block.makeCuboidShape(3, 5, 11, 9, 11, 11),
+            Block.makeCuboidShape(0, 5, 5, 3, 11, 11),
+            Block.makeCuboidShape(12.5, 12, 7, 14.5, 12.25, 9),
+            Block.makeCuboidShape(0.5, 11, 7, 2.5, 11.25, 9)
+    ).reduce((v1, v2) -> {return VoxelShapes.combineAndSimplify(v1, v2, IBooleanFunction.OR);}).get();
+
+    private static final VoxelShape SHAPE_E = VoxelShapeUtils.rotateY(SHAPE_N, 90);
+    private static final VoxelShape SHAPE_S = VoxelShapeUtils.rotateY(SHAPE_E, 90);
+    private static final VoxelShape SHAPE_W = VoxelShapeUtils.rotateY(SHAPE_S, 90);
+
+    private static final VoxelShape[] SHAPES = new VoxelShape[] { SHAPE_E, SHAPE_S, SHAPE_W, SHAPE_N };
+
+//    private static final VoxelShape COLLISION_SHAPE = Block.makeCuboidShape(2, 2, 2, 14, 14, 14);
 
     public BlockVacuumPump() {
         super(ModBlocks.defaultProps());
     }
 
     @Override
-    public VoxelShape getShape(BlockState p_220053_1_, IBlockReader p_220053_2_, BlockPos p_220053_3_, ISelectionContext p_220053_4_) {
-        return BASE_SHAPE;
+    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+        Direction d = state.get(directionProperty());
+        return SHAPES[d.getHorizontalIndex()];
     }
 
-    @Override
-    public VoxelShape getCollisionShape(BlockState p_220071_1_, IBlockReader p_220071_2_, BlockPos p_220071_3_, ISelectionContext p_220071_4_) {
-        return COLLISION_SHAPE;
-    }
+//    @Override
+//    public VoxelShape getCollisionShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+//        return COLLISION_SHAPE;
+//    }
 
     @Override
     protected Class<? extends TileEntity> getTileEntityClass() {

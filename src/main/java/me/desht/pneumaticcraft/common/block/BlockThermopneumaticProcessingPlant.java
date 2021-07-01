@@ -1,20 +1,3 @@
-/*
- * This file is part of pnc-repressurized.
- *
- *     pnc-repressurized is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
- *
- *     pnc-repressurized is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
- *
- *     You should have received a copy of the GNU General Public License
- *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
- */
-
 package me.desht.pneumaticcraft.common.block;
 
 import me.desht.pneumaticcraft.common.core.ModBlocks;
@@ -24,28 +7,69 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.shapes.IBooleanFunction;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 
+import java.util.stream.Stream;
+
 public class BlockThermopneumaticProcessingPlant extends BlockPneumaticCraft {
-    private static final VoxelShape TANK_IN1 = Block.box(0, 0, 9, 7, 12, 16);
-    private static final VoxelShape TANK_IN2 = Block.box(9, 0, 9, 16, 12, 16);
-    private static final VoxelShape TANK_OUT = Block.box(5, 0, 0, 11, 8, 6);
-    private static final VoxelShape SHAPE_N = VoxelShapes.or(TANK_IN1, TANK_IN2, TANK_OUT);
+    private static final VoxelShape SHAPE_N = Stream.of(
+            Block.makeCuboidShape(14, 5, 5, 16, 10, 9),
+            Block.makeCuboidShape(0, 5, 5, 2, 10, 9),
+            Block.makeCuboidShape(4, 1, 0, 12, 13, 1),
+            Block.makeCuboidShape(0, 10, 0, 2, 13, 2),
+            Block.makeCuboidShape(0.5, 13, 14.5, 1.5, 15, 15.5),
+            Block.makeCuboidShape(14.5, 1, 0.5, 15.5, 15, 1.5),
+            Block.makeCuboidShape(0.5, 1, 0.5, 1.5, 15, 1.5),
+            Block.makeCuboidShape(0.5, 11, 1.5, 1.5, 12, 9),
+            Block.makeCuboidShape(14.5, 11, 1.5, 15.5, 12, 9),
+            Block.makeCuboidShape(15, 15, 1, 16, 16, 15),
+            Block.makeCuboidShape(0, 15, 1, 1, 16, 15),
+            Block.makeCuboidShape(0, 15, 0, 16, 16, 1),
+            Block.makeCuboidShape(0, 0, 0, 16, 1, 16),
+            Block.makeCuboidShape(9, 13, 11, 16, 13, 16),
+            Block.makeCuboidShape(0, 13, 11, 7, 13, 16),
+            Block.makeCuboidShape(16, 1, 11, 16, 13, 16),
+            Block.makeCuboidShape(7, 1, 11, 7, 13, 16),
+            Block.makeCuboidShape(9, 1, 11, 9, 13, 16),
+            Block.makeCuboidShape(0, 1, 11, 0, 13, 16),
+            Block.makeCuboidShape(9, 1, 16, 16, 13, 16),
+            Block.makeCuboidShape(0, 1, 16, 7, 13, 16),
+            Block.makeCuboidShape(14, 1, 9, 16, 13, 11),
+            Block.makeCuboidShape(0, 1, 9, 2, 13, 11),
+            Block.makeCuboidShape(2, 1, 1, 14, 16, 11),
+            Block.makeCuboidShape(14, 10, 0, 16, 13, 2),
+            Block.makeCuboidShape(14.5, 13, 14.5, 15.5, 15, 15.5),
+            Block.makeCuboidShape(7, 2.5, 13.5, 9, 3.5, 14.5),
+            Block.makeCuboidShape(11.5, 13.5, 10.5, 12.5, 14.5, 12.5),
+            Block.makeCuboidShape(3.5, 13.5, 10.5, 4.5, 14.5, 12.5),
+            Block.makeCuboidShape(11.5, 13.25, 12.5, 12.5, 14.5, 13.5),
+            Block.makeCuboidShape(3.5, 13.25, 12.5, 4.5, 14.5, 13.5),
+            Block.makeCuboidShape(8.75, 2, 13, 9, 4, 15),
+            Block.makeCuboidShape(7, 2, 13, 7.25, 4, 15),
+            Block.makeCuboidShape(11, 13, 11, 13, 15, 11.25),
+            Block.makeCuboidShape(3, 13, 11, 5, 15, 11.25),
+            Block.makeCuboidShape(11, 13, 12, 13, 13.25, 14),
+            Block.makeCuboidShape(3, 13, 12, 5, 13.25, 14),
+            Block.makeCuboidShape(0, 15, 15, 16, 16, 16),
+            Block.makeCuboidShape(12, 11, 0.5, 14, 12, 1.5),
+            Block.makeCuboidShape(2, 11, 0.5, 4, 12, 1.5)
+    ).reduce((v1, v2) -> {return VoxelShapes.combineAndSimplify(v1, v2, IBooleanFunction.OR);}).get();
     private static final VoxelShape SHAPE_E = VoxelShapeUtils.rotateY(SHAPE_N, 90);
     private static final VoxelShape SHAPE_S = VoxelShapeUtils.rotateY(SHAPE_N, 180);
     private static final VoxelShape SHAPE_W = VoxelShapeUtils.rotateY(SHAPE_N, 270);
     private static final VoxelShape[] SHAPES = { SHAPE_S, SHAPE_W, SHAPE_N, SHAPE_E };
 
     public BlockThermopneumaticProcessingPlant() {
-        super(ModBlocks.defaultProps().noOcclusion());
+        super(ModBlocks.defaultProps().notSolid());
     }
 
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-        return SHAPES[state.getValue(directionProperty()).get2DDataValue()];
+        return SHAPES[state.get(directionProperty()).getHorizontalIndex()];
     }
 
     @Override
