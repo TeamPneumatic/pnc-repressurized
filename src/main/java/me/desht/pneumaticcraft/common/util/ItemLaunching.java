@@ -39,9 +39,9 @@ public class ItemLaunching {
         BlockPos trackPos = new BlockPos(initialPos);
         launchedEntity.setPosition(initialPos.x, initialPos.y, initialPos.z);
         NetworkHandler.sendToAllTracking(new PacketSetEntityMotion(launchedEntity, velocity), world, trackPos);
-        if (launchedEntity instanceof FireballEntity) {
+        if (launchedEntity instanceof AbstractFireballEntity) {
             // fireball velocity is handled a little differently...
-            FireballEntity fireball = (FireballEntity) launchedEntity;
+            AbstractFireballEntity fireball = (AbstractFireballEntity) launchedEntity;
             fireball.accelerationX = velocity.x * 0.05;
             fireball.accelerationY = velocity.y * 0.05;
             fireball.accelerationZ = velocity.z * 0.05;
@@ -49,7 +49,6 @@ public class ItemLaunching {
             launchedEntity.setMotion(velocity);
         }
         launchedEntity.setOnGround(false);
-//        launchedEntity.collided = false;
         launchedEntity.collidedHorizontally = false;
         launchedEntity.collidedVertically = false;
 
@@ -93,7 +92,9 @@ public class ItemLaunching {
             } else if (item == Items.EGG) {
                 return new EggEntity(world, player);
             } else if (item == Items.FIRE_CHARGE) {
-                return new SmallFireballEntity(world, player, 0, 0, 0);
+                SmallFireballEntity e = new SmallFireballEntity(world, player, 0, 0, 0);
+                e.setStack(stack);
+                return e;
             } else if (item == Items.SNOWBALL) {
                 return new SnowballEntity(world, player);
             } else if (item instanceof SpawnEggItem && world instanceof ServerWorld) {
