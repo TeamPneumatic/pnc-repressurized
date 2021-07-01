@@ -1,20 +1,3 @@
-/*
- * This file is part of pnc-repressurized.
- *
- *     pnc-repressurized is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU General Public License as published by
- *     the Free Software Foundation, either version 3 of the License, or
- *     (at your option) any later version.
- *
- *     pnc-repressurized is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU General Public License for more details.
- *
- *     You should have received a copy of the GNU General Public License
- *     along with pnc-repressurized.  If not, see <https://www.gnu.org/licenses/>.
- */
-
 package me.desht.pneumaticcraft.client.render.fluid;
 
 import com.google.common.collect.ImmutableList;
@@ -26,8 +9,8 @@ import net.minecraft.util.math.AxisAlignedBB;
 import java.util.Collection;
 
 public class RenderThermopneumaticProcessingPlant extends AbstractFluidTER<TileEntityThermopneumaticProcessingPlant> {
-    private static final AxisAlignedBB TANK_BOUNDS_1 = new AxisAlignedBB(9.1 / 16f, 1 / 16f, 0.1 / 16f, 15.9 / 16f, 11.9 / 16f, 4.9 / 16f);
-    private static final AxisAlignedBB TANK_BOUNDS_2 = new AxisAlignedBB(0.1 / 16f, 1 / 16f, 0.1 / 16f, 6.9 / 16f, 11.9 / 16f, 4.9 / 16f);
+    private static final AxisAlignedBB TANK_BOUNDS_1 = new AxisAlignedBB(10.1 / 16f, 1 / 16f, 0.1 / 16f, 15.9 / 16f, 11 / 16f, 4.9 / 16f);
+    private static final AxisAlignedBB TANK_BOUNDS_2 = new AxisAlignedBB( 0.1 / 16f, 1 / 16f, 0.1 / 16f,  6.9 / 16f, 11 / 16f, 4.9 / 16f);
 
     private static final AxisAlignedBB[] BOUNDS_IN = new AxisAlignedBB[4];
     static {

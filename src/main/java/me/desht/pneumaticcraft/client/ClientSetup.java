@@ -148,10 +148,10 @@ public class ClientSetup {
         RenderTypeLookup.setRenderLayer(ModBlocks.TANK_MEDIUM.get(), RenderType.getCutoutMipped());
         RenderTypeLookup.setRenderLayer(ModBlocks.TANK_LARGE.get(), RenderType.getCutoutMipped());
         RenderTypeLookup.setRenderLayer(ModBlocks.TANK_HUGE.get(), RenderType.getCutoutMipped());
-        RenderTypeLookup.setRenderLayer(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.get(), RenderType.getCutoutMipped());
-        RenderTypeLookup.setRenderLayer(ModBlocks.UV_LIGHT_BOX.get(), RenderType.getCutoutMipped());
-        RenderTypeLookup.setRenderLayer(ModBlocks.THERMAL_LAGGING.get(), RenderType.getTranslucent());
         RenderTypeLookup.setRenderLayer(ModBlocks.VACUUM_PUMP.get(), RenderType.getTranslucent());
+        RenderTypeLookup.setRenderLayer(ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.get(), RenderType.getCutoutMipped());
+        RenderTypeLookup.setRenderLayer(ModBlocks.UV_LIGHT_BOX.get(), layer -> layer == RenderType.getCutoutMipped() || layer == RenderType.getTranslucent());
+        RenderTypeLookup.setRenderLayer(ModBlocks.THERMAL_LAGGING.get(), RenderType.getTranslucent());
 
         // camouflageable blocks need to render in all layers, since their camo could render in any layer
         for (RegistryObject<Block> ro: ModBlocks.BLOCKS.getEntries()) {
