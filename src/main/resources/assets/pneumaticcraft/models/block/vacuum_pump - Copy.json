@@ -1,9 +1,0 @@
-{
-  "parent": "forge:block/default",
-  "loader": "forge:obj",
-  "model": "pneumaticcraft:models/block/vacuum_pump.obj",
-  "flip-v": true,
-  "textures": {
-    "particle": "pneumaticcraft:block/compressed_iron_block"
-  }
-}
