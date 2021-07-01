@@ -9,8 +9,8 @@ import net.minecraft.util.math.AxisAlignedBB;
 import java.util.Collection;
 
 public class RenderThermopneumaticProcessingPlant extends AbstractFluidTER<TileEntityThermopneumaticProcessingPlant> {
-    private static final AxisAlignedBB TANK_BOUNDS_1 = new AxisAlignedBB(9.1 / 16f, 1 / 16f, 0.1 / 16f, 15.9 / 16f, 11.9 / 16f, 4.9 / 16f);
-    private static final AxisAlignedBB TANK_BOUNDS_2 = new AxisAlignedBB(0.1 / 16f, 1 / 16f, 0.1 / 16f, 6.9 / 16f, 11.9 / 16f, 4.9 / 16f);
+    private static final AxisAlignedBB TANK_BOUNDS_1 = new AxisAlignedBB(10.1 / 16f, 1 / 16f, 0.1 / 16f, 15.9 / 16f, 11 / 16f, 4.9 / 16f);
+    private static final AxisAlignedBB TANK_BOUNDS_2 = new AxisAlignedBB( 0.1 / 16f, 1 / 16f, 0.1 / 16f,  6.9 / 16f, 11 / 16f, 4.9 / 16f);
 
     private static final AxisAlignedBB[] BOUNDS_IN = new AxisAlignedBB[4];
     static {
