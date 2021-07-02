@@ -11,6 +11,7 @@ import me.desht.pneumaticcraft.common.item.ItemGunAmmo;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
+import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound.SoundSource;
 import me.desht.pneumaticcraft.common.util.EntityDistanceComparator;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.fakeplayer.FakeNetHandlerPlayerServer;
@@ -336,8 +337,8 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements
         }
 
         @Override
-        public Object getSoundSource() {
-            return TileEntitySentryTurret.this.getPos();
+        public SoundSource getSoundSource() {
+            return SoundSource.of(TileEntitySentryTurret.this);
         }
 
         @Override

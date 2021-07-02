@@ -18,7 +18,6 @@ import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.opengl.GL11;
 
@@ -31,6 +30,8 @@ import static me.desht.pneumaticcraft.client.util.RenderUtils.FULL_BRIGHT;
 import static me.desht.pneumaticcraft.client.util.RenderUtils.renderWithTypeAndFinish;
 
 public class ProgWidgetRenderer {
+    private static final Map<ResourceLocation, BiConsumer<MatrixStack, IProgWidget>> EXTRA_RENDERERS = new HashMap<>();
+
     /**
      * Render a progwidget into a GUI.  Do not use for in-world rendering
      * (see {@link ProgWidgetRenderer#renderProgWidget3d(MatrixStack, IRenderTypeBuffer, IProgWidget)}
@@ -80,19 +81,17 @@ public class ProgWidgetRenderer {
         });
     }
 
-    private static final Map<ResourceLocation, BiConsumer<MatrixStack, IProgWidget>> extraRenderers = new HashMap<>();
-
     public static void doExtraRendering2d(MatrixStack matrixStack, IProgWidget widget) {
-        extraRenderers.getOrDefault(widget.getTypeID(), ProgWidgetRenderer::renderGenericExtras).accept(matrixStack, widget);
+        EXTRA_RENDERERS.getOrDefault(widget.getTypeID(), ProgWidgetRenderer::renderGenericExtras).accept(matrixStack, widget);
     }
 
     public static <P extends IProgWidget> void registerExtraRenderer(ProgWidgetType<P> type, BiConsumer<MatrixStack, P> consumer) {
-        extraRenderers.put(type.getRegistryName(), (BiConsumer<MatrixStack, IProgWidget>) consumer);
+        EXTRA_RENDERERS.put(type.getRegistryName(), (BiConsumer<MatrixStack, IProgWidget>) consumer);
     }
 
     public static void renderGenericExtras(MatrixStack matrixStack, IProgWidget progWidget) {
         List<ITextComponent> info = progWidget.getExtraStringInfo();
-        if (!info.equals(StringTextComponent.EMPTY)) {
+        if (!info.isEmpty()) {
             matrixStack.push();
             matrixStack.scale(0.5f, 0.5f, 0.5f);
             FontRenderer fr = Minecraft.getInstance().fontRenderer;

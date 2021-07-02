@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.network;
 
+import com.mojang.datafixers.util.Either;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import net.minecraft.entity.Entity;
@@ -8,6 +9,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.network.NetworkEvent;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -15,67 +17,93 @@ import java.util.function.Supplier;
  * Sent by server to start a new MovingSound playing
  */
 public class PacketPlayMovingSound {
-    enum SourceType { ENTITY, STATIC_POS}
-
     private final MovingSounds.Sound sound;
-    private final BlockPos pos;
-    private final int entityId;
-    private final SourceType sourceType;
+    private final SoundSource source;
 
-    public PacketPlayMovingSound(MovingSounds.Sound sound, Object soundSource) {
+    public PacketPlayMovingSound(MovingSounds.Sound sound, SoundSource source) {
         this.sound = sound;
-        if (soundSource instanceof Entity) {
-            this.sourceType = SourceType.ENTITY;
-            this.entityId = ((Entity) soundSource).getEntityId();
-            this.pos = null;
-        } else if (soundSource instanceof TileEntity) {
-            this.sourceType = SourceType.STATIC_POS;
-            this.pos = ((TileEntity) soundSource).getPos();
-            this.entityId = -1;
-        } else if (soundSource instanceof BlockPos) {
-            this.sourceType = SourceType.STATIC_POS;
-            this.pos = new BlockPos((BlockPos) soundSource);
-            this.entityId = -1;
-        } else {
-            throw new IllegalArgumentException("invalid sound source: " + soundSource);
-        }
+        this.source = source;
     }
 
     public PacketPlayMovingSound(PacketBuffer buffer) {
-        sound = MovingSounds.Sound.values()[buffer.readByte()];
-        sourceType = SourceType.values()[buffer.readByte()];
-        if (sourceType == SourceType.ENTITY) {
-            entityId = buffer.readInt();
-            pos = null;
-        } else if (sourceType == SourceType.STATIC_POS) {
-            pos = buffer.readBlockPos();
-            entityId = -1;
-        } else {
-            throw new IllegalArgumentException("invalid sound source: " + sourceType);
-        }
+        sound = buffer.readEnumValue(MovingSounds.Sound.class);
+        source = SoundSource.fromBytes(buffer);
     }
 
     public void toBytes(PacketBuffer buffer) {
-        buffer.writeByte(sound.ordinal());
-        buffer.writeByte(sourceType.ordinal());
-        if (sourceType == SourceType.ENTITY) {
-            buffer.writeInt(entityId);
-        } else if (sourceType == SourceType.STATIC_POS) {
-            buffer.writeBlockPos(pos);
-        }
+        buffer.writeEnumValue(sound);
+        source.toBytes(buffer);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            if (sourceType == SourceType.ENTITY) {
-                Entity e = ClientUtils.getClientWorld().getEntityByID(entityId);
-                if (e != null) {
-                    MovingSounds.playMovingSound(sound, e);
-                }
-            } else if (sourceType == SourceType.STATIC_POS) {
-                MovingSounds.playMovingSound(sound, pos);
-            }
+            if (source != null) source.handle(sound);
         });
         ctx.get().setPacketHandled(true);
+    }
+
+    private enum SourceType {
+        ENTITY(buf -> SoundSource.of(buf.readInt())),
+        STATIC_POS(buf -> SoundSource.of(buf.readBlockPos()));
+
+        private final Function<PacketBuffer, SoundSource> creator;
+
+        SourceType(Function<PacketBuffer,SoundSource> creator) {
+            this.creator = creator;
+        }
+
+        public SoundSource getSource(PacketBuffer buf) {
+            return creator.apply(buf);
+        }
+    }
+
+    public static class SoundSource {
+        private final Either<Entity,BlockPos> entityOrPos;
+
+        private SoundSource(Either<Entity, BlockPos> entityOrPos) {
+            this.entityOrPos = entityOrPos;
+        }
+
+        public static SoundSource of(Entity e) {
+            return new SoundSource(Either.left(e));
+        }
+
+        public static SoundSource of(int id) {
+            Entity e = ClientUtils.getClientWorld().getEntityByID(id);
+            return e == null ? null : of(e);
+        }
+
+        public static SoundSource of(BlockPos pos) {
+            return new SoundSource(Either.right(pos));
+        }
+
+        public static SoundSource of(TileEntity te) {
+            return new SoundSource(Either.right(te.getPos()));
+        }
+
+        public static SoundSource fromBytes(PacketBuffer buf) {
+            SourceType type = buf.readEnumValue(SourceType.class);
+            return type.getSource(buf);
+        }
+
+        void toBytes(PacketBuffer buf) {
+            entityOrPos.ifLeft(id -> {
+                buf.writeEnumValue(SourceType.ENTITY);
+                buf.writeInt(id.getEntityId());
+            }).ifRight(pos -> {
+                buf.writeEnumValue(SourceType.STATIC_POS);
+                buf.writeBlockPos(pos);
+            });
+        }
+
+        public void handle(MovingSounds.Sound sound) {
+            entityOrPos
+                    .ifLeft(e -> MovingSounds.playMovingSound(sound, e))
+                    .ifRight(pos -> MovingSounds.playMovingSound(sound, pos));
+        }
+
+        public Either<Entity,BlockPos> asEntityOrPos() {
+            return entityOrPos;
+        }
     }
 }

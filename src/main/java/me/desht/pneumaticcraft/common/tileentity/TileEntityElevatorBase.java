@@ -11,6 +11,7 @@ import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerElevator;
 import me.desht.pneumaticcraft.common.network.*;
+import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound.SoundSource;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethod;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.LuaMethodRegistry;
 import me.desht.pneumaticcraft.common.tileentity.RedstoneController.ReceivingRedstoneMode;
@@ -179,7 +180,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
                         isStopped ? ModSounds.ELEVATOR_RISING_STOP.get() : ModSounds.ELEVATOR_RISING_START.get(),
                         SoundCategory.BLOCKS, (float) PNCConfig.Client.Sound.elevatorVolumeStartStop, 1.0F, true);
             } else if (!isStopped) {
-                NetworkHandler.sendToAllTracking(new PacketPlayMovingSound(MovingSounds.Sound.ELEVATOR, getCoreElevator()), this);
+                NetworkHandler.sendToAllTracking(new PacketPlayMovingSound(MovingSounds.Sound.ELEVATOR, SoundSource.of(getCoreElevator())), this);
             }
         }
     }

@@ -211,6 +211,7 @@ public abstract class TileEntityBase extends TileEntity
     }
 
     protected void onFirstServerTick() {
+        // TODO 1.17 should be able to replace onFirstServerTick() with onLoad()
         if (this instanceof IHeatExchangingTE) {
             ((IHeatExchangingTE) this).initializeHullHeatExchangers(world, pos);
         }

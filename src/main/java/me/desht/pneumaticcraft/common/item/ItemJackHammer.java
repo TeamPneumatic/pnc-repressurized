@@ -16,6 +16,7 @@ import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.item.ItemDrillBit.DrillBitType;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound;
+import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound.SoundSource;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityChargingStation;
 import me.desht.pneumaticcraft.common.util.*;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
@@ -552,7 +553,7 @@ public class ItemJackHammer extends ItemPressurizable
                 if (event.getWorld().isRemote) {
                     MovingSounds.playMovingSound(MovingSounds.Sound.JACKHAMMER, event.getPlayer());
                 } else {
-                    NetworkHandler.sendToAllTracking(new PacketPlayMovingSound(MovingSounds.Sound.JACKHAMMER, player), player.world, player.getPosition());
+                    NetworkHandler.sendToAllTracking(new PacketPlayMovingSound(MovingSounds.Sound.JACKHAMMER, SoundSource.of(player)), player.world, player.getPosition());
                 }
             }
         }

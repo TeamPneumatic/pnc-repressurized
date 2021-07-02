@@ -21,6 +21,7 @@ import me.desht.pneumaticcraft.common.item.ItemMachineUpgrade;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.network.*;
+import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound.SoundSource;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.*;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -454,7 +455,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         if (jetbootsAirUsage != 0 && !player.world.isRemote) {
             if (prevJetBootsAirUsage == 0) {
                 // jet boots starting up
-                NetworkHandler.sendToAllTracking(new PacketPlayMovingSound(MovingSounds.Sound.JET_BOOTS, player), player.world, player.getPosition());
+                NetworkHandler.sendToAllTracking(new PacketPlayMovingSound(MovingSounds.Sound.JET_BOOTS, SoundSource.of(player)), player.world, player.getPosition());
                 AdvancementTriggers.FLIGHT.trigger((ServerPlayerEntity) player);
             }
             if (player.collidedHorizontally) {

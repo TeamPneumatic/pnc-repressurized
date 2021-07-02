@@ -19,7 +19,7 @@ public class MovingSoundJetBoots extends TickableSound {
     private float targetPitch;
     private int endTimer = Integer.MAX_VALUE;
 
-    MovingSoundJetBoots(PlayerEntity player) {
+    public MovingSoundJetBoots(PlayerEntity player) {
         super(ModSounds.LEAKING_GAS_LOW.get(), SoundCategory.NEUTRAL);
 
         this.player = player;

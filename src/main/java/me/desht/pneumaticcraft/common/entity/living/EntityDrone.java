@@ -31,6 +31,7 @@ import me.desht.pneumaticcraft.common.item.ItemGunAmmo;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
+import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound.SoundSource;
 import me.desht.pneumaticcraft.common.network.PacketShowWireframe;
 import me.desht.pneumaticcraft.common.progwidgets.IProgWidget;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetGoToLocation;
@@ -1446,8 +1447,8 @@ public class EntityDrone extends EntityDroneBase implements
         }
 
         @Override
-        public Object getSoundSource() {
-            return EntityDrone.this;
+        public SoundSource getSoundSource() {
+            return SoundSource.of(EntityDrone.this);
         }
 
         @Override

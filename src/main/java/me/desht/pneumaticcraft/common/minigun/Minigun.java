@@ -9,6 +9,7 @@ import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.item.ItemGunAmmo;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound;
+import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound.SoundSource;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.util.RayTraceUtils;
 import net.minecraft.entity.Entity;
@@ -123,8 +124,8 @@ public abstract class Minigun {
      *
      * @return the sound's source
      */
-    public Object getSoundSource() {
-        return player;
+    public SoundSource getSoundSource() {
+        return SoundSource.of(player);
     }
 
     public float getMinigunSpeed() {
