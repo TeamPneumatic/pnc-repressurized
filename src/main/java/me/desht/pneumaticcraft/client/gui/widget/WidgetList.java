@@ -10,11 +10,13 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import org.lwjgl.opengl.GL11;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
 public class WidgetList<T> extends Widget implements ITooltipProvider {
+    @Nonnull
     private final Consumer<WidgetList<T>> pressable;
     private final List<T> items = new ArrayList<>();
     private int selected = -1;  // < 0 indicates nothing selected
@@ -27,32 +29,32 @@ public class WidgetList<T> extends Widget implements ITooltipProvider {
     private ToolTipType toolTipType = ToolTipType.AUTO;
 
     public WidgetList(int xIn, int yIn, int width, int height) {
-        this(xIn, yIn, width, height, null);
+        this(xIn, yIn, width, height, c -> {});
     }
 
-    public WidgetList(int xIn, int yIn, int width, int height, Consumer<WidgetList<T>> pressable) {
+    public WidgetList(int xIn, int yIn, int width, int height, @Nonnull Consumer<WidgetList<T>> pressable) {
         super(xIn, yIn, width, height, StringTextComponent.EMPTY);
 
         this.pressable = pressable;
     }
 
-    public WidgetList setColor(int color) {
+    public WidgetList<T> setColor(int color) {
         this.fgColor = color;
         return this;
     }
 
-    public WidgetList setToolTipType(ToolTipType toolTipType) {
+    public WidgetList<T> setToolTipType(ToolTipType toolTipType) {
         this.toolTipType = toolTipType;
         return this;
     }
 
-    public WidgetList setSelectedColors(int selectedFg, int selectedBg) {
+    public WidgetList<T> setSelectedColors(int selectedFg, int selectedBg) {
         this.selectedFg = selectedFg;
         this.selectedBg = selectedBg;
         return this;
     }
 
-    public WidgetList inverseSelected(boolean inverse) {
+    public WidgetList<T> inverseSelected(boolean inverse) {
         this.inverseSelected = inverse;
         return this;
     }
@@ -148,9 +150,7 @@ public class WidgetList<T> extends Widget implements ITooltipProvider {
             doubleClicked = now - lastClick < 250 && newSel == selected;
             setSelected(newSel);
             lastClick = now;
-            if (pressable != null) {
-                pressable.accept(this);
-            }
+            pressable.accept(this);
         }
     }
 
