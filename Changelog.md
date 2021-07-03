@@ -27,6 +27,7 @@ PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 * Charging Station GUI now has a button to toggle "upgrade only" mode
   * In this mode, no transfer of air to/from items happens, and no air leaks for unconnected stations occur
   * Useful if you want to carry a Charging Station around for on-the-go management of item upgrades
+* CraftTweaker docs are now available on the official CraftTweaker documentation site: https://docs.blamejared.com/1.16/en/index/, Mods -> PneumaticCraft: Repressurized
 
 ### Fixes
 * Fixed in-world Yeast crafting destroying blocks if trying to spread to a waterlogged block
@@ -35,6 +36,9 @@ PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 * Heat Frames can no longer be placed on PNC:R fluid tanks (or any block with a fluid capability)  
   * This was causing too much confusion: Heat Frames are intended for item inventories, not fluid tanks
   * It only went on the PNC:R fluid tank because the tank has an item capability for the bucket slot
+* Fixed the fireballs launched by the Chestplate Item Launcher (from Fire Charges) hanging around forever
+* Fixed Pneumatic Armor Jump upgrade only allowing forward jumps, even if moving backwards or sideways
+  * Also slightly increased the horizontal velocity of the forward jump, when already sprinting
 
 ## 2.13.0-199 (24 Jun 2021)
 

@@ -32,7 +32,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EntityDamageSource;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.Difficulty;
@@ -211,12 +210,9 @@ public class EventHandlerPneumaticArmor {
                 int rangeUpgrades = handler.getUpgradeCount(EquipmentSlotType.LEGS, EnumUpgrade.JUMPING,
                         player.isSneaking() ? 1 : PneumaticValues.PNEUMATIC_LEGS_MAX_JUMP);
                 float actualBoost = Math.max(1.0f, rangeUpgrades * power);
-                float scale = player.isSprinting() ? 0.3f * actualBoost : 0.225f * actualBoost;
-                float rotRad = player.rotationYaw * 0.017453292f;  // deg2rad
                 Vector3d m = player.getMotion();
-                double addX = m.x == 0 ? 0 : - (double)(MathHelper.sin(rotRad) * scale);
-                double addZ = m.z == 0 ? 0 : + (double)(MathHelper.cos(rotRad) * scale);
-                player.setMotion(m.x + addX, m.y + actualBoost * 0.15f, m.z + addZ);
+                double scale = player.isSprinting() ? actualBoost : actualBoost * 0.6;
+                player.setMotion(m.x * scale, m.y + actualBoost * 0.15f, m.z * scale);
                 int airUsed = (int) Math.ceil(PneumaticValues.PNEUMATIC_ARMOR_JUMP_USAGE * actualBoost * (player.isSprinting() ? 2 : 1));
                 handler.addAir(EquipmentSlotType.LEGS, -airUsed);
             }
