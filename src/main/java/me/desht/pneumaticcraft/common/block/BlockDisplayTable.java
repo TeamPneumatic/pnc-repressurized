@@ -18,6 +18,7 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.shapes.IBooleanFunction;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
@@ -26,6 +27,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
+import java.util.stream.Stream;
 
 public class BlockDisplayTable extends BlockPneumaticCraft {
     private static final VoxelShape[] SHAPE_CACHE = new VoxelShape[16];
@@ -35,11 +37,11 @@ public class BlockDisplayTable extends BlockPneumaticCraft {
     private static final BooleanProperty SW = BooleanProperty.create("sw");
     private static final BooleanProperty NW = BooleanProperty.create("nw");
 
-    private static final VoxelShape TOP = makeCuboidShape(0, 14, 0, 16, 16, 16);
-    private static final VoxelShape LEG1 = makeCuboidShape(1, 0, 1, 3, 14, 3);
-    private static final VoxelShape LEG2 = makeCuboidShape(1, 0, 13, 3, 14, 15);
-    private static final VoxelShape LEG3 = makeCuboidShape(13, 0, 1, 15, 14, 3);
-    private static final VoxelShape LEG4 = makeCuboidShape(13, 0, 13, 15, 14, 15);
+    private static final VoxelShape TOP = Block.makeCuboidShape(0, 13, 0, 16, 16, 16);
+//    private static final VoxelShape LEG1 = makeCuboidShape(1, 0, 1, 3, 14, 3);
+//    private static final VoxelShape LEG2 = makeCuboidShape(1, 0, 13, 3, 14, 15);
+//    private static final VoxelShape LEG3 = makeCuboidShape(13, 0, 1, 15, 14, 3);
+//    private static final VoxelShape LEG4 = makeCuboidShape(13, 0, 13, 15, 14, 15);
 
     public BlockDisplayTable() {
         super(ModBlocks.defaultProps());
@@ -152,10 +154,42 @@ public class BlockDisplayTable extends BlockPneumaticCraft {
     }
 
     private enum Leg {
-        NE( 1,-1, BlockDisplayTable.NE, Block.makeCuboidShape(13f, 0,  1f, 15f, 16,  3f)),
-        SE( 1, 1, BlockDisplayTable.SE, Block.makeCuboidShape(13f, 0, 13f, 15f, 16, 15f)),
-        SW(-1, 1, BlockDisplayTable.SW, Block.makeCuboidShape( 1f, 0, 13f,  3f, 16, 15f)),
-        NW(-1,-1, BlockDisplayTable.NW, Block.makeCuboidShape( 1f, 0,  1f,  3f, 16,  3f));
+        NE( 1,-1, BlockDisplayTable.NE, Stream.of(
+                Block.makeCuboidShape(14, 11.5, 0, 15, 12.5, 3),
+                Block.makeCuboidShape(13, 0, 0, 16, 1, 3),
+                Block.makeCuboidShape(13.5, 1, 0.5, 15.5, 8, 2.5),
+                Block.makeCuboidShape(13.25, 7, 0.25, 15.75, 13, 2.75),
+                Block.makeCuboidShape(13, 11.5, 1, 16, 12.5, 2),
+                Block.makeCuboidShape(14, 7.5, 0, 15, 8.5, 3),
+                Block.makeCuboidShape(13, 7.5, 1, 16, 8.5, 2)
+        ).reduce((v1, v2) -> {return VoxelShapes.combineAndSimplify(v1, v2, IBooleanFunction.OR);}).get()),
+        SE( 1, 1, BlockDisplayTable.SE, Stream.of(
+                Block.makeCuboidShape(13, 11.5, 14, 16, 12.5, 15),
+                Block.makeCuboidShape(13, 0, 13, 16, 1, 16),
+                Block.makeCuboidShape(13.5, 1, 13.5, 15.5, 8, 15.5),
+                Block.makeCuboidShape(13.25, 7, 13.25, 15.75, 13, 15.75),
+                Block.makeCuboidShape(14, 11.5, 13, 15, 12.5, 16),
+                Block.makeCuboidShape(13, 7.5, 14, 16, 8.5, 15),
+                Block.makeCuboidShape(14, 7.5, 13, 15, 8.5, 16)
+        ).reduce((v1, v2) -> {return VoxelShapes.combineAndSimplify(v1, v2, IBooleanFunction.OR);}).get()),
+        SW(-1, 1, BlockDisplayTable.SW, Stream.of(
+                Block.makeCuboidShape(1, 11.5, 13, 2, 12.5, 16),
+                Block.makeCuboidShape(0, 0, 13, 3, 1, 16),
+                Block.makeCuboidShape(0.5, 1, 13.5, 2.5, 8, 15.5),
+                Block.makeCuboidShape(0.25, 7, 13.25, 2.75, 13, 15.75),
+                Block.makeCuboidShape(0, 11.5, 14, 3, 12.5, 15),
+                Block.makeCuboidShape(1, 7.5, 13, 2, 8.5, 16),
+                Block.makeCuboidShape(0, 7.5, 14, 3, 8.5, 15)
+        ).reduce((v1, v2) -> {return VoxelShapes.combineAndSimplify(v1, v2, IBooleanFunction.OR);}).get()),
+        NW(-1,-1, BlockDisplayTable.NW, Stream.of(
+                Block.makeCuboidShape(0, 11.5, 1, 3, 12.5, 2),
+                Block.makeCuboidShape(0, 0, 0, 3, 1, 3),
+                Block.makeCuboidShape(0.5, 1, 0.5, 2.5, 8, 2.5),
+                Block.makeCuboidShape(0.25, 7, 0.25, 2.75, 13, 2.75),
+                Block.makeCuboidShape(1, 11.5, 0, 2, 12.5, 3),
+                Block.makeCuboidShape(0, 7.5, 1, 3, 8.5, 2),
+                Block.makeCuboidShape(1, 7.5, 0, 2, 8.5, 3)
+        ).reduce((v1, v2) -> {return VoxelShapes.combineAndSimplify(v1, v2, IBooleanFunction.OR);}).get());
 
         final int x;
         final int z;
