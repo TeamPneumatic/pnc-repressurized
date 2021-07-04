@@ -19,6 +19,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.shapes.IBooleanFunction;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
@@ -27,6 +28,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
+import java.util.stream.Stream;
 
 public class BlockDisplayTable extends BlockPneumaticCraft {
     private static final VoxelShape[] SHAPE_CACHE = new VoxelShape[16];
@@ -36,7 +38,11 @@ public class BlockDisplayTable extends BlockPneumaticCraft {
     private static final BooleanProperty SW = BooleanProperty.create("sw");
     private static final BooleanProperty NW = BooleanProperty.create("nw");
 
-    private static final VoxelShape TOP = box(0, 14, 0, 16, 16, 16);
+    private static final VoxelShape TOP = Block.box(0, 13, 0, 16, 16, 16);
+//    private static final VoxelShape LEG1 = box(1, 0, 1, 3, 14, 3);
+//    private static final VoxelShape LEG2 = box(1, 0, 13, 3, 14, 15);
+//    private static final VoxelShape LEG3 = box(13, 0, 1, 15, 14, 3);
+//    private static final VoxelShape LEG4 = box(13, 0, 13, 15, 14, 15);
 
     public BlockDisplayTable() {
         super(ModBlocks.defaultProps());
@@ -177,10 +183,42 @@ public class BlockDisplayTable extends BlockPneumaticCraft {
     }
 
     private enum Leg {
-        NE( 1,-1, BlockDisplayTable.NE, Block.box(13f, 0,  1f, 15f, 14,  3f)),
-        SE( 1, 1, BlockDisplayTable.SE, Block.box(13f, 0, 13f, 15f, 14, 15f)),
-        SW(-1, 1, BlockDisplayTable.SW, Block.box( 1f, 0, 13f,  3f, 14, 15f)),
-        NW(-1,-1, BlockDisplayTable.NW, Block.box( 1f, 0,  1f,  3f, 14,  3f));
+        NE( 1,-1, BlockDisplayTable.NE, Stream.of(
+                Block.box(14, 11.5, 0, 15, 12.5, 3),
+                Block.box(13, 0, 0, 16, 1, 3),
+                Block.box(13.5, 1, 0.5, 15.5, 8, 2.5),
+                Block.box(13.25, 7, 0.25, 15.75, 13, 2.75),
+                Block.box(13, 11.5, 1, 16, 12.5, 2),
+                Block.box(14, 7.5, 0, 15, 8.5, 3),
+                Block.box(13, 7.5, 1, 16, 8.5, 2)
+        ).reduce((v1, v2) -> {return VoxelShapes.join(v1, v2, IBooleanFunction.OR);}).get()),
+        SE( 1, 1, BlockDisplayTable.SE, Stream.of(
+                Block.box(13, 11.5, 14, 16, 12.5, 15),
+                Block.box(13, 0, 13, 16, 1, 16),
+                Block.box(13.5, 1, 13.5, 15.5, 8, 15.5),
+                Block.box(13.25, 7, 13.25, 15.75, 13, 15.75),
+                Block.box(14, 11.5, 13, 15, 12.5, 16),
+                Block.box(13, 7.5, 14, 16, 8.5, 15),
+                Block.box(14, 7.5, 13, 15, 8.5, 16)
+        ).reduce((v1, v2) -> {return VoxelShapes.join(v1, v2, IBooleanFunction.OR);}).get()),
+        SW(-1, 1, BlockDisplayTable.SW, Stream.of(
+                Block.box(1, 11.5, 13, 2, 12.5, 16),
+                Block.box(0, 0, 13, 3, 1, 16),
+                Block.box(0.5, 1, 13.5, 2.5, 8, 15.5),
+                Block.box(0.25, 7, 13.25, 2.75, 13, 15.75),
+                Block.box(0, 11.5, 14, 3, 12.5, 15),
+                Block.box(1, 7.5, 13, 2, 8.5, 16),
+                Block.box(0, 7.5, 14, 3, 8.5, 15)
+        ).reduce((v1, v2) -> {return VoxelShapes.join(v1, v2, IBooleanFunction.OR);}).get()),
+        NW(-1,-1, BlockDisplayTable.NW, Stream.of(
+                Block.box(0, 11.5, 1, 3, 12.5, 2),
+                Block.box(0, 0, 0, 3, 1, 3),
+                Block.box(0.5, 1, 0.5, 2.5, 8, 2.5),
+                Block.box(0.25, 7, 0.25, 2.75, 13, 2.75),
+                Block.box(1, 11.5, 0, 2, 12.5, 3),
+                Block.box(0, 7.5, 1, 3, 8.5, 2),
+                Block.box(1, 7.5, 0, 2, 8.5, 3)
+        ).reduce((v1, v2) -> {return VoxelShapes.join(v1, v2, IBooleanFunction.OR);}).get());
 
         final int x;
         final int z;
