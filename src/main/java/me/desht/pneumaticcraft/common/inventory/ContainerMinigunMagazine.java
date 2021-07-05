@@ -27,11 +27,10 @@ public class ContainerMinigunMagazine extends ContainerPneumaticBase<TileEntityB
         super(ModContainers.MINIGUN_MAGAZINE.get(), windowId, playerInventory);
         this.hand = hand;
 
-        gunInv = ItemMinigun.getMagazine(playerInventory.player.getHeldItem(hand));
-        if (gunInv != null) {
-            for (int i = 0; i < gunInv.getSlots(); i++) {
-                addSlot(new SlotItemHandler(gunInv, i, 26 + (i % 2) * 18, 26 + (i / 2) * 18));
-            }
+        ItemMinigun minigun = (ItemMinigun) playerInventory.player.getHeldItem(hand).getItem();
+        gunInv = minigun.getMagazine(playerInventory.player.getHeldItem(hand));
+        for (int i = 0; i < gunInv.getSlots(); i++) {
+            addSlot(new SlotItemHandler(gunInv, i, 26 + (i % 2) * 18, 26 + (i / 2) * 18));
         }
 
         addPlayerSlots(playerInventory, 84);

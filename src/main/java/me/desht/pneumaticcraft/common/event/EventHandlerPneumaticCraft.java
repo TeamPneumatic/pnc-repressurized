@@ -14,9 +14,9 @@ import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.block.tubes.ModuleNetworkManager;
 import me.desht.pneumaticcraft.common.capabilities.CapabilityHacking;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
-import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.hacking.entity.HackableEnderman;
+import me.desht.pneumaticcraft.common.item.ItemMinigun;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketModWrenchBlock;
@@ -25,7 +25,6 @@ import me.desht.pneumaticcraft.common.recipes.machine.ExplosionCraftingRecipeImp
 import me.desht.pneumaticcraft.common.thirdparty.ModdedWrenchUtils;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityProgrammer;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityRefineryController;
-import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.Block;
@@ -257,15 +256,10 @@ public class EventHandlerPneumaticCraft {
                 // sync any variable values in this position provider item to the client for rendering purposes
                 ((IPositionProvider) event.getTo().getItem()).syncVariables(player, event.getTo());
             } else if (event.getSlot() == EquipmentSlotType.MAINHAND) {
-                // tag the minigun with the player's entity ID - it's sync'd to clients
-                // so other clients will know who's wielding it, and render appropriately
-                // See RenderItemMinigun#renderByItem()
-                if (event.getTo().getItem() == ModItems.MINIGUN.get()) {
-                    NBTUtils.initNBTTagCompound(event.getTo());
-                    event.getTo().getTag().putInt("owningPlayerId", player.getEntityId());
-                } else if (event.getFrom().getItem() == ModItems.MINIGUN.get()) {
-                    NBTUtils.initNBTTagCompound(event.getFrom());
-                    event.getFrom().getTag().remove("owningPlayerId");
+                if (event.getTo().getItem() instanceof ItemMinigun) {
+                    ((ItemMinigun) event.getTo().getItem()).onEquipmentChange(player, event.getTo(), true);
+                } else if (event.getFrom().getItem() instanceof ItemMinigun) {
+                    ((ItemMinigun) event.getFrom().getItem()).onEquipmentChange(player, event.getFrom(), false);
                 }
             } else if (event.getSlot().getSlotType() == EquipmentSlotType.Group.ARMOR) {
                 // trigger the "compressed iron man" advancement if wearing a full suit
