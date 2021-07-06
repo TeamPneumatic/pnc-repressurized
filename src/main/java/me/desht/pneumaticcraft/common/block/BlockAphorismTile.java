@@ -30,6 +30,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -52,6 +53,7 @@ import static me.desht.pneumaticcraft.lib.NBTKeys.NBT_EXTRA;
 
 public class BlockAphorismTile extends BlockPneumaticCraft implements ColorHandlers.ITintableBlock {
     public static final float APHORISM_TILE_THICKNESS = 1 / 16F;
+    public static final BooleanProperty INVISIBLE = BooleanProperty.create("invisible");
 
     private static final VoxelShape[] SHAPES = new VoxelShape[] {
             Block.makeCuboidShape(0, 0, 0, 16,  1, 16),
@@ -61,15 +63,6 @@ public class BlockAphorismTile extends BlockPneumaticCraft implements ColorHandl
             Block.makeCuboidShape(0, 0, 0,  1, 16, 16),
             Block.makeCuboidShape(15, 0, 0, 16, 16, 16),
     };
-    private static final VoxelShape[] INVIS_SHAPES = new VoxelShape[] {
-            Block.makeCuboidShape(0, 0, 0, 16,  0.01, 16),
-            Block.makeCuboidShape(0, 15.99, 0, 16, 16, 16),
-            Block.makeCuboidShape(0, 0, 0, 16, 16,  0.01),
-            Block.makeCuboidShape(0, 0, 15.99, 16, 16, 16),
-            Block.makeCuboidShape(0, 0, 0,  0.01, 16, 16),
-            Block.makeCuboidShape(15.99, 0, 0, 16, 16, 16),
-    };
-    public static final BooleanProperty INVISIBLE = BooleanProperty.create("invisible");
 
     public BlockAphorismTile() {
         super(Block.Properties.create(Material.ROCK).hardnessAndResistance(1.5f, 4.0f).doesNotBlockMovement());
@@ -84,8 +77,12 @@ public class BlockAphorismTile extends BlockPneumaticCraft implements ColorHandl
 
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader world, BlockPos pos, ISelectionContext selectionContext) {
-        return state.getBlock() == ModBlocks.APHORISM_TILE.get() && state.get(BlockAphorismTile.INVISIBLE) ?
-                INVIS_SHAPES[getRotation(state).getIndex()] : SHAPES[getRotation(state).getIndex()];
+        if (state.getBlock() == ModBlocks.APHORISM_TILE.get() && state.get(BlockAphorismTile.INVISIBLE)) {
+            // bad mapping: should be isSneaking()
+            return selectionContext.getPosY() ? SHAPES[getRotation(state).getIndex()] : VoxelShapes.empty();
+        } else {
+            return SHAPES[getRotation(state).getIndex()];
+        }
     }
 
     @Nullable
@@ -102,7 +99,7 @@ public class BlockAphorismTile extends BlockPneumaticCraft implements ColorHandl
     @Override
     public BlockRenderType getRenderType(BlockState state) {
         return state.getBlock() == ModBlocks.APHORISM_TILE.get() && state.get(BlockAphorismTile.INVISIBLE) ?
-                BlockRenderType.INVISIBLE : super.getRenderType(state);
+                BlockRenderType.INVISIBLE : BlockRenderType.MODEL;
     }
 
     @Override
@@ -147,37 +144,30 @@ public class BlockAphorismTile extends BlockPneumaticCraft implements ColorHandl
         TileEntityAphorismTile teAT = (TileEntityAphorismTile) te;
 
         if (!world.isRemote && player.getHeldItem(hand).getItem().isIn(Tags.Items.DYES) && !teAT.isInvisible()) {
-            DyeColor color =  DyeColor.getColor(player.getHeldItem(hand));
-            if (color != null) {
-                if (clickedBorder(state, brtr.getHitVec())) {
-                    if (teAT.getBorderColor() != color.getId()) {
-                        teAT.setBorderColor(color.getId());
-                        if (PNCConfig.Common.General.useUpDyesWhenColoring) player.getHeldItem(hand).shrink(1);
-                    }
-                } else {
-                    if (teAT.getBackgroundColor() != color.getId()) {
-                        teAT.setBackgroundColor(color.getId());
-                        if (PNCConfig.Common.General.useUpDyesWhenColoring) player.getHeldItem(hand).shrink(1);
-                    }
-                }
-            }
-        } else if (hand == Hand.MAIN_HAND) {
-            if (teAT.isInvisible()) {
-                if (world.isRemote && player.isSneaking() && player.getHeldItem(hand).isEmpty()) {
-                    return openEditorGui(player, teAT);
-                } else if (!player.isSneaking()) {
-                    // pass click to block behind
-                    BlockPos pos2 = pos.offset(teAT.getRotation());
-                    BlockRayTraceResult brtr2 = new BlockRayTraceResult(brtr.getHitVec(), brtr.getFace(), pos2, brtr.isInside());
-                    return world.getBlockState(pos2).onBlockActivated(world, player, hand, brtr2);
-                }
-            } else if (world.isRemote && player.getHeldItem(hand).isEmpty()) {
-                return openEditorGui(player, teAT);
-            }
-            return ActionResultType.PASS;
+            return tryDyeTile(state, player, hand, brtr, teAT);
+        } else if (world.isRemote && hand == Hand.MAIN_HAND && player.getHeldItem(hand).isEmpty()) {
+            return openEditorGui(player, teAT);
         }
+        return ActionResultType.PASS;
+    }
 
-        return ActionResultType.SUCCESS;
+    private ActionResultType tryDyeTile(BlockState state, PlayerEntity player, Hand hand, BlockRayTraceResult brtr, TileEntityAphorismTile teAT) {
+        DyeColor color = DyeColor.getColor(player.getHeldItem(hand));
+        if (color != null) {
+            if (clickedBorder(state, brtr.getHitVec())) {
+                if (teAT.getBorderColor() != color.getId()) {
+                    teAT.setBorderColor(color.getId());
+                    if (PNCConfig.Common.General.useUpDyesWhenColoring) player.getHeldItem(hand).shrink(1);
+                }
+            } else {
+                if (teAT.getBackgroundColor() != color.getId()) {
+                    teAT.setBackgroundColor(color.getId());
+                    if (PNCConfig.Common.General.useUpDyesWhenColoring) player.getHeldItem(hand).shrink(1);
+                }
+            }
+            return ActionResultType.CONSUME;
+        }
+        return ActionResultType.FAIL;
     }
 
     private ActionResultType openEditorGui(PlayerEntity player, TileEntityAphorismTile teAT) {
