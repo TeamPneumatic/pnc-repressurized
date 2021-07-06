@@ -8,7 +8,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 
-## 2.13.1-?? (unreleased)
+## 2.13.1-202 (6 Jul 2021)
 
 ### New
 * Added a new Jet Boots Smart Hover mode
@@ -16,8 +16,8 @@ PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
   * When off, Jet Boots behave exactly as before
   * When on, hovering only engages when the thrust key is pressed. Stepping off an edge or jumping will *not* enable hovering.
 * Added new keybinding for Jet Boots thrust
-  * This used to share the vanilla Jump key binding (Space by default)
-  * Default for new keybinding Space, same as before
+  * This used to be hardcoded to the vanilla Jump key binding (Space by default)
+  * Default for new keybinding is Space, same as before
   * Can be set via armor GUI (Jet Boots page) as well as vanilla Options -> Controls screen  
   * Changing this to something other than the vanilla Jump keybinding is particularly useful in conjunction with Smart Hover Mode
 
@@ -28,6 +28,9 @@ PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
   * In this mode, no transfer of air to/from items happens, and no air leaks for unconnected stations occur
   * Useful if you want to carry a Charging Station around for on-the-go management of item upgrades
 * CraftTweaker docs are now available on the official CraftTweaker documentation site: https://docs.blamejared.com/1.16/en/index/, Mods -> PneumaticCraft: Repressurized
+* Better block shape behaviour for invisible Aphorism Tiles
+  * Invisible tiles now have no block shape at all, unless you sneak
+  * Makes them more attractive as chest labels (especially when displaying items...)
 
 ### Fixes
 * Fixed in-world Yeast crafting destroying blocks if trying to spread to a waterlogged block
@@ -39,6 +42,11 @@ PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 * Fixed the fireballs launched by the Chestplate Item Launcher (from Fire Charges) hanging around forever
 * Fixed Pneumatic Armor Jump upgrade only allowing forward jumps, even if moving backwards or sideways
   * Also slightly increased the horizontal velocity of the forward jump, when already sprinting
+* Fixed Refinery GUI sometimes wrongly reporting missing Refinery Outputs (outputs were found by server OK but client missed them)
+* Fixed Minigun rendering weirdly when in offhand
+  * Note that Minigun still needs to be in main hand to fire, but at least looks right when carried in offhand now
+  * Also fixed odd rendering rotation when player inventory is open
+* Fixed Minigun not spinning up or firing if multiple Miniguns are being carried
 
 ## 2.13.0-199 (24 Jun 2021)
 
