@@ -375,7 +375,10 @@ public abstract class TileEntityBase extends TileEntity
     }
 
     public TileEntity getCachedNeighbor(Direction dir) {
-        return neighbourCache.getCachedNeighbour(dir);
+        // don't attempt to cache client-side; we don't get neighbour block updates there so can't reliably clear the cache
+        return world.isRemote ?
+                world.getTileEntity(pos.offset(dir)) :
+                neighbourCache.getCachedNeighbour(dir);
     }
 
     /**
