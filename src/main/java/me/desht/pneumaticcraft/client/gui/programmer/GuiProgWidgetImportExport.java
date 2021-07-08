@@ -32,6 +32,8 @@ public class GuiProgWidgetImportExport<P extends IProgWidget & ISidedWidget & IC
                         sideName, b -> progWidget.getSides()[dir.getIndex()] = b.checked);
                 checkBox.checked = progWidget.getSides()[dir.getIndex()];
                 addButton(checkBox);
+
+                addLabel(xlate("pneumaticcraft.gui.progWidget.inventory.accessingSides"), guiLeft + 6, guiTop + 20);
             }
         }
 
@@ -47,7 +49,6 @@ public class GuiProgWidgetImportExport<P extends IProgWidget & ISidedWidget & IC
         textField.setResponder(s -> progWidget.setCount(textField.getValue()));
         addButton(textField);
 
-        addLabel(xlate("pneumaticcraft.gui.progWidget.inventory.accessingSides"), guiLeft + 6, guiTop + 20);
     }
 
     protected boolean showSides() {

@@ -1,9 +1,12 @@
 package me.desht.pneumaticcraft.common.util;
 
 import com.google.common.collect.Lists;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
@@ -172,6 +175,28 @@ public class IOHelper {
         return false;
     }
 
+    /**
+     * Insert an item into an item handler, dropping any excess in the world
+     * @param world the world
+     * @param stack the stack to insert
+     * @param handler the item handler
+     * @param dropPos position to drop excess items at
+     * @param simulate true if only simulating (excess will not be dropped)
+     */
+    public static void insertOrDrop(World world, ItemStack stack, IItemHandler handler, Vector3d dropPos, boolean simulate) {
+        ItemStack remainder = ItemHandlerHelper.insertItem(handler, stack, simulate);
+        if (!remainder.isEmpty() && !simulate) {
+            ItemEntity item = new ItemEntity(world, dropPos.getX(), dropPos.getY(), dropPos.getZ(), remainder);
+            world.addEntity(item);
+        }
+    }
+
+    /**
+     * Count the number of items in the given handler which match the given predicate
+     * @param cap the item handler capability
+     * @param pred a matching predicate
+     * @return the number of matching items
+     */
     public static int countItems(LazyOptional<IItemHandler> cap, Predicate<ItemStack> pred) {
         return cap.map(handler -> IntStream.range(0, handler.getSlots())
                 .mapToObj(handler::getStackInSlot)

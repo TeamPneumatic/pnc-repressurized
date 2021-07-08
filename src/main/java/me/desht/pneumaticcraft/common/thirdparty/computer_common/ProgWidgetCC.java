@@ -7,21 +7,22 @@ import me.desht.pneumaticcraft.common.ai.StringFilterEntitySelector;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.progwidgets.*;
+import me.desht.pneumaticcraft.common.recipes.CraftingRecipeCache;
 import me.desht.pneumaticcraft.common.thirdparty.ThirdPartyManager;
+import me.desht.pneumaticcraft.common.util.DummyContainer;
 import me.desht.pneumaticcraft.common.util.LegacyAreaWidgetConverter;
 import me.desht.pneumaticcraft.common.util.LegacyAreaWidgetConverter.EnumOldAreaType;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.inventory.CraftingInventory;
-import net.minecraft.inventory.container.Container;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.ICraftingRecipe;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -442,15 +443,16 @@ public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrder
 
     @Override
     public CraftingInventory getCraftingGrid() {
-        CraftingInventory invCrafting = new CraftingInventory(new Container(null, -1) {
-            @Override
-            public boolean canInteractWith(PlayerEntity player) {
-                return false;
-            }
-        }, 3, 3);
-        for (int i = 0; i < 9; i++)
+        CraftingInventory invCrafting = new CraftingInventory(new DummyContainer(), 3, 3);
+        for (int i = 0; i < 9; i++) {
             invCrafting.setInventorySlotContents(i, craftingGrid[i]);
+        }
         return invCrafting;
+    }
+
+    @Override
+    public Optional<ICraftingRecipe> getRecipe(World world, CraftingInventory grid) {
+        return CraftingRecipeCache.INSTANCE.getCachedRecipe(world, grid);
     }
 
     @Override
