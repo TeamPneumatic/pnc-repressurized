@@ -665,6 +665,8 @@
    "pneumaticcraft.armor.moveStat.expandLeft" : "Stat expands to the §bLeft§r.  §eMiddle-click§r to toggle.",
    "pneumaticcraft.armor.moveStat.expandRight" : "Stat expands to the §bRight§r.  §eMiddle-click§r to toggle.",
    "pneumaticcraft.armor.options" : "Pneumatic Armor General Options",
+   "pneumaticcraft.armor.search.configure" : "Press [%s] to configure",
+   "pneumaticcraft.armor.search.found" : " (%d found)",
    "pneumaticcraft.armor.upgrade.air_conditioning" : "Air Conditioning",
    "pneumaticcraft.armor.upgrade.block_tracker" : "Block Tracker",
    "pneumaticcraft.armor.upgrade.block_tracker.module.bc_energy" : "BuildCraft Energy Blocks",

@@ -29,12 +29,12 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
@@ -70,6 +70,16 @@ public class SearchClientHandler extends IArmorUpgradeClientHandler.AbstractHand
 
             totalSearchedItemCount = itemSearchCount + blockSearchCount;
         }
+
+        Item item = ItemPneumaticArmor.getSearchedItem(ClientUtils.getWornArmor(EquipmentSlotType.HEAD));
+        List<ITextComponent> textList = new ArrayList<>();
+        if (item == null || item == Items.AIR) {
+            textList.add(xlate("pneumaticcraft.armor.search.configure", I18n.format(KeyHandler.getInstance().keybindOpenOptions.getTranslationKey())));
+        } else {
+            if (searchedStack.getItem() != item) searchedStack = new ItemStack(item);
+            textList.add(searchedStack.getDisplayName().deepCopy().append(xlate("pneumaticcraft.armor.search.found", totalSearchedItemCount)));
+        }
+        searchInfo.setText(textList);
     }
 
     @Override
@@ -91,15 +101,6 @@ public class SearchClientHandler extends IArmorUpgradeClientHandler.AbstractHand
 
     @Override
     public void render2D(MatrixStack matrixStack, float partialTicks, boolean helmetEnabled) {
-        Item item = ItemPneumaticArmor.getSearchedItem(ClientUtils.getWornArmor(EquipmentSlotType.HEAD));
-        List<ITextComponent> textList = new ArrayList<>();
-        if (item == null) {
-            textList.add(new StringTextComponent("press '" + I18n.format(KeyHandler.getInstance().keybindOpenOptions.getTranslationKey()) + "' to configure"));
-        } else {
-            if (searchedStack.getItem() != item) searchedStack = new ItemStack(item);
-            textList.add(searchedStack.getDisplayName().deepCopy().appendString(" (" + totalSearchedItemCount + " found)"));
-        }
-        searchInfo.setText(textList);
     }
 
     private int trackInventoryCounts(int rangeUpgrades) {
@@ -137,10 +138,11 @@ public class SearchClientHandler extends IArmorUpgradeClientHandler.AbstractHand
         if (!handlerEnabled) return;
 
         Item searchedItem = ItemPneumaticArmor.getSearchedItem(ClientUtils.getWornArmor(EquipmentSlotType.HEAD));
-        List<ItemEntity> items = player.world.getEntitiesWithinAABB(ItemEntity.class, EntityTrackerClientHandler.getAABBFromRange(player, rangeUpgrades));
+        if (searchedItem == null || searchedItem == Items.AIR) return;
 
+        List<ItemEntity> items = player.world.getEntitiesWithinAABB(ItemEntity.class, EntityTrackerClientHandler.getAABBFromRange(player, rangeUpgrades));
         for (ItemEntity itemEntity : items) {
-            if (!itemEntity.getItem().isEmpty() && searchedItem != null) {
+            if (!itemEntity.getItem().isEmpty()) {
                 if (itemEntity.getItem().getItem() == searchedItem) {
                     searchedItems.put(itemEntity, itemEntity.getItem().getCount());
                     itemSearchCount += itemEntity.getItem().getCount();
