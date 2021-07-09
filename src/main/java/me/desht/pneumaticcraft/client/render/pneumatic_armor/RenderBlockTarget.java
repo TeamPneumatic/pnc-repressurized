@@ -43,8 +43,8 @@ public class RenderBlockTarget {
 
     private final World world;
     private final BlockPos pos;
-    private final long posHash;
-    public final IGuiAnimatedStat stat;
+    private final int posHash;
+    private final IGuiAnimatedStat stat;
     private final PlayerEntity player;
     private final BlockTrackerClientHandler blockTracker;
     public int ticksExisted = 0;
@@ -61,12 +61,11 @@ public class RenderBlockTarget {
         this.posHash = pos.hashCode();
         this.te = te;
         this.blockTracker = blockTracker;
-        ITextComponent title = xlate(world.getBlockState(pos).getBlock().getTranslationKey());
+
         BlockState state = world.getBlockState(pos);
         ItemStack stack = state.getBlock().getPickBlock(state, Minecraft.getInstance().objectMouseOver, world, pos, player);
-        if (!stack.isEmpty()) {
-            title = stack.getDisplayName();
-        }
+
+        ITextComponent title = stack.isEmpty() ? xlate(world.getBlockState(pos).getBlock().getTranslationKey()) : stack.getDisplayName();
         stat = new WidgetAnimatedStat(null, title, WidgetAnimatedStat.StatIcon.of(stack), 20, -20, HUDHandler.getInstance().getStatOverlayColor(), null, false);
         stat.setMinimumContractedDimensions(0, 0);
         stat.setAutoLineWrap(false);
@@ -256,5 +255,9 @@ public class RenderBlockTarget {
 
     public void updateColor(int color) {
         if (stat != null) stat.setBackgroundColor(color);
+    }
+
+    public ITextComponent getTitle() {
+        return stat.getTitle();
     }
 }

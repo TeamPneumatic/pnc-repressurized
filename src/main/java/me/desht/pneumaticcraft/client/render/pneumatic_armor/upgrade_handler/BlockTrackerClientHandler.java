@@ -72,7 +72,7 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
         BlockPos.Mutable pos = new BlockPos.Mutable();
         for (int i = 0; i < HARD_MAX_BLOCKS_PER_TICK; i++) {
             // 1% of a tick = 500,000ns
-            if ((i & 0xff) == 0 && System.nanoTime() - now > PNCConfig.Client.Armor.blockTrackerMaxTimePerTick * 500000) {
+            if ((i & 0xff) == 0 && System.nanoTime() - now > PNCConfig.Client.Armor.blockTrackerMaxTimePerTick * 500_000L) {
                 break;
             }
 
@@ -116,8 +116,6 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
         processTrackerEntries(player, blockTrackRange);
 
         updateTrackerText();
-
-        int nTargets = blockTargets.size();
     }
 
     private void checkBlockFocus(PlayerEntity player, int blockTrackRange) {
@@ -268,10 +266,9 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
     }
 
     private void updateTrackerText() {
-
         if (focusedTarget != null) {
             blockTrackInfo.setTitle(xlate("pneumaticcraft.armor.upgrade.block_tracker"));
-            blockTrackInfo.setText(focusedTarget.stat.getTitle());
+            blockTrackInfo.setText(focusedTarget.getTitle());
         } else {
             blockTrackInfo.setTitle(xlate("pneumaticcraft.blockTracker.info.trackedBlocks"));
 
@@ -282,10 +279,9 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
                 }
             });
 
-            if (textList.size() == 0) textList.add(xlate("pneumaticcraft.blockTracker.info.noTrackedBlocks"));
+            if (textList.isEmpty()) textList.add(xlate("pneumaticcraft.blockTracker.info.noTrackedBlocks"));
             blockTrackInfo.setText(textList);
         }
-
     }
 
     private void addBlockTarget(RenderBlockTarget blockTarget) {
