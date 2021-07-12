@@ -137,14 +137,14 @@ public class GuiArmorMainScreen extends GuiPneumaticScreenBase implements IGuiSc
 
     private void addPages() {
         for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
-            List<IArmorUpgradeHandler> renderHandlers = ArmorUpgradeRegistry.getInstance().getHandlersForSlot(slot);
-            for (int i = 0; i < renderHandlers.size(); i++) {
+            List<IArmorUpgradeHandler<?>> upgradeHandlers = ArmorUpgradeRegistry.getInstance().getHandlersForSlot(slot);
+            for (int i = 0; i < upgradeHandlers.size(); i++) {
                 if (inInitPhase || CommonArmorHandler.getHandlerForPlayer().isUpgradeInserted(slot, i) || slot == EquipmentSlotType.HEAD && i == 0) {
-                    IArmorUpgradeHandler handler = renderHandlers.get(i);
+                    IArmorUpgradeHandler<?> handler = upgradeHandlers.get(i);
                     if (inInitPhase
                             || ItemPneumaticArmor.isPneumaticArmorPiece(Minecraft.getInstance().player, slot)
                             || handler instanceof CoreComponentsHandler) {
-                        IArmorUpgradeClientHandler clientHandler = ArmorUpgradeClientRegistry.getInstance().getClientHandler(handler);
+                        IArmorUpgradeClientHandler<?> clientHandler = ArmorUpgradeClientRegistry.getInstance().getClientHandler(handler.getID());
                         IOptionPage optionPage = clientHandler.getGuiOptionsPage(this);
                         if (optionPage != null) {
                             List<ItemStack> stacks = new ArrayList<>();

@@ -9,7 +9,7 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.Kic
 
 import java.util.Optional;
 
-public class KickOptions extends IOptionPage.SimpleToggleableOptions<KickClientHandler> {
+public class KickOptions extends IOptionPage.SimpleOptionPage<KickClientHandler> {
     private IKeybindingButton changeKeybindingButton;
 
     public KickOptions(IGuiScreen screen, KickClientHandler upgradeHandler) {

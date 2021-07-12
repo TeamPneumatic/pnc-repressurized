@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHa
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.CoreComponentsClientHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorFeatureStatus;
@@ -76,11 +77,11 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
         return KeyDispatcher.id2checkBox.get(upgradeID);
     }
 
-    public static WidgetKeybindCheckBox forUpgrade(IArmorUpgradeHandler handler) {
+    public static WidgetKeybindCheckBox forUpgrade(IArmorUpgradeHandler<?> handler) {
         return get(handler.getID());
     }
 
-    public static WidgetKeybindCheckBox forUpgrade(IArmorUpgradeClientHandler handler) {
+    public static WidgetKeybindCheckBox forUpgrade(IArmorUpgradeClientHandler<?> handler) {
         return get(handler.getCommonHandler().getID());
     }
 
@@ -98,7 +99,7 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
         return this;
     }
 
-    public static boolean isHandlerEnabled(IArmorUpgradeHandler handler) {
+    public static boolean isHandlerEnabled(IArmorUpgradeHandler<?> handler) {
         return forUpgrade(handler).checked;
     }
 
@@ -126,16 +127,16 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
             }
 
             CommonArmorHandler commonArmorHandler = CommonArmorHandler.getHandlerForPlayer();
-            ArmorUpgradeRegistry.ArmorUpgradeEntry entry = ArmorUpgradeRegistry.getInstance().getUpgradeEntry(upgradeID);
-            ArmorUpgradeRegistry.ArmorUpgradeEntry ownerEntry = ArmorUpgradeRegistry.getInstance().getUpgradeEntry(ownerUpgradeID);
+            IArmorUpgradeHandler<?> entry = ArmorUpgradeRegistry.getInstance().getUpgradeEntry(upgradeID);
+            IArmorUpgradeHandler<?> ownerEntry = ArmorUpgradeRegistry.getInstance().getUpgradeEntry(ownerUpgradeID);
 
             if (!checked) {
                 // require armor to be ready to switch on a feature (but always allow switching off)
                 // for main control: entry != null, ownerEntry == null
                 // for sub-control: entry == null, ownerEntry != null
                 if (entry != null) {
-                    if (this != coreComponents && !commonArmorHandler.isArmorReady(entry.getSlot())) return true;
-                } else if (ownerEntry != null && !commonArmorHandler.isArmorReady(ownerEntry.getSlot())) {
+                    if (this != coreComponents && !commonArmorHandler.isArmorReady(entry.getEquipmentSlot())) return true;
+                } else if (ownerEntry != null && !commonArmorHandler.isArmorReady(ownerEntry.getEquipmentSlot())) {
                     return true;
                 }
             }
@@ -147,7 +148,7 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
             ArmorFeatureStatus.INSTANCE.tryWriteToFile();
 
             if (entry != null) {
-                EquipmentSlotType slot = entry.getSlot();
+                EquipmentSlotType slot = entry.getEquipmentSlot();
                 byte idx = (byte) entry.getIndex();
                 if (commonArmorHandler.isUpgradeInserted(slot, idx)) {
                     toggleUpgrade(commonArmorHandler, slot, idx);
@@ -186,15 +187,17 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
         // master switch has been clicked: toggle on/off *all* installed upgrades on both client and server
         List<FeatureSetting> features = new ArrayList<>();
         ArmorUpgradeRegistry.getInstance().entries().forEach(entry -> {
-            boolean state = coreComponents.checked && WidgetKeybindCheckBox.forUpgrade(entry.getHandler()).checked;
+            boolean state = coreComponents.checked && WidgetKeybindCheckBox.forUpgrade(entry).checked;
             byte idx = (byte) entry.getIndex();
-            features.add(new FeatureSetting(entry.getSlot(), idx, state));
-            commonArmorHandler.setUpgradeEnabled(entry.getSlot(), idx, state);
+            features.add(new FeatureSetting(entry.getEquipmentSlot(), idx, state));
+            commonArmorHandler.setUpgradeEnabled(entry.getEquipmentSlot(), idx, state);
         });
         NetworkHandler.sendToServer(new PacketToggleArmorFeatureBulk(features));
         if (checked) {
             // force pressure stat to recalc its layout (just using .reset() isn't enough)
-            ArmorUpgradeClientRegistry.getInstance().getClientHandler(ArmorUpgradeRegistry.getInstance().coreComponentsHandler).onResolutionChanged();
+            ArmorUpgradeClientRegistry.getInstance()
+                    .getClientHandler(ArmorUpgradeRegistry.getInstance().coreComponentsHandler, CoreComponentsClientHandler.class)
+                    .onResolutionChanged();
         } else {
             Minecraft.getInstance().player.playSound(ModSounds.MINIGUN_STOP.get(), 1f, 0.5f);
         }

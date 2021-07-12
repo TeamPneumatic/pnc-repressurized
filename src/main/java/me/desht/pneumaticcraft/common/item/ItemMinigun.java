@@ -22,6 +22,7 @@ import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
 import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.lib.Log;
+import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -37,6 +38,9 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.network.NetworkHooks;
 import org.apache.commons.lang3.Validate;
 
@@ -286,6 +290,26 @@ public class ItemMinigun extends ItemPressurizable implements
             }
         }
         return -1;
+    }
+
+    @Mod.EventBusSubscriber(modid = Names.MOD_ID)
+    public static class Listener {
+        @SubscribeEvent
+        public static void onLivingAttack(LivingAttackEvent event) {
+            if (event.getEntityLiving() instanceof PlayerEntity
+                    && event.getSource() instanceof EntityDamageSource
+                    && ((EntityDamageSource) event.getSource()).getIsThornsDamage()) {
+                // don't take thorns damage when attacking with minigun (it applies direct damage, but it's effectively ranged...)
+                PlayerEntity player = (PlayerEntity) event.getEntityLiving();
+                ItemStack stack = player.getHeldItemMainhand();
+                if (stack.getItem() instanceof ItemMinigun) {
+                    Minigun minigun = ((ItemMinigun) stack.getItem()).getMinigun(stack, player);
+                    if (minigun != null && minigun.getMinigunSpeed() >= Minigun.MAX_GUN_SPEED) {
+                        event.setCanceled(true);
+                    }
+                }
+            }
+        }
     }
 
     public static class MagazineHandler extends BaseItemStackHandler {

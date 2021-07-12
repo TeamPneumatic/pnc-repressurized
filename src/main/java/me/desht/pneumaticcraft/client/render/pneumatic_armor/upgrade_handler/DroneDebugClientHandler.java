@@ -10,17 +10,16 @@ import me.desht.pneumaticcraft.client.gui.pneumatic_armor.option_screens.DroneDe
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
+import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.DroneDebugHandler;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
-public class DroneDebugClientHandler extends IArmorUpgradeClientHandler.AbstractHandler {
+public class DroneDebugClientHandler extends IArmorUpgradeClientHandler.AbstractHandler<DroneDebugHandler> {
     private final Set<BlockPos> shownPositions = new HashSet<>();
     private final Set<BlockPos> shownArea = new HashSet<>();
 
@@ -45,7 +44,7 @@ public class DroneDebugClientHandler extends IArmorUpgradeClientHandler.Abstract
     }
 
     @Override
-    public void render2D(MatrixStack matrixStack, float partialTicks, boolean helmetEnabled) {
+    public void render2D(MatrixStack matrixStack, float partialTicks, boolean armorPieceHasPressure) {
     }
 
     @Override
@@ -58,8 +57,8 @@ public class DroneDebugClientHandler extends IArmorUpgradeClientHandler.Abstract
     }
 
     @Override
-    public Optional<KeyBinding> getInitialKeyBinding() {
-        return Optional.empty();
+    public boolean isToggleable() {
+        return false;
     }
 
     public static boolean enabledForPlayer(PlayerEntity player) {

@@ -16,6 +16,8 @@ import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
+import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
+import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.JetBootsHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.entity.player.PlayerEntity;
@@ -33,7 +35,7 @@ import java.util.Collection;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleToggleableHandler {
+public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleToggleableHandler<JetBootsHandler> {
     public static final int BUILDER_MODE_LEVEL = 3;  // tier needed for builder mode
     public static final int STABLIZERS_LEVEL = 4;  // tier needed for flight stabilizers
 
@@ -94,17 +96,18 @@ public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleTogg
             widestR = Math.max(fr.getStringWidth(r1), Math.max(fr.getStringWidth(r2), fr.getStringWidth(r3)));
 
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer();
-            builderMode = handler.isJetBootsBuilderMode();
-            flightStabilizers = handler.isFlightStabilizers();
-            smartHover = handler.isSmartHover();
+            JetBootsStateTracker.JetBootsState jbState = JetBootsStateTracker.getClientTracker().getJetBootsState(player);
+            builderMode = jbState.isBuilderMode();
+
+            JetBootsHandler.JetBootsLocalState jbLocal = handler.getExtensionData(getCommonHandler());
+            flightStabilizers = jbLocal.isFlightStabilizers();
+            smartHover = jbLocal.isSmartHover();
         }
     }
 
     @Override
-    public void render2D(MatrixStack matrixStack, float partialTicks, boolean helmetEnabled) {
-        super.render2D(matrixStack, partialTicks, helmetEnabled);
-
-        if (helmetEnabled && jbStat.isStatOpen()) {
+    public void render2D(MatrixStack matrixStack, float partialTicks, boolean armorPieceHasPressure) {
+        if (armorPieceHasPressure && jbStat.isStatOpen()) {
             FontRenderer fr = Minecraft.getInstance().fontRenderer;
             int xl = jbStat.getBaseX() + 5;
             int y = jbStat.getBaseY() + fr.FONT_HEIGHT + 8;

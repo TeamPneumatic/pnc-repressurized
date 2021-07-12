@@ -20,7 +20,7 @@ import java.util.Optional;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class CoreComponentsOptions extends IOptionPage.SimpleToggleableOptions<CoreComponentsClientHandler> {
+public class CoreComponentsOptions extends IOptionPage.SimpleOptionPage<CoreComponentsClientHandler> {
     private IKeybindingButton changeKeybindingButton;
 
     public CoreComponentsOptions(IGuiScreen screen, CoreComponentsClientHandler upgradeHandler) {

@@ -24,6 +24,7 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateArmorExtraData;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
+import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.CoordTrackerHandler;
 import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Names;
@@ -49,7 +50,7 @@ import java.util.Collections;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class CoordTrackClientHandler extends IArmorUpgradeClientHandler.AbstractHandler {
+public class CoordTrackClientHandler extends IArmorUpgradeClientHandler.AbstractHandler<CoordTrackerHandler> {
 //    public static final int SEARCH_RANGE = 150;
 
     private RenderCoordWireframe coordTracker;
@@ -123,7 +124,7 @@ public class CoordTrackClientHandler extends IArmorUpgradeClientHandler.Abstract
     }
 
     @Override
-    public void render2D(MatrixStack matrixStack, float partialTicks, boolean upgradeEnabled) {
+    public void render2D(MatrixStack matrixStack, float partialTicks, boolean armorPieceHasPressure) {
     }
 
     @Override
@@ -187,7 +188,8 @@ public class CoordTrackClientHandler extends IArmorUpgradeClientHandler.Abstract
             CommonArmorHandler commonArmorHandler = CommonArmorHandler.getHandlerForPlayer();
             if (commonArmorHandler.getUpgradeCount(EquipmentSlotType.HEAD, EnumUpgrade.COORDINATE_TRACKER) == 0) return;
 
-            CoordTrackClientHandler handler = (CoordTrackClientHandler) ArmorUpgradeClientRegistry.getInstance().getClientHandler(ArmorUpgradeRegistry.getInstance().coordTrackerHandler);
+            CoordTrackClientHandler handler = ArmorUpgradeClientRegistry.getInstance()
+                    .getClientHandler(ArmorUpgradeRegistry.getInstance().coordTrackerHandler, CoordTrackClientHandler.class);
             if (handler.isListeningToCoordTrackerSetting) {
                 handler.isListeningToCoordTrackerSetting = false;
                 if (event.getFace() != null) {
@@ -196,7 +198,7 @@ public class CoordTrackClientHandler extends IArmorUpgradeClientHandler.Abstract
                     ItemPneumaticArmor.setCoordTrackerPos(helmetStack, gPos);
                     CompoundNBT tag = new CompoundNBT();
                     tag.put(ItemPneumaticArmor.NBT_COORD_TRACKER, GlobalPosHelper.toNBT(gPos));
-                    NetworkHandler.sendToServer(new PacketUpdateArmorExtraData(EquipmentSlotType.HEAD, tag));
+                    NetworkHandler.sendToServer(new PacketUpdateArmorExtraData(EquipmentSlotType.HEAD, tag, handler.getCommonHandler().getID()));
                     HUDHandler.getInstance().addMessage(xlate("pneumaticcraft.armor.gui.coordinateTracker.selectedTarget", PneumaticCraftUtils.posToString(gPos.getPos())), Collections.emptyList(), 60, 0x8000AA00);
                 }
             }

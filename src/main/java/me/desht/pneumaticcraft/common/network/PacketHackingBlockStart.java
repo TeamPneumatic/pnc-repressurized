@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
+import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderBlockTarget;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.BlockTrackerClientHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
@@ -34,14 +34,20 @@ public class PacketHackingBlockStart extends LocationIntPacket {
             if (player == null) {
                 // client
                 PlayerEntity cPlayer = ClientUtils.getClientPlayer();
-                CommonArmorHandler.getHandlerForPlayer(cPlayer).setHackedBlockPos(new WorldAndCoord(cPlayer.world, pos));
-                RenderBlockTarget target = HUDHandler.getInstance().getSpecificRenderer(BlockTrackerClientHandler.class).getTargetForCoord(pos);
+                CommonArmorHandler.getHandlerForPlayer()
+                        .getExtensionData(ArmorUpgradeRegistry.getInstance().hackHandler)
+                        .setHackedBlockPos(new WorldAndCoord(cPlayer.world, pos));
+
+                RenderBlockTarget target = ArmorUpgradeClientRegistry.getInstance()
+                        .getClientHandler(ArmorUpgradeRegistry.getInstance().blockTrackerHandler, BlockTrackerClientHandler.class)
+                        .getTargetForCoord(pos);
                 if (target != null) target.onHackConfirmServer();
             } else {
                 // server
                 CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
                 if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().blockTrackerHandler, true)) {
-                    handler.setHackedBlockPos(new WorldAndCoord(player.world, pos));
+                    handler.getExtensionData(ArmorUpgradeRegistry.getInstance().hackHandler)
+                            .setHackedBlockPos(new WorldAndCoord(player.world, pos));
                     NetworkHandler.sendToAllTracking(this, player.world, player.getPosition());
                 }
             }

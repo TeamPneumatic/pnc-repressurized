@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.client.gui.pneumatic_armor.option_screens;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
+import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.client.util.PointXY;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -16,7 +17,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.fml.client.gui.widget.Slider;
 import org.apache.commons.lang3.tuple.Pair;
 
-public abstract class AbstractSliderOptions<T extends IArmorUpgradeClientHandler> extends IOptionPage.SimpleToggleableOptions<T>
+public abstract class AbstractSliderOptions<T extends IArmorUpgradeClientHandler<?>> extends IOptionPage.SimpleOptionPage<T>
         implements Slider.ISlider {
     private Slider slider;
     private Integer pendingVal = null;
@@ -72,9 +73,10 @@ public abstract class AbstractSliderOptions<T extends IArmorUpgradeClientHandler
             // avoid sending a stream of update packets if player is dragging slider
             CompoundNBT tag = new CompoundNBT();
             tag.putInt(getTagName(), pendingVal);
-            NetworkHandler.sendToServer(new PacketUpdateArmorExtraData(getSlot(), tag));
+            IArmorUpgradeHandler<?> upgradeHandler = getClientUpgradeHandler().getCommonHandler();
+            NetworkHandler.sendToServer(new PacketUpdateArmorExtraData(getSlot(), tag, upgradeHandler.getID()));
             // also update the clientside handler
-            CommonArmorHandler.getHandlerForPlayer().onDataFieldUpdated(getTagName(), tag.get(getTagName()));
+            upgradeHandler.onDataFieldUpdated(CommonArmorHandler.getHandlerForPlayer(), getTagName(), tag.get(getTagName()));
             pendingVal = null;
         }
     }

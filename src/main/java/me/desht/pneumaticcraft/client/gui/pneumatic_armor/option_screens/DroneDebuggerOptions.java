@@ -35,7 +35,7 @@ import java.util.Set;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class DroneDebuggerOptions extends IOptionPage.SimpleToggleableOptions<DroneDebugClientHandler> {
+public class DroneDebuggerOptions extends IOptionPage.SimpleOptionPage<DroneDebugClientHandler> {
     private static final int PROGRAMMING_MARGIN = 20;
     private static final int PROGRAMMING_START_Y = 40;
 

@@ -1,14 +1,31 @@
 package me.desht.pneumaticcraft.common.pneumatic_armor.handlers;
 
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
-import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
+import me.desht.pneumaticcraft.api.pneumatic_armor.BaseArmorUpgradeHandler;
+import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorExtensionData;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
+import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
+import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
+import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
+import me.desht.pneumaticcraft.lib.PneumaticValues;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.vector.Vector3d;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
-public class SpeedBoostHandler implements IArmorUpgradeHandler {
+public class SpeedBoostHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
+    private static final Vector3d FORWARD = new Vector3d(0, 0, 1);
+
+    // track player movement across ticks on the server - very transient, a capability would be overkill here
+    private static final Map<UUID,Vector3d> moveMap = new HashMap<>();
+
     @Override
     public ResourceLocation getID() {
         return RL("run_speed");
@@ -27,5 +44,47 @@ public class SpeedBoostHandler implements IArmorUpgradeHandler {
     @Override
     public EquipmentSlotType getEquipmentSlot() {
         return EquipmentSlotType.LEGS;
+    }
+
+    @Override
+    public void tick(ICommonArmorHandler commonArmorHandler, boolean enabled) {
+        PlayerEntity player = commonArmorHandler.getPlayer();
+
+        double speedBoost = getSpeedBoostFromLegs(commonArmorHandler);
+        if (speedBoost == 0) return;
+
+        if (player.world.isRemote) {
+            // doing this client-side only appears to be effective
+            if (player.moveForward > 0) {
+                JetBootsStateTracker.JetBootsState jbState = JetBootsStateTracker.getClientTracker().getJetBootsState(player);
+                if (!player.isOnGround() && jbState.isEnabled() && jbState.isBuilderMode()) {
+                    player.moveRelative(commonArmorHandler.getUpgradeCount(EquipmentSlotType.FEET, EnumUpgrade.JET_BOOTS) / 250f, FORWARD);
+                }
+                if (player.isOnGround() && !player.isInWater()) {
+                    player.moveRelative((float) speedBoost, FORWARD);
+                }
+            }
+        }
+        if (!player.world.isRemote && speedBoost > 0) {
+            Vector3d prev = moveMap.get(player.getUniqueID());
+            boolean moved = prev != null && (Math.abs(player.getPosX() - prev.x) > 0.0001 || Math.abs(player.getPosZ() - prev.z) > 0.0001);
+            if (moved && player.isOnGround() && !player.isInWater()) {
+                int airUsage = (int) Math.ceil(PneumaticValues.PNEUMATIC_LEGS_SPEED_USAGE * speedBoost * 8);
+                commonArmorHandler.addAir(EquipmentSlotType.LEGS, -airUsage);
+            }
+            moveMap.put(player.getUniqueID(), player.getPositionVec());
+        }
+    }
+
+    public double getSpeedBoostFromLegs(ICommonArmorHandler commonArmorHandler) {
+        if (commonArmorHandler.upgradeUsable(ArmorUpgradeRegistry.getInstance().runSpeedHandler, true)) {
+            int speedUpgrades = commonArmorHandler.getUpgradeCount(EquipmentSlotType.LEGS, EnumUpgrade.SPEED);
+            PlayerEntity player = commonArmorHandler.getPlayer();
+            ItemStack armorStack = player.getItemStackFromSlot(EquipmentSlotType.LEGS);
+            float speedBoostMult = ItemPneumaticArmor.getIntData(armorStack, ItemPneumaticArmor.NBT_SPEED_BOOST, 100, 0, 100) / 100f;
+            return PneumaticValues.PNEUMATIC_LEGS_BOOST_PER_UPGRADE * speedUpgrades * speedBoostMult;
+        } else {
+            return 0.0;
+        }
     }
 }

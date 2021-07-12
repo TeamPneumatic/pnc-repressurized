@@ -20,6 +20,7 @@ import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.BlockTrackerHandler;
+import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.SearchHandler;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
@@ -45,7 +46,7 @@ import java.util.Map;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class SearchClientHandler extends IArmorUpgradeClientHandler.AbstractHandler {
+public class SearchClientHandler extends IArmorUpgradeClientHandler.AbstractHandler<SearchHandler> {
     private int totalSearchedItemCount;
     private int itemSearchCount;
     private int ticksExisted;
@@ -100,7 +101,7 @@ public class SearchClientHandler extends IArmorUpgradeClientHandler.AbstractHand
     }
 
     @Override
-    public void render2D(MatrixStack matrixStack, float partialTicks, boolean helmetEnabled) {
+    public void render2D(MatrixStack matrixStack, float partialTicks, boolean armorPieceHasPressure) {
     }
 
     private int trackInventoryCounts(int rangeUpgrades) {
@@ -129,13 +130,10 @@ public class SearchClientHandler extends IArmorUpgradeClientHandler.AbstractHand
      * Called by the EntityTrackerUpgradeHandler every 16 ticks to find items in item entities on the ground.
      * @param player the player
      * @param rangeUpgrades number of range upgrades installed in the helmet
-     * @param handlerEnabled true if the search handler is actually enabled, false otherwise
      */
-    void trackItemEntities(PlayerEntity player, int rangeUpgrades, boolean handlerEnabled) {
+    void trackItemEntities(PlayerEntity player, int rangeUpgrades) {
         searchedItems.clear();
         itemSearchCount = 0;
-
-        if (!handlerEnabled) return;
 
         Item searchedItem = ItemPneumaticArmor.getSearchedItem(ClientUtils.getWornArmor(EquipmentSlotType.HEAD));
         if (searchedItem == null || searchedItem == Items.AIR) return;

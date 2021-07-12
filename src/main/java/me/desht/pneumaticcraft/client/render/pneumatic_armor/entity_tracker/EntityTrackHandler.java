@@ -8,7 +8,7 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableEntity;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IPneumaticHelmetRegistry;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.client.KeyHandler;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
+import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.PneumaticHelmetRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderDroneAI;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderEntityTarget;
@@ -17,8 +17,9 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.Ent
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.HackClientHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.entity.living.EntityDroneBase;
-import me.desht.pneumaticcraft.common.hacking.HackableHandler;
+import me.desht.pneumaticcraft.common.hacking.HackManager;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
+import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.entity.AgeableEntity;
@@ -309,9 +310,11 @@ public class EntityTrackHandler {
         @Override
         public void addInfo(Entity entity, List<ITextComponent> curInfo, boolean isLookingAtTarget) {
             PlayerEntity player = ClientUtils.getClientPlayer();
-            IHackableEntity hackable = HackableHandler.getHackableForEntity(entity, player);
+            IHackableEntity hackable = HackManager.getHackableForEntity(entity, player);
             if (hackable != null) {
-                int hackTime = HUDHandler.getInstance().getSpecificRenderer(EntityTrackerClientHandler.class).getTargetsStream()
+                int hackTime = ArmorUpgradeClientRegistry.getInstance()
+                        .getClientHandler(ArmorUpgradeRegistry.getInstance().entityTrackerHandler, EntityTrackerClientHandler.class)
+                        .getTargetsStream()
                         .filter(target -> target.entity == entity)
                         .findFirst()
                         .map(RenderEntityTarget::getHackTime)

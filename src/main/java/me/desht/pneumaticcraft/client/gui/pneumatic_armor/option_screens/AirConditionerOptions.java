@@ -10,7 +10,7 @@ import net.minecraft.client.Minecraft;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class AirConditionerOptions extends IOptionPage.SimpleToggleableOptions<AirConClientHandler> {
+public class AirConditionerOptions extends IOptionPage.SimpleOptionPage<AirConClientHandler> {
 
     public AirConditionerOptions(IGuiScreen screen, AirConClientHandler airConUpgradeHandler) {
         super(screen, airConUpgradeHandler);

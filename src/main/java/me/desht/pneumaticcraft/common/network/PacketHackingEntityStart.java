@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
+import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.RenderEntityTarget;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.EntityTrackerClientHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
@@ -36,13 +36,18 @@ public class PacketHackingEntityStart {
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             ServerPlayerEntity player = ctx.get().getSender();
+            ArmorUpgradeRegistry r = ArmorUpgradeRegistry.getInstance();
             if (player == null) {
                 // client
                 PlayerEntity cPlayer = ClientUtils.getClientPlayer();
                 Entity entity = cPlayer.world.getEntityByID(entityId);
                 if (entity != null) {
-                    CommonArmorHandler.getHandlerForPlayer(cPlayer).setHackedEntity(entity);
-                    HUDHandler.getInstance().getSpecificRenderer(EntityTrackerClientHandler.class).getTargetsStream()
+                    CommonArmorHandler.getHandlerForPlayer(cPlayer)
+                            .getExtensionData(r.hackHandler)
+                            .setHackedEntity(entity);
+                    ArmorUpgradeClientRegistry.getInstance()
+                            .getClientHandler(r.entityTrackerHandler, EntityTrackerClientHandler.class)
+                            .getTargetsStream()
                             .filter(target -> target.entity == entity)
                             .findFirst()
                             .ifPresent(RenderEntityTarget::onHackConfirmServer);
@@ -50,10 +55,10 @@ public class PacketHackingEntityStart {
             } else {
                 // server
                 CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
-                if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().entityTrackerHandler, true)) {
+                if (handler.upgradeUsable(r.entityTrackerHandler, true)) {
                     Entity entity = player.world.getEntityByID(entityId);
                     if (entity != null) {
-                        handler.setHackedEntity(entity);
+                        handler.getExtensionData(r.hackHandler).setHackedEntity(entity);
                         NetworkHandler.sendToAllTracking(this, entity);
                     }
                 }

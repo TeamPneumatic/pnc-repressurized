@@ -58,11 +58,13 @@ public interface IPneumaticHelmetRegistry {
     List<IHackableEntity> getCurrentEntityHacks(Entity entity);
 
     /**
-     * Registers a Pneumatic Helmet module. This must be called from a {@code FMLClientSetupEvent} handler.
+     * Registers the client handler for a Pneumatic Armor upgrade. This must be called from a {@code FMLClientSetupEvent}
+     * handler. This also registers any keybindings referenced by the render handler
+     * (see {@link IArmorUpgradeClientHandler#getInitialKeyBinding()} and {@link IArmorUpgradeClientHandler#getSubKeybinds()}.
      *
      * @param clientHandler the handler to register
      */
-    void registerRenderHandler(IArmorUpgradeHandler handler, IArmorUpgradeClientHandler clientHandler);
+    <T extends IArmorUpgradeHandler<?>> void registerRenderHandler(T handler, IArmorUpgradeClientHandler<T> clientHandler);
 
     /**
      * Create a new keybinding button for an {@link IOptionPage} armor GUI screen.  This is intended to be called from

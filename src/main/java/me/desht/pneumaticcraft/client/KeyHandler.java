@@ -64,11 +64,6 @@ public class KeyHandler {
         keyListeners.add(listener);
     }
 
-    /**
-     * This will only subscribe when NotEnoughKeys is not installed.
-     *
-     * @param event
-     */
     @SubscribeEvent
     public void onKey(InputEvent.KeyInputEvent event) {
         for (KeyBinding key : keys) {

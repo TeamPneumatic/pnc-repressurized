@@ -18,6 +18,7 @@ import me.desht.pneumaticcraft.common.ai.StringFilterEntitySelector;
 import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
+import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.EntityTrackerHandler;
 import me.desht.pneumaticcraft.common.util.EntityFilter;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.client.Minecraft;
@@ -41,7 +42,7 @@ import java.util.stream.Stream;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.AbstractHandler {
+public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.AbstractHandler<EntityTrackerHandler> {
     private static final int ENTITY_TRACK_THRESHOLD = 7;
     private static final float ENTITY_TRACKING_RANGE = 16F;
 
@@ -60,10 +61,10 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
         int rangeUpgrades = armorHandler.getUpgradeCount(EquipmentSlotType.HEAD, EnumUpgrade.RANGE);
         PlayerEntity player = armorHandler.getPlayer();
 
-        SearchClientHandler searchHandler = (SearchClientHandler) ArmorUpgradeClientRegistry.getInstance().getClientHandler(ArmorUpgradeRegistry.getInstance().searchHandler);
-
-        if (searchHandler != null && (Minecraft.getInstance().world.getGameTime() & 0xf) == 0) {
-            searchHandler.trackItemEntities(player, rangeUpgrades, WidgetKeybindCheckBox.isHandlerEnabled(ArmorUpgradeRegistry.getInstance().searchHandler));
+        if ((Minecraft.getInstance().world.getGameTime() & 0xf) == 0 && WidgetKeybindCheckBox.isHandlerEnabled(ArmorUpgradeRegistry.getInstance().searchHandler)) {
+            ArmorUpgradeClientRegistry.getInstance()
+                    .getClientHandler(ArmorUpgradeRegistry.getInstance().searchHandler, SearchClientHandler.class)
+                    .trackItemEntities(player, rangeUpgrades);
         }
 
         ItemStack helmetStack = player.getItemStackFromSlot(EquipmentSlotType.HEAD);
@@ -135,7 +136,7 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
     }
 
     @Override
-    public void render2D(MatrixStack matrixStack, float partialTicks, boolean upgradeEnabled) {
+    public void render2D(MatrixStack matrixStack, float partialTicks, boolean armorPieceHasPressure) {
     }
 
     @Override

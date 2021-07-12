@@ -7,9 +7,7 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.PneumaticCraftTags;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModSounds;
-import me.desht.pneumaticcraft.common.item.ItemMinigun;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
-import me.desht.pneumaticcraft.common.minigun.Minigun;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketJetBootsStateSync;
 import me.desht.pneumaticcraft.common.network.PacketSendArmorHUDMessage;
@@ -24,12 +22,10 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.entity.Pose;
-import net.minecraft.entity.monster.GuardianEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EntityDamageSource;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
@@ -96,10 +92,8 @@ public class EventHandlerPneumaticArmor {
                 return;
             }
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
-            if (!handler.isArmorEnabled()) {
-                return;
-            }
-            if (event.getEntity().world.getDifficulty() == Difficulty.HARD && handler.isJetBootsActive()) {
+            JetBootsState jbState = JetBootsStateTracker.getTracker(player).getJetBootsState(player);
+            if (event.getEntity().world.getDifficulty() == Difficulty.HARD && jbState.isActive()) {
                 // thrusting into the ground hurts at hard difficulty!
                 event.setDamageMultiplier(0.2F);
                 return;
@@ -141,6 +135,7 @@ public class EventHandlerPneumaticArmor {
             PlayerEntity player = (PlayerEntity) event.getEntityLiving();
 
             if (isPneumaticArmorPiece(player, EquipmentSlotType.CHEST) && event.getSource().isFireDamage() && !(player.isCreative() || player.isSpectator())) {
+                // security upgrade in chestplate protects from fire
                 CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
                 if (handler.isArmorEnabled() && handler.hasMinPressure(EquipmentSlotType.CHEST) && handler.getUpgradeCount(EquipmentSlotType.CHEST, EnumUpgrade.SECURITY) > 0) {
                     event.setCanceled(true);
@@ -156,18 +151,6 @@ public class EventHandlerPneumaticArmor {
                             player.world.playSound(null, player.getPosition(), ModSounds.LEAKING_GAS.get(), SoundCategory.PLAYERS, 1f, 0.7f);
                             tryExtinguish(player);
                         }
-                    }
-                }
-            } else if (event.getSource() instanceof EntityDamageSource
-                    && ((EntityDamageSource) event.getSource()).getIsThornsDamage()
-                    && event.getSource().getTrueSource() instanceof GuardianEntity) {
-                // not actually armor-related, but it's the right event...
-                // don't take thorns damage from Guardians when attacking with minigun
-                ItemStack stack = player.getHeldItemMainhand();
-                if (stack.getItem() instanceof ItemMinigun) {
-                    Minigun minigun = ((ItemMinigun) stack.getItem()).getMinigun(stack, player);
-                    if (minigun != null && minigun.getMinigunSpeed() >= Minigun.MAX_GUN_SPEED) {
-                        event.setCanceled(true);
                     }
                 }
             }
@@ -201,7 +184,8 @@ public class EventHandlerPneumaticArmor {
                 return;
             }
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
-            if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().jetBootsHandler, true) && !handler.isSmartHover()) {
+            if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().jetBootsHandler, true)
+                    && !handler.getExtensionData(ArmorUpgradeRegistry.getInstance().jetBootsHandler).isSmartHover()) {
                 // enabled jet boots = no jumping
                 return;
             }
@@ -229,7 +213,8 @@ public class EventHandlerPneumaticArmor {
         int max = PneumaticValues.PNEUMATIC_JET_BOOTS_MAX_UPGRADES;
         if (isPneumaticArmorPiece(player, EquipmentSlotType.FEET) && !player.isOnGround()) {
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(event.getPlayer());
-            if (handler.isJetBootsEnabled() && handler.isJetBootsBuilderMode()) {
+            JetBootsState jbState = JetBootsStateTracker.getTracker(player).getJetBootsState(player);
+            if (jbState.isEnabled() && jbState.isBuilderMode()) {
                 int n = (max + 1) - handler.getUpgradeCount(EquipmentSlotType.FEET, EnumUpgrade.JET_BOOTS, max);
                 if (n < 4) {
                     float mult = 5.0f / n;   // default dig speed when not on ground is 1/5 of normal
@@ -258,8 +243,6 @@ public class EventHandlerPneumaticArmor {
             }
         }
     }
-
-    private static final Vector3d IDLE_VEC = new Vector3d(0, -0.5, 0);
 
     /**
      * Client-side: play particles for all (close enough) player entities with enabled jet boots, including the actual player.

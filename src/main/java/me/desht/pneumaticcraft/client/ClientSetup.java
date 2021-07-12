@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.client;
 
-import me.desht.pneumaticcraft.client.event.ClientTickHandler;
 import me.desht.pneumaticcraft.client.gui.*;
 import me.desht.pneumaticcraft.client.gui.programmer.*;
 import me.desht.pneumaticcraft.client.gui.semiblock.GuiLogisticsProvider;
@@ -67,7 +66,6 @@ public class ClientSetup {
 
     static void init(FMLClientSetupEvent event) {
         MinecraftForge.EVENT_BUS.register(HUDHandler.getInstance());
-        MinecraftForge.EVENT_BUS.register(ClientTickHandler.instance());
         MinecraftForge.EVENT_BUS.register(HackTickHandler.instance());
         MinecraftForge.EVENT_BUS.register(AreaRenderManager.getInstance());
         MinecraftForge.EVENT_BUS.register(KeyHandler.getInstance());

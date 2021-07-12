@@ -29,7 +29,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiMoveStat extends GuiPneumaticScreenBase {
     private final IGuiAnimatedStat movedStat;
-    private final IArmorUpgradeClientHandler renderHandler;
+    private final IArmorUpgradeClientHandler<?> renderHandler;
     private boolean clicked = false;
     private final List<IGuiAnimatedStat> otherStats = new ArrayList<>();
     private final List<ITextComponent> helpText = new ArrayList<>();
@@ -41,11 +41,11 @@ public class GuiMoveStat extends GuiPneumaticScreenBase {
     private static boolean snap = false;
     private static int gridSize = 4;
 
-    public GuiMoveStat(IArmorUpgradeClientHandler renderHandler, ArmorHUDLayout.LayoutType layoutItem) {
+    public GuiMoveStat(IArmorUpgradeClientHandler<?> renderHandler, ArmorHUDLayout.LayoutType layoutItem) {
         this(renderHandler, layoutItem, renderHandler.getAnimatedStat());
     }
 
-    public GuiMoveStat(IArmorUpgradeClientHandler renderHandler, ArmorHUDLayout.LayoutType layoutItem, @Nonnull IGuiAnimatedStat movedStat) {
+    public GuiMoveStat(IArmorUpgradeClientHandler<?> renderHandler, ArmorHUDLayout.LayoutType layoutItem, @Nonnull IGuiAnimatedStat movedStat) {
         super(new StringTextComponent("Move Gui"));
 
         this.movedStat = movedStat;
@@ -56,9 +56,9 @@ public class GuiMoveStat extends GuiPneumaticScreenBase {
 
         CommonArmorHandler commonArmorHandler = CommonArmorHandler.getHandlerForPlayer();
         for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
-            List<IArmorUpgradeClientHandler> renderHandlers = ArmorUpgradeClientRegistry.getInstance().getHandlersForSlot(slot);
+            List<IArmorUpgradeClientHandler<?>> renderHandlers = ArmorUpgradeClientRegistry.getInstance().getHandlersForSlot(slot);
             for (int i = 0; i < renderHandlers.size(); i++) {
-                IArmorUpgradeClientHandler upgradeRenderHandler = renderHandlers.get(i);
+                IArmorUpgradeClientHandler<?> upgradeRenderHandler = renderHandlers.get(i);
                 if (commonArmorHandler.isUpgradeInserted(slot, i) && commonArmorHandler.isUpgradeEnabled(slot, i)) {
                     IGuiAnimatedStat stat = upgradeRenderHandler.getAnimatedStat();
                     if (stat != null && stat != movedStat) {
@@ -68,7 +68,8 @@ public class GuiMoveStat extends GuiPneumaticScreenBase {
             }
         }
 
-        CoreComponentsClientHandler mainOptions = HUDHandler.getInstance().getSpecificRenderer(CoreComponentsClientHandler.class);
+        CoreComponentsClientHandler mainOptions = ArmorUpgradeClientRegistry.getInstance()
+                .getClientHandler(ArmorUpgradeRegistry.getInstance().coreComponentsHandler, CoreComponentsClientHandler.class);
         if (movedStat != mainOptions.testMessageStat) {
             mainOptions.testMessageStat = new WidgetAnimatedStat(null, new StringTextComponent("Test Message, keep in mind messages can be long!"),
                     WidgetAnimatedStat.StatIcon.NONE, HUDHandler.getInstance().getStatOverlayColor(), null, ArmorHUDLayout.INSTANCE.messageStat);

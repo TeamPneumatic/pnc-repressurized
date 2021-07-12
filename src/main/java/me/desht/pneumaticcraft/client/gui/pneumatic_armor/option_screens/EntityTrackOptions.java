@@ -26,7 +26,7 @@ import org.lwjgl.glfw.GLFW;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class EntityTrackOptions extends IOptionPage.SimpleToggleableOptions<EntityTrackerClientHandler> {
+public class EntityTrackOptions extends IOptionPage.SimpleOptionPage<EntityTrackerClientHandler> {
 
     private TextFieldWidget textField;
     private WidgetButtonExtended warningButton;
@@ -93,7 +93,7 @@ public class EntityTrackOptions extends IOptionPage.SimpleToggleableOptions<Enti
         if (sendTimer > 0 && --sendTimer == 0) {
             CompoundNBT tag = new CompoundNBT();
             tag.putString(ItemPneumaticArmor.NBT_ENTITY_FILTER, textField.getText());
-            NetworkHandler.sendToServer(new PacketUpdateArmorExtraData(EquipmentSlotType.HEAD, tag));
+            NetworkHandler.sendToServer(new PacketUpdateArmorExtraData(EquipmentSlotType.HEAD, tag, getClientUpgradeHandler().getCommonHandler().getID()));
         }
     }
 

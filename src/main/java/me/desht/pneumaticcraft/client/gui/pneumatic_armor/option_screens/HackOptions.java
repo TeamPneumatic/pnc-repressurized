@@ -9,7 +9,7 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.Hac
 
 import java.util.Optional;
 
-public class HackOptions extends IOptionPage.SimpleToggleableOptions<HackClientHandler> {
+public class HackOptions extends IOptionPage.SimpleOptionPage<HackClientHandler> {
     private IKeybindingButton changeKeybindingButton;
 
     public HackOptions(IGuiScreen screen, HackClientHandler upgradeHandler) {

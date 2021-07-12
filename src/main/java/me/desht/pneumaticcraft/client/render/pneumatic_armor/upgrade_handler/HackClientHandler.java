@@ -12,6 +12,7 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
+import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.HackHandler;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.PlayerEntity;
@@ -21,11 +22,10 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 
 import java.util.List;
-import java.util.Optional;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class HackClientHandler extends IArmorUpgradeClientHandler.AbstractHandler {
+public class HackClientHandler extends IArmorUpgradeClientHandler.AbstractHandler<HackHandler> {
     public HackClientHandler() {
         super(ArmorUpgradeRegistry.getInstance().hackHandler);
     }
@@ -39,7 +39,7 @@ public class HackClientHandler extends IArmorUpgradeClientHandler.AbstractHandle
     }
 
     @Override
-    public void render2D(MatrixStack matrixStack, float partialTicks, boolean helmetEnabled) {
+    public void render2D(MatrixStack matrixStack, float partialTicks, boolean armorPieceHasPressure) {
     }
 
     @Override
@@ -52,8 +52,8 @@ public class HackClientHandler extends IArmorUpgradeClientHandler.AbstractHandle
     }
 
     @Override
-    public Optional<KeyBinding> getInitialKeyBinding() {
-        return Optional.empty();
+    public boolean isToggleable() {
+        return false;
     }
 
     public static boolean enabledForPlayer(PlayerEntity player) {

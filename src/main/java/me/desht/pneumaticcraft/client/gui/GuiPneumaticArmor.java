@@ -61,10 +61,10 @@ public class GuiPneumaticArmor extends GuiChargingUpgradeManager {
         CommonArmorHandler commonArmorHandler = CommonArmorHandler.getHandlerForPlayer();
         float totalUsage = commonArmorHandler.getIdleAirUsage(equipmentSlot, true);
         if (totalUsage > 0F) {
-            List<IArmorUpgradeHandler> handlers = ArmorUpgradeRegistry.getInstance().getHandlersForSlot(equipmentSlot);
+            List<IArmorUpgradeHandler<?>> handlers = ArmorUpgradeRegistry.getInstance().getHandlersForSlot(equipmentSlot);
             for (int i = 0; i < handlers.size(); i++) {
                 if (commonArmorHandler.isUpgradeInserted(equipmentSlot, i)) {
-                    IArmorUpgradeHandler handler = handlers.get(i);
+                    IArmorUpgradeHandler<?> handler = handlers.get(i);
                     float upgradeUsage = handler.getIdleAirUsage(commonArmorHandler);
                     if (upgradeUsage > 0F) {
                         text.add(new StringTextComponent(PneumaticCraftUtils.roundNumberTo(upgradeUsage, 1) + " mL/t (" + handler.getID() + ")").mergeStyle(black));

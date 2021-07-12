@@ -15,7 +15,7 @@ import java.util.Collections;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class CoordinateTrackerOptions extends IOptionPage.SimpleToggleableOptions<CoordTrackClientHandler> {
+public class CoordinateTrackerOptions extends IOptionPage.SimpleOptionPage<CoordTrackClientHandler> {
     private Button wirePath;
     private Button pathEnabled;
     private Button xRayEnabled;

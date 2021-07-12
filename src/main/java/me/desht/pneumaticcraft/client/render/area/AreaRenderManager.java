@@ -11,6 +11,7 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ItemCamoApplicator;
 import me.desht.pneumaticcraft.common.item.ItemGPSAreaTool;
 import me.desht.pneumaticcraft.common.item.ItemJackHammer;
+import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.tileentity.ICamouflageableTE;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.block.BlockState;
@@ -114,7 +115,8 @@ public enum AreaRenderManager {
         ItemStack helmet = player.getItemStackFromSlot(EquipmentSlotType.HEAD);
         if (helmet.getItem() == ModItems.PNEUMATIC_HELMET.get()) {
             if (droneDebugger == null) {
-                droneDebugger = ArmorUpgradeClientRegistry.getInstance().byClass(DroneDebugClientHandler.class);
+                droneDebugger = ArmorUpgradeClientRegistry.getInstance()
+                        .getClientHandler(ArmorUpgradeRegistry.getInstance().droneDebugHandler, DroneDebugClientHandler.class);
             }
             Set<BlockPos> posSet = droneDebugger.getShowingPositions();
             Set<BlockPos> areaSet = droneDebugger.getShownArea();

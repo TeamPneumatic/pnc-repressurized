@@ -10,7 +10,7 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.block_tracker.Block
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.BlockTrackerClientHandler;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
-import me.desht.pneumaticcraft.common.hacking.HackableHandler;
+import me.desht.pneumaticcraft.common.hacking.HackManager;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketDescriptionPacketRequest;
 import me.desht.pneumaticcraft.common.network.PacketHackingBlockStart;
@@ -133,7 +133,7 @@ public class RenderBlockTarget {
         }
 
         if (hackTime > 0) {
-            IHackableBlock hackableBlock = HackableHandler.getHackableForBlock(world, pos, player);
+            IHackableBlock hackableBlock = HackManager.getHackableForBlock(world, pos, player);
             if (hackableBlock != null) {
                 hackTime++;
             } else {
@@ -232,7 +232,7 @@ public class RenderBlockTarget {
 
     public void hack() {
         if (isInitialized() && isPlayerLookingAtTarget()) {
-            IHackableBlock block = HackableHandler.getHackableForBlock(world, pos, player);
+            IHackableBlock block = HackManager.getHackableForBlock(world, pos, player);
             if (block != null && (hackTime == 0 || hackTime > block.getHackTime(world, pos, player)))
                 NetworkHandler.sendToServer(new PacketHackingBlockStart(pos));
         }

@@ -38,7 +38,7 @@ public class JetBootsStateTracker {
      * @param active jet boots firing?
      * @param builderMode in builder mode?
      */
-    void setJetBootsState(PlayerEntity player, boolean enabled, boolean active, boolean builderMode) {
+    public void setJetBootsState(PlayerEntity player, boolean enabled, boolean active, boolean builderMode) {
         if (!player.world.isRemote) {
             JetBootsState state = stateMap.computeIfAbsent(player.getUniqueID(), uuid -> new JetBootsState(false, false, false));
 
@@ -64,9 +64,12 @@ public class JetBootsStateTracker {
         return stateMap.getOrDefault(player.getUniqueID(), new JetBootsState(false, false, false));
     }
 
+    /**
+     * Synced state: set on the server and sync'd to clients (i.e. other players need to know what this player's state is)
+     */
     public static class JetBootsState {
         private boolean enabled;  // switched on
-        private boolean active;   // actively firing (player holding Jump key)
+        private boolean active;   // actively firing (player holding thrust key)
         private boolean builderMode; // player in builder mode (prevents model rotation)
 
         public JetBootsState(boolean enabled, boolean active, boolean builderMode) {

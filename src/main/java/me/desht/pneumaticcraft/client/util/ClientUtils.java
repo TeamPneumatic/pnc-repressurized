@@ -2,9 +2,10 @@ package me.desht.pneumaticcraft.client.util;
 
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticContainerBase;
 import me.desht.pneumaticcraft.client.gui.programmer.GuiProgWidgetOptionBase;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.HUDHandler;
+import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
 import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.EntityTrackerClientHandler;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
+import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
@@ -76,7 +77,9 @@ public class ClientUtils {
     }
 
     public static void addDroneToHudHandler(EntityDrone drone, BlockPos pos) {
-        HUDHandler.getInstance().getSpecificRenderer(EntityTrackerClientHandler.class).getTargetsStream()
+        ArmorUpgradeClientRegistry.getInstance()
+                .getClientHandler(ArmorUpgradeRegistry.getInstance().entityTrackerHandler, EntityTrackerClientHandler.class)
+                .getTargetsStream()
                 .filter(target -> target.entity == drone)
                 .forEach(target -> target.getDroneAIRenderer().addBlackListEntry(drone.world, pos));
     }

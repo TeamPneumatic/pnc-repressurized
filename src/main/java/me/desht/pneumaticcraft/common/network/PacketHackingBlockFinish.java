@@ -4,8 +4,9 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IHackableBlock;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.event.HackTickHandler;
-import me.desht.pneumaticcraft.common.hacking.HackableHandler;
+import me.desht.pneumaticcraft.common.hacking.HackManager;
 import me.desht.pneumaticcraft.common.hacking.WorldAndCoord;
+import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
@@ -29,11 +30,11 @@ public class PacketHackingBlockFinish extends LocationIntPacket {
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             PlayerEntity player = ClientUtils.getClientPlayer();
-            IHackableBlock hackableBlock = HackableHandler.getHackableForBlock(player.world, pos, player);
+            IHackableBlock hackableBlock = HackManager.getHackableForBlock(player.world, pos, player);
             if (hackableBlock != null) {
                 hackableBlock.onHackComplete(player.world, pos, player);
                 HackTickHandler.instance().trackBlock(player.world, pos, hackableBlock);
-                CommonArmorHandler.getHandlerForPlayer(player).setHackedBlockPos(null);
+                CommonArmorHandler.getHandlerForPlayer(player).getExtensionData(ArmorUpgradeRegistry.getInstance().hackHandler).setHackedBlockPos(null);
                 player.playSound(ModSounds.HELMET_HACK_FINISH.get(), 1.0F, 1.0F);
             }
         });

@@ -14,6 +14,7 @@ import net.minecraft.client.Minecraft;
  *
  * @author MineMaarten
  */
+@SuppressWarnings("unused")
 public class IDEDebug {
     /**
      * This can be used as an IntelliJ break condition to ensure mouse pointer is

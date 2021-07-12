@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
+import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
 import net.minecraft.client.audio.TickableSound;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.SoundCategory;
@@ -28,7 +29,7 @@ public class MovingSoundJetBoots extends TickableSound {
         this.targetPitch = 0.7F;
         this.pitch = 0.5F;
         this.handler = CommonArmorHandler.getHandlerForPlayer(player);
-        this.volume = volumeFromConfig();
+        this.volume = volumeFromConfig(JetBootsStateTracker.getClientTracker().getJetBootsState(player).isBuilderMode());
     }
 
     @Override
@@ -38,13 +39,14 @@ public class MovingSoundJetBoots extends TickableSound {
             return;
         }
 
+        JetBootsStateTracker.JetBootsState jbState = JetBootsStateTracker.getClientTracker().getJetBootsState(player);
+
         if (endTimer == Integer.MAX_VALUE &&
-                (!handler.isJetBootsEnabled()
-                        || (!handler.isJetBootsActive() && (player.isOnGround() || player.isElytraFlying())))) {
+                (!jbState.isEnabled() || (!jbState.isActive() && (player.isOnGround() || player.isElytraFlying())))) {
             endTimer = END_TICKS;
         }
         if (endTimer <= END_TICKS) {
-            if (player.isOnGround() || !handler.isJetBootsActive()) {
+            if (player.isOnGround() || !jbState.isActive()) {
                 endTimer--;
             } else {
                 endTimer = Integer.MAX_VALUE;
@@ -57,18 +59,17 @@ public class MovingSoundJetBoots extends TickableSound {
 
         if (endTimer > 0 && endTimer <= END_TICKS) {
             targetPitch = 0.5F;
-            volume = volumeFromConfig() - ((END_TICKS - endTimer) / 50F);
+            volume = volumeFromConfig(jbState.isBuilderMode()) - ((END_TICKS - endTimer) / 50F);
         } else {
-            boolean jetBootsActive = handler.isJetBootsActive();
-            if (jetBootsActive) {
+            if (jbState.isActive()) {
                 double vel = player.getMotion().length();
                 targetPitch = 0.9F + (float) vel / 15;
-                volume = volumeFromConfig() + (float) vel / 15;
+                volume = volumeFromConfig(jbState.isBuilderMode()) + (float) vel / 15;
             } else {
                 targetPitch = 0.9F;
-                volume = volumeFromConfig() * 0.8F;
+                volume = volumeFromConfig(jbState.isBuilderMode()) * 0.8F;
             }
-            handleParticles(jetBootsActive);
+            handleParticles(jbState.isActive(), jbState.isBuilderMode());
         }
         pitch += (targetPitch - pitch) / 10F;
         if (player.isInWater()) {
@@ -77,12 +78,17 @@ public class MovingSoundJetBoots extends TickableSound {
         }
     }
 
-    private void handleParticles(boolean jetBootsActive) {
+    @Override
+    public boolean isDonePlaying() {
+        return !handler.isValid() || !handler.isArmorEnabled() || endTimer <= 0;
+    }
+
+    private void handleParticles(boolean jetBootsActive, boolean builderMode) {
         int distThresholdSq = ClientUtils.getRenderDistanceThresholdSq();
         if ((jetBootsActive || (player.world.getGameTime() & 0x3) == 0 || !ClientUtils.isFirstPersonCamera()) && player.getDistanceSq(ClientUtils.getClientPlayer()) < distThresholdSq) {
             int nParticles = jetBootsActive ? 3 : 1;
-            Vector3d jetVec = jetBootsActive && !handler.isJetBootsBuilderMode() ? player.getLookVec().scale(-0.5) : IDLE_VEC;
-            Vector3d feet = jetBootsActive && !handler.isJetBootsBuilderMode() ?
+            Vector3d jetVec = jetBootsActive && !builderMode ? player.getLookVec().scale(-0.5) : IDLE_VEC;
+            Vector3d feet = jetBootsActive && !builderMode ?
                     player.getPositionVec().add(player.getLookVec().scale(player == ClientUtils.getClientPlayer() ? -4 : -2)) :
                     player.getPositionVec().add(0, -0.25, 0);
             for (int i = 0; i < nParticles; i++) {
@@ -91,12 +97,7 @@ public class MovingSoundJetBoots extends TickableSound {
         }
     }
 
-    @Override
-    public boolean isDonePlaying() {
-        return !handler.isValid() || !handler.isArmorEnabled() || endTimer <= 0;
-    }
-
-    private float volumeFromConfig() {
-        return (float) (handler.isJetBootsBuilderMode() ? PNCConfig.Client.Sound.jetbootsVolumeBuilderMode : PNCConfig.Client.Sound.jetbootsVolume);
+    private float volumeFromConfig(boolean builderMode) {
+        return (float) (builderMode ? PNCConfig.Client.Sound.jetbootsVolumeBuilderMode : PNCConfig.Client.Sound.jetbootsVolume);
     }
 }

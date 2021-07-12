@@ -22,7 +22,7 @@ import net.minecraft.util.text.StringTextComponent;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class SearchOptions extends IOptionPage.SimpleToggleableOptions<SearchClientHandler> {
+public class SearchOptions extends IOptionPage.SimpleOptionPage<SearchClientHandler> {
     private static GuiItemSearcher searchGui;
 
     private final PlayerEntity player = Minecraft.getInstance().player;

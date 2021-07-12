@@ -2,7 +2,9 @@ package me.desht.pneumaticcraft.common.network;
 
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
+import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
+import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.network.PacketBuffer;
@@ -35,9 +37,10 @@ public class PacketJetBootsActivate {
         ctx.get().enqueueWork(() -> {
             if (ItemPneumaticArmor.isPneumaticArmorPiece(player, EquipmentSlotType.FEET)) {
                 CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
+                JetBootsStateTracker.JetBootsState jbState = JetBootsStateTracker.getTracker(player).getJetBootsState(player);
                 if (handler.getUpgradeCount(EquipmentSlotType.FEET, EnumUpgrade.JET_BOOTS) > 0
-                        && (!state || handler.isJetBootsEnabled())) {
-                    handler.setJetBootsActive(state);
+                        && (!state || jbState.isEnabled())) {
+                    ArmorUpgradeRegistry.getInstance().jetBootsHandler.setJetBootsActive(handler, state);
                 }
             }
         });

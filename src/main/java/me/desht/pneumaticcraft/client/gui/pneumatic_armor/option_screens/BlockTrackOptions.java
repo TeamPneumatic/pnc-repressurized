@@ -15,7 +15,7 @@ import net.minecraft.util.ResourceLocation;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class BlockTrackOptions extends IOptionPage.SimpleToggleableOptions<BlockTrackerClientHandler> {
+public class BlockTrackOptions extends IOptionPage.SimpleOptionPage<BlockTrackerClientHandler> {
     public BlockTrackOptions(IGuiScreen screen, BlockTrackerClientHandler renderHandler) {
         super(screen, renderHandler);
     }

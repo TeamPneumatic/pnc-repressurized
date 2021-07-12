@@ -30,9 +30,6 @@ public class HeatExchangerLogicTicking implements IHeatExchangerLogic {
     private double thermalCapacity = 1;
     private final BitSet connections = new BitSet(6);
 
-    // prevent infinite recursion when adding/removing a connected exchanger
-//    private static boolean isAddingOrRemovingLogic;
-
     @Override
     public void initializeAsHull(World world, BlockPos pos, BiPredicate<IWorld,BlockPos> blockFilter, Direction... validSides) {
         if (ambientTemperature < 0) {
@@ -70,11 +67,6 @@ public class HeatExchangerLogicTicking implements IHeatExchangerLogic {
         if (reciprocate) {
             exchanger.addConnectedExchanger(this, false);
         }
-//        if (!isAddingOrRemovingLogic) {
-//            isAddingOrRemovingLogic = true;
-//            exchanger.addConnectedExchanger(this);
-//            isAddingOrRemovingLogic = false;
-//        }
     }
 
     @Override
@@ -83,11 +75,6 @@ public class HeatExchangerLogicTicking implements IHeatExchangerLogic {
         if (reciprocate) {
             exchanger.removeConnectedExchanger(this, false);
         }
-//        if (!isAddingOrRemovingLogic) {
-//            isAddingOrRemovingLogic = true;
-//            exchanger.removeConnectedExchanger(this);
-//            isAddingOrRemovingLogic = false;
-//        }
     }
 
     @Override

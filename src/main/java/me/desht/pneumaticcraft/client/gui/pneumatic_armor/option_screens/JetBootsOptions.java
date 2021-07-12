@@ -17,6 +17,7 @@ import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketUpdateArmorExtraData;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
+import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.JetBootsHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.nbt.CompoundNBT;
@@ -75,9 +76,10 @@ public class JetBootsOptions extends AbstractSliderOptions<JetBootsClientHandler
         if (commonArmorHandler.getUpgradeCount(EquipmentSlotType.FEET, EnumUpgrade.JET_BOOTS) >= minTier) {
             CompoundNBT tag = new CompoundNBT();
             tag.putBoolean(flagName, cb.checked);
-            NetworkHandler.sendToServer(new PacketUpdateArmorExtraData(EquipmentSlotType.FEET, tag));
-            CommonArmorHandler.getHandlerForPlayer().onDataFieldUpdated(flagName, tag.get(flagName));
-            ResourceLocation ownerId = getClientUpgradeHandler().getCommonHandler().getID();
+            JetBootsHandler upgradeHandler = getClientUpgradeHandler().getCommonHandler();
+            NetworkHandler.sendToServer(new PacketUpdateArmorExtraData(EquipmentSlotType.FEET, tag, upgradeHandler.getID()));
+            upgradeHandler.onDataFieldUpdated(CommonArmorHandler.getHandlerForPlayer(), flagName, tag.get(flagName));
+            ResourceLocation ownerId = upgradeHandler.getID();
             HUDHandler.getInstance().addFeatureToggleMessage(ArmorUpgradeRegistry.getStringKey(ownerId), ArmorUpgradeRegistry.getStringKey(cb.getUpgradeId()), cb.checked);
         }
     }

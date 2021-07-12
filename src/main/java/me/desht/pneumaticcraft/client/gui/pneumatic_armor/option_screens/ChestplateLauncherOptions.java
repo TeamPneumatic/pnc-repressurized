@@ -9,7 +9,7 @@ import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.Che
 
 import java.util.Optional;
 
-public class ChestplateLauncherOptions extends IOptionPage.SimpleToggleableOptions<ChestplateLauncherClientHandler> {
+public class ChestplateLauncherOptions extends IOptionPage.SimpleOptionPage<ChestplateLauncherClientHandler> {
     private IKeybindingButton changeKeybindingButton;
 
     public ChestplateLauncherOptions(IGuiScreen screen, ChestplateLauncherClientHandler renderHandler) {

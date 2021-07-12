@@ -4,7 +4,6 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import me.desht.pneumaticcraft.api.client.IFOVModifierItem;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.ICustomDurabilityBar;
 import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticContainerBase;
@@ -29,6 +28,8 @@ import me.desht.pneumaticcraft.common.network.PacketShiftScrollWheel;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
+import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker.JetBootsState;
+import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.JetBootsHandler;
 import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
@@ -250,10 +251,10 @@ public class ClientEventHandler {
         if (event.getInfo().getRenderViewEntity() instanceof PlayerEntity) {
             PlayerEntity player = (PlayerEntity) event.getInfo().getRenderViewEntity();
             if (ItemPneumaticArmor.isPneumaticArmorPiece(player, EquipmentSlotType.FEET) && !player.isOnGround()) {
-                CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
                 float targetRoll;
                 float div = 50F;
-                if (handler.isJetBootsActive() && !handler.isJetBootsBuilderMode()) {
+                JetBootsState jbState = JetBootsStateTracker.getClientTracker().getJetBootsState(player);
+                if (jbState.isActive() && !jbState.isBuilderMode()) {
                     float roll = player.rotationYawHead - player.prevRotationYawHead;
                     if (Math.abs(roll) < 0.0001) {
                         targetRoll = 0F;
@@ -278,13 +279,15 @@ public class ClientEventHandler {
             PlayerEntity player = event.player;
             if (player == null || player.world == null || !player.world.isRemote) return;
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
-            if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().jetBootsHandler, false)) {
-                if (handler.isJetBootsActive() && (!handler.isJetBootsEnabled() || !KeyHandler.getInstance().keybindJetBoots.isKeyDown())) {
+            JetBootsHandler jbHandler = ArmorUpgradeRegistry.getInstance().jetBootsHandler;
+            JetBootsState jbState = jbHandler.getJetBootsSyncedState(handler);
+            if (handler.upgradeUsable(jbHandler, false)) {
+                if (jbState.isActive() && (!jbState.isEnabled() || !KeyHandler.getInstance().keybindJetBoots.isKeyDown())) {
                     NetworkHandler.sendToServer(new PacketJetBootsActivate(false));
-                    handler.setJetBootsActive(false);
-                } else if (!handler.isJetBootsActive() && handler.isJetBootsEnabled() && KeyHandler.getInstance().keybindJetBoots.isKeyDown()) {
+                    jbHandler.setJetBootsActive(handler, false);
+                } else if (!jbState.isActive() && jbState.isEnabled() && KeyHandler.getInstance().keybindJetBoots.isKeyDown()) {
                     NetworkHandler.sendToServer(new PacketJetBootsActivate(true));
-                    handler.setJetBootsActive(true);
+                    jbHandler.setJetBootsActive(handler, true);
                 }
             }
         }
@@ -294,7 +297,7 @@ public class ClientEventHandler {
     public static void playerPreRotateEvent(RenderPlayerEvent.Pre event) {
         PlayerEntity player = event.getPlayer();
         if (!player.isElytraFlying()) {
-            JetBootsStateTracker.JetBootsState state = JetBootsStateTracker.getClientTracker().getJetBootsState(player);
+            JetBootsState state = JetBootsStateTracker.getClientTracker().getJetBootsState(player);
             if (state != null && state.shouldRotatePlayer()) {
                 player.limbSwing = player.limbSwingAmount = 0F;
             }
@@ -318,8 +321,7 @@ public class ClientEventHandler {
     public static void fogDensityEvent(EntityViewRenderEvent.FogDensity event) {
         if (event.getInfo().getFluidState().isTagged(FluidTags.WATER) && event.getInfo().getRenderViewEntity() instanceof PlayerEntity) {
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer();
-            if (handler.isArmorReady(EquipmentSlotType.HEAD) && handler.isScubaEnabled()
-                    && handler.getUpgradeCount(EquipmentSlotType.HEAD, EnumUpgrade.SCUBA) > 0) {
+            if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().scubaHandler, true)) {
                 event.setDensity(0.02f);
                 event.setCanceled(true);
             }

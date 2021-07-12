@@ -15,7 +15,7 @@ import me.desht.pneumaticcraft.common.core.*;
 import me.desht.pneumaticcraft.common.dispenser.BehaviorDispenseDrone;
 import me.desht.pneumaticcraft.common.event.*;
 import me.desht.pneumaticcraft.common.fluid.FluidSetup;
-import me.desht.pneumaticcraft.common.hacking.HackableHandler;
+import me.desht.pneumaticcraft.common.hacking.HackManager;
 import me.desht.pneumaticcraft.common.heat.behaviour.HeatBehaviourManager;
 import me.desht.pneumaticcraft.common.item.ItemGPSAreaTool;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
@@ -125,7 +125,7 @@ public class PneumaticCraftRepressurized {
         NetworkHandler.init();
         FluidSetup.init();
         ArmorUpgradeRegistry.init();
-        HackableHandler.addDefaultEntries();
+        HackManager.addDefaultEntries();
         SensorHandler.getInstance().init();
         UpgradesDBSetup.init();
         VillageStructures.init();

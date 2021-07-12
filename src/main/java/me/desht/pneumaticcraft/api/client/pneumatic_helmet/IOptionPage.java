@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.api.client.pneumatic_helmet;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.util.text.IFormattableTextComponent;
 
@@ -13,9 +14,10 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 /**
  * The Option Page is the page you see when you press 'F' (by default) with a Pneumatic Helmet equipped. You can
  * register this class by returning a new instance of it at {@link IArmorUpgradeClientHandler#getGuiOptionsPage(IGuiScreen)}
+ * <p>
+ * It is strongly recommended to extend the {@link SimpleOptionPage} class rather than implement this interface directly.
  */
 public interface IOptionPage {
-
     /**
      * Get a reference to the IGuiScreen object.  You can use this to get the font renderer, for example.
      *
@@ -137,22 +139,22 @@ public interface IOptionPage {
     default void tick() { }
 
     /**
-     * Get the keybinding button for this page, if any.
+     * Get the keybinding button for this page, if any.  You can can create a keybinding button with
+     * {@link IPneumaticHelmetRegistry#makeKeybindingButton(int, KeyBinding)}.
      *
      * @return the keybinding button, or {@code Optional.empty()} if there isn't one
      */
     default Optional<IKeybindingButton> getKeybindingButton() { return Optional.empty(); }
 
     /**
-     * Convenience class for simple toggleable armor features with no additional settings, but an optional keybinding
-     * button.
+     * Convenience class for simple armor features with no additional settings.
      */
-    class SimpleToggleableOptions<T extends IArmorUpgradeClientHandler> implements IOptionPage {
+    class SimpleOptionPage<T extends IArmorUpgradeClientHandler<?>> implements IOptionPage {
         private final IGuiScreen screen;
         private final IFormattableTextComponent name;
         private final T clientUpgradeHandler;
 
-        public SimpleToggleableOptions(IGuiScreen screen, T clientUpgradeHandler) {
+        public SimpleOptionPage(IGuiScreen screen, T clientUpgradeHandler) {
             this.screen = screen;
             this.name = xlate(ArmorUpgradeRegistry.getStringKey(clientUpgradeHandler.getCommonHandler().getID()));
             this.clientUpgradeHandler = clientUpgradeHandler;
@@ -212,7 +214,7 @@ public interface IOptionPage {
 
         @Override
         public boolean isToggleable() {
-            return true;
+            return getClientUpgradeHandler().isToggleable();
         }
 
         @Override

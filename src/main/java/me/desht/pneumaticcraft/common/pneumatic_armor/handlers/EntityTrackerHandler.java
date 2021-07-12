@@ -1,7 +1,8 @@
 package me.desht.pneumaticcraft.common.pneumatic_armor.handlers;
 
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
-import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
+import me.desht.pneumaticcraft.api.pneumatic_armor.BaseArmorUpgradeHandler;
+import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorExtensionData;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.inventory.EquipmentSlotType;
@@ -9,7 +10,7 @@ import net.minecraft.util.ResourceLocation;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 
-public class EntityTrackerHandler implements IArmorUpgradeHandler {
+public class EntityTrackerHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
     private static final float ENTITY_TRACKING_RANGE = 16F;
 
     @Override

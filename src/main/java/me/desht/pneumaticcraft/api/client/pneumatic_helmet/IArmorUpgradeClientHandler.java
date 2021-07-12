@@ -19,15 +19,15 @@ import java.util.Optional;
 
 /**
  * Represents the client-specific part of an armor upgrade handler; provides methods for rendering, getting the
- * configuration GUI page, and read/writing client-side configuration. It's recommended to extend
+ * configuration GUI page, reading/writing client-side configuration, and handling keybinds. It's recommended to extend
  * {@link AbstractHandler} or {@link SimpleToggleableHandler} rather than implement this interface directly.
  */
-public interface IArmorUpgradeClientHandler {
+public interface IArmorUpgradeClientHandler<T extends IArmorUpgradeHandler<?>> {
     /**
      * Get the common handler corresponding to this client handler. There is always a one-to-mapping between common
      * and client handlers.
      */
-    IArmorUpgradeHandler getCommonHandler();
+    T getCommonHandler();
 
     /**
      * This is called when a {@link net.minecraftforge.fml.config.ModConfig.ModConfigEvent} is received for the mod.
@@ -40,15 +40,16 @@ public interface IArmorUpgradeClientHandler {
     default void saveToConfig() {}
 
     /**
-     * This method is called every client tick, and should be used to update logic like the tracking and velocities
-     * of stuff.
-     *  @param armorHandler common armor handler for the player wearing this armor piece
+     * This method is called every client tick, and should be used to update clientside logic for armor upgrades.
+     * Unlike {@link IArmorUpgradeHandler#tick(ICommonArmorHandler, boolean)}, this method is only called for upgrades
+     * which are actually enabled (or not toggleable).
      *
+     * @param armorHandler common armor handler for the player wearing this armor piece
      */
     void tickClient(ICommonArmorHandler armorHandler);
 
     /**
-     * Called in the 3D render stage (called from {@link net.minecraftforge.client.event.RenderWorldLastEvent})
+     * Called in the 3D render stage (via {@link net.minecraftforge.client.event.RenderWorldLastEvent})
      *
      * @param matrixStack the matrix stack
      * @param buffer the render type buffer
@@ -57,35 +58,34 @@ public interface IArmorUpgradeClientHandler {
     void render3D(MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks);
 
     /**
-     * Called in the 2D render stage (called from {@link net.minecraftforge.client.event.RenderGameOverlayEvent.Post})
+     * Called in the 2D render stage (via {@link net.minecraftforge.client.event.RenderGameOverlayEvent.Post})
      *
+     * @param matrixStack the matrix stack
      * @param partialTicks partial ticks since last world tick
-     * @param helmetEnabled true when isEnabled() returned true earlier. Can be used to close AnimatedStats for instance.
-     *                      However this is already handled if you return an AnimatedStat in getAnimatedStat().
+     * @param armorPieceHasPressure true if the armor piece actually has any pressure
      */
-    void render2D(MatrixStack matrixStack, float partialTicks, boolean helmetEnabled);
+    void render2D(MatrixStack matrixStack, float partialTicks, boolean armorPieceHasPressure);
 
     /**
-     * You can return a {@link IGuiAnimatedStat} here, that the HUD Handler will pick up and render. It also
-     * automatically opens and closes the stat as necessary. The GuiMoveStat uses this method to retrieve the to be
-     * moved stat.
+     * You can return a {@link IGuiAnimatedStat} here, which the HUD Handler will pick up and render. It also
+     * automatically opens and closes the stat window as necessary.
      *
-     * @return the animated stat, or null if no stat used.
+     * @return the animated stat, or null if this upgrade doesn't use/require a stat window
      */
     default IGuiAnimatedStat getAnimatedStat() {
         return null;
     }
 
     /**
-     * Called when (re-)equipping the armor piece.  Use this to clear any information held by the handler, e.g.
-     * currently tracked entities.
+     * Called when (re-)equipping the armor piece.  Use this to clear any client-side state information held by the
+     * upgrade handler and initialise it to a known state.
      */
     void reset();
 
     /**
-     * When you have some options for your upgrade handler, return a new instance of an IOptionsPage.
-     * When you do so, it will automatically get picked up by the options handler, and it will be added to the
-     * options GUI when this upgrade returns true when calling isEnabled(). Returning null here is valid.
+     * When you have some configurable options for your upgrade handler, return a new instance of an {@link IOptionPage}.
+     * When you do so, it will automatically get picked up by the armor GUI handler, and a button for the upgrade
+     * will be displayed in the main armor GUI.
      *
      * @param screen an instance of the gui Screen object
      * @return an options page, or null if the upgrade does not have an options page
@@ -100,18 +100,33 @@ public interface IArmorUpgradeClientHandler {
     }
 
     /**
+     * Is this upgrade toggleable, i.e. can it be switched on & off?  Toggleable upgrades will have a checkbox in their
+     * GUI page with a possible associated keybinding. Non-toggleable upgrades generally have a bindable hotkey to
+     * trigger a one-off action (e.g. hacking, chestplate launcher...).  The default return value for this method is
+     * true, which is the most common case.  Override to return false for non-toggleable upgrades.
+     *
+     * @return true if the upgrade is toggleable, false otherwise
+     */
+    default boolean isToggleable() {
+        return true;
+    }
+
+    /**
      * Get the default keybinding for toggling this upgrade on/off. By default, an unbound key binding will be
-     * registered for the upgrade, so it appears in the Config -> Controls screen with no binding. Note that only
-     * toggles are added here; keybinds which trigger specific actions (e.g. the Chestplate Launcher or Drone Debugging
-     * key) need to be registered explicitly.
+     * registered for the upgrade, so it appears in the vanilla Config -> Controls screen with no binding. Note that only
+     * toggles are added here; keybinds for non-toggleable upgrade which trigger specific actions (e.g. the
+     * Chestplate Launcher or Drone Debugging key) need to be registered explicitly.
      * <p>
-     * If this upgrade is not a toggleable upgrade, return {@code Optional.empty()} here.
+     * You should not override this default implementation. Non-toggleable upgrades return {@code Optional.empty()}
+     * by default.
      *
      * @return the default key binding for this upgrade
      */
     default Optional<KeyBinding> getInitialKeyBinding() {
-        return Optional.of(new KeyBinding(IArmorUpgradeHandler.getStringKey(getCommonHandler().getID()), KeyConflictContext.IN_GAME, KeyModifier.NONE,
-                InputMappings.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, getKeybindCategory()));
+        return isToggleable() ?
+                Optional.of(new KeyBinding(IArmorUpgradeHandler.getStringKey(getCommonHandler().getID()), KeyConflictContext.IN_GAME, KeyModifier.NONE,
+                        InputMappings.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, getKeybindCategory())) :
+                Optional.empty();
     }
 
     /**
@@ -159,15 +174,15 @@ public interface IArmorUpgradeClientHandler {
     /**
      * Convenience class which allows a reference to the common upgrade handler to be passed in and retrieved.
      */
-    abstract class AbstractHandler implements IArmorUpgradeClientHandler {
-        private final IArmorUpgradeHandler commonHandler;
+    abstract class AbstractHandler<T extends IArmorUpgradeHandler<?>> implements IArmorUpgradeClientHandler<T> {
+        private final T commonHandler;
 
-        public AbstractHandler(IArmorUpgradeHandler commonHandler) {
+        public AbstractHandler(T commonHandler) {
             this.commonHandler = commonHandler;
         }
 
         @Override
-        public IArmorUpgradeHandler getCommonHandler() {
+        public T getCommonHandler() {
             return commonHandler;
         }
     }
@@ -175,8 +190,8 @@ public interface IArmorUpgradeClientHandler {
     /**
      * Convenience class for simple toggleable armor features with no additional settings.
      */
-    abstract class SimpleToggleableHandler extends AbstractHandler {
-        public SimpleToggleableHandler(IArmorUpgradeHandler commonHandler) {
+    abstract class SimpleToggleableHandler<T extends IArmorUpgradeHandler<?>> extends AbstractHandler<T> {
+        public SimpleToggleableHandler(T commonHandler) {
             super(commonHandler);
         }
 
@@ -189,7 +204,7 @@ public interface IArmorUpgradeClientHandler {
         }
 
         @Override
-        public void render2D(MatrixStack matrixStack, float partialTicks, boolean helmetEnabled) {
+        public void render2D(MatrixStack matrixStack, float partialTicks, boolean armorPieceHasPressure) {
         }
 
         @Override
@@ -198,7 +213,7 @@ public interface IArmorUpgradeClientHandler {
 
         @Override
         public IOptionPage getGuiOptionsPage(IGuiScreen screen) {
-            return new IOptionPage.SimpleToggleableOptions<>(screen, this);
+            return new IOptionPage.SimpleOptionPage<>(screen, this);
         }
     }
 }

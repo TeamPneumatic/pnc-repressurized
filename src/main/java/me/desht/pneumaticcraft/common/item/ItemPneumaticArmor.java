@@ -321,8 +321,7 @@ public class ItemPneumaticArmor extends ArmorItem implements
     @Override
     public float getFOVModifier(ItemStack stack, PlayerEntity player, EquipmentSlotType slot) {
         if (slot == EquipmentSlotType.LEGS && PNCConfig.Client.Armor.leggingsFOVFactor > 0) {
-            CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer();
-            double boost = handler.getSpeedBoostFromLegs();
+            double boost = ArmorUpgradeRegistry.getInstance().runSpeedHandler.getSpeedBoostFromLegs(CommonArmorHandler.getHandlerForPlayer());
             if (boost > 0) {
                 return 1.0f + (float) (boost * 2.0 * PNCConfig.Client.Armor.leggingsFOVFactor);
             }

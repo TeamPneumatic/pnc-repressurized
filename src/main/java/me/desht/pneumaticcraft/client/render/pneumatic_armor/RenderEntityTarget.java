@@ -15,7 +15,7 @@ import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.entity.EntityProgrammableController;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.entity.living.EntityDroneBase;
-import me.desht.pneumaticcraft.common.hacking.HackableHandler;
+import me.desht.pneumaticcraft.common.hacking.HackManager;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketHackingEntityStart;
@@ -95,7 +95,7 @@ public class RenderEntityTarget {
         isLookingAtTarget = isPlayerLookingAtTarget();
 
         if (hackTime > 0) {
-            IHackableEntity hackableEntity = HackableHandler.getHackableForEntity(entity, ClientUtils.getClientPlayer());
+            IHackableEntity hackableEntity = HackManager.getHackableForEntity(entity, ClientUtils.getClientPlayer());
             if (hackableEntity != null) {
                 hackTime++;
             } else {
@@ -197,7 +197,7 @@ public class RenderEntityTarget {
 
     public void hack() {
         if (isInitialized() && isPlayerLookingAtTarget()) {
-            IHackableEntity hackable = HackableHandler.getHackableForEntity(entity, ClientUtils.getClientPlayer());
+            IHackableEntity hackable = HackManager.getHackableForEntity(entity, ClientUtils.getClientPlayer());
             if (hackable != null && (hackTime == 0 || hackTime > hackable.getHackTime(entity, ClientUtils.getClientPlayer())))
                 NetworkHandler.sendToServer(new PacketHackingEntityStart(entity));
         }
