@@ -33,17 +33,20 @@ public class StepAssistHandler extends BaseArmorUpgradeHandler<IArmorExtensionDa
 
     @Override
     public void tick(ICommonArmorHandler commonArmorHandler, boolean enabled) {
-        PlayerEntity player = commonArmorHandler.getPlayer();
+        // we will give the player a step height boost every tick if enabled
+        // but we won't take it away here, since that could mess up items from other
+        // mods which grant step assist
         if (commonArmorHandler.hasMinPressure(EquipmentSlotType.FEET) && enabled) {
+            PlayerEntity player = commonArmorHandler.getPlayer();
             player.stepHeight = player.isSneaking() ? 0.6001F : 1.25F;
-        } /*else {
-            player.stepHeight = 0.6F;
-        }*/
+        }
     }
 
     @Override
     public void onToggle(ICommonArmorHandler commonArmorHandler, boolean newState) {
-//        if (!newState) commonArmorHandler.getPlayer().stepHeight = 0.6F;
+        if (!newState) {
+            commonArmorHandler.getPlayer().stepHeight = 0.6F;
+        }
     }
 
     @Override
