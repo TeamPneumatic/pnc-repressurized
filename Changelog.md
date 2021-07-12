@@ -8,6 +8,16 @@ Changes are in reverse chronological order; newest changes at the top.
 
 PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 
+## 2.13.2-??? (unreleased)
+
+### Updates
+* Significant internal refactoring of Pneumatic Armor upgrade handling
+  * No player-visible updates, but a fair bit of code cleanup & optimisation has been done
+  
+### Fixes
+* Fixed bug where PNC Fluid Tanks would push any fluid into a Memory Stick, treating it as XP
+* Items in a Pressure Chamber no longer render too dark
+
 ## 2.13.1-202 (6 Jul 2021)
 
 ### New
