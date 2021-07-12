@@ -132,7 +132,7 @@ public class FluidItemWrapper implements ICapabilityProvider {
 
         @Override
         public int fill(FluidStack resource, FluidAction doFill) {
-            if (fluidTank == null) return 0;
+            if (fluidTank == null || !isFluidValid(0, resource)) return 0;
             int filled = fluidTank.fill(resource, doFill);
             if (filled > 0 && doFill == FluidAction.EXECUTE) {
                 serializeTank(fluidTank, tankName);
