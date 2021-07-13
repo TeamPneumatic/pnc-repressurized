@@ -1,0 +1,7 @@
+{
+  "parent": "pneumaticcraft:block/compressed_iron_block",
+  "textures": {
+    "texture": "pneumaticcraft:block/creative_compressed_iron_block",
+    "particle": "pneumaticcraft:block/creative_compressed_iron_block"
+  }
+}

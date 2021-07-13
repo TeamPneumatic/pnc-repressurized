@@ -238,6 +238,7 @@ public class ClientSetup {
         ScreenManager.registerFactory(ModContainers.CHARGING_MINIGUN.get(), GuiMinigun::new);
         ScreenManager.registerFactory(ModContainers.CHARGING_JACKHAMMER.get(), GuiJackhammer::new);
         ScreenManager.registerFactory(ModContainers.CREATIVE_COMPRESSOR.get(), GuiCreativeCompressor::new);
+        ScreenManager.registerFactory(ModContainers.CREATIVE_COMPRESSED_IRON_BLOCK.get(), GuiCreativeCompressedIronBlock::new);
         ScreenManager.registerFactory(ModContainers.ELECTROSTATIC_COMPRESSOR.get(), GuiElectrostaticCompressor::new);
         ScreenManager.registerFactory(ModContainers.ELEVATOR.get(), GuiElevator::new);
         ScreenManager.registerFactory(ModContainers.ETCHING_TANK.get(), GuiEtchingTank::new);

@@ -25,8 +25,6 @@ public class TileEntityHeatPipe extends TileEntityTickableBase implements ICamou
 
     public TileEntityHeatPipe() {
         super(ModTileEntities.HEAT_PIPE.get());
-
-        heatExchanger.setThermalResistance(0.01);
     }
 
     @Override

@@ -141,7 +141,8 @@ public class ModTileEntities {
             = register("spawner_extractor", () -> new TileEntityType<>(TileEntitySpawnerExtractor::new, ImmutableSet.of(ModBlocks.SPAWNER_EXTRACTOR.get()), null));
     public static final RegistryObject<TileEntityType<TileEntityPressurizedSpawner>> PRESSURIZED_SPAWNER
             = register("pressurized_spawner", () -> new TileEntityType<>(TileEntityPressurizedSpawner::new, ImmutableSet.of(ModBlocks.PRESSURIZED_SPAWNER.get()), null));
-
+    public static final RegistryObject<TileEntityType<TileEntityCreativeCompressedIronBlock>> CREATIVE_COMPRESSED_IRON_BLOCK
+            = register("creative_compressed_iron_block", () -> new TileEntityType<>(TileEntityCreativeCompressedIronBlock::new, ImmutableSet.of(ModBlocks.CREATIVE_COMPRESSED_IRON_BLOCK.get()), null));
     private static <T extends TileEntityType<?>> RegistryObject<T> register(String name, Supplier<T> sup) {
         return TILE_ENTITIES.register(name, sup);
     }

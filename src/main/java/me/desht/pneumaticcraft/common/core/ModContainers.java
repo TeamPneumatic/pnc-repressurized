@@ -123,6 +123,8 @@ public class ModContainers {
             = register("spawner_extractor", ContainerSpawnerExtractor::new);
     public static final RegistryObject<ContainerType<ContainerPressurizedSpawner>> PRESSURIZED_SPAWNER
             = register("pressurized_spawner", ContainerPressurizedSpawner::new) ;
+    public static final RegistryObject<ContainerType<ContainerCreativeCompressedIronBlock>> CREATIVE_COMPRESSED_IRON_BLOCK
+            = register("creative_compressed_iron_block", ContainerCreativeCompressedIronBlock::new);
 
     private static <C extends Container, T extends ContainerType<C>> RegistryObject<T> register(String name, IContainerFactory<? extends C> f) {
         //noinspection unchecked

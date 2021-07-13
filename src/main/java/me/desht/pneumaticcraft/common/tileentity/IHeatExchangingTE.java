@@ -73,4 +73,8 @@ public interface IHeatExchangingTE {
         map.forEach((logic, sides) ->
                 logic.initializeAsHull(world, pos, heatExchangerBlockFilter(), sides.toArray(new Direction[0])));
     }
+
+    default boolean shouldShowGuiHeatTab() {
+        return true;
+    }
 }

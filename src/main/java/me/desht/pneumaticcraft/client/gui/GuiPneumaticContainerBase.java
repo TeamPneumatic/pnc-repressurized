@@ -93,7 +93,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
             if (shouldAddRedstoneTab() && te instanceof IRedstoneControl) {
                 addRedstoneTab(((IRedstoneControl<?>) te).getRedstoneController());
             }
-            if (te instanceof IHeatExchangingTE) {
+            if (te instanceof IHeatExchangingTE && ((IHeatExchangingTE) te).shouldShowGuiHeatTab()) {
                 addAnimatedStat(xlate("pneumaticcraft.gui.tab.info.heat.title"),
                         new ItemStack(Items.BLAZE_POWDER), 0xFFE05500, false)
                         .setText(xlate("pneumaticcraft.gui.tab.info.heat"));

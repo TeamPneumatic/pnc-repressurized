@@ -1,0 +1,7 @@
+{
+  "variants":{
+    "": {
+      "model": "pneumaticcraft:block/creative_compressed_iron_block"
+    }
+  }
+}

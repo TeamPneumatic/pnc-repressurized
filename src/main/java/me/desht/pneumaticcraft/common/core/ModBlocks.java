@@ -131,6 +131,8 @@ public class ModBlocks {
             BlockProgrammer::new);
     public static final RegistryObject<BlockCreativeCompressor> CREATIVE_COMPRESSOR = register("creative_compressor",
             BlockCreativeCompressor::new, block -> () -> new BlockCreativeCompressor.ItemBlockCreativeCompressor(block.get()));
+    public static final RegistryObject<BlockCreativeCompressedIron> CREATIVE_COMPRESSED_IRON_BLOCK = register("creative_compressed_iron_block",
+            BlockCreativeCompressedIron::new, block -> () -> new BlockCreativeCompressedIron.ItemBlockCreativeCompressedIron(block.get()));
     public static final RegistryObject<BlockLiquidCompressor> LIQUID_COMPRESSOR = register("liquid_compressor",
             BlockLiquidCompressor::new);
     public static final RegistryObject<BlockAdvancedLiquidCompressor> ADVANCED_LIQUID_COMPRESSOR = register("advanced_liquid_compressor",
