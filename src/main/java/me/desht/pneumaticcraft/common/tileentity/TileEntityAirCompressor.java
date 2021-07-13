@@ -76,7 +76,7 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
 
             if (rsController.shouldRun() && burnTime < curFuelUsage) {
                 ItemStack fuelStack = itemHandler.getStackInSlot(FUEL_SLOT);
-                int itemBurnTime = PneumaticCraftUtils.getBurnTime(fuelStack);
+                int itemBurnTime = fuelStack.isEmpty() ? 0 : PneumaticCraftUtils.getBurnTime(fuelStack);
                 if (itemBurnTime > 0) {
                     burnTime += itemBurnTime;
                     maxBurnTime = burnTime;
