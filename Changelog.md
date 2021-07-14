@@ -17,6 +17,9 @@ PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 ### Fixes
 * Fixed bug where PNC Fluid Tanks would push any fluid into a Memory Stick, treating it as XP
 * Items in a Pressure Chamber no longer render too dark
+* Fixed Air Compressors running with no fuel when Advent of Ascension is also installed
+  * This is actually an AoA bug where empty itemstacks end up with a fuel value, but I've added extra checks in PNC to prevent this happening
+* Fixed Programmer only using/returning Puzzle Pieces for a single item when writing a program to a stack of multiple Network API items
 
 ## 2.13.1-202 (6 Jul 2021)
 

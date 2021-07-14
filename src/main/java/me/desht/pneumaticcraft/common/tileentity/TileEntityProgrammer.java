@@ -409,7 +409,7 @@ public class TileEntityProgrammer extends TileEntityTickableBase implements IGUI
             List<IProgWidget> inDrone = getProgWidgets(stackInSlot);
             int dronePieces = (int) inDrone.stream().filter(p -> !p.freeToUse()).count();
             int required = (int) progWidgets.stream().filter(p -> !p.freeToUse()).count();
-            return required - dronePieces;
+            return (required - dronePieces) * stackInSlot.getCount();
         } else {
             return 0;
         }
