@@ -353,7 +353,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
         if (ClientUtils.hasShiftDown() && hasTileEntity(getDefaultState())) {
             TileEntity te = createTileEntity(getDefaultState(), world);
             if (te instanceof TileEntityPneumaticBase) {
-                float pressure = ((TileEntityPneumaticBase) te).dangerPressure;
+                float pressure = ((TileEntityPneumaticBase) te).getDangerPressure();
                 curInfo.add(xlate("pneumaticcraft.gui.tooltip.maxPressure", pressure).mergeStyle(TextFormatting.YELLOW));
             }
         }

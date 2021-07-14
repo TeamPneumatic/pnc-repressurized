@@ -474,7 +474,7 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
     public void onDescUpdate() {
         super.onDescUpdate();
 
-        nParticles = (int) (Math.min(1, (roundedPressure / dangerPressure) * (multiBlockSize - 2) * (multiBlockSize - 2)) * 2);
+        nParticles = (int) (Math.min(1, (roundedPressure / getDangerPressure()) * (multiBlockSize - 2) * (multiBlockSize - 2)) * 2);
     }
 
     @Override

@@ -42,11 +42,6 @@ public class RenderPressureGaugeModule extends TubeModuleRendererBase<ModulePres
         BlockPos pos = module.getTube().getPos();
         if (ClientUtils.getClientPlayer().getDistanceSq(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) > 256) return;
 
-        TileEntityPressureTube base = module.getTube();
-        float pressure = base.getPressure();
-        float critPressure = base.criticalPressure;
-        float dangerPressure = base.dangerPressure;
-
         matrixStack.push();
 
         matrixStack.translate(0.5, 1.5, 0.5);
@@ -55,7 +50,9 @@ public class RenderPressureGaugeModule extends TubeModuleRendererBase<ModulePres
         matrixStack.translate(0, 1, 0.378);
         matrixStack.scale(GAUGE_SCALE, GAUGE_SCALE, GAUGE_SCALE);
         matrixStack.rotate(Vector3f.YP.rotationDegrees(180));
-        PressureGaugeRenderer3D.drawPressureGauge(matrixStack, buffer, -1, critPressure, dangerPressure, 0, pressure, 0, 0, 0xFF000000);
+        TileEntityPressureTube te = module.getTube();
+        PressureGaugeRenderer3D.drawPressureGauge(matrixStack, buffer, -1, te.getCriticalPressure(), te.getDangerPressure(),
+                0, te.getPressure(), 0, 0, 0xFF000000);
 
         matrixStack.pop();
     }

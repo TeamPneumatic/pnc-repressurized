@@ -146,7 +146,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
                     TileEntityConstants.ELEVATOR_SPEED_FAST * speedMultiplier * chargingSlowdown:
                     TileEntityConstants.ELEVATOR_SPEED_SLOW * speedMultiplier * chargingSlowdown;
             extension = Math.max(targetExtension, extension - moveBy);
-            if (!getWorld().isRemote && chargingUpgrades > 0 && getPressure() < dangerPressure - 0.1f) {
+            if (!getWorld().isRemote && chargingUpgrades > 0 && getPressure() < airHandler.getDangerPressure() - 0.1f) {
                 float mul = 0.15f * Math.min(4, chargingUpgrades);
                 addAir((int) ((oldExtension - extension) * PneumaticValues.USAGE_ELEVATOR * mul * (getSpeedUsageMultiplierFromUpgrades() / speedMultiplier)));
             }

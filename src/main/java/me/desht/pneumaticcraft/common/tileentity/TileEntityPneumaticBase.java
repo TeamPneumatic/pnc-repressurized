@@ -29,12 +29,9 @@ import java.util.*;
  */
 public abstract class TileEntityPneumaticBase extends TileEntityTickableBase {
     @GuiSynced
-    final IAirHandlerMachine airHandler;
+    protected final IAirHandlerMachine airHandler;
     private final LazyOptional<IAirHandlerMachine> airHandlerCap;
-    public final float dangerPressure;
-    public final float criticalPressure;
-    private final int defaultVolume;
-    private final Map<IAirHandlerMachine, List<Direction>> airHandlerMap = new HashMap<>();
+    private final Map<IAirHandlerMachine, List<Direction>> airHandlerMap = new IdentityHashMap<>();
 
     public TileEntityPneumaticBase(TileEntityType type, float dangerPressure, float criticalPressure, int volume, int upgradeSlots) {
         super(type, upgradeSlots);
@@ -42,9 +39,6 @@ public abstract class TileEntityPneumaticBase extends TileEntityTickableBase {
         this.airHandler = PneumaticRegistry.getInstance().getAirHandlerMachineFactory()
                 .createAirHandler(dangerPressure, criticalPressure, volume);
         this.airHandlerCap = LazyOptional.of(() -> airHandler);
-        this.dangerPressure = dangerPressure;
-        this.criticalPressure = criticalPressure;
-        this.defaultVolume = volume;
     }
 
     @Override
@@ -104,9 +98,7 @@ public abstract class TileEntityPneumaticBase extends TileEntityTickableBase {
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
         if (cap == PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY ) {
-            return world != null && (side == null || canConnectPneumatic(side)) ?
-                    PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY.orEmpty(cap, airHandlerCap) :
-                    LazyOptional.empty();
+            return world != null && (side == null || canConnectPneumatic(side)) ? airHandlerCap.cast() : LazyOptional.empty();
         } else {
             return super.getCapability(cap, side);
         }
@@ -196,13 +188,21 @@ public abstract class TileEntityPneumaticBase extends TileEntityTickableBase {
             });
         }
 
-        registry.registerLuaMethod(new LuaConstant("getDangerPressure", dangerPressure));
-        registry.registerLuaMethod(new LuaConstant("getCriticalPressure", criticalPressure));
-        registry.registerLuaMethod(new LuaConstant("getDefaultVolume", defaultVolume));
+        registry.registerLuaMethod(new LuaConstant("getDangerPressure", getDangerPressure()));
+        registry.registerLuaMethod(new LuaConstant("getCriticalPressure", getCriticalPressure()));
+        registry.registerLuaMethod(new LuaConstant("getDefaultVolume", getDefaultVolume()));
     }
 
     public float getPressure() {
         return airHandler.getPressure();
+    }
+
+    public float getDangerPressure() {
+        return airHandler.getDangerPressure();
+    }
+
+    public float getCriticalPressure() {
+        return airHandler.getCriticalPressure();
     }
 
     public void addAir(int air) {
@@ -220,7 +220,7 @@ public abstract class TileEntityPneumaticBase extends TileEntityTickableBase {
     }
 
     public int getDefaultVolume() {
-        return defaultVolume;
+        return airHandler.getBaseVolume();
     }
 
     public void forceLeak(Direction dir) {

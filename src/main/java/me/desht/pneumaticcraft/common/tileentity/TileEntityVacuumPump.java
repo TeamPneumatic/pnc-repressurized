@@ -34,7 +34,7 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 public class TileEntityVacuumPump extends TileEntityPneumaticBase implements
         IRedstoneControl<TileEntityVacuumPump>, IManoMeasurable, INamedContainerProvider {
     @GuiSynced
-    private final MachineAirHandler vacuumHandler;
+    private final IAirHandlerMachine vacuumHandler;
     private final LazyOptional<IAirHandlerMachine> vacuumCap;
     public int rotation;
     public int oldRotation;
@@ -58,7 +58,7 @@ public class TileEntityVacuumPump extends TileEntityPneumaticBase implements
         if (cap == PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY) {
             if (world == null) return LazyOptional.empty();
             if (side == getVacuumSide()) {
-                return PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY.orEmpty(cap, vacuumCap);
+                return vacuumCap.cast();
             } else if (side != getInputSide() && side != null) {
                 return LazyOptional.empty();
             }

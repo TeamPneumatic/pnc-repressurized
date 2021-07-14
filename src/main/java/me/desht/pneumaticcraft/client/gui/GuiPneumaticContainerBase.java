@@ -333,7 +333,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
             if (gaugeLocation != null) {
                 TileEntityPneumaticBase pneu = (TileEntityPneumaticBase) te;
                 float minWorking = te instanceof IMinWorkingPressure ? ((IMinWorkingPressure) te).getMinWorkingPressure() : -Float.MAX_VALUE;
-                PressureGaugeRenderer2D.drawPressureGauge(matrixStack, font, -1, pneu.criticalPressure, pneu.dangerPressure, minWorking, pneu.getPressure(), gaugeLocation.x - guiLeft, gaugeLocation.y - guiTop);
+                PressureGaugeRenderer2D.drawPressureGauge(matrixStack, font, -1, pneu.getCriticalPressure(), pneu.getDangerPressure(), minWorking, pneu.getPressure(), gaugeLocation.x - guiLeft, gaugeLocation.y - guiTop);
             }
         }
     }
