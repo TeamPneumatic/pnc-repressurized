@@ -36,7 +36,6 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.util.BlockSnapshot;
 import net.minecraftforge.event.ForgeEventFactory;
@@ -559,11 +558,6 @@ public class PneumaticCraftUtils {
     public static ITextComponent dyeColorDesc(int c) {
         return new TranslationTextComponent("color.minecraft." + DyeColor.byId(c).getTranslationKey())
                 .mergeStyle(TextFormatting.BOLD);
-    }
-
-    public static int getBurnTime(ItemStack stack) {
-        int ret = stack.getBurnTime();
-        return ForgeEventFactory.getItemBurnTime(stack, ret == -1 ? ForgeHooks.getBurnTime(stack) : ret);
     }
 
     public static void copyItemHandler(IItemHandler source, ItemStackHandler dest, int maxSlots) {

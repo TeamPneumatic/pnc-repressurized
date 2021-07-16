@@ -31,13 +31,9 @@ public class GuiAirCompressor extends GuiPneumaticContainerBase<ContainerAirComp
     protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int x, int y) {
         super.drawGuiContainerBackgroundLayer(matrixStack, partialTicks, x, y);
 
-//        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-        int i1 = te.getBurnTimeRemainingScaled(12);
-        int xStart = (width - xSize) / 2;
-        int yStart = (height - ySize) / 2;
-
+        int yOff = te.getBurnTimeRemainingScaled(12);
         if (te.burnTime >= te.curFuelUsage) {
-            blit(matrixStack, xStart + getFuelSlotXOffset(), yStart + 38 + 12 - i1, 176, 12 - i1, 14, i1 + 2);
+            blit(matrixStack, guiLeft + getFuelSlotXOffset(), guiTop + 38 + 12 - yOff, 176, 12 - yOff, 14, yOff + 2);
         }
     }
 

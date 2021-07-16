@@ -6,7 +6,6 @@ import me.desht.pneumaticcraft.common.inventory.ContainerAirCompressor;
 import me.desht.pneumaticcraft.common.inventory.handler.BaseItemStackHandler;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
-import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -20,6 +19,7 @@ import net.minecraft.particles.ParticleTypes;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.items.IItemHandler;
@@ -76,7 +76,7 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
 
             if (rsController.shouldRun() && burnTime < curFuelUsage) {
                 ItemStack fuelStack = itemHandler.getStackInSlot(FUEL_SLOT);
-                int itemBurnTime = fuelStack.isEmpty() ? 0 : PneumaticCraftUtils.getBurnTime(fuelStack);
+                int itemBurnTime = ForgeHooks.getBurnTime(fuelStack);
                 if (itemBurnTime > 0) {
                     burnTime += itemBurnTime;
                     maxBurnTime = burnTime;
@@ -213,7 +213,7 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
         @Override
         public boolean isItemValid(int slot, ItemStack itemStack) {
             return slot == FUEL_SLOT &&
-                    (itemStack.isEmpty() || PneumaticCraftUtils.getBurnTime(itemStack) > 0 && !FluidUtil.getFluidContained(itemStack).isPresent());
+                    (itemStack.isEmpty() || ForgeHooks.getBurnTime(itemStack) > 0 && !FluidUtil.getFluidContained(itemStack).isPresent());
         }
     }
 
