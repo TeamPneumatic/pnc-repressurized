@@ -102,7 +102,7 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements
             }
             LivingEntity target = getMinigun().getAttackTarget();
             if (target != null) {
-                if (rsController.shouldRun() && entitySelector.apply(target)) {
+                if (rsController.shouldRun() && entitySelector.test(target)) {
                     if ((getWorld().getGameTime() & 0x7) == 0) {
                         // Make sure any knockback has the right direction.
                         getFakePlayer().setPosition(getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5);
@@ -349,12 +349,12 @@ public class TileEntitySentryTurret extends TileEntityTickableBase implements
 
     private class SentryTurretEntitySelector extends StringFilterEntitySelector {
         @Override
-        public boolean apply(Entity entity) {
+        public boolean test(Entity entity) {
             if (entity instanceof PlayerEntity) {
                 PlayerEntity player = (PlayerEntity) entity;
                 if (player.isCreative() || player.isSpectator() || isExcludedBySecurityStations(player)) return false;
             }
-            return super.apply(entity) && inRange(entity) && canTurretSeeEntity(entity);
+            return super.test(entity) && inRange(entity) && canTurretSeeEntity(entity);
         }
 
         private boolean inRange(Entity entity) {

@@ -12,10 +12,7 @@ public class StringFilterEntitySelector implements Predicate<Entity> {
 
     @Override
     public boolean apply(Entity entity) {
-        for (EntityFilter f : getFilter()) {
-            if (f.apply(entity)) return true;
-        }
-        return false;
+        return getFilter().stream().anyMatch(f -> f.test(entity));
     }
 
     protected List<EntityFilter> getFilter() {

@@ -13,7 +13,9 @@ PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 ### Updates
 * Significant internal refactoring of Pneumatic Armor upgrade handling
   * No player-visible updates, but a fair bit of code cleanup & optimisation has been done
-  
+* Entity filter: `@mob` will no longer match tamed mobs
+  * While there aren't any tameable mobs in vanilla, it's possible for other mods to add them, e.g. Quark Foxhounds
+
 ### Fixes
 * Fixed bug where PNC Fluid Tanks would push any fluid into a Memory Stick, treating it as XP
 * Items in a Pressure Chamber no longer render too dark

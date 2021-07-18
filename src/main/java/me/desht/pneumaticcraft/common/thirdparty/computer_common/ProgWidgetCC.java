@@ -245,7 +245,7 @@ public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrder
 
     @Override
     public boolean isEntityValid(Entity entity) {
-        return (whitelistFilter == null || whitelistFilter.apply(entity)) && (blacklistFilter == null || !blacklistFilter.apply(entity));
+        return (whitelistFilter == null || whitelistFilter.test(entity)) && (blacklistFilter == null || !blacklistFilter.test(entity));
     }
 
     private BlockPos getMinPos() {

@@ -90,16 +90,15 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
         }
 
         List<Integer> toRemove = new ArrayList<>();
-        for (Map.Entry<Integer, RenderEntityTarget> entry : targets.entrySet()) {
-            RenderEntityTarget target = entry.getValue();
+        targets.forEach((entityId, target) -> {
             if (!target.entity.isAlive() || player.getDistance(target.entity) > entityTrackRange + 5 || !entityFilter.test(target.entity)) {
                 if (target.ticksExisted > 0) {
                     target.ticksExisted = -60;
                 } else if (target.ticksExisted == -1) {
-                    toRemove.add(entry.getKey());
+                    toRemove.add(entityId);
                 }
             }
-        }
+        });
         toRemove.forEach(targets::remove);
 
         List<ITextComponent> text = new ArrayList<>();
@@ -194,13 +193,13 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
         }
 
         @Override
-        public boolean apply(Entity entity) {
+        public boolean test(Entity entity) {
             return entity != player
                     && (entity instanceof LivingEntity || entity instanceof HangingEntity || entity instanceof AbstractMinecartEntity)
                     && entity.isAlive()
                     && player.getDistance(entity) < threshold
                     && !MinecraftForge.EVENT_BUS.post(new EntityTrackEvent(entity))
-                    && super.apply(entity);
+                    && super.test(entity);
         }
     }
 
