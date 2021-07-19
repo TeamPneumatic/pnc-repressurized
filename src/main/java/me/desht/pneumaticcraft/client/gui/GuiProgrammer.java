@@ -1040,8 +1040,8 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
                 if (gui != null) {
                     minecraft.displayGuiScreen(gui);
                 }
+                return true;
             }
-            return true;
         }
         return super.mouseClicked(origX, origY, button);
     }
