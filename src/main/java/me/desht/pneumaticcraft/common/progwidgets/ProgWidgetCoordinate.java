@@ -164,10 +164,10 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
     
     public void loadFromGPSTool(ItemStack gpsTool){
         String variable = ItemGPSTool.getVariable(gpsTool);
-        if("".equals(variable)){
+        if (variable.isEmpty()) {
             setCoordinate(ItemGPSTool.getGPSLocation(gpsTool));
             setUsingVariable(false);
-        }else{
+        } else {
             setVariable("#" + variable);
             setUsingVariable(true);
         }

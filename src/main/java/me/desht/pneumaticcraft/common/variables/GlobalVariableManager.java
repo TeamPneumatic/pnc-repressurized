@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.variables;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import me.desht.pneumaticcraft.common.progwidgets.IVariableProvider;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
@@ -17,6 +18,7 @@ import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 import javax.annotation.Nonnull;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Manages global variables. These are prefixed with '#'.
@@ -133,45 +135,80 @@ public class GlobalVariableManager extends WorldSavedData implements IVariablePr
     @Override
     public void read(CompoundNBT tag) {
         globalVars.clear();
-        ListNBT list = tag.getList("globalVars", Constants.NBT.TAG_COMPOUND);
-        for (int i = 0; i < list.size(); i++) {
-            CompoundNBT t = list.getCompound(i);
-            globalVars.put(t.getString("varName"), new BlockPos(t.getInt("x"), t.getInt("y"), t.getInt("z")));
+        globalItemVars.clear();
+        playerVars.clear();
+        playerItemVars.clear();
+
+        readPosList(tag.getList("globalVars", Constants.NBT.TAG_COMPOUND)).forEach(globalVars::put);
+
+        readItemList(tag.getList("globalItemVars", Constants.NBT.TAG_COMPOUND)).forEach(globalItemVars::put);
+
+        CompoundNBT playerPos = tag.getCompound("playerVars");
+        for (String id : playerPos.keySet()) {
+            readPosList(playerPos.getList(id, Constants.NBT.TAG_COMPOUND)).forEach((k, v) -> playerVars.put(UUID.fromString(id), k, v));
         }
 
-        readItemVars(tag, globalItemVars);
-    }
-
-    public static void readItemVars(CompoundNBT tag, Map<String, ItemStack> map) {
-        map.clear();
-        ListNBT list = tag.getList("globalItemVars", Constants.NBT.TAG_COMPOUND);
-        for (int i = 0; i < list.size(); i++) {
-            CompoundNBT t = list.getCompound(i);
-            map.put(t.getString("varName"), ItemStack.read(t.getCompound("item")));
+        CompoundNBT playerItems = tag.getCompound("playerItemVars");
+        for (String id : playerItems.keySet()) {
+            readItemList(playerItems.getList(id, Constants.NBT.TAG_COMPOUND)).forEach((k, v) -> playerItemVars.put(UUID.fromString(id), k, v));
         }
     }
 
     @Override
     public CompoundNBT write(CompoundNBT tag) {
+        tag.put("globalVars", writePosList(globalVars));
+
+        tag.put("globalItemVars", writeItemList(globalItemVars));
+
+        CompoundNBT playerPos = new CompoundNBT();
+        for (UUID uuid : playerVars.rowKeySet()) {
+            playerPos.put(uuid.toString(), writePosList(playerVars.row(uuid)));
+        }
+        tag.put("playerVars", playerPos);
+
+        CompoundNBT playerItems = new CompoundNBT();
+        for (UUID uuid : playerItemVars.rowKeySet()) {
+            playerItems.put(uuid.toString(), writeItemList(playerItemVars.row(uuid)));
+        }
+        tag.put("playerItemVars", playerItems);
+
+        return tag;
+    }
+
+    private Map<String,BlockPos> readPosList(ListNBT list) {
+        Map<String,BlockPos> map = new HashMap<>();
+        for (int i = 0; i < list.size(); i++) {
+            CompoundNBT t = list.getCompound(i);
+            map.put(t.getString("varName"), new BlockPos(t.getInt("x"), t.getInt("y"), t.getInt("z")));
+        }
+        return map;
+    }
+
+    private ListNBT writePosList(Map<String,BlockPos> map) {
         ListNBT list = new ListNBT();
-        for (Map.Entry<String, BlockPos> entry : globalVars.entrySet()) {
+        map.forEach((key, pos) -> {
             CompoundNBT t = new CompoundNBT();
-            t.putString("varName", entry.getKey());
-            BlockPos pos = entry.getValue();
+            t.putString("varName", key);
             t.putInt("x", pos.getX());
             t.putInt("y", pos.getY());
             t.putInt("z", pos.getZ());
             list.add(t);
-        }
-        tag.put("globalVars", list);
-
-        writeItemVars(tag);
-        return tag;
+        });
+        return list;
     }
 
-    public void writeItemVars(CompoundNBT tag) {
+    private Map<String,ItemStack> readItemList(ListNBT list) {
+        Map<String,ItemStack> map = new HashMap<>();
+        for (int i = 0; i < list.size(); i++) {
+            CompoundNBT t = list.getCompound(i);
+            map.put(t.getString("varName"), ItemStack.read(t.getCompound("item")));
+        }
+        return map;
+    }
+
+    private ListNBT writeItemList(Map<String, ItemStack> map) {
         ListNBT list = new ListNBT();
-        for (Map.Entry<String, ItemStack> entry : globalItemVars.entrySet()) {
+        for (Map.Entry<String, ItemStack> entry : map.entrySet()) {
             CompoundNBT t = new CompoundNBT();
             t.putString("varName", entry.getKey());
             CompoundNBT itemTag = new CompoundNBT();
@@ -179,13 +216,15 @@ public class GlobalVariableManager extends WorldSavedData implements IVariablePr
             t.put("item", itemTag);
             list.add(t);
         }
-        tag.put("globalItemVars", list);
+        return list;
     }
 
-    public String[] getAllActiveVariableNames() {
+    public String[] getAllActiveVariableNames(PlayerEntity player) {
         Set<String> varNames = new HashSet<>();
-        varNames.addAll(globalVars.keySet());
-        varNames.addAll(globalItemVars.keySet());
+        varNames.addAll(globalVars.keySet().stream().filter(s -> !s.isEmpty()).map(s -> "#" + s).collect(Collectors.toList()));
+        varNames.addAll(globalItemVars.keySet().stream().filter(s -> !s.isEmpty()).map(s -> "#" + s).collect(Collectors.toList()));
+        varNames.addAll(playerVars.row(player.getUniqueID()).keySet().stream().filter(s -> !s.isEmpty()).map(s -> "%" + s).collect(Collectors.toList()));
+        varNames.addAll(playerItemVars.row(player.getUniqueID()).keySet().stream().filter(s -> !s.isEmpty()).map(s -> "%" + s).collect(Collectors.toList()));
         return varNames.toArray(new String[0]);
     }
 

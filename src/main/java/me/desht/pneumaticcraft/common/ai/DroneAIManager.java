@@ -172,6 +172,8 @@ public class DroneAIManager implements IVariableProvider {
             return event.getCoordinate();
         } else if (varName.startsWith("#")) {
             return GlobalVariableManager.getInstance().getPos(varName.substring(1));
+        } else if (varName.startsWith("%")) {
+            return GlobalVariableManager.getInstance().getPos(drone.getOwnerUUID(), varName.substring(1));
         } else {
             return coordinateVariables.get(varName);
         }
@@ -213,6 +215,8 @@ public class DroneAIManager implements IVariableProvider {
     public void setItem(String varName, @Nonnull ItemStack item) {
         if (varName.startsWith("#")) {
             GlobalVariableManager.getInstance().set(varName.substring(1), item);
+        } else if (varName.startsWith("%")) {
+            GlobalVariableManager.getInstance().set(drone.getOwnerUUID(), varName.substring(1), item);
         } else if (!varName.startsWith("$")) {
             itemVariables.put(varName, item);
             drone.onVariableChanged(varName, false);

@@ -78,14 +78,14 @@ public class ContainerRemote extends ContainerPneumaticBase<TileEntityBase> {
 
         for (int i = 0; i < lastValues.length; i++) {
             String varName = syncedVars.get(i);
-            if (varName.startsWith("#")) varName = varName.substring(1);
+            if (varName.isEmpty()) continue;
+//            if (varName.startsWith("#")) varName = varName.substring(1);
             BlockPos newValue = GlobalVariableManager.getInstance().getPos(varName);
             if (!newValue.equals(lastValues[i])) {
                 lastValues[i] = newValue;
-                for (Object o : listeners) {
-                    if (o instanceof ServerPlayerEntity)
-                        NetworkHandler.sendToPlayer(new PacketSetGlobalVariable(varName, newValue), (ServerPlayerEntity) o);
-                }
+                listeners.stream()
+                        .filter(o -> o instanceof ServerPlayerEntity)
+                        .forEach(o -> NetworkHandler.sendToPlayer(new PacketSetGlobalVariable(varName, newValue), (ServerPlayerEntity) o));
             }
         }
     }

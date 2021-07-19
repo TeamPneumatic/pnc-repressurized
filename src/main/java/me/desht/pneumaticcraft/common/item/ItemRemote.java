@@ -96,7 +96,7 @@ public class ItemRemote extends Item {
         if (player.isCrouching()) {
             if (isAllowedToEdit(player, remote)) {
                 NetworkHooks.openGui((ServerPlayerEntity) player, new RemoteEditorContainerProvider(remote, hand), buf -> buf.writeBoolean(hand == Hand.MAIN_HAND));
-                NetworkHandler.sendToPlayer(new PacketNotifyVariablesRemote(GlobalVariableManager.getInstance().getAllActiveVariableNames()), (ServerPlayerEntity) player);
+                NetworkHandler.sendToPlayer(new PacketNotifyVariablesRemote(GlobalVariableManager.getInstance().getAllActiveVariableNames(player)), (ServerPlayerEntity) player);
             }
         } else {
             NetworkHooks.openGui((ServerPlayerEntity) player, new RemoteContainerProvider(remote, hand), buf -> buf.writeBoolean(hand == Hand.MAIN_HAND));
