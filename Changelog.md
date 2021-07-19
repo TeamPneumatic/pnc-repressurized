@@ -8,13 +8,17 @@ Changes are in reverse chronological order; newest changes at the top.
 
 PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 
-## 2.13.2-??? (unreleased)
+## 2.13.2-205 (19 Jul 2021)
 
+### New
+* New block: Creative Compressed Iron Block
+  * This creative-only block maintains a constant temperature, similar to how the Creative Compressor maintains a constant pressure
+  
 ### Updates
 * Significant internal refactoring of Pneumatic Armor upgrade handling
   * No player-visible updates, but a fair bit of code cleanup & optimisation has been done
 * Entity filter: `@mob` will no longer match tamed mobs
-  * While there aren't any tameable mobs in vanilla, it's possible for other mods to add them, e.g. Quark Foxhounds
+  * While there aren't any tameable mobs in vanilla, other mods can add them, e.g. tamed Quark's Foxhounds are now safe from your Sentry Turrets & Guard Drones
 
 ### Fixes
 * Fixed bug where PNC Fluid Tanks would push any fluid into a Memory Stick, treating it as XP
@@ -22,6 +26,7 @@ PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 * Fixed Air Compressors running with no fuel when Advent of Ascension is also installed
   * This is actually an AoA bug where empty itemstacks end up with a fuel value, but I've added extra checks in PNC to prevent this happening
 * Fixed Programmer only using/returning Puzzle Pieces for a single item when writing a program to a stack of multiple Network API items
+* Fixed right-clicking slots to split stacks not working in the Programmer GUI
 
 ## 2.13.1-202 (6 Jul 2021)
 
