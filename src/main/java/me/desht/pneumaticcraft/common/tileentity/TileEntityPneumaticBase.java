@@ -116,9 +116,9 @@ public abstract class TileEntityPneumaticBase extends TileEntityTickableBase {
         super.read(state, tag);
 
         airHandler.deserializeNBT(tag.getCompound(NBTKeys.NBT_AIR_HANDLER));
+        airHandler.setVolumeUpgrades(getUpgrades(EnumUpgrade.VOLUME));
         if (tag.contains(NBTKeys.NBT_AIR_AMOUNT)) {
             // when restoring from item NBT
-            airHandler.setVolumeUpgrades(getUpgrades(EnumUpgrade.VOLUME));
             airHandler.addAir(tag.getInt(NBTKeys.NBT_AIR_AMOUNT));
         }
     }
