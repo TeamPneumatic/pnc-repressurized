@@ -89,6 +89,7 @@ public class PneumaticCraftRepressurized {
         forgeBus.register(new DroneSpecialVariableHandler());
         forgeBus.register(ItemGPSAreaTool.EventHandler.class);
         forgeBus.register(HackTickHandler.instance());
+        forgeBus.addListener(VillageStructures::addMechanicHouse);
 
         forgeBus.addListener(EventPriority.HIGH, ModWorldGen::onBiomeLoading);
     }
@@ -128,7 +129,7 @@ public class PneumaticCraftRepressurized {
         HackManager.addDefaultEntries();
         SensorHandler.getInstance().init();
         UpgradesDBSetup.init();
-        VillageStructures.init();
+//        VillageStructures.init();
         ModNameCache.init();
         HeatBehaviourManager.getInstance().init();
 
