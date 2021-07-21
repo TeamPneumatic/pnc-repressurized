@@ -162,7 +162,7 @@ public class ItemAmadronTablet extends ItemPressurizable implements IPositionPro
     }
 
     @Override
-    public List<BlockPos> getStoredPositions(World world, @Nonnull ItemStack stack) {
+    public List<BlockPos> getStoredPositions(PlayerEntity player, @Nonnull ItemStack stack) {
         GlobalPos gp1 = getItemProvidingLocation(stack);
         GlobalPos gp2 = getFluidProvidingLocation(stack);
         return Arrays.asList(gp1 == null ? null : gp1.getPos(), gp2 == null ? null : gp2.getPos());

@@ -112,7 +112,7 @@ public class GuiInventorySearcher extends ContainerScreen<ContainerInventorySear
     public BlockPos getBlockPos() {
         ItemStack stack = inventory.getStackInSlot(0);
         if (stack.getItem() instanceof IPositionProvider) {
-            List<BlockPos> posList = ((IPositionProvider) stack.getItem()).getRawStoredPositions(ClientUtils.getClientWorld(), stack);
+            List<BlockPos> posList = ((IPositionProvider) stack.getItem()).getRawStoredPositions(ClientUtils.getClientPlayer(), stack);
             int posIdx = getPosIdx(stack);
             if (!posList.isEmpty()) {
                 BlockPos pos = posList.get(Math.min(posIdx, posList.size() - 1));

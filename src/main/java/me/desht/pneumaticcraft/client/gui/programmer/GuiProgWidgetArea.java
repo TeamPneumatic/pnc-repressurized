@@ -123,9 +123,9 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
     private void openInvSearchGUI(int which) {
         ItemStack gpsStack = new ItemStack(ModItems.GPS_TOOL.get());
         if (which == 0) {
-            ItemGPSTool.setGPSLocation(gpsStack, new BlockPos(progWidget.x1, progWidget.y1, progWidget.z1));
+            ItemGPSTool.setGPSLocation(ClientUtils.getClientPlayer(), gpsStack, new BlockPos(progWidget.x1, progWidget.y1, progWidget.z1));
         } else {
-            ItemGPSTool.setGPSLocation(gpsStack, new BlockPos(progWidget.x2, progWidget.y2, progWidget.z2));
+            ItemGPSTool.setGPSLocation(ClientUtils.getClientPlayer(), gpsStack, new BlockPos(progWidget.x2, progWidget.y2, progWidget.z2));
         }
         ClientUtils.openContainerGui(ModContainers.INVENTORY_SEARCHER.get(), new StringTextComponent("Inventory Searcher (GPS)"));
         if (minecraft.currentScreen instanceof GuiInventorySearcher) {

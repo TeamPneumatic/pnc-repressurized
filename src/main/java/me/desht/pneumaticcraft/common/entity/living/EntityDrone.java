@@ -722,7 +722,7 @@ public class EntityDrone extends EntityDroneBase implements
         ItemStack stack = player.getHeldItem(hand);
         if (stack.getItem() == ModItems.GPS_TOOL.get()) {
             if (!world.isRemote) {
-                BlockPos gpsLoc = ItemGPSTool.getGPSLocation(world, stack);
+                BlockPos gpsLoc = ItemGPSTool.getGPSLocation(player, stack);
                 if (gpsLoc != null) {
                     getNavigator().tryMoveToXYZ(gpsLoc.getX(), gpsLoc.getY(), gpsLoc.getZ(), 0.1D);
                     return ActionResultType.SUCCESS;

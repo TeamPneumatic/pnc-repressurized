@@ -7,7 +7,7 @@ import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
-import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
+import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -38,7 +38,7 @@ public class ItemGPSTool extends Item implements IPositionProvider {
     @Override
     public ActionResultType onItemUse(ItemUseContext ctx) {
         BlockPos pos = ctx.getPos();
-        setGPSLocation(ctx.getPlayer().getHeldItem(ctx.getHand()), pos);
+        setGPSLocation(ctx.getPlayer(), ctx.getPlayer().getHeldItem(ctx.getHand()), pos);
         if (!ctx.getWorld().isRemote)
             ctx.getPlayer().sendStatusMessage(new TranslationTextComponent("pneumaticcraft.message.gps_tool.targetSet" ,pos.getX(), pos.getY(), pos.getZ()).mergeStyle(TextFormatting.GREEN), false);
         ctx.getPlayer().playSound(ModSounds.CHIRP.get(), 1.0f, 1.5f);
@@ -49,7 +49,7 @@ public class ItemGPSTool extends Item implements IPositionProvider {
     public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
         ItemStack stack = playerIn.getHeldItem(handIn);
         if (worldIn.isRemote) {
-            GuiGPSTool.showGUI(stack, handIn, getGPSLocation(worldIn, stack));
+            GuiGPSTool.showGUI(stack, handIn, getGPSLocation(playerIn, stack));
         }
         return ActionResult.resultSuccess(stack);
     }
@@ -77,9 +77,9 @@ public class ItemGPSTool extends Item implements IPositionProvider {
     @Override
     public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean heldItem) {
         String var = getVariable(stack);
-        if (!var.equals("") && !world.isRemote) {
-            BlockPos pos = GlobalVariableManager.getInstance().getPos(var);
-            setGPSLocation(stack, pos);
+        if (!var.isEmpty() && !world.isRemote && entity instanceof PlayerEntity) {
+            BlockPos pos = GlobalVariableHelper.getPos(entity.getUniqueID(), var);
+            setGPSLocation((PlayerEntity) entity, stack, pos, false);
         }
     }
 
@@ -87,13 +87,13 @@ public class ItemGPSTool extends Item implements IPositionProvider {
         return getGPSLocation(null, stack);
     }
 
-    public static BlockPos getGPSLocation(World world, ItemStack gpsTool) {
+    public static BlockPos getGPSLocation(PlayerEntity player, ItemStack gpsTool) {
         CompoundNBT compound = gpsTool.getTag();
         if (compound != null) {
             String var = getVariable(gpsTool);
-            if (!var.isEmpty() && world != null && !world.isRemote) {
-                BlockPos pos = GlobalVariableManager.getInstance().getPos(var);
-                setGPSLocation(gpsTool, pos);
+            if (!var.isEmpty()) {
+                BlockPos pos = GlobalVariableHelper.getPos(player == null ? null : player.getUniqueID(), var);
+                if (pos != null) setGPSLocation(player, gpsTool, pos);
             }
             BlockPos pos = net.minecraft.nbt.NBTUtil.readBlockPos(compound.getCompound("Pos"));
             return pos.equals(BlockPos.ZERO) ? null : pos;
@@ -102,10 +102,18 @@ public class ItemGPSTool extends Item implements IPositionProvider {
         }
     }
 
-    public static void setGPSLocation(ItemStack gpsTool, BlockPos pos) {
+    public static void setGPSLocation(PlayerEntity player, ItemStack gpsTool, BlockPos pos) {
+        setGPSLocation(player, gpsTool, pos, true);
+    }
+
+    public static void setGPSLocation(PlayerEntity player, ItemStack gpsTool, BlockPos pos, boolean updateVarManager) {
         gpsTool.getOrCreateTag().put("Pos", net.minecraft.nbt.NBTUtil.writeBlockPos(pos));
-        String var = getVariable(gpsTool);
-        if (!var.isEmpty()) GlobalVariableManager.getInstance().set(var, pos);
+        if (updateVarManager) {
+            String var = getVariable(gpsTool);
+            if (!var.isEmpty()) {
+                GlobalVariableHelper.setPos(player == null ? null : player.getUniqueID(), var, pos);
+            }
+        }
     }
 
     public static void setVariable(ItemStack gpsTool, String variable) {
@@ -113,12 +121,19 @@ public class ItemGPSTool extends Item implements IPositionProvider {
     }
 
     public static String getVariable(ItemStack gpsTool) {
-        return gpsTool.hasTag() ? gpsTool.getTag().getString("variable") : "";
+        if (gpsTool.hasTag()) return "";
+        String varName = gpsTool.getTag().getString("variable");
+        if (!GlobalVariableHelper.hasPrefix(varName)) {
+            // TODO remove in 1.17 - migrate old unprefixed varnames
+            varName = "#" + varName;
+            setVariable(gpsTool, varName);
+        }
+        return varName;
     }
 
     @Override
-    public List<BlockPos> getStoredPositions(World world, @Nonnull ItemStack stack) {
-        return Collections.singletonList(getGPSLocation(world, stack));
+    public List<BlockPos> getStoredPositions(PlayerEntity player, @Nonnull ItemStack stack) {
+        return Collections.singletonList(getGPSLocation(player, stack));
     }
 
     @Override

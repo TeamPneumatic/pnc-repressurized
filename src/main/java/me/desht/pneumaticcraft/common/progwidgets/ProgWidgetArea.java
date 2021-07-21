@@ -8,6 +8,7 @@ import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.progwidgets.area.*;
 import me.desht.pneumaticcraft.common.progwidgets.area.AreaType.AreaTypeWidget;
+import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.Entity;
@@ -339,8 +340,8 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         z2 = z1 - (buf.readVarInt() - 127);
         type = createType(buf.readVarInt());
         type.readFromPacket(buf);
-        coord1Variable = buf.readString(256);
-        coord2Variable = buf.readString(256);
+        coord1Variable = buf.readString(GlobalVariableManager.MAX_VARIABLE_LEN);
+        coord2Variable = buf.readString(GlobalVariableManager.MAX_VARIABLE_LEN);
     }
 
     @Override

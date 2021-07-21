@@ -1,9 +1,9 @@
 package me.desht.pneumaticcraft.api.item;
 
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -17,12 +17,12 @@ public interface IPositionProvider {
      * Get block position data from the given ItemStack.  It is up to the implementor to decide how the block positions
      * should be stored on the itemstack and in what order they should be returned.
      *
-     * @param world the world (if a server world, global variables may be used)
+     * @param player the player, for player-global variable context (may be null)
      * @param stack the itemstack
      * @return a list of block positions that has been retrieved from the itemstack
      */
     @Nonnull
-    List<BlockPos> getStoredPositions(World world, @Nonnull ItemStack stack);
+    List<BlockPos> getStoredPositions(PlayerEntity player, @Nonnull ItemStack stack);
 
     /**
      * Color that should be used to highlight the stored block positions if & when they are rendered on-screen.
@@ -47,8 +47,8 @@ public interface IPositionProvider {
      * @param stack the itemstack
      * @return the raw positions stored on the itemstack
      */
-    default List<BlockPos> getRawStoredPositions(World world, ItemStack stack) {
-        return getStoredPositions(world, stack);
+    default List<BlockPos> getRawStoredPositions(PlayerEntity player, ItemStack stack) {
+        return getStoredPositions(player, stack);
     }
 
     /**
