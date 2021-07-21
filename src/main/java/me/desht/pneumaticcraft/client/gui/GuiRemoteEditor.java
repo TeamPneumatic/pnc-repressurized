@@ -103,7 +103,7 @@ public class GuiRemoteEditor extends GuiRemote {
         snapCheck.checked = PNCConfig.Client.guiRemoteGridSnap;
         addButton(snapCheck);
 
-        addButton(new WidgetLabel(guiLeft + 234, guiTop + 7, xlate("pneumaticcraft.gui.remote.widgetTray").mergeStyle(TextFormatting.BOLD)).setAlignment(WidgetLabel.Alignment.CENTRE));
+        addButton(new WidgetLabel(guiLeft + 234, guiTop + 7, xlate("pneumaticcraft.gui.remote.widgetTray").mergeStyle(TextFormatting.DARK_BLUE)).setAlignment(WidgetLabel.Alignment.CENTRE));
 
         minecraft.keyboardListener.enableRepeatEvents(true);
     }
@@ -132,7 +132,6 @@ public class GuiRemoteEditor extends GuiRemote {
         renderBackground(matrixStack);
         bindGuiTexture();
         blit(matrixStack, guiLeft, guiTop, 0, 0, xSize, ySize, 320, 256);
-        super.drawGuiContainerBackgroundLayer(matrixStack, partialTicks, x, y);
     }
 
     @Override

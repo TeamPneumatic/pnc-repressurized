@@ -69,6 +69,7 @@ public class ActionWidgetButton extends ActionWidgetVariable<WidgetButtonExtende
 
     @Override
     public void onVariableChange() {
+        // no action needed
     }
 
     @Override

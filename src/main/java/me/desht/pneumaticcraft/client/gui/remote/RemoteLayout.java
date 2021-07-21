@@ -11,28 +11,22 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 public class RemoteLayout {
-
     private final List<ActionWidget<?>> actionWidgets = new ArrayList<>();
-    private static final Map<String, Class<? extends ActionWidget<?>>> registeredWidgets = new HashMap<>();
+    private static final Map<String, Supplier<ActionWidget<?>>> registeredWidgets = new HashMap<>();
 
     static {
-        registerWidget(ActionWidgetCheckBox.class);
-        registerWidget(ActionWidgetLabel.class);
-        registerWidget(ActionWidgetButton.class);
-        registerWidget(ActionWidgetDropdown.class);
+        registerWidget(ActionWidgetCheckBox::new);
+        registerWidget(ActionWidgetLabel::new);
+        registerWidget(ActionWidgetButton::new);
+        registerWidget(ActionWidgetDropdown::new);
     }
 
-    private static void registerWidget(Class<? extends ActionWidget<?>> widgetClass) {
-        try {
-            ActionWidget<?> widget = widgetClass.newInstance();
-            registeredWidgets.put(widget.getId(), widgetClass);
-            return;
-        } catch (InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        throw new IllegalArgumentException("Widget " + widgetClass + " couldn't be registered");
+    private static void registerWidget(Supplier<ActionWidget<?>> supplier) {
+        ActionWidget<?> widget = supplier.get();
+        registeredWidgets.put(widget.getId(), supplier);
     }
 
     public RemoteLayout(ItemStack remote, int guiLeft, int guiTop) {
@@ -42,13 +36,11 @@ public class RemoteLayout {
             for (int i = 0; i < tagList.size(); i++) {
                 CompoundNBT widgetTag = tagList.getCompound(i);
                 String id = widgetTag.getString("id");
-                Class<? extends ActionWidget<?>> clazz = registeredWidgets.get(id);
-                try {
-                    ActionWidget<?> widget = clazz.newInstance();
-                    widget.readFromNBT(widgetTag, guiLeft, guiTop);
-                    actionWidgets.add(widget);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                Supplier<ActionWidget<?>> sup = registeredWidgets.get(id);
+                if (sup != null) {
+                    ActionWidget<?> actionWidget = sup.get();
+                    actionWidget.readFromNBT(widgetTag, guiLeft, guiTop);
+                    actionWidgets.add(actionWidget);
                 }
             }
         }

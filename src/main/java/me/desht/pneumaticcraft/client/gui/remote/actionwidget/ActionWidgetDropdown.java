@@ -3,9 +3,10 @@ package me.desht.pneumaticcraft.client.gui.remote.actionwidget;
 import me.desht.pneumaticcraft.client.gui.GuiRemoteEditor;
 import me.desht.pneumaticcraft.client.gui.remote.GuiRemoteDropdown;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetComboBox;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSetGlobalVariable;
-import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
+import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resources.I18n;
@@ -113,7 +114,8 @@ public class ActionWidgetDropdown extends ActionWidgetVariable<WidgetComboBox> {
 
     private void updateWidget() {
         String[] elements = getDropdownElements();
-        selectedElement = elements[MathHelper.clamp(GlobalVariableManager.getInstance().getInteger(getVariableName()), 0, elements.length - 1)];
+        int idx = GlobalVariableHelper.getInt(ClientUtils.getClientPlayer().getUniqueID(), getVariableName());
+        selectedElement = elements[MathHelper.clamp(idx, 0, elements.length - 1)];
 
         if (widget != null) {
             widget.x = x;

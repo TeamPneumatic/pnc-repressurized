@@ -46,7 +46,7 @@ import static net.minecraftforge.fml.network.NetworkDirection.PLAY_TO_CLIENT;
 import static net.minecraftforge.fml.network.NetworkDirection.PLAY_TO_SERVER;
 
 public class NetworkHandler {
-    private static final String PROTOCOL_VERSION = "6";
+    private static final String PROTOCOL_VERSION = "7";
     private static final SimpleChannel NETWORK = NetworkRegistry.ChannelBuilder
             .named(RL("main_channel"))
             .clientAcceptedVersions(PROTOCOL_VERSION::equals)
@@ -127,8 +127,6 @@ public class NetworkHandler {
 				PacketSyncRedstoneModuleToClient::toBytes, PacketSyncRedstoneModuleToClient::new, PacketSyncRedstoneModuleToClient::handle, PLAY_TO_CLIENT);
 		registerMessage(PacketSyncRedstoneModuleToServer.class,
 				PacketSyncRedstoneModuleToServer::toBytes, PacketSyncRedstoneModuleToServer::new, PacketSyncRedstoneModuleToServer::handle, PLAY_TO_SERVER);
-		registerMessage(PacketNotifyVariablesRemote.class,
-				PacketNotifyVariablesRemote::toBytes, PacketNotifyVariablesRemote::new, PacketNotifyVariablesRemote::handle, PLAY_TO_CLIENT);
 		registerMessage(PacketHackingBlockStart.class,
 				PacketHackingBlockStart::toBytes, PacketHackingBlockStart::new, PacketHackingBlockStart::handle);
 		registerMessage(PacketHackingBlockFinish.class,

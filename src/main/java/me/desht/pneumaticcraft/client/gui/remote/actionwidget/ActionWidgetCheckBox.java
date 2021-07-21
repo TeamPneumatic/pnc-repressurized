@@ -1,10 +1,11 @@
 package me.desht.pneumaticcraft.client.gui.remote.actionwidget;
 
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSetGlobalVariable;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
-import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
+import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.util.Constants;
@@ -23,7 +24,6 @@ public class ActionWidgetCheckBox extends ActionWidgetVariable<WidgetCheckBox> i
     public void readFromNBT(CompoundNBT tag, int guiLeft, int guiTop) {
         super.readFromNBT(tag, guiLeft, guiTop);
         widget = new WidgetCheckBox(tag.getInt("x") + guiLeft, tag.getInt("y") + guiTop, 0xFF404040, deserializeTextComponent(tag.getString("text")), b -> onActionPerformed());
-//        setTooltip(tag.getString("tooltip"));
         widget.setTooltip(NBTUtils.deserializeTextComponents(tag.getList("tooltip", Constants.NBT.TAG_STRING)));
     }
 
@@ -59,7 +59,7 @@ public class ActionWidgetCheckBox extends ActionWidgetVariable<WidgetCheckBox> i
 
     @Override
     public void onVariableChange() {
-        widget.checked = GlobalVariableManager.getInstance().getBoolean(getVariableName());
+        widget.checked = GlobalVariableHelper.getBool(ClientUtils.getClientPlayer().getUniqueID(), getVariableName());
     }
 
     @Override

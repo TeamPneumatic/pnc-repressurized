@@ -5,16 +5,14 @@ import me.desht.pneumaticcraft.client.gui.GuiPneumaticScreenBase;
 import me.desht.pneumaticcraft.client.gui.GuiRemoteEditor;
 import me.desht.pneumaticcraft.client.gui.remote.actionwidget.ActionWidget;
 import me.desht.pneumaticcraft.client.gui.remote.actionwidget.IActionWidgetLabeled;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetComboBox;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetTextFieldNumber;
+import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -30,6 +28,8 @@ public class GuiRemoteOptionBase<A extends ActionWidget<?>> extends GuiPneumatic
     private WidgetTextField labelField, tooltipField;
     private WidgetComboBox enableField;
     private WidgetTextFieldNumber xValueField, yValueField, zValueField;
+    private WidgetButtonExtended enableVarTypeButton;
+    private boolean playerGlobalEnableVar;
 
     public GuiRemoteOptionBase(A actionWidget, GuiRemoteEditor guiRemote) {
         super(new TranslationTextComponent("pneumaticcraft.gui.remote.tray." + actionWidget.getId() + ".name"));
@@ -62,9 +62,13 @@ public class GuiRemoteOptionBase<A extends ActionWidget<?>> extends GuiPneumatic
 
         minecraft.keyboardListener.enableRepeatEvents(true);
 
+        playerGlobalEnableVar = actionWidget.getEnableVariable().isEmpty() || actionWidget.getEnableVariable().startsWith("#");
+
         addLabel(xlate("pneumaticcraft.gui.remote.enable"), guiLeft + 10, guiTop + 150);
         addLabel(title, width / 2, guiTop + 5, WidgetLabel.Alignment.CENTRE);
-        addLabel(new StringTextComponent("#"), guiLeft + 10, guiTop + 161);
+        enableVarTypeButton = new WidgetButtonExtended(guiLeft + 10, guiTop + 158, 12, 14, getVarPrefix(playerGlobalEnableVar),
+                b -> togglePlayerGlobalEnable()).setTooltipKey("pneumaticcraft.gui.remote.varType.tooltip");
+        addButton(enableVarTypeButton);
 
         if (actionWidget instanceof IActionWidgetLabeled) {
             addLabel(xlate("pneumaticcraft.gui.remote.text"), guiLeft + 10, guiTop + 20);
@@ -76,9 +80,9 @@ public class GuiRemoteOptionBase<A extends ActionWidget<?>> extends GuiPneumatic
         addLabel(new StringTextComponent("Y:"), guiLeft + 67, guiTop + 186);
         addLabel(new StringTextComponent("Z:"), guiLeft + 124, guiTop + 186);
 
-        enableField = new WidgetComboBox(font, guiLeft + 18, guiTop + 160, 152, 10);
-        enableField.setElements(guiRemote.getContainer().variables);
-        enableField.setText(actionWidget.getEnableVariable());
+        enableField = new WidgetComboBox(font, guiLeft + 23, guiTop + 160, 147, 10);
+        enableField.setElements(extractVarnames(guiRemote.getContainer().variables, playerGlobalEnableVar));
+        enableField.setText(stripVarPrefix(actionWidget.getEnableVariable()));
         enableField.setTooltip(xlate("pneumaticcraft.gui.remote.enable.tooltip"));
         addButton(enableField);
 
@@ -120,7 +124,7 @@ public class GuiRemoteOptionBase<A extends ActionWidget<?>> extends GuiPneumatic
     public void onClose() {
         minecraft.keyboardListener.enableRepeatEvents(false);
 
-        actionWidget.setEnableVariable(enableField.getText());
+        actionWidget.setEnableVariable(getPrefixedVar(enableField.getText(), playerGlobalEnableVar));
         actionWidget.setEnablingValue(xValueField.getValue(), yValueField.getValue(), zValueField.getValue());
         if (actionWidget instanceof IActionWidgetLabeled) {
             ((IActionWidgetLabeled) actionWidget).setText(new StringTextComponent(labelField.getText()));
@@ -135,8 +139,36 @@ public class GuiRemoteOptionBase<A extends ActionWidget<?>> extends GuiPneumatic
         }
     }
 
+    private void togglePlayerGlobalEnable() {
+        playerGlobalEnableVar = !playerGlobalEnableVar;
+        enableVarTypeButton.setMessage(new StringTextComponent(getVarPrefix(playerGlobalEnableVar)));
+        enableField.setElements(extractVarnames(guiRemote.getContainer().variables, playerGlobalEnableVar));
+    }
+
     @Override
     public void closeScreen() {
         minecraft.displayGuiScreen(guiRemote);
+    }
+
+    String getPrefixedVar(String varName, boolean playerGlobal) {
+        return varName.isEmpty() ? "" : getVarPrefix(playerGlobal) + varName;
+    }
+
+    String getVarPrefix(boolean playerGlobal) {
+        return playerGlobal ? "#" : "%";
+    }
+
+    String stripVarPrefix(String varName) {
+        return varName.startsWith("#") || varName.startsWith("%") ? varName.substring(1) : varName;
+    }
+
+    List<String> extractVarnames(String[] varnames, boolean playerGlobal) {
+        List<String> res = new ArrayList<>();
+        for (String v : varnames) {
+            if (playerGlobal && v.startsWith("#") || !playerGlobal && v.startsWith("%")) {
+               res.add(v.substring(1));
+            }
+        }
+        return res;
     }
 }

@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.client.gui.remote;
 
 import me.desht.pneumaticcraft.client.gui.GuiRemoteEditor;
 import me.desht.pneumaticcraft.client.gui.remote.actionwidget.ActionWidgetButton;
+import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextFieldNumber;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
@@ -26,8 +27,11 @@ public class GuiRemoteButton extends GuiRemoteVariable<ActionWidgetButton> {
         addLabel(new StringTextComponent("X:"), guiLeft + 10, guiTop + 106);
         addLabel(new StringTextComponent("Y:"), guiLeft + 67, guiTop + 106);
         addLabel(new StringTextComponent("Z:"), guiLeft + 124, guiTop + 106);
-        addLabel(xlate("pneumaticcraft.gui.remote.button.width"), guiLeft + 10, guiTop + 123);
-        addLabel(xlate("pneumaticcraft.gui.remote.button.height"), guiLeft + 10, guiTop + 138);
+        WidgetLabel lw = addLabel(xlate("pneumaticcraft.gui.remote.button.width"), guiLeft + 10, guiTop + 123);
+        WidgetLabel lh = addLabel(xlate("pneumaticcraft.gui.remote.button.height"), guiLeft + 10, guiTop + 136);
+        int xOff = guiLeft + 13 + Math.max(lw.getWidth(), lh.getWidth());
+        lw.x = xOff - (lw.getWidth() + 3);
+        lh.x = xOff - (lh.getWidth() + 3);
 
         ITextComponent valueTooltip = xlate("pneumaticcraft.gui.remote.button.value.tooltip");
 
@@ -46,13 +50,13 @@ public class GuiRemoteButton extends GuiRemoteVariable<ActionWidgetButton> {
         zValueField.setTooltip(valueTooltip);
         addButton(zValueField);
 
-        widthField = new WidgetTextFieldNumber(font, guiLeft + 100, guiTop + 123, 60, 10)
+        widthField = new WidgetTextFieldNumber(font, xOff, guiTop + 122, 35, 10)
                 .setRange(10, Integer.MAX_VALUE).setAdjustments(1, 10);
         widthField.setValue(actionWidget.getWidth());
         widthField.minValue = 10;
         addButton(widthField);
 
-        heightField = new WidgetTextFieldNumber(font, guiLeft + 100, guiTop + 138, 60, 10)
+        heightField = new WidgetTextFieldNumber(font, xOff, guiTop + 135, 35, 10)
                 .setRange(10, Integer.MAX_VALUE).setAdjustments(1, 10);
         heightField.setValue(actionWidget.getHeight());
         heightField.minValue = 10;

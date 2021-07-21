@@ -35,6 +35,7 @@ public class GlobalVariableManager extends WorldSavedData implements IVariablePr
     private final Map<String, ItemStack> globalItemVars = new HashMap<>();
     private final Table<UUID, String, BlockPos> playerVars = HashBasedTable.create();
     private final Table<UUID, String, ItemStack> playerItemVars = HashBasedTable.create();
+    private final Set<UUID> importDone = new HashSet<>();  // until 1.17; tracks which players have already done a global->player-global import
 
     public static GlobalVariableManager getInstance() {
         if (EffectiveSide.get() == LogicalSide.CLIENT) {
@@ -110,8 +111,16 @@ public class GlobalVariableManager extends WorldSavedData implements IVariablePr
         return globalVars.containsKey(varName);
     }
 
+    public boolean hasPos(UUID ownerUUID, String varName) {
+        return playerVars.contains(ownerUUID, varName);
+    }
+
     public boolean hasItem(String varName) {
         return globalItemVars.containsKey(varName);
+    }
+
+    public boolean hasItem(UUID ownerUUID, String varName) {
+        return playerItemVars.contains(ownerUUID, varName);
     }
 
     public BlockPos getPos(String varName) {
@@ -127,7 +136,7 @@ public class GlobalVariableManager extends WorldSavedData implements IVariablePr
         return globalItemVars.getOrDefault(varName, ItemStack.EMPTY);
     }
 
-    private ItemStack getItem(UUID ownerUUID, String varName) {
+    ItemStack getItem(UUID ownerUUID, String varName) {
         ItemStack stack = playerItemVars.get(ownerUUID, varName);
         return stack == null ? ItemStack.EMPTY : stack;
     }
@@ -152,6 +161,9 @@ public class GlobalVariableManager extends WorldSavedData implements IVariablePr
         for (String id : playerItems.keySet()) {
             readItemList(playerItems.getList(id, Constants.NBT.TAG_COMPOUND)).forEach((k, v) -> playerItemVars.put(UUID.fromString(id), k, v));
         }
+
+        CompoundNBT done = tag.getCompound("importDone");
+        done.keySet().forEach(id -> importDone.add(UUID.fromString(id)));
     }
 
     @Override
@@ -171,6 +183,12 @@ public class GlobalVariableManager extends WorldSavedData implements IVariablePr
             playerItems.put(uuid.toString(), writeItemList(playerItemVars.row(uuid)));
         }
         tag.put("playerItemVars", playerItems);
+
+        if (!importDone.isEmpty()) {
+            CompoundNBT done = new CompoundNBT();
+            importDone.forEach(id -> done.putBoolean(id.toString(), true));
+            tag.put("importDone", done);
+        }
 
         return tag;
     }
@@ -221,10 +239,10 @@ public class GlobalVariableManager extends WorldSavedData implements IVariablePr
 
     public String[] getAllActiveVariableNames(PlayerEntity player) {
         Set<String> varNames = new HashSet<>();
-        varNames.addAll(globalVars.keySet().stream().filter(s -> !s.isEmpty()).map(s -> "#" + s).collect(Collectors.toList()));
-        varNames.addAll(globalItemVars.keySet().stream().filter(s -> !s.isEmpty()).map(s -> "#" + s).collect(Collectors.toList()));
-        varNames.addAll(playerVars.row(player.getUniqueID()).keySet().stream().filter(s -> !s.isEmpty()).map(s -> "%" + s).collect(Collectors.toList()));
-        varNames.addAll(playerItemVars.row(player.getUniqueID()).keySet().stream().filter(s -> !s.isEmpty()).map(s -> "%" + s).collect(Collectors.toList()));
+        varNames.addAll(globalVars.keySet().stream().filter(s -> !s.isEmpty()).map(s -> "%" + s).collect(Collectors.toList()));
+        varNames.addAll(globalItemVars.keySet().stream().filter(s -> !s.isEmpty()).map(s -> "%" + s).collect(Collectors.toList()));
+        varNames.addAll(playerVars.row(player.getUniqueID()).keySet().stream().filter(s -> !s.isEmpty()).map(s -> "#" + s).collect(Collectors.toList()));
+        varNames.addAll(playerItemVars.row(player.getUniqueID()).keySet().stream().filter(s -> !s.isEmpty()).map(s -> "#" + s).collect(Collectors.toList()));
         return varNames.toArray(new String[0]);
     }
 
@@ -251,5 +269,16 @@ public class GlobalVariableManager extends WorldSavedData implements IVariablePr
 
     public ItemStack getStack(UUID ownerUUID, String varName) {
         return getItem(ownerUUID, varName);
+    }
+
+    public boolean importGlobals(UUID playerID) {
+        if (importDone.contains(playerID)) return false;
+
+        globalVars.forEach((varName, pos) -> playerVars.row(playerID).putIfAbsent(varName, pos));
+        globalItemVars.forEach((varName, stack) -> playerItemVars.row(playerID).putIfAbsent(varName, stack));
+
+        importDone.add(playerID);
+        markDirty();
+        return true;
     }
 }

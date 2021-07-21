@@ -8,19 +8,24 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 public class TextVariableParser {
     private final String orig;
     private final DroneAIManager variableHolder;
     private final Set<String> relevantVariables = new HashSet<>();
+    private final UUID playerID;
 
-    public TextVariableParser(String str) {
-        this(str, null);
+    public TextVariableParser(String str, UUID playerID) {
+        this.orig = str;
+        this.variableHolder = null;
+        this.playerID = playerID;
     }
 
     public TextVariableParser(String str, DroneAIManager variableHolder) {
-        orig = str;
+        this.orig = str;
         this.variableHolder = variableHolder;
+        this.playerID = variableHolder.getDrone().getOwnerUUID();
     }
 
     public String parse() {
@@ -53,9 +58,9 @@ public class TextVariableParser {
         relevantVariables.add(variable);
 
         if (variableHolder == null) {
-            String v1 = variable.startsWith("#") ? variable.substring(1) : variable;
-            GlobalVariableManager gvm = GlobalVariableManager.getInstance();
-            return gvm.hasItem(v1) ? stackToStr(gvm.getItem(v1), ext.equals("id")) : posToStr(gvm.getPos(v1), ext);
+            BlockPos pos = GlobalVariableHelper.getPos(playerID, variable, BlockPos.ZERO);
+            ItemStack stack = GlobalVariableHelper.getStack(playerID, variable);
+            return stack.isEmpty() ? posToStr(pos, ext) : stackToStr(stack, ext.equals("id"));
         } else {
             return variableHolder.hasCoordinate(variable) ?
                     posToStr(variableHolder.getCoordinate(variable), ext) :

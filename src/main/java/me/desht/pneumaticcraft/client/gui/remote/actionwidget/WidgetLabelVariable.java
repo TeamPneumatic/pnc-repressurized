@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.client.gui.remote.actionwidget;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetLabel;
+import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.variables.TextVariableParser;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.ITextComponent;
@@ -13,7 +14,7 @@ public class WidgetLabelVariable extends WidgetLabel {
     public WidgetLabelVariable(int x, int y, ITextComponent text) {
         super(x, y, text);
 
-        this.parser = new TextVariableParser(text.getString());
+        this.parser = new TextVariableParser(text.getString(), ClientUtils.getClientPlayer().getUniqueID());
         this.width = Minecraft.getInstance().fontRenderer.getStringWidth(parser.parse());
     }
 
