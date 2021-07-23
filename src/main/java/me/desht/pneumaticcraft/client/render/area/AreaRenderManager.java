@@ -25,6 +25,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
@@ -209,7 +210,9 @@ public enum AreaRenderManager {
                     ItemJackHammer.getBreakPositions(world, brtr.getPos(), brtr.getFace(), player.getHorizontalFacing(), digMode) :
                     Collections.emptySet();
             if (!posSet.isEmpty()) posSet.add(brtr.getPos());
-            jackhammerPositionShower = AreaRenderer.builder().withColor(0x20FFFFFF).withSize(1.01f).disableWriteMask().build(posSet);
+            AreaRenderer.Builder b = AreaRenderer.builder().withColor(0x20FFFFFF).withSize(1.01f).disableWriteMask();
+            if (state.getShape(world, brtr.getPos()) != (VoxelShapes.fullCube())) b = b.drawShapes();
+            jackhammerPositionShower = b.build(posSet);
             lastJackhammerDetails = new LastJackhammerDetails(brtr.getPos(), brtr.getFace(), digMode);
         }
         jackhammerPositionShower.render(matrixStack, buffer);
