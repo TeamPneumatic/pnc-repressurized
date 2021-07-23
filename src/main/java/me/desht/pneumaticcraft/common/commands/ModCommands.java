@@ -130,9 +130,10 @@ public class ModCommands {
         CommandSource source = ctx.getSource();
         if (!varName.startsWith("#") && !varName.startsWith("%")) {
             source.sendFeedback(xlate("pneumaticcraft.command.getGlobalVariable.prefixReminder").mergeStyle(TextFormatting.GOLD), false);
+            varName = "#" + varName;
         }
         try {
-            UUID id = varName.startsWith("%") ? null : ctx.getSource().asPlayer().getUniqueID();
+            UUID id = ctx.getSource().asPlayer().getUniqueID();
             BlockPos pos = GlobalVariableHelper.getPos(id, varName);
             ItemStack stack = GlobalVariableHelper.getStack(id, varName);
             if (pos != null) {

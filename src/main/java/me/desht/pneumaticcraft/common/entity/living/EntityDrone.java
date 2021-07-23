@@ -596,7 +596,7 @@ public class EntityDrone extends EntityDroneBase implements
     }
 
     public BlockPos getVariable(String varName) {
-        return aiManager.getCoordinate(varName);
+        return aiManager.getCoordinate(ownerUUID, varName);
     }
 
     private ResourceLocation getActiveProgramKey() {

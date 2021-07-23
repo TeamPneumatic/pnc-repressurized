@@ -3,53 +3,72 @@ package me.desht.pneumaticcraft.common.variables;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 
-import java.util.ArrayList;
+import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class GlobalVariableHelper {
     /**
      * Retrieve a blockpos variable from the GVM. The variable may start with "#" or "%" to indicate player-global
+     * or global respectively. Missing prefix defaults to player-global.
+     * @param id the ID of the owning player (ignored for "%" global variables)
+     * @param varName the variable name, optionally prefixed with "%" or "#"
+     * @param def default value if not present in the GVM
+     * @return the variable's value
+     */
+    public static BlockPos getPos(@Nullable UUID id, String varName, BlockPos def) {
+        GlobalVariableManager gvm = GlobalVariableManager.getInstance();
+        if (varName.startsWith("%")) {
+            return gvm.hasPos(varName.substring(1)) ? gvm.getPos(varName.substring(1)) : def;
+        }
+        if (id == null) return def;
+        if (varName.startsWith("#")) {
+            varName = varName.substring(1);
+        }
+        return gvm.hasPos(id, varName) ? gvm.getPos(id, varName) : def;
+    }
+
+    /**
+     * Retrieve a blockpos variable from the GVM. The variable may start with "#" or "%" to indicate player-global
+     * or global respectively. Missing prefix defaults to player-global.
+     * @param id the ID of the owning player (ignored for "%" global variables, must be a valid player UUID otherwise)
+     * @param varName the variable name, optionally prefixed with "%" or "#"
+     * @return the variable's value
+     */
+    public static BlockPos getPos(@Nullable UUID id, String varName) {
+        return getPos(id, varName, null);
+    }
+
+    /**
+     * Retrieve an itemstack variable from the GVM. The variable may start with "#" or "%" to indicate player-global
      * or global respectively. Missing prefix defaults to player-global.
      * @param id the ID of the owning player (ignored for "%" global variables, must be a valid player UUID otherwise)
      * @param varName the variable name, optionally prefixed with "%" or "#"
      * @param def default value if not present in the GVM
      * @return the variable's value
      */
-    public static BlockPos getPos(UUID id, String varName, BlockPos def) {
+    public static ItemStack getStack(@Nullable UUID id, String varName, ItemStack def) {
         GlobalVariableManager gvm = GlobalVariableManager.getInstance();
-        if (varName.startsWith("#")) {
-            return id != null && gvm.hasPos(id, varName.substring(1)) ? gvm.getPos(id, varName.substring(1)) : def;
-        } else if (varName.startsWith("%")) {
-            return gvm.hasPos(varName.substring(1)) ? gvm.getPos(varName.substring(1)) : def;
-        } else {
-            return gvm.hasPos(id, varName) ? gvm.getPos(id, varName) : def;
+        if (varName.startsWith("%")) {
+            return gvm.hasItem(varName.substring(1)) ? gvm.getItem(varName.substring(1)) : def;
         }
+        if (id == null) return def;
+        if (varName.startsWith("#")) {
+            varName = varName.substring(1);
+        }
+        return gvm.hasItem(id, varName) ? gvm.getItem(id, varName) : def;
     }
 
     /**
-     * Retrieve a blockpos variable from the GVM. The variable may start with "#" or "%" to indicate player-global
+     * Retrieve an itemstack variable from the GVM. The variable may start with "#" or "%" to indicate player-global
      * or global respectively. Missing prefix defaults to player-global.
      * @param id the ID of the owning player (ignored for "%" global variables, must be a valid player UUID otherwise)
      * @param varName the variable name, optionally prefixed with "%" or "#"
      * @return the variable's value
      */
-    public static BlockPos getPos(UUID id, String varName) {
-        return getPos(id, varName, null);
-    }
-
-    public static ItemStack getStack(UUID id, String varName, ItemStack def) {
-        GlobalVariableManager gvm = GlobalVariableManager.getInstance();
-        if (varName.startsWith("#")) {
-            return gvm.hasItem(id, varName.substring(1)) ? gvm.getItem(id, varName.substring(1)) : def;
-        } else if (varName.startsWith("%")) {
-            return gvm.hasItem(varName.substring(1)) ? gvm.getItem(varName.substring(1)) : def;
-        } else {
-            return gvm.hasItem(id, varName) ? gvm.getItem(id, varName) : def;
-        }
-    }
-
-    public static ItemStack getStack(UUID id, String varName) {
+    public static ItemStack getStack(@Nullable UUID id, String varName) {
         return getStack(id, varName, ItemStack.EMPTY);
     }
 
@@ -118,18 +137,15 @@ public class GlobalVariableHelper {
     }
 
     /**
-     * Given a list of var names, return a corresponding list of varname with the right prefix
+     * Given a list of prefixed var names, return a corresponding list of var names with a matching prefix character
      * @param varnames the var names
-     * @param playerGlobal true if player-global, false if server-global
-     * @return a list of prefixed var names
+     * @param playerGlobal true to extract player-global, false for server-global
+     * @return a list of unprefixed var names
      */
     public static List<String> extractVarnames(String[] varnames, boolean playerGlobal) {
-        List<String> res = new ArrayList<>();
-        for (String v : varnames) {
-            if (playerGlobal && v.startsWith("#") || !playerGlobal && v.startsWith("%")) {
-                res.add(v.substring(1));
-            }
-        }
-        return res;
+        return Arrays.stream(varnames)
+                .filter(v -> playerGlobal && v.startsWith("#") || !playerGlobal && v.startsWith("%"))
+                .map(v -> v.substring(1))
+                .collect(Collectors.toList());
     }
 }

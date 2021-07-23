@@ -62,9 +62,9 @@ public class TextVariableParser {
             ItemStack stack = GlobalVariableHelper.getStack(playerID, variable);
             return stack.isEmpty() ? posToStr(pos, ext) : stackToStr(stack, ext.equals("id"));
         } else {
-            return variableHolder.hasCoordinate(variable) ?
-                    posToStr(variableHolder.getCoordinate(variable), ext) :
-                    (variableHolder.hasStack(variable) ? stackToStr(variableHolder.getStack(variable), ext.equals("id")) : "");
+            return variableHolder.hasCoordinate(playerID, variable) ?
+                    posToStr(variableHolder.getCoordinate(playerID, variable), ext) :
+                    (variableHolder.hasStack(playerID, variable) ? stackToStr(variableHolder.getStack(playerID, variable), ext.equals("id")) : "");
         }
     }
 

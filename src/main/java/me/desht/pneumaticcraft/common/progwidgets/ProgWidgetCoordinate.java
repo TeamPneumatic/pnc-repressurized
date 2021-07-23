@@ -126,7 +126,7 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
 
     public BlockPos getCoordinate() {
         if (useVariable && aiManager != null) {
-            return aiManager.getCoordinate(variable);
+            return aiManager.getCoordinate(aiManager.getDrone().getOwnerUUID(), variable);
         } else {
             return getRawCoordinate();
         }

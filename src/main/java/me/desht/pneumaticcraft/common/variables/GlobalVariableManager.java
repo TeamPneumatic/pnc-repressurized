@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.common.variables;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import me.desht.pneumaticcraft.common.progwidgets.IVariableProvider;
+import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -247,28 +248,33 @@ public class GlobalVariableManager extends WorldSavedData implements IVariablePr
     }
 
     @Override
-    public boolean hasCoordinate(String varName) {
-        return globalVars.containsKey(varName);
+    public boolean hasCoordinate(UUID id, String varName) {
+        if (varName.startsWith("%")) return hasPos(varName);
+        return id == null ? warn(varName, false) : Boolean.valueOf(hasPos(id, varName));
     }
 
     @Override
-    public BlockPos getCoordinate(String varName) {
-        return getPos(varName);
+    public BlockPos getCoordinate(UUID id, String varName) {
+        if (varName.startsWith("%")) return getPos(varName);
+        return id == null ? warn(varName, BlockPos.ZERO) : getPos(id, varName);
     }
 
     @Override
-    public boolean hasStack(String varName) {
-        return globalItemVars.containsKey(varName);
+    public boolean hasStack(UUID id, String varName) {
+        if (varName.startsWith("%")) return hasItem(varName);
+        return id == null ? warn(varName, false) : Boolean.valueOf(hasItem(id, varName));
     }
 
     @Nonnull
     @Override
-    public ItemStack getStack(String varName) {
-        return getItem(varName);
+    public ItemStack getStack(UUID id, String varName) {
+        if (varName.startsWith("%")) return getItem(varName);
+        return id == null ? warn(varName, ItemStack.EMPTY) : getItem(id, varName);
     }
 
-    public ItemStack getStack(UUID ownerUUID, String varName) {
-        return getItem(ownerUUID, varName);
+    private <T> T warn(String varName, T ret) {
+        Log.warning("checking for player-global var " + varName + " with null player context");
+        return ret;
     }
 
     public boolean importGlobals(UUID playerID) {

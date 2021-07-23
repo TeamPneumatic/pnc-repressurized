@@ -6,13 +6,13 @@ import me.desht.pneumaticcraft.client.gui.GuiRemoteEditor;
 import me.desht.pneumaticcraft.client.gui.remote.actionwidget.ActionWidget;
 import me.desht.pneumaticcraft.client.gui.remote.actionwidget.IActionWidgetLabeled;
 import me.desht.pneumaticcraft.client.gui.widget.*;
+import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -66,7 +66,7 @@ public class GuiRemoteOptionBase<A extends ActionWidget<?>> extends GuiPneumatic
 
         addLabel(xlate("pneumaticcraft.gui.remote.enable"), guiLeft + 10, guiTop + 150);
         addLabel(title, width / 2, guiTop + 5, WidgetLabel.Alignment.CENTRE);
-        enableVarTypeButton = new WidgetButtonExtended(guiLeft + 10, guiTop + 158, 12, 14, getVarPrefix(playerGlobalEnableVar),
+        enableVarTypeButton = new WidgetButtonExtended(guiLeft + 10, guiTop + 158, 12, 14, GlobalVariableHelper.getVarPrefix(playerGlobalEnableVar),
                 b -> togglePlayerGlobalEnable()).setTooltipKey("pneumaticcraft.gui.remote.varType.tooltip");
         addButton(enableVarTypeButton);
 
@@ -81,8 +81,8 @@ public class GuiRemoteOptionBase<A extends ActionWidget<?>> extends GuiPneumatic
         addLabel(new StringTextComponent("Z:"), guiLeft + 124, guiTop + 186);
 
         enableField = new WidgetComboBox(font, guiLeft + 23, guiTop + 160, 147, 10);
-        enableField.setElements(extractVarnames(guiRemote.getContainer().variables, playerGlobalEnableVar));
-        enableField.setText(stripVarPrefix(actionWidget.getEnableVariable()));
+        enableField.setElements(GlobalVariableHelper.extractVarnames(guiRemote.getContainer().variables, playerGlobalEnableVar));
+        enableField.setText(GlobalVariableHelper.stripVarPrefix(actionWidget.getEnableVariable()));
         enableField.setTooltip(xlate("pneumaticcraft.gui.remote.enable.tooltip"));
         addButton(enableField);
 
@@ -124,7 +124,7 @@ public class GuiRemoteOptionBase<A extends ActionWidget<?>> extends GuiPneumatic
     public void onClose() {
         minecraft.keyboardListener.enableRepeatEvents(false);
 
-        actionWidget.setEnableVariable(getPrefixedVar(enableField.getText(), playerGlobalEnableVar));
+        actionWidget.setEnableVariable(GlobalVariableHelper.getPrefixedVar(enableField.getText(), playerGlobalEnableVar));
         actionWidget.setEnablingValue(xValueField.getValue(), yValueField.getValue(), zValueField.getValue());
         if (actionWidget instanceof IActionWidgetLabeled) {
             ((IActionWidgetLabeled) actionWidget).setText(new StringTextComponent(labelField.getText()));
@@ -141,34 +141,12 @@ public class GuiRemoteOptionBase<A extends ActionWidget<?>> extends GuiPneumatic
 
     private void togglePlayerGlobalEnable() {
         playerGlobalEnableVar = !playerGlobalEnableVar;
-        enableVarTypeButton.setMessage(new StringTextComponent(getVarPrefix(playerGlobalEnableVar)));
-        enableField.setElements(extractVarnames(guiRemote.getContainer().variables, playerGlobalEnableVar));
+        enableVarTypeButton.setMessage(new StringTextComponent(GlobalVariableHelper.getVarPrefix(playerGlobalEnableVar)));
+        enableField.setElements(GlobalVariableHelper.extractVarnames(guiRemote.getContainer().variables, playerGlobalEnableVar));
     }
 
     @Override
     public void closeScreen() {
         minecraft.displayGuiScreen(guiRemote);
-    }
-
-    String getPrefixedVar(String varName, boolean playerGlobal) {
-        return varName.isEmpty() ? "" : getVarPrefix(playerGlobal) + varName;
-    }
-
-    String getVarPrefix(boolean playerGlobal) {
-        return playerGlobal ? "#" : "%";
-    }
-
-    String stripVarPrefix(String varName) {
-        return varName.startsWith("#") || varName.startsWith("%") ? varName.substring(1) : varName;
-    }
-
-    List<String> extractVarnames(String[] varnames, boolean playerGlobal) {
-        List<String> res = new ArrayList<>();
-        for (String v : varnames) {
-            if (playerGlobal && v.startsWith("#") || !playerGlobal && v.startsWith("%")) {
-               res.add(v.substring(1));
-            }
-        }
-        return res;
     }
 }

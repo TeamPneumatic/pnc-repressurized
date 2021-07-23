@@ -16,6 +16,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.NBTUtil;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
@@ -58,19 +59,21 @@ public class ItemGPSTool extends Item implements IPositionProvider {
     public void addInformation(ItemStack stack, World worldIn, List<ITextComponent> infoList, ITooltipFlag par4) {
         super.addInformation(stack, worldIn, infoList, par4);
 
-        ClientUtils.addGuiContextSensitiveTooltip(stack, infoList);
-        BlockPos pos = getGPSLocation(stack);
-        if (pos != null) {
-            ITextComponent translated = new TranslationTextComponent(worldIn.getBlockState(pos).getBlock().getTranslationKey());
-            IFormattableTextComponent blockName = worldIn.getChunkProvider().isChunkLoaded(new ChunkPos(pos)) ?
-                    new StringTextComponent(" (").append(translated).appendString(")") :
-                    StringTextComponent.EMPTY.copyRaw();
-            String str = String.format("[%d, %d, %d]", pos.getX(), pos.getY(), pos.getZ());
-            infoList.add(new StringTextComponent(str).mergeStyle(TextFormatting.YELLOW).append(blockName.mergeStyle(TextFormatting.GREEN)));
-        }
-        String varName = getVariable(stack);
-        if (!varName.isEmpty()) {
-            infoList.add(xlate("pneumaticcraft.gui.tooltip.gpsTool.variable", varName));
+        if (worldIn != null) {
+            ClientUtils.addGuiContextSensitiveTooltip(stack, infoList);
+            BlockPos pos = getGPSLocation(ClientUtils.getClientPlayer(), stack);
+            if (pos != null) {
+                ITextComponent translated = new TranslationTextComponent(worldIn.getBlockState(pos).getBlock().getTranslationKey());
+                IFormattableTextComponent blockName = worldIn.getChunkProvider().isChunkLoaded(new ChunkPos(pos)) ?
+                        new StringTextComponent(" (").append(translated).appendString(")") :
+                        StringTextComponent.EMPTY.copyRaw();
+                String str = String.format("[%d, %d, %d]", pos.getX(), pos.getY(), pos.getZ());
+                infoList.add(new StringTextComponent(str).mergeStyle(TextFormatting.YELLOW).append(blockName.mergeStyle(TextFormatting.GREEN)));
+            }
+            String varName = getVariable(stack);
+            if (!varName.isEmpty()) {
+                infoList.add(xlate("pneumaticcraft.gui.tooltip.gpsTool.variable", varName));
+            }
         }
     }
 
@@ -78,7 +81,7 @@ public class ItemGPSTool extends Item implements IPositionProvider {
     public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean heldItem) {
         String var = getVariable(stack);
         if (!var.isEmpty() && !world.isRemote && entity instanceof PlayerEntity) {
-            BlockPos pos = GlobalVariableHelper.getPos(entity.getUniqueID(), var);
+            BlockPos pos = GlobalVariableHelper.getPos(entity.getUniqueID(), var, BlockPos.ZERO);
             setGPSLocation((PlayerEntity) entity, stack, pos, false);
         }
     }
@@ -107,7 +110,8 @@ public class ItemGPSTool extends Item implements IPositionProvider {
     }
 
     public static void setGPSLocation(PlayerEntity player, ItemStack gpsTool, BlockPos pos, boolean updateVarManager) {
-        gpsTool.getOrCreateTag().put("Pos", net.minecraft.nbt.NBTUtil.writeBlockPos(pos));
+//        gpsTool.getOrCreateTag().put("Pos", net.minecraft.nbt.NBTUtil.writeBlockPos(pos));
+        NBTUtils.setCompoundTag(gpsTool, "Pos", NBTUtil.writeBlockPos(pos));
         if (updateVarManager) {
             String var = getVariable(gpsTool);
             if (!var.isEmpty()) {
@@ -121,9 +125,9 @@ public class ItemGPSTool extends Item implements IPositionProvider {
     }
 
     public static String getVariable(ItemStack gpsTool) {
-        if (gpsTool.hasTag()) return "";
+        if (!gpsTool.hasTag()) return "";
         String varName = gpsTool.getTag().getString("variable");
-        if (!GlobalVariableHelper.hasPrefix(varName)) {
+        if (!varName.isEmpty() && !GlobalVariableHelper.hasPrefix(varName)) {
             // TODO remove in 1.17 - migrate old unprefixed varnames
             varName = "#" + varName;
             setVariable(gpsTool, varName);

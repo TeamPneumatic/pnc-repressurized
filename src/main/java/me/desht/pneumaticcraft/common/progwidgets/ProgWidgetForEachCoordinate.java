@@ -91,7 +91,7 @@ public class ProgWidgetForEachCoordinate extends ProgWidgetAreaItemBase implemen
     public IProgWidget getOutputWidget(IDroneBase drone, List<IProgWidget> allWidgets) {
         List<String> locations = getPossibleJumpLocations();
         if (locations.size() > 0 && ai != null
-                && (traversedPositions.size() == 1 || !aiManager.getCoordinate(elementVariable).equals(BlockPos.ZERO))) {
+                && (traversedPositions.size() == 1 || !aiManager.getCoordinate(drone.getOwnerUUID(), elementVariable).equals(BlockPos.ZERO))) {
             BlockPos pos = ai.getCurCoord();
             if (pos != null) {
                 aiManager.setCoordinate(elementVariable, pos);

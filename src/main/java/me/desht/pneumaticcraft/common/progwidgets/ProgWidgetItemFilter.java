@@ -83,7 +83,7 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
 
     @Nonnull
     public ItemStack getFilter() {
-        return variable.isEmpty() ? filter : aiManager != null ? aiManager.getStack(variable) : ItemStack.EMPTY;
+        return variable.isEmpty() ? filter : aiManager != null ? aiManager.getStack(aiManager.getDrone().getOwnerUUID(), variable) : ItemStack.EMPTY;
     }
 
     public ItemStack getRawFilter() {

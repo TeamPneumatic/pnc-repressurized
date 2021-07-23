@@ -4,6 +4,7 @@ import me.desht.pneumaticcraft.client.gui.GuiRemoteEditor;
 import me.desht.pneumaticcraft.client.gui.remote.actionwidget.ActionWidgetVariable;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetComboBox;
+import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
 import net.minecraft.util.text.StringTextComponent;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -31,22 +32,22 @@ public class GuiRemoteVariable<A extends ActionWidgetVariable<?>> extends GuiRem
         addButton(varTypeButton);
 
         variableField = new WidgetComboBox(font, guiLeft + 23, guiTop + 80, 147, 10);
-        variableField.setElements(extractVarnames(guiRemote.getContainer().variables, playerGlobal));
-        variableField.setText(stripVarPrefix(actionWidget.getVariableName()));
+        variableField.setElements(GlobalVariableHelper.extractVarnames(guiRemote.getContainer().variables, playerGlobal));
+        variableField.setText(GlobalVariableHelper.stripVarPrefix(actionWidget.getVariableName()));
         variableField.setTooltip(xlate("pneumaticcraft.gui.remote.variable.tooltip"));
         addButton(variableField);
     }
 
     @Override
     public void onClose() {
-        actionWidget.setVariableName(getPrefixedVar(variableField.getText(), playerGlobal));
+        actionWidget.setVariableName(GlobalVariableHelper.getPrefixedVar(variableField.getText(), playerGlobal));
 
         super.onClose();
     }
 
     private void togglePlayerGlobal() {
         playerGlobal = !playerGlobal;
-        variableField.setElements(extractVarnames(guiRemote.getContainer().variables, playerGlobal));
-        varTypeButton.setMessage(new StringTextComponent(getVarPrefix(playerGlobal)));
+        variableField.setElements(GlobalVariableHelper.extractVarnames(guiRemote.getContainer().variables, playerGlobal));
+        varTypeButton.setMessage(new StringTextComponent(GlobalVariableHelper.getVarPrefix(playerGlobal)));
     }
 }

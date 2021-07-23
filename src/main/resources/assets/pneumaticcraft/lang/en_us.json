@@ -1644,7 +1644,7 @@
    "pneumaticcraft.gui.tooltip.etching_tank.acid_usage" : "Etching Acid usage: ~%s mB/sec",
    "pneumaticcraft.gui.tooltip.etching_tank.process_time" : "Etching time: %d secs",
    "pneumaticcraft.gui.tooltip.fluid" : "Fluid: ",
-   "pneumaticcraft.gui.tooltip.gpsTool.variable" : "▶ Linked variable: \"#%s\"",
+   "pneumaticcraft.gui.tooltip.gpsTool.variable" : "▶ Linked variable: \"%s\"",
    "pneumaticcraft.gui.tooltip.gunAmmo.ammoRemaining" : "Ammo: §f%d / %d",
    "pneumaticcraft.gui.tooltip.gunAmmo.combineWithPotion" : "§oCraft with a Potion to tip the bullets.",
    "pneumaticcraft.gui.tooltip.gunAmmo" : "§dPotion type:",

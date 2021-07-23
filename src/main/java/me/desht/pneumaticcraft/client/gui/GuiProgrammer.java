@@ -1047,7 +1047,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
     }
 
     private boolean mouseClickedWithPosProvider(double mouseX, double mouseY, IProgWidget hovered, ItemStack heldItem) {
-        ProgWidgetArea areaToolWidget = heldItem.getItem() instanceof ItemGPSAreaTool ? ItemGPSAreaTool.getArea(heldItem) : null;
+        ProgWidgetArea areaToolWidget = heldItem.getItem() instanceof ItemGPSAreaTool ? ItemGPSAreaTool.getArea(minecraft.player, heldItem) : null;
         if (hovered != null) {
             // clicked an existing widget: update any area or coordinate widgets from the held item
             if (areaToolWidget != null && hovered instanceof ProgWidgetArea) {

@@ -38,8 +38,9 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     public int x1, y1, z1, x2, y2, z2;
     private String coord1Variable = "", coord2Variable = "";
     private DroneAIManager aiManager;
-    private IVariableProvider variableProvider;
     public AreaType type = new AreaTypeBox();
+    private IVariableProvider variableProvider;
+    private UUID playerID;  // for player-global variable context
 
     // map string area types to internal numeric ID's (for more efficient sync)
     private static final Map<String, Integer> areaTypeToID = new HashMap<>();
@@ -186,13 +187,13 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         if (coord1Variable.isEmpty()) {
             c1 = x1 != 0 || y1 != 0 || z1 != 0 ? new BlockPos(x1, y1, z1) : null;
         } else {
-            c1 = variableProvider != null ? variableProvider.getCoordinate(coord1Variable) : null;
+            c1 = variableProvider != null ? variableProvider.getCoordinate(playerID, coord1Variable) : null;
         }
         BlockPos c2;
         if (coord2Variable.isEmpty()) {
             c2 = x2 != 0 || y2 != 0 || z2 != 0 ? new BlockPos(x2, y2, z2) : null;
         } else {
-            c2 = variableProvider != null ? variableProvider.getCoordinate(coord2Variable) : null;
+            c2 = variableProvider != null ? variableProvider.getCoordinate(playerID, coord2Variable) : null;
         }
         if (c1 == null && c2 == null) {
             return new BlockPos[]{null, null};
@@ -424,7 +425,8 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         variables.add(coord2Variable);
     }
 
-    public void setVariableProvider(IVariableProvider provider) {
+    public void setVariableProvider(IVariableProvider provider, UUID playerID) {
         this.variableProvider = provider;
+        this.playerID = playerID;
     }
 }

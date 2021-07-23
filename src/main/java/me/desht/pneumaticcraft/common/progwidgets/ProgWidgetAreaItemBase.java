@@ -136,9 +136,9 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget
             if (!widget.type.isDeterministic()) canCache = false;
             if (aiManager != null) {
                 if (!widget.getCoord1Variable().equals(""))
-                    areaVariableStates.put(widget.getCoord1Variable(), aiManager.getCoordinate(widget.getCoord1Variable()));
+                    areaVariableStates.put(widget.getCoord1Variable(), aiManager.getCoordinate(aiManager.getDrone().getOwnerUUID(), widget.getCoord1Variable()));
                 if (!widget.getCoord2Variable().equals(""))
-                    areaVariableStates.put(widget.getCoord2Variable(), aiManager.getCoordinate(widget.getCoord2Variable()));
+                    areaVariableStates.put(widget.getCoord2Variable(), aiManager.getCoordinate(aiManager.getDrone().getOwnerUUID(), widget.getCoord2Variable()));
             }
             widget = (ProgWidgetArea) widget.getConnectedParameters()[0];
         }
@@ -147,9 +147,9 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget
             if (!widget.type.isDeterministic()) canCache = false;
             if (aiManager != null) {
                 if (!widget.getCoord1Variable().equals(""))
-                    areaVariableStates.put(widget.getCoord1Variable(), aiManager.getCoordinate(widget.getCoord1Variable()));
+                    areaVariableStates.put(widget.getCoord1Variable(), aiManager.getCoordinate(aiManager.getDrone().getOwnerUUID(), widget.getCoord1Variable()));
                 if (!widget.getCoord2Variable().equals(""))
-                    areaVariableStates.put(widget.getCoord2Variable(), aiManager.getCoordinate(widget.getCoord2Variable()));
+                    areaVariableStates.put(widget.getCoord2Variable(), aiManager.getCoordinate(aiManager.getDrone().getOwnerUUID(), widget.getCoord2Variable()));
             }
             widget = (ProgWidgetArea) widget.getConnectedParameters()[0];
         }
@@ -158,7 +158,7 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget
     private boolean updateVariables() {
         boolean varChanged = false;
         for (Map.Entry<String, BlockPos> entry : areaVariableStates.entrySet()) {
-            BlockPos newValue = aiManager.getCoordinate(entry.getKey());
+            BlockPos newValue = aiManager.getCoordinate(aiManager.getDrone().getOwnerUUID(), entry.getKey());
             if (!newValue.equals(entry.getValue())) {
                 varChanged = true;
                 entry.setValue(newValue);

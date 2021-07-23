@@ -26,7 +26,7 @@ public class PacketChangeGPSToolCoordinate extends LocationIntPacket {
 
     public PacketChangeGPSToolCoordinate(BlockPos pos, Hand hand, String variable, int index) {
         super(pos);
-        Validate.isTrue(GlobalVariableHelper.hasPrefix(variable), "variable missing # or % prefix!");
+        Validate.isTrue(variable.isEmpty() || GlobalVariableHelper.hasPrefix(variable), "variable missing # or %% prefix!");
         this.hand = hand;
         this.variable = variable;
         this.index = index;
@@ -57,7 +57,7 @@ public class PacketChangeGPSToolCoordinate extends LocationIntPacket {
                     ItemGPSTool.setGPSLocation(player, playerStack, pos);
                 }
             } else if (playerStack.getItem() == ModItems.GPS_AREA_TOOL.get()) {
-                ItemGPSAreaTool.setVariable(playerStack, variable, index);
+                ItemGPSAreaTool.setVariable(ctx.get().getSender(), playerStack, variable, index);
                 if (pos.getY() >= 0) {
                     ItemGPSAreaTool.setGPSPosAndNotify(player, pos, hand, index);
                 }

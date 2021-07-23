@@ -155,12 +155,12 @@ public class DroneAIManager implements IVariableProvider {
     }
 
     @Override
-    public boolean hasCoordinate(String varName) {
+    public boolean hasCoordinate(UUID id, String varName) {
         return getCoordinateInternal(varName) != null;
     }
 
     @Override
-    public BlockPos getCoordinate(String varName) {
+    public BlockPos getCoordinate(UUID id, String varName) {
         BlockPos pos = getCoordinateInternal(varName);
         return pos != null ? pos : BlockPos.ZERO;
     }
@@ -191,12 +191,12 @@ public class DroneAIManager implements IVariableProvider {
     }
 
     @Override
-    public boolean hasStack(String varName) {
-        return !getStack(varName).isEmpty();
+    public boolean hasStack(UUID id, String varName) {
+        return !getStack(id, varName).isEmpty();
     }
 
     @Override
-    public ItemStack getStack(String varName) {
+    public ItemStack getStack(UUID id, String varName) {
         ItemStack item;
         if (varName.startsWith("$")) {
             SpecialVariableRetrievalEvent.ItemVariable.Drone event = new SpecialVariableRetrievalEvent.ItemVariable.Drone(drone, varName.substring(1));
