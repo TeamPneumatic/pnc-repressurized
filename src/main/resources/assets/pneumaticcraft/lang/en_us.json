@@ -740,7 +740,7 @@
    "pneumaticcraft.command.getGlobalVariable.missing" : "No such variable: \"%s\"",
    "pneumaticcraft.command.getGlobalVariable.outputPos" : "Variable name: \"%s\": Coordinate: %s",
    "pneumaticcraft.command.getGlobalVariable.outputItem" : "Variable name: \"%s\": Item: %s",
-   "pneumaticcraft.command.getGlobalVariable.prefixReminder" : "No prefix used, assuming player-global. Use '#' for player-global, '%' for global.",
+   "pneumaticcraft.command.getGlobalVariable.prefixReminder" : "No prefix used, assuming player-global. Use '#' for player-global, '%' for server-global.",
    "pneumaticcraft.command.setGlobalVariable.output" : "Variable \"%s\" has been set to %s.",
    "pneumaticcraft.death.attack.acid1" : "%1$s was etched to death!",
    "pneumaticcraft.death.attack.acid2" : "%1$s turned into a PCB!",

@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.client.gui.remote.actionwidget;
 
 import me.desht.pneumaticcraft.client.gui.GuiRemoteEditor;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
+import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.Widget;
@@ -71,15 +71,17 @@ public abstract class ActionWidget<W extends Widget> {
     public boolean isEnabled() {
         if (enableVariable.isEmpty()) return true;
 
-        boolean playerVar = true;
-        if (enableVariable.startsWith("%")) {
-            playerVar = false;
-            enableVariable = enableVariable.substring(1);
-        } else if (enableVariable.startsWith("#")) {
-            enableVariable = enableVariable.substring(1);
-        }
-        GlobalVariableManager gvm = GlobalVariableManager.getInstance();
-        BlockPos pos = playerVar ? gvm.getPos(ClientUtils.getClientPlayer().getUniqueID(), enableVariable) : gvm.getPos(enableVariable);
+//        boolean playerVar = true;
+//        if (enableVariable.startsWith("%")) {
+//            playerVar = false;
+//            enableVariable = enableVariable.substring(1);
+//        } else if (enableVariable.startsWith("#")) {
+//            enableVariable = enableVariable.substring(1);
+//        }
+//        GlobalVariableManager gvm = GlobalVariableManager.getInstance();
+//        BlockPos pos = playerVar ? gvm.getPos(ClientUtils.getClientPlayer().getUniqueID(), enableVariable) : gvm.getPos(enableVariable);
+
+        BlockPos pos = GlobalVariableHelper.getPos(ClientUtils.getClientPlayer().getUniqueID(), enableVariable);
         return pos.equals(enablingValue);
     }
 

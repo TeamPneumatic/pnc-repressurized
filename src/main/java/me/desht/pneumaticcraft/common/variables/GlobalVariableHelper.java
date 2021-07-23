@@ -1,8 +1,11 @@
 package me.desht.pneumaticcraft.common.variables;
 
+import me.desht.pneumaticcraft.common.progwidgets.IVariableProvider;
+import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
@@ -23,7 +26,10 @@ public class GlobalVariableHelper {
         if (varName.startsWith("%")) {
             return gvm.hasPos(varName.substring(1)) ? gvm.getPos(varName.substring(1)) : def;
         }
-        if (id == null) return def;
+        if (id == null) {
+            Log.warning("querying player-global var %s with no player context?", varName);
+            return def;
+        }
         if (varName.startsWith("#")) {
             varName = varName.substring(1);
         }
@@ -43,7 +49,7 @@ public class GlobalVariableHelper {
 
     /**
      * Retrieve an itemstack variable from the GVM. The variable may start with "#" or "%" to indicate player-global
-     * or global respectively. Missing prefix defaults to player-global.
+     * or global respectively. Missing prefix defaults to player-global "#".
      * @param id the ID of the owning player (ignored for "%" global variables, must be a valid player UUID otherwise)
      * @param varName the variable name, optionally prefixed with "%" or "#"
      * @param def default value if not present in the GVM
@@ -52,13 +58,16 @@ public class GlobalVariableHelper {
     public static ItemStack getStack(@Nullable UUID id, String varName, ItemStack def) {
         GlobalVariableManager gvm = GlobalVariableManager.getInstance();
         if (varName.startsWith("%")) {
-            return gvm.hasItem(varName.substring(1)) ? gvm.getItem(varName.substring(1)) : def;
+            return gvm.hasStack(varName.substring(1)) ? gvm.getStack(varName.substring(1)) : def;
         }
-        if (id == null) return def;
+        if (id == null) {
+            Log.warning("querying player-global var %s with no player context?", varName);
+            return def;
+        }
         if (varName.startsWith("#")) {
             varName = varName.substring(1);
         }
-        return gvm.hasItem(id, varName) ? gvm.getItem(id, varName) : def;
+        return gvm.hasStack(id, varName) ? gvm.getStack(id, varName) : def;
     }
 
     /**
@@ -75,11 +84,22 @@ public class GlobalVariableHelper {
     public static void setPos(UUID id, String varName, BlockPos pos) {
         GlobalVariableManager gvm = GlobalVariableManager.getInstance();
         if (varName.startsWith("#") && id != null) {
-            gvm.set(id, varName.substring(1), pos);
+            gvm.setPos(id, varName.substring(1), pos);
         } else if (varName.startsWith("%")) {
-            gvm.set(varName.substring(1), pos);
+            gvm.setPos(varName.substring(1), pos);
         } else if (id != null) {
-            gvm.set(id, varName, pos);
+            gvm.setPos(id, varName, pos);
+        }
+    }
+
+    public static void setStack(UUID id, String varName, ItemStack stack) {
+        GlobalVariableManager gvm = GlobalVariableManager.getInstance();
+        if (varName.startsWith("#") && id != null) {
+            gvm.setStack(id, varName.substring(1), stack);
+        } else if (varName.startsWith("%")) {
+            gvm.setStack(varName.substring(1), stack);
+        } else if (id != null) {
+            gvm.setStack(id, varName, stack);
         }
     }
 
@@ -91,13 +111,13 @@ public class GlobalVariableHelper {
         return getPos(id, varName, BlockPos.ZERO).getX();
     }
 
-    public static void setBool(UUID id, String varName, boolean val) {
-        setInt(id, varName, val ? 1 : 0);
-    }
-
-    public static void setInt(UUID id, String varName, int val) {
-        setPos(id, varName, new BlockPos(val, 0, 0));
-    }
+//    public static void setBool(UUID id, String varName, boolean val) {
+//        setInt(id, varName, val ? 1 : 0);
+//    }
+//
+//    public static void setInt(UUID id, String varName, int val) {
+//        setPos(id, varName, new BlockPos(val, 0, 0));
+//    }
 
     /**
      * Given a plain variable name, add the "#" or "%" prefix as appropriate
@@ -147,5 +167,34 @@ public class GlobalVariableHelper {
                 .filter(v -> playerGlobal && v.startsWith("#") || !playerGlobal && v.startsWith("%"))
                 .map(v -> v.substring(1))
                 .collect(Collectors.toList());
+    }
+
+    public static IVariableProvider getVariableProvider() {
+        return VariableProviderWrapper.INSTANCE;
+    }
+
+    private enum VariableProviderWrapper implements IVariableProvider {
+        INSTANCE;
+
+        @Override
+        public boolean hasCoordinate(UUID id, String varName) {
+            return GlobalVariableHelper.getPos(id, varName) != null;
+        }
+
+        @Override
+        public BlockPos getCoordinate(UUID id, String varName) {
+            return GlobalVariableHelper.getPos(id, varName);
+        }
+
+        @Override
+        public boolean hasStack(UUID id, String varName) {
+            return !GlobalVariableHelper.getStack(id, varName).isEmpty();
+        }
+
+        @Nonnull
+        @Override
+        public ItemStack getStack(UUID id, String varName) {
+            return GlobalVariableHelper.getStack(id, varName);
+        }
     }
 }

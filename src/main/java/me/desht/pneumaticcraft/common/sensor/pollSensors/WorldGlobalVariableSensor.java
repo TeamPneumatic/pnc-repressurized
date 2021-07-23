@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.sensor.pollSensors;
 import com.google.common.collect.ImmutableSet;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.universal_sensor.IPollSensorSetting;
-import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
+import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
@@ -37,7 +37,9 @@ public class WorldGlobalVariableSensor implements IPollSensorSetting {
 
     @Override
     public int getRedstoneValue(World world, BlockPos pos, int sensorRange, String textBoxText) {
-        return GlobalVariableManager.getInstance().getBoolean(textBoxText) ? 15 : 0;
+        // TODO player-global
+        return GlobalVariableHelper.getBool(null, "%" + textBoxText) ? 15 : 0;
+//        return GlobalVariableManager.getInstance().getBoolean(textBoxText) ? 15 : 0;
     }
 
     @Override

@@ -2,8 +2,6 @@ package me.desht.pneumaticcraft.common.variables;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
-import me.desht.pneumaticcraft.common.progwidgets.IVariableProvider;
-import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -17,14 +15,13 @@ import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.thread.EffectiveSide;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
-import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * Manages global variables. These are prefixed with '#'.
  */
-public class GlobalVariableManager extends WorldSavedData implements IVariableProvider {
+public class GlobalVariableManager extends WorldSavedData /*implements IVariableProvider*/ {
     public static final int MAX_VARIABLE_LEN = 64;
 
     private static final String DATA_KEY = "PneumaticCraftGlobalVariables";
@@ -60,84 +57,64 @@ public class GlobalVariableManager extends WorldSavedData implements IVariablePr
         return overworld;
     }
 
-    public void set(String varName, boolean value) {
-        set(varName, value ? 1 : 0);
+    boolean hasPos(String varName) {
+        return globalVars.containsKey(varName);
     }
 
-    public void set(String varName, int value) {
-        set(varName, value, 0, 0);
+    boolean hasPos(UUID ownerUUID, String varName) {
+        return playerVars.contains(ownerUUID, varName);
     }
 
-    public void set(String varName, int x, int y, int z) {
-        set(varName, new BlockPos(x, y, z));
+    BlockPos getPos(String varName) {
+        return globalVars.getOrDefault(varName, BlockPos.ZERO);
     }
 
-    public void set(String varName, BlockPos pos) {
+    BlockPos getPos(UUID ownerUUID, String varName) {
+        BlockPos pos = playerVars.get(ownerUUID, varName);
+        return pos == null ? BlockPos.ZERO : pos;
+    }
+
+    void setPos(String varName, BlockPos pos) {
         if (!varName.isEmpty()) {
             globalVars.put(varName, pos);
             markDirty();
         }
     }
 
-    public void set(UUID ownerUUID, String varName, BlockPos coord) {
+    void setPos(UUID ownerUUID, String varName, BlockPos coord) {
         if (!varName.isEmpty()) {
             playerVars.put(ownerUUID, varName, coord);
             markDirty();
         }
     }
 
-    public void set(String varName, ItemStack item) {
+    void setStack(String varName, ItemStack item) {
         if (!varName.isEmpty()) {
             globalItemVars.put(varName, item);
             markDirty();
         }
     }
 
-    public void set(UUID ownerUUID, String varName, ItemStack item) {
+    void setStack(UUID ownerUUID, String varName, ItemStack item) {
         if (!varName.isEmpty()) {
             playerItemVars.put(ownerUUID, varName, item);
             markDirty();
         }
     }
 
-    public boolean getBoolean(String varName) {
-        return getInteger(varName) != 0;
-    }
-
-    public int getInteger(String varName) {
-        return getPos(varName).getX();
-    }
-
-    public boolean hasPos(String varName) {
-        return globalVars.containsKey(varName);
-    }
-
-    public boolean hasPos(UUID ownerUUID, String varName) {
-        return playerVars.contains(ownerUUID, varName);
-    }
-
-    public boolean hasItem(String varName) {
+    boolean hasStack(String varName) {
         return globalItemVars.containsKey(varName);
     }
 
-    public boolean hasItem(UUID ownerUUID, String varName) {
+    boolean hasStack(UUID ownerUUID, String varName) {
         return playerItemVars.contains(ownerUUID, varName);
     }
 
-    public BlockPos getPos(String varName) {
-        return globalVars.getOrDefault(varName, BlockPos.ZERO);
-    }
-
-    public BlockPos getPos(UUID ownerUUID, String varName) {
-        BlockPos pos = playerVars.get(ownerUUID, varName);
-        return pos == null ? BlockPos.ZERO : pos;
-    }
-
-    public ItemStack getItem(String varName) {
+    ItemStack getStack(String varName) {
         return globalItemVars.getOrDefault(varName, ItemStack.EMPTY);
     }
 
-    ItemStack getItem(UUID ownerUUID, String varName) {
+    ItemStack getStack(UUID ownerUUID, String varName) {
         ItemStack stack = playerItemVars.get(ownerUUID, varName);
         return stack == null ? ItemStack.EMPTY : stack;
     }
@@ -245,36 +222,6 @@ public class GlobalVariableManager extends WorldSavedData implements IVariablePr
         varNames.addAll(playerVars.row(player.getUniqueID()).keySet().stream().filter(s -> !s.isEmpty()).map(s -> "#" + s).collect(Collectors.toList()));
         varNames.addAll(playerItemVars.row(player.getUniqueID()).keySet().stream().filter(s -> !s.isEmpty()).map(s -> "#" + s).collect(Collectors.toList()));
         return varNames.toArray(new String[0]);
-    }
-
-    @Override
-    public boolean hasCoordinate(UUID id, String varName) {
-        if (varName.startsWith("%")) return hasPos(varName);
-        return id == null ? warn(varName, false) : Boolean.valueOf(hasPos(id, varName));
-    }
-
-    @Override
-    public BlockPos getCoordinate(UUID id, String varName) {
-        if (varName.startsWith("%")) return getPos(varName);
-        return id == null ? warn(varName, BlockPos.ZERO) : getPos(id, varName);
-    }
-
-    @Override
-    public boolean hasStack(UUID id, String varName) {
-        if (varName.startsWith("%")) return hasItem(varName);
-        return id == null ? warn(varName, false) : Boolean.valueOf(hasItem(id, varName));
-    }
-
-    @Nonnull
-    @Override
-    public ItemStack getStack(UUID id, String varName) {
-        if (varName.startsWith("%")) return getItem(varName);
-        return id == null ? warn(varName, ItemStack.EMPTY) : getItem(id, varName);
-    }
-
-    private <T> T warn(String varName, T ret) {
-        Log.warning("checking for player-global var " + varName + " with null player context");
-        return ret;
     }
 
     public boolean importGlobals(UUID playerID) {

@@ -152,6 +152,7 @@ public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidge
         return tooltipText;
     }
 
+    @Override
     public int getWidth() {
         return width;
     }

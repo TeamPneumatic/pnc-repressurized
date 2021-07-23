@@ -10,7 +10,6 @@ import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
-import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -80,7 +79,7 @@ public class ItemGPSAreaTool extends Item implements IPositionProvider {
         IFormattableTextComponent blockName = worldIn.getChunkProvider().isChunkLoaded(new ChunkPos(pos)) ?
                 new StringTextComponent(" (").append(translated).appendString(")") :
                 StringTextComponent.EMPTY.copyRaw();
-        String str = String.format("P%d%s: [%d, %d, %d]", index + 1, TextFormatting.YELLOW.toString(), pos.getX(), pos.getY(), pos.getZ());
+        String str = String.format("P%d%s: [%d, %d, %d]", index + 1, TextFormatting.YELLOW, pos.getX(), pos.getY(), pos.getZ());
         return new StringTextComponent(str).mergeStyle(index == 0 ? TextFormatting.RED : TextFormatting.GREEN).append(blockName.mergeStyle(TextFormatting.GREEN));
     }
 
@@ -125,7 +124,7 @@ public class ItemGPSAreaTool extends Item implements IPositionProvider {
         Validate.isTrue(stack.getItem() instanceof ItemGPSAreaTool);
         ProgWidgetArea area = new ProgWidgetArea();
         if (stack.hasTag()) {
-            area.setVariableProvider(GlobalVariableManager.getInstance(), player.getUniqueID());  // allows client to read vars for rendering purposes
+            area.setVariableProvider(GlobalVariableHelper.getVariableProvider(), player.getUniqueID());  // allows client to read vars for rendering purposes
             area.readFromNBT(stack.getTag());
         }
         return area;
@@ -182,10 +181,11 @@ public class ItemGPSAreaTool extends Item implements IPositionProvider {
 
     @Override
     public void syncVariables(ServerPlayerEntity player, ItemStack stack) {
-        String v1 = getVariable(player, stack, 0);
+        ProgWidgetArea area = getArea(player, stack);
+        String v1 = area.getCoord1Variable();
+        String v2 = area.getCoord2Variable();
         if (!v1.isEmpty()) PneumaticRegistry.getInstance().syncGlobalVariable(player, v1);
-        String v2 = getVariable(player, stack, 1);
-        if (!v1.isEmpty()) PneumaticRegistry.getInstance().syncGlobalVariable(player, v2);
+        if (!v2.isEmpty()) PneumaticRegistry.getInstance().syncGlobalVariable(player, v2);
     }
 
     @Override

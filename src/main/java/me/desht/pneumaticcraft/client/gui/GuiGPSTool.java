@@ -47,6 +47,9 @@ public class GuiGPSTool extends GuiPneumaticScreenBase {
     @Override
     public void init() {
         super.init();
+
+        xSize = width;
+
         int[] oldText = new int[3];
         if (textFields[0] == null) {
             oldText[0] = oldGPSLoc.getX();
@@ -81,17 +84,16 @@ public class GuiGPSTool extends GuiPneumaticScreenBase {
         }
 
         if (variableField != null) oldVarName = variableField.getText();
-        variableField = new WidgetTextField(font, xMiddle - 50, yMiddle + 60, 100, font.FONT_HEIGHT);
+        variableField = new WidgetTextField(font, xMiddle - 50, yMiddle + 60, 100, font.FONT_HEIGHT + 1);
         playerGlobal = !oldVarName.startsWith("%");
         oldVarName = GlobalVariableHelper.stripVarPrefix(oldVarName);
         variableField.setText(oldVarName);
         addButton(variableField);
 
-        varTypeButton = new WidgetButtonExtended(variableField.x - 15, yMiddle + 59, 12, 14, playerGlobal ? "#" : "%",
-                b -> toggleVarType());
+        varTypeButton = new WidgetButtonExtended(variableField.x - 13, yMiddle + 58, 12, 14, playerGlobal ? "#" : "%",
+                b -> toggleVarType())
+                .setTooltipKey("pneumaticcraft.gui.remote.varType.tooltip");
         addButton(varTypeButton);
-//        ITextComponent var = xlate("pneumaticcraft.gui.progWidget.coordinate.variable").appendString(" #");
-//        addButton(new WidgetLabel(variableField.x - 1 - font.getStringPropertyWidth(var), yMiddle + 61, var, 0xc0c0c0));
     }
 
     protected void toggleVarType() {

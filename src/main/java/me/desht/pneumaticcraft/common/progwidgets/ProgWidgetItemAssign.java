@@ -79,7 +79,7 @@ public class ProgWidgetItemAssign extends ProgWidget implements IVariableSetWidg
     public IProgWidget getOutputWidget(IDroneBase drone, List<IProgWidget> allWidgets) {
         if (!variable.equals("")) {
             ProgWidgetItemFilter filter = (ProgWidgetItemFilter) getConnectedParameters()[0];
-            aiManager.setItem(variable, filter != null ? filter.getFilter() : drone.getInv().getStackInSlot(0).copy());
+            aiManager.setStack(variable, filter != null ? filter.getFilter() : drone.getInv().getStackInSlot(0).copy());
         }
         return super.getOutputWidget(drone, allWidgets);
     }
