@@ -59,6 +59,9 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class PneumaticCraftUtils {
+    // an impossible blockpos to indicate invalid positions
+    private static final BlockPos INVALID_POS = new BlockPos(0, Integer.MIN_VALUE, 0);
+
     /**
      * Returns the EnumFacing of the given entity.
      *
@@ -577,7 +580,15 @@ public class PneumaticCraftUtils {
     }
 
     public static String posToString(BlockPos pos) {
-        return String.format("%d,%d,%d", pos.getX(), pos.getY(), pos.getZ());
+        return isValidPos(pos) ? String.format("%d,%d,%d", pos.getX(), pos.getY(), pos.getZ()) : "-";
+    }
+
+    public static boolean isValidPos(BlockPos pos) {
+        return pos != null && pos != INVALID_POS;
+    }
+
+    public static BlockPos invalidPos() {
+        return INVALID_POS;
     }
 
     public static <T extends TileEntity> Optional<T> getTileEntityAt(IBlockReader w, BlockPos pos, Class<T> cls) {

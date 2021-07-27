@@ -135,10 +135,7 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget
         while (widget != null) {
             if (!widget.type.isDeterministic()) canCache = false;
             if (aiManager != null) {
-                if (!widget.getCoord1Variable().equals(""))
-                    areaVariableStates.put(widget.getCoord1Variable(), aiManager.getCoordinate(aiManager.getDrone().getOwnerUUID(), widget.getCoord1Variable()));
-                if (!widget.getCoord2Variable().equals(""))
-                    areaVariableStates.put(widget.getCoord2Variable(), aiManager.getCoordinate(aiManager.getDrone().getOwnerUUID(), widget.getCoord2Variable()));
+                initVars(widget);
             }
             widget = (ProgWidgetArea) widget.getConnectedParameters()[0];
         }
@@ -146,12 +143,17 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget
         while (widget != null) {
             if (!widget.type.isDeterministic()) canCache = false;
             if (aiManager != null) {
-                if (!widget.getCoord1Variable().equals(""))
-                    areaVariableStates.put(widget.getCoord1Variable(), aiManager.getCoordinate(aiManager.getDrone().getOwnerUUID(), widget.getCoord1Variable()));
-                if (!widget.getCoord2Variable().equals(""))
-                    areaVariableStates.put(widget.getCoord2Variable(), aiManager.getCoordinate(aiManager.getDrone().getOwnerUUID(), widget.getCoord2Variable()));
+                initVars(widget);
             }
             widget = (ProgWidgetArea) widget.getConnectedParameters()[0];
+        }
+    }
+
+    private void initVars(ProgWidgetArea widget) {
+        for (int i = 0; i < 2; i++) {
+            String varName = widget.getVarName(i);
+            if (!varName.isEmpty())
+                areaVariableStates.put(varName, aiManager.getCoordinate(aiManager.getDrone().getOwnerUUID(), varName));
         }
     }
 

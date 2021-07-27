@@ -30,12 +30,12 @@ public class GuiGPSAreaTool extends GuiGPSTool {
 
     private GuiGPSAreaTool(ItemStack stack, Hand hand, int index) {
         super(stack.getDisplayName(), hand,
-                ItemGPSAreaTool.getGPSLocation(Minecraft.getInstance().player, stack, index),
+                ItemGPSAreaTool.getGPSLocation(Minecraft.getInstance().player, stack, index).orElse(BlockPos.ZERO),
                 ItemGPSAreaTool.getVariable(Minecraft.getInstance().player, stack, index));
 
         this.index = index;
         for (int i = 0; i <= 1; i++) {
-            p1p2Pos[i] = ItemGPSAreaTool.getGPSLocation(Minecraft.getInstance().player, stack, i);
+            p1p2Pos[i] = ItemGPSAreaTool.getGPSLocation(Minecraft.getInstance().player, stack, i).orElse(BlockPos.ZERO);
             vars[i] = ItemGPSAreaTool.getVariable(Minecraft.getInstance().player, stack, i);
             playerGlobals[i] = !vars[i].startsWith("%");
             vars[i] = GlobalVariableHelper.stripVarPrefix(vars[i]);
@@ -84,7 +84,7 @@ public class GuiGPSAreaTool extends GuiGPSTool {
 
     private boolean changed(int index) {
         ItemStack stack = minecraft.player.getHeldItem(hand);
-        BlockPos p = ItemGPSAreaTool.getGPSLocation(minecraft.player, stack, index);
+        BlockPos p = ItemGPSAreaTool.getGPSLocation(minecraft.player, stack, index).orElse(BlockPos.ZERO);
         String var = ItemGPSAreaTool.getVariable(ClientUtils.getClientPlayer(), stack, index);
         String var2 = GlobalVariableHelper.getPrefixedVar(vars[index], playerGlobals[index]);
         return !p.equals(p1p2Pos[index]) || !var.equals(var2);

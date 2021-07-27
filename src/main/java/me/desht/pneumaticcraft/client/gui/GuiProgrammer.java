@@ -913,15 +913,19 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         for (IProgWidget widget : te.progWidgets) {
             if (widget instanceof ProgWidgetArea) {
                 ProgWidgetArea area = (ProgWidgetArea) widget;
-                if (area.getCoord1Variable().equals("") && (area.x1 != 0 || area.y1 != 0 || area.z1 != 0)) {
-                    BlockPos offset = new BlockPos(area.x1 - baseCoord.getX(), area.y1 - baseCoord.getY(), area.z1 - baseCoord.getZ());
-                    String var = getOffsetVariable(offsetToVariableNames, baseWidget.getVariable(), offset);
-                    if (!simulate) area.setCoord1Variable(var);
+                if (area.getVarName(0).isEmpty()) {
+                    area.getPos(0).ifPresent(pos -> {
+                        BlockPos offset = pos.subtract(baseCoord);
+                        String var = makeOffsetVariable(offsetToVariableNames, baseWidget.getVariable(), offset);
+                        if (!simulate) area.setVarName(0, var);
+                    });
                 }
-                if (area.getCoord2Variable().equals("") && (area.x2 != 0 || area.y2 != 0 || area.z2 != 0)) {
-                    BlockPos offset = new BlockPos(area.x2 - baseCoord.getX(), area.y2 - baseCoord.getY(), area.z2 - baseCoord.getZ());
-                    String var = getOffsetVariable(offsetToVariableNames, baseWidget.getVariable(), offset);
-                    if (!simulate) area.setCoord2Variable(var);
+                if (area.getVarName(1).isEmpty()) {
+                    area.getPos(1).ifPresent(pos -> {
+                        BlockPos offset = pos.subtract(baseCoord);
+                        String var = makeOffsetVariable(offsetToVariableNames, baseWidget.getVariable(), offset);
+                        if (!simulate) area.setVarName(1, var);
+                    });
                 }
             } else if (widget instanceof ProgWidgetCoordinate && baseWidget.getConnectedParameters()[0] != widget) {
                 ProgWidgetCoordinate coordinate = (ProgWidgetCoordinate) widget;
@@ -937,7 +941,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
                             tooltip.add(xlate("pneumaticcraft.gui.programmer.button.convertToRelative.coordIsChangedWarning", coordStr));
                         if (!simulate) {
                             BlockPos offset = coord.subtract(baseCoord);
-                            String var = getOffsetVariable(offsetToVariableNames, baseWidget.getVariable(), offset);
+                            String var = makeOffsetVariable(offsetToVariableNames, baseWidget.getVariable(), offset);
                             coordinate.setVariable(var);
                             coordinate.setUsingVariable(true);
                         }
@@ -988,7 +992,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
         return true;
     }
 
-    private String getOffsetVariable(Map<BlockPos, String> offsetToVariableNames, String baseVariable, BlockPos offset) {
+    private String makeOffsetVariable(Map<BlockPos, String> offsetToVariableNames, String baseVariable, BlockPos offset) {
         if (offset.equals(BlockPos.ZERO))
             return baseVariable;
         return offsetToVariableNames.computeIfAbsent(offset, k -> "var" + (offsetToVariableNames.size() + 1));
@@ -1064,10 +1068,10 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
                     BlockPos pos = ItemGPSTool.getGPSLocation(heldItem);
                     String var = ItemGPSTool.getVariable(heldItem);
                     ProgWidgetArea areaHovered = (ProgWidgetArea) hovered;
-                    if (pos != null) areaHovered.setP1(pos);
-                    areaHovered.setP2(BlockPos.ZERO);
-                    areaHovered.setCoord1Variable(var);
-                    areaHovered.setCoord2Variable("");
+                    if (pos != null) areaHovered.setPos(0, pos);
+                    areaHovered.setPos(1, null);
+                    areaHovered.setVarName(0, var);
+                    areaHovered.setVarName(1, "");
                 }
                 NetworkHandler.sendToServer(new PacketProgrammerUpdate(te));
             }
@@ -1076,39 +1080,31 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
             List<IProgWidget> toCreate = new ArrayList<>();
             if (areaToolWidget != null) {
                 if (Screen.hasShiftDown()) {
-                    ProgWidgetCoordinate pc = new ProgWidgetCoordinate();
-                    pc.setCoordinate(new BlockPos(areaToolWidget.x1, areaToolWidget.y1, areaToolWidget.z1));
-                    toCreate.add(pc);
-                    if (areaToolWidget.x2 != 0 && areaToolWidget.y2 != 0 && areaToolWidget.z2 != 0) {
-                        ProgWidgetCoordinate pc2 = new ProgWidgetCoordinate();
-                        pc2.setCoordinate(new BlockPos(areaToolWidget.x2, areaToolWidget.y2, areaToolWidget.z2));
-                        toCreate.add(pc2);
-                    }
+                    toCreate.add(ProgWidgetCoordinate.fromPos(areaToolWidget.getPos(0).orElse(BlockPos.ZERO)));
+                    areaToolWidget.getPos(1).ifPresent(pos -> toCreate.add(ProgWidgetCoordinate.fromPos(pos)));
                 } else {
                     toCreate.add(areaToolWidget);
                 }
             } else if (heldItem.getItem() == ModItems.GPS_TOOL.get()) {
                 if (Screen.hasShiftDown()) {
-                    BlockPos pos = ItemGPSTool.getGPSLocation(heldItem);
-                    ProgWidgetArea areaWidget = ProgWidgetArea.fromPositions(pos, BlockPos.ZERO);
+                    ProgWidgetArea areaWidget = ProgWidgetArea.fromPosition(ItemGPSTool.getGPSLocation(heldItem));
                     String var = ItemGPSTool.getVariable(heldItem);
-                    if (!var.isEmpty()) areaWidget.setCoord1Variable(var);
+                    if (!var.isEmpty()) areaWidget.setVarName(0, var);
                     toCreate.add(areaWidget);
                 } else {
-                    ProgWidgetCoordinate coordWidget = new ProgWidgetCoordinate();
-                    coordWidget.loadFromGPSTool(heldItem);
-                    toCreate.add(coordWidget);
+                    toCreate.add(ProgWidgetCoordinate.fromGPSTool(heldItem));
                 }
             }
+            int n = te.progWidgets.size();
             for (int i = 0; i < toCreate.size(); i++) {
                 IProgWidget p = toCreate.get(i);
                 p.setX((int) (mouseX - guiLeft - p.getWidth() / 3d));
                 p.setY((int) (mouseY - guiTop - p.getHeight() / 4d) + i * p.getHeight());
-                if (!programmerUnit.isOutsideProgrammingArea(p)) {
+                if (!programmerUnit.isOutsideProgrammingArea(p) && isValidPlaced(p)) {
                     te.progWidgets.add(p);
                 }
             }
-            if (!toCreate.isEmpty()) {
+            if (te.progWidgets.size() > n) {
                 NetworkHandler.sendToServer(new PacketProgrammerUpdate(te));
             }
         }

@@ -15,6 +15,7 @@ import me.desht.pneumaticcraft.common.progwidgets.area.AreaType;
 import me.desht.pneumaticcraft.common.progwidgets.area.AreaType.AreaTypeWidget;
 import me.desht.pneumaticcraft.common.progwidgets.area.AreaType.AreaTypeWidgetEnum;
 import me.desht.pneumaticcraft.common.progwidgets.area.AreaType.AreaTypeWidgetInteger;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.item.ItemStack;
@@ -70,8 +71,8 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
         Set<String> variables = guiProgrammer == null ? Collections.emptySet() : guiProgrammer.te.getAllVariables();
         variableField1.setElements(variables);
         variableField2.setElements(variables);
-        variableField1.setText(progWidget.getCoord1Variable());
-        variableField2.setText(progWidget.getCoord2Variable());
+        variableField1.setText(progWidget.getVarName(0));
+        variableField2.setText(progWidget.getVarName(1));
         if (advancedMode) {
             addButton(variableField1);
             addButton(variableField2);
@@ -97,36 +98,23 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
 
         if (invSearchGui != null) {
             // returning from GPS selection GUI; copy the selected blockpos to the progwidget
-            BlockPos searchPos = invSearchGui.getBlockPos();
-            if (pointSearched == 0) {
-                progWidget.x1 = searchPos.getX();
-                progWidget.y1 = searchPos.getY();
-                progWidget.z1 = searchPos.getZ();
-            } else {
-                progWidget.x2 = searchPos.getX();
-                progWidget.y2 = searchPos.getY();
-                progWidget.z2 = searchPos.getZ();
-            }
+            progWidget.setPos(pointSearched, invSearchGui.getBlockPos());
         }
 
         // blockpos labels
-        String l1 = "P1: " + TextFormatting.DARK_BLUE + formatPos(progWidget.x1, progWidget.y1, progWidget.z1);
+        String l1 = "P1: " + TextFormatting.DARK_BLUE + formatPos(progWidget.getPos(0).orElse(PneumaticCraftUtils.invalidPos()));
         addLabel(new StringTextComponent(l1), guiLeft + 8, guiTop + 20);
-        String l2 = "P2: " + TextFormatting.DARK_BLUE + formatPos(progWidget.x2, progWidget.y2, progWidget.z2);
+        String l2 = "P2: " + TextFormatting.DARK_BLUE + formatPos(progWidget.getPos(1).orElse(PneumaticCraftUtils.invalidPos()));
         addLabel(new StringTextComponent(l2), guiLeft + 133, guiTop + 20);
     }
 
-    private String formatPos(int x, int y, int z) {
-        return x == 0 && y == 0 && z == 0 ? "-" : String.format("[ %d, %d, %d ]", x, y, z);
+    private String formatPos(BlockPos pos) {
+        return PneumaticCraftUtils.isValidPos(pos) ? String.format("[ %d, %d, %d ]", pos.getX(), pos.getY(), pos.getZ()) : "-";
     }
 
     private void openInvSearchGUI(int which) {
         ItemStack gpsStack = new ItemStack(ModItems.GPS_TOOL.get());
-        if (which == 0) {
-            ItemGPSTool.setGPSLocation(ClientUtils.getClientPlayer(), gpsStack, new BlockPos(progWidget.x1, progWidget.y1, progWidget.z1));
-        } else {
-            ItemGPSTool.setGPSLocation(ClientUtils.getClientPlayer(), gpsStack, new BlockPos(progWidget.x2, progWidget.y2, progWidget.z2));
-        }
+        ItemGPSTool.setGPSLocation(ClientUtils.getClientPlayer(), gpsStack, progWidget.getPos(which).orElse(BlockPos.ZERO));
         ClientUtils.openContainerGui(ModContainers.INVENTORY_SEARCHER.get(), new StringTextComponent("Inventory Searcher (GPS)"));
         if (minecraft.currentScreen instanceof GuiInventorySearcher) {
             invSearchGui = (GuiInventorySearcher) minecraft.currentScreen;
@@ -220,8 +208,8 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
 
     @Override
     public void onClose() {
-        progWidget.setCoord1Variable(variableField1.getText());
-        progWidget.setCoord2Variable(variableField2.getText());
+        progWidget.setVarName(0, variableField1.getText());
+        progWidget.setVarName(1, variableField2.getText());
         saveWidgets();
 
         super.onClose();

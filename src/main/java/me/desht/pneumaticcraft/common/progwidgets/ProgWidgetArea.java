@@ -8,6 +8,7 @@ import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.progwidgets.area.*;
 import me.desht.pneumaticcraft.common.progwidgets.area.AreaType.AreaTypeWidget;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import me.desht.pneumaticcraft.lib.Log;
 import me.desht.pneumaticcraft.lib.Textures;
@@ -35,9 +36,9 @@ import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
  * The Area widget itself
  */
 public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariableWidget {
-    public int x1, y1, z1, x2, y2, z2;
-    private String coord1Variable = "", coord2Variable = "";
     private DroneAIManager aiManager;
+    private final BlockPos[] pos = new BlockPos[] { null, null };
+    private final String[] varNames = new String[] { "", "" };
     public AreaType type = new AreaTypeBox();
     private IVariableProvider variableProvider;
     private UUID playerID;  // for player-global variable context
@@ -91,24 +92,22 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
 
     public static ProgWidgetArea fromPositions(BlockPos p1, BlockPos p2) {
         ProgWidgetArea area = new ProgWidgetArea();
-        area.setP1(p1);
-        area.setP2(p2);
+        area.setPos(0, p1);
+        area.setPos(1, p2);
         return area;
     }
 
     @Override
     public List<ITextComponent> getExtraStringInfo() {
         List<ITextComponent> res = new ArrayList<>();
-        if (!coord1Variable.isEmpty()) {
-            res.add(new StringTextComponent("\"" + coord1Variable + "\""));
-        } else if (x1 != 0 && y1 != 0 && z1 != 0) {
-            res.add(new StringTextComponent(String.format("%d, %d, %d", x1, y1, z1)));
+        for (int i = 0; i < 2; i++) {
+            if (!varNames[i].isEmpty()) {
+                res.add(new StringTextComponent("\"" + varNames[i] + "\""));
+            } else if (PneumaticCraftUtils.isValidPos(pos[i])) {
+                res.add(new StringTextComponent(PneumaticCraftUtils.posToString(pos[i])));
+            }
         }
-        if (!coord2Variable.isEmpty()) {
-            res.add(new StringTextComponent("\"" + coord2Variable + "\""));
-            res.add(new StringTextComponent(type.toString()));
-        } else if (x2 != 0 && y2 != 0 && z2 != 0) {
-            res.add(new StringTextComponent(String.format("%d, %d, %d", x2, y2, z2)));
+        if (res.size() == 2) {
             res.add(new StringTextComponent(type.toString()));
         }
         return res;
@@ -118,24 +117,16 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     public void getTooltip(List<ITextComponent> curTooltip) {
         super.getTooltip(curTooltip);
 
-        String c1;
-        if (coord1Variable.isEmpty()) {
-            c1 = x1 != 0 || y1 != 0 || z1 != 0 ? String.format("P1: [ %d, %d, %d ]", x1, y1, z1) : null;
-        } else {
-            c1 = "P1: var \"" + coord1Variable + "\"";
+        int n = curTooltip.size();
+        for (int i = 0; i < 2; i++) {
+            String text = varNames[i].isEmpty() ?
+                    pos[i] == null ? null : PneumaticCraftUtils.posToString(pos[i]) :
+                    String.format("P%d: var \"%s\"", i, varNames[i]);
+            if (text != null) {
+                curTooltip.add(new StringTextComponent(text));
+            }
         }
-        String c2;
-        if (coord2Variable.isEmpty()) {
-            c2 = x2 != 0 || y2 != 0 || z2 != 0 ? String.format("P2: [ %d, %d, %d ]", x2, y2, z2) : null;
-        } else {
-            c2 = "P2: var \"" + coord2Variable + "\"";
-        }
-
-        if (c1 != null) {
-            curTooltip.add(new StringTextComponent(c1));
-        }
-        if (c2 != null) {
-            curTooltip.add(new StringTextComponent(c2));
+        if (curTooltip.size() - n == 2) {
             addAreaTypeTooltip(curTooltip);
         }
     }
@@ -153,7 +144,7 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     @Override
     public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
-        if (coord1Variable.isEmpty() && coord2Variable.isEmpty() && x1 == 0 && y1 == 0 && z1 == 0 && x2 == 0 && y2 == 0 && z2 == 0) {
+        if (varNames[0].isEmpty() && varNames[1].isEmpty() && pos[0] == null && pos[1] == null) {
             curInfo.add(xlate("pneumaticcraft.gui.progWidget.area.error.noArea"));
         }
         if (!(type instanceof AreaTypeBox)) {
@@ -170,39 +161,19 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         }
     }
 
-    public void setP1(BlockPos p) {
-        x1 = p.getX();
-        y1 = p.getY();
-        z1 = p.getZ();
-    }
-
-    public void setP2(BlockPos p) {
-        x2 = p.getX();
-        y2 = p.getY();
-        z2 = p.getZ();
-    }
-
     private BlockPos[] getAreaPoints() {
-        BlockPos c1;
-        if (coord1Variable.isEmpty()) {
-            c1 = x1 != 0 || y1 != 0 || z1 != 0 ? new BlockPos(x1, y1, z1) : null;
-        } else {
-            c1 = variableProvider != null ? variableProvider.getCoordinate(playerID, coord1Variable) : null;
+        BlockPos[] points = new BlockPos[2];
+        for (int i = 0; i < 2; i++) {
+            points[i] = varNames[i].isEmpty() ? pos[i] : variableProvider != null ? variableProvider.getCoordinate(playerID, varNames[i]) : null;
         }
-        BlockPos c2;
-        if (coord2Variable.isEmpty()) {
-            c2 = x2 != 0 || y2 != 0 || z2 != 0 ? new BlockPos(x2, y2, z2) : null;
-        } else {
-            c2 = variableProvider != null ? variableProvider.getCoordinate(playerID, coord2Variable) : null;
-        }
-        if (c1 == null && c2 == null) {
+        if (points[0] == null && points[1] == null) {
             return new BlockPos[]{null, null};
-        } else if (c1 == null) {
-            return new BlockPos[]{c2, null};
-        } else if (c2 == null) {
-            return new BlockPos[]{c1, null};
+        } else if (points[0] == null) {
+            return new BlockPos[]{points[1], null};
+        } else if (points[1] == null) {
+            return new BlockPos[]{points[0], null};
         } else {
-            return new BlockPos[]{c1, c2};
+            return points;
         }
     }
 
@@ -316,63 +287,69 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     @Override
     public void writeToPacket(PacketBuffer buf) {
         super.writeToPacket(buf);
-        buf.writeInt(x1);
-        buf.writeInt(y1);
-        buf.writeInt(z1);
+        BlockPos pos1 = getPos(0).orElse(BlockPos.ZERO);
+        BlockPos pos2 = getPos(1).orElse(BlockPos.ZERO);
+        buf.writeBlockPos(pos1);
         // looks weird but this ensures the vast majority of offsets can be encoded into one byte
         // (keep numbers positive for best varint results)
-        buf.writeVarInt(x1 - x2 + 127);
-        buf.writeVarInt(y1 - y2 + 127);
-        buf.writeVarInt(z1 - z2 + 127);
+        BlockPos offset = pos1.subtract(pos2).add(127, 127, 127);
+        buf.writeBlockPos(offset);
+//        buf.writeVarInt(x1 - x2 + 127);
+//        buf.writeVarInt(y1 - y2 + 127);
+//        buf.writeVarInt(z1 - z2 + 127);
         buf.writeVarInt(areaTypeToID.get(type.getName()));
         type.writeToPacket(buf);
-        buf.writeString(coord1Variable);
-        buf.writeString(coord2Variable);
+        buf.writeString(varNames[0]);
+        buf.writeString(varNames[1]);
     }
 
     @Override
     public void readFromPacket(PacketBuffer buf) {
         super.readFromPacket(buf);
-        x1 = buf.readInt();
-        y1 = buf.readInt();
-        z1 = buf.readInt();
-        x2 = x1 - (buf.readVarInt() - 127);
-        y2 = y1 - (buf.readVarInt() - 127);
-        z2 = z1 - (buf.readVarInt() - 127);
+        pos[0] = buf.readBlockPos();
+        BlockPos offset = buf.readBlockPos().add(-127, -127, -127);
+        pos[1] = pos[0].subtract(offset);
+//        x2 = x1 - (buf.readVarInt() - 127);
+//        y2 = y1 - (buf.readVarInt() - 127);
+//        z2 = z1 - (buf.readVarInt() - 127);
         type = createType(buf.readVarInt());
         type.readFromPacket(buf);
-        coord1Variable = buf.readString(GlobalVariableManager.MAX_VARIABLE_LEN);
-        coord2Variable = buf.readString(GlobalVariableManager.MAX_VARIABLE_LEN);
+        varNames[0] = buf.readString(GlobalVariableManager.MAX_VARIABLE_LEN);
+        varNames[1] = buf.readString(GlobalVariableManager.MAX_VARIABLE_LEN);
     }
 
     @Override
     public void writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
-        tag.putInt("x1", x1);
-        tag.putInt("y1", y1);
-        tag.putInt("z1", z1);
-        tag.putInt("x2", x2);
-        tag.putInt("y2", y2);
-        tag.putInt("z2", z2);
+        getPos(0).ifPresent(pos -> {
+            tag.putInt("x1", pos.getX());
+            tag.putInt("y1", pos.getY());
+            tag.putInt("z1", pos.getZ());
+        });
+        getPos(1).ifPresent(pos -> {
+            tag.putInt("x2", pos.getX());
+            tag.putInt("y2", pos.getY());
+            tag.putInt("z2", pos.getZ());
+        });
         tag.putString("type", type.getName());
         type.writeToNBT(tag);
-        if (!coord1Variable.isEmpty()) tag.putString("coord1Variable", coord1Variable);
-        if (!coord2Variable.isEmpty()) tag.putString("coord2Variable", coord2Variable);
+        if (!varNames[0].isEmpty()) tag.putString("coord1Variable", varNames[0]);
+        if (!varNames[1].isEmpty()) tag.putString("coord2Variable", varNames[1]);
     }
 
     @Override
     public void readFromNBT(CompoundNBT tag) {
         super.readFromNBT(tag);
-        x1 = tag.getInt("x1");
-        y1 = tag.getInt("y1");
-        z1 = tag.getInt("z1");
-        x2 = tag.getInt("x2");
-        y2 = tag.getInt("y2");
-        z2 = tag.getInt("z2");
+        if (tag.contains("x1")) {
+            pos[0] = new BlockPos(tag.getInt("x1"), tag.getInt("y1"), tag.getInt("z1"));
+        }
+        if (tag.contains("x2")) {
+            pos[1] = new BlockPos(tag.getInt("x2"), tag.getInt("y2"), tag.getInt("z2"));
+        }
         type = createType(tag.getString("type"));
         type.readFromNBT(tag);
-        coord1Variable = tag.getString("coord1Variable");
-        coord2Variable = tag.getString("coord2Variable");
+        varNames[0] = tag.getString("coord1Variable");
+        varNames[1] = tag.getString("coord2Variable");
     }
 
     public static AreaType createType(String id) {
@@ -397,20 +374,20 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         return DyeColor.GREEN;
     }
 
-    public String getCoord1Variable() {
-        return coord1Variable;
+    public void setPos(int index, BlockPos newPos) {
+        pos[index] = newPos;
     }
 
-    public void setCoord1Variable(String coord1Variable) {
-        this.coord1Variable = coord1Variable;
+    public Optional<BlockPos> getPos(int index) {
+        return Optional.ofNullable(pos[index]);
     }
 
-    public String getCoord2Variable() {
-        return coord2Variable;
+    public String getVarName(int index) {
+        return varNames[index];
     }
 
-    public void setCoord2Variable(String coord2Variable) {
-        this.coord2Variable = coord2Variable;
+    public void setVarName(int index, String varName) {
+        varNames[index] = varName;
     }
 
     @Override
@@ -421,8 +398,8 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
 
     @Override
     public void addVariables(Set<String> variables) {
-        variables.add(coord1Variable);
-        variables.add(coord2Variable);
+        variables.add(varNames[0]);
+        variables.add(varNames[1]);
     }
 
     public void setVariableProvider(IVariableProvider provider, UUID playerID) {

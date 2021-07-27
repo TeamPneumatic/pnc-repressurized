@@ -105,10 +105,10 @@ public enum AreaRenderManager {
         ItemStack curItem = getHeldPositionProvider(player);
         if (curItem.getItem() instanceof ItemGPSAreaTool) {
             // show the raw P1/P2 positions; the area is shown by getHeldPositionProvider()
-            BlockPos p1 = ItemGPSAreaTool.getGPSLocation(player, curItem, 0);
-            BlockPos p2 = ItemGPSAreaTool.getGPSLocation(player, curItem, 1);
-            AreaRenderer.builder().withColor(0x80FF6060).xray().build(p1).render(matrixStack, buffer);
-            AreaRenderer.builder().withColor(0x8060FF60).xray().build(p2).render(matrixStack, buffer);
+            ItemGPSAreaTool.getGPSLocation(player, curItem, 0)
+                    .ifPresent(pos -> AreaRenderer.builder().withColor(0x80FF6060).xray().build(pos).render(matrixStack, buffer));
+            ItemGPSAreaTool.getGPSLocation(player, curItem, 1)
+                    .ifPresent(pos -> AreaRenderer.builder().withColor(0x8060FF60).xray().build(pos).render(matrixStack, buffer));
         }
     }
 

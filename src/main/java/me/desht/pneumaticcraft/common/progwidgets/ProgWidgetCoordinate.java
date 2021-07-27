@@ -33,6 +33,18 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
         super(ModProgWidgets.COORDINATE.get());
     }
 
+    public static ProgWidgetCoordinate fromPos(BlockPos pos) {
+        ProgWidgetCoordinate w = new ProgWidgetCoordinate();
+        w.setCoordinate(pos);
+        return w;
+    }
+
+    public static ProgWidgetCoordinate fromGPSTool(ItemStack gpsTool) {
+        ProgWidgetCoordinate w = new ProgWidgetCoordinate();
+        w.loadFromGPSTool(gpsTool);
+        return w;
+    }
+
     @Override
     public boolean hasStepInput() {
         return false;
