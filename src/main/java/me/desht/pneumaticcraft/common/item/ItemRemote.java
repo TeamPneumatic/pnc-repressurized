@@ -47,8 +47,8 @@ public class ItemRemote extends Item {
     @Override
     public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand handIn) {
         ItemStack stack = player.getHeldItem(handIn);
-        if (!world.isRemote) {
-            openGui(player, stack, handIn);
+        if (player instanceof ServerPlayerEntity) {
+            openGui((ServerPlayerEntity) player, stack, handIn);
         }
         return ActionResult.resultSuccess(stack);
     }
@@ -70,15 +70,12 @@ public class ItemRemote extends Item {
                 player.sendStatusMessage(xlate("pneumaticcraft.gui.remote.cantBindSecurityStation"), true);
                 return ActionResultType.FAIL;
             }
-        } else if (!world.isRemote) {
-            openGui(player, remote, ctx.getHand());
+        } else if (player instanceof ServerPlayerEntity) {
+            openGui((ServerPlayerEntity) player, remote, ctx.getHand());
         }
         return ActionResultType.SUCCESS;
     }
 
-    /**
-     * allows items to add custom lines of information to the mouseover description
-     */
     @Override
     public void addInformation(ItemStack remote, World world, List<ITextComponent> curInfo, ITooltipFlag moreInfo) {
         super.addInformation(remote, world, curInfo, moreInfo);
@@ -91,13 +88,13 @@ public class ItemRemote extends Item {
         }
     }
 
-    private void openGui(PlayerEntity player, ItemStack remote, Hand hand) {
+    private void openGui(ServerPlayerEntity player, ItemStack remote, Hand hand) {
         if (player.isCrouching()) {
             if (isAllowedToEdit(player, remote)) {
-                NetworkHooks.openGui((ServerPlayerEntity) player, new RemoteEditorContainerProvider(remote, hand), buf -> toBytes(buf, player, hand, true));
+                NetworkHooks.openGui(player, new RemoteEditorContainerProvider(remote, hand), buf -> toBytes(buf, player, hand, true));
             }
         } else {
-            NetworkHooks.openGui((ServerPlayerEntity) player, new RemoteContainerProvider(remote, hand), buf -> toBytes(buf, player, hand, false));
+            NetworkHooks.openGui(player, new RemoteContainerProvider(remote, hand), buf -> toBytes(buf, player, hand, false));
         }
     }
 

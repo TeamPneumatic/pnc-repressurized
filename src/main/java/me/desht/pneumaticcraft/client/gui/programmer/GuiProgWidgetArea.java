@@ -114,7 +114,7 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
 
     private void openInvSearchGUI(int which) {
         ItemStack gpsStack = new ItemStack(ModItems.GPS_TOOL.get());
-        ItemGPSTool.setGPSLocation(ClientUtils.getClientPlayer(), gpsStack, progWidget.getPos(which).orElse(BlockPos.ZERO));
+        ItemGPSTool.setGPSLocation(ClientUtils.getClientPlayer().getUniqueID(), gpsStack, progWidget.getPos(which).orElse(BlockPos.ZERO));
         ClientUtils.openContainerGui(ModContainers.INVENTORY_SEARCHER.get(), new StringTextComponent("Inventory Searcher (GPS)"));
         if (minecraft.currentScreen instanceof GuiInventorySearcher) {
             invSearchGui = (GuiInventorySearcher) minecraft.currentScreen;
@@ -153,7 +153,7 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
                 curY += font.FONT_HEIGHT + 20;
             } else if (areaTypeWidget instanceof AreaTypeWidgetEnum<?>) {
                 AreaTypeWidgetEnum<?> enumWidget = (AreaTypeWidgetEnum<?>) areaTypeWidget;
-                WidgetComboBox enumCbb = new WidgetComboBox(font, x, curY, 80, font.FONT_HEIGHT + 1).setFixedOptions();
+                WidgetComboBox enumCbb = new WidgetComboBox(font, x, curY, 80, font.FONT_HEIGHT + 1).setFixedOptions(true);
                 enumCbb.setElements(getEnumNames(enumWidget.enumClass));
                 enumCbb.setText(enumWidget.readAction.get().toString());
                 addButton(enumCbb);

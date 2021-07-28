@@ -91,7 +91,8 @@ public class PneumaticCraftAPIHandler implements PneumaticRegistry.IPneumaticCra
 
     @Override
     public void syncGlobalVariable(ServerPlayerEntity player, String varName) {
-        NetworkHandler.sendToPlayer(new PacketSetGlobalVariable(varName, GlobalVariableHelper.getPos(player.getUniqueID(), varName)), player);
+        BlockPos pos = GlobalVariableHelper.getPos(player.getUniqueID(), varName, BlockPos.ZERO);
+        NetworkHandler.sendToPlayer(new PacketSetGlobalVariable(varName, pos), player);
     }
 
     @Override

@@ -333,8 +333,16 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         });
         tag.putString("type", type.getName());
         type.writeToNBT(tag);
-        if (!varNames[0].isEmpty()) tag.putString("coord1Variable", varNames[0]);
-        if (!varNames[1].isEmpty()) tag.putString("coord2Variable", varNames[1]);
+        if (!varNames[0].isEmpty()) {
+            tag.putString("coord1Variable", varNames[0]);
+        } else {
+            tag.remove("coord1Variable");
+        }
+        if (!varNames[1].isEmpty()) {
+            tag.putString("coord2Variable", varNames[1]);
+        } else {
+            tag.remove("coord2Variable");
+        }
     }
 
     @Override

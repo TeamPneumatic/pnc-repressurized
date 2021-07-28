@@ -92,7 +92,8 @@ public class ContainerRemote extends ContainerPneumaticBase<TileEntityBase> {
                 lastValues[i] = newValue;
                 listeners.stream()
                         .filter(listener -> listener instanceof ServerPlayerEntity)
-                        .forEach(player -> NetworkHandler.sendToPlayer(new PacketSetGlobalVariable(varName, newValue), (ServerPlayerEntity) player));
+                        .map(listener -> (ServerPlayerEntity) listener)
+                        .forEach(player -> NetworkHandler.sendToPlayer(new PacketSetGlobalVariable(varName, newValue), player));
             }
         }
     }

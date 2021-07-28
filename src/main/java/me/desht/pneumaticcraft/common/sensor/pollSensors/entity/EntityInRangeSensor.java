@@ -9,7 +9,6 @@ import java.util.List;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class EntityInRangeSensor extends EntityPollSensor {
-
     private EntityFilter filter;
 
     @Override
@@ -25,6 +24,16 @@ public class EntityInRangeSensor extends EntityPollSensor {
     @Override
     public boolean isEntityFilter() {
         return true;
+    }
+
+    @Override
+    public String getHelpText() {
+        return "pneumaticcraft.gui.entityFilter.helpText";
+    }
+
+    @Override
+    public String getHelpPromptText() {
+        return "pneumaticcraft.gui.entityFilter.holdF1";
     }
 
     @Override

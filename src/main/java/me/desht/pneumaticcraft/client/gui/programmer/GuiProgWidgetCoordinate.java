@@ -84,7 +84,7 @@ public class GuiProgWidgetCoordinate extends GuiProgWidgetAreaShow<ProgWidgetCoo
             invSearchGui.setStackPredicate(itemStack -> itemStack.getItem() instanceof IPositionProvider);
             BlockPos area = progWidget.getRawCoordinate();
             ItemStack gpsStack = new ItemStack(ModItems.GPS_TOOL.get());
-            ItemGPSTool.setGPSLocation(ClientUtils.getClientPlayer(), gpsStack, area);
+            ItemGPSTool.setGPSLocation(ClientUtils.getClientPlayer().getUniqueID(), gpsStack, area);
             invSearchGui.setSearchStack(ItemGPSTool.getGPSLocation(gpsStack) != null ? gpsStack : ItemStack.EMPTY);
         }
     }

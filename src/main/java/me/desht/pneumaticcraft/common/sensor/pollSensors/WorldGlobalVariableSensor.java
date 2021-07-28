@@ -3,7 +3,9 @@ package me.desht.pneumaticcraft.common.sensor.pollSensors;
 import com.google.common.collect.ImmutableSet;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.universal_sensor.IPollSensorSetting;
+import me.desht.pneumaticcraft.common.inventory.ContainerUniversalSensor;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
@@ -54,5 +56,12 @@ public class WorldGlobalVariableSensor implements IPollSensorSetting {
     @Override
     public void setPlayerContext(UUID playerID) {
         this.playerID = playerID;
+    }
+
+    @Override
+    public List<String> getTextBoxOptions(PlayerEntity player) {
+        return player.openContainer instanceof ContainerUniversalSensor ?
+                ((ContainerUniversalSensor) player.openContainer).getGlobalVars() :
+                null;
     }
 }

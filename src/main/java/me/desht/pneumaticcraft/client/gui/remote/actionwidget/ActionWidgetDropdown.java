@@ -95,7 +95,7 @@ public class ActionWidgetDropdown extends ActionWidgetVariable<WidgetComboBox> {
         if (widget == null) {
             widget = new WidgetComboBox(Minecraft.getInstance().fontRenderer, x, y, width, height, this::onPressed);
             widget.setElements(getDropdownElements());
-            widget.setFixedOptions();
+            widget.setFixedOptions(true);
             widget.setShouldSort(sorted);
             updateWidget();
         }

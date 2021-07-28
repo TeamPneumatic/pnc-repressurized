@@ -52,7 +52,7 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
     @Override
     public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
-        if (variable.equals("") && filter == null) {
+        if (variable.isEmpty() && filter == null) {
             curInfo.add(xlate("pneumaticcraft.gui.progWidget.itemFilter.error.noFilter"));
         }
         if (matchBlock && !(filter.getItem() instanceof BlockItem) && variable.isEmpty()) {

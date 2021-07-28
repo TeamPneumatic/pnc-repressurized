@@ -82,7 +82,7 @@ public class GuiRemoteEditor extends GuiRemote {
         widgetTray.add(new ActionWidgetCheckBox(new WidgetCheckBox(guiLeft + 200, guiTop + 23, 0xFF404040, xlate("pneumaticcraft.gui.remote.tray.checkbox.name"))));
         widgetTray.add(new ActionWidgetLabel(new WidgetLabelVariable(guiLeft + 200, guiTop + 38, xlate("pneumaticcraft.gui.remote.tray.label.name"))));
         widgetTray.add(new ActionWidgetButton(new WidgetButtonExtended(guiLeft + 200, guiTop + 53, 50, 20, xlate("pneumaticcraft.gui.remote.tray.button.name"))));
-        widgetTray.add(new ActionWidgetDropdown(new WidgetComboBox(font, guiLeft + 200, guiTop + 80, 70, font.FONT_HEIGHT + 1).setFixedOptions()));
+        widgetTray.add(new ActionWidgetDropdown(new WidgetComboBox(font, guiLeft + 200, guiTop + 80, 70, font.FONT_HEIGHT + 1).setFixedOptions(true)));
 
         for (ActionWidget<?> actionWidget : widgetTray) {
             addButton(actionWidget.getWidget());

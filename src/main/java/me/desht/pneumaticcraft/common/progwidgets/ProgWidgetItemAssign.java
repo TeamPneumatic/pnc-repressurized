@@ -60,7 +60,7 @@ public class ProgWidgetItemAssign extends ProgWidget implements IVariableSetWidg
     @Override
     public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
-        if (variable.equals("")) {
+        if (variable.isEmpty()) {
             curInfo.add(xlate("pneumaticcraft.gui.progWidget.general.error.emptyVariable"));
         }
     }
@@ -77,7 +77,7 @@ public class ProgWidgetItemAssign extends ProgWidget implements IVariableSetWidg
 
     @Override
     public IProgWidget getOutputWidget(IDroneBase drone, List<IProgWidget> allWidgets) {
-        if (!variable.equals("")) {
+        if (!variable.isEmpty()) {
             ProgWidgetItemFilter filter = (ProgWidgetItemFilter) getConnectedParameters()[0];
             aiManager.setStack(variable, filter != null ? filter.getFilter() : drone.getInv().getStackInSlot(0).copy());
         }

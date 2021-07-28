@@ -13,7 +13,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class WidgetComboBox extends WidgetTextField implements IDrawAfterRender {
-
     private final ArrayList<String> elements = new ArrayList<>();
     private final FontRenderer fontRenderer;
     private boolean enabled = true;
@@ -94,7 +93,7 @@ public class WidgetComboBox extends WidgetTextField implements IDrawAfterRender 
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (getVisible() && active) {
+        if (getVisible() && active && button == 0) {
             int h = baseHeight + (isFocused() ? getApplicableElements().size() * fontRenderer.FONT_HEIGHT : 0);
             boolean flag = mouseX >= (double)this.x && mouseX < (double)(this.x + this.width)
                     && mouseY >= (double)this.y && mouseY < (double)(this.y + h);
@@ -143,8 +142,8 @@ public class WidgetComboBox extends WidgetTextField implements IDrawAfterRender 
         this.enabled = enabled;
     }
 
-    public WidgetComboBox setFixedOptions() {
-        fixedOptions = true;
+    public WidgetComboBox setFixedOptions(boolean fixed) {
+        fixedOptions = fixed;
         applicable = null; // force recalc
         return this;
     }
@@ -177,7 +176,7 @@ public class WidgetComboBox extends WidgetTextField implements IDrawAfterRender 
 
         setShouldSort(false);
         setElements(labels);
-        setFixedOptions();
+        setFixedOptions(true);
         selectElement(initialValue.ordinal());
         return this;
     }

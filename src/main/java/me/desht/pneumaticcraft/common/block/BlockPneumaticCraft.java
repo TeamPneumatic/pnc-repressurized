@@ -130,13 +130,25 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
                         return ActionResultType.SUCCESS;
                     }
                     if (te instanceof INamedContainerProvider) {
-                        NetworkHooks.openGui((ServerPlayerEntity) player, (INamedContainerProvider) te, pos);
+                        doOpenGui((ServerPlayerEntity) player, te);
+//                        NetworkHooks.openGui((ServerPlayerEntity) player, (INamedContainerProvider) te, pos);
                     }
                 }
             }
 
             return ActionResultType.SUCCESS;
         }
+    }
+
+    /**
+     * Default open gui method just sends the TE's blockpos.  Override if more server->client data needs to be
+     * serialised, and handle deserialisation in the corresponding container constructor.
+     *
+     * @param player the server player
+     * @param te the tile entity, which is known to be an INamedContainerProvider
+     */
+    protected void doOpenGui(ServerPlayerEntity player, TileEntity te) {
+        NetworkHooks.openGui(player, (INamedContainerProvider) te, te.getPos());
     }
 
     @Nullable
@@ -435,6 +447,7 @@ public abstract class BlockPneumaticCraft extends Block implements IPneumaticWre
         return super.updatePostPlacement(stateIn, facing, facingState, worldIn, currentPos, facingPos);
     }
 
+    @Override
     public boolean allowsMovement(BlockState state, IBlockReader worldIn, BlockPos pos, PathType type) {
         return getCollisionShape(state, worldIn, pos, ISelectionContext.dummy()).isEmpty();
     }

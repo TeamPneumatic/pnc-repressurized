@@ -243,7 +243,7 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadr
             settingSlot = slot;
             ItemStack gps = new ItemStack(ModItems.GPS_TOOL.get());
             GlobalPos gPos = getPosition(slot);
-            if (gPos != null) ItemGPSTool.setGPSLocation(ClientUtils.getClientPlayer(), gps, gPos.getPos());
+            if (gPos != null) ItemGPSTool.setGPSLocation(ClientUtils.getClientPlayer().getUniqueID(), gps, gPos.getPos());
             gpsSearchGui.setSearchStack(ItemGPSTool.getGPSLocation(gps) != null ? gps : ItemStack.EMPTY);
         }
     }

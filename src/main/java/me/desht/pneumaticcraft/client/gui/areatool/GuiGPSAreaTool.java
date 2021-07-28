@@ -6,6 +6,7 @@ import me.desht.pneumaticcraft.common.item.ItemGPSAreaTool;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketChangeGPSToolCoordinate;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidgetArea;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.button.Button;
@@ -84,7 +85,7 @@ public class GuiGPSAreaTool extends GuiGPSTool {
 
     private boolean changed(int index) {
         ItemStack stack = minecraft.player.getHeldItem(hand);
-        BlockPos p = ItemGPSAreaTool.getGPSLocation(minecraft.player, stack, index).orElse(BlockPos.ZERO);
+        BlockPos p = ItemGPSAreaTool.getGPSLocation(minecraft.player, stack, index).orElse(PneumaticCraftUtils.invalidPos());
         String var = ItemGPSAreaTool.getVariable(ClientUtils.getClientPlayer(), stack, index);
         String var2 = GlobalVariableHelper.getPrefixedVar(vars[index], playerGlobals[index]);
         return !p.equals(p1p2Pos[index]) || !var.equals(var2);

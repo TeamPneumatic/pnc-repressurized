@@ -7,6 +7,7 @@ import net.minecraft.util.math.BlockPos;
 
 import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Represents an item which can store & provide one or more block positions.  An example would be the GPS Tool (one
@@ -17,12 +18,12 @@ public interface IPositionProvider {
      * Get block position data from the given ItemStack.  It is up to the implementor to decide how the block positions
      * should be stored on the itemstack and in what order they should be returned.
      *
-     * @param player the player, for player-global variable context (may be null)
+     * @param playerId the player, for player-global variable context (may be null)
      * @param stack the itemstack
      * @return a list of block positions that has been retrieved from the itemstack
      */
     @Nonnull
-    List<BlockPos> getStoredPositions(PlayerEntity player, @Nonnull ItemStack stack);
+    List<BlockPos> getStoredPositions(UUID playerId, @Nonnull ItemStack stack);
 
     /**
      * Color that should be used to highlight the stored block positions if & when they are rendered on-screen.
@@ -43,17 +44,19 @@ public interface IPositionProvider {
      * Gets the raw stored positions in this provider. E.g. for the GPS Area Tool, just the two clicked
      * positions, not the whole set of positions defined by the tool's area type.
      *
-     * @param world the world (if a server world, global variables may be used)
+     * @param player the player, for player-global variable context
      * @param stack the itemstack
      * @return the raw positions stored on the itemstack
      */
     default List<BlockPos> getRawStoredPositions(PlayerEntity player, ItemStack stack) {
-        return getStoredPositions(player, stack);
+        return getStoredPositions(player.getUniqueID(), stack);
     }
 
     /**
-     * If the item stores any global variables which the client needs to know about (e.g. for area rendering), implement
-     * this method to sync their values to the client. This method is only called server-side, of course.
+     * If the item stores any global variables which the client needs to know about (e.g. for area rendering), override
+     * this method to sync their values to the client. This method is called server-side when an item in any player's
+     * inventory (which implements {@link IPositionProvider}) changes in any way.
+     * <p>
      * See {@link me.desht.pneumaticcraft.api.PneumaticRegistry.IPneumaticCraftInterface#syncGlobalVariable(ServerPlayerEntity, String)}}
      * for a convenience method to send the necessary sync packet.
      *

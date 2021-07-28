@@ -33,10 +33,7 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -162,7 +159,7 @@ public class ItemAmadronTablet extends ItemPressurizable implements IPositionPro
     }
 
     @Override
-    public List<BlockPos> getStoredPositions(PlayerEntity player, @Nonnull ItemStack stack) {
+    public List<BlockPos> getStoredPositions(UUID playerId, @Nonnull ItemStack stack) {
         GlobalPos gp1 = getItemProvidingLocation(stack);
         GlobalPos gp2 = getFluidProvidingLocation(stack);
         return Arrays.asList(gp1 == null ? null : gp1.getPos(), gp2 == null ? null : gp2.getPos());

@@ -34,7 +34,6 @@ import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.client.gui.IGuiEventListener;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.RenderType;
@@ -61,7 +60,9 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.lwjgl.opengl.GL11;
 
+import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 @Mod.EventBusSubscriber(modid = Names.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class ClientEventHandler {
@@ -365,10 +366,15 @@ public class ClientEventHandler {
     @SubscribeEvent
     public static void onGuiDrawPost(GuiScreenEvent.DrawScreenEvent.Post event) {
         if (event.getGui() instanceof GuiPneumaticContainerBase || event.getGui() instanceof GuiPneumaticScreenBase) {
-            for (IGuiEventListener l : event.getGui().getEventListeners()) {
-                if (l instanceof IDrawAfterRender) {
-                    ((IDrawAfterRender) l).renderAfterEverythingElse(event.getMatrixStack(), event.getMouseX(), event.getMouseY(), event.getRenderPartialTicks());
-                }
+            List<IDrawAfterRender> toDraw = event.getGui().getEventListeners().stream()
+                    .filter(l -> l instanceof IDrawAfterRender)
+                    .map(l -> (IDrawAfterRender) l)
+                    .collect(Collectors.toList());
+            if (!toDraw.isEmpty()) {
+                event.getMatrixStack().push();
+                event.getMatrixStack().translate(0, 0, 500);
+                toDraw.forEach(d -> d.renderAfterEverythingElse(event.getMatrixStack(), event.getMouseX(), event.getMouseY(), event.getRenderPartialTicks()));
+                event.getMatrixStack().pop();
             }
         }
     }

@@ -63,7 +63,7 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
     @Override
     public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
-        if (variable.equals("")) {
+        if (variable.isEmpty()) {
             curInfo.add(xlate("pneumaticcraft.gui.progWidget.general.error.emptyVariable"));
         }
         if (!axisOptions.shouldCheck(Axis.X) && !axisOptions.shouldCheck(Axis.Y) && !axisOptions.shouldCheck(Axis.Z)) {
@@ -93,7 +93,7 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
 
     @Override
     public IProgWidget getOutputWidget(IDroneBase drone, List<IProgWidget> allWidgets) {
-        if (!variable.equals("")) {
+        if (!variable.isEmpty()) {
             BlockPos curPos = calculateCoordinate(this, 0, operator, axisOptions);
             aiManager.setCoordinate(variable, curPos);
         }

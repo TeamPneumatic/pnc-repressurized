@@ -144,7 +144,7 @@ public enum AreaRenderManager {
                 // Position data has changed: recache stored positions
                 lastItemHashCode = thisHash;
                 IPositionProvider positionProvider = (IPositionProvider) curItem.getItem();
-                List<BlockPos> posList = positionProvider.getStoredPositions(player, curItem);
+                List<BlockPos> posList = positionProvider.getStoredPositions(player.getUniqueID(), curItem);
                 if (posList.size() > MAX_DISPLAYED_POS) {
                     posList.sort(Comparator.comparingDouble(blockPos -> blockPos.distanceSq(player.getPosition())));
                     player.sendStatusMessage(xlate("pneumaticcraft.message.gps_tool.culledRenderArea", posList.size()).mergeStyle(TextFormatting.GOLD), false);

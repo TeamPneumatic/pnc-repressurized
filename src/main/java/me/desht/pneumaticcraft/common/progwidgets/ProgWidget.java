@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.config.subconfig.ProgWidgetConfig;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
+import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.nbt.CompoundNBT;
@@ -66,7 +67,7 @@ public abstract class ProgWidget implements IProgWidget {
             Set<String> variables = new HashSet<>();
             ((IVariableWidget) this).addVariables(variables);
             for (String variable : variables) {
-                if (!variable.equals("") && !variable.startsWith("#") && !variable.startsWith("$") && !isVariableSetAnywhere(widgets, variable)) {
+                if (!variable.isEmpty() && !GlobalVariableHelper.hasPrefix(variable) && !isVariableSetAnywhere(widgets, variable)) {
                     curInfo.add(xlate("pneumaticcraft.gui.progWidget.general.warning.variableNeverSet", variable));
                 }
             }
@@ -74,7 +75,7 @@ public abstract class ProgWidget implements IProgWidget {
     }
 
     private boolean isVariableSetAnywhere(List<IProgWidget> widgets, String variable) {
-        if (variable.equals("")) return true;
+        if (variable.isEmpty()) return true;
         for (IProgWidget widget : widgets) {
             if (widget instanceof IVariableSetWidget) {
                 Set<String> variables = new HashSet<>();

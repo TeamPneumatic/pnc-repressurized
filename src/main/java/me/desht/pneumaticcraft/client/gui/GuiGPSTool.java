@@ -129,7 +129,7 @@ public class GuiGPSTool extends GuiPneumaticScreenBase {
         BlockPos newPos = new BlockPos(textFields[0].getValue(), textFields[1].getValue(), textFields[2].getValue());
         String varName = GlobalVariableHelper.getPrefixedVar(variableField.getText(), playerGlobal);
         NetworkHandler.sendToServer(new PacketChangeGPSToolCoordinate(
-                newPos.equals(oldGPSLoc) ? new BlockPos(-1, -1, -1) : newPos,
+                /*newPos.equals(oldGPSLoc) ? new BlockPos(-1, -1, -1) :*/ newPos,
                 hand, varName, getIndex())
         );
 

@@ -1,8 +1,6 @@
 package me.desht.pneumaticcraft.common.network;
 
-import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.item.ItemGPSAreaTool;
-import me.desht.pneumaticcraft.common.item.ItemGPSTool;
+import me.desht.pneumaticcraft.common.item.IGPSToolSync;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -50,16 +48,10 @@ public class PacketChangeGPSToolCoordinate extends LocationIntPacket {
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             ServerPlayerEntity player = ctx.get().getSender();
-            ItemStack playerStack = player.getHeldItem(hand);
-            if (playerStack.getItem() == ModItems.GPS_TOOL.get()) {
-                ItemGPSTool.setVariable(playerStack, variable);
-                if (pos.getY() >= 0) {
-                    ItemGPSTool.setGPSLocation(player, playerStack, pos);
-                }
-            } else if (playerStack.getItem() == ModItems.GPS_AREA_TOOL.get()) {
-                ItemGPSAreaTool.setVariable(ctx.get().getSender(), playerStack, variable, index);
-                if (pos.getY() >= 0) {
-                    ItemGPSAreaTool.setGPSPosAndNotify(player, pos, hand, index);
+            if (player != null) {
+                ItemStack stack = player.getHeldItem(hand);
+                if (stack.getItem() instanceof IGPSToolSync) {
+                    ((IGPSToolSync) stack.getItem()).syncFromClient(player, stack, index, pos, variable);
                 }
             }
         });

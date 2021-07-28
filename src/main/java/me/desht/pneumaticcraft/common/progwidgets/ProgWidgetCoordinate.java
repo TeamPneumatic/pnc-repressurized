@@ -71,7 +71,7 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
     @Override
     public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
-        if (useVariable && variable.equals("")) {
+        if (useVariable && variable.isEmpty()) {
             curInfo.add(xlate("pneumaticcraft.gui.progWidget.general.error.emptyVariable"));
         }
     }

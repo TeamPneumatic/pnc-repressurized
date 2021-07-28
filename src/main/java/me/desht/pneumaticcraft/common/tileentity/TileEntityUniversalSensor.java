@@ -296,7 +296,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
                 int t = Integer.parseInt(tag.split(":")[1]);
                 String[] directories = SensorHandler.getInstance().getDirectoriesAtLocation(getSensorSetting());
                 if (t / 10 <= directories.length) { // <= because of the redstone button being 0.
-                    if (getSensorSetting().equals("")) {
+                    if (getSensorSetting().isEmpty()) {
                         setSensorSetting(directories[t / 10 - 1]);
                     } else {
                         setSensorSetting(getSensorSetting() + "/" + directories[t / 10 - 1]);
@@ -336,7 +336,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
         ItemStack stack = itemHandler.getStackInSlot(0);
         if (stack.getItem() instanceof IPositionProvider) {
             int sensorRange = getRange();
-            List<BlockPos> posList = ((IPositionProvider) stack.getItem()).getStoredPositions(null, stack);
+            List<BlockPos> posList = ((IPositionProvider) stack.getItem()).getStoredPositions(playerId, stack);
             List<BlockPos> gpsPositions = posList.stream()
                     .filter(pos -> pos != null
                             && Math.abs(pos.getX() - getPos().getX()) <= sensorRange
@@ -540,7 +540,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
         @Override
         public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
             if (stack.getItem() instanceof IPositionProvider) {
-                List<BlockPos> l = ((IPositionProvider) stack.getItem()).getStoredPositions(null, stack);
+                List<BlockPos> l = ((IPositionProvider) stack.getItem()).getStoredPositions(playerId, stack);
                 return !l.isEmpty() && l.get(0) != null;
             }
             return false;

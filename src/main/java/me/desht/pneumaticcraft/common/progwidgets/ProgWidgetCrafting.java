@@ -42,17 +42,8 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
     @Override
     public void addErrors(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
         super.addErrors(curInfo, widgets);
-//        boolean usingVariables = false;
 
         getCraftingGrid(); // to set up usingVariables
-
-//        for (int y = 0; y < 3; y++) {
-//            ProgWidgetItemFilter itemFilter = (ProgWidgetItemFilter) getConnectedParameters()[y];
-//            for (int x = 0; x < 3 && itemFilter != null; x++) {
-//                if (!itemFilter.getVariable().equals("")) usingVariables = true;
-//                itemFilter = (ProgWidgetItemFilter) itemFilter.getConnectedParameters()[0];
-//            }
-//        }
         if (!usingVariables && getRecipeResult(ClientUtils.getClientWorld()) == null) {
             curInfo.add(xlate("pneumaticcraft.gui.progWidget.crafting.error.noCraftingRecipe"));
         }

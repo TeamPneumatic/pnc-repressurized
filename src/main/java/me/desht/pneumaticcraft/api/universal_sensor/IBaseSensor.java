@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.api.universal_sensor;
 
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.RangedInteger;
 import net.minecraft.util.text.ITextComponent;
 
@@ -41,10 +42,51 @@ public interface IBaseSensor {
     }
 
     /**
-     * If a textbox is to be displyed (see {@link #needsTextBox()}), is this textbox for an entity filter?
+     * If a textbox is to be displayed (see {@link #needsTextBox()}), is this textbox for an entity filter?
      * @return true if this is an entity filter, false otherwise
+     * @deprecated use {@link #getHelpText()}
      */
+    @Deprecated
     default boolean isEntityFilter() {
+        return false;
+    }
+
+    /**
+     * If this sensor should have a popup help panel, return a translation key here for the help text which should be
+     * shown when F1 is held down.  The translated text can include line breaks; use the sequence {@code {br}} for that.
+     * @return help text translation key, or the empty string for no help text
+     */
+    default String getHelpText() {
+        return "";
+    }
+
+    /**
+     * Only used if {@link #getHelpText()} returns a non-empty string; return a translation key for a "Hold F1" type
+     * message for this sensor.
+     * @return a translation key, or the empty string for no help prompt text
+     */
+    default String getHelpPromptText() {
+        return "";
+    }
+
+    /**
+     * If a textbox is to be displayed (see {@link #needsTextBox()}), this can be used to return a list of possible
+     * values. If this returns a non-null result, the textbox will become a combo box with a drop-down for the
+     * values returned.
+     * @param player the client player
+     * @return a list of possible values, or null if the textbox should be purely free-form
+     */
+    default List<String> getTextBoxOptions(PlayerEntity player) {
+        return null;
+    }
+
+    /**
+     * If {@link #getTextBoxOptions(PlayerEntity)} returns a non-null result, this can be used to control if the
+     * returned options are the only possible values, or whether the textbox should continue to allow free-form text
+     * insertion.
+     * @return true for strict combo box behaviour, false to allow freeform text insertion
+     */
+    default boolean strictComboBox() {
         return false;
     }
 
