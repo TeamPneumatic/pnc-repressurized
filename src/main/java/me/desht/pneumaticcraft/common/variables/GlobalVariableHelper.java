@@ -111,14 +111,6 @@ public class GlobalVariableHelper {
         return getPos(id, varName, BlockPos.ZERO).getX();
     }
 
-//    public static void setBool(UUID id, String varName, boolean val) {
-//        setInt(id, varName, val ? 1 : 0);
-//    }
-//
-//    public static void setInt(UUID id, String varName, int val) {
-//        setPos(id, varName, new BlockPos(val, 0, 0));
-//    }
-
     /**
      * Given a plain variable name, add the "#" or "%" prefix as appropriate
      * @param varName the variable

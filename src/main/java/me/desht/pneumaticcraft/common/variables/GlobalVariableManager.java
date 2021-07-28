@@ -76,28 +76,44 @@ public class GlobalVariableManager extends WorldSavedData /*implements IVariable
 
     void setPos(String varName, BlockPos pos) {
         if (!varName.isEmpty()) {
-            globalVars.put(varName, pos);
+            if (pos == null) {
+                globalVars.remove(varName);
+            } else {
+                globalVars.put(varName, pos);
+            }
             markDirty();
         }
     }
 
     void setPos(UUID ownerUUID, String varName, BlockPos coord) {
         if (!varName.isEmpty()) {
-            playerVars.put(ownerUUID, varName, coord);
+            if (coord == null) {
+                playerVars.remove(ownerUUID, varName);
+            } else {
+                playerVars.put(ownerUUID, varName, coord);
+            }
             markDirty();
         }
     }
 
     void setStack(String varName, ItemStack item) {
         if (!varName.isEmpty()) {
-            globalItemVars.put(varName, item);
+            if (item.isEmpty()) {
+                globalItemVars.remove(varName);
+            } else {
+                globalItemVars.put(varName, item);
+            }
             markDirty();
         }
     }
 
     void setStack(UUID ownerUUID, String varName, ItemStack item) {
         if (!varName.isEmpty()) {
-            playerItemVars.put(ownerUUID, varName, item);
+            if (item.isEmpty()) {
+                playerItemVars.remove(ownerUUID, varName);
+            } else {
+                playerItemVars.put(ownerUUID, varName, item);
+            }
             markDirty();
         }
     }
@@ -215,13 +231,15 @@ public class GlobalVariableManager extends WorldSavedData /*implements IVariable
         return list;
     }
 
-    public String[] getAllActiveVariableNames(PlayerEntity player) {
+    public Collection<String> getAllActiveVariableNames(PlayerEntity player) {
         Set<String> varNames = new HashSet<>();
         varNames.addAll(globalVars.keySet().stream().filter(s -> !s.isEmpty()).map(s -> "%" + s).collect(Collectors.toList()));
         varNames.addAll(globalItemVars.keySet().stream().filter(s -> !s.isEmpty()).map(s -> "%" + s).collect(Collectors.toList()));
-        varNames.addAll(playerVars.row(player.getUniqueID()).keySet().stream().filter(s -> !s.isEmpty()).map(s -> "#" + s).collect(Collectors.toList()));
-        varNames.addAll(playerItemVars.row(player.getUniqueID()).keySet().stream().filter(s -> !s.isEmpty()).map(s -> "#" + s).collect(Collectors.toList()));
-        return varNames.toArray(new String[0]);
+        if (player != null) {
+            varNames.addAll(playerVars.row(player.getUniqueID()).keySet().stream().filter(s -> !s.isEmpty()).map(s -> "#" + s).collect(Collectors.toList()));
+            varNames.addAll(playerItemVars.row(player.getUniqueID()).keySet().stream().filter(s -> !s.isEmpty()).map(s -> "#" + s).collect(Collectors.toList()));
+        }
+        return varNames;
     }
 
     public boolean importGlobals(UUID playerID) {

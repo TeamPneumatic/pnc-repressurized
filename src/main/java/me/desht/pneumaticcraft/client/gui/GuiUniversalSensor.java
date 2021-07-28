@@ -106,10 +106,10 @@ public class GuiUniversalSensor extends GuiPneumaticContainerBase<ContainerUnive
                 curX += 18;
             }
         } else {
-            int xSpace = xSize - 96;
+            int xSpace = xSize - 92;
             int size = font.getStringWidth(folders[folders.length - 1]);
             matrixStack.push();
-            matrixStack.translate(92, 24, 0);
+            matrixStack.translate(88, 24, 0);
             if (size > xSpace) {
                 matrixStack.scale((float)xSpace / (float)size, 1, 1);
             }

@@ -6,6 +6,7 @@ import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.datafixers.util.Either;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
 import me.desht.pneumaticcraft.common.util.IOHelper;
@@ -16,6 +17,8 @@ import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.command.arguments.BlockPosArgument;
 import net.minecraft.command.arguments.EntityArgument;
+import net.minecraft.command.arguments.ItemArgument;
+import net.minecraft.command.arguments.ItemInput;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -26,6 +29,7 @@ import net.minecraft.util.text.TextFormatting;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -42,20 +46,33 @@ public class ModCommands {
                         .requires(cs -> cs.hasPermissionLevel(2))
                         .executes(ModCommands::dumpNBT)
                 )
-                .then(literal("get_global_var")
-                        .then(argument("varname", new VarnameType())
-                                .executes(c -> getGlobalVar(c, StringArgumentType.getString(c,"varname")))
-                        )
-                )
-                .then(literal("set_global_var")
-                        .then(argument("varname", new VarnameType())
-                                .then(argument("pos", BlockPosArgument.blockPos())
-                                        .executes(c -> setGlobalVar(c, StringArgumentType.getString(c,"varname"), BlockPosArgument.getLoadedBlockPos(c, "pos")))
+                .then(literal("global_var")
+                        .then(literal("get")
+                                .then(argument("varname", new VarnameType())
+                                        .executes(c -> getGlobalVar(c, StringArgumentType.getString(c,"varname")))
                                 )
                         )
-                )
-                .then(literal("import_global_vars")  // TODO remove in 1.17
-                        .executes(ModCommands::importGlobals)
+                        .then(literal("set")
+                                .then(argument("varname", new VarnameType())
+                                        .then(argument("pos", BlockPosArgument.blockPos())
+                                                .executes(c -> setGlobalVar(c, StringArgumentType.getString(c,"varname"), Either.left(BlockPosArgument.getLoadedBlockPos(c, "pos"))))
+                                        )
+                                        .then(argument("item", ItemArgument.item())
+                                                .executes(c -> setGlobalVar(c, StringArgumentType.getString(c,"varname"), Either.right(ItemArgument.getItem(c, "item"))))
+                                        )
+                                )
+                        )
+                        .then(literal("delete")
+                                .then(argument("varname", new VarnameType())
+                                        .executes(c -> delGlobalVar(c, StringArgumentType.getString(c,"varname")))
+                                )
+                        )
+                        .then(literal("list")
+                                .executes(ModCommands::listGlobals)
+                        )
+                        .then(literal("import_server_globals") // TODO remove in 1.17
+                                .executes(ModCommands::importGlobals)
+                        )
                 )
                 .then(literal("amadrone_deliver")
                         .requires(cs -> cs.hasPermissionLevel(2))
@@ -78,7 +95,7 @@ public class ModCommands {
         CommandSource source = ctx.getSource();
         if (source.getEntity() instanceof PlayerEntity) {
             if (GlobalVariableManager.getInstance().importGlobals(source.getEntity().getUniqueID())) {
-                source.sendFeedback(xlate("pneumaticcraft.command.importGlobals.success"), false);
+                source.sendFeedback(xlate("pneumaticcraft.command.importGlobals.success"), true);
             } else {
                 source.sendErrorMessage(xlate("pneumaticcraft.command.importGlobals.failure"));
             }
@@ -114,7 +131,7 @@ public class ModCommands {
             if (deliveredStacks.size() > 0) {
                 GlobalPos gPos = GlobalPosHelper.makeGlobalPos(source.getWorld(), toPos);
                 PneumaticRegistry.getInstance().getDroneRegistry().deliverItemsAmazonStyle(gPos, deliveredStacks.toArray(new ItemStack[0]));
-                source.sendFeedback(xlate("pneumaticcraft.command.deliverAmazon.success", PneumaticCraftUtils.posToString(fromPos), PneumaticCraftUtils.posToString(toPos)), false);
+                source.sendFeedback(xlate("pneumaticcraft.command.deliverAmazon.success", PneumaticCraftUtils.posToString(fromPos), PneumaticCraftUtils.posToString(toPos)), true);
                 return 1;
             } else {
                 source.sendErrorMessage(xlate("pneumaticcraft.command.deliverAmazon.noItems", PneumaticCraftUtils.posToString(fromPos)));
@@ -126,24 +143,38 @@ public class ModCommands {
         return status;
     }
 
+    private static int listGlobals(CommandContext<CommandSource> ctx) {
+        CommandSource source = ctx.getSource();
+        PlayerEntity playerEntity = source.getEntity() instanceof PlayerEntity ? (PlayerEntity) source.getEntity() : null;
+        UUID id = playerEntity == null ? null : playerEntity.getUniqueID();
+        Collection<String> varNames = GlobalVariableManager.getInstance().getAllActiveVariableNames(playerEntity);
+        source.sendFeedback(new StringTextComponent(varNames.size() + " vars").mergeStyle(TextFormatting.GREEN, TextFormatting.UNDERLINE), false);
+        varNames.stream().sorted().forEach(var -> {
+            BlockPos pos = GlobalVariableHelper.getPos(id, var);
+            ItemStack stack = GlobalVariableHelper.getStack(id, var);
+            String val = PneumaticCraftUtils.posToString(pos);
+            if (!stack.isEmpty()) val += " / " + stack.getItem().getRegistryName();
+            source.sendFeedback(new StringTextComponent(var).appendString(" = [").appendString(val).appendString("]"), false);
+        });
+        return 1;
+    }
+
     private static int getGlobalVar(CommandContext<CommandSource> ctx, String varName) {
         CommandSource source = ctx.getSource();
-        if (!varName.startsWith("#") && !varName.startsWith("%")) {
+        if (!GlobalVariableHelper.hasPrefix(varName)) {
             source.sendFeedback(xlate("pneumaticcraft.command.getGlobalVariable.prefixReminder").mergeStyle(TextFormatting.GOLD), false);
             varName = "#" + varName;
         }
         try {
-            UUID id = ctx.getSource().asPlayer().getUniqueID();
+            UUID id = varName.startsWith("%") ? null : ctx.getSource().asPlayer().getUniqueID();
             BlockPos pos = GlobalVariableHelper.getPos(id, varName);
             ItemStack stack = GlobalVariableHelper.getStack(id, varName);
-            if (pos != null) {
-                source.sendFeedback(xlate("pneumaticcraft.command.getGlobalVariable.outputPos", varName, PneumaticCraftUtils.posToString(pos)), false);
-            }
-            if (!stack.isEmpty()) {
-                source.sendFeedback(xlate("pneumaticcraft.command.getGlobalVariable.outputItem", varName, stack.getDisplayName().getString()), false);
-            }
+            String val = PneumaticCraftUtils.posToString(pos);
+            if (!stack.isEmpty()) val += " / " + stack.getItem().getRegistryName();
             if (pos == null && stack.isEmpty()) {
-                source.sendErrorMessage(xlate("pneumaticcraft.command.getGlobalVariable.missing", varName));
+                source.sendErrorMessage(xlate("pneumaticcraft.command.globalVariable.missing", varName));
+            } else {
+                source.sendFeedback(xlate("pneumaticcraft.command.globalVariable.output", varName, val), false);
             }
         } catch (CommandSyntaxException e) {
             source.sendErrorMessage(new StringTextComponent("Player-globals require player context!"));
@@ -152,21 +183,50 @@ public class ModCommands {
         return 1;
     }
 
-    private static int setGlobalVar(CommandContext<CommandSource> ctx, String varName, BlockPos pos) {
+    private static int setGlobalVar(CommandContext<CommandSource> ctx, String varName, Either<BlockPos, ItemInput> posOrItem) {
         CommandSource source = ctx.getSource();
 
+        if (!GlobalVariableHelper.hasPrefix(varName)) {
+            source.sendFeedback(xlate("pneumaticcraft.command.globalVariable.prefixReminder").mergeStyle(TextFormatting.GOLD), false);
+            varName = "#" + varName;
+        }
+
+        try {
+            UUID id = varName.startsWith("%") ? null : ctx.getSource().asPlayer().getUniqueID();
+            final String v = varName;
+            posOrItem.ifLeft(pos -> {
+                GlobalVariableHelper.setPos(id, v, pos);
+                source.sendFeedback(xlate("pneumaticcraft.command.globalVariable.output", v, PneumaticCraftUtils.posToString(pos)), true);
+            }).ifRight(item -> {
+                ItemStack stack = new ItemStack(item.getItem());
+                GlobalVariableHelper.setStack(id, v, stack);
+                source.sendFeedback(xlate("pneumaticcraft.command.globalVariable.output", v, stack.getItem().getRegistryName()), true);
+            });
+        } catch (CommandSyntaxException e) {
+            source.sendErrorMessage(new StringTextComponent("Player-globals require player context!"));
+        }
+
+        return 1;
+    }
+
+    private static int delGlobalVar(CommandContext<CommandSource> ctx, String varName) {
+        CommandSource source = ctx.getSource();
         if (!varName.startsWith("#") && !varName.startsWith("%")) {
             source.sendFeedback(xlate("pneumaticcraft.command.getGlobalVariable.prefixReminder").mergeStyle(TextFormatting.GOLD), false);
         }
 
         try {
             UUID id = varName.startsWith("%") ? null : ctx.getSource().asPlayer().getUniqueID();
-            GlobalVariableHelper.setPos(id, varName, pos);
-            source.sendFeedback(xlate("pneumaticcraft.command.setGlobalVariable.output", varName, PneumaticCraftUtils.posToString(pos)), false);
+            if (GlobalVariableHelper.getPos(id, varName) == null && GlobalVariableHelper.getStack(id, varName).isEmpty()) {
+                source.sendErrorMessage(xlate("pneumaticcraft.command.globalVariable.missing", varName));
+            } else {
+                GlobalVariableHelper.setPos(id, varName, null);
+                GlobalVariableHelper.setStack(id, varName, ItemStack.EMPTY);
+                source.sendFeedback(xlate("pneumaticcraft.command.globalVariable.delete", varName), true);
+            }
         } catch (CommandSyntaxException e) {
-            source.sendFeedback(new StringTextComponent("Player-globals require player context!"), false);
+            source.sendErrorMessage(new StringTextComponent("Player-globals require player context!"));
         }
-
         return 1;
     }
 

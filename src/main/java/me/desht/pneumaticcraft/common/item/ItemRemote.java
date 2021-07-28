@@ -32,7 +32,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nullable;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -105,9 +105,9 @@ public class ItemRemote extends Item {
         // see ContainerRemote constructor for corresponding deserialisation
         buf.writeBoolean(hand == Hand.MAIN_HAND);
         if (syncGlobals) {
-            String[] variables = GlobalVariableManager.getInstance().getAllActiveVariableNames(player);
-            buf.writeVarInt(variables.length);
-            Arrays.stream(variables).forEach(buf::writeString);
+            Collection<String> variables = GlobalVariableManager.getInstance().getAllActiveVariableNames(player);
+            buf.writeVarInt(variables.size());
+            variables.forEach(buf::writeString);
         } else {
             buf.writeVarInt(0);
         }

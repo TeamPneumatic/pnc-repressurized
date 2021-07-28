@@ -13,8 +13,10 @@ public class WorldGlobalVariableAnalogSensor extends WorldGlobalVariableSensor {
 
     @Override
     public int getRedstoneValue(World world, BlockPos pos, int sensorRange, String textBoxText) {
-        // TODO player-global
-        return MathHelper.clamp(GlobalVariableHelper.getInt(null, "%" + textBoxText), 0, 15);
-//        return MathHelper.clamp(GlobalVariableManager.getInstance().getInteger(textBoxText), 0, 15);
+        if (playerID == null && !GlobalVariableHelper.hasPrefix(textBoxText)) {
+            // TODO legacy - assume server-global - remove in 1.17
+            textBoxText = "%" + textBoxText;
+        }
+        return MathHelper.clamp(GlobalVariableHelper.getInt(playerID, textBoxText), 0, 15);
     }
 }

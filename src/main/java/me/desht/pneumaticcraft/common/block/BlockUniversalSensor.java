@@ -5,6 +5,9 @@ import me.desht.pneumaticcraft.common.tileentity.TileEntityUniversalSensor;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
@@ -12,6 +15,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
+import net.minecraft.world.World;
+import net.minecraftforge.common.util.FakePlayer;
 
 public class BlockUniversalSensor extends BlockPneumaticCraft {
     private static final VoxelShape SHAPE = Block.makeCuboidShape(0, 0, 0, 16, 4, 16);
@@ -37,6 +42,17 @@ public class BlockUniversalSensor extends BlockPneumaticCraft {
         super.fillStateContainer(builder);
 
         builder.add(BlockPneumaticCraft.NORTH, BlockPneumaticCraft.SOUTH, BlockPneumaticCraft.WEST, BlockPneumaticCraft.EAST);
+    }
+
+    @Override
+    public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity entity, ItemStack stack) {
+        PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityUniversalSensor.class).ifPresent(teUS -> {
+            if (entity instanceof PlayerEntity && !(entity instanceof FakePlayer)) {
+                teUS.setPlayerId(entity.getUniqueID());
+            }
+        });
+
+        super.onBlockPlacedBy(world, pos, state, entity, stack);
     }
 
     @Override

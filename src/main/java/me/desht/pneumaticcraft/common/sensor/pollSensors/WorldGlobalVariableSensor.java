@@ -7,13 +7,15 @@ import me.desht.pneumaticcraft.common.variables.GlobalVariableHelper;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 public class WorldGlobalVariableSensor implements IPollSensorSetting {
+    protected UUID playerID;
 
     @Override
     public String getSensorPath() {
@@ -37,13 +39,20 @@ public class WorldGlobalVariableSensor implements IPollSensorSetting {
 
     @Override
     public int getRedstoneValue(World world, BlockPos pos, int sensorRange, String textBoxText) {
-        // TODO player-global
-        return GlobalVariableHelper.getBool(null, "%" + textBoxText) ? 15 : 0;
-//        return GlobalVariableManager.getInstance().getBoolean(textBoxText) ? 15 : 0;
+        if (playerID == null && !GlobalVariableHelper.hasPrefix(textBoxText)) {
+            // TODO legacy - assume server-global - remove in 1.17
+            textBoxText = "%" + textBoxText;
+        }
+        return GlobalVariableHelper.getBool(playerID, textBoxText) ? 15 : 0;
     }
 
     @Override
     public void getAdditionalInfo(List<ITextComponent> info) {
-        info.add(new StringTextComponent("Variable Name"));
+        info.add(new TranslationTextComponent("pneumaticcraft.gui.progWidget.coordinate.variableName"));
+    }
+
+    @Override
+    public void setPlayerContext(UUID playerID) {
+        this.playerID = playerID;
     }
 }

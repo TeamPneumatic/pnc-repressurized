@@ -36,6 +36,7 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.IFormattableTextComponent;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.Event;
@@ -44,10 +45,7 @@ import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
@@ -90,6 +88,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
     @GuiSynced
     public int outOfRange;
     private final RangeManager rangeManager = new RangeManager(this, 0x605050D0);
+    private UUID playerId;
 
     public TileEntityUniversalSensor() {
         super(ModTileEntities.UNIVERSAL_SENSOR.get(), PneumaticValues.DANGER_PRESSURE_UNIVERSAL_SENSOR, PneumaticValues.MAX_PRESSURE_UNIVERSAL_SENSOR, PneumaticValues.VOLUME_UNIVERSAL_SENSOR, 4);
@@ -115,9 +114,11 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
                 isSensorActive = true;
                 addAir(-sensor.getAirUsage(getWorld(), getPos()));
                 if (sensor instanceof IPollSensorSetting) {
-                    if (tickTimer >= ((IPollSensorSetting) sensor).getPollFrequency(this)) {
+                    IPollSensorSetting pollSensor = (IPollSensorSetting) sensor;
+                    if (tickTimer >= pollSensor.getPollFrequency(this)) {
                         try {
-                            int newRedstoneStrength = ((IPollSensorSetting) sensor).getRedstoneValue(getWorld(), getPos(), getRange(), sensorGuiText);
+                            pollSensor.setPlayerContext(playerId);
+                            int newRedstoneStrength = pollSensor.getRedstoneValue(getWorld(), getPos(), getRange(), sensorGuiText);
                             if (invertedRedstone) newRedstoneStrength = 15 - newRedstoneStrength;
                             if (newRedstoneStrength != redstoneStrength) {
                                 redstoneStrength = newRedstoneStrength;
@@ -249,6 +250,7 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
         tag.putString("sensorSetting", sensorSetting);
         tag.putFloat("dishSpeed", dishSpeed);
         tag.putString("sensorText", sensorGuiText);
+        if (playerId != null) tag.putString("playerId", playerId.toString());
 
         return tag;
     }
@@ -265,6 +267,9 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
         }
         dishSpeed = tag.getFloat("dishSpeed");
         sensorGuiText = tag.getString("sensorText");
+        if (tag.contains("playerId", Constants.NBT.TAG_STRING)) {
+            playerId = UUID.fromString(tag.getString("playerId"));
+        }
 
         setupGPSPositions();
     }
@@ -521,6 +526,10 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
         return new ContainerUniversalSensor(i, playerInventory, getPos());
+    }
+
+    public void setPlayerId(UUID playerId) {
+        this.playerId = playerId;
     }
 
     private class UniversalSensorItemHandler extends ItemStackHandler {
