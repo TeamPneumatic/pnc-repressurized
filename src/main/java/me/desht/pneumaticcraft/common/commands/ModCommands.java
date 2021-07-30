@@ -8,6 +8,8 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.datafixers.util.Either;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
+import me.desht.pneumaticcraft.common.network.NetworkHandler;
+import me.desht.pneumaticcraft.common.network.PacketSetGlobalVariable;
 import me.desht.pneumaticcraft.common.util.GlobalPosHelper;
 import me.desht.pneumaticcraft.common.util.IOHelper;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -162,7 +164,7 @@ public class ModCommands {
     private static int getGlobalVar(CommandContext<CommandSource> ctx, String varName) {
         CommandSource source = ctx.getSource();
         if (!GlobalVariableHelper.hasPrefix(varName)) {
-            source.sendFeedback(xlate("pneumaticcraft.command.getGlobalVariable.prefixReminder").mergeStyle(TextFormatting.GOLD), false);
+            source.sendFeedback(xlate("pneumaticcraft.command.globalVariable.prefixReminder").mergeStyle(TextFormatting.GOLD), false);
             varName = "#" + varName;
         }
         try {
@@ -212,7 +214,7 @@ public class ModCommands {
     private static int delGlobalVar(CommandContext<CommandSource> ctx, String varName) {
         CommandSource source = ctx.getSource();
         if (!varName.startsWith("#") && !varName.startsWith("%")) {
-            source.sendFeedback(xlate("pneumaticcraft.command.getGlobalVariable.prefixReminder").mergeStyle(TextFormatting.GOLD), false);
+            source.sendFeedback(xlate("pneumaticcraft.command.globalVariable.prefixReminder").mergeStyle(TextFormatting.GOLD), false);
         }
 
         try {
@@ -222,6 +224,14 @@ public class ModCommands {
             } else {
                 GlobalVariableHelper.setPos(id, varName, null);
                 GlobalVariableHelper.setStack(id, varName, ItemStack.EMPTY);
+                // global var deletions need to get sync'd to players; syncing normally happens when remote/gps tool/etc GUI's
+                // are opened, but deleted vars won't get sync'd there, so could wrongly hang around on the client
+                if (id != null) {
+                    PneumaticRegistry.getInstance().syncGlobalVariable(ctx.getSource().asPlayer(), varName);
+                } else {
+                    NetworkHandler.sendToAll(new PacketSetGlobalVariable(varName, (BlockPos) null));
+                    NetworkHandler.sendToAll(new PacketSetGlobalVariable(varName, ItemStack.EMPTY));
+                }
                 source.sendFeedback(xlate("pneumaticcraft.command.globalVariable.delete", varName), true);
             }
         } catch (CommandSyntaxException e) {
@@ -235,7 +245,7 @@ public class ModCommands {
         public String parse(StringReader reader) throws CommandSyntaxException {
             int start = reader.getCursor();
             if (reader.peek() == '#' || reader.peek() == '%') reader.skip();
-            while (reader.canRead() && StringUtils.isAlphanumeric(String.valueOf(reader.peek()))) {
+            while (reader.canRead() && (StringUtils.isAlphanumeric(String.valueOf(reader.peek())) || reader.peek() == '_')) {
                 reader.skip();
             }
             return reader.getString().substring(start, reader.getCursor());

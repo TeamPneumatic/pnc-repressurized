@@ -5,11 +5,13 @@ import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.common.ai.DroneAIManager;
 import me.desht.pneumaticcraft.common.core.ModProgWidgets;
 import me.desht.pneumaticcraft.common.item.ItemGPSTool;
+import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import me.desht.pneumaticcraft.common.variables.GlobalVariableManager;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.NBTUtil;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -18,13 +20,13 @@ import net.minecraft.util.text.StringTextComponent;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget {
-
-    private int x, y, z;
+    private BlockPos coord;
     private String variable = "";
     private boolean useVariable;
     private DroneAIManager aiManager;
@@ -63,7 +65,7 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
     @Override
     public void addWarnings(List<ITextComponent> curInfo, List<IProgWidget> widgets) {
         super.addWarnings(curInfo, widgets);
-        if (!useVariable && x == 0 && y == 0 && z == 0) {
+        if (!useVariable && coord == null) {
             curInfo.add(xlate("pneumaticcraft.gui.progWidget.coordinate.warning.noCoordinate"));
         }
     }
@@ -94,9 +96,9 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
     @Override
     public void writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
-        tag.putInt("posX", x);
-        tag.putInt("posY", y);
-        tag.putInt("posZ", z);
+        if (coord != null) {
+            tag.put("coord", NBTUtil.writeBlockPos(coord));
+        }
         if (!variable.isEmpty()) tag.putString("variable", variable);
         if (useVariable) tag.putBoolean("useVariable", true);
     }
@@ -104,9 +106,14 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
     @Override
     public void readFromNBT(CompoundNBT tag) {
         super.readFromNBT(tag);
-        x = tag.getInt("posX");
-        y = tag.getInt("posY");
-        z = tag.getInt("posZ");
+        if (tag.contains("posX")) {
+            // TODO remove in 1.17
+            coord = new BlockPos(tag.getInt("posX"), tag.getInt("posY"), tag.getInt("posZ"));
+        } else if (tag.contains("coord")) {
+            coord = NBTUtil.readBlockPos(tag.getCompound("coord"));
+        } else {
+            coord = null;
+        }
         variable = tag.getString("variable");
         useVariable = tag.getBoolean("useVariable");
     }
@@ -114,9 +121,8 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
     @Override
     public void writeToPacket(PacketBuffer buf) {
         super.writeToPacket(buf);
-        buf.writeInt(x);
-        buf.writeInt(y);
-        buf.writeInt(z);
+        buf.writeBoolean(coord != null);
+        if (coord != null) buf.writeBlockPos(coord);
         buf.writeString(variable);
         buf.writeBoolean(useVariable);
     }
@@ -124,9 +130,7 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
     @Override
     public void readFromPacket(PacketBuffer buf) {
         super.readFromPacket(buf);
-        x = buf.readInt();
-        y = buf.readInt();
-        z = buf.readInt();
+        coord = buf.readBoolean() ? buf.readBlockPos() : null;
         variable = buf.readString(GlobalVariableManager.MAX_VARIABLE_LEN);
         useVariable = buf.readBoolean();
     }
@@ -136,7 +140,7 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
         this.aiManager = aiManager;
     }
 
-    public BlockPos getCoordinate() {
+    public Optional<BlockPos> getCoordinate() {
         if (useVariable && aiManager != null) {
             return aiManager.getCoordinate(aiManager.getDrone().getOwnerUUID(), variable);
         } else {
@@ -144,18 +148,12 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
         }
     }
 
-    public BlockPos getRawCoordinate() {
-        return new BlockPos(x, y, z);
+    public Optional<BlockPos> getRawCoordinate() {
+        return Optional.ofNullable(coord);
     }
 
     public void setCoordinate(BlockPos pos) {
-        if (pos != null) {
-            x = pos.getX();
-            y = pos.getY();
-            z = pos.getZ();
-        } else {
-            x = y = z = 0;
-        }
+        coord = pos;
     }
 
     public void setVariable(String varName) {
@@ -174,13 +172,13 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
         this.useVariable = useVariable;
     }
     
-    public void loadFromGPSTool(ItemStack gpsTool){
+    public void loadFromGPSTool(ItemStack gpsTool) {
         String variable = ItemGPSTool.getVariable(gpsTool);
         if (variable.isEmpty()) {
-            setCoordinate(ItemGPSTool.getGPSLocation(gpsTool));
+            setCoordinate(ItemGPSTool.getGPSLocation(gpsTool).orElse(BlockPos.ZERO));
             setUsingVariable(false);
         } else {
-            setVariable("#" + variable);
+            setVariable(variable);
             setUsingVariable(true);
         }
     }
@@ -190,16 +188,17 @@ public class ProgWidgetCoordinate extends ProgWidget implements IVariableWidget 
         super.getTooltip(curTooltip);
 
         if (useVariable) {
-            curTooltip.add(new StringTextComponent("XYZ: '" + variable + "'"));
-        } else if (x != 0 || y != 0 || z != 0) {
-            curTooltip.add(new StringTextComponent("X: " + x + ", Y: " + y + ", Z: " + z));
+            curTooltip.add(new StringTextComponent("XYZ: var '" + variable + "'"));
+        } else {
+            curTooltip.add(new StringTextComponent(PneumaticCraftUtils.posToString(coord)));
         }
     }
 
     @Override
     public List<ITextComponent> getExtraStringInfo() {
-        if (useVariable) return Collections.singletonList(varAsTextComponent(variable));
-        else return x != 0 || y != 0 || z != 0 ? Collections.singletonList(new StringTextComponent(x + ", " + y + ", " + z)) : Collections.emptyList();
+        return useVariable ?
+                Collections.singletonList(varAsTextComponent(variable)) :
+                Collections.singletonList(new StringTextComponent(PneumaticCraftUtils.posToString(coord)));
     }
 
     @Override

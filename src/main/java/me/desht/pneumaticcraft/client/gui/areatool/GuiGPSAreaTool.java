@@ -31,12 +31,12 @@ public class GuiGPSAreaTool extends GuiGPSTool {
 
     private GuiGPSAreaTool(ItemStack stack, Hand hand, int index) {
         super(stack.getDisplayName(), hand,
-                ItemGPSAreaTool.getGPSLocation(Minecraft.getInstance().player, stack, index).orElse(BlockPos.ZERO),
+                ItemGPSAreaTool.getGPSLocation(Minecraft.getInstance().player, stack, index).orElse(ClientUtils.getClientPlayer().getPosition()),
                 ItemGPSAreaTool.getVariable(Minecraft.getInstance().player, stack, index));
 
         this.index = index;
         for (int i = 0; i <= 1; i++) {
-            p1p2Pos[i] = ItemGPSAreaTool.getGPSLocation(Minecraft.getInstance().player, stack, i).orElse(BlockPos.ZERO);
+            p1p2Pos[i] = ItemGPSAreaTool.getGPSLocation(Minecraft.getInstance().player, stack, i).orElse(ClientUtils.getClientPlayer().getPosition());
             vars[i] = ItemGPSAreaTool.getVariable(Minecraft.getInstance().player, stack, i);
             playerGlobals[i] = !vars[i].startsWith("%");
             vars[i] = GlobalVariableHelper.stripVarPrefix(vars[i]);

@@ -33,7 +33,9 @@ public class GuiProgWidgetCoordinate extends GuiProgWidgetAreaShow<ProgWidgetCoo
         super.init();
 
         if (invSearchGui != null) {
+            // returning from GPS selection GUI; copy the selected blockpos to the progwidget
             progWidget.setCoordinate(invSearchGui.getBlockPos());
+            invSearchGui = null;
         }
 
         WidgetRadioButton.Builder.create()
@@ -56,9 +58,10 @@ public class GuiProgWidgetCoordinate extends GuiProgWidgetAreaShow<ProgWidgetCoo
             addButton(coordFields[i]);
             coordFields[i].setEnabled(gpsButton.active);
         }
-        coordFields[0].setValue(progWidget.getRawCoordinate().getX());
-        coordFields[1].setValue(progWidget.getRawCoordinate().getY());
-        coordFields[2].setValue(progWidget.getRawCoordinate().getZ());
+        BlockPos coord = progWidget.getRawCoordinate().orElse(BlockPos.ZERO);
+        coordFields[0].setValue(coord.getX());
+        coordFields[1].setValue(coord.getY());
+        coordFields[2].setValue(coord.getZ());
 
         variableField = new WidgetComboBox(font, guiLeft + 90, guiTop + 112, 80, font.FONT_HEIGHT + 1);
         variableField.setElements(guiProgrammer.te.getAllVariables());
@@ -82,10 +85,10 @@ public class GuiProgWidgetCoordinate extends GuiProgWidgetAreaShow<ProgWidgetCoo
         if (minecraft.currentScreen instanceof GuiInventorySearcher) {
             invSearchGui = (GuiInventorySearcher) minecraft.currentScreen;
             invSearchGui.setStackPredicate(itemStack -> itemStack.getItem() instanceof IPositionProvider);
-            BlockPos area = progWidget.getRawCoordinate();
+            BlockPos coord = progWidget.getRawCoordinate().orElse(BlockPos.ZERO);
             ItemStack gpsStack = new ItemStack(ModItems.GPS_TOOL.get());
-            ItemGPSTool.setGPSLocation(ClientUtils.getClientPlayer().getUniqueID(), gpsStack, area);
-            invSearchGui.setSearchStack(ItemGPSTool.getGPSLocation(gpsStack) != null ? gpsStack : ItemStack.EMPTY);
+            ItemGPSTool.setGPSLocation(ClientUtils.getClientPlayer().getUniqueID(), gpsStack, coord);
+            invSearchGui.setSearchStack(ItemGPSTool.getGPSLocation(gpsStack).isPresent() ? gpsStack : ItemStack.EMPTY);
         }
     }
 

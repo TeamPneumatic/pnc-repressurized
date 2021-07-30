@@ -74,8 +74,7 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadr
         } else if (fluidGui != null) {
             setFluid(settingSlot, fluidGui.getFilter());
         } else if (gpsSearchGui != null) {
-            positions[settingSlot] = gpsSearchGui.getSearchStack().isEmpty() ?
-                    null : ItemGPSTool.getGPSLocation(gpsSearchGui.getSearchStack());
+            ItemGPSTool.getGPSLocation(gpsSearchGui.getSearchStack()).ifPresent(pos -> positions[settingSlot] = pos);
         }
         openingSubGUI = false;
         searchGui = null;

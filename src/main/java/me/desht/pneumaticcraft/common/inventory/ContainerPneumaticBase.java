@@ -167,6 +167,7 @@ public class ContainerPneumaticBase<T extends TileEntityBase> extends Container 
     }
 
     // almost the same as the super method, but pays attention to slot itemstack limits
+    @Override
     protected boolean mergeItemStack(ItemStack stack, int startIndex, int endIndex, boolean reverseDirection) {
         boolean flag = false;
         int i = startIndex;

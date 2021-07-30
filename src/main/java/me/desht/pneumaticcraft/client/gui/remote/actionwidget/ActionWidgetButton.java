@@ -64,7 +64,7 @@ public class ActionWidgetButton extends ActionWidgetVariable<WidgetButtonExtende
 
     @Override
     public void onActionPerformed() {
-        NetworkHandler.sendToServer(new PacketSetGlobalVariable(getVariableName(), settingCoordinate));
+        if (!getVariableName().isEmpty()) NetworkHandler.sendToServer(new PacketSetGlobalVariable(getVariableName(), settingCoordinate));
     }
 
     @Override

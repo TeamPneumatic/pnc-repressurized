@@ -595,7 +595,7 @@ public class EntityDrone extends EntityDroneBase implements
         aiManager.setCoordinate(varName, pos);
     }
 
-    public BlockPos getVariable(String varName) {
+    public Optional<BlockPos> getVariable(String varName) {
         return aiManager.getCoordinate(ownerUUID, varName);
     }
 
@@ -722,13 +722,10 @@ public class EntityDrone extends EntityDroneBase implements
         ItemStack stack = player.getHeldItem(hand);
         if (stack.getItem() == ModItems.GPS_TOOL.get()) {
             if (!world.isRemote) {
-                BlockPos gpsLoc = ItemGPSTool.getGPSLocation(player.getUniqueID(), stack);
-                if (gpsLoc != null) {
-                    getNavigator().tryMoveToXYZ(gpsLoc.getX(), gpsLoc.getY(), gpsLoc.getZ(), 0.1D);
+                return ItemGPSTool.getGPSLocation(player.getUniqueID(), stack).map(gpsPos -> {
+                    getNavigator().tryMoveToXYZ(gpsPos.getX(), gpsPos.getY(), gpsPos.getZ(), 0.1D);
                     return ActionResultType.SUCCESS;
-                } else {
-                    return ActionResultType.PASS;
-                }
+                }).orElse(ActionResultType.PASS);
             }
             return ActionResultType.SUCCESS;
         } else if (stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).isPresent()) {

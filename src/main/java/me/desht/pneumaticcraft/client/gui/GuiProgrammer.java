@@ -930,7 +930,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
             } else if (widget instanceof ProgWidgetCoordinate && baseWidget.getConnectedParameters()[0] != widget) {
                 ProgWidgetCoordinate coordinate = (ProgWidgetCoordinate) widget;
                 if (!coordinate.isUsingVariable()) {
-                    BlockPos coord = coordinate.getCoordinate();
+                    BlockPos coord = coordinate.getCoordinate().orElse(BlockPos.ZERO);
                     String coordStr = PneumaticCraftUtils.posToString(coord);
                     if (PneumaticCraftUtils.distBetweenSq(coord, 0, 0, 0) < 4096) {
                         // When the coordinate value is close to 0, there's a low chance it means a position, and rather an offset.
@@ -1065,13 +1065,13 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
                 if (hovered instanceof ProgWidgetCoordinate) {
                     ((ProgWidgetCoordinate) hovered).loadFromGPSTool(heldItem);
                 } else if (hovered instanceof ProgWidgetArea) {
-                    BlockPos pos = ItemGPSTool.getGPSLocation(heldItem);
-                    String var = ItemGPSTool.getVariable(heldItem);
                     ProgWidgetArea areaHovered = (ProgWidgetArea) hovered;
-                    if (pos != null) areaHovered.setPos(0, pos);
-                    areaHovered.setPos(1, null);
-                    areaHovered.setVarName(0, var);
-                    areaHovered.setVarName(1, "");
+                    ItemGPSTool.getGPSLocation(ClientUtils.getClientPlayer().getUniqueID(), heldItem).ifPresent(gpsPos -> {
+                        areaHovered.setPos(0, gpsPos);
+                        areaHovered.setPos(1, gpsPos);
+                    });
+                    areaHovered.setVarName(0, ItemGPSTool.getVariable(heldItem));
+                    areaHovered.setVarName(1, ItemGPSTool.getVariable(heldItem));
                 }
                 NetworkHandler.sendToServer(new PacketProgrammerUpdate(te));
             }
@@ -1087,7 +1087,7 @@ public class GuiProgrammer extends GuiPneumaticContainerBase<ContainerProgrammer
                 }
             } else if (heldItem.getItem() == ModItems.GPS_TOOL.get()) {
                 if (Screen.hasShiftDown()) {
-                    ProgWidgetArea areaWidget = ProgWidgetArea.fromPosition(ItemGPSTool.getGPSLocation(heldItem));
+                    ProgWidgetArea areaWidget = ProgWidgetArea.fromPosition(ItemGPSTool.getGPSLocation(heldItem).orElse(BlockPos.ZERO));
                     String var = ItemGPSTool.getVariable(heldItem);
                     if (!var.isEmpty()) areaWidget.setVarName(0, var);
                     toCreate.add(areaWidget);

@@ -18,6 +18,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 
 public class GuiGPSTool extends GuiPneumaticScreenBase {
     private static final int TEXTFIELD_WIDTH = 60;
@@ -64,7 +65,7 @@ public class GuiGPSTool extends GuiPneumaticScreenBase {
         for (int i = 0; i < 3; i++) {
             int min = i == 1 ? PneumaticCraftUtils.getMinHeight(ClientUtils.getClientWorld()) : Integer.MIN_VALUE;
             int max = i == 1 ? ClientUtils.getClientWorld().getHeight() : Integer.MAX_VALUE;
-            textFields[i] = new WidgetTextFieldNumber(font, xMiddle - TEXTFIELD_WIDTH / 2, yMiddle - 15 + i * 22, TEXTFIELD_WIDTH, font.FONT_HEIGHT)
+            textFields[i] = new WidgetTextFieldNumber(font, xMiddle - TEXTFIELD_WIDTH / 2, yMiddle - 16 + i * 22, TEXTFIELD_WIDTH, font.FONT_HEIGHT + 2)
                     .setValue(oldText[i])
                     .setRange(min, max)
                     .setAdjustments(1, 10);
@@ -94,6 +95,9 @@ public class GuiGPSTool extends GuiPneumaticScreenBase {
                 b -> toggleVarType())
                 .setTooltipKey("pneumaticcraft.gui.remote.varType.tooltip");
         addButton(varTypeButton);
+
+        addLabel(new TranslationTextComponent("pneumaticcraft.gui.progWidget.coordinate.variable").appendString(":"), variableField.x, variableField.y - font.FONT_HEIGHT - 2).setColor(0xFFFFFF);
+
     }
 
     protected void toggleVarType() {

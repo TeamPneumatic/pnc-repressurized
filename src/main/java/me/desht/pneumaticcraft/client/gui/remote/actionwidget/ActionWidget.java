@@ -70,18 +70,7 @@ public abstract class ActionWidget<W extends Widget> {
 
     public boolean isEnabled() {
         if (enableVariable.isEmpty()) return true;
-
-//        boolean playerVar = true;
-//        if (enableVariable.startsWith("%")) {
-//            playerVar = false;
-//            enableVariable = enableVariable.substring(1);
-//        } else if (enableVariable.startsWith("#")) {
-//            enableVariable = enableVariable.substring(1);
-//        }
-//        GlobalVariableManager gvm = GlobalVariableManager.getInstance();
-//        BlockPos pos = playerVar ? gvm.getPos(ClientUtils.getClientPlayer().getUniqueID(), enableVariable) : gvm.getPos(enableVariable);
-
-        BlockPos pos = GlobalVariableHelper.getPos(ClientUtils.getClientPlayer().getUniqueID(), enableVariable);
+        BlockPos pos = GlobalVariableHelper.getPos(ClientUtils.getClientPlayer().getUniqueID(), enableVariable, BlockPos.ZERO);
         return pos.equals(enablingValue);
     }
 

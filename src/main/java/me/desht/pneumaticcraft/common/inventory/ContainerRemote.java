@@ -34,9 +34,9 @@ public class ContainerRemote extends ContainerPneumaticBase<TileEntityBase> {
 
         this.hand = hand;
         this.variables = new String[0];
+        this.playerId = playerInventory.player.getUniqueID();
         this.syncedVars = new ArrayList<>(getRelevantVariableNames(playerInventory.player.getHeldItem(hand)));
         this.lastValues = new BlockPos[syncedVars.size()];
-        this.playerId = playerInventory.player.getUniqueID();
     }
 
     private ContainerRemote(ContainerType<ContainerRemote> type, int windowId, PlayerInventory playerInventory, PacketBuffer buffer) {
@@ -49,9 +49,9 @@ public class ContainerRemote extends ContainerPneumaticBase<TileEntityBase> {
             variables[i] = buffer.readString();
         }
 
+        this.playerId = playerInventory.player.getUniqueID();
         this.syncedVars = new ArrayList<>(getRelevantVariableNames(playerInventory.player.getHeldItem(hand)));
         this.lastValues = new BlockPos[syncedVars.size()];
-        this.playerId = playerInventory.player.getUniqueID();
     }
 
     public static ContainerRemote createRemoteContainer(int windowId, PlayerInventory playerInventory, PacketBuffer buffer) {

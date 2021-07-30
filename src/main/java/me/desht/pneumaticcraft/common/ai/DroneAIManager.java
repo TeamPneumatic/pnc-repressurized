@@ -56,7 +56,7 @@ public class DroneAIManager implements IVariableProvider {
 
     private Map<String, BlockPos> coordinateVariables = new HashMap<>();
     private Map<String, ItemStack> itemVariables = new HashMap<>();
-    private final Deque<IProgWidget> jumpBackWidgets = new ArrayDeque<>(); // A jump-back stack
+    private final Deque<IProgWidget> jumpBackWidgets = new ArrayDeque<>(); // Used to jump back to a foreach widget.
 
     private static final int MAX_JUMP_STACK_SIZE = 100;
 
@@ -98,11 +98,6 @@ public class DroneAIManager implements IVariableProvider {
     void connectVariables(DroneAIManager subAI) {
         subAI.coordinateVariables = coordinateVariables;
         subAI.itemVariables = itemVariables;
-    }
-
-    public void clearVariables() {
-        coordinateVariables.clear();
-        itemVariables.clear();
     }
 
     public boolean isIdling() {
@@ -155,40 +150,16 @@ public class DroneAIManager implements IVariableProvider {
     }
 
     @Override
-    public boolean hasCoordinate(UUID id, String varName) {
-        return getCoordinateInternal(varName) != null;
-    }
-
-    @Override
-    public BlockPos getCoordinate(UUID id, String varName) {
-        BlockPos pos = getCoordinateInternal(varName);
-        return pos != null ? pos : BlockPos.ZERO;
-    }
-
-    private BlockPos getCoordinateInternal(String varName) {
+    public Optional<BlockPos> getCoordinate(UUID id, String varName) {
         if (varName.startsWith("$")) {
             SpecialVariableRetrievalEvent.CoordinateVariable.Drone event = new SpecialVariableRetrievalEvent.CoordinateVariable.Drone(drone, varName.substring(1));
             MinecraftForge.EVENT_BUS.post(event);
-            return event.getCoordinate();
+            return Optional.ofNullable(event.getCoordinate());
         } else if (varName.startsWith("%") || varName.startsWith("#")) {
-            return GlobalVariableHelper.getPos(drone.getOwnerUUID(), varName, BlockPos.ZERO);
+            return Optional.ofNullable(GlobalVariableHelper.getPos(drone.getOwnerUUID(), varName));
         } else {
-            return coordinateVariables.get(varName);
+            return Optional.ofNullable(coordinateVariables.get(varName));
         }
-    }
-
-    public void setCoordinate(String varName, BlockPos coord) {
-        if (varName.startsWith("%") || varName.startsWith("#")) {
-            GlobalVariableHelper.setPos(drone.getOwnerUUID(), varName, coord);
-        } else if (!varName.startsWith("$")) {
-            coordinateVariables.put(varName, coord);
-            drone.onVariableChanged(varName, true);
-        }
-    }
-
-    @Override
-    public boolean hasStack(UUID id, String varName) {
-        return !getStack(id, varName).isEmpty();
     }
 
     @Override
@@ -204,6 +175,15 @@ public class DroneAIManager implements IVariableProvider {
             item = itemVariables.getOrDefault(varName, ItemStack.EMPTY);
         }
         return item;
+    }
+
+    public void setCoordinate(String varName, BlockPos coord) {
+        if (varName.startsWith("%") || varName.startsWith("#")) {
+            GlobalVariableHelper.setPos(drone.getOwnerUUID(), varName, coord);
+        } else if (!varName.startsWith("$")) {
+            coordinateVariables.put(varName, coord);
+            drone.onVariableChanged(varName, true);
+        }
     }
 
     public void setStack(String varName, @Nonnull ItemStack item) {
@@ -262,10 +242,10 @@ public class DroneAIManager implements IVariableProvider {
             boolean first = widget instanceof ProgWidgetStart;
             targetAI = widget.getWidgetTargetAI(drone, widget);
             ai = widget.getWidgetAI(drone, widget);
-            Set<IProgWidget> visitedWidgets = new HashSet<>();//Prevent endless loops
+            Set<IProgWidget> visitedWidgets = new HashSet<>(); //Prevent endless loops
             while (!visitedWidgets.contains(widget) && targetAI == null && ai == null) {
                 visitedWidgets.add(widget);
-                IProgWidget oldWidget = widget;
+                IProgWidget prevWidget = widget;
                 widget = widget.getOutputWidget(drone, progWidgets);
                 if (widget == null) {
                     // reached the last widget in the line
@@ -279,9 +259,9 @@ public class DroneAIManager implements IVariableProvider {
                         }
                     }
                     return;
-                } else if (oldWidget.getOutputWidget() != widget) {
+                } else if (prevWidget.getOutputWidget() != widget) {
                     // we jumped to a "subroutine"
-                    if (addJumpBackWidget(oldWidget)) return;
+                    if (addJumpBackWidget(prevWidget)) return;
                 }
                 targetAI = widget.getWidgetTargetAI(drone, widget);
                 ai = widget.getWidgetAI(drone, widget);

@@ -48,6 +48,7 @@ import net.minecraftforge.items.ItemStackHandler;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -579,11 +580,11 @@ public class PneumaticCraftUtils {
         return new BlockPos(e.getPosX(), e.getPosY(), e.getPosZ());
     }
 
-    public static String posToString(BlockPos pos) {
-        return isValidPos(pos) ? String.format("%d,%d,%d", pos.getX(), pos.getY(), pos.getZ()) : "-";
+    public static String posToString(@Nullable BlockPos pos) {
+        return isValidPos(pos) ? String.format("%d, %d, %d", pos.getX(), pos.getY(), pos.getZ()) : "-";
     }
 
-    public static boolean isValidPos(BlockPos pos) {
+    public static boolean isValidPos(@Nullable BlockPos pos) {
         return pos != null && pos != INVALID_POS;
     }
 

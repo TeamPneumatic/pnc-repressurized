@@ -68,14 +68,7 @@ public class ActionWidgetDropdown extends ActionWidgetVariable<WidgetComboBox> {
 
     @Override
     public void onKeyTyped() {
-        String[] elements = getDropdownElements();
-        selectedElement = getWidget().getText();
-        for (int i = 0; i < elements.length; i++) {
-            if (elements[i].equals(selectedElement)) {
-                NetworkHandler.sendToServer(new PacketSetGlobalVariable(getVariableName(), i));
-                break;
-            }
-        }
+        if (!getVariableName().isEmpty()) NetworkHandler.sendToServer(new PacketSetGlobalVariable(getVariableName(), widget.getSelectedElementIndex()));
     }
 
     @Override
@@ -103,7 +96,7 @@ public class ActionWidgetDropdown extends ActionWidgetVariable<WidgetComboBox> {
     }
 
     private void onPressed(WidgetComboBox comboBox) {
-        if (comboBox.getSelectedElementIndex() >= 0) {
+        if (comboBox.getSelectedElementIndex() >= 0 && !getVariableName().isEmpty()) {
             NetworkHandler.sendToServer(new PacketSetGlobalVariable(getVariableName(), comboBox.getSelectedElementIndex()));
         }
     }

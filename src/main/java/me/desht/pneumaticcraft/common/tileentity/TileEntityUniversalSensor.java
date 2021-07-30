@@ -471,12 +471,9 @@ public class TileEntityUniversalSensor extends TileEntityPneumaticBase implement
                 requireArgs(args, 1, "upgrade_slot");
                 ItemStack stack = getUpgradeHandler().getStackInSlot(((Double) args[0]).intValue() - 1); //minus one, as lua is 1-oriented.
                 if (stack.getItem() == ModItems.GPS_TOOL.get()) {
-                    BlockPos pos = ItemGPSTool.getGPSLocation(stack);
-                    if (pos != null) {
-                        return new Object[]{pos.getX(), pos.getY(), pos.getZ()};
-                    } else {
-                        return new Object[]{0, 0, 0};
-                    }
+                    return ItemGPSTool.getGPSLocation(stack)
+                            .map(pos -> new Object[]{pos.getX(), pos.getY(), pos.getZ()})
+                            .orElse(new Object[]{0, 0, 0});
                 } else {
                     return null;
                 }

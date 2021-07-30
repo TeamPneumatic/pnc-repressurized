@@ -121,9 +121,9 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
         for (int i = 0; i < 2; i++) {
             String text = varNames[i].isEmpty() ?
                     pos[i] == null ? null : PneumaticCraftUtils.posToString(pos[i]) :
-                    String.format("P%d: var \"%s\"", i, varNames[i]);
+                    String.format("var \"%s\"", varNames[i]);
             if (text != null) {
-                curTooltip.add(new StringTextComponent(text));
+                curTooltip.add(new StringTextComponent("P" + (i + 1) + ": ").append(new StringTextComponent(text).mergeStyle(TextFormatting.YELLOW)));
             }
         }
         if (curTooltip.size() - n == 2) {
@@ -164,7 +164,10 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     private BlockPos[] getAreaPoints() {
         BlockPos[] points = new BlockPos[2];
         for (int i = 0; i < 2; i++) {
-            points[i] = varNames[i].isEmpty() ? pos[i] : variableProvider != null ? variableProvider.getCoordinate(playerID, varNames[i]) : null;
+            if (varNames[i].isEmpty()) points[i] = pos[i];
+            else points[i] = variableProvider != null ?
+                    variableProvider.getCoordinate(playerID, varNames[i]).orElse(null) :
+                    null;
         }
         if (points[0] == null && points[1] == null) {
             return new BlockPos[]{null, null};

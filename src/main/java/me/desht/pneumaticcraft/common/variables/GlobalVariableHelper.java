@@ -9,6 +9,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -169,18 +170,8 @@ public class GlobalVariableHelper {
         INSTANCE;
 
         @Override
-        public boolean hasCoordinate(UUID id, String varName) {
-            return GlobalVariableHelper.getPos(id, varName) != null;
-        }
-
-        @Override
-        public BlockPos getCoordinate(UUID id, String varName) {
-            return GlobalVariableHelper.getPos(id, varName);
-        }
-
-        @Override
-        public boolean hasStack(UUID id, String varName) {
-            return !GlobalVariableHelper.getStack(id, varName).isEmpty();
+        public Optional<BlockPos> getCoordinate(UUID id, String varName) {
+            return Optional.ofNullable(GlobalVariableHelper.getPos(id, varName));
         }
 
         @Nonnull

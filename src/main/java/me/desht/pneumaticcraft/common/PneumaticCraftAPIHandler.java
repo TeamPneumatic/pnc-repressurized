@@ -91,8 +91,12 @@ public class PneumaticCraftAPIHandler implements PneumaticRegistry.IPneumaticCra
 
     @Override
     public void syncGlobalVariable(ServerPlayerEntity player, String varName) {
-        BlockPos pos = GlobalVariableHelper.getPos(player.getUniqueID(), varName, BlockPos.ZERO);
+        BlockPos pos = GlobalVariableHelper.getPos(player.getUniqueID(), varName);
         NetworkHandler.sendToPlayer(new PacketSetGlobalVariable(varName, pos), player);
+        // TODO should we sync item variables too?
+        //  right now there isn't really a need for it, so it would just be extra network chatter
+//        ItemStack stack = GlobalVariableHelper.getStack(player.getUniqueID(), varName);
+//        NetworkHandler.sendToPlayer(new PacketSetGlobalVariable(varName, stack), player);
     }
 
     @Override

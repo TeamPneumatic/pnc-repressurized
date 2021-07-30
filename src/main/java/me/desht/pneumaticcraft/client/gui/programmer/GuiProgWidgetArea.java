@@ -99,6 +99,7 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
         if (invSearchGui != null) {
             // returning from GPS selection GUI; copy the selected blockpos to the progwidget
             progWidget.setPos(pointSearched, invSearchGui.getBlockPos());
+            invSearchGui = null;
         }
 
         // blockpos labels

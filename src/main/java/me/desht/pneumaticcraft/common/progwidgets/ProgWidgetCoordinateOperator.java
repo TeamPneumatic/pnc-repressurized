@@ -77,7 +77,7 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
             IProgWidget w = getConnectedParameters()[1];
             while (w instanceof ProgWidgetCoordinate) {
                 if (!((ProgWidgetCoordinate) w).isUsingVariable()) {
-                    BlockPos pos = ((ProgWidgetCoordinate) w).getCoordinate();
+                    BlockPos pos = ((ProgWidgetCoordinate) w).getCoordinate().orElse(BlockPos.ZERO);
                     if (axisOptions.shouldCheck(Axis.X) && pos.getX() == 0
                             || axisOptions.shouldCheck(Axis.Y) && pos.getY() == 0
                             || axisOptions.shouldCheck(Axis.Z) && pos.getZ() == 0)
@@ -117,7 +117,7 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
         if (whiteList != null) {
             whiteList = (ProgWidgetCoordinate) whiteList.getConnectedParameters()[0];
             while (whiteList != null) {
-                curPos = getNextPos(curPos, whiteList.getCoordinate(), op, true, axisOptions);
+                curPos = getNextPos(curPos, whiteList.getCoordinate().orElse(BlockPos.ZERO), op, true, axisOptions);
                 whiteList = (ProgWidgetCoordinate) whiteList.getConnectedParameters()[0];
             }
         } else if (blackList != null) {
@@ -125,7 +125,7 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
             blackList = (ProgWidgetCoordinate) blackList.getConnectedParameters()[0];
         }
         while (blackList != null) {
-            curPos = getNextPos(curPos, blackList.getCoordinate(), op, false, axisOptions);
+            curPos = getNextPos(curPos, blackList.getCoordinate().orElse(BlockPos.ZERO), op, false, axisOptions);
             blackList = (ProgWidgetCoordinate) blackList.getConnectedParameters()[0];
         }
         return curPos;
@@ -265,14 +265,16 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
             switch (this) {
                 case PLUS_MINUS:
                     return whiteList != null ?
-                            whiteList.getCoordinate() :
-                            (blackList != null ? BlockPos.ZERO.subtract(blackList.getCoordinate()) : BlockPos.ZERO);
+                            whiteList.getCoordinate().orElse(BlockPos.ZERO) :
+                            (blackList != null ? BlockPos.ZERO.subtract(blackList.getCoordinate().orElse(BlockPos.ZERO)) : BlockPos.ZERO);
                 case MULIPLY_DIVIDE:
-                    return whiteList != null ? whiteList.getCoordinate() : BlockPos.ZERO;
+                    return whiteList != null ?
+                            whiteList.getCoordinate().orElse(BlockPos.ZERO) :
+                            BlockPos.ZERO;
                 case MAX_MIN:
                     return whiteList != null ?
-                            whiteList.getCoordinate() :
-                            (blackList != null ? blackList.getCoordinate() : BlockPos.ZERO);
+                            whiteList.getCoordinate().orElse(BlockPos.ZERO) :
+                            (blackList != null ? blackList.getCoordinate().orElse(BlockPos.ZERO) : BlockPos.ZERO);
                 default:
                     throw new IllegalArgumentException("bad value for op?");
             }

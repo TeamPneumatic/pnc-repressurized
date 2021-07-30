@@ -24,11 +24,11 @@ public class GuiRemoteVariable<A extends ActionWidgetVariable<?>> extends GuiRem
 
         addLabel(xlate("pneumaticcraft.gui.progWidget.coordinate.variableName"), guiLeft + 10, guiTop + 70);
 
-        playerGlobal = actionWidget.getVariableName().isEmpty() || actionWidget.getVariableName().startsWith("%");
+        playerGlobal = actionWidget.getVariableName().isEmpty() || actionWidget.getVariableName().startsWith("#");
 
-        varTypeButton = new WidgetButtonExtended(guiLeft + 10, guiTop + 78, 12, 14, "#", b -> togglePlayerGlobal())
+        varTypeButton = new WidgetButtonExtended(guiLeft + 10, guiTop + 78, 12, 14, GlobalVariableHelper.getVarPrefix(playerGlobal),
+                b -> togglePlayerGlobal())
                 .setTooltipKey("pneumaticcraft.gui.remote.varType.tooltip");
-
         addButton(varTypeButton);
 
         variableField = new WidgetComboBox(font, guiLeft + 23, guiTop + 80, 147, 10);

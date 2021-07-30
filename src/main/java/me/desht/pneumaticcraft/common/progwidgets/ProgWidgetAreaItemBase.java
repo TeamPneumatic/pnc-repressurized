@@ -153,20 +153,23 @@ public abstract class ProgWidgetAreaItemBase extends ProgWidget
         for (int i = 0; i < 2; i++) {
             String varName = widget.getVarName(i);
             if (!varName.isEmpty())
-                areaVariableStates.put(varName, aiManager.getCoordinate(aiManager.getDrone().getOwnerUUID(), varName));
+                aiManager.getCoordinate(aiManager.getDrone().getOwnerUUID(), varName)
+                        .ifPresent(pos -> areaVariableStates.put(varName, pos));
         }
     }
 
     private boolean updateVariables() {
-        boolean varChanged = false;
+        int changed = 0;
         for (Map.Entry<String, BlockPos> entry : areaVariableStates.entrySet()) {
-            BlockPos newValue = aiManager.getCoordinate(aiManager.getDrone().getOwnerUUID(), entry.getKey());
-            if (!newValue.equals(entry.getValue())) {
-                varChanged = true;
-                entry.setValue(newValue);
-            }
+            if (aiManager.getCoordinate(aiManager.getDrone().getOwnerUUID(), entry.getKey()).map(newValue -> {
+                if (!newValue.equals(entry.getValue())) {
+                    entry.setValue(newValue);
+                    return true;
+                }
+                return false;
+            }).orElse(false)) changed++;
         }
-        return varChanged;
+        return changed > 0;
     }
 
     @Override

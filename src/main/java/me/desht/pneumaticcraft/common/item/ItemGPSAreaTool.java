@@ -25,8 +25,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.text.*;
 import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.apache.commons.lang3.Validate;
@@ -82,7 +80,6 @@ public class ItemGPSAreaTool extends Item implements IPositionProvider, IGPSTool
         return new StringTextComponent(str).mergeStyle(index == 0 ? TextFormatting.RED : TextFormatting.GREEN).append(blockName.mergeStyle(TextFormatting.GREEN));
     }
 
-    @OnlyIn(Dist.CLIENT)
     @Override
     public void addInformation(ItemStack stack, World worldIn, List<ITextComponent> infoList, ITooltipFlag tooltipFlag) {
         super.addInformation(stack, worldIn, infoList, tooltipFlag);
@@ -135,6 +132,7 @@ public class ItemGPSAreaTool extends Item implements IPositionProvider, IGPSTool
         return getArea(player.getUniqueID(), stack);
     }
 
+    @Nonnull
     public static Optional<BlockPos> getGPSLocation(PlayerEntity player, ItemStack gpsTool, int index) {
         Validate.isTrue(index == 0 || index == 1, "index must be 0 or 1!");
         ProgWidgetArea area = getArea(player, gpsTool);
@@ -223,7 +221,7 @@ public class ItemGPSAreaTool extends Item implements IPositionProvider, IGPSTool
         public static void onBlockLeftClick(PlayerInteractEvent.LeftClickBlock event) {
             if (event.getItemStack().getItem() == ModItems.GPS_AREA_TOOL.get()) {
                 Optional<BlockPos> optPos = getGPSLocation(event.getPlayer(), event.getItemStack(), 1);
-                if (!optPos.isPresent() || !event.getPos().equals(optPos.get())) {
+                if (!event.getPos().equals(optPos.orElse(null))) {
                     event.getPlayer().playSound(ModSounds.CHIRP.get(), 1.0f, 1.5f);
                     setGPSPosAndNotify(event.getPlayer(), event.getHand(), event.getPos(), 1);
                 }

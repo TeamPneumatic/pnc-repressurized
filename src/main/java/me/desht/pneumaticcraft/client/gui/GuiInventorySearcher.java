@@ -108,18 +108,16 @@ public class GuiInventorySearcher extends ContainerScreen<ContainerInventorySear
      * Special case for when the searched item is a position provider
      * @return the selected blockpos, or null if the search item is not a position provider
      */
-    @Nonnull
     public BlockPos getBlockPos() {
         ItemStack stack = inventory.getStackInSlot(0);
         if (stack.getItem() instanceof IPositionProvider) {
             List<BlockPos> posList = ((IPositionProvider) stack.getItem()).getRawStoredPositions(ClientUtils.getClientPlayer(), stack);
             int posIdx = getPosIdx(stack);
             if (!posList.isEmpty()) {
-                BlockPos pos = posList.get(Math.min(posIdx, posList.size() - 1));
-                return pos == null ? BlockPos.ZERO : pos;
+                return posList.get(Math.min(posIdx, posList.size() - 1));
             }
         }
-        return BlockPos.ZERO;
+        return null;
     }
 
     private int getPosIdx(ItemStack stack) {
