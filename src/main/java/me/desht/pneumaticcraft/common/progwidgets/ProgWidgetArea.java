@@ -15,6 +15,7 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.DyeColor;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.NBTUtil;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -324,27 +325,19 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     @Override
     public void writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
-        getPos(0).ifPresent(pos -> {
-            tag.putInt("x1", pos.getX());
-            tag.putInt("y1", pos.getY());
-            tag.putInt("z1", pos.getZ());
-        });
-        getPos(1).ifPresent(pos -> {
-            tag.putInt("x2", pos.getX());
-            tag.putInt("y2", pos.getY());
-            tag.putInt("z2", pos.getZ());
-        });
+        getPos(0).ifPresent(pos -> tag.put("pos1", NBTUtil.writeBlockPos(pos)));
+        getPos(1).ifPresent(pos -> tag.put("pos2", NBTUtil.writeBlockPos(pos)));
         tag.putString("type", type.getName());
         type.writeToNBT(tag);
         if (!varNames[0].isEmpty()) {
-            tag.putString("coord1Variable", varNames[0]);
+            tag.putString("var1", varNames[0]);
         } else {
-            tag.remove("coord1Variable");
+            tag.remove("var1");
         }
         if (!varNames[1].isEmpty()) {
-            tag.putString("coord2Variable", varNames[1]);
+            tag.putString("var2", varNames[1]);
         } else {
-            tag.remove("coord2Variable");
+            tag.remove("var2");
         }
     }
 
@@ -352,15 +345,34 @@ public class ProgWidgetArea extends ProgWidget implements IAreaProvider, IVariab
     public void readFromNBT(CompoundNBT tag) {
         super.readFromNBT(tag);
         if (tag.contains("x1")) {
+            // TODO remove in 1.17 - legacy import code
             pos[0] = new BlockPos(tag.getInt("x1"), tag.getInt("y1"), tag.getInt("z1"));
-        }
-        if (tag.contains("x2")) {
             pos[1] = new BlockPos(tag.getInt("x2"), tag.getInt("y2"), tag.getInt("z2"));
+            if (pos[1].equals(BlockPos.ZERO)) {
+                pos[1] = pos[0];
+            }
+            varNames[0] = tag.getString("coord1Variable");
+            varNames[1] = tag.getString("coord2Variable");
+            tag.remove("x1");
+            tag.remove("x2");
+            tag.remove("y1");
+            tag.remove("y2");
+            tag.remove("z1");
+            tag.remove("z1");
+            tag.remove("coord1Variable");
+            tag.remove("coord2Variable");
+        } else {
+            pos[0] = NBTUtil.readBlockPos(tag.getCompound("pos1"));
+            pos[1] = NBTUtil.readBlockPos(tag.getCompound("pos2"));
+            if (pos[1].equals(BlockPos.ZERO)) {
+                // TODO remove in 1.17 - (0,0,0) will no longer mean "invalid"
+                pos[1] = pos[0];
+            }
+            varNames[0] = tag.getString("var1");
+            varNames[1] = tag.getString("var2");
         }
         type = createType(tag.getString("type"));
         type.readFromNBT(tag);
-        varNames[0] = tag.getString("coord1Variable");
-        varNames[1] = tag.getString("coord2Variable");
     }
 
     public static AreaType createType(String id) {

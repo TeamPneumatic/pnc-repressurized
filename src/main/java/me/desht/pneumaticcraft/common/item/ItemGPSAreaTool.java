@@ -124,8 +124,27 @@ public class ItemGPSAreaTool extends Item implements IPositionProvider, IGPSTool
         if (stack.hasTag()) {
             area.setVariableProvider(GlobalVariableHelper.getVariableProvider(), playerId);  // allows client to read vars for rendering purposes
             area.readFromNBT(stack.getTag());
+            maybeMigrateOldVarnames(stack, area);
         }
         return area;
+    }
+
+    /**
+     * TODO delete in 1.17.  Migrate unprefixed var names and add a '#' prefix
+     * @param stack the area tool
+     * @param area the area widget
+     */
+    private static void maybeMigrateOldVarnames(ItemStack stack, ProgWidgetArea area) {
+        boolean needSave = false;
+        for (int i = 0; i < 2; i++) {
+            if (!area.getVarName(i).isEmpty() && !GlobalVariableHelper.hasPrefix(area.getVarName(i))) {
+                area.setVarName(i, "#" + area.getVarName(i));
+                needSave = true;
+            }
+        }
+        if (needSave) {
+            area.writeToNBT(stack.getOrCreateTag());
+        }
     }
 
     public static ProgWidgetArea getArea(PlayerEntity player, ItemStack stack) {

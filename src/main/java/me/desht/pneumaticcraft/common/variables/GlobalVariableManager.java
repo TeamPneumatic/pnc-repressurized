@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.variables;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
+import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -11,8 +12,11 @@ import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraft.world.storage.WorldSavedData;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.thread.EffectiveSide;
+import net.minecraftforge.fml.event.server.FMLServerAboutToStartEvent;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 
 import java.util.*;
@@ -21,7 +25,7 @@ import java.util.stream.Collectors;
 /**
  * Manages global variables. These are prefixed with '#'.
  */
-public class GlobalVariableManager extends WorldSavedData /*implements IVariableProvider*/ {
+public class GlobalVariableManager extends WorldSavedData {
     public static final int MAX_VARIABLE_LEN = 64;
 
     private static final String DATA_KEY = "PneumaticCraftGlobalVariables";
@@ -251,5 +255,14 @@ public class GlobalVariableManager extends WorldSavedData /*implements IVariable
         importDone.add(playerID);
         markDirty();
         return true;
+    }
+
+    @Mod.EventBusSubscriber(modid = Names.MOD_ID)
+    public static class Listener {
+        @SubscribeEvent
+        public static void onServerStarting(FMLServerAboutToStartEvent event) {
+            // clear reference to the overworld; necessary when using integrated server & changing worlds
+            overworld = null;
+        }
     }
 }

@@ -57,7 +57,7 @@ public class ModCommands {
                         .then(literal("set")
                                 .then(argument("varname", new VarnameType())
                                         .then(argument("pos", BlockPosArgument.blockPos())
-                                                .executes(c -> setGlobalVar(c, StringArgumentType.getString(c,"varname"), Either.left(BlockPosArgument.getLoadedBlockPos(c, "pos"))))
+                                                .executes(c -> setGlobalVar(c, StringArgumentType.getString(c,"varname"), Either.left(BlockPosArgument.getBlockPos(c, "pos"))))
                                         )
                                         .then(argument("item", ItemArgument.item())
                                                 .executes(c -> setGlobalVar(c, StringArgumentType.getString(c,"varname"), Either.right(ItemArgument.getItem(c, "item"))))

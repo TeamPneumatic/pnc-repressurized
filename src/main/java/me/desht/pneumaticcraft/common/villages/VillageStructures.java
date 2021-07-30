@@ -48,6 +48,7 @@ public class VillageStructures {
     }
 
     public static void addMechanicHouse(final FMLServerAboutToStartEvent event) {
+        // func_244267_aX = registryAccess
         MutableRegistry<JigsawPattern> templatePoolRegistry = event.getServer().func_244267_aX().getRegistry(Registry.JIGSAW_POOL_KEY);
 
         for (String biome : new String[]{"plains", "desert", "savanna", "taiga", "snowy"}) {
