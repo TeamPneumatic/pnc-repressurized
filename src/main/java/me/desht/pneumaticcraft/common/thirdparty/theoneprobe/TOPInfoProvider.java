@@ -137,18 +137,14 @@ public class TOPInfoProvider {
                 ITextComponent fluidDesc = fluidStack.isEmpty() ?
                         xlate("pneumaticcraft.gui.misc.empty") :
                         new StringTextComponent(fluidStack.getAmount() + "mB ").append(xlate(fluidStack.getTranslationKey()));
-                probeInfo.text(new StringTextComponent("Tank #" + (i + 1) + ": ")
-                        .append(fluidDesc.deepCopy().mergeStyle(TextFormatting.AQUA)));
+                probeInfo.text(xlate("pneumaticcraft.waila.tank", i + 1, fluidDesc.deepCopy().mergeStyle(TextFormatting.AQUA)));
             }
         }
     }
 
     private static void handleCamo(ProbeMode mode, IProbeInfo probeInfo, BlockState camo) {
         if (camo != null) {
-            probeInfo.text(new StringTextComponent("[Camo: ")
-                    .append(ItemCamoApplicator.getCamoStateDisplayName(camo))
-                    .appendString("]")
-                    .mergeStyle(TextFormatting.YELLOW));
+            probeInfo.text(xlate("pneumaticcraft.waila.camo", ItemCamoApplicator.getCamoStateDisplayName(camo)));
         }
     }
 

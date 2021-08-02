@@ -13,8 +13,6 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.List;
 
@@ -74,7 +72,7 @@ public class ProgWidgetLiquidImport extends ProgWidgetInventoryBase implements I
     @Override
     public void getTooltip(List<ITextComponent> curTooltip) {
         super.getTooltip(curTooltip);
-        curTooltip.add(new StringTextComponent("Order: ").append(new TranslationTextComponent(order.getTranslationKey())));
+        curTooltip.add(xlate("pneumaticcraft.message.misc.order", xlate(order.getTranslationKey())));
         if (shouldVoidExcess()) {
             curTooltip.add(xlate("pneumaticcraft.gui.progWidget.liquidImport.voidExcess"));
         }

@@ -34,7 +34,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -276,7 +275,7 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
             List<ITextComponent> textList = new ArrayList<>();
             blockTypeCount.forEach((k, v) -> {
                 if (v > 0 && WidgetKeybindCheckBox.get(k).checked) {
-                    textList.add(new StringTextComponent(v + " ").append(xlate(ArmorUpgradeRegistry.getStringKey(k))));
+                    textList.add(xlate("pneumaticcraft.message.misc.countedItem", v, xlate(ArmorUpgradeRegistry.getStringKey(k))));
                 }
             });
 

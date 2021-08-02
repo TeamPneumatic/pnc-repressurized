@@ -205,10 +205,9 @@ public class DroneDebuggerOptions extends IOptionPage.SimpleOptionPage<DroneDebu
             DroneDebugEntry entry = selectedDrone.getDebugger().getDebugEntry(widgetId);
             if (entry != null) {
                 long elapsed = (System.currentTimeMillis() - entry.getReceivedTime()) / 50;
-                tooltip.add(new StringTextComponent("Last message: " ).mergeStyle(TextFormatting.AQUA)
-                        .appendString(PneumaticCraftUtils.convertTicksToMinutesAndSeconds(elapsed, true))
-                        .mergeStyle(TextFormatting.YELLOW)
-                        .appendString(" ago"));
+                tooltip.add((xlate("pneumaticcraft.gui.progWidget.debug.lastMessage",
+                                PneumaticCraftUtils.convertTicksToMinutesAndSeconds(elapsed, true))).mergeStyle(TextFormatting.AQUA)
+                );
                 tooltip.add(new StringTextComponent("  \"")
                         .append(xlate(entry.getMessage()))
                         .appendString("\"  ")

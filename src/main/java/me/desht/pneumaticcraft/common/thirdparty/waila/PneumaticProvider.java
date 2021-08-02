@@ -17,7 +17,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
@@ -95,9 +94,8 @@ public class PneumaticProvider {
                 FluidStack fluidStack = FluidStack.loadFluidStackFromNBT(subtag);
                 ITextComponent fluidDesc = fluidStack.isEmpty() ?
                         xlate("pneumaticcraft.gui.misc.empty") :
-                        new StringTextComponent(fluidStack.getAmount() + "mB ").append(xlate(fluidStack.getTranslationKey()));
-                tooltip.add(new StringTextComponent("Tank #" + (i + 1) + ": ")
-                        .append(fluidDesc.deepCopy().mergeStyle(TextFormatting.AQUA)));
+                        xlate("pneumaticcraft.message.misc.fluidmB", fluidStack.getAmount()).appendString(" ").append(xlate(fluidStack.getTranslationKey()));
+                tooltip.add(xlate("pneumaticcraft.waila.tank", i + 1, fluidDesc.deepCopy().mergeStyle(TextFormatting.AQUA)));
             }
         }
 

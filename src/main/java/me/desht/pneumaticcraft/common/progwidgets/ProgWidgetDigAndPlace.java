@@ -5,8 +5,6 @@ import me.desht.pneumaticcraft.common.ai.DroneAIBlockInteraction;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.Collections;
 import java.util.List;
@@ -31,7 +29,7 @@ public abstract class ProgWidgetDigAndPlace extends ProgWidgetAreaItemBase imple
     @Override
     public void getTooltip(List<ITextComponent> curTooltip) {
         super.getTooltip(curTooltip);
-        curTooltip.add(new StringTextComponent("Order: ").append(new TranslationTextComponent(order.getTranslationKey())));
+        curTooltip.add(xlate("pneumaticcraft.message.misc.order", xlate(order.getTranslationKey())));
     }
 
     ProgWidgetDigAndPlace(ProgWidgetType<?> type, Ordering order) {

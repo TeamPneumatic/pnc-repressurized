@@ -13,6 +13,8 @@ import net.minecraftforge.fluids.FluidStack;
 import java.util.List;
 import java.util.function.Consumer;
 
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
+
 public class WidgetFluidStack extends WidgetFluidFilter {
     private boolean adjustable = false;
 
@@ -80,8 +82,8 @@ public class WidgetFluidStack extends WidgetFluidFilter {
     @Override
     public void addTooltip(double mouseX, double mouseY, List<ITextComponent> curTip, boolean shiftPressed) {
         if (!fluidStack.isEmpty()) {
-            curTip.add(new FluidStack(fluidStack, 1).getDisplayName().deepCopy()
-                    .appendString(" (" + fluidStack.getAmount() + "mB)"));
+            curTip.add(new FluidStack(fluidStack, 1).getDisplayName());
+            curTip.add(xlate("pneumaticcraft.message.misc.fluidmB", fluidStack.getAmount()).mergeStyle(TextFormatting.GRAY));
             curTip.add(new StringTextComponent(ModNameCache.getModName(fluidStack.getFluid()))
                     .mergeStyle(TextFormatting.BLUE,  TextFormatting.ITALIC));
         }
