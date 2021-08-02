@@ -8,6 +8,16 @@ Changes are in reverse chronological order; newest changes at the top.
 
 PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 
+## 2.13.3-??? (unreleased)
+
+### Fixes
+* Fixed machines sometimes losing air on world reload (under certain circumstances, based on pressure & Volume Upgrade count)
+* Village house generation has been redone to be properly datapack-friendly
+  * No player-visible change, but previous generation could break datapack-based worldgen due to modifying world registries instead of dynamic registries
+* Fixed some block highlighting (GPS tools etc.) not showing the highlight for air blocks
+* Fixed possible server crash if an Air Compressor explodes (due to overpressure) on the same tick as it toggles on/off
+* Fixed up some hardcoded messages (added translations) and made some other messages more translation-friendly
+
 ## 2.13.2-205 (19 Jul 2021)
 
 ### New
