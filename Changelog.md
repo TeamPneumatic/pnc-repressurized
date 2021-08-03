@@ -8,7 +8,10 @@ Changes are in reverse chronological order; newest changes at the top.
 
 PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 
-## 2.13.3-??? (unreleased)
+## 2.13.3-209 (3 Aug 2021)
+
+### Updates
+* A few updates to ru_ru translations (thanks @shikhtv)
 
 ### Fixes
 * Fixed machines sometimes losing air on world reload (under certain circumstances, based on pressure & Volume Upgrade count)
@@ -17,10 +20,10 @@ PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 * Fixed some block highlighting (GPS tools etc.) not showing the highlight for air blocks
 * Fixed possible server crash if an Air Compressor explodes (due to overpressure) on the same tick as it toggles on/off
 * Fixed up some hardcoded messages (added translations) and made some other messages more translation-friendly
-* Several ComputerCraft fixes
+* Several ComputerCraft fixes:
   * `getDroneName()` Lua call now returns the drone's name instead of `nil`
   * `getOwnerID()` Lua call now returns the drone owner's UUID instead of `nil`
-  * `setArea()` Lua call (7-param version) now correctly takes `Filled` as an area type (use `getAreaTypes()` to list the accepted area types)
+  * `setArea()` Lua call (7-param version) now properly accepts all the area types listed by `getAreaTypes()`
   * The area shown by `showArea()` will now disappear as soon as the drone dies (wrenched, killed, etc.) instead of hanging around until the next `hideArea()` call
 
 ## 2.13.2-205 (19 Jul 2021)
