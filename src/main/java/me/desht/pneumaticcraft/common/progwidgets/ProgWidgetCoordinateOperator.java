@@ -208,7 +208,7 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
     public void getTooltip(List<ITextComponent> curTooltip) {
         super.getTooltip(curTooltip);
 
-        curTooltip.add(xlate("pneumaticcraft.gui.progWidget.itemAssign.settingVariable").appendString(": \"").appendString(variable).appendString("\""));
+        curTooltip.add(xlate("pneumaticcraft.gui.progWidget.itemAssign.settingVariable", variable));
         curTooltip.add(xlate("pneumaticcraft.gui.progWidget.coordinateOperator.operator").appendString(" ").append(xlate(operator.getTranslationKey())));
         getAxesString().ifPresent(t -> curTooltip.add(xlate("pneumaticcraft.gui.progWidget.coordinateOperator.axes").appendString(" ").append(t)));
     }

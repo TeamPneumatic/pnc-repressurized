@@ -25,7 +25,7 @@ public class GuiProgWidgetItemAssign extends GuiProgWidgetOptionBase<ProgWidgetI
         textfield.setText(progWidget.getVariable());
         addButton(textfield);
 
-        addButton(new WidgetLabel(guiLeft + 10, guiTop + 30, xlate("pneumaticcraft.gui.progWidget.itemAssign.settingVariable")));
+        addButton(new WidgetLabel(guiLeft + 10, guiTop + 30, xlate("pneumaticcraft.gui.progWidget.itemFilter.variableLabel")));
     }
 
     @Override

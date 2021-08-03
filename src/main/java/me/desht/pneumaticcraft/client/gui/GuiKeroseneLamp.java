@@ -48,7 +48,7 @@ public class GuiKeroseneLamp extends GuiPneumaticContainerBase<ContainerKerosene
             slider.updateSlider();
         }
 
-        rangeLabel.setMessage(xlate("pneumaticcraft.gui.keroseneLamp.currentRange", te.getRange()));
+        rangeLabel.setMessage(xlate("pneumaticcraft.message.misc.range", te.getRange()));
     }
 
     @Override

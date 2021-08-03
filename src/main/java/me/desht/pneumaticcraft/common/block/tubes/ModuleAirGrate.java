@@ -29,7 +29,6 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceContext;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.LazyOptional;
@@ -40,6 +39,8 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 import java.util.*;
+
+import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class ModuleAirGrate extends TubeModule {
     private int grateRange;
@@ -285,11 +286,14 @@ public class ModuleAirGrate extends TubeModule {
     @Override
     public void addInfo(List<ITextComponent> curInfo) {
         super.addInfo(curInfo);
-        String txt = grateRange == 0 ? "Idle" : vacuum ? "Attracting" : "Repelling";
-        curInfo.add(new StringTextComponent("Status: ").appendString(txt).mergeStyle(TextFormatting.WHITE));
-        curInfo.add(new StringTextComponent("Range: ").appendString(grateRange + " blocks").mergeStyle(TextFormatting.WHITE));
-        if (entityFilter != null)
-            curInfo.add(new StringTextComponent("Entity Filter: \"").appendString(entityFilter.toString()).appendString("\"").mergeStyle(TextFormatting.WHITE));
+        String k = grateRange == 0 ? "idle" : vacuum ? "attracting" : "repelling";
+        curInfo.add(xlate("pneumaticcraft.waila.airGrateModule." + k).mergeStyle(TextFormatting.WHITE));
+        if (grateRange != 0) {
+            curInfo.add(xlate("pneumaticcraft.message.misc.range", grateRange).mergeStyle(TextFormatting.WHITE));
+        }
+        if (entityFilter != null) {
+            curInfo.add(xlate("pneumaticcraft.gui.entityFilter.show", entityFilter.toString()).mergeStyle(TextFormatting.WHITE));
+        }
     }
 
     @Override

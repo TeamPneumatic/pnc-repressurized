@@ -73,7 +73,7 @@ public class AreaRenderer {
         World world = Minecraft.getInstance().world;
         BlockState state = world.getBlockState(pos);
         boolean xray = disableDepthTest || disableWriteMask;
-        if (!xray && !state.getMaterial().isReplaceable() || disableWriteMask && state.getMaterial().isReplaceable()) return;
+        if (!xray && !state.getMaterial().isReplaceable()) return;
         if (drawShapes) {
             VoxelShape shape = state.getBlock() instanceof BlockPneumaticCraftCamo ?
                     ((BlockPneumaticCraftCamo) state.getBlock()).getUncamouflagedShape(state, world, pos, ISelectionContext.dummy()) :

@@ -47,7 +47,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
@@ -149,7 +148,7 @@ public class ItemPneumaticArmor extends ArmorItem implements
 
     private void addHelmetInformation(ItemStack stack, World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         if (OneProbeCrafting.isOneProbeEnabled(stack)) {
-            tooltip.add(new StringTextComponent("The One Probe installed").mergeStyle(TextFormatting.BLUE));
+            tooltip.add(xlate("gui.tooltip.item.pneumaticcraft.pneumatic_helmet.one_probe").mergeStyle(TextFormatting.BLUE));
         }
 
         Item searchedItem = getSearchedItem(stack);

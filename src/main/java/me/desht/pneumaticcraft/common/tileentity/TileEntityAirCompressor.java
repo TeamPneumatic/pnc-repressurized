@@ -104,7 +104,10 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
             boolean wasActive = isActive;
             isActive = burnTime > curFuelUsage;
             if (wasActive != isActive) {
-                getWorld().setBlockState(getPos(), getWorld().getBlockState(getPos()).with(BlockAirCompressor.ON, isActive));
+                BlockState state = getBlockState();
+                if (state.hasProperty(BlockAirCompressor.ON)) {
+                    getWorld().setBlockState(getPos(), state.with(BlockAirCompressor.ON, isActive));
+                }
             }
             airHandler.setSideLeaking(hasNoConnectedAirHandlers() ? getRotation() : null);
         } else {

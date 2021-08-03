@@ -121,8 +121,7 @@ public class ProgWidgetItemAssign extends ProgWidget implements IVariableSetWidg
     @Override
     public void getTooltip(List<ITextComponent> curTooltip) {
         super.getTooltip(curTooltip);
-        curTooltip.add(xlate("pneumaticcraft.gui.progWidget.itemAssign.settingVariable")
-                .appendString(": \"").appendString(variable).appendString("\""));
+        curTooltip.add(xlate("pneumaticcraft.gui.progWidget.itemAssign.settingVariable", variable));
     }
 
     @Override
