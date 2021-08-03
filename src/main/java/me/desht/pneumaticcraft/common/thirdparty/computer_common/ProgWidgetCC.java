@@ -114,9 +114,7 @@ public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrder
 
     String[] getAreaTypes() {
         String[] areaTypes = new String[EnumOldAreaType.values().length];
-        for (int i = 0; i < areaTypes.length; i++) {
-            areaTypes[i] = EnumOldAreaType.values()[i].toString();
-        }
+        Arrays.setAll(areaTypes, i -> EnumOldAreaType.values()[i].toString());
         return areaTypes;
     }
 
@@ -151,7 +149,10 @@ public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrder
     }
 
     private Set<BlockPos> getArea(int x1, int y1, int z1, int x2, int y2, int z2, String areaType) throws IllegalArgumentException {
-        EnumOldAreaType type = EnumOldAreaType.valueOf(areaType.toUpperCase(Locale.ROOT));
+        EnumOldAreaType type = EnumOldAreaType.byName(areaType);
+        if (type == null) {
+            throw new IllegalArgumentException("Unknown area type: '" + areaType + "'. Use `getAreaTypes()` to list accepted values.");
+        }
         ProgWidgetArea helperWidget = new ProgWidgetArea();
         helperWidget.x1 = x1;
         helperWidget.y1 = y1;

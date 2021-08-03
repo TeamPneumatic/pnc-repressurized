@@ -80,6 +80,7 @@ public class TileEntityDroneInterface extends TileEntity implements ITickableTil
             }
         } else {
             if (!getWorld().isRemote && getBlockState().get(BlockDroneInterface.CONNECTED)) {
+                NetworkHandler.sendToAllTracking(new PacketShowArea(getPos()), TileEntityDroneInterface.this);
                 world.setBlockState(pos, getBlockState().with(BlockDroneInterface.CONNECTED, false));
             }
         }
@@ -105,7 +106,6 @@ public class TileEntityDroneInterface extends TileEntity implements ITickableTil
         tag.putInt("drone",  drone != null ? drone.getEntityId() : -1);
         return tag;
     }
-
 
     @Override
     public void handleUpdateTag(BlockState state, CompoundNBT tag) {
@@ -699,7 +699,7 @@ public class TileEntityDroneInterface extends TileEntity implements ITickableTil
             @Override
             public Object[] call(Object[] args) {
                 requireNoArgs(args);
-                return new Object[]{validateAndGetDrone().getName()};
+                return new Object[]{validateAndGetDrone().getName().getString()};
             }
         });
 
@@ -715,7 +715,7 @@ public class TileEntityDroneInterface extends TileEntity implements ITickableTil
             @Override
             public Object[] call(Object[] args) {
                 requireNoArgs(args);
-                return new Object[]{validateAndGetDrone().getOwnerUUID()};
+                return new Object[]{validateAndGetDrone().getOwnerUUID().toString()};
             }
         });
     }
