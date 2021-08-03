@@ -68,11 +68,6 @@ public class BlockPneumaticDoorBase extends BlockPneumaticCraftCamo {
     }
 
     @Override
-    protected boolean canRotateToTopOrBottom() {
-        return false;
-    }
-
-    @Override
     protected boolean reversePlacementRotation() {
         return true;
     }

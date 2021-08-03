@@ -119,6 +119,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
                 handleRedstoneControl();
             }
             speedMultiplier = syncedSpeedMult = getSpeedMultiplierFromUpgrades();
+            chargingUpgrades = getUpgrades(EnumUpgrade.CHARGING);  // sync'd to client to adjust elevator speed as appropriate
         } else {
             speedMultiplier = (float) (syncedSpeedMult * PacketServerTickTime.tickTimeMultiplier);
             if (prevCamoState != camoState) {
@@ -188,15 +189,6 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
     private boolean shouldPlaySounds() {
         return !(getCachedNeighbor(Direction.EAST) instanceof TileEntityElevatorBase)
                 && !(getCachedNeighbor(Direction.SOUTH) instanceof TileEntityElevatorBase);
-    }
-
-    @Override
-    public void onUpgradesChanged() {
-        super.onUpgradesChanged();
-
-        if (!world.isRemote) {
-            chargingUpgrades = getUpgrades(EnumUpgrade.CHARGING);  // will sync to client
-        }
     }
 
     public boolean isStopped() {
@@ -294,6 +286,7 @@ public class TileEntityElevatorBase extends TileEntityPneumaticBase implements
         } while (getWorld().getBlockState(getPos().add(0, -elevatorBases, 0)).getBlock() == ModBlocks.ELEVATOR_BASE.get());
 
         maxFloorHeight = Math.min(i, elevatorBases * PNCConfig.Common.Machines.elevatorBaseBlocksPerBase);
+        markDirty();
     }
 
     @Override
