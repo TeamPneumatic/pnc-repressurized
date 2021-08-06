@@ -35,13 +35,13 @@ public class TileEntityPressurizedSpawner extends TileEntityPneumaticBase implem
 {
     public static final int BASE_SPAWN_INTERVAL = 200;
 
-    private final ItemSpawnerCore.SpawnerCoreItemHandler inventory = new ItemSpawnerCore.SpawnerCoreItemHandler();
+    private final ItemSpawnerCore.SpawnerCoreItemHandler inventory = new ItemSpawnerCore.SpawnerCoreItemHandler(this);
     private final LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> inventory);
     @GuiSynced
     public TileEntityVacuumTrap.Problems problem = TileEntityVacuumTrap.Problems.OK;
     @GuiSynced
     private final RedstoneController<TileEntityPressurizedSpawner> rsController = new RedstoneController<>(this);
-    private int counter = BASE_SPAWN_INTERVAL;
+    private int counter = -1;  // -1 => re-init on next tick
     @DescSynced
     private boolean running;
     private final RangeManager rangeManager = new RangeManager(this, 0x60400040).withCustomExtents(this::buildCustomExtents);
@@ -55,6 +55,7 @@ public class TileEntityPressurizedSpawner extends TileEntityPneumaticBase implem
         super.tick();
 
         rangeManager.setRange(2 + getUpgrades(EnumUpgrade.RANGE));
+        if (counter < 0) counter = getSpawnInterval();
 
         if (!world.isRemote) {
             ItemSpawnerCore.SpawnerCoreStats stats = inventory.getStats();

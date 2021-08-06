@@ -69,7 +69,7 @@ public class TileEntityVacuumTrap extends TileEntityPneumaticBase implements
         }
     }
 
-    private final SpawnerCoreItemHandler inv = new SpawnerCoreItemHandler();
+    private final SpawnerCoreItemHandler inv = new SpawnerCoreItemHandler(this);
     private final LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> inv);
 
     private final List<MobEntity> targetEntities = new ArrayList<>();

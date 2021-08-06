@@ -14,6 +14,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUseContext;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.WeightedRandom;
@@ -203,8 +204,8 @@ public class ItemSpawnerCore extends Item implements ColorHandlers.ITintableItem
     public static class SpawnerCoreItemHandler extends BaseItemStackHandler {
         private SpawnerCoreStats stats;
 
-        public SpawnerCoreItemHandler() {
-            super(1);
+        public SpawnerCoreItemHandler(TileEntity owner) {
+            super(owner, 1);
         }
 
         @Override
