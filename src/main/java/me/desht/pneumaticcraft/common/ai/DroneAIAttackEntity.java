@@ -38,8 +38,8 @@ public class DroneAIAttackEntity extends MeleeAttackGoal {
             return false;
         }
 
-        LivingEntity entitylivingbase = attacker.getAttackTarget();
-        if (entitylivingbase == null) {
+        LivingEntity target = attacker.getAttackTarget();
+        if (target == null || !target.isAlive()) {
             attacker.getDebugger().addEntry("pneumaticcraft.gui.progWidget.entityAttack.debug.noEntityToAttack");
         }
 
@@ -49,6 +49,8 @@ public class DroneAIAttackEntity extends MeleeAttackGoal {
     @Override
     public void startExecuting() {
         super.startExecuting();
+
+        attacker.incAttackCount();
 
         // switch to the carried melee weapon with the highest attack damage
         if (attacker.getAttackTarget() != null && attacker.getInv().getSlots() > 1) {
@@ -79,11 +81,11 @@ public class DroneAIAttackEntity extends MeleeAttackGoal {
     @Override
     public boolean shouldContinueExecuting() {
         if (isRanged) {
-            LivingEntity entitylivingbase = attacker.getAttackTarget();
-            if (entitylivingbase == null) return false;
-            double dist = attacker.getDistanceSq(entitylivingbase.getPosX(), entitylivingbase.getBoundingBox().minY, entitylivingbase.getPosZ());
+            LivingEntity target = attacker.getAttackTarget();
+            if (target == null || !target.isAlive()) return false;
             if (attacker.getSlotForAmmo() < 0) return false;
-            if (dist < Math.pow(rangedAttackRange, 2) && attacker.getEntitySenses().canSee(entitylivingbase))
+            double dist = attacker.getDistanceSq(target.getPosX(), target.getBoundingBox().minY, target.getPosZ());
+            if (dist < Math.pow(rangedAttackRange, 2) && attacker.getEntitySenses().canSee(target))
                 return true;
         }
         return super.shouldContinueExecuting();
@@ -91,24 +93,25 @@ public class DroneAIAttackEntity extends MeleeAttackGoal {
 
     @Override
     public void resetTask() {
-
+        super.resetTask();
     }
 
     @Override
     public void tick() {
-        boolean needingSuper = true;
         if (isRanged) {
-            LivingEntity entitylivingbase = attacker.getAttackTarget();
-            double dist = attacker.getDistanceSq(entitylivingbase.getPosX(), entitylivingbase.getBoundingBox().minY, entitylivingbase.getPosZ());
-            if (dist < Math.pow(rangedAttackRange, 2) && attacker.getEntitySenses().canSee(entitylivingbase)) {
-                attacker.getFakePlayer().setPosition(attacker.getPosX(), attacker.getPosY(), attacker.getPosZ());
-                attacker.tryFireMinigun(entitylivingbase);
-                needingSuper = false;
-                if (dist < Math.pow(rangedAttackRange * 0.75, 2)) {
-                    attacker.getNavigator().clearPath();
+            LivingEntity target = attacker.getAttackTarget();
+            if (target != null) {
+                double dist = attacker.getDistanceSq(target.getPosX(), target.getBoundingBox().minY, target.getPosZ());
+                if (dist < Math.pow(rangedAttackRange, 2) && attacker.getEntitySenses().canSee(target)) {
+                    attacker.getFakePlayer().setPosition(attacker.getPosX(), attacker.getPosY(), attacker.getPosZ());
+                    attacker.tryFireMinigun(target);
+                    if (dist < Math.pow(rangedAttackRange * 0.75, 2)) {
+                        attacker.getNavigator().clearPath();
+                    }
                 }
             }
+        } else {
+            super.tick();
         }
-        if (needingSuper) super.tick();
     }
 }

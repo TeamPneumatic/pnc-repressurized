@@ -200,6 +200,7 @@ public class EntityDrone extends EntityDroneBase implements
     private boolean disabledByHacking;
     private boolean standby; // If true, the drone's propellors stop, the drone will fall down, and won't use pressure.
     private Minigun minigun;
+    private int attackCount; // tracks number of times drone has starting attacking something
 
     private final DroneDebugger debugger = new DroneDebugger(this);
 
@@ -1439,6 +1440,19 @@ public class EntityDrone extends EntityDroneBase implements
      */
     public boolean addProgram(BlockPos clickPos, Direction facing, BlockPos placePos, ItemStack droneStack, List<IProgWidget> progWidgets) {
         return false;
+    }
+
+    public void incAttackCount() {
+        attackCount++;
+    }
+
+    public int getAttackCount() {
+        return attackCount;
+    }
+
+    @Override
+    public void resetAttackCount() {
+        attackCount = 0;
     }
 
     public class MinigunDrone extends Minigun {

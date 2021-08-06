@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.ai;
 
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
 import me.desht.pneumaticcraft.common.progwidgets.IEntityProvider;
+import me.desht.pneumaticcraft.common.progwidgets.IMaxActions;
 import me.desht.pneumaticcraft.common.progwidgets.ProgWidget;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -19,7 +20,7 @@ public class DroneAINearestAttackableTarget extends TargetGoal {
     /**
      * Instance of EntityAINearestAttackableTargetSorter.
      */
-    private final Sorter theNearestAttackableTargetSorter;
+    private final DistanceSorter distanceSorter;
 
     private LivingEntity targetEntity;
 
@@ -32,7 +33,7 @@ public class DroneAINearestAttackableTarget extends TargetGoal {
         super(drone, checkSight, easyTargetsOnly);
         this.drone = drone;
         this.widget = widget;
-        theNearestAttackableTargetSorter = new Sorter(drone);
+        distanceSorter = new DistanceSorter(drone);
         setMutexFlags(EnumSet.of(Flag.TARGET));
     }
 
@@ -44,10 +45,17 @@ public class DroneAINearestAttackableTarget extends TargetGoal {
         if (drone.hasMinigun() && drone.getSlotForAmmo() < 0) {
             return false;
         }
+        if (widget instanceof IMaxActions) {
+            IMaxActions m = (IMaxActions) widget;
+            if (m.useMaxActions() && drone.getAttackCount() >= m.getMaxActions()) {
+                return false;
+            }
+        }
+
         List<Entity> list = ((IEntityProvider) widget).getValidEntities(drone.world);
-        list.sort(theNearestAttackableTargetSorter);
+        list.sort(distanceSorter);
         for (Entity entity : list) {
-            if (entity != goalOwner && entity instanceof LivingEntity && !shouldIgnore(entity)) {
+            if (entity.isAlive() && entity != goalOwner && entity instanceof LivingEntity && !shouldIgnore(entity)) {
                 targetEntity = (LivingEntity) entity;
                 return true;
             }
@@ -68,23 +76,16 @@ public class DroneAINearestAttackableTarget extends TargetGoal {
         super.startExecuting();
     }
 
-    // lifted from 1.12.2
-    public static class Sorter implements Comparator<Entity> {
+    public static class DistanceSorter implements Comparator<Entity> {
         private final Entity entity;
 
-        Sorter(Entity entityIn) {
+        DistanceSorter(Entity entityIn) {
             this.entity = entityIn;
         }
 
+        @Override
         public int compare(Entity e1, Entity e2) {
-            double d0 = this.entity.getDistanceSq(e1);
-            double d1 = this.entity.getDistanceSq(e2);
-
-            if (d0 < d1) {
-                return -1;
-            } else {
-                return d0 > d1 ? 1 : 0;
-            }
+            return Double.compare(entity.getDistanceSq(e1), entity.getDistanceSq(e2));
         }
     }
 }

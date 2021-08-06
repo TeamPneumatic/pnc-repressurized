@@ -72,4 +72,8 @@ public interface IDroneBase extends IDrone {
     boolean canMoveIntoFluid(Fluid fluid);
 
     DroneItemHandler getDroneItemHandler();
+
+    default void resetAttackCount() {
+
+    }
 }

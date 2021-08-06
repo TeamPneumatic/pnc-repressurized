@@ -12,6 +12,8 @@ import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.item.DyeColor;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
@@ -23,8 +25,10 @@ import java.util.Set;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class ProgWidgetEntityAttack extends ProgWidget implements IAreaProvider, IEntityProvider {
+public class ProgWidgetEntityAttack extends ProgWidget implements IAreaProvider, IEntityProvider, IMaxActions {
     private EntityFilterPair<ProgWidgetEntityAttack> entityFilters;
+    private int maxActions;
+    private boolean useMaxActions;
 
     public ProgWidgetEntityAttack() {
         super(ModProgWidgets.ENTITY_ATTACK.get());
@@ -46,7 +50,7 @@ public class ProgWidgetEntityAttack extends ProgWidget implements IAreaProvider,
 
     @Override
     public Goal getWidgetAI(IDroneBase drone, IProgWidget widget) {
-        return new DroneAIAttackEntity((EntityDrone) drone, 0.1D, false);
+        return new DroneAIAttackEntity((EntityDrone) drone, 1.0D, false);
     }
 
     @Override
@@ -114,5 +118,53 @@ public class ProgWidgetEntityAttack extends ProgWidget implements IAreaProvider,
     @Override
     public DyeColor getColor() {
         return DyeColor.RED;
+    }
+
+    @Override
+    public void setMaxActions(int maxActions) {
+        this.maxActions = maxActions;
+    }
+
+    @Override
+    public int getMaxActions() {
+        return maxActions;
+    }
+
+    @Override
+    public void setUseMaxActions(boolean useMaxActions) {
+        this.useMaxActions = useMaxActions;
+    }
+
+    @Override
+    public boolean useMaxActions() {
+        return useMaxActions;
+    }
+
+    @Override
+    public void writeToNBT(CompoundNBT tag) {
+        super.writeToNBT(tag);
+        if (useMaxActions) tag.putBoolean("useMaxActions", true);
+        tag.putInt("maxActions", maxActions);
+    }
+
+    @Override
+    public void readFromNBT(CompoundNBT tag) {
+        super.readFromNBT(tag);
+        useMaxActions = tag.getBoolean("useMaxActions");
+        maxActions = tag.getInt("maxActions");
+    }
+
+    @Override
+    public void writeToPacket(PacketBuffer buf) {
+        super.writeToPacket(buf);
+        buf.writeBoolean(useMaxActions);
+        buf.writeVarInt(maxActions);
+    }
+
+    @Override
+    public void readFromPacket(PacketBuffer buf) {
+        super.readFromPacket(buf);
+        useMaxActions = buf.readBoolean();
+        maxActions = buf.readVarInt();
     }
 }

@@ -56,7 +56,7 @@ public class DroneAIManager implements IVariableProvider {
 
     private Map<String, BlockPos> coordinateVariables = new HashMap<>();
     private Map<String, ItemStack> itemVariables = new HashMap<>();
-    private final Stack<IProgWidget> jumpBackWidgets = new Stack<>();//Used to jump back to a for each widget.
+    private final Deque<IProgWidget> jumpBackWidgets = new ArrayDeque<>(); // A jump-back stack
 
     private static final int MAX_JUMP_STACK_SIZE = 100;
 
@@ -220,21 +220,21 @@ public class DroneAIManager implements IVariableProvider {
     }
 
     private void updateWidgetFlow() {
-        boolean isExecuting = false;
-        for (EntityAITaskEntry entry : executingTaskEntries) {
-            if (curWidgetAI == entry.goal) {
-                isExecuting = true;
-                break;
-            }
-        }
+        // is the current widget still in the executing list?
+        boolean isExecuting = executingTaskEntries.stream().anyMatch(entry -> curWidgetAI == entry.goal);
+
         if (!isExecuting && curActiveWidget != null && (curWidgetTargetAI == null || !curWidgetTargetAI.shouldExecute())) {
+            // move on to the next widget in the program
+            drone.resetAttackCount();
             IProgWidget widget = curActiveWidget.getOutputWidget(drone, progWidgets);
             if (widget != null) {
-                if (curActiveWidget.getOutputWidget() != widget) {
-                    if (addJumpBackWidget(curActiveWidget)) return;
+                // we've jumped to a widget that isn't the direct descendant of the previous (jump, foreach...)
+                if (curActiveWidget.getOutputWidget() != widget && addJumpBackWidget(curActiveWidget)) {
+                    return;
                 }
                 setActiveWidget(widget);
             } else {
+                // end of the program!
                 if (stopWhenEndReached) {
                     setActiveWidget(null);
                 } else {
@@ -252,12 +252,10 @@ public class DroneAIManager implements IVariableProvider {
         if (!jumpBackWidgets.isEmpty()) {
             setActiveWidget(jumpBackWidgets.pop());
         } else {
-            for (IProgWidget widget : progWidgets) {
-                if (widget instanceof ProgWidgetStart) {
-                    setActiveWidget(widget);
-                    return;
-                }
-            }
+            progWidgets.stream()
+                    .filter(widget -> widget instanceof ProgWidgetStart)
+                    .findFirst()
+                    .ifPresent(this::setActiveWidget);
         }
     }
 
@@ -371,10 +369,7 @@ public class DroneAIManager implements IVariableProvider {
                             && !item.cannotPickup()
                             && !ItemRegistry.getInstance().shouldSuppressMagnet(item)
                             && drone.getDronePos().squareDistanceTo(item.getPositionVec()) <= rangeSq);
-
-            for (ItemEntity item : items) {
-                DroneEntityAIPickupItems.tryPickupItem(drone, item);
-            }
+            items.forEach(item -> DroneEntityAIPickupItems.tryPickupItem(drone, item));
         }
     }
 

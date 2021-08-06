@@ -1092,7 +1092,7 @@
    "pneumaticcraft.gui.progWidget.difficulty.medium" : "Medium",
    "pneumaticcraft.gui.progWidget.digAndPlace.order" : "Order",
    "pneumaticcraft.gui.progWidget.digAndPlace.useMaxActions" : "Limit interactions",
-   "pneumaticcraft.gui.progWidget.digAndPlace.useMaxActions.tooltip" : "If checked, at most the specified number of block interactions will be done before moving on to the next puzzle piece.",
+   "pneumaticcraft.gui.progWidget.digAndPlace.useMaxActions.tooltip" : "If checked, at most the specified number of block or entity interactions will be done before moving on to the next widget in the program.",
    "pneumaticcraft.gui.progWidget.dig.debug.cantDigBlock" : "Not allowed to dig block or cannot break the block.",
    "pneumaticcraft.gui.progWidget.dig.debug.missingDiggingTool" : "No damageable digging tool found.",
    "pneumaticcraft.gui.progWidget.dig.requiresDiggingTool" : "Requires digging tool",
