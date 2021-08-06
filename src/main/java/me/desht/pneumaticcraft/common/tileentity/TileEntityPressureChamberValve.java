@@ -292,10 +292,11 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
     private void processApplicableRecipes() {
         for (ApplicableRecipe applicableRecipe : applicableRecipes) {
             PressureChamberRecipe recipe = applicableRecipe.recipe;
-            boolean pressureOK = recipe.getCraftingPressure() <= getPressure() && recipe.getCraftingPressure() > 0F
-                    || recipe.getCraftingPressure() >= getPressure() && recipe.getCraftingPressure() < 0F;
-            if (Math.abs(recipe.getCraftingPressure()) < Math.abs(recipePressure)) {
-                recipePressure = recipe.getCraftingPressure();
+            float requiredPressure = recipe.getCraftingPressure(itemsInChamber, applicableRecipe.slots);
+            boolean pressureOK = requiredPressure <= getPressure() && requiredPressure > 0F
+                    || requiredPressure >= getPressure() && requiredPressure < 0F;
+            if (Math.abs(requiredPressure) < Math.abs(recipePressure)) {
+                recipePressure = requiredPressure;
             }
             if (pressureOK) {
                 // let's craft! (although if the output handler is full, we won't...)

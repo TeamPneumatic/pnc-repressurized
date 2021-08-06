@@ -9,11 +9,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.items.IItemHandler;
 
 import javax.annotation.Nonnull;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 public abstract class PressureChamberRecipe extends PneumaticCraftRecipe {
     protected PressureChamberRecipe(ResourceLocation id) {
@@ -24,17 +20,41 @@ public abstract class PressureChamberRecipe extends PneumaticCraftRecipe {
      * Returns the minimum pressure required to craft the recipe. Negative pressures are also acceptable; in this
      * case the pressure chamber's pressure must be <strong>lower</strong> than the required pressure.
      *
+     * @deprecated don't override this; override {@link #getCraftingPressure(IItemHandler, List)} instead
      * @return threshold pressure
      */
-    public abstract float getCraftingPressure();
+    @Deprecated
+    public float getCraftingPressure() {
+        return 0f;
+    }
+
+    /**
+     * Returns the minimum pressure required to craft the recipe. Negative pressures are also acceptable; in this
+     * case the pressure chamber's pressure must be <strong>lower</strong> than the required pressure.
+     *
+     * @param chamberHandler what's currently in the pressure chamber
+     * @param ingredientSlots a list of slots in {@code chamberHandler} (as returned by {@link #findIngredients(IItemHandler)})
+     *                        where the ingredients can be found
+     * @return threshold pressure
+     */
+    public float getCraftingPressure(IItemHandler chamberHandler, List<Integer> ingredientSlots) {
+        return getCraftingPressure();
+    }
+
+    /**
+     * Get the required crafting pressure for the items specified by {@link #getInputsForDisplay()}, for display
+     * purposes only (e.g. for JEI)
+     */
+    public abstract float getCraftingPressureForDisplay();
 
     /**
      * When called (by the pressure chamber TE when it detects a change in the chamber contents), try to find the
      * ingredients for this recipe in the given item handler, which represents all of the items currently in the
      * pressure chamber. You must return a collection of slot indices into the item handler which contain the matching
-     * ingredients; those indices will be passed promptly to {@link #craftRecipe(IItemHandler, List, boolean)} by the pressure
-     * chamber. <strong>Do not cache this list across ticks</strong>, since the chamber contents are quite likely to
-     * change in the meantime.
+     * ingredients; those indices will be passed promptly to {@link #getCraftingPressure(IItemHandler, List)} and
+     * {@link #craftRecipe(IItemHandler, List, boolean)} by the pressure chamber.
+     * <p><strong>Do not cache this list across ticks</strong>, since the chamber contents are quite likely to
+     * change in the meantime.</p>
      *
      * @param chamberHandler what's currently in the pressure chamber
      * @return if this recipe is valid, a list of slots in the item handler where the ingredients can be found; otherwise, an empty list

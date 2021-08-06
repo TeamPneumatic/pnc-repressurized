@@ -39,7 +39,12 @@ public class PressureChamberRecipeImpl extends PressureChamberRecipe {
     }
 
     @Override
-    public float getCraftingPressure() {
+    public float getCraftingPressure(IItemHandler chamberHandler, List<Integer> ingredientSlots) {
+        return pressureRequired;
+    }
+
+    @Override
+    public float getCraftingPressureForDisplay() {
         return pressureRequired;
     }
 
@@ -128,7 +133,7 @@ public class PressureChamberRecipeImpl extends PressureChamberRecipe {
 
     @Override
     public void write(PacketBuffer buffer) {
-        buffer.writeFloat(getCraftingPressure());
+        buffer.writeFloat(getCraftingPressureForDisplay());
         buffer.writeVarInt(inputs.size());
         inputs.forEach(i -> i.write(buffer));
         buffer.writeVarInt(outputs.size());

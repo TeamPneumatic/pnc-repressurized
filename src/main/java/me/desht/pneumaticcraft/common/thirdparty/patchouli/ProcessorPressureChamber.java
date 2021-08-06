@@ -44,7 +44,7 @@ public class ProcessorPressureChamber implements IComponentProcessor {
                 return IVariable.wrapList(results.get(index).stream().map(IVariable::from).collect(ImmutableList.toImmutableList()));
             }
         } else if (s.equals("pressure")) {
-            String pr = PneumaticCraftUtils.roundNumberTo(recipe.getCraftingPressure(), 1);
+            String pr = PneumaticCraftUtils.roundNumberTo(recipe.getCraftingPressureForDisplay(), 1);
             return IVariable.wrap(I18n.format("pneumaticcraft.patchouli.processor.pressureChamber.desc", pr));
         }
 
