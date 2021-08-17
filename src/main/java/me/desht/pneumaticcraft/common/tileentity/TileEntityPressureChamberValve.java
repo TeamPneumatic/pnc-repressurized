@@ -468,7 +468,8 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
         multiBlockX = baseX;
         multiBlockY = baseY;
         multiBlockZ = baseZ;
-        airHandler.setBaseVolume(getDefaultVolume());
+        int vol = PneumaticValues.VOLUME_PRESSURE_CHAMBER_PER_EMPTY;
+        airHandler.setBaseVolume(multiBlockSize > 3 ? vol * IntMath.pow(multiBlockSize - 2, 3) : vol);
     }
 
     @Override
@@ -651,12 +652,6 @@ public class TileEntityPressureChamberValve extends TileEntityPneumaticBase
     @Override
     public float getMinWorkingPressure() {
         return isValidRecipeInChamber ? recipePressure : -Float.MAX_VALUE;
-    }
-
-    @Override
-    public int getDefaultVolume() {
-        int vol = super.getDefaultVolume();
-        return multiBlockSize > 3 ? vol * IntMath.pow(multiBlockSize - 2, 3) : vol;
     }
 
     @Nullable
