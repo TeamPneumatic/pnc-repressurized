@@ -8,6 +8,20 @@ Changes are in reverse chronological order; newest changes at the top.
 
 PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 
+## 2.13.4-??? (unreleased)
+
+### Updates
+* Entity Attack widget can now take a max entity count
+  * Allows drone to stop attacking and proceed with next widget in program, even if there are more targets to attack
+* Pressure Chamber custom recipe enhancement: added item-aware `getCraftingPressure(IItemHandler chamberHandler, List<Integer> ingredientSlots)` method variant in `PressureChamberRecipe` API class
+  * Allows for item-sensitive pressure requirements in custom recipes
+  * Old 0-arg `getCraftingPressure()` method is deprecated and will be removed in next major Minecraft release
+
+### Fixes
+* Fixed Pressure Chamber (4x4x4 and 5x5x5 sizes) miscalculating base volume if broken and rebuilt - thanks @s-l-lee
+* Fixed Pressurized Spawner ignoring Speed Upgrades on initial spawn countdown when reloading world
+* Documented Drone XP Orb importing functionality in the manual (see Entity Import Widget page)
+
 ## 2.13.3-211 (3 Aug 2021)
 
 ### Updates
