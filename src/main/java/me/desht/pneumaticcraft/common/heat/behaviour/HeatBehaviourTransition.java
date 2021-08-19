@@ -68,4 +68,8 @@ public abstract class HeatBehaviourTransition extends HeatBehaviourLiquid {
         NetworkHandler.sendToAllTracking(new PacketSpawnParticle(ParticleTypes.SMOKE, pos.getX(), pos.getY() + 1, pos.getZ(),
                         0, 0, 0, 8, 1, 0, 1), getWorld(), pos);
     }
+
+    public double getExtractionProgress() {
+        return maxExchangedHeat == 0 ? 0 : tracker.getHeatExtracted(getPos()) / maxExchangedHeat;
+    }
 }

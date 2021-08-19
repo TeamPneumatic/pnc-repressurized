@@ -225,4 +225,14 @@ public class HeatExchangerLogicTicking implements IHeatExchangerLogic {
     public void addHeat(double amount) {
         setTemperature(MathHelper.clamp(temperature + amount / getThermalCapacity(), 0, 2273));
     }
+
+    @Override
+    public <T extends HeatBehaviour<?>> Optional<T> getHeatBehaviour(BlockPos pos, Class<T> cls) {
+        for (HeatBehaviour<?> behaviour : behaviours) {
+            if (behaviour.getPos().equals(pos) && cls.isAssignableFrom(behaviour.getClass())) {
+                return Optional.of(cls.cast(behaviour));
+            }
+        }
+        return Optional.empty();
+    }
 }

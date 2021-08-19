@@ -7,6 +7,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.INBTSerializable;
 
+import java.util.Optional;
 import java.util.function.BiPredicate;
 
 /**
@@ -194,6 +195,19 @@ public interface IHeatExchangerLogic extends INBTSerializable<CompoundNBT> {
 
     @Override
     default void deserializeNBT(CompoundNBT nbt) {
+    }
+
+    /**
+     * Get the {@link HeatBehaviour} at the given position, which must be adjacent to this heat exchanger's owning tile
+     * entity, and in this heat exchanger's list of heat behaviours that it handles.
+     * @param pos position of the heat behaviour
+     * @param cls required class of the heat behaviour (any heat behaviour which extends this class will match)
+     * @param <T>
+     * @return an optional heat behaviour, or {@code Optional.empty()} the position is invalid or there is no matching
+     * heat behaviour there
+     */
+    default <T extends HeatBehaviour<?>> Optional<T> getHeatBehaviour(BlockPos pos, Class<T> cls) {
+        return Optional.empty();
     }
 
     BiPredicate<IWorld,BlockPos> ALL_BLOCKS = (world, pos) -> true;

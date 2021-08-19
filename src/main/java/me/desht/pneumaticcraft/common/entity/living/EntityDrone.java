@@ -902,7 +902,11 @@ public class EntityDrone extends EntityDroneBase implements
 
     @Override
     public void printManometerMessage(PlayerEntity player, List<ITextComponent> curInfo) {
-        if (hasCustomName()) curInfo.add(getCustomName().deepCopy().mergeStyle(TextFormatting.AQUA));
+        if (hasCustomName()) {
+            curInfo.add(getDroneName().deepCopy().mergeStyle(TextFormatting.AQUA, TextFormatting.ITALIC));
+        } else {
+            curInfo.add(getDroneName().deepCopy().mergeStyle(TextFormatting.AQUA));
+        }
         curInfo.add(xlate("pneumaticcraft.entityTracker.info.tamed", getOwnerName().getString()));
         curInfo.add(xlate("pneumaticcraft.gui.tooltip.pressure", PneumaticCraftUtils.roundNumberTo(getAirHandler().getPressure(), 2)));
     }

@@ -1826,6 +1826,8 @@
    "pneumaticcraft.waila.temperature" : "Temperature: ",
    "pneumaticcraft.waila.temperature.up" : "Top Temperature: ",
    "pneumaticcraft.waila.temperature.west" : "West Temperature: ",
+   "pneumaticcraft.waila.temperatureGain" : "§7Heat Absorption: §f%d%%",
+   "pneumaticcraft.waila.temperatureLoss" : "§7Heat Extraction: §f%d%%",
    "pneumaticcraft.waila.tubeModule.threshold" : "Threshold: §e%d bar",
    "programmingPuzzle.pneumaticcraft.area.name" : "Area",
    "programmingPuzzle.pneumaticcraft.block_right_click.name" : "Right Click",

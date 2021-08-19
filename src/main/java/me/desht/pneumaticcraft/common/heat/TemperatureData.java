@@ -17,7 +17,7 @@ import java.util.Set;
 public class TemperatureData implements INBTSerializable<CompoundNBT> {
     private final Double[] temp = new Double[7];
 
-    private boolean isMultisided = true;
+    private boolean isMultisided;
 
     public static TemperatureData fromNBT(CompoundNBT nbt) {
         TemperatureData data = new TemperatureData();
@@ -25,33 +25,30 @@ public class TemperatureData implements INBTSerializable<CompoundNBT> {
         return data;
     }
 
-    private TemperatureData() {}
+    private TemperatureData() {
+        isMultisided = false;
+    }
 
     public TemperatureData(ICapabilityProvider provider) {
         Arrays.fill(temp, null);
 
         Set<IHeatExchangerLogic> heatExchangers = new HashSet<>();
         for (Direction face : DirectionUtil.VALUES) {
-            boolean done = provider.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY, face).map(h -> {
-                if (heatExchangers.contains(h)) {
-                    isMultisided = false;
-                    return true;
-                } else {
-                    heatExchangers.add(h);
-                    return false;
-                }
-            }).orElse(false);
-            if (done) break;
+            provider.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY, face).ifPresent(heatExchangers::add);
         }
 
-        if (isMultisided) {
+        if (heatExchangers.size() > 1) {
+            isMultisided = true;
             for (Direction face : DirectionUtil.VALUES) {
                 provider.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY, face)
                         .ifPresent(h -> temp[face.getIndex()] = h.getTemperature());
             }
-        } else {
+        } else if (heatExchangers.size() == 1) {
+            isMultisided = false;
             provider.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY)
                     .ifPresent(h -> temp[6] = h.getTemperature());
+        } else {
+            isMultisided = false;
         }
     }
 
