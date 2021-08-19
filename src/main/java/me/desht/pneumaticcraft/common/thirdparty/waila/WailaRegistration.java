@@ -4,10 +4,10 @@ import mcp.mobius.waila.api.IRegistrar;
 import mcp.mobius.waila.api.IWailaPlugin;
 import mcp.mobius.waila.api.TooltipPosition;
 import mcp.mobius.waila.api.WailaPlugin;
+import me.desht.pneumaticcraft.api.misc.IPneumaticCraftProbeable;
 import me.desht.pneumaticcraft.common.entity.semiblock.EntitySemiblockBase;
 import me.desht.pneumaticcraft.common.tileentity.ICamouflageableTE;
 import me.desht.pneumaticcraft.common.tileentity.IRedstoneControl;
-import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityPressureTube;
 import net.minecraft.block.Block;
 import net.minecraft.entity.LivingEntity;
@@ -17,7 +17,7 @@ import net.minecraft.tileentity.TileEntity;
 public class WailaRegistration implements IWailaPlugin {
     @Override
     public void register(IRegistrar iRegistrar) {
-        iRegistrar.registerBlockDataProvider(new PneumaticProvider.Data(), TileEntityBase.class);
+        iRegistrar.registerBlockDataProvider(new PneumaticProvider.Data(), IPneumaticCraftProbeable.class);
         iRegistrar.registerBlockDataProvider(new SemiblockProvider.Data(), Block.class);
         iRegistrar.registerBlockDataProvider(new RedstoneControlProvider.Data(), IRedstoneControl.class);
         iRegistrar.registerBlockDataProvider(new TubeModuleProvider.Data(), TileEntityPressureTube.class);

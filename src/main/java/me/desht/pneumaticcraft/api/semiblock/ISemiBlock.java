@@ -20,8 +20,8 @@ import java.util.List;
 /**
  * Represents a "semiblock" - an attachable gadget which sits on a real block, such as a logistics frame or
  * crop support.
- * <p>
- * While semiblocks are implemented as entities, this is an implementation detail which should not be relied upon.
+ * @implNote While semiblocks are implemented as entities, this is an implementation detail which should not be relied
+ * upon any more than strictly necessary.
  */
 public interface ISemiBlock extends ICapabilityProvider {
     /**
@@ -62,9 +62,9 @@ public interface ISemiBlock extends ICapabilityProvider {
      * rather than {@code writeAdditional()} for fields that either need to be serialized to the dropped item, or
      * displayed on TOP/Waila.
      * <p>
-     * Note that data written to itemstacks is automatically applied to newly-spawned entities by
+     * @implNote Data written to itemstacks is automatically applied to newly-spawned entities by
      * {@link EntityType#applyItemNBT(World, PlayerEntity, Entity, CompoundNBT)} when the
-     * entity is spawned from an item (i.e. placed by a player).
+     * semiblock entity is spawned from an item (i.e. placed by a player).
      * @param tag NBT tag to write data to
      */
     CompoundNBT serializeNBT(CompoundNBT tag);
@@ -123,8 +123,9 @@ public interface ISemiBlock extends ICapabilityProvider {
     boolean canCoexist(ISemiBlock otherSemiblock);
 
     /**
-     * Get the tracking for this semiblock; should only be used for syncing purposes.
-     *
+     * Get the tracking for this semiblock; this should only be used for network sync purposes, and is subject to change
+     * on a world reload.
+     * @see ISemiBlock#byTrackingId(World, int)
      * @return the underlying entity's ID, or -1 if the entity has not been added to the world
      */
     int getTrackingId();
@@ -148,13 +149,13 @@ public interface ISemiBlock extends ICapabilityProvider {
     }
 
     /**
-     * Write this semiblock to network buffer for server<->client sync purposes.
+     * Write this semiblock to network buffer for network sync purposes.
      * @param payload the buffer
      */
     void writeToBuf(PacketBuffer payload);
 
     /**
-     * Read this semiblock from network buffer for server<->client sync purposes.
+     * Read this semiblock from network buffer for network sync purposes.
      * @param payload the buffer
      */
     void readFromBuf(PacketBuffer payload);
@@ -165,9 +166,10 @@ public interface ISemiBlock extends ICapabilityProvider {
      */
     default int getColor() { return 0xFF808080; }
 
-
     /**
-     * Retrieve a semiblock by tracking ID.  This is generally used for client/server sync purposes.
+     * Retrieve a semiblock by tracking ID.  This is only intended to be used for network sync purposes and is
+     * subject to change on a world reload.
+     * @see ISemiBlock#getTrackingId()
      * @param world the world
      * @param id the tracking ID
      * @return a semiblock, or null if ID is not valid

@@ -55,6 +55,8 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
                 () -> Blocks.INFESTED_MOSSY_STONE_BRICKS, () -> Blocks.INFESTED_STONE_BRICKS
         );
 
+        createTag(PneumaticCraftTags.Blocks.PROBE_TARGET);
+
         getOrCreateBuilder(Tags.Blocks.ORES);
         getOrCreateBuilder(BlockTags.LOGS);
         getOrCreateBuilder(PneumaticCraftTags.Blocks.JACKHAMMER_ORES).addTag(Tags.Blocks.ORES).addTag(BlockTags.LOGS);
