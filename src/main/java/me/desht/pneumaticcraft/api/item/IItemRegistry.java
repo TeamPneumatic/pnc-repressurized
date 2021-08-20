@@ -69,4 +69,12 @@ public interface IItemRegistry {
      * @param modifierFunc a volume modifier function
      */
     void registerPneumaticVolumeModifier(ItemVolumeModifier modifierFunc);
+
+    /**
+     * Get some information for the given Spawner Core item
+     * @param stack an ItemStack, which must be a Spawner Core
+     * @return a spawner core stats object, to query and manipulate the item
+     * @throws IllegalArgumentException if the passed ItemStack is not a Spawner Core
+     */
+    ISpawnerCoreStats getSpawnerCoreStats(ItemStack stack);
 }

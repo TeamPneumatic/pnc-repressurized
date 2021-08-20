@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.item;
 
+import me.desht.pneumaticcraft.api.item.ISpawnerCoreStats;
 import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.client.util.TintColor;
@@ -30,7 +31,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.BiConsumer;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -45,18 +45,18 @@ public class ItemSpawnerCore extends Item implements ColorHandlers.ITintableItem
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         super.addInformation(stack, worldIn, tooltip, flagIn);
 
-        SpawnerCoreStats stats = SpawnerCoreStats.forItemStack(stack);
+        ISpawnerCoreStats stats = SpawnerCoreStats.forItemStack(stack);
         if (stats != null) {
-            if (stats.getUnused() < 100) {
-                stats.entityCounts.keySet().stream()
+            if (stats.getUnusedPercentage() < 100) {
+                stats.getEntities().stream()
                         .sorted(Comparator.comparing(t -> I18n.format(t.getTranslationKey())))
                         .forEach(type -> tooltip.add(GuiConstants.bullet()
                                 .append(xlate(type.getTranslationKey()).mergeStyle(TextFormatting.YELLOW))
-                                .appendString(": " + stats.entityCounts.get(type) + "%").mergeStyle(TextFormatting.WHITE))
+                                .appendString(": " + stats.getPercentage(type) + "%").mergeStyle(TextFormatting.WHITE))
                         );
                 tooltip.add(GuiConstants.bullet()
                         .append(xlate("pneumaticcraft.gui.misc.empty").mergeStyle(TextFormatting.YELLOW, TextFormatting.ITALIC))
-                        .appendString(": " + stats.getUnused() + "%").mergeStyle(TextFormatting.WHITE));
+                        .appendString(": " + stats.getUnusedPercentage() + "%").mergeStyle(TextFormatting.WHITE));
             } else {
                 tooltip.add(xlate("pneumaticcraft.gui.misc.empty").mergeStyle(TextFormatting.YELLOW));
             }
@@ -75,7 +75,7 @@ public class ItemSpawnerCore extends Item implements ColorHandlers.ITintableItem
     private boolean trySpawnEntity(ItemUseContext context) {
         ItemStack stack = context.getItem();
         if (stack.getCount() != 1) return false;
-        SpawnerCoreStats stats = SpawnerCoreStats.forItemStack(stack);
+        ISpawnerCoreStats stats = SpawnerCoreStats.forItemStack(stack);
         if (stats != null) {
             World world = context.getWorld();
             EntityType<?> type = stats.pickEntity(false);
@@ -106,19 +106,18 @@ public class ItemSpawnerCore extends Item implements ColorHandlers.ITintableItem
     @Override
     public int getTintColor(ItemStack stack, int tintIndex) {
         if (tintIndex == 1) {
-            SpawnerCoreStats stats = SpawnerCoreStats.forItemStack(stack);
+            ISpawnerCoreStats stats = SpawnerCoreStats.forItemStack(stack);
             if (stats != null) {
-                if (stats.getUnused() == 100) return 0xFFFFFFFF;
+                if (stats.getUnusedPercentage() == 100) return 0xFFFFFFFF;
                 int t = (int) (ClientUtils.getClientWorld().getGameTime() % 40);
                 float b = t < 20 ? MathHelper.sin(3.1415927f * t / 20f) / 6f : 0;
-                return TintColor.HSBtoRGB(0f, 1f - stats.getUnused() / 100f, 0.83333f + b);
+                return TintColor.HSBtoRGB(0f, 1f - stats.getUnusedPercentage() / 100f, 0.83333f + b);
             }
         }
         return 0xFFFFFFFF;
     }
 
-    public static class SpawnerCoreStats {
-
+    public static class SpawnerCoreStats implements ISpawnerCoreStats {
         private final Map<EntityType<?>, Integer> entityCounts = new HashMap<>();
         private int unused;
 
@@ -139,10 +138,11 @@ public class ItemSpawnerCore extends Item implements ColorHandlers.ITintableItem
             unused = Math.max(0, 100 - total);
         }
 
-        public static SpawnerCoreStats forItemStack(ItemStack stack) {
+        static SpawnerCoreStats forItemStack(ItemStack stack) {
             return stack.getItem() instanceof ItemSpawnerCore ? new SpawnerCoreStats(stack) : null;
         }
 
+        @Override
         public void serialize(ItemStack stack) {
             if (stack.getItem() instanceof ItemSpawnerCore) {
                 if (unused == 100) {
@@ -160,17 +160,27 @@ public class ItemSpawnerCore extends Item implements ColorHandlers.ITintableItem
                         }
                     });
                 }
+            } else {
+                throw new IllegalArgumentException("item is not a spawner core!");
             }
         }
 
-        public int getUnused() {
+        @Override
+        public Collection<EntityType<?>> getEntities() {
+            return entityCounts.keySet();
+        }
+
+        @Override
+        public int getPercentage(EntityType<?> entityType) {
+            return entityCounts.getOrDefault(entityType, 0);
+        }
+
+        @Override
+        public int getUnusedPercentage() {
             return unused;
         }
 
-        public void forEach(BiConsumer<? super EntityType<?>, Integer> c) {
-            entityCounts.forEach(c);
-        }
-
+        @Override
         public boolean addAmount(EntityType<?> type, int toAdd) {
             int current = entityCounts.getOrDefault(type, 0);
             toAdd = MathHelper.clamp(toAdd, -current, unused);
@@ -183,6 +193,7 @@ public class ItemSpawnerCore extends Item implements ColorHandlers.ITintableItem
             return false;
         }
 
+        @Override
         public EntityType<?> pickEntity(boolean includeUnused) {
             if (unused == 100) return null; // degenerate case
             List<WeightedEntity> weightedEntities = new ArrayList<>();
@@ -202,7 +213,7 @@ public class ItemSpawnerCore extends Item implements ColorHandlers.ITintableItem
     }
 
     public static class SpawnerCoreItemHandler extends BaseItemStackHandler {
-        private SpawnerCoreStats stats;
+        private ISpawnerCoreStats stats;
 
         public SpawnerCoreItemHandler(TileEntity owner) {
             super(owner, 1);
@@ -234,7 +245,7 @@ public class ItemSpawnerCore extends Item implements ColorHandlers.ITintableItem
             readSpawnerCoreStats();
         }
 
-        public SpawnerCoreStats getStats() {
+        public ISpawnerCoreStats getStats() {
             return stats;
         }
 

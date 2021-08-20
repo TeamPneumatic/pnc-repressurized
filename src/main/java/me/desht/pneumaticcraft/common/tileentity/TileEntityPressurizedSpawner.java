@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.item.ISpawnerCoreStats;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerPressurizedSpawner;
 import me.desht.pneumaticcraft.common.item.ItemSpawnerCore;
@@ -58,7 +59,7 @@ public class TileEntityPressurizedSpawner extends TileEntityPneumaticBase implem
         if (counter < 0) counter = getSpawnInterval();
 
         if (!world.isRemote) {
-            ItemSpawnerCore.SpawnerCoreStats stats = inventory.getStats();
+            ISpawnerCoreStats stats = inventory.getStats();
             running = false;
             problem = TileEntityVacuumTrap.Problems.OK;
             if (stats == null) {
@@ -90,7 +91,7 @@ public class TileEntityPressurizedSpawner extends TileEntityPneumaticBase implem
         return aabb.grow(getRange(), 0, getRange()).expand(0, 2, 0).expand(0, -1, 0);
     }
 
-    private boolean trySpawnSomething(ItemSpawnerCore.SpawnerCoreStats stats) {
+    private boolean trySpawnSomething(ISpawnerCoreStats stats) {
         EntityType<?> type = stats.pickEntity(true);
         if (type != null && world instanceof ServerWorld) {
             ServerWorld serverworld = (ServerWorld)world;

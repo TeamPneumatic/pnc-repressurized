@@ -1,10 +1,11 @@
 package me.desht.pneumaticcraft.common.tileentity;
 
+import me.desht.pneumaticcraft.api.PneumaticRegistry;
+import me.desht.pneumaticcraft.api.item.ISpawnerCoreStats;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModTileEntities;
 import me.desht.pneumaticcraft.common.inventory.ContainerSpawnerExtractor;
-import me.desht.pneumaticcraft.common.item.ItemSpawnerCore.SpawnerCoreStats;
 import me.desht.pneumaticcraft.common.network.DescSynced;
 import me.desht.pneumaticcraft.common.network.GuiSynced;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
@@ -200,7 +201,7 @@ public class TileEntitySpawnerExtractor extends TileEntityPneumaticBase implemen
     private void extractSpawnerCore() {
         PneumaticCraftUtils.getTileEntityAt(world, pos.down(), MobSpawnerTileEntity.class).ifPresent(te -> {
             ItemStack spawnerCore = new ItemStack(ModItems.SPAWNER_CORE.get());
-            SpawnerCoreStats stats = SpawnerCoreStats.forItemStack(spawnerCore);
+            ISpawnerCoreStats stats = PneumaticRegistry.getInstance().getItemRegistry().getSpawnerCoreStats(spawnerCore);
             Entity e = getCachedEntity(te);
             if (e != null && stats != null) {
                 stats.addAmount(e.getType(), 100);

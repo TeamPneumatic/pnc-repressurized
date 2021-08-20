@@ -100,7 +100,7 @@ public class TileEntityVacuumTrap extends TileEntityPneumaticBase implements
         if (!world.isRemote) {
             isCoreLoaded = inv.getStats() != null;
 
-            if (isOpen() && isCoreLoaded && inv.getStats().getUnused() > 0 && getPressure() <= getMinWorkingPressure()) {
+            if (isOpen() && isCoreLoaded && inv.getStats().getUnusedPercentage() > 0 && getPressure() <= getMinWorkingPressure()) {
                 if ((world.getGameTime() & 0xf) == 0) {
                     scanForEntities();
                 }
@@ -119,7 +119,7 @@ public class TileEntityVacuumTrap extends TileEntityPneumaticBase implements
             }
             if (!isCoreLoaded)
                 problem = Problems.NO_CORE;
-            else if (inv.getStats().getUnused() == 0)
+            else if (inv.getStats().getUnusedPercentage() == 0)
                 problem = Problems.CORE_FULL;
             else if (!isOpen())
                 problem = Problems.TRAP_CLOSED;

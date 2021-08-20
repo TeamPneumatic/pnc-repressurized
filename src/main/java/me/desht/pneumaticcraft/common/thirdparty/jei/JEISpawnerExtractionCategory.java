@@ -1,9 +1,10 @@
 package me.desht.pneumaticcraft.common.thirdparty.jei;
 
 import com.google.common.collect.ImmutableList;
+import me.desht.pneumaticcraft.api.PneumaticRegistry;
+import me.desht.pneumaticcraft.api.item.ISpawnerCoreStats;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.item.ItemSpawnerCore.SpawnerCoreStats;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
@@ -91,12 +92,10 @@ public class JEISpawnerExtractionCategory implements IRecipeCategory<JEISpawnerE
         List<ItemStack> cores = new ArrayList<>();
         for (EntityType<?> type : ENTITY_TYPES) {
             ItemStack core = new ItemStack(ModItems.SPAWNER_CORE.get());
-            SpawnerCoreStats stats = SpawnerCoreStats.forItemStack(core);
-            if (stats != null) {
-                stats.addAmount(type, 100);
-                stats.serialize(core);
-                cores.add(core);
-            }
+            ISpawnerCoreStats stats = PneumaticRegistry.getInstance().getItemRegistry().getSpawnerCoreStats(core);
+            stats.addAmount(type, 100);
+            stats.serialize(core);
+            cores.add(core);
         }
 
         return Collections.singletonList(new Recipe(

@@ -74,6 +74,12 @@ public enum ItemRegistry implements IItemRegistry {
         volumeModifiers.add(modifierFunc);
     }
 
+    @Override
+    public ISpawnerCoreStats getSpawnerCoreStats(ItemStack stack) {
+        Validate.isTrue(stack.getItem() instanceof ItemSpawnerCore, "item is not a Spawner Core!");
+        return ItemSpawnerCore.SpawnerCoreStats.forItemStack(stack);
+    }
+
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean shouldSuppressMagnet(Entity e) {
         return magnetSuppressors.stream().anyMatch(s -> s.shouldSuppressMagnet(e));
