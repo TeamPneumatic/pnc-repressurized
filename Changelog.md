@@ -9,22 +9,27 @@ Changes are in reverse chronological order; newest changes at the top.
 PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 
 ## 2.13.4-??? (unreleased)
-
+  
 ### Updates
 * Entity Attack widget can now take a max entity count
   * Allows drone to stop attacking and proceed with next widget in program, even if there are more targets to attack
-* API: Pressure Chamber custom recipe enhancement: added item-aware `getCraftingPressure(IItemHandler chamberHandler, List<Integer> ingredientSlots)` method variant in `PressureChamberRecipe` API class
-  * Allows for item-sensitive pressure requirements in custom recipes (which extend the API class `PressureChamberRecipe`)
-  * Old 0-arg `getCraftingPressure()` method is deprecated and will be removed in next major Minecraft release
-* API: added new interface `IPneumaticCraftProbebable` and new block tag `pneumaticcraft:probe_target`
-  * Blocks which inherit the interface or are added to the block tag will be treated like PNC blocks for the purposes of TOP & WAILA display
-  * Previously this required extending the non-API `BlockPneumaticCraft` class, which is not recommended
-  * Useful for blocks added by PNC addon mods
 * Improvements to Manometer functionality
   * Right-clicking any block now shows its name
   * Right-clicking air now shows the ambient temperature for the area
   * Right-clicking non-tile entity heat blocks (e.g. Magma) now shows the heat extraction/absorption percentage if applicable (e.g. if used to heat or cool a machine)
   
+### API Updates
+* Pressure Chamber custom recipe enhancement: added item-aware `getCraftingPressure(IItemHandler chamberHandler, List<Integer> ingredientSlots)` method variant in `PressureChamberRecipe` API class
+  * Allows for item-sensitive pressure requirements in custom recipes (which extend the API class `PressureChamberRecipe`)
+  * Old 0-arg `getCraftingPressure()` method is deprecated and will be removed in next major Minecraft release
+* Added new interface `IPneumaticCraftProbebable` and new block tag `pneumaticcraft:probe_target`
+  * Blocks which inherit the interface or are added to the block tag will be treated like PNC blocks for the purposes of TOP & WAILA display
+  * Previously this required extending the non-API `BlockPneumaticCraft` class, which is not recommended
+  * Useful for blocks added by PNC addon mods
+* Added new interface `ISpawnerCoreStats` to manage Spawner Core items
+* Recipe types are now registered with the recipe interface type (previously mistakenly registered with the recipe implementation class)
+  * This means mods adding custom recipe types don't need to extend the implementation class, which was never intended
+
 ### Fixes
 * Fixed Pressure Chamber (4x4x4 and 5x5x5 sizes) miscalculating base volume if broken and rebuilt - thanks @s-l-lee
 * Fixed Pressurized Spawner ignoring Speed Upgrades on initial spawn countdown when reloading world

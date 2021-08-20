@@ -166,7 +166,7 @@ public class ItemSpawnerCore extends Item implements ColorHandlers.ITintableItem
         }
 
         @Override
-        public Collection<EntityType<?>> getEntities() {
+        public Set<EntityType<?>> getEntities() {
             return entityCounts.keySet();
         }
 
