@@ -3,10 +3,10 @@ package me.desht.pneumaticcraft.client.gui.widget;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
+import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketGuiButton;
-import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
@@ -24,14 +24,14 @@ import java.util.List;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class WidgetAmadronOffer extends Widget implements ITooltipProvider {
-    private final AmadronOffer offer;
+    private final AmadronRecipe offer;
     private final List<Widget> subWidgets = new ArrayList<>();
     private int shoppingAmount;
     private boolean canBuy;
     private final Rectangle2d[] tooltipRectangles = new Rectangle2d[2];
     private boolean renderBackground = true;
 
-    public WidgetAmadronOffer(int x, int y, AmadronOffer offer) {
+    public WidgetAmadronOffer(int x, int y, AmadronRecipe offer) {
         super(x, y, 73, 35, StringTextComponent.EMPTY);
         this.offer = offer;
         if (offer.getInput().getType() == AmadronTradeResource.Type.FLUID) {
@@ -121,7 +121,7 @@ public class WidgetAmadronOffer extends Widget implements ITooltipProvider {
         }
     }
 
-    public AmadronOffer getOffer() {
+    public AmadronRecipe getOffer() {
         return offer;
     }
 

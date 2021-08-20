@@ -7,6 +7,7 @@ import com.blamejared.crafttweaker.api.item.IItemStack;
 import com.blamejared.crafttweaker.api.managers.IRecipeManager;
 import com.blamejared.crafttweaker.impl.actions.recipes.ActionAddRecipe;
 import com.blamejared.crafttweaker_annotations.annotations.Document;
+import me.desht.pneumaticcraft.api.crafting.recipe.PressureChamberRecipe;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.recipes.machine.PressureChamberRecipeImpl;
 import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.CTUtils;
@@ -29,7 +30,7 @@ public class PressureChamber implements IRecipeManager {
     }
 
     @Override
-    public IRecipeType<PressureChamberRecipeImpl> getRecipeType() {
+    public IRecipeType<PressureChamberRecipe> getRecipeType() {
         return PneumaticCraftRecipeType.PRESSURE_CHAMBER;
     }
 }

@@ -7,6 +7,7 @@ import com.blamejared.crafttweaker.api.item.IItemStack;
 import com.blamejared.crafttweaker.api.managers.IRecipeManager;
 import com.blamejared.crafttweaker.impl.actions.recipes.ActionAddRecipe;
 import com.blamejared.crafttweaker_annotations.annotations.Document;
+import me.desht.pneumaticcraft.api.crafting.recipe.ExplosionCraftingRecipe;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.recipes.machine.ExplosionCraftingRecipeImpl;
 import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.CTUtils;
@@ -32,7 +33,7 @@ public class ExplosionCrafting implements IRecipeManager {
     }
 
     @Override
-    public IRecipeType<ExplosionCraftingRecipeImpl> getRecipeType() {
+    public IRecipeType<ExplosionCraftingRecipe> getRecipeType() {
         return PneumaticCraftRecipeType.EXPLOSION_CRAFTING;
     }
 }

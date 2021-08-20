@@ -6,6 +6,7 @@ import com.blamejared.crafttweaker.api.fluid.CTFluidIngredient;
 import com.blamejared.crafttweaker.api.managers.IRecipeManager;
 import com.blamejared.crafttweaker.impl.actions.recipes.ActionAddRecipe;
 import com.blamejared.crafttweaker_annotations.annotations.Document;
+import me.desht.pneumaticcraft.api.crafting.recipe.FuelQualityRecipe;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.recipes.other.FuelQualityRecipeImpl;
 import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.CTUtils;
@@ -28,7 +29,7 @@ public class FuelQuality implements IRecipeManager {
     }
 
     @Override
-    public IRecipeType<FuelQualityRecipeImpl> getRecipeType() {
+    public IRecipeType<FuelQualityRecipe> getRecipeType() {
         return PneumaticCraftRecipeType.FUEL_QUALITY;
     }
 }

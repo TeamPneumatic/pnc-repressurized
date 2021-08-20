@@ -304,15 +304,4 @@ public class AmadronPlayerOffer extends AmadronOffer {
                 new ResourceLocation(s.replaceFirst("_rev$", "")):
                 new ResourceLocation(s + "_rev");
     }
-
-    /**
-     * Check if the given offer is a player offer, created by the given player
-     * @param offer the offer to check
-     * @param player the player to check
-     * @return true if the offer is a player offer created by the player, false otherwise
-     */
-    public static boolean isPlayerOffer(AmadronOffer offer, PlayerEntity player) {
-        return offer instanceof AmadronPlayerOffer && ((AmadronPlayerOffer) offer).getPlayerId().equals(player.getUniqueID());
-    }
-
 }

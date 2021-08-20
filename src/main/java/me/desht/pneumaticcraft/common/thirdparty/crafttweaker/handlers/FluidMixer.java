@@ -8,6 +8,7 @@ import com.blamejared.crafttweaker.api.item.IItemStack;
 import com.blamejared.crafttweaker.api.managers.IRecipeManager;
 import com.blamejared.crafttweaker.impl.actions.recipes.ActionAddRecipe;
 import com.blamejared.crafttweaker_annotations.annotations.Document;
+import me.desht.pneumaticcraft.api.crafting.recipe.FluidMixerRecipe;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.recipes.machine.FluidMixerRecipeImpl;
 import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.CTUtils;
@@ -33,7 +34,7 @@ public class FluidMixer implements IRecipeManager {
     }
 
     @Override
-    public IRecipeType<FluidMixerRecipeImpl> getRecipeType() {
+    public IRecipeType<FluidMixerRecipe> getRecipeType() {
         return PneumaticCraftRecipeType.FLUID_MIXER;
     }
 }

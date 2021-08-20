@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.network;
 
+import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
@@ -16,7 +17,7 @@ import java.util.function.Supplier;
  * or when a player logs in
  */
 public class PacketSyncAmadronOffers {
-    private final Collection<AmadronOffer> activeOffers;
+    private final Collection<AmadronRecipe> activeOffers;
     private final boolean notifyPlayer;
 
     public PacketSyncAmadronOffers(boolean notifyPlayer) {
@@ -40,7 +41,7 @@ public class PacketSyncAmadronOffers {
     public void toBytes(PacketBuffer buf) {
         buf.writeBoolean(notifyPlayer);
         buf.writeVarInt(activeOffers.size());
-        for (AmadronOffer offer : activeOffers) {
+        for (AmadronRecipe offer : activeOffers) {
             buf.writeBoolean(offer instanceof AmadronPlayerOffer);
             buf.writeResourceLocation(offer.getId());
             offer.write(buf);

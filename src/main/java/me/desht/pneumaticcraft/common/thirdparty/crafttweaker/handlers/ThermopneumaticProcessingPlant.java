@@ -10,6 +10,7 @@ import com.blamejared.crafttweaker.api.managers.IRecipeManager;
 import com.blamejared.crafttweaker.impl.actions.recipes.ActionAddRecipe;
 import com.blamejared.crafttweaker_annotations.annotations.Document;
 import me.desht.pneumaticcraft.api.crafting.TemperatureRange;
+import me.desht.pneumaticcraft.api.crafting.recipe.ThermoPlantRecipe;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
 import me.desht.pneumaticcraft.common.recipes.machine.ThermoPlantRecipeImpl;
 import me.desht.pneumaticcraft.common.thirdparty.crafttweaker.CTUtils;
@@ -37,7 +38,7 @@ public class ThermopneumaticProcessingPlant implements IRecipeManager {
     }
 
     @Override
-    public IRecipeType<ThermoPlantRecipeImpl> getRecipeType() {
+    public IRecipeType<ThermoPlantRecipe> getRecipeType() {
         return PneumaticCraftRecipeType.THERMO_PLANT;
     }
 }

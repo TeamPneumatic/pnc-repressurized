@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.inventory;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
+import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
 import me.desht.pneumaticcraft.common.DroneRegistry;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.config.subconfig.AmadronPlayerOffers;
@@ -12,7 +13,6 @@ import me.desht.pneumaticcraft.common.entity.living.EntityAmadrone;
 import me.desht.pneumaticcraft.common.entity.living.EntityAmadrone.AmadronAction;
 import me.desht.pneumaticcraft.common.item.ItemAmadronTablet;
 import me.desht.pneumaticcraft.common.network.*;
-import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronPlayerOffer;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
@@ -48,7 +48,7 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
     public static final int ROWS = 4;
     public static final int OFFERS_PER_PAGE = ROWS * 2;
 
-    public final List<AmadronOffer> activeOffers = new ArrayList<>(AmadronOfferManager.getInstance().getActiveOffers());
+    public final List<AmadronRecipe> activeOffers = new ArrayList<>(AmadronOfferManager.getInstance().getActiveOffers());
     private final ItemStackHandler inv = new ItemStackHandler(OFFERS_PER_PAGE * 2);
     @GuiSynced
     private final int[] shoppingItems = new int[OFFERS_PER_PAGE];
@@ -146,7 +146,7 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
         int totalMb = 0;
         for (int i = 0; i < shoppingItems.length; i++) {
             if (shoppingItems[i] >= 0 && shoppingItems[i] < activeOffers.size()) {
-                AmadronOffer offer = activeOffers.get(shoppingItems[i]);
+                AmadronRecipe offer = activeOffers.get(shoppingItems[i]);
                 AmadronTradeResource out = offer.getOutput();
                 switch (out.getType()) {
                     case ITEM:
@@ -260,9 +260,9 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
         } else if (tag.equals("addPlayerTrade")) {
             openTradeGui(player);
         } else if (tag.startsWith("remove:") && shiftHeld) {
-            AmadronOffer offer = AmadronOfferManager.getInstance().getOffer(new ResourceLocation(tag.substring(7)));
+            AmadronRecipe offer = AmadronOfferManager.getInstance().getOffer(new ResourceLocation(tag.substring(7)));
             if (offer instanceof AmadronPlayerOffer) {
-                removeCustomOffer(player, (AmadronPlayerOffer) offer);
+                tryRemoveCustomOffer(player, (AmadronPlayerOffer) offer);
             }
         }
     }
@@ -271,7 +271,7 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
         boolean placed = false;
         for (int i = 0; i < shoppingItems.length; i++) {
             if (shoppingItems[i] >= 0) {
-                AmadronOffer offer = activeOffers.get(shoppingItems[i]);
+                AmadronRecipe offer = activeOffers.get(shoppingItems[i]);
                 GlobalPos itemGPos = ItemAmadronTablet.getItemProvidingLocation(player.getHeldItem(hand));
                 GlobalPos fluidGPos = ItemAmadronTablet.getFluidProvidingLocation(player.getHeldItem(hand));
                 EntityAmadrone drone = retrieveOrderItems(player, offer, shoppingAmounts[i], itemGPos, fluidGPos);
@@ -303,19 +303,17 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
         });
     }
 
-    private void removeCustomOffer(ServerPlayerEntity player, AmadronPlayerOffer offer) {
-        if (offer.getPlayerId().equals(player.getGameProfile().getId())) {
-            if (AmadronOfferManager.getInstance().removePlayerOffer(offer)) {
-                if (PNCConfig.Common.Amadron.notifyOfTradeRemoval) {
-                    NetworkHandler.sendToAll(new PacketAmadronTradeRemoved(offer));
-                }
-                offer.returnStock();
-                ItemAmadronTablet.openGui(player, hand);
+    private void tryRemoveCustomOffer(ServerPlayerEntity player, AmadronPlayerOffer offer) {
+        if (offer.isRemovableBy(player) && AmadronOfferManager.getInstance().removePlayerOffer(offer)) {
+            if (PNCConfig.Common.Amadron.notifyOfTradeRemoval) {
+                NetworkHandler.sendToAll(new PacketAmadronTradeRemoved(offer));
             }
+            offer.returnStock();
+            ItemAmadronTablet.openGui(player, hand);
         }
     }
 
-    public static EntityAmadrone retrieveOrderItems(PlayerEntity orderingPlayer, AmadronOffer offer, int times, GlobalPos itemGPos, GlobalPos liquidGPos) {
+    public static EntityAmadrone retrieveOrderItems(PlayerEntity orderingPlayer, AmadronRecipe offer, int times, GlobalPos itemGPos, GlobalPos liquidGPos) {
         boolean isAmadronRestock = orderingPlayer == null;
         if (offer.getInput().getType() == AmadronTradeResource.Type.ITEM) {
             if (itemGPos == null) return null;
@@ -332,7 +330,7 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
             }
             if (stacks.isEmpty()) {
                 // shouldn't happen but see https://github.com/TeamPneumatic/pnc-repressurized/issues/399
-                Log.error(String.format("retrieveOrderItems: got empty itemstack list for offer %d x %s @ %s", times, queryingItems.toString(), itemGPos.toString()));
+                Log.error(String.format("retrieveOrderItems: got empty itemstack list for offer %d x %s @ %s", times, queryingItems, itemGPos));
                 return null;
             }
 
@@ -352,18 +350,18 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
         }
     }
 
-    private static void reduceStockLevel(AmadronOffer offer, int times, boolean isAmadronRestock) {
+    private static void reduceStockLevel(AmadronRecipe offer, int times, boolean isAmadronRestock) {
         // Reduce stock here; if the order fails (e.g. player takes items out of the chest before the Amadron can get them),
         // we'll restore the stock level, in EventHandlerAmadron#onAmadronFailure().
         if (!isAmadronRestock && (offer instanceof AmadronPlayerOffer || offer.getMaxStock() >= 0)) {
-            offer.addStock(-times);
+            offer.setStock(offer.getStock() - times);
             if (offer instanceof AmadronPlayerOffer) AmadronPlayerOffers.save();
             NetworkHandler.sendNonLocal(new PacketAmadronStockUpdate(offer.getId(), offer.getStock()));
         }
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    public static boolean validateStockLevel(PlayerEntity orderingPlayer, AmadronOffer offer, int times, boolean isAmadronRestock) {
+    public static boolean validateStockLevel(PlayerEntity orderingPlayer, AmadronRecipe offer, int times, boolean isAmadronRestock) {
         if (!isAmadronRestock && offer.getStock() >= 0 && times > offer.getStock()) {
             // shouldn't happen normally, but could as result of a player trying to spoof the system
             // by bypassing stock checks in the Amadron GUI (hacked client)
@@ -382,13 +380,13 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
                 ItemAmadronTablet.getFluidCapability(tablet));
     }
 
-    private int capShoppingAmount(AmadronOffer offer, int wantedAmount,
+    private int capShoppingAmount(AmadronRecipe offer, int wantedAmount,
                                   LazyOptional<IItemHandler> itemCap,
                                   LazyOptional<IFluidHandler> fluidCap) {
         return capShoppingAmount(offer, wantedAmount, itemCap, itemCap, fluidCap, fluidCap);
     }
 
-    private int capShoppingAmount(AmadronOffer offer, int wantedTradeCount,
+    private int capShoppingAmount(AmadronRecipe offer, int wantedTradeCount,
                                   LazyOptional<IItemHandler> itemCapIn,
                                   LazyOptional<IItemHandler> itemCapOut,
                                   LazyOptional<IFluidHandler> fluidCapIn,
@@ -467,7 +465,7 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
         return freeSlot;
     }
 
-    public int getShoppingCartAmount(AmadronOffer offer) {
+    public int getShoppingCartAmount(AmadronRecipe offer) {
         int offerId = activeOffers.indexOf(offer);
         for (int i = 0; i < shoppingItems.length; i++) {
             if (shoppingItems[i] == offerId) {

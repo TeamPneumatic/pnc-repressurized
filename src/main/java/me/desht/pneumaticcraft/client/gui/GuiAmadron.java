@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.client.gui;
 
 import com.google.common.collect.ImmutableList;
+import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
 import me.desht.pneumaticcraft.client.gui.widget.*;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.client.util.PointXY;
@@ -10,7 +11,6 @@ import me.desht.pneumaticcraft.common.inventory.SlotUntouchable;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketAmadronInvSync;
 import me.desht.pneumaticcraft.common.network.PacketAmadronOrderUpdate;
-import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOfferManager;
 import me.desht.pneumaticcraft.common.tileentity.TileEntityBase;
 import me.desht.pneumaticcraft.lib.GuiConstants;
@@ -154,7 +154,7 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
         if (!container.isBasketEmpty()) {
             builder.add(StringTextComponent.EMPTY);
             builder.add(xlate("pneumaticcraft.gui.amadron.basket").mergeStyle(TextFormatting.AQUA, TextFormatting.UNDERLINE));
-            for (AmadronOffer offer : AmadronOfferManager.getInstance().getActiveOffers()) {
+            for (AmadronRecipe offer : AmadronOfferManager.getInstance().getActiveOffers()) {
                 int nOrders = container.getShoppingCartAmount(offer);
                 if (nOrders > 0) {
                     String in = (offer.getInput().getAmount() * nOrders) + " x " + offer.getInput().getName();
@@ -187,12 +187,12 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
         needsRefreshing = false;
         int invSize = ContainerAmadron.ROWS * 2;
         container.clearStacks();
-        List<Pair<Integer,AmadronOffer>> visibleOffers = new ArrayList<>();
+        List<Pair<Integer,AmadronRecipe>> visibleOffers = new ArrayList<>();
         int skippedOffers = 0;
         int applicableOffers = 0;
 
         for (int i = 0; i < container.activeOffers.size(); i++) {
-            AmadronOffer offer = container.activeOffers.get(i);
+            AmadronRecipe offer = container.activeOffers.get(i);
             if (offer.passesQuery(searchBar.getText())) {
                 applicableOffers++;
                 if (skippedOffers < page * invSize) {
@@ -209,7 +209,7 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
         children.removeAll(widgetOffers);
         for (int i = 0; i < visibleOffers.size(); i++) {
             int offerId = visibleOffers.get(i).getLeft();
-            AmadronOffer offer = visibleOffers.get(i).getRight();
+            AmadronRecipe offer = visibleOffers.get(i).getRight();
             if (!offer.getInput().getItem().isEmpty()) {
                 container.getSlot(i * 2).putStack(offer.getInput().getItem());
                 ((SlotUntouchable) container.getSlot(i * 2)).setEnabled(true);
@@ -255,7 +255,7 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
     static class WidgetAmadronOfferAdjustable extends WidgetAmadronOffer {
         private final int offerId;
 
-        WidgetAmadronOfferAdjustable(int offerId, int x, int y, AmadronOffer offer) {
+        WidgetAmadronOfferAdjustable(int offerId, int x, int y, AmadronRecipe offer) {
             super(x, y, offer);
             this.offerId = offerId;
         }

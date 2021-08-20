@@ -2,8 +2,8 @@ package me.desht.pneumaticcraft.common.thirdparty.jei;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
+import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
 import me.desht.pneumaticcraft.common.core.ModItems;
-import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
 import me.desht.pneumaticcraft.lib.Textures;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.IRecipeLayout;
@@ -23,7 +23,7 @@ import java.util.List;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class JEIAmadronTradeCategory implements IRecipeCategory<AmadronOffer> {
+public class JEIAmadronTradeCategory implements IRecipeCategory<AmadronRecipe> {
     private final String localizedName;
     private final IDrawable background;
     private final IDrawable icon;
@@ -40,8 +40,8 @@ public class JEIAmadronTradeCategory implements IRecipeCategory<AmadronOffer> {
     }
 
     @Override
-    public Class<? extends AmadronOffer> getRecipeClass() {
-        return AmadronOffer.class;
+    public Class<? extends AmadronRecipe> getRecipeClass() {
+        return AmadronRecipe.class;
     }
 
     @Override
@@ -60,7 +60,7 @@ public class JEIAmadronTradeCategory implements IRecipeCategory<AmadronOffer> {
     }
 
     @Override
-    public void setIngredients(AmadronOffer recipe, IIngredients ingredients) {
+    public void setIngredients(AmadronRecipe recipe, IIngredients ingredients) {
         if (recipe.getInput().getType() == AmadronTradeResource.Type.ITEM) {
             ingredients.setInput(VanillaTypes.ITEM, recipe.getInput().getItem());
         } else if (recipe.getInput().getType() == AmadronTradeResource.Type.FLUID) {
@@ -74,7 +74,7 @@ public class JEIAmadronTradeCategory implements IRecipeCategory<AmadronOffer> {
     }
 
     @Override
-    public void setRecipe(IRecipeLayout recipeLayout, AmadronOffer recipe, IIngredients ingredients) {
+    public void setRecipe(IRecipeLayout recipeLayout, AmadronRecipe recipe, IIngredients ingredients) {
         if (recipe.getInput().getType() == AmadronTradeResource.Type.ITEM) {
             recipeLayout.getItemStacks().init(0, true, 5, 14);
             recipeLayout.getItemStacks().set(0, recipe.getInput().getItem());
@@ -92,14 +92,14 @@ public class JEIAmadronTradeCategory implements IRecipeCategory<AmadronOffer> {
     }
 
     @Override
-    public void draw(AmadronOffer recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
+    public void draw(AmadronRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
         FontRenderer fr = Minecraft.getInstance().fontRenderer;
         int x = (background.getWidth() - fr.getStringWidth(recipe.getVendor())) / 2;
         fr.drawString(matrixStack, recipe.getVendor(), x, 3, 0xFF404040);
     }
 
     @Override
-    public List<ITextComponent> getTooltipStrings(AmadronOffer recipe, double mouseX, double mouseY) {
+    public List<ITextComponent> getTooltipStrings(AmadronRecipe recipe, double mouseX, double mouseY) {
         List<ITextComponent> res = new ArrayList<>();
         if (mouseX >= 22 && mouseX <= 51 && mouseY >= 12) {
             res.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.vendor", recipe.getVendor()));

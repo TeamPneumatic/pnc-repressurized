@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.api.crafting.recipe;
 
 import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
 
 /**
@@ -61,4 +62,44 @@ public abstract class AmadronRecipe extends PneumaticCraftRecipe {
      * @return the number of trades in stock, or any negative number for unlimited stock
      */
     public abstract int getStock();
+
+    /**
+     * Update the number of trades Amadron currently has in stock for this offer. It is the responsbility of the
+     * implementation to ensure the stock level does not go below 0, or above the max stock level as returned by
+     * {@link #getMaxStock()} (provided that the max stock level is > 0).
+     *
+     * @param stock the new stock level
+     */
+    public abstract void setStock(int stock);
+
+    /**
+     * Get the maximum (initial) stock level for this offer.
+     *
+     * @return the max stock level; any quantity <= 0 indicates no maximum in force
+     */
+    public abstract int getMaxStock();
+
+    /**
+     * Can this offer be removed by the given player?
+     *
+     * @param player the player
+     * @return true if this player can remove this offer from the system, false otherwise
+     */
+    public boolean isRemovableBy(PlayerEntity player) {
+        return false;
+    }
+
+    /**
+     * Does this offer match the given query string? The input resource, output resource and vendor names are all
+     * tested (case-insensitive) for the query.
+     *
+     * @param query the query string
+     * @return true if the recipe matches, false otherwise
+     */
+    public final boolean passesQuery(String query) {
+        String queryLow = query.toLowerCase();
+        return getInput().getName().toLowerCase().contains(queryLow)
+                || getOutput().getName().toLowerCase().contains(queryLow)
+                || getVendor().toLowerCase().contains(queryLow);
+    }
 }

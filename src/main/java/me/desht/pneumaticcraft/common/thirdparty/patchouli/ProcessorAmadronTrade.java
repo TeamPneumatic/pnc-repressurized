@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.common.thirdparty.patchouli;
 
 import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource.Type;
+import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
 import me.desht.pneumaticcraft.common.recipes.PneumaticCraftRecipeType;
-import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
@@ -13,7 +13,7 @@ import vazkii.patchouli.api.IVariableProvider;
 
 @SuppressWarnings("unused")
 public class ProcessorAmadronTrade implements IComponentProcessor {
-    private AmadronOffer recipe = null;
+    private AmadronRecipe recipe = null;
     private String text = null;
 
     @Override
