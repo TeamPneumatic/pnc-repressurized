@@ -3,7 +3,7 @@
   "block": "quark:permafrost",
   "temperature": 223,
   "heatCapacity": 5000,
-  "transformCold": {
+  "transformHot": {
     "block": "minecraft:cobblestone"
   }
 }
