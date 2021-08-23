@@ -43,7 +43,7 @@ public class Reflections {
     public static Class<?> guardian_aiGuardianAttack;
 
     public static void init() {
-        msbl_isActivated = ObfuscationReflectionHelper.findMethod(AbstractSpawner.class, "func_98279_f");
+        msbl_isActivated = ObfuscationReflectionHelper.findMethod(AbstractSpawner.class, "isNearPlayer");
 
         // access to non-public entity AI's for hacking purposes
         // TODO 1.14 verify notch names
