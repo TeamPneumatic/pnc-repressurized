@@ -184,6 +184,8 @@ minecraft {
 		server {
 			property 'forge.logging.console.level', 'debug'
 			workingDirectory file('run')
+			property 'mixin.env.remapRefMap', 'true'
+			property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
 			ideaModule "${project.name}.main"
 			mods {
 				pneumaticcraft.sources((SourceSet[]) [sourceSets.main, sourceSets.api])
@@ -192,7 +194,8 @@ minecraft {
 		data {
 			property 'forge.logging.console.level', 'debug'
 			property 'fml.earlyprogresswindow', 'false'
-			property 'mixin.env.disableRefMap', 'true'
+			property 'mixin.env.remapRefMap', 'true'
+			property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
 			workingDirectory file('run')
 			ideaModule "${project.name}.main"
 			forceExit false
