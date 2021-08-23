@@ -13,7 +13,7 @@ public class ModuleSafetyValve extends TubeModuleRedstoneReceiving {
     public void update() {
         super.update();
 
-        if (!pressureTube.getWorld().isRemote && pressureTube.getPressure() > getThreshold()) {
+        if (!pressureTube.getLevel().isClientSide && pressureTube.getPressure() > getThreshold()) {
             pressureTube.forceLeak(dir);
         }
     }

@@ -33,20 +33,20 @@ public class GuiRefineryController extends GuiPneumaticContainerBase<ContainerRe
     public GuiRefineryController(ContainerRefinery container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
 
-        ySize = 189;
+        imageHeight = 189;
     }
 
     @Override
     public void init() {
         super.init();
 
-        widgetTemperature = new WidgetTemperature(guiLeft + 32, guiTop + 32, TemperatureRange.of(273, 673), 273, 50);
+        widgetTemperature = new WidgetTemperature(leftPos + 32, topPos + 32, TemperatureRange.of(273, 673), 273, 50);
         addButton(widgetTemperature);
 
-        addButton(new WidgetTank(guiLeft + 8, guiTop + 25, te.getInputTank()));
+        addButton(new WidgetTank(leftPos + 8, topPos + 25, te.getInputTank()));
 
-        int x = guiLeft + 95;
-        int y = guiTop + 29;
+        int x = leftPos + 95;
+        int y = topPos + 29;
 
         // "te" always refers to the master refinery; the bottom block of the stack
         outputs = new ArrayList<>();
@@ -59,7 +59,7 @@ public class GuiRefineryController extends GuiPneumaticContainerBase<ContainerRe
                 x += 20;
                 y -= 4;
                 outputs.add(teRO);
-                te1 = te1.getWorld().getTileEntity(te1.getPos().up());
+                te1 = te1.getLevel().getBlockEntity(te1.getBlockPos().above());
             } while (te1 instanceof TileEntityRefineryOutput);
         }
 
@@ -84,20 +84,20 @@ public class GuiRefineryController extends GuiPneumaticContainerBase<ContainerRe
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float f, int x, int y) {
-        super.drawGuiContainerBackgroundLayer(matrixStack, f, x, y);
+    protected void renderBg(MatrixStack matrixStack, float f, int x, int y) {
+        super.renderBg(matrixStack, f, x, y);
         if (outputs.size() < 4) {
             RenderSystem.enableBlend();
             RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-            fill(matrixStack, guiLeft + 155, guiTop + 17, guiLeft + 171, guiTop + 81, 0x40FF0000);
+            fill(matrixStack, leftPos + 155, topPos + 17, leftPos + 171, topPos + 81, 0x40FF0000);
             if (outputs.size() < 3) {
-                fill(matrixStack, guiLeft + 135, guiTop + 21, guiLeft + 151, guiTop + 85, 0x40FF0000);
+                fill(matrixStack, leftPos + 135, topPos + 21, leftPos + 151, topPos + 85, 0x40FF0000);
             }
             if (outputs.size() < 2) {
-                fill(matrixStack, guiLeft + 115, guiTop + 25, guiLeft + 131, guiTop + 89, 0x40FF0000);
+                fill(matrixStack, leftPos + 115, topPos + 25, leftPos + 131, topPos + 89, 0x40FF0000);
             }
             if (outputs.size() < 1) {
-                fill(matrixStack, guiLeft + 95, guiTop + 29, guiLeft + 111, guiTop + 93, 0x40FF0000);
+                fill(matrixStack, leftPos + 95, topPos + 29, leftPos + 111, topPos + 93, 0x40FF0000);
             }
             RenderSystem.disableBlend();
         }

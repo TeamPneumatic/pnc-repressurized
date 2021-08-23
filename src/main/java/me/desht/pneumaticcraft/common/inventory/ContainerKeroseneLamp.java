@@ -23,7 +23,7 @@ public class ContainerKeroseneLamp extends ContainerPneumaticBase<TileEntityKero
     }
 
     @Override
-    public boolean canInteractWith(PlayerEntity player) {
+    public boolean stillValid(PlayerEntity player) {
         return te.isGuiUseableByPlayer(player);
     }
 }

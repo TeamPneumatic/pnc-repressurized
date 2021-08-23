@@ -52,7 +52,7 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
         super(container, inv, displayString);
 
         this.logistics = (L) container.logistics;
-        ySize = 216;
+        imageHeight = 216;
     }
 
     @Override
@@ -71,33 +71,33 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
 
         ITextComponent invisibleText = xlate("pneumaticcraft.gui.logistics_frame.invisible");
         WidgetCheckBox invisible;
-        addButton(invisible = new WidgetCheckBox(guiLeft + xSize - 20 - font.getStringPropertyWidth(invisibleText), guiTop + 17, 0xFF404040, invisibleText, b -> {
+        addButton(invisible = new WidgetCheckBox(leftPos + imageWidth - 20 - font.width(invisibleText), topPos + 17, 0xFF404040, invisibleText, b -> {
             logistics.setSemiblockInvisible(b.checked);
             syncToServer();
         }).setChecked(logistics.isSemiblockInvisible()));
 
         invisible.setTooltipKey("pneumaticcraft.gui.logistics_frame.invisible.tooltip");
 
-        addButton(itemWhitelist = new WidgetButtonExtended(guiLeft + 5, guiTop + 16, 12, 12, StringTextComponent.EMPTY, b -> {
+        addButton(itemWhitelist = new WidgetButtonExtended(leftPos + 5, topPos + 16, 12, 12, StringTextComponent.EMPTY, b -> {
             logistics.setItemWhiteList(!logistics.isItemWhiteList());
             updateLabels();
             syncToServer();
         }).setVisible(false).setInvisibleHoverColor(0x80808080));
         itemWhitelist.visible = logistics.supportsBlacklisting();
-        addButton(fluidWhitelist = new WidgetButtonExtended(guiLeft + 5, guiTop + 88, 12, 12, StringTextComponent.EMPTY, b -> {
+        addButton(fluidWhitelist = new WidgetButtonExtended(leftPos + 5, topPos + 88, 12, 12, StringTextComponent.EMPTY, b -> {
             logistics.setFluidWhiteList(!logistics.isFluidWhiteList());
             updateLabels();
             syncToServer();
         }).setVisible(false).setInvisibleHoverColor(0x80808080));
         fluidWhitelist.visible = logistics.supportsBlacklisting();
         int xOff = logistics.supportsBlacklisting() ? 13 : 0;
-        addButton(itemLabel = new WidgetLabel(guiLeft + 5 + xOff, guiTop + 18, StringTextComponent.EMPTY) {
+        addButton(itemLabel = new WidgetLabel(leftPos + 5 + xOff, topPos + 18, StringTextComponent.EMPTY) {
             @Override
             public void onClick(double mouseX, double mouseY) {
                 if (itemWhitelist.visible) itemWhitelist.onClick(mouseX, mouseY);
             }
         });
-        addButton(fluidLabel = new WidgetLabel(guiLeft + 5 + xOff, guiTop + 90, StringTextComponent.EMPTY) {
+        addButton(fluidLabel = new WidgetLabel(leftPos + 5 + xOff, topPos + 90, StringTextComponent.EMPTY) {
             @Override
             public void onClick(double mouseX, double mouseY) {
                 if (fluidWhitelist.visible) fluidWhitelist.onClick(mouseX, mouseY);
@@ -113,7 +113,7 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
         });
         fluidWidgets.forEach(this::addButton);
 
-        addInfoTab(GuiUtils.xlateAndSplit("gui.tooltip.item.pneumaticcraft." + logistics.getId().getPath()));
+        addInfoTab(GuiUtils.xlateAndSplit("gui.tooltip.item.pneumaticcraft." + logistics.getSemiblockId().getPath()));
         addFilterTab();
         addJeiFilterInfoTab();
 
@@ -152,14 +152,14 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
     @Override
     protected void doDelayedAction() {
         if (logistics instanceof ISpecificRequester) {
-            ((ISpecificRequester) logistics).setMinItemOrderSize(minItemsField.getValue());
-            ((ISpecificRequester) logistics).setMinFluidOrderSize(minFluidField.getValue());
+            ((ISpecificRequester) logistics).setMinItemOrderSize(minItemsField.getIntValue());
+            ((ISpecificRequester) logistics).setMinFluidOrderSize(minFluidField.getIntValue());
             syncToServer();
         }
     }
 
     public void updateItemFilter(int slot, ItemStack stack) {
-        container.getSlot(slot).putStack(stack);
+        menu.getSlot(slot).set(stack);
         logistics.setItemFilter(slot, stack);
         syncToServer();
     }
@@ -171,14 +171,14 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
     }
 
     public PointXY getFluidSlotPos(int slot) {
-        return new PointXY(guiLeft + slot * 18 + 8, guiTop + 101);
+        return new PointXY(leftPos + slot * 18 + 8, topPos + 101);
     }
 
     private void updateLabels() {
         TextFormatting s1 = logistics.isItemWhiteList() ? TextFormatting.RESET : TextFormatting.STRIKETHROUGH;
         TextFormatting s2 = logistics.isFluidWhiteList() ? TextFormatting.RESET : TextFormatting.STRIKETHROUGH;
-        itemLabel.setMessage(xlate(String.format("pneumaticcraft.gui.%s.itemFilters", logistics.getId().getPath())).mergeStyle(s1));
-        fluidLabel.setMessage(xlate(String.format("pneumaticcraft.gui.%s.fluidFilters", logistics.getId().getPath())).mergeStyle(s2));
+        itemLabel.setMessage(xlate(String.format("pneumaticcraft.gui.%s.itemFilters", logistics.getSemiblockId().getPath())).withStyle(s1));
+        fluidLabel.setMessage(xlate(String.format("pneumaticcraft.gui.%s.fluidFilters", logistics.getSemiblockId().getPath())).withStyle(s2));
         itemWhitelist.setRenderedIcon(logistics.isItemWhiteList() ? Textures.GUI_WHITELIST : Textures.GUI_BLACKLIST);
         fluidWhitelist.setRenderedIcon(logistics.isFluidWhiteList() ? Textures.GUI_WHITELIST : Textures.GUI_BLACKLIST);
     }
@@ -193,8 +193,8 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
             logistics.setFluidFilter(idx, widget.getFluidStack().copy());
             syncToServer();
             return;
-        } else if (playerInventory.getItemStack().getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).isPresent()) {
-            FluidStack f = playerInventory.getItemStack().getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY)
+        } else if (inventory.getCarried().getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).isPresent()) {
+            FluidStack f = inventory.getCarried().getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY)
                     .map(h -> h.getFluidInTank(0)).orElse(FluidStack.EMPTY);
             logistics.setFluidFilter(idx, f.isEmpty() ? FluidStack.EMPTY : new FluidStack(f, 1000));
             widget.setFluid(f.getFluid());
@@ -204,7 +204,7 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
 
         fluidSearchGui = new GuiLogisticsLiquidFilter(this);
         editingSlot = idx;
-        minecraft.displayGuiScreen(fluidSearchGui);
+        minecraft.setScreen(fluidSearchGui);
     }
 
     private void addFilterTab() {
@@ -260,18 +260,18 @@ public class GuiLogisticsBase<L extends EntityLogisticsFrame> extends GuiPneumat
     }
 
     @Override
-    protected void handleMouseClick(Slot slot, int slotId, int clickedButton, ClickType clickType) {
+    protected void slotClicked(Slot slot, int slotId, int clickedButton, ClickType clickType) {
         if (slot instanceof SlotPhantom
-                && minecraft.player.inventory.getItemStack().isEmpty()
-                && !slot.getHasStack()
+                && minecraft.player.inventory.getCarried().isEmpty()
+                && !slot.hasItem()
                 && (clickedButton == 0 || clickedButton == 1)) {
             editingSlot = slot.getSlotIndex();
             ClientUtils.openContainerGui(ModContainers.ITEM_SEARCHER.get(), new StringTextComponent("Searcher"));
-            if (minecraft.currentScreen instanceof GuiItemSearcher) {
-                itemSearchGui = (GuiItemSearcher) minecraft.currentScreen;
+            if (minecraft.screen instanceof GuiItemSearcher) {
+                itemSearchGui = (GuiItemSearcher) minecraft.screen;
             }
         } else {
-            super.handleMouseClick(slot, slotId, clickedButton, clickType);
+            super.slotClicked(slot, slotId, clickedButton, clickType);
         }
     }
 }

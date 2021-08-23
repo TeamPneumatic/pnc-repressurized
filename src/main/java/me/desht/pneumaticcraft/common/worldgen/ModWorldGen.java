@@ -22,14 +22,14 @@ public class ModWorldGen {
         Registry<ConfiguredFeature<?, ?>> registry = WorldGenRegistries.CONFIGURED_FEATURE;
 
         OIL_LAKES = Feature.LAKE
-                .withConfiguration(new BlockStateFeatureConfig(ModBlocks.OIL.get().getDefaultState()))
-                .withPlacement(ModDecorators.OIL_LAKE.get().configure(new ChanceConfig(ConfigHelper.getOilLakeChance())));
+                .configured(new BlockStateFeatureConfig(ModBlocks.OIL.get().defaultBlockState()))
+                .decorated(ModDecorators.OIL_LAKE.get().configured(new ChanceConfig(ConfigHelper.getOilLakeChance())));
         Registry.register(registry, RL("oil_lakes"), OIL_LAKES);
     }
 
     public static void onBiomeLoading(BiomeLoadingEvent event) {
         if (!General.oilWorldGenBlacklist.contains(event.getName()) && !General.oilWorldGenCategoryBlacklist.contains(event.getCategory().getName())) {
-            event.getGeneration().withFeature(GenerationStage.Decoration.LAKES, OIL_LAKES);
+            event.getGeneration().addFeature(GenerationStage.Decoration.LAKES, OIL_LAKES);
         }
     }
 }

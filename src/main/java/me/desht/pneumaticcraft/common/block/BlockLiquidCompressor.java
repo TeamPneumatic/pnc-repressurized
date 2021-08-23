@@ -6,7 +6,7 @@ import net.minecraft.tileentity.TileEntity;
 
 public class BlockLiquidCompressor extends BlockPneumaticCraft {
     public BlockLiquidCompressor() {
-        super(ModBlocks.defaultProps().notSolid());
+        super(ModBlocks.defaultProps().noOcclusion());
     }
 
     @Override

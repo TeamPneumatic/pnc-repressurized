@@ -7,6 +7,6 @@ import net.minecraft.tileentity.TileEntity;
 public abstract class HeatBehaviourLiquid extends HeatBehaviour<TileEntity> {
     public Fluid getFluid() {
         if (getBlockState().getFluidState().isEmpty()) return null;
-        return getBlockState().getFluidState().getFluid();
+        return getBlockState().getFluidState().getType();
     }
 }

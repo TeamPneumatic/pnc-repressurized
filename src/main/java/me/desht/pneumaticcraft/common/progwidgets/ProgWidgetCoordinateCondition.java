@@ -120,7 +120,7 @@ public class ProgWidgetCoordinateCondition extends ProgWidgetConditionBase {
     public String getCondition() {
         return Arrays.stream(Axis.values())
                 .filter(axisOptions::shouldCheck)
-                .map(axis -> String.format("%1$s1 %2$s %1$s2", axis.getName2(), operator.toString()))
+                .map(axis -> String.format("%1$s1 %2$s %1$s2", axis.getName(), operator.toString()))
                 .collect(Collectors.joining(" and "));
     }
 }

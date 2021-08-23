@@ -26,7 +26,7 @@ public class SemiblockProvider {
         @Override
         public void appendServerData(CompoundNBT compoundNBT, ServerPlayerEntity serverPlayerEntity, World world, TileEntity tileEntity) {
             CompoundNBT tag = new CompoundNBT();
-            SemiblockTracker.getInstance().getAllSemiblocks(world, tileEntity.getPos())
+            SemiblockTracker.getInstance().getAllSemiblocks(world, tileEntity.getBlockPos())
                     .forEach((semiBlock) -> {
                         NonNullList<ItemStack> drops = semiBlock.getDrops();
                         if (!drops.isEmpty()) {
@@ -42,16 +42,16 @@ public class SemiblockProvider {
         public void appendBody(List<ITextComponent> tooltip, IDataAccessor accessor, IPluginConfig config) {
             CompoundNBT tag = accessor.getServerData().getCompound("semiBlocks");
 
-            for (String name : tag.keySet()) {
+            for (String name : tag.getAllKeys()) {
                 try {
                     int entityId = Integer.parseInt(name);
                     ISemiBlock entity = ISemiBlock.byTrackingId(accessor.getWorld(), entityId);
                     if (entity instanceof EntitySemiblockBase) {
                         if (!(entity instanceof IDirectionalSemiblock) || ((IDirectionalSemiblock) entity).getSide() == accessor.getSide()) {
                             ITextComponent title = new StringTextComponent(TextFormatting.YELLOW.toString() + "[")
-                                    .append(entity.getDisplayName()).appendString("]");
+                                    .append(entity.getDisplayName()).append("]");
                             tooltip.add(title);
-                            entity.addTooltip(tooltip, accessor.getPlayer(), tag.getCompound(name), accessor.getPlayer().isSneaking());
+                            entity.addTooltip(tooltip, accessor.getPlayer(), tag.getCompound(name), accessor.getPlayer().isShiftKeyDown());
                         }
                     }
                 } catch (NumberFormatException ignored) {

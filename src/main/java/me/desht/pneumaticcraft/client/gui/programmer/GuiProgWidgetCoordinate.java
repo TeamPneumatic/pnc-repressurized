@@ -52,35 +52,35 @@ public class GuiProgWidgetCoordinate extends GuiProgWidgetAreaShow<ProgWidgetCoo
         addButton(gpsButton);
         coordFields = new WidgetTextFieldNumber[3];
         for (int i = 0; i < 3; i++) {
-            coordFields[i] = new WidgetTextFieldNumber(font, guiLeft + 100, guiTop + 50 + 13 * i, 40, font.FONT_HEIGHT + 1);
+            coordFields[i] = new WidgetTextFieldNumber(font, guiLeft + 100, guiTop + 50 + 13 * i, 40, font.lineHeight + 1);
             addButton(coordFields[i]);
-            coordFields[i].setEnabled(gpsButton.active);
+            coordFields[i].setEditable(gpsButton.active);
         }
         coordFields[0].setValue(progWidget.getRawCoordinate().getX());
         coordFields[1].setValue(progWidget.getRawCoordinate().getY());
         coordFields[2].setValue(progWidget.getRawCoordinate().getZ());
 
-        variableField = new WidgetComboBox(font, guiLeft + 90, guiTop + 112, 80, font.FONT_HEIGHT + 1);
+        variableField = new WidgetComboBox(font, guiLeft + 90, guiTop + 112, 80, font.lineHeight + 1);
         variableField.setElements(guiProgrammer.te.getAllVariables());
-        variableField.setMaxStringLength(GlobalVariableManager.MAX_VARIABLE_LEN);
+        variableField.setMaxLength(GlobalVariableManager.MAX_VARIABLE_LEN);
         addButton(variableField);
-        variableField.setText(progWidget.getVariable());
-        variableField.setEnabled(progWidget.isUsingVariable());
+        variableField.setValue(progWidget.getVariable());
+        variableField.setEditable(progWidget.isUsingVariable());
     }
 
     private void setUsingVariable(boolean usingVariable) {
         progWidget.setUsingVariable(usingVariable);
         gpsButton.active = !usingVariable;
         for (WidgetTextField textField : coordFields) {
-            textField.setEnabled(!usingVariable);
+            textField.setEditable(!usingVariable);
         }
-        variableField.setEnabled(usingVariable);
+        variableField.setEditable(usingVariable);
     }
 
     private void openGPSSearcher() {
         ClientUtils.openContainerGui(ModContainers.INVENTORY_SEARCHER.get(), new StringTextComponent("Inventory Searcher (GPS)"));
-        if (minecraft.currentScreen instanceof GuiInventorySearcher) {
-            invSearchGui = (GuiInventorySearcher) minecraft.currentScreen;
+        if (minecraft.screen instanceof GuiInventorySearcher) {
+            invSearchGui = (GuiInventorySearcher) minecraft.screen;
             invSearchGui.setStackPredicate(itemStack -> itemStack.getItem() instanceof IPositionProvider);
             BlockPos area = progWidget.getRawCoordinate();
             ItemStack gpsStack = new ItemStack(ModItems.GPS_TOOL.get());
@@ -90,19 +90,19 @@ public class GuiProgWidgetCoordinate extends GuiProgWidgetAreaShow<ProgWidgetCoo
     }
 
     @Override
-    public void onClose() {
-        progWidget.setCoordinate(new BlockPos(coordFields[0].getValue(), coordFields[1].getValue(), coordFields[2].getValue()));
-        progWidget.setVariable(variableField.getText());
+    public void removed() {
+        progWidget.setCoordinate(new BlockPos(coordFields[0].getIntValue(), coordFields[1].getIntValue(), coordFields[2].getIntValue()));
+        progWidget.setVariable(variableField.getValue());
 
-        super.onClose();
+        super.removed();
     }
 
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         super.render(matrixStack, mouseX, mouseY, partialTicks);
-        font.drawString(matrixStack, "x:", guiLeft + 90, guiTop + 51, 0xFF404040);
-        font.drawString(matrixStack, "y:", guiLeft + 90, guiTop + 64, 0xFF404040);
-        font.drawString(matrixStack, "z:", guiLeft + 90, guiTop + 77, 0xFF404040);
-        font.drawString(matrixStack, I18n.format("pneumaticcraft.gui.progWidget.coordinate.variableName"), guiLeft + 90, guiTop + 100, 0xFF404060);
+        font.draw(matrixStack, "x:", guiLeft + 90, guiTop + 51, 0xFF404040);
+        font.draw(matrixStack, "y:", guiLeft + 90, guiTop + 64, 0xFF404040);
+        font.draw(matrixStack, "z:", guiLeft + 90, guiTop + 77, 0xFF404040);
+        font.draw(matrixStack, I18n.get("pneumaticcraft.gui.progWidget.coordinate.variableName"), guiLeft + 90, guiTop + 100, 0xFF404060);
     }
 }

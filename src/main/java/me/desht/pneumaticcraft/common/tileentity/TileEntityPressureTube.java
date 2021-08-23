@@ -58,8 +58,8 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT tag) {
-        super.read(state, tag);
+    public void load(BlockState state, CompoundNBT tag) {
+        super.load(state, tag);
 
         byte closed = tag.getByte("sidesClosed");
         for (int i = 0; i < 6; i++) {
@@ -68,8 +68,8 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT nbt) {
-        super.write(nbt);
+    public CompoundNBT save(CompoundNBT nbt) {
+        super.save(nbt);
 
         byte closed = 0;
         for (int i = 0; i < 6; i++) {
@@ -135,18 +135,18 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
         }
 
         updateRenderBoundingBox();
-        if (hasWorld() && getWorld().isRemote) {
+        if (hasLevel() && getLevel().isClientSide) {
             rerenderTileEntity();
         }
         camoState = ICamouflageableTE.readCamo(tag);
     }
 
     public void updateRenderBoundingBox() {
-        renderBoundingBox = new AxisAlignedBB(getPos());
+        renderBoundingBox = new AxisAlignedBB(getBlockPos());
 
         for (Direction dir : DirectionUtil.VALUES) {
             if (modules.containsKey(dir) && modules.get(dir).getRenderBoundingBox() != null) {
-                renderBoundingBox = renderBoundingBox.union(modules.get(dir).getRenderBoundingBox());
+                renderBoundingBox = renderBoundingBox.minmax(modules.get(dir).getRenderBoundingBox());
             }
         }
     }
@@ -161,7 +161,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
             pendingCacheShapeClear = 0;
         }
 
-        if (!getWorld().isRemote) airHandler.setSideLeaking(null);
+        if (!getLevel().isClientSide) airHandler.setSideLeaking(null);
 
         for (Direction dir : DirectionUtil.VALUES) {
             TubeModule tm = getModule(dir);
@@ -176,7 +176,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
         }
 
         // check for possibility of air leak due to unconnected tube
-        if (!getWorld().isRemote && !hasModules && !hasClosedSide && neighbourDirections.size() == 1) {
+        if (!getLevel().isClientSide && !hasModules && !hasClosedSide && neighbourDirections.size() == 1) {
             Direction d = neighbourDirections.get(0).getOpposite();
             airHandler.setSideLeaking(canConnectPneumatic(d) ? d : null);
         }
@@ -218,11 +218,11 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     }
 
     public boolean isSideClosed(Direction side) {
-        return sidesClosed[side.getIndex()];
+        return sidesClosed[side.get3DDataValue()];
     }
 
     public void setSideClosed(Direction side, boolean closed) {
-        sidesClosed[side.getIndex()] = closed;
+        sidesClosed[side.get3DDataValue()] = closed;
     }
 
     public Stream<TubeModule> tubeModules() {
@@ -254,10 +254,10 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
         } else {
             modules.remove(side);
         }
-        if (getWorld() != null && !getWorld().isRemote) {
-            getWorld().setBlockState(getPos(), BlockPressureTube.recalculateState(world, pos, getBlockState()), Constants.BlockFlags.DEFAULT);
+        if (getLevel() != null && !getLevel().isClientSide) {
+            getLevel().setBlock(getBlockPos(), BlockPressureTube.recalculateState(level, worldPosition, getBlockState()), Constants.BlockFlags.DEFAULT);
             sendDescriptionPacket();
-            markDirty();
+            setChanged();
         }
     }
 
@@ -272,7 +272,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
     public void onNeighborTileUpdate(BlockPos tilePos) {
         super.onNeighborTileUpdate(tilePos);
 
-        tubeModules().filter(module -> getPos().offset(module.getDirection()).equals(tilePos))
+        tubeModules().filter(module -> getBlockPos().relative(module.getDirection()).equals(tilePos))
                 .forEach(TubeModule::onNeighborTileUpdate);
     }
 
@@ -304,7 +304,7 @@ public class TileEntityPressureTube extends TileEntityPneumaticBase implements I
 
     @Override
     public AxisAlignedBB getRenderBoundingBox() {
-        return renderBoundingBox != null ? renderBoundingBox : new AxisAlignedBB(getPos());
+        return renderBoundingBox != null ? renderBoundingBox : new AxisAlignedBB(getBlockPos());
     }
 
     @Override

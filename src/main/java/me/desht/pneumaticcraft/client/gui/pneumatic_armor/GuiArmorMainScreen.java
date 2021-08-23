@@ -64,8 +64,8 @@ public class GuiArmorMainScreen extends GuiPneumaticScreenBase implements IGuiSc
     public static void initHelmetCoreComponents() {
         if (instance == null) {
             instance = new GuiArmorMainScreen();
-            MainWindow mw = Minecraft.getInstance().getMainWindow();
-            instance.init(Minecraft.getInstance(), mw.getScaledWidth(), mw.getScaledHeight());  // causes init() to be called
+            MainWindow mw = Minecraft.getInstance().getWindow();
+            instance.init(Minecraft.getInstance(), mw.getGuiScaledWidth(), mw.getGuiScaledHeight());  // causes init() to be called
 
             for (int i = 1; i < instance.upgradeOptions.size(); i++) {
                 pageNumber = i;
@@ -90,9 +90,9 @@ public class GuiArmorMainScreen extends GuiPneumaticScreenBase implements IGuiSc
 
         int xPos = 200;
         int yPos = 5;
-        int buttonWidth = font.getStringPropertyWidth(xlate("pneumaticcraft.armor.upgrade.core_components"));
+        int buttonWidth = font.width(xlate("pneumaticcraft.armor.upgrade.core_components"));
         for (UpgradeOption opt : upgradeOptions) {
-            buttonWidth = Math.max(buttonWidth, font.getStringPropertyWidth(opt.page.getPageName()));
+            buttonWidth = Math.max(buttonWidth, font.width(opt.page.getPageName()));
         }
 
         for (int i = 0; i < upgradeOptions.size(); i++) {
@@ -163,9 +163,9 @@ public class GuiArmorMainScreen extends GuiPneumaticScreenBase implements IGuiSc
         renderBackground(matrixStack);
         IOptionPage optionPage = getCurrentOptionsPage().page;
         optionPage.renderPre(matrixStack, x, y, partialTicks);
-        drawCenteredString(matrixStack, font, getCurrentOptionsPage().page.getPageName().deepCopy().mergeStyle(TITLE_PREFIX), 100, 12, 0xFFFFFFFF);
+        drawCenteredString(matrixStack, font, getCurrentOptionsPage().page.getPageName().copy().withStyle(TITLE_PREFIX), 100, 12, 0xFFFFFFFF);
         if (optionPage.displaySettingsHeader()) {
-            drawCenteredString(matrixStack, font, xlate("pneumaticcraft.armor.gui.misc.settings").mergeStyle(TextFormatting.DARK_AQUA), 100, optionPage.settingsYposition(), 0xFFFFFFFF);
+            drawCenteredString(matrixStack, font, xlate("pneumaticcraft.armor.gui.misc.settings").withStyle(TextFormatting.DARK_AQUA), 100, optionPage.settingsYposition(), 0xFFFFFFFF);
         }
         super.render(matrixStack, x, y, partialTicks);
         optionPage.renderPost(matrixStack, x, y, partialTicks);
@@ -226,7 +226,7 @@ public class GuiArmorMainScreen extends GuiPneumaticScreenBase implements IGuiSc
 
     @Override
     public void setFocusedWidget(Widget w) {
-        setListener(w);
+        setFocused(w);
     }
 
     @Override

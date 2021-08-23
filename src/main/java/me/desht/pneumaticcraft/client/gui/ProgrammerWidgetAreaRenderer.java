@@ -85,9 +85,9 @@ public class ProgrammerWidgetAreaRenderer {
 
     private void addMessages(List<ITextComponent> tooltip, List<ITextComponent> msgList, String key, TextFormatting color) {
         if (!msgList.isEmpty()) {
-            tooltip.add(xlate(key).mergeStyle(color, TextFormatting.UNDERLINE));
+            tooltip.add(xlate(key).withStyle(color, TextFormatting.UNDERLINE));
             for (ITextComponent msg : msgList) {
-                tooltip.add(new StringTextComponent(GuiConstants.TRIANGLE_RIGHT + " ").append(msg).mergeStyle(color));
+                tooltip.add(new StringTextComponent(GuiConstants.TRIANGLE_RIGHT + " ").append(msg).withStyle(color));
             }
         }
     }
@@ -133,16 +133,16 @@ public class ProgrammerWidgetAreaRenderer {
 
     protected void addAdditionalInfoToTooltip(IProgWidget widget, List<ITextComponent> tooltip) {
         if (ProgWidgetGuiManager.hasGui(widget)) {
-            tooltip.add(xlate("pneumaticcraft.gui.programmer.rightClickForOptions").mergeStyle(TextFormatting.GOLD));
+            tooltip.add(xlate("pneumaticcraft.gui.programmer.rightClickForOptions").withStyle(TextFormatting.GOLD));
         }
         ThirdPartyManager.instance().getDocsProvider().addTooltip(tooltip, false);
-        if (Minecraft.getInstance().gameSettings.advancedItemTooltips) {
-            tooltip.add(new StringTextComponent(widget.getType().getRegistryName().toString()).mergeStyle(TextFormatting.DARK_GRAY));
+        if (Minecraft.getInstance().options.advancedItemTooltips) {
+            tooltip.add(new StringTextComponent(widget.getType().getRegistryName().toString()).withStyle(TextFormatting.DARK_GRAY));
         }
     }
 
     public void tick() {
-        if ((Minecraft.getInstance().world.getGameTime() & 0xf) == 0 || widgetErrors.size() != progWidgets.size() || widgetWarnings.size() != progWidgets.size()) {
+        if ((Minecraft.getInstance().level.getGameTime() & 0xf) == 0 || widgetErrors.size() != progWidgets.size() || widgetWarnings.size() != progWidgets.size()) {
             widgetErrors.clear();
             widgetWarnings.clear();
             totalErrors = totalWarnings = 0;
@@ -168,12 +168,12 @@ public class ProgrammerWidgetAreaRenderer {
         }
         lastZoom = scaleScroll.getState();
 
-        MainWindow mw = Minecraft.getInstance().getMainWindow();
-        double sf = mw.getGuiScaleFactor();
-        GL11.glScissor((int)((guiLeft + startX) * mw.getGuiScaleFactor()), (int)(mw.getScaledHeight() * sf - areaHeight * sf - (guiTop + startY) * sf), (int)(areaWidth * sf), (int)(areaHeight * sf));
+        MainWindow mw = Minecraft.getInstance().getWindow();
+        double sf = mw.getGuiScale();
+        GL11.glScissor((int)((guiLeft + startX) * mw.getGuiScale()), (int)(mw.getGuiScaledHeight() * sf - areaHeight * sf - (guiTop + startY) * sf), (int)(areaWidth * sf), (int)(areaHeight * sf));
         GL11.glEnable(GL11.GL_SCISSOR_TEST);
 
-        matrixStack.push();
+        matrixStack.pushPose();
         matrixStack.translate(translatedX, translatedY, 0);
 
         float scale = getScale();
@@ -185,11 +185,11 @@ public class ProgrammerWidgetAreaRenderer {
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         for (IProgWidget widget : progWidgets) {
-            matrixStack.push();
+            matrixStack.pushPose();
             matrixStack.translate(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
             matrixStack.scale(0.5f, 0.5f, 1.0f);
             ProgWidgetRenderer.renderProgWidget2d(matrixStack, widget);
-            matrixStack.pop();
+            matrixStack.popPose();
         }
 
         if (widgetErrors.size() == progWidgets.size() && widgetWarnings.size() == progWidgets.size()) {
@@ -208,15 +208,15 @@ public class ProgrammerWidgetAreaRenderer {
 
         if (showInfo) {
             for (IProgWidget widget : progWidgets) {
-                matrixStack.push();
+                matrixStack.pushPose();
                 matrixStack.translate(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
                 matrixStack.scale(0.5f, 0.5f, 1.0f);
                 ProgWidgetRenderer.doExtraRendering2d(matrixStack, widget);
-                matrixStack.pop();
+                matrixStack.popPose();
             }
         }
 
-        matrixStack.pop();
+        matrixStack.popPose();
 
         GL11.glDisable(GL11.GL_SCISSOR_TEST);
     }
@@ -243,14 +243,14 @@ public class ProgrammerWidgetAreaRenderer {
     }
 
     protected void drawBorder(MatrixStack matrixStack, IProgWidget widget, int color, int inset) {
-        matrixStack.push();
+        matrixStack.pushPose();
         matrixStack.translate(widget.getX() + guiLeft, widget.getY() + guiTop, 0);
         matrixStack.scale(0.5f, 0.5f, 1f);
         vLine(matrixStack, inset, inset, widget.getHeight() - inset, color);
         vLine(matrixStack, widget.getWidth() - inset, inset, widget.getHeight() - inset, color);
         hLine(matrixStack, widget.getWidth() - inset, inset, inset, color);
         hLine(matrixStack, widget.getWidth() - inset, inset, widget.getHeight() - inset, color);
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     private void hLine(MatrixStack matrixStack, int minX, int maxX, int y, int color) {
@@ -274,7 +274,7 @@ public class ProgrammerWidgetAreaRenderer {
         RenderSystem.lineWidth(1);
         RenderSystem.disableTexture();
 
-        BufferBuilder wr = Tessellator.getInstance().getBuffer();
+        BufferBuilder wr = Tessellator.getInstance().getBuilder();
         wr.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION);
 
         Map<String, List<IProgWidget>> labelWidgets = new HashMap<>();
@@ -284,7 +284,7 @@ public class ProgrammerWidgetAreaRenderer {
             }
         }
 
-        Matrix4f posMat = matrixStack.getLast().getMatrix();
+        Matrix4f posMat = matrixStack.last().pose();
         for (IProgWidget widget : progWidgets) {
             if (widget instanceof IJump) {
                 for (String jumpLocation : ((IJump) widget).getPossibleJumpLocations()) {
@@ -295,22 +295,22 @@ public class ProgrammerWidgetAreaRenderer {
                         int y2 = labelWidget.getY() + labelWidget.getHeight() / 4;
                         float midX = (x2 + x1) / 2F;
                         float midY = (y2 + y1) / 2F;
-                        wr.pos(posMat,guiLeft + x1, guiTop + y1, 0.0f).endVertex();
-                        wr.pos(posMat,guiLeft + x2, guiTop + y2, 0.0f).endVertex();
+                        wr.vertex(posMat,guiLeft + x1, guiTop + y1, 0.0f).endVertex();
+                        wr.vertex(posMat,guiLeft + x2, guiTop + y2, 0.0f).endVertex();
                         Vector3d arrowVec = new Vector3d(x1 - x2, y1 - y2, 0).normalize();
                         arrowVec = new Vector3d(arrowVec.x * ARROW_SIZE, 0, arrowVec.y * ARROW_SIZE);
-                        arrowVec = arrowVec.rotateYaw(ARROW_ANGLE);
-                        wr.pos(posMat,guiLeft + midX, guiTop + midY, 0.0f).endVertex();
-                        wr.pos(posMat,guiLeft + midX + (float)arrowVec.x, guiTop + midY + (float)arrowVec.z, 0.0f).endVertex();
-                        arrowVec = arrowVec.rotateYaw(-2 * ARROW_ANGLE);
-                        wr.pos(posMat,guiLeft + midX, guiTop + midY, 0.0f).endVertex();
-                        wr.pos(posMat,guiLeft + midX + (float)arrowVec.x, guiTop + midY + (float)arrowVec.z, 0.0f).endVertex();
+                        arrowVec = arrowVec.yRot(ARROW_ANGLE);
+                        wr.vertex(posMat,guiLeft + midX, guiTop + midY, 0.0f).endVertex();
+                        wr.vertex(posMat,guiLeft + midX + (float)arrowVec.x, guiTop + midY + (float)arrowVec.z, 0.0f).endVertex();
+                        arrowVec = arrowVec.yRot(-2 * ARROW_ANGLE);
+                        wr.vertex(posMat,guiLeft + midX, guiTop + midY, 0.0f).endVertex();
+                        wr.vertex(posMat,guiLeft + midX + (float)arrowVec.x, guiTop + midY + (float)arrowVec.z, 0.0f).endVertex();
                     }
                 }
             }
         }
 
-        Tessellator.getInstance().draw();
+        Tessellator.getInstance().end();
 
         RenderSystem.enableTexture();
     }

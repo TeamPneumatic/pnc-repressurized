@@ -42,16 +42,16 @@ public class HackableTameable implements IHackableEntity {
 
     @Override
     public void onHackFinished(Entity entity, PlayerEntity player) {
-        if (entity.world.isRemote) {
-            entity.handleStatusUpdate((byte) 7);
+        if (entity.level.isClientSide) {
+            entity.handleEntityEvent((byte) 7);
         } else {
             TameableEntity tameable = (TameableEntity) entity;
-            tameable.getNavigator().clearPath();
-            tameable.setAttackTarget(null);
+            tameable.getNavigation().stop();
+            tameable.setTarget(null);
             tameable.setHealth(20.0F);
-            tameable.setOwnerId(player.getUniqueID());
-            tameable.world.setEntityState(entity, (byte) 7);
-            tameable.setTamed(true);
+            tameable.setOwnerUUID(player.getUUID());
+            tameable.level.broadcastEntityEvent(entity, (byte) 7);
+            tameable.setTame(true);
 
             // TODO: code smell
             // Would be better to have a HackableCat subclass, but HackableHandler.getHackableForEntity() isn't

@@ -24,15 +24,15 @@ public class HeatBehaviourFurnace extends HeatBehaviour<AbstractFurnaceTileEntit
     public void tick() {
         AbstractFurnaceTileEntity furnace = getTileEntity();
         if (getHeatExchanger().getTemperature() > 373) {
-            if (furnace.burnTime < 190 && !furnace.getStackInSlot(0).isEmpty()) {
-                if (furnace.burnTime == 0) {
-                    getWorld().setBlockState(getPos(), getBlockState().with(AbstractFurnaceBlock.LIT, true));
+            if (furnace.litTime < 190 && !furnace.getItem(0).isEmpty()) {
+                if (furnace.litTime == 0) {
+                    getWorld().setBlockAndUpdate(getPos(), getBlockState().setValue(AbstractFurnaceBlock.LIT, true));
                 }
-                furnace.recipesUsed = 200; // oddly named? this is itemBurnTime
-                furnace.burnTime += 10;
+                furnace.litDuration = 200; // oddly named? this is itemBurnTime
+                furnace.litTime += 10;
                 getHeatExchanger().addHeat(-1);
             }
-            if (furnace.cookTime > 0) {
+            if (furnace.cookingProgress > 0) {
                 // Easy performance saver, the Furnace won't be ticked unnecessarily when there's nothing to
                 // cook (or when just started cooking).
                 int progress = Math.max(0, ((int) getHeatExchanger().getTemperature() - 343) / 30);

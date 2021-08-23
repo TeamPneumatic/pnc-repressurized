@@ -66,21 +66,21 @@ public class WidgetAmadronOffer extends Widget implements ITooltipProvider {
     @Override
     public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTick) {
         if (visible) {
-            FontRenderer fr = Minecraft.getInstance().fontRenderer;
+            FontRenderer fr = Minecraft.getInstance().font;
             if (renderBackground) {
-                Minecraft.getInstance().getTextureManager().bindTexture(Textures.WIDGET_AMADRON_OFFER);
+                Minecraft.getInstance().getTextureManager().bind(Textures.WIDGET_AMADRON_OFFER);
                 RenderSystem.color4f(1f, canBuy ? 1f : 0.4f, canBuy ? 1f : 0.4f, 1f);
                 AbstractGui.blit(matrixStack, x, y, 0, 0, width, height, 256, 256);
             }
-            IReorderingProcessor r = fr.trimStringToWidth(new StringTextComponent(offer.getVendor()).mergeStyle(canBuy ? TextFormatting.BLACK : TextFormatting.DARK_GRAY), 73).get(0);
-            fr.func_238422_b_(matrixStack, r, x + 2, y + 2, 0xFF000000);
+            IReorderingProcessor r = fr.split(new StringTextComponent(offer.getVendor()).withStyle(canBuy ? TextFormatting.BLACK : TextFormatting.DARK_GRAY), 73).get(0);
+            fr.draw(matrixStack, r, x + 2, y + 2, 0xFF000000);
             if (shoppingAmount > 0) {
                 String str = "" + shoppingAmount;
-                fr.drawString(matrixStack,str, x + 36 - fr.getStringWidth(str) / 2f, y + (offer.getStock() >= 0 ? 15 : 20), 0xFF000000);
+                fr.draw(matrixStack,str, x + 36 - fr.width(str) / 2f, y + (offer.getStock() >= 0 ? 15 : 20), 0xFF000000);
             }
             if (offer.getStock() >= 0) {
                 String str = TextFormatting.DARK_BLUE.toString() + offer.getStock();
-                fr.drawString(matrixStack,str, x + 36 - fr.getStringWidth(str) / 2f, y + 25, 0xFF000000);
+                fr.draw(matrixStack,str, x + 36 - fr.width(str) / 2f, y + 25, 0xFF000000);
             }
         }
     }
@@ -115,8 +115,8 @@ public class WidgetAmadronOffer extends Widget implements ITooltipProvider {
             if (offer.getStock() >= 0) curTip.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.stock", offer.getStock()));
             curTip.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.inBasket", shoppingAmount));
 
-            if (Minecraft.getInstance().gameSettings.advancedItemTooltips) {
-                curTip.add(new StringTextComponent(offer.getId().toString()).mergeStyle(TextFormatting.DARK_GRAY));
+            if (Minecraft.getInstance().options.advancedItemTooltips) {
+                curTip.add(new StringTextComponent(offer.getId().toString()).withStyle(TextFormatting.DARK_GRAY));
             }
         }
     }

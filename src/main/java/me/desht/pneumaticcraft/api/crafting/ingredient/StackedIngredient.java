@@ -46,7 +46,7 @@ public class StackedIngredient extends Ingredient {
 
     public static Ingredient fromIngredient(int count, Ingredient wrappedIngredient) {
         List<ItemStack> l = new ArrayList<>();
-        for (ItemStack stack : wrappedIngredient.getMatchingStacks()) {
+        for (ItemStack stack : wrappedIngredient.getItems()) {
             l.add(ItemHandlerHelper.copyStackWithSize(stack, count));
         }
         return fromStacks(l.toArray(new ItemStack[0]));
@@ -54,7 +54,7 @@ public class StackedIngredient extends Ingredient {
 
     public static StackedIngredient fromItemListStream(Stream<? extends Ingredient.IItemList> stream) {
         StackedIngredient ingredient = new StackedIngredient(stream);
-        return ingredient.hasNoMatchingItems() ? StackedIngredient.EMPTY : ingredient;
+        return ingredient.isEmpty() ? StackedIngredient.EMPTY : ingredient;
     }
 
     @Override
@@ -67,7 +67,7 @@ public class StackedIngredient extends Ingredient {
         if (checkingStack == null || checkingStack.isEmpty()) {
             return super.test(checkingStack);
         } else {
-            return Arrays.stream(this.getMatchingStacks())
+            return Arrays.stream(this.getItems())
                     .anyMatch(stack -> stack.getItem() == checkingStack.getItem() && stack.getCount() <= checkingStack.getCount());
         }
     }
@@ -76,19 +76,19 @@ public class StackedIngredient extends Ingredient {
         if (json.has("item") && json.has("tag")) {
             throw new JsonParseException("An ingredient entry is either a tag or an item, not both");
         } else if (json.has("item")) {
-            ResourceLocation resourcelocation1 = new ResourceLocation(JSONUtils.getString(json, "item"));
+            ResourceLocation resourcelocation1 = new ResourceLocation(JSONUtils.getAsString(json, "item"));
             Item item = Registry.ITEM.getOptional(resourcelocation1)
                     .orElseThrow(() -> new JsonSyntaxException("Unknown item '" + resourcelocation1 + "'"));
-            int count = json.has("count") ? JSONUtils.getInt(json, "count") : 1;
+            int count = json.has("count") ? JSONUtils.getAsInt(json, "count") : 1;
             return new Ingredient.SingleItemList(new ItemStack(item, count));
         } else if (json.has("tag")) {
-            ResourceLocation resourcelocation = new ResourceLocation(JSONUtils.getString(json, "tag"));
+            ResourceLocation resourcelocation = new ResourceLocation(JSONUtils.getAsString(json, "tag"));
 //            ITag<Item> tag = ItemTags.getCollection().get(resourcelocation);
-            ITag<Item> tag = TagCollectionManager.getManager().getItemTags().get(resourcelocation);
+            ITag<Item> tag = TagCollectionManager.getInstance().getItems().getTag(resourcelocation);
             if (tag == null) {
                 throw new JsonSyntaxException("Unknown item tag '" + resourcelocation + "'");
             } else {
-                int count = json.has("count") ? JSONUtils.getInt(json, "count") : 1;
+                int count = json.has("count") ? JSONUtils.getAsInt(json, "count") : 1;
                 return new StackedTagList(tag, count, resourcelocation);
             }
         } else {
@@ -102,7 +102,7 @@ public class StackedIngredient extends Ingredient {
 
         @Override
         public StackedIngredient parse(PacketBuffer buffer) {
-            return fromItemListStream(Stream.generate(() -> new Ingredient.SingleItemList(buffer.readItemStack())).limit(buffer.readVarInt()));
+            return fromItemListStream(Stream.generate(() -> new Ingredient.SingleItemList(buffer.readItem())).limit(buffer.readVarInt()));
         }
 
         @Override
@@ -112,11 +112,11 @@ public class StackedIngredient extends Ingredient {
 
         @Override
         public void write(PacketBuffer buffer, StackedIngredient ingredient) {
-            ItemStack[] items = ingredient.getMatchingStacks();
+            ItemStack[] items = ingredient.getItems();
             buffer.writeVarInt(items.length);
 
             for (ItemStack stack : items)
-                buffer.writeItemStack(stack);
+                buffer.writeItem(stack);
         }
     }
 
@@ -128,7 +128,7 @@ public class StackedIngredient extends Ingredient {
         }
 
         @Override
-        public Collection<ItemStack> getStacks() {
+        public Collection<ItemStack> getItems() {
             return Collections.singletonList(itemStack);
         }
 
@@ -154,15 +154,15 @@ public class StackedIngredient extends Ingredient {
         }
 
         @Override
-        public Collection<ItemStack> getStacks() {
+        public Collection<ItemStack> getItems() {
             List<ItemStack> list = Lists.newArrayList();
 
-            for (Item item : this.tag.getAllElements()) {
+            for (Item item : this.tag.getValues()) {
                 list.add(new ItemStack(item, count));
             }
 
             if (list.size() == 0 && !net.minecraftforge.common.ForgeConfig.SERVER.treatEmptyTagsAsAir.get()) {
-                list.add(new ItemStack(net.minecraft.block.Blocks.BARRIER).setDisplayName(new net.minecraft.util.text.StringTextComponent("Empty Tag: " + id.toString())));
+                list.add(new ItemStack(net.minecraft.block.Blocks.BARRIER).setHoverName(new net.minecraft.util.text.StringTextComponent("Empty Tag: " + id.toString())));
             }
             return list;
         }

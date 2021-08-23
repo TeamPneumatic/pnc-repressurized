@@ -128,7 +128,7 @@ public abstract class TileEntityBase extends TileEntity
 
     @Override
     public BlockPos getPosition() {
-        return getPos();
+        return getBlockPos();
     }
 
     @Override
@@ -172,14 +172,14 @@ public abstract class TileEntityBase extends TileEntity
      * which extend non-tickable subclasses might need it (e.g. TileEntityPressureChamberInterface)
      */
     void tickImpl() {
-        if (firstTick && !world.isRemote) {
+        if (firstTick && !level.isClientSide) {
             onFirstServerTick();
         }
         firstTick = false;
 
         upgradeCache.validate();
 
-        if (!world.isRemote) {
+        if (!level.isClientSide) {
             if (this instanceof IHeatExchangingTE) {
                 // tick default heat exchanger; if the TE has other exchangers, they are handled in the subclass
                 IHeatExchangerLogic logic = ((IHeatExchangingTE) this).getHeatExchanger();
@@ -203,8 +203,8 @@ public abstract class TileEntityBase extends TileEntity
     }
 
     @Override
-    public void remove() {
-        super.remove();
+    public void setRemoved() {
+        super.setRemoved();
 
         if (getInventoryCap().isPresent()) getInventoryCap().invalidate();
         if (getHeatCap(null).isPresent()) getHeatCap(null).invalidate();
@@ -213,12 +213,12 @@ public abstract class TileEntityBase extends TileEntity
     protected void onFirstServerTick() {
         // TODO 1.17 should be able to replace onFirstServerTick() with onLoad()
         if (this instanceof IHeatExchangingTE) {
-            ((IHeatExchangingTE) this).initializeHullHeatExchangers(world, pos);
+            ((IHeatExchangingTE) this).initializeHullHeatExchangers(level, worldPosition);
         }
     }
 
     protected void updateNeighbours() {
-        world.notifyNeighborsOfStateChange(getPos(), getBlockState().getBlock());
+        level.updateNeighborsAt(getBlockPos(), getBlockState().getBlock());
     }
 
     public void onBlockRotated() {
@@ -230,7 +230,7 @@ public abstract class TileEntityBase extends TileEntity
     }
 
     void rerenderTileEntity() {
-        world.notifyBlockUpdate(getPos(), getBlockState(), getBlockState(), 0);
+        level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 0);
     }
 
     protected boolean shouldRerenderChunkOnDescUpdate() {
@@ -268,8 +268,8 @@ public abstract class TileEntityBase extends TileEntity
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tag) {
-        super.write(tag);
+    public CompoundNBT save(CompoundNBT tag) {
+        super.save(tag);
 
         if (customName != null) {
             tag.putString("CustomName", ITextComponent.Serializer.toJson(customName));
@@ -293,11 +293,11 @@ public abstract class TileEntityBase extends TileEntity
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT tag) {
-        super.read(state, tag);
+    public void load(BlockState state, CompoundNBT tag) {
+        super.load(state, tag);
 
         if (tag.contains("CustomName", Constants.NBT.TAG_STRING)) {
-            customName = ITextComponent.Serializer.getComponentFromJson(tag.getString("CustomName"));
+            customName = ITextComponent.Serializer.fromJson(tag.getString("CustomName"));
         }
         if (tag.contains(NBTKeys.NBT_UPGRADE_INVENTORY) && getUpgradeHandler() != null) {
             getUpgradeHandler().deserializeNBT(tag.getCompound(NBTKeys.NBT_UPGRADE_INVENTORY));
@@ -328,8 +328,8 @@ public abstract class TileEntityBase extends TileEntity
     public IModelData getModelData() {
         if (this instanceof ICamouflageableTE) {
             return new ModelDataMap.Builder()
-                    .withInitial(BlockPneumaticCraftCamo.BLOCK_ACCESS, world)
-                    .withInitial(BlockPneumaticCraftCamo.BLOCK_POS, pos)
+                    .withInitial(BlockPneumaticCraftCamo.BLOCK_ACCESS, level)
+                    .withInitial(BlockPneumaticCraftCamo.BLOCK_POS, worldPosition)
                     .withInitial(BlockPneumaticCraftCamo.CAMO_STATE, ((ICamouflageableTE) this).getCamouflage())
                     .build();
         } else {
@@ -349,8 +349,8 @@ public abstract class TileEntityBase extends TileEntity
     }
 
     @Override
-    public void updateContainingBlockInfo() {
-        super.updateContainingBlockInfo();
+    public void clearCache() {
+        super.clearCache();
     }
 
     public int getUpgrades(EnumUpgrade upgrade) {
@@ -370,14 +370,14 @@ public abstract class TileEntityBase extends TileEntity
     }
 
     public boolean isGuiUseableByPlayer(PlayerEntity player) {
-        return getWorld().getTileEntity(getPos()) == this
-                && player.getDistanceSq(Vector3d.copyCentered(getPos())) <= 64.0D;
+        return getLevel().getBlockEntity(getBlockPos()) == this
+                && player.distanceToSqr(Vector3d.atCenterOf(getBlockPos())) <= 64.0D;
     }
 
     public TileEntity getCachedNeighbor(Direction dir) {
         // don't attempt to cache client-side; we don't get neighbour block updates there so can't reliably clear the cache
-        return world.isRemote ?
-                world.getTileEntity(pos.offset(dir)) :
+        return level.isClientSide ?
+                level.getBlockEntity(worldPosition.relative(dir)) :
                 neighbourCache.getCachedNeighbour(dir);
     }
 
@@ -395,7 +395,7 @@ public abstract class TileEntityBase extends TileEntity
      */
     public void onNeighborBlockUpdate(BlockPos fromPos) {
         if (this instanceof IHeatExchangingTE) {
-            ((IHeatExchangingTE) this).initializeHullHeatExchangers(world, pos);
+            ((IHeatExchangingTE) this).initializeHullHeatExchangers(level, worldPosition);
         }
         if (this instanceof IRedstoneControl) {
             ((IRedstoneControl<?>)this).getRedstoneController().updateRedstonePower();
@@ -459,7 +459,7 @@ public abstract class TileEntityBase extends TileEntity
                     requireArgs(args, 0, 1, "face? (down/up/north/south/west/east)");
                     Direction dir = args.length == 0 ? null : getDirForString((String) args[0]);
                     IHeatExchangerLogic logic = ((IHeatExchangingTE) TileEntityBase.this).getHeatExchanger(dir);
-                    double temp = logic == null ? HeatExchangerLogicAmbient.getAmbientTemperature(world, pos) : logic.getTemperature();
+                    double temp = logic == null ? HeatExchangerLogicAmbient.getAmbientTemperature(level, worldPosition) : logic.getTemperature();
                     return new Object[] { temp };
                 }
             });
@@ -586,9 +586,9 @@ public abstract class TileEntityBase extends TileEntity
      * @return the player count
      */
     public int countPlayersUsing() {
-        return (int) world.getPlayers().stream()
-                .filter(player -> player.openContainer instanceof ContainerPneumaticBase)
-                .filter(player -> ((ContainerPneumaticBase<?>) player.openContainer).te == this)
+        return (int) level.players().stream()
+                .filter(player -> player.containerMenu instanceof ContainerPneumaticBase)
+                .filter(player -> ((ContainerPneumaticBase<?>) player.containerMenu).te == this)
                 .count();
     }
 
@@ -596,7 +596,7 @@ public abstract class TileEntityBase extends TileEntity
     public void requestModelDataUpdate() {
         // it is possible for the TE's client world to be a fake one, e.g. Create schematicannon previews
         // https://github.com/TeamPneumatic/pnc-repressurized/issues/812
-        if (world != null && world.isRemote && world == ClientUtils.getClientWorld()) {
+        if (level != null && level.isClientSide && level == ClientUtils.getClientWorld()) {
             ModelDataManager.requestModelDataRefresh(this);
         }
     }

@@ -15,15 +15,15 @@ public class TickHandlerPneumaticCraft {
 
     @SubscribeEvent
     public void onWorldTickEnd(TickEvent.WorldTickEvent event) {
-        if (event.phase == TickEvent.Phase.END && !event.world.isRemote) {
+        if (event.phase == TickEvent.Phase.END && !event.world.isClientSide) {
             World world = event.world;
             DroneClaimManager.getInstance(world).update();
             if (event.world.getGameTime() % 100 == 0) {
-                double tickTime = MathHelper.average(ServerLifecycleHooks.getCurrentServer().tickTimeArray) * 1.0E-6D;
+                double tickTime = MathHelper.average(ServerLifecycleHooks.getCurrentServer().tickTimes) * 1.0E-6D;
                 // In case world are going to get their own thread: MinecraftServer.getServer().worldTickTimes.get(event.world.provider.getDimension())
-                NetworkHandler.sendToDimension(new PacketServerTickTime(tickTime), event.world.getDimensionKey());
+                NetworkHandler.sendToDimension(new PacketServerTickTime(tickTime), event.world.dimension());
             }
-            if (event.world.getDimensionKey() == World.OVERWORLD) {
+            if (event.world.dimension() == World.OVERWORLD) {
                 AmadronOfferManager.getInstance().maybeRebuildActiveOffers(event.world);
             }
         }
@@ -32,7 +32,7 @@ public class TickHandlerPneumaticCraft {
     @SubscribeEvent
     public void onServerTickEnd(TickEvent.ServerTickEvent event) {
         if (event.phase == TickEvent.Phase.END) {
-            int ticks = ServerLifecycleHooks.getCurrentServer().getTickCounter();
+            int ticks = ServerLifecycleHooks.getCurrentServer().getTickCount();
             if (ticks % PNCConfig.Common.Amadron.reshuffleInterval == PNCConfig.Common.Amadron.reshuffleInterval - 1) {
                 AmadronOfferManager.getInstance().compileActiveOffersList();
             }

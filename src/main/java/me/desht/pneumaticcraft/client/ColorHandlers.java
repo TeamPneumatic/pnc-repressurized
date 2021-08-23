@@ -33,7 +33,7 @@ public class ColorHandlers {
             } else if (item.get() instanceof BlockItem) {
                 Block b = ((BlockItem)item.get()).getBlock();
                 if (b instanceof ITintableBlock) {
-                    event.getItemColors().register((stack, index) -> event.getBlockColors().getColor(b.getDefaultState(), null, null, index), item.get());
+                    event.getItemColors().register((stack, index) -> event.getBlockColors().getColor(b.defaultBlockState(), null, null, index), item.get());
                 }
             }
         }
@@ -47,9 +47,9 @@ public class ColorHandlers {
             } else if (block.get() instanceof BlockPneumaticCraftCamo) {
                 event.getBlockColors().register((state, blockAccess, pos, tintIndex) -> {
                     if (blockAccess != null && pos != null) {
-                        TileEntity te = blockAccess.getTileEntity(pos);
+                        TileEntity te = blockAccess.getBlockEntity(pos);
                         if (te instanceof ICamouflageableTE && ((ICamouflageableTE) te).getCamouflage() != null) {
-                            return event.getBlockColors().getColor(((ICamouflageableTE) te).getCamouflage(), te.getWorld(), pos, tintIndex);
+                            return event.getBlockColors().getColor(((ICamouflageableTE) te).getCamouflage(), te.getLevel(), pos, tintIndex);
                         }
                     }
                     return 0xFFFFFFFF;
@@ -83,7 +83,7 @@ public class ColorHandlers {
         @Override
         default int getTintColor(BlockState state, @Nullable IBlockDisplayReader world, @Nullable BlockPos pos, int tintIndex) {
             if (world != null && pos != null) {
-                TileEntity te = world.getTileEntity(pos);
+                TileEntity te = world.getBlockEntity(pos);
                 TintColor tint = te instanceof IHeatTinted ? ((IHeatTinted) te).getColorForTintIndex(tintIndex) : TintColor.WHITE;
                 return tint.getRGB();
             }

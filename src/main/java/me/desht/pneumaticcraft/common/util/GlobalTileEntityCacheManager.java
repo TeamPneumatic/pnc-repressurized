@@ -65,7 +65,7 @@ public class GlobalTileEntityCacheManager{
         }
         
         public void removeFromWorld(IWorld world){
-            tileEntities.removeIf(te -> te.getWorld() == world);
+            tileEntities.removeIf(te -> te.getLevel() == world);
         }
         
         public Stream<T> stream(){

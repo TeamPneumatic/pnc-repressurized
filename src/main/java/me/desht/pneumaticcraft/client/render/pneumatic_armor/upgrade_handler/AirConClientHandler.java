@@ -37,7 +37,7 @@ public class AirConClientHandler extends IArmorUpgradeClientHandler.SimpleToggle
     public void tickClient(ICommonArmorHandler armorHandler) {
         super.tickClient(armorHandler);
 
-        if ((armorHandler.getPlayer().world.getGameTime() & 0x3) == 0) {
+        if ((armorHandler.getPlayer().level.getGameTime() & 0x3) == 0) {
             if (currentAC < deltaTemp)
                 currentAC++;
             else if (currentAC > deltaTemp)
@@ -50,7 +50,7 @@ public class AirConClientHandler extends IArmorUpgradeClientHandler.SimpleToggle
                     + Strings.repeat("|", Math.abs(ac))
                     + TextFormatting.DARK_GRAY
                     + Strings.repeat("|", MAX_AC - Math.abs(ac));
-            acStat.setTitle(new StringTextComponent("A/C: " + bar).mergeStyle(TextFormatting.YELLOW));
+            acStat.setTitle(new StringTextComponent("A/C: " + bar).withStyle(TextFormatting.YELLOW));
             acStat.setBackgroundColor(ac < 0 ? 0x300080FF : (ac == 0 ? 0x3000AA00 : 0x30FFD000));
         }
     }

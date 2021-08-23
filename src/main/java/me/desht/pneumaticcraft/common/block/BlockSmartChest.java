@@ -28,7 +28,7 @@ import java.util.List;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class BlockSmartChest extends BlockPneumaticCraft {
-    private static final VoxelShape SHAPE = makeCuboidShape(1, 0, 1, 15, 15, 15);
+    private static final VoxelShape SHAPE = box(1, 0, 1, 15, 15, 15);
 
     public BlockSmartChest() {
         super(ModBlocks.reinforcedStoneProps());
@@ -70,10 +70,10 @@ public class BlockSmartChest extends BlockPneumaticCraft {
         }
 
         @Override
-        public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-            super.addInformation(stack, worldIn, tooltip, flagIn);
+        public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+            super.appendHoverText(stack, worldIn, tooltip, flagIn);
 
-            CompoundNBT tag = stack.getChildTag(NBTKeys.BLOCK_ENTITY_TAG);
+            CompoundNBT tag = stack.getTagElement(NBTKeys.BLOCK_ENTITY_TAG);
             if (tag != null && tag.contains("Items")) {
                 CompoundNBT subTag = tag.getCompound("Items");
                 ListNBT l = subTag.getList("Filter", Constants.NBT.TAG_COMPOUND);

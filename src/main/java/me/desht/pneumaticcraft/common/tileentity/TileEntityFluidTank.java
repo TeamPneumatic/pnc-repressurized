@@ -70,15 +70,15 @@ public abstract class TileEntityFluidTank extends TileEntityTickableBase
 
         tank.tick();
 
-        if (!world.isRemote) {
+        if (!level.isClientSide) {
             processFluidItem(INPUT_SLOT, OUTPUT_SLOT);
 
             FluidStack stack = getTank().getFluid();
             if (!stack.isEmpty()) {
                 Direction dir = stack.getFluid().getAttributes().getDensity() < 0 ? Direction.UP : Direction.DOWN;
-                if (getBlockState().get(BlockPneumaticCraft.connectionProperty(dir))) {
-                    BlockState other = world.getBlockState(pos.offset(dir));
-                    if (other.getBlock() instanceof BlockFluidTank && other.get(BlockPneumaticCraft.connectionProperty(dir.getOpposite()))) {
+                if (getBlockState().getValue(BlockPneumaticCraft.connectionProperty(dir))) {
+                    BlockState other = level.getBlockState(worldPosition.relative(dir));
+                    if (other.getBlock() instanceof BlockFluidTank && other.getValue(BlockPneumaticCraft.connectionProperty(dir.getOpposite()))) {
                         TileEntity teOther = getCachedNeighbor(dir);
                         if (teOther instanceof TileEntityFluidTank) {
                             FluidUtil.tryFluidTransfer(((TileEntityFluidTank) teOther).getTank(), tank, tank.getCapacity() / 32, true);
@@ -88,7 +88,7 @@ public abstract class TileEntityFluidTank extends TileEntityTickableBase
             }
 
             Direction ejectDir = getUpgradeCache().getEjectDirection();
-            if (ejectDir != null && (ejectDir.getAxis() != Direction.Axis.Y || !getBlockState().get(BlockPneumaticCraft.connectionProperty(ejectDir)))) {
+            if (ejectDir != null && (ejectDir.getAxis() != Direction.Axis.Y || !getBlockState().getValue(BlockPneumaticCraft.connectionProperty(ejectDir)))) {
                 IOHelper.getFluidHandlerForTE(getCachedNeighbor(ejectDir), ejectDir.getOpposite()).ifPresent(h -> {
                     int amount = BASE_EJECT_RATE << getUpgrades(EnumUpgrade.SPEED);
                     FluidUtil.tryFluidTransfer(h, tank, amount, true);
@@ -130,14 +130,14 @@ public abstract class TileEntityFluidTank extends TileEntityTickableBase
     @Nullable
     @Override
     public Container createMenu(int windowId, PlayerInventory inv, PlayerEntity player) {
-        return new ContainerFluidTank(windowId, inv, getPos());
+        return new ContainerFluidTank(windowId, inv, getBlockPos());
     }
 
     public boolean isNeighbourCompatible(FluidStack stack, Direction dir) {
         BlockState state = getBlockState();
         TileEntityFluidTank curTank = this;
         while (state.getBlock() instanceof BlockFluidTank) {
-            if (!state.get(BlockPneumaticCraft.connectionProperty(dir))) {
+            if (!state.getValue(BlockPneumaticCraft.connectionProperty(dir))) {
                 // no connection? no problem
                 return true;
             }

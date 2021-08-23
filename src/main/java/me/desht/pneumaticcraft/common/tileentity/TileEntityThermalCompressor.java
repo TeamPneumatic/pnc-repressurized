@@ -86,7 +86,7 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase
     public void tick() {
         super.tick();
 
-        if (!world.isRemote) {
+        if (!level.isClientSide) {
             for (IHeatExchangerLogic heatExchanger : heatExchangers) {
                 heatExchanger.tick();
             }
@@ -108,7 +108,7 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase
     @Override
     public IHeatExchangerLogic getHeatExchanger(Direction side) {
         if (side == null) return null;
-        return side.getAxis() == Direction.Axis.Y ? null : heatExchangers[side.getHorizontalIndex()];
+        return side.getAxis() == Direction.Axis.Y ? null : heatExchangers[side.get2DDataValue()];
     }
 
     @Override
@@ -137,7 +137,7 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase
     }
 
     public double airProduced(Direction side) {
-        if (world.isRemote) {
+        if (level.isClientSide) {
             // clientside: just for GUI display purposes
             double diff = Math.abs(getHeatExchanger(side).getTemperatureAsInt() - getHeatExchanger(side.getOpposite()).getTemperatureAsInt());
             return diff < 10 ? 0 : diff * AIR_GEN_MULTIPLIER;
@@ -171,8 +171,8 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tag) {
-        super.write(tag);
+    public CompoundNBT save(CompoundNBT tag) {
+        super.save(tag);
         for (int i = 0; i < 4; i++) {
             tag.put("side" + i, heatExchangers[i].serializeNBT());
         }
@@ -182,8 +182,8 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT tag) {
-        super.read(state, tag);
+    public void load(BlockState state, CompoundNBT tag) {
+        super.load(state, tag);
 
         for (int i = 0; i < 4; i++) {
             heatExchangers[i].deserializeNBT(tag.getCompound("side" + i));
@@ -210,7 +210,7 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase
     @Nullable
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        return new ContainerThermalCompressor(i, playerInventory, getPos());
+        return new ContainerThermalCompressor(i, playerInventory, getBlockPos());
     }
 
     @Override
@@ -218,7 +218,7 @@ public class TileEntityThermalCompressor extends TileEntityPneumaticBase
         if (side == null) {
             return LazyOptional.of(() -> dummyExchanger);
         } else {
-            return side.getAxis() == Direction.Axis.Y ? LazyOptional.empty() : heatCaps.get(side.getHorizontalIndex());
+            return side.getAxis() == Direction.Axis.Y ? LazyOptional.empty() : heatCaps.get(side.get2DDataValue());
         }
     }
 }

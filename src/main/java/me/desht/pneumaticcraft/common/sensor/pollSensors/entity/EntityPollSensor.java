@@ -26,8 +26,8 @@ abstract class EntityPollSensor implements IPollSensorSetting {
 
     @Override
     public int getRedstoneValue(World world, BlockPos pos, int sensorRange, String textBoxText) {
-        AxisAlignedBB aabb = new AxisAlignedBB(pos.add(-sensorRange, -sensorRange, -sensorRange), pos.add(1 + sensorRange, 1 + sensorRange, 1 + sensorRange));
-        return getRedstoneValue(world.getEntitiesWithinAABB(getEntityTracked(), aabb), textBoxText);
+        AxisAlignedBB aabb = new AxisAlignedBB(pos.offset(-sensorRange, -sensorRange, -sensorRange), pos.offset(1 + sensorRange, 1 + sensorRange, 1 + sensorRange));
+        return getRedstoneValue(world.getEntitiesOfClass(getEntityTracked(), aabb), textBoxText);
     }
 
     protected abstract Class<? extends Entity> getEntityTracked();

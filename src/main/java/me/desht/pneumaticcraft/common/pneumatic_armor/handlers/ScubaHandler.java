@@ -46,24 +46,24 @@ public class ScubaHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
     @Override
     public void tick(ICommonArmorHandler commonArmorHandler, boolean enabled) {
         PlayerEntity player = commonArmorHandler.getPlayer();
-        if (!player.world.isRemote && enabled
+        if (!player.level.isClientSide && enabled
                 && commonArmorHandler.hasMinPressure(EquipmentSlotType.HEAD)
-                && player.getAir() < 150) {
+                && player.getAirSupply() < 150) {
 
-            ItemStack helmetStack = player.getItemStackFromSlot(EquipmentSlotType.HEAD);
+            ItemStack helmetStack = player.getItemBySlot(EquipmentSlotType.HEAD);
 
             int baseVol = ((ItemPneumaticArmor) helmetStack.getItem()).getBaseVolume();
             int vol = ApplicableUpgradesDB.getInstance().getUpgradedVolume(baseVol, commonArmorHandler.getUpgradeCount(EquipmentSlotType.HEAD, EnumUpgrade.VOLUME));
             float airInHelmet = commonArmorHandler.getArmorPressure(EquipmentSlotType.HEAD) * vol;
-            int playerAir = (int) Math.min(300 - player.getAir(), airInHelmet / PNCConfig.Common.Armor.scubaMultiplier);
-            player.setAir(player.getAir() + playerAir);
+            int playerAir = (int) Math.min(300 - player.getAirSupply(), airInHelmet / PNCConfig.Common.Armor.scubaMultiplier);
+            player.setAirSupply(player.getAirSupply() + playerAir);
 
             int airUsed = playerAir * PNCConfig.Common.Armor.scubaMultiplier;
             commonArmorHandler.addAir(EquipmentSlotType.HEAD, -airUsed);
 
-            NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.SCUBA.get(), SoundCategory.PLAYERS, player.getPosition(), 1f, 1.0f, false), (ServerPlayerEntity) player);
-            Vector3d eyes = player.getEyePosition(1.0f).add(player.getLookVec().scale(0.5));
-            NetworkHandler.sendToAllTracking(new PacketSpawnParticle(ParticleTypes.BUBBLE, eyes.x - 0.5, eyes.y, eyes.z -0.5, 0.0, 0.2, 0.0, 10, 1.0, 1.0, 1.0), player.world, player.getPosition());
+            NetworkHandler.sendToPlayer(new PacketPlaySound(ModSounds.SCUBA.get(), SoundCategory.PLAYERS, player.blockPosition(), 1f, 1.0f, false), (ServerPlayerEntity) player);
+            Vector3d eyes = player.getEyePosition(1.0f).add(player.getLookAngle().scale(0.5));
+            NetworkHandler.sendToAllTracking(new PacketSpawnParticle(ParticleTypes.BUBBLE, eyes.x - 0.5, eyes.y, eyes.z -0.5, 0.0, 0.2, 0.0, 10, 1.0, 1.0, 1.0), player.level, player.blockPosition());
         }
     }
 }

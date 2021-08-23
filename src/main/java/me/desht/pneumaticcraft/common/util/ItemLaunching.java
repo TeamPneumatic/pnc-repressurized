@@ -30,39 +30,39 @@ import net.minecraft.world.server.ServerWorld;
  */
 public class ItemLaunching {
     public static void launchEntity(Entity launchedEntity, Vector3d initialPos, Vector3d velocity, boolean doSpawn) {
-        World world = launchedEntity.getEntityWorld();
+        World world = launchedEntity.getCommandSenderWorld();
 
-        if (launchedEntity.getRidingEntity() != null) {
+        if (launchedEntity.getVehicle() != null) {
             launchedEntity.stopRiding();
         }
 
         BlockPos trackPos = new BlockPos(initialPos);
-        launchedEntity.setPosition(initialPos.x, initialPos.y, initialPos.z);
+        launchedEntity.setPos(initialPos.x, initialPos.y, initialPos.z);
         NetworkHandler.sendToAllTracking(new PacketSetEntityMotion(launchedEntity, velocity), world, trackPos);
         if (launchedEntity instanceof AbstractFireballEntity) {
             // fireball velocity is handled a little differently...
             AbstractFireballEntity fireball = (AbstractFireballEntity) launchedEntity;
-            fireball.accelerationX = velocity.x * 0.05;
-            fireball.accelerationY = velocity.y * 0.05;
-            fireball.accelerationZ = velocity.z * 0.05;
+            fireball.xPower = velocity.x * 0.05;
+            fireball.yPower = velocity.y * 0.05;
+            fireball.zPower = velocity.z * 0.05;
         } else {
-            launchedEntity.setMotion(velocity);
+            launchedEntity.setDeltaMovement(velocity);
         }
         launchedEntity.setOnGround(false);
-        launchedEntity.collidedHorizontally = false;
-        launchedEntity.collidedVertically = false;
+        launchedEntity.horizontalCollision = false;
+        launchedEntity.verticalCollision = false;
 
-        if (doSpawn && !world.isRemote) {
-            world.addEntity(launchedEntity);
+        if (doSpawn && !world.isClientSide) {
+            world.addFreshEntity(launchedEntity);
         }
 
         for (int i = 0; i < 5; i++) {
-            double velX = velocity.x * 0.4D + (world.rand.nextGaussian() - 0.5D) * 0.05D;
-            double velY = velocity.y * 0.4D + (world.rand.nextGaussian() - 0.5D) * 0.05D;
-            double velZ = velocity.z * 0.4D + (world.rand.nextGaussian() - 0.5D) * 0.05D;
+            double velX = velocity.x * 0.4D + (world.random.nextGaussian() - 0.5D) * 0.05D;
+            double velY = velocity.y * 0.4D + (world.random.nextGaussian() - 0.5D) * 0.05D;
+            double velZ = velocity.z * 0.4D + (world.random.nextGaussian() - 0.5D) * 0.05D;
             NetworkHandler.sendToAllTracking(new PacketSpawnParticle(AirParticleData.DENSE, initialPos.x, initialPos.y, initialPos.z, velX, velY, velZ), world, trackPos);
         }
-        world.playSound(null, initialPos.x, initialPos.y, initialPos.z, ModSounds.AIR_CANNON.get(), SoundCategory.BLOCKS, 1f,world.rand.nextFloat() / 4f + 0.75f);
+        world.playSound(null, initialPos.x, initialPos.y, initialPos.z, ModSounds.AIR_CANNON.get(), SoundCategory.BLOCKS, 1f,world.random.nextFloat() / 4f + 0.75f);
     }
 
     /**
@@ -93,19 +93,19 @@ public class ItemLaunching {
                 return new EggEntity(world, player);
             } else if (item == Items.FIRE_CHARGE) {
                 SmallFireballEntity e = new SmallFireballEntity(world, player, 0, 0, 0);
-                e.setStack(stack);
+                e.setItem(stack);
                 return e;
             } else if (item == Items.SNOWBALL) {
                 return new SnowballEntity(world, player);
             } else if (item instanceof SpawnEggItem && world instanceof ServerWorld) {
                 EntityType<?> type = ((SpawnEggItem) item).getType(stack.getTag());
-                Entity e = type.spawn((ServerWorld) world, stack, player, player.getPosition(), SpawnReason.SPAWN_EGG, false, false);
-                if (e instanceof LivingEntity && stack.hasDisplayName()) {
-                    e.setCustomName(stack.getDisplayName());
+                Entity e = type.spawn((ServerWorld) world, stack, player, player.blockPosition(), SpawnReason.SPAWN_EGG, false, false);
+                if (e instanceof LivingEntity && stack.hasCustomHoverName()) {
+                    e.setCustomName(stack.getHoverName());
                 }
                 return e;
             } else if (item instanceof MinecartItem) {
-                return MinecartEntity.create(world, 0, 0, 0, ((MinecartItem) item).minecartType);
+                return MinecartEntity.createMinecart(world, 0, 0, 0, ((MinecartItem) item).type);
             }  else if (item instanceof BoatItem) {
                 return new BoatEntity(world, 0, 0, 0);
             } else if (item == Items.FIREWORK_ROCKET) {
@@ -116,7 +116,7 @@ public class ItemLaunching {
             return new EntityTumblingBlock(world, player, 0, 0, 0, stack);
         } else {
             ItemEntity e = new ItemEntity(world, 0, 0, 0, stack);
-            e.setPickupDelay(20);
+            e.setPickUpDelay(20);
             return e;
         }
     }

@@ -120,11 +120,11 @@ public class WidgetList<T> extends Widget implements ITooltipProvider {
 
     private void drawList(MatrixStack matrixStack) {
         Minecraft mc = Minecraft.getInstance();
-        int sf = mc.gameSettings.guiScale;
-        int h = mc.fontRenderer.FONT_HEIGHT;
+        int sf = mc.options.guiScale;
+        int h = mc.font.lineHeight;
         int lines = height / h;
 
-        matrixStack.push();
+        matrixStack.pushPose();
         GL11.glEnable(GL11.GL_SCISSOR_TEST);
         GL11.glScissor(x * sf, (y + height) * sf, width * sf, height * sf);
         if (inverseSelected && selected >= 0) {
@@ -135,17 +135,17 @@ public class WidgetList<T> extends Widget implements ITooltipProvider {
         matrixStack.translate(x, y, 0);
         matrixStack.scale(0.75f, 1f, 1f);
         for (int i = 0; i < items.size() && i < lines; i++) {
-            mc.fontRenderer.drawString(matrixStack, items.get(i).toString(), 0, i * h, i == selected ? selectedFg : fgColor);
+            mc.font.draw(matrixStack, items.get(i).toString(), 0, i * h, i == selected ? selectedFg : fgColor);
         }
         GL11.glDisable(GL11.GL_SCISSOR_TEST);
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     @Override
     public void onClick(double mouseX, double mouseY) {
         if (active) {
             long now = System.currentTimeMillis();
-            int h = Minecraft.getInstance().fontRenderer.FONT_HEIGHT;
+            int h = Minecraft.getInstance().font.lineHeight;
             int newSel = MathHelper.clamp((int) (mouseY - this.y) / h, 0, items.size() - 1);
             doubleClicked = now - lastClick < 250 && newSel == selected;
             setSelected(newSel);
@@ -158,11 +158,11 @@ public class WidgetList<T> extends Widget implements ITooltipProvider {
     public void addTooltip(double mouseX, double mouseY, List<ITextComponent> curTip, boolean shift) {
         if (toolTipType == ToolTipType.NONE) return;
 
-        int h = Minecraft.getInstance().fontRenderer.FONT_HEIGHT;
+        int h = Minecraft.getInstance().font.lineHeight;
         int idx = Math.max(0, (int) (mouseY - this.y) / h);
         if (idx >= 0 && idx < items.size()) {
             String s = items.get(idx).toString();
-            if (toolTipType == ToolTipType.ALWAYS || Minecraft.getInstance().fontRenderer.getStringWidth(s) * 3 / 4 > width) {
+            if (toolTipType == ToolTipType.ALWAYS || Minecraft.getInstance().font.width(s) * 3 / 4 > width) {
                 curTip.add(new StringTextComponent(s));
             }
         }

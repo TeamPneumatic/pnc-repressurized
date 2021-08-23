@@ -34,8 +34,8 @@ public class RenderThermopneumaticProcessingPlant extends AbstractFluidTER<TileE
     @Override
     Collection<TankRenderInfo> getTanksToRender(TileEntityThermopneumaticProcessingPlant te) {
         return ImmutableList.of(
-                new TankRenderInfo(te.getInputTank(), BOUNDS_IN[te.getRotation().getHorizontalIndex()]).without(Direction.DOWN),
-                new TankRenderInfo(te.getOutputTank(), BOUNDS_OUT[te.getRotation().getHorizontalIndex()]).without(Direction.DOWN)
+                new TankRenderInfo(te.getInputTank(), BOUNDS_IN[te.getRotation().get2DDataValue()]).without(Direction.DOWN),
+                new TankRenderInfo(te.getOutputTank(), BOUNDS_OUT[te.getRotation().get2DDataValue()]).without(Direction.DOWN)
         );
     }
 }

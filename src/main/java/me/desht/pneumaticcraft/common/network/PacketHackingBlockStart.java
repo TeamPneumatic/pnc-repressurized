@@ -36,7 +36,7 @@ public class PacketHackingBlockStart extends LocationIntPacket {
                 PlayerEntity cPlayer = ClientUtils.getClientPlayer();
                 CommonArmorHandler.getHandlerForPlayer()
                         .getExtensionData(ArmorUpgradeRegistry.getInstance().hackHandler)
-                        .setHackedBlockPos(new WorldAndCoord(cPlayer.world, pos));
+                        .setHackedBlockPos(new WorldAndCoord(cPlayer.level, pos));
 
                 RenderBlockTarget target = ArmorUpgradeClientRegistry.getInstance()
                         .getClientHandler(ArmorUpgradeRegistry.getInstance().blockTrackerHandler, BlockTrackerClientHandler.class)
@@ -47,8 +47,8 @@ public class PacketHackingBlockStart extends LocationIntPacket {
                 CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
                 if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().blockTrackerHandler, true)) {
                     handler.getExtensionData(ArmorUpgradeRegistry.getInstance().hackHandler)
-                            .setHackedBlockPos(new WorldAndCoord(player.world, pos));
-                    NetworkHandler.sendToAllTracking(this, player.world, player.getPosition());
+                            .setHackedBlockPos(new WorldAndCoord(player.level, pos));
+                    NetworkHandler.sendToAllTracking(this, player.level, player.blockPosition());
                 }
             }
         });

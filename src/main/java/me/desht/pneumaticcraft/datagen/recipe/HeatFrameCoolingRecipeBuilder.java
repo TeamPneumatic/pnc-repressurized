@@ -40,8 +40,8 @@ public class HeatFrameCoolingRecipeBuilder extends PneumaticCraftRecipeBuilder<H
         }
 
         @Override
-        public void serialize(JsonObject json) {
-            json.add("input", input.serialize());
+        public void serializeRecipeData(JsonObject json) {
+            json.add("input", input.toJson());
             json.addProperty("max_temp", temperature);
             json.add("result", SerializerHelper.serializeOneItemStack(output));
             if (bonusMultiplier > 0f || bonusLimit > 0f) {

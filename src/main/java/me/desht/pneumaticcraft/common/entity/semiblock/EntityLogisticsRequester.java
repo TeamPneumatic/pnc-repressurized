@@ -20,7 +20,7 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 
 public class EntityLogisticsRequester extends EntityLogisticsFrame implements ISpecificRequester, IProvidingInventoryListener {
-    private static final DataParameter<Boolean> AE2_ENABLED = EntityDataManager.createKey(EntityLogisticsRequester.class, DataSerializers.BOOLEAN);
+    private static final DataParameter<Boolean> AE2_ENABLED = EntityDataManager.defineId(EntityLogisticsRequester.class, DataSerializers.BOOLEAN);
 
     private static final String NBT_AE2_INTEGRATION = "AE2_Integration";
 
@@ -34,11 +34,11 @@ public class EntityLogisticsRequester extends EntityLogisticsFrame implements IS
     }
 
     @Override
-    protected void registerData() {
-        super.registerData();
+    protected void defineSynchedData() {
+        super.defineSynchedData();
 
         if (AE2Integration.isAvailable()) {
-            getDataManager().register(AE2_ENABLED, false);
+            getEntityData().define(AE2_ENABLED, false);
         }
     }
 
@@ -83,8 +83,8 @@ public class EntityLogisticsRequester extends EntityLogisticsFrame implements IS
     }
 
     @Override
-    protected void readAdditional(CompoundNBT tag) {
-        super.readAdditional(tag);
+    protected void readAdditionalSaveData(CompoundNBT tag) {
+        super.readAdditionalSaveData(tag);
 
         if (AE2Integration.isAvailable()) {
             setAE2enabled(tag.getBoolean(NBT_AE2_INTEGRATION));
@@ -115,7 +115,7 @@ public class EntityLogisticsRequester extends EntityLogisticsFrame implements IS
     public void tick() {
         super.tick();
 
-        if (!world.isRemote && AE2Integration.isAvailable()) {
+        if (!level.isClientSide && AE2Integration.isAvailable()) {
             getAE2integration().maybeCheckForInterface();
         }
     }
@@ -202,11 +202,11 @@ public class EntityLogisticsRequester extends EntityLogisticsFrame implements IS
     }
 
     private void setAE2enabled(boolean enabled) {
-        getDataManager().set(AE2_ENABLED, enabled);
+        getEntityData().set(AE2_ENABLED, enabled);
     }
 
     public boolean isAE2enabled() {
-        return AE2Integration.isAvailable() && getDataManager().get(AE2_ENABLED);
+        return AE2Integration.isAvailable() && getEntityData().get(AE2_ENABLED);
     }
 
     public AE2RequesterIntegration getAE2integration() {

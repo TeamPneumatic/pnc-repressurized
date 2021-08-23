@@ -33,19 +33,19 @@ public class TileEntityHeatSink extends TileEntityCompressedIronBlock {
     protected void onFirstServerTick() {
         super.onFirstServerTick();
 
-        ambientTemp = HeatExchangerLogicAmbient.getAmbientTemperature(getWorld(), getPos());
+        ambientTemp = HeatExchangerLogicAmbient.getAmbientTemperature(getLevel(), getBlockPos());
         airExchanger.setTemperature(ambientTemp);
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tag) {
+    public CompoundNBT save(CompoundNBT tag) {
         tag.put("airExchanger", airExchanger.serializeNBT());
-        return super.write(tag);
+        return super.save(tag);
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT tag) {
-        super.read(state, tag);
+    public void load(BlockState state, CompoundNBT tag) {
+        super.load(state, tag);
         airExchanger.deserializeNBT(tag.getCompound("airExchanger"));
     }
 
@@ -53,7 +53,7 @@ public class TileEntityHeatSink extends TileEntityCompressedIronBlock {
     public void tick() {
         super.tick();
 
-        if (!world.isRemote) {
+        if (!level.isClientSide) {
             airExchanger.tick();
             airExchanger.setTemperature(ambientTemp);
         }
@@ -68,8 +68,8 @@ public class TileEntityHeatSink extends TileEntityCompressedIronBlock {
     @Override
     public AxisAlignedBB getRenderBoundingBox() {
         return new AxisAlignedBB(
-                getPos().getX(), getPos().getY(), getPos().getZ(),
-                getPos().getX() + 1, getPos().getY() + 1, getPos().getZ() + 1
+                getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(),
+                getBlockPos().getX() + 1, getBlockPos().getY() + 1, getBlockPos().getZ() + 1
         );
     }
 

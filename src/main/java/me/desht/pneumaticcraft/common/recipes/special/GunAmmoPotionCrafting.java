@@ -23,15 +23,15 @@ import java.util.stream.Stream;
 public class GunAmmoPotionCrafting extends ShapelessRecipe {
     public GunAmmoPotionCrafting(ResourceLocation idIn) {
         super(idIn, "", new ItemStack(ModItems.GUN_AMMO.get()),
-                NonNullList.from(Ingredient.EMPTY, Ingredient.fromItems(ModItems.GUN_AMMO.get()), new PotionIngredient()));
+                NonNullList.of(Ingredient.EMPTY, Ingredient.of(ModItems.GUN_AMMO.get()), new PotionIngredient()));
     }
 
     @Override
-    public ItemStack getCraftingResult(CraftingInventory inv) {
+    public ItemStack assemble(CraftingInventory inv) {
         ItemStack potion = ItemStack.EMPTY;
         ItemStack ammo = ItemStack.EMPTY;
-        for (int i = 0; i < inv.getSizeInventory(); i++) {
-            ItemStack stack = inv.getStackInSlot(i);
+        for (int i = 0; i < inv.getContainerSize(); i++) {
+            ItemStack stack = inv.getItem(i);
             if (stack.getItem() instanceof PotionItem) {
                 potion = stack;
             } else if (stack.getItem() == ModItems.GUN_AMMO.get()) {
@@ -58,10 +58,10 @@ public class GunAmmoPotionCrafting extends ShapelessRecipe {
         }
 
         @Override
-        public ItemStack[] getMatchingStacks() {
+        public ItemStack[] getItems() {
             NonNullList<ItemStack> potions = NonNullList.create();
             for (Potion p : ForgeRegistries.POTION_TYPES.getValues()) {
-                if (p != Potions.EMPTY) potions.add(PotionUtils.addPotionToItemStack(new ItemStack(Items.POTION), p));
+                if (p != Potions.EMPTY) potions.add(PotionUtils.setPotion(new ItemStack(Items.POTION), p));
             }
 
             return potions.toArray(new ItemStack[0]);
@@ -69,7 +69,7 @@ public class GunAmmoPotionCrafting extends ShapelessRecipe {
 
         @Override
         public boolean test(@Nullable ItemStack stack) {
-            return !PotionUtils.getEffectsFromStack(stack).isEmpty();
+            return !PotionUtils.getMobEffects(stack).isEmpty();
         }
     }
 }

@@ -30,93 +30,93 @@ public class ModelHeatFrame extends EntityModel<EntityHeatFrame> {
     private final ModelRenderer top7;
 
     public ModelHeatFrame() {
-        textureWidth = 64;
-        textureHeight = 64;
+        texWidth = 64;
+        texHeight = 64;
 
         bottom3 = new ModelRenderer(64, 64, 0, 0);
         bottom3.addBox(0F, 0F, 0F, 4, 4, 4);
-        bottom3.setRotationPoint(-8.5F, 20.5F, 4.5F);
+        bottom3.setPos(-8.5F, 20.5F, 4.5F);
         bottom3.mirror = true;
         bottom4 = new ModelRenderer(64, 64, 16, 0);
         bottom4.addBox(0F, 0F, 0F, 4, 4, 4);
-        bottom4.setRotationPoint(4.5F, 20.5F, 4.5F);
+        bottom4.setPos(4.5F, 20.5F, 4.5F);
         bottom4.mirror = true;
         bottom5 = new ModelRenderer(64, 64, 32, 0);
         bottom5.addBox(0F, 0F, 0F, 9, 1, 1);
-        bottom5.setRotationPoint(-4.5F, 23.5F, -8.5F);
+        bottom5.setPos(-4.5F, 23.5F, -8.5F);
         bottom5.mirror = true;
         bottom6 = new ModelRenderer(64, 64, 32, 2);
         bottom6.addBox(0F, 0F, 0F, 9, 1, 1);
-        bottom6.setRotationPoint(-4.5F, 23.5F, 7.5F);
+        bottom6.setPos(-4.5F, 23.5F, 7.5F);
         bottom6.mirror = true;
         bottom7 = new ModelRenderer(64, 64, 44, 0);
         bottom7.addBox(0F, 0F, 0F, 1, 1, 9);
-        bottom7.setRotationPoint(-8.5F, 23.5F, -4.5F);
+        bottom7.setPos(-8.5F, 23.5F, -4.5F);
         bottom7.mirror = true;
         bottom8 = new ModelRenderer(64, 64, 32, 4);
         bottom8.addBox(0F, 0F, 0F, 1, 1, 9);
-        bottom8.setRotationPoint(7.5F, 23.5F, -4.5F);
+        bottom8.setPos(7.5F, 23.5F, -4.5F);
         bottom8.mirror = true;
         bottom2 = new ModelRenderer(64, 64, 0, 8);
         bottom2.addBox(0F, 0F, 0F, 4, 4, 4);
-        bottom2.setRotationPoint(-8.5F, 20.5F, -8.5F);
+        bottom2.setPos(-8.5F, 20.5F, -8.5F);
         bottom2.mirror = true;
         bottom1 = new ModelRenderer(64, 64, 16, 8);
         bottom1.addBox(0F, 0F, 0F, 4, 4, 4);
-        bottom1.setRotationPoint(4.5F, 20.5F, -8.5F);
+        bottom1.setPos(4.5F, 20.5F, -8.5F);
         bottom1.mirror = true;
         shape1 = new ModelRenderer(64, 64, 0, 16);
         shape1.addBox(0F, 0F, 0F, 1, 9, 1);
-        shape1.setRotationPoint(-8.5F, 11.5F, -8.5F);
+        shape1.setPos(-8.5F, 11.5F, -8.5F);
         shape1.mirror = true;
         shape2 = new ModelRenderer(64, 64, 4, 16);
         shape2.addBox(0F, 0F, 0F, 1, 9, 1);
-        shape2.setRotationPoint(7.5F, 11.5F, -8.5F);
+        shape2.setPos(7.5F, 11.5F, -8.5F);
         shape2.mirror = true;
         shape3 = new ModelRenderer(64, 64, 0, 16);
         shape3.addBox(0F, 0F, 0F, 1, 9, 1);
-        shape3.setRotationPoint(-8.5F, 11.5F, 7.5F);
+        shape3.setPos(-8.5F, 11.5F, 7.5F);
         shape3.mirror = true;
         shape4 = new ModelRenderer(64, 64, 0, 16);
         shape4.addBox(0F, 0F, 0F, 1, 9, 1);
-        shape4.setRotationPoint(7.5F, 11.5F, 7.5F);
+        shape4.setPos(7.5F, 11.5F, 7.5F);
         shape4.mirror = true;
         top6 = new ModelRenderer(64, 64, 32, 26);
         top6.addBox(0F, 0F, 0F, 9, 1, 1);
-        top6.setRotationPoint(-4.5F, 7.5F, -8.5F);
+        top6.setPos(-4.5F, 7.5F, -8.5F);
         top6.mirror = true;
         top3 = new ModelRenderer(64, 64, 0, 34);
         top3.addBox(0F, 0F, 0F, 4, 4, 4);
-        top3.setRotationPoint(-8.5F, 7.5F, -8.5F);
+        top3.setPos(-8.5F, 7.5F, -8.5F);
         top3.mirror = true;
         top4 = new ModelRenderer(64, 64, 16, 26);
         top4.addBox(0F, 0F, 0F, 4, 4, 4);
-        top4.setRotationPoint(4.5F, 7.5F, 4.5F);
+        top4.setPos(4.5F, 7.5F, 4.5F);
         top4.mirror = true;
         top8 = new ModelRenderer(64, 64, 32, 30);
         top8.addBox(0F, 0F, 0F, 1, 1, 9);
-        top8.setRotationPoint(-8.5F, 7.5F, -4.5F);
+        top8.setPos(-8.5F, 7.5F, -4.5F);
         top8.mirror = true;
         top1 = new ModelRenderer(64, 64, 0, 26);
         top1.addBox(0F, 0F, 0F, 4, 4, 4);
-        top1.setRotationPoint(-8.5F, 7.5F, 4.5F);
+        top1.setPos(-8.5F, 7.5F, 4.5F);
         top1.mirror = true;
         top5 = new ModelRenderer(64, 64, 32, 28);
         top5.addBox(0F, 0F, 0F, 9, 1, 1);
-        top5.setRotationPoint(-4.5F, 7.5F, 7.5F);
+        top5.setPos(-4.5F, 7.5F, 7.5F);
         top5.mirror = true;
         top2 = new ModelRenderer(64, 64, 16, 34);
         top2.addBox(0F, 0F, 0F, 4, 4, 4);
-        top2.setRotationPoint(4.5F, 7.5F, -8.5F);
+        top2.setPos(4.5F, 7.5F, -8.5F);
         top2.mirror = true;
         top7 = new ModelRenderer(64, 64, 44, 26);
         top7.addBox(0F, 0F, 0F, 1, 1, 9);
-        top7.setRotationPoint(7.5F, 7.5F, -4.5F);
+        top7.setPos(7.5F, 7.5F, -4.5F);
         top7.mirror = true;
     }
 
     @Override
-    public void render(MatrixStack matrixStackIn, IVertexBuilder bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
+    public void renderToBuffer(MatrixStack matrixStackIn, IVertexBuilder bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
         bottom3.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
         bottom4.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
         bottom5.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
@@ -140,6 +140,6 @@ public class ModelHeatFrame extends EntityModel<EntityHeatFrame> {
     }
 
     @Override
-    public void setRotationAngles(EntityHeatFrame entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void setupAnim(EntityHeatFrame entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
     }
 }

@@ -35,10 +35,10 @@ public class PressureChamberRecipeBuilder extends PneumaticCraftRecipeBuilder<Pr
         }
 
         @Override
-        public void serialize(JsonObject json) {
+        public void serializeRecipeData(JsonObject json) {
             JsonArray in = new JsonArray();
             for (Ingredient ingr : inputs) {
-                in.add(ingr.serialize());
+                in.add(ingr.toJson());
             }
             json.add("inputs", in);
             json.addProperty("pressure", requiredPressure);

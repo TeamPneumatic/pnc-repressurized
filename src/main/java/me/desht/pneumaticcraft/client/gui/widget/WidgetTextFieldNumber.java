@@ -7,7 +7,6 @@ import net.minecraft.util.math.MathHelper;
 import org.apache.commons.lang3.math.NumberUtils;
 
 public class WidgetTextFieldNumber extends WidgetTextField {
-
     public int minValue = Integer.MIN_VALUE;
     public int maxValue = Integer.MAX_VALUE;
     private int decimals;
@@ -18,7 +17,7 @@ public class WidgetTextFieldNumber extends WidgetTextField {
         super(fontRenderer, x, y, width, height);
         setValue(0);
 
-        setValidator(input -> decimals == 0 ?
+        setFilter(input -> decimals == 0 ?
                 PneumaticCraftUtils.isInteger(input) :
                 PneumaticCraftUtils.isNumber(input)
         );
@@ -35,17 +34,22 @@ public class WidgetTextFieldNumber extends WidgetTextField {
         return this;
     }
 
-    public WidgetTextFieldNumber setValue(double value) {
-        setText(PneumaticCraftUtils.roundNumberTo(MathHelper.clamp(value, minValue, maxValue), decimals));
+    public WidgetTextFieldNumber setValue(int value) {
+        setValue(Integer.toString(MathHelper.clamp(value, minValue, maxValue)));
         return this;
     }
 
-    public int getValue() {
-        return MathHelper.clamp(NumberUtils.toInt(getText()), minValue, maxValue);
+    public WidgetTextFieldNumber setValue(double value) {
+        setValue(PneumaticCraftUtils.roundNumberTo(MathHelper.clamp(value, minValue, maxValue), decimals));
+        return this;
+    }
+
+    public int getIntValue() {
+        return MathHelper.clamp(NumberUtils.toInt(getValue()), minValue, maxValue);
     }
 
     public double getDoubleValue() {
-        return PneumaticCraftUtils.roundNumberToDouble(MathHelper.clamp(NumberUtils.toDouble(getText()), minValue, maxValue), decimals);
+        return PneumaticCraftUtils.roundNumberToDouble(MathHelper.clamp(NumberUtils.toDouble(getValue()), minValue, maxValue), decimals);
     }
 
     public WidgetTextFieldNumber setAdjustments(double fineAdjust, double coarseAdjust) {
@@ -58,11 +62,11 @@ public class WidgetTextFieldNumber extends WidgetTextField {
     public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
         double adj = ClientUtils.hasShiftDown() ? coarseAdjust : fineAdjust;
         if (decimals > 0) {
-            setValue(MathHelper.clamp(getDoubleValue() + (delta > 0 ? adj : -adj), minValue, maxValue));
+            setValue(getDoubleValue() + (delta > 0 ? adj : -adj));
         } else {
-            int v = getValue();
-            if (v == 1 && adj % 10 == 0) adj--;  // little kludge to make adjusting from 1 behave in a user-friendly way
-            setValue(MathHelper.clamp(getValue() + (delta > 0 ? adj : -adj), minValue, maxValue));
+            int curVal = getIntValue();
+            if (curVal == 1 && adj % 10 == 0) adj--;  // little kludge to make adjusting from 1 behave in a user-friendly way
+            setValue(curVal + (delta > 0 ? adj : -adj));
         }
         return true;
     }

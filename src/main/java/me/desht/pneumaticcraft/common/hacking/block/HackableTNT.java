@@ -37,11 +37,11 @@ public class HackableTNT implements IHackableBlock {
 
     @Override
     public void onHackComplete(World world, BlockPos pos, PlayerEntity player) {
-        if (!world.isRemote) {
+        if (!world.isClientSide) {
             world.removeBlock(pos, false);
             TNTEntity tnt = new TNTEntity(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, player);
             tnt.setFuse(1);
-            world.addEntity(tnt);
+            world.addFreshEntity(tnt);
         }
     }
 }

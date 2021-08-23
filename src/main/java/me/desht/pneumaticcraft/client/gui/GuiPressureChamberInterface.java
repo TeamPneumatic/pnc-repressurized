@@ -40,14 +40,14 @@ public class GuiPressureChamberInterface extends GuiPneumaticContainerBase<Conta
 
         statusStat = addAnimatedStat(xlate("pneumaticcraft.gui.pressureChamberInterface.status"), new ItemStack(ModBlocks.PRESSURE_CHAMBER_INTERFACE.get()), 0xFFFFAA00, false);
 
-        exportAnyButton = addButton(new WidgetButtonExtended(guiLeft + 111, guiTop + 32, 60, 20, StringTextComponent.EMPTY)
+        exportAnyButton = addButton(new WidgetButtonExtended(leftPos + 111, topPos + 32, 60, 20, StringTextComponent.EMPTY)
                 .withTag("export_mode"));
-        exportTypeLabel = addButton(new WidgetLabel(guiLeft + 111, guiTop + 20, xlate("pneumaticcraft.gui.pressureChamberInterface.exportLabel")));
+        exportTypeLabel = addButton(new WidgetLabel(leftPos + 111, topPos + 20, xlate("pneumaticcraft.gui.pressureChamberInterface.exportLabel")));
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int x, int y) {
-        super.drawGuiContainerForegroundLayer(matrixStack, x, y);
+    protected void renderLabels(MatrixStack matrixStack, int x, int y) {
+        super.renderLabels(matrixStack, x, y);
 
         int inputShift = (int) ((1F - (float) Math.cos(te.inputProgress / (float) MAX_PROGRESS * Math.PI)) * 11);
         int outputShift = (int) ((1F - (float) Math.cos(te.outputProgress / (float) MAX_PROGRESS * Math.PI)) * 11);
@@ -81,8 +81,8 @@ public class GuiPressureChamberInterface extends GuiPneumaticContainerBase<Conta
         }
 
         statusStat.setText(ImmutableList.of(
-                xlate("pneumaticcraft.gui.pressureChamberInterface.mode").mergeStyle(TextFormatting.WHITE),
-                xlate(te.interfaceMode.getTranslationKey()).mergeStyle(TextFormatting.BLACK)
+                xlate("pneumaticcraft.gui.pressureChamberInterface.mode").withStyle(TextFormatting.WHITE),
+                xlate(te.interfaceMode.getTranslationKey()).withStyle(TextFormatting.BLACK)
         ));
 
         if (hasEnoughPressure && !te.hasEnoughPressure()) {

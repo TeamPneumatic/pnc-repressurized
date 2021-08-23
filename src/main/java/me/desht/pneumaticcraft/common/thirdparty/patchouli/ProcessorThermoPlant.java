@@ -19,7 +19,7 @@ public class ProcessorThermoPlant implements IComponentProcessor {
     @Override
     public void setup(IVariableProvider iVariableProvider) {
         ResourceLocation recipeId = new ResourceLocation(iVariableProvider.get("recipe").asString());
-        this.recipe = PneumaticCraftRecipeType.THERMO_PLANT.getRecipe(Minecraft.getInstance().world, recipeId);
+        this.recipe = PneumaticCraftRecipeType.THERMO_PLANT.getRecipe(Minecraft.getInstance().level, recipeId);
         this.header = iVariableProvider.has("header") ? iVariableProvider.get("header").asString() : "";
     }
 
@@ -41,7 +41,7 @@ public class ProcessorThermoPlant implements IComponentProcessor {
             case "text":
                 String pr = PneumaticCraftUtils.roundNumberTo(recipe.getRequiredPressure(), 1);
                 String temp = recipe.getOperatingTemperature().asString(TemperatureRange.TemperatureScale.CELSIUS);
-                return IVariable.wrap(I18n.format("pneumaticcraft.patchouli.processor.thermoPlant.desc", pr, temp));
+                return IVariable.wrap(I18n.get("pneumaticcraft.patchouli.processor.thermoPlant.desc", pr, temp));
             case "scale":
                 return IVariable.wrap(getScale(recipe));
         }
@@ -62,7 +62,7 @@ public class ProcessorThermoPlant implements IComponentProcessor {
         if (!recipe.getOutputFluid().isEmpty()) {
             return recipe.getOutputFluid().getDisplayName().getString();
         } else if (!recipe.getOutputItem().isEmpty()) {
-            return recipe.getOutputItem().getDisplayName().getString();
+            return recipe.getOutputItem().getHoverName().getString();
         } else {
             return "";
         }

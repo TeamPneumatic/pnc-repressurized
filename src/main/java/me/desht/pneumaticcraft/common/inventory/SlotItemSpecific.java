@@ -40,7 +40,7 @@ class SlotItemSpecific extends SlotItemHandler {
      * the armor slots.
      */
     @Override
-    public boolean isItemValid(@Nonnull ItemStack stack) {
+    public boolean mayPlace(@Nonnull ItemStack stack) {
         return stack.isEmpty() || itemAllowed.test(stack);
     }
 

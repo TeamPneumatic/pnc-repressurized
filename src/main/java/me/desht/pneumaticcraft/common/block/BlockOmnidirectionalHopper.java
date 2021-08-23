@@ -34,12 +34,12 @@ import javax.annotation.Nullable;
 
 public class BlockOmnidirectionalHopper extends BlockPneumaticCraft implements ColorHandlers.ITintableBlock {
 
-    private static final VoxelShape MIDDLE_SHAPE = Block.makeCuboidShape(4, 6, 4, 12, 10, 12);
-    private static final VoxelShape INPUT_SHAPE = Block.makeCuboidShape(0.0D, 10.0D, 0.0D, 16.0D, 16.0D, 16.0D);
+    private static final VoxelShape MIDDLE_SHAPE = Block.box(4, 6, 4, 12, 10, 12);
+    private static final VoxelShape INPUT_SHAPE = Block.box(0.0D, 10.0D, 0.0D, 16.0D, 16.0D, 16.0D);
     private static final VoxelShape INPUT_MIDDLE_SHAPE = VoxelShapes.or(MIDDLE_SHAPE, INPUT_SHAPE);
-    private static final VoxelShape BOWL_SHAPE = Block.makeCuboidShape(2.0D, 11.0D, 2.0D, 14.0D, 16.0D, 14.0D);
+    private static final VoxelShape BOWL_SHAPE = Block.box(2.0D, 11.0D, 2.0D, 14.0D, 16.0D, 14.0D);
 
-    private static final VoxelShape INPUT_UP    = VoxelShapes.combineAndSimplify(INPUT_MIDDLE_SHAPE, BOWL_SHAPE, IBooleanFunction.ONLY_FIRST);
+    private static final VoxelShape INPUT_UP    = VoxelShapes.join(INPUT_MIDDLE_SHAPE, BOWL_SHAPE, IBooleanFunction.ONLY_FIRST);
     private static final VoxelShape INPUT_NORTH = VoxelShapeUtils.rotateX(INPUT_UP, 270);
     private static final VoxelShape INPUT_DOWN  = VoxelShapeUtils.rotateX(INPUT_NORTH, 270);
     private static final VoxelShape INPUT_SOUTH = VoxelShapeUtils.rotateX(INPUT_UP, 90);
@@ -49,8 +49,8 @@ public class BlockOmnidirectionalHopper extends BlockPneumaticCraft implements C
         INPUT_DOWN, INPUT_UP, INPUT_NORTH, INPUT_SOUTH, INPUT_WEST, INPUT_EAST
     };
 
-    private static final VoxelShape OUTPUT_DOWN = Block.makeCuboidShape(6.5, 0, 6.5, 9.5, 6, 9.5);
-    private static final VoxelShape OUTPUT_UP = Block.makeCuboidShape(6.5, 10, 6.5, 9.5, 16, 9.5);
+    private static final VoxelShape OUTPUT_DOWN = Block.box(6.5, 0, 6.5, 9.5, 6, 9.5);
+    private static final VoxelShape OUTPUT_UP = Block.box(6.5, 10, 6.5, 9.5, 16, 9.5);
     private static final VoxelShape OUTPUT_NORTH = VoxelShapeUtils.rotateX(OUTPUT_DOWN, 90);
     private static final VoxelShape OUTPUT_SOUTH = VoxelShapeUtils.rotateX(OUTPUT_DOWN, 270);
     private static final VoxelShape OUTPUT_WEST = VoxelShapeUtils.rotateY(OUTPUT_NORTH, 270);
@@ -74,27 +74,27 @@ public class BlockOmnidirectionalHopper extends BlockPneumaticCraft implements C
 
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-        int idx = state.get(INPUT_FACING).getIndex() + state.get(directionProperty()).getIndex() * 6;
+        int idx = state.getValue(INPUT_FACING).get3DDataValue() + state.getValue(directionProperty()).get3DDataValue() * 6;
         if (SHAPE_CACHE[idx] == null) {
-            SHAPE_CACHE[idx] = VoxelShapes.combineAndSimplify(
-                    INPUT_SHAPES[state.get(INPUT_FACING).getIndex()],
-                    OUTPUT_SHAPES[state.get(directionProperty()).getIndex()],
+            SHAPE_CACHE[idx] = VoxelShapes.join(
+                    INPUT_SHAPES[state.getValue(INPUT_FACING).get3DDataValue()],
+                    OUTPUT_SHAPES[state.getValue(directionProperty()).get3DDataValue()],
                     IBooleanFunction.OR);
         }
         return SHAPE_CACHE[idx];
     }
 
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        super.fillStateContainer(builder);
+    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
         builder.add(INPUT_FACING);
     }
 
     @Override
     public BlockState getStateForPlacement(BlockItemUseContext ctx) {
-        return this.getDefaultState()
-                .with(BlockStateProperties.FACING, ctx.getFace().getOpposite())
-                .with(INPUT_FACING, ctx.getNearestLookingDirection().getOpposite());
+        return this.defaultBlockState()
+                .setValue(BlockStateProperties.FACING, ctx.getClickedFace().getOpposite())
+                .setValue(INPUT_FACING, ctx.getNearestLookingDirection().getOpposite());
     }
 
     @Override
@@ -108,22 +108,22 @@ public class BlockOmnidirectionalHopper extends BlockPneumaticCraft implements C
     }
 
     private Direction getInputDirection(World world, BlockPos pos) {
-        return world.getBlockState(pos).get(BlockOmnidirectionalHopper.INPUT_FACING);
+        return world.getBlockState(pos).getValue(BlockOmnidirectionalHopper.INPUT_FACING);
     }
 
     @Override
     public boolean onWrenched(World world, PlayerEntity player, BlockPos pos, Direction face, Hand hand) {
         BlockState state = world.getBlockState(pos);
-        if (player != null && player.isSneaking()) {
+        if (player != null && player.isShiftKeyDown()) {
             Direction outputDir = getRotation(state);
-            outputDir = Direction.byIndex(outputDir.getIndex() + 1);
-            if (outputDir == getInputDirection(world, pos)) outputDir = Direction.byIndex(outputDir.getIndex() + 1);
+            outputDir = Direction.from3DDataValue(outputDir.get3DDataValue() + 1);
+            if (outputDir == getInputDirection(world, pos)) outputDir = Direction.from3DDataValue(outputDir.get3DDataValue() + 1);
             setRotation(world, pos, outputDir);
         } else {
-            Direction inputDir = state.get(INPUT_FACING);
-            inputDir = Direction.byIndex(inputDir.getIndex() + 1);
-            if (inputDir == getRotation(world, pos)) inputDir = Direction.byIndex(inputDir.getIndex() + 1);
-            world.setBlockState(pos, state.with(INPUT_FACING, inputDir));
+            Direction inputDir = state.getValue(INPUT_FACING);
+            inputDir = Direction.from3DDataValue(inputDir.get3DDataValue() + 1);
+            if (inputDir == getRotation(world, pos)) inputDir = Direction.from3DDataValue(inputDir.get3DDataValue() + 1);
+            world.setBlockAndUpdate(pos, state.setValue(INPUT_FACING, inputDir));
         }
         PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityAbstractHopper.class).ifPresent(TileEntityAbstractHopper::onBlockRotated);
         return true;

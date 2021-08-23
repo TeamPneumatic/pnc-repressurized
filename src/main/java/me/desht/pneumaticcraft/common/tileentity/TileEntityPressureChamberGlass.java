@@ -50,12 +50,12 @@ public class TileEntityPressureChamberGlass extends TileEntityPressureChamberWal
     @Override
     public IModelData getModelData() {
         return new ModelDataMap.Builder()
-                .withInitial(DOWN, getTextureIndex(world, pos, Direction.DOWN))
-                .withInitial(UP, getTextureIndex(world, pos, Direction.UP))
-                .withInitial(NORTH, getTextureIndex(world, pos, Direction.NORTH))
-                .withInitial(SOUTH, getTextureIndex(world, pos, Direction.SOUTH))
-                .withInitial(WEST, getTextureIndex(world, pos, Direction.WEST))
-                .withInitial(EAST, getTextureIndex(world, pos, Direction.EAST))
+                .withInitial(DOWN, getTextureIndex(level, worldPosition, Direction.DOWN))
+                .withInitial(UP, getTextureIndex(level, worldPosition, Direction.UP))
+                .withInitial(NORTH, getTextureIndex(level, worldPosition, Direction.NORTH))
+                .withInitial(SOUTH, getTextureIndex(level, worldPosition, Direction.SOUTH))
+                .withInitial(WEST, getTextureIndex(level, worldPosition, Direction.WEST))
+                .withInitial(EAST, getTextureIndex(level, worldPosition, Direction.EAST))
                 .build();
     }
 
@@ -63,34 +63,34 @@ public class TileEntityPressureChamberGlass extends TileEntityPressureChamberWal
         boolean[] bitMatrix = new boolean[8];
         switch (face) {
             case DOWN:case UP:
-                bitMatrix[0] = isGlass(world, pos.add(face == Direction.DOWN ? 1 : -1, 0, -1));
-                bitMatrix[1] = isGlass(world, pos.add(0, 0, -1));
-                bitMatrix[2] = isGlass(world, pos.add(face == Direction.UP ? 1 : -1,  0, -1));
-                bitMatrix[3] = isGlass(world, pos.add(face == Direction.DOWN ? 1 : -1, 0, 0));
-                bitMatrix[4] = isGlass(world, pos.add(face == Direction.UP ? 1 : - 1, 0, 0));
-                bitMatrix[5] = isGlass(world, pos.add(face == Direction.DOWN ? 1 : -1, 0, 1));
-                bitMatrix[6] = isGlass(world, pos.add(0, 0, 1));
-                bitMatrix[7] = isGlass(world, pos.add(face == Direction.UP ? 1 : - 1, 0, 1));
+                bitMatrix[0] = isGlass(world, pos.offset(face == Direction.DOWN ? 1 : -1, 0, -1));
+                bitMatrix[1] = isGlass(world, pos.offset(0, 0, -1));
+                bitMatrix[2] = isGlass(world, pos.offset(face == Direction.UP ? 1 : -1,  0, -1));
+                bitMatrix[3] = isGlass(world, pos.offset(face == Direction.DOWN ? 1 : -1, 0, 0));
+                bitMatrix[4] = isGlass(world, pos.offset(face == Direction.UP ? 1 : - 1, 0, 0));
+                bitMatrix[5] = isGlass(world, pos.offset(face == Direction.DOWN ? 1 : -1, 0, 1));
+                bitMatrix[6] = isGlass(world, pos.offset(0, 0, 1));
+                bitMatrix[7] = isGlass(world, pos.offset(face == Direction.UP ? 1 : - 1, 0, 1));
                 break;
             case NORTH:case SOUTH:
-                bitMatrix[0] = isGlass(world, pos.add(face == Direction.NORTH ? 1 : -1, 1, 0));
-                bitMatrix[1] = isGlass(world, pos.add(0, 1, 0));
-                bitMatrix[2] = isGlass(world, pos.add(face == Direction.SOUTH ? 1 : -1, 1, 0));
-                bitMatrix[3] = isGlass(world, pos.add(face == Direction.NORTH ? 1 : -1, 0, 0));
-                bitMatrix[4] = isGlass(world, pos.add(face == Direction.SOUTH ? 1 : -1, 0, 0));
-                bitMatrix[5] = isGlass(world, pos.add(face == Direction.NORTH ? 1 : -1, -1, 0));
-                bitMatrix[6] = isGlass(world, pos.add(0, -1, 0));
-                bitMatrix[7] = isGlass(world, pos.add(face == Direction.SOUTH ? 1 : -1, -1, 0));
+                bitMatrix[0] = isGlass(world, pos.offset(face == Direction.NORTH ? 1 : -1, 1, 0));
+                bitMatrix[1] = isGlass(world, pos.offset(0, 1, 0));
+                bitMatrix[2] = isGlass(world, pos.offset(face == Direction.SOUTH ? 1 : -1, 1, 0));
+                bitMatrix[3] = isGlass(world, pos.offset(face == Direction.NORTH ? 1 : -1, 0, 0));
+                bitMatrix[4] = isGlass(world, pos.offset(face == Direction.SOUTH ? 1 : -1, 0, 0));
+                bitMatrix[5] = isGlass(world, pos.offset(face == Direction.NORTH ? 1 : -1, -1, 0));
+                bitMatrix[6] = isGlass(world, pos.offset(0, -1, 0));
+                bitMatrix[7] = isGlass(world, pos.offset(face == Direction.SOUTH ? 1 : -1, -1, 0));
                 break;
             case WEST:case EAST:
-                bitMatrix[0] = isGlass(world, pos.add(0, 1, face == Direction.EAST ? 1 : -1));
-                bitMatrix[1] = isGlass(world, pos.add(0, 1, 0));
-                bitMatrix[2] = isGlass(world, pos.add(0, 1, face == Direction.WEST ? 1 : -1));
-                bitMatrix[3] = isGlass(world, pos.add(0, 0, face == Direction.EAST ? 1 : -1));
-                bitMatrix[4] = isGlass(world, pos.add(0, 0, face == Direction.WEST ? 1 : -1));
-                bitMatrix[5] = isGlass(world, pos.add(0, -1, face == Direction.EAST ? 1 : -1));
-                bitMatrix[6] = isGlass(world, pos.add(0, -1, 0));
-                bitMatrix[7] = isGlass(world, pos.add(0, -1, face == Direction.WEST ? 1 : -1));
+                bitMatrix[0] = isGlass(world, pos.offset(0, 1, face == Direction.EAST ? 1 : -1));
+                bitMatrix[1] = isGlass(world, pos.offset(0, 1, 0));
+                bitMatrix[2] = isGlass(world, pos.offset(0, 1, face == Direction.WEST ? 1 : -1));
+                bitMatrix[3] = isGlass(world, pos.offset(0, 0, face == Direction.EAST ? 1 : -1));
+                bitMatrix[4] = isGlass(world, pos.offset(0, 0, face == Direction.WEST ? 1 : -1));
+                bitMatrix[5] = isGlass(world, pos.offset(0, -1, face == Direction.EAST ? 1 : -1));
+                bitMatrix[6] = isGlass(world, pos.offset(0, -1, 0));
+                bitMatrix[7] = isGlass(world, pos.offset(0, -1, face == Direction.WEST ? 1 : -1));
                 break;
         }
 

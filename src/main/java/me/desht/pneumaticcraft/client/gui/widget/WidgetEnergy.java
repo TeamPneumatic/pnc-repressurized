@@ -25,7 +25,7 @@ public class WidgetEnergy extends Widget implements ITooltipProvider {
     public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTick){
         int amount = getScaled();
 
-        Minecraft.getInstance().getTextureManager().bindTexture(Textures.WIDGET_ENERGY);
+        Minecraft.getInstance().getTextureManager().bind(Textures.WIDGET_ENERGY);
         AbstractGui.blit(matrixStack, x + 1, y, 1, 0, width - 2, height, 32, 64);
         AbstractGui.blit(matrixStack, x + 1, y + DEFAULT_SCALE - amount, 17, DEFAULT_SCALE - amount, width - 2, amount, 32, 64);
     }

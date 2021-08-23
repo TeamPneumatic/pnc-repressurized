@@ -35,12 +35,12 @@ public class JEIUVLightBoxCategory implements IRecipeCategory<UVLightBoxRecipe> 
     static {
         ItemStack out = new ItemStack(ModItems.EMPTY_PCB.get());
         TileEntityUVLightBox.setExposureProgress(out, 100);
-        UVLightBoxRecipe recipe = new UVLightBoxRecipe(Ingredient.fromItems(ModItems.EMPTY_PCB.get()), out);
+        UVLightBoxRecipe recipe = new UVLightBoxRecipe(Ingredient.of(ModItems.EMPTY_PCB.get()), out);
         UV_LIGHT_BOX_RECIPES = Collections.singletonList(recipe);
     }
 
     JEIUVLightBoxCategory() {
-        localizedName = I18n.format(ModBlocks.UV_LIGHT_BOX.get().getTranslationKey());
+        localizedName = I18n.get(ModBlocks.UV_LIGHT_BOX.get().getDescriptionId());
         background = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_MISC_RECIPES, 0, 0, 82, 18);
         icon = JEIPlugin.jeiHelpers.getGuiHelper().createDrawableIngredient(new ItemStack(ModBlocks.UV_LIGHT_BOX.get()));
         IDrawableStatic d = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_MISC_RECIPES, 82, 0, 38, 17);
@@ -97,7 +97,7 @@ public class JEIUVLightBoxCategory implements IRecipeCategory<UVLightBoxRecipe> 
     public List<ITextComponent> getTooltipStrings(UVLightBoxRecipe recipe, double mouseX, double mouseY) {
         List<ITextComponent> res = new ArrayList<>();
         if (mouseX >= 23 && mouseX <= 60) {
-            res.addAll(PneumaticCraftUtils.splitStringComponent(I18n.format("pneumaticcraft.gui.nei.recipe.uvLightBox")));
+            res.addAll(PneumaticCraftUtils.splitStringComponent(I18n.get("pneumaticcraft.gui.nei.recipe.uvLightBox")));
         }
         return res;
     }

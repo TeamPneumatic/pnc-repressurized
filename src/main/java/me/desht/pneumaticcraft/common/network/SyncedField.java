@@ -311,7 +311,7 @@ public abstract class SyncedField<T> {
         protected boolean equals(IItemHandlerModifiable oldValue, IItemHandlerModifiable newValue) {
             if (oldValue.getSlots() != newValue.getSlots()) return false;
             for (int i = 0; i < oldValue.getSlots(); i++) {
-                if (!ItemStack.areItemStacksEqual(oldValue.getStackInSlot(i), newValue.getStackInSlot(i))) {
+                if (!ItemStack.matches(oldValue.getStackInSlot(i), newValue.getStackInSlot(i))) {
                     return false;
                 }
             }
@@ -357,18 +357,18 @@ public abstract class SyncedField<T> {
             case 3:
                 return buf.readBoolean();
             case 4:
-                return buf.readString();
+                return buf.readUtf();
             case 5:
                 return buf.readByte();
             case 6:
-                return buf.readItemStack();
+                return buf.readItem();
             case 7:
                 return buf.readFluidStack();
             case 8:
                 int len = buf.readVarInt();
                 ItemStackHandler handler = new ItemStackHandler(len);
                 for (int i = 0; i < len; i++) {
-                    handler.setStackInSlot(buf.readVarInt(), buf.readItemStack());
+                    handler.setStackInSlot(buf.readVarInt(), buf.readItem());
                 }
                 return handler;
         }
@@ -390,13 +390,13 @@ public abstract class SyncedField<T> {
                 buf.writeBoolean((Boolean) value);
                 break;
             case 4:
-                buf.writeString((String) value);
+                buf.writeUtf((String) value);
                 break;
             case 5:
                 buf.writeByte((Byte) value);
                 break;
             case 6:
-                buf.writeItemStack(value == null ? ItemStack.EMPTY : (ItemStack) value);
+                buf.writeItem(value == null ? ItemStack.EMPTY : (ItemStack) value);
                 break;
             case 7:
                 buf.writeFluidStack((FluidStack) value);
@@ -406,7 +406,7 @@ public abstract class SyncedField<T> {
                 buf.writeVarInt(h.getSlots());
                 for (int i = 0; i < h.getSlots(); i++) {
                     buf.writeVarInt(i);
-                    buf.writeItemStack(h.getStackInSlot(i));
+                    buf.writeItem(h.getStackInSlot(i));
                 }
                 break;
         }

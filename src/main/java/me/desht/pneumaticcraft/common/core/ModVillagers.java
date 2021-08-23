@@ -28,7 +28,7 @@ public class ModVillagers {
     }
 
     private static Set<BlockState> getAllStates(Block block) {
-        return ImmutableSet.copyOf(block.getStateContainer().getValidStates());
+        return ImmutableSet.copyOf(block.getStateDefinition().getPossibleStates());
     }
 
 }

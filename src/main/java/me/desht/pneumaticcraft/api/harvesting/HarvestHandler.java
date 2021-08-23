@@ -79,7 +79,7 @@ public abstract class HarvestHandler extends ForgeRegistryEntry<HarvestHandler> 
      * @param drone the drone
      */
     public List<ItemStack> addFilterItems(World world, IBlockReader chunkCache, BlockPos pos, BlockState state, IDrone drone){
-        return world instanceof ServerWorld ? Block.getDrops(state, (ServerWorld) world, pos, world.getTileEntity(pos)) : Collections.emptyList();
+        return world instanceof ServerWorld ? Block.getDrops(state, (ServerWorld) world, pos, world.getBlockEntity(pos)) : Collections.emptyList();
     }
 
     /**

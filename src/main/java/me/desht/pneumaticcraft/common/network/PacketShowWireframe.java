@@ -14,7 +14,7 @@ public class PacketShowWireframe extends LocationIntPacket {
 
     public PacketShowWireframe(EntityDrone entity, BlockPos pos) {
         super(pos);
-        entityId = entity.getEntityId();
+        entityId = entity.getId();
     }
 
     public PacketShowWireframe(PacketBuffer buffer) {
@@ -30,7 +30,7 @@ public class PacketShowWireframe extends LocationIntPacket {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            Entity ent = ctx.get().getSender().world.getEntityByID(entityId);
+            Entity ent = ctx.get().getSender().level.getEntity(entityId);
             if (ent instanceof EntityDrone) {
                 ClientUtils.addDroneToHudHandler((EntityDrone) ent, pos);
             }

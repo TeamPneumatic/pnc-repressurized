@@ -67,22 +67,22 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase
     public void tick() {
         super.tick();
 
-        if ((getWorld().getGameTime() & 0x1f) == 0) {  // every 32 ticks
+        if ((getLevel().getGameTime() & 0x1f) == 0) {  // every 32 ticks
             int max = PneumaticValues.PRODUCTION_ELECTROSTATIC_COMPRESSOR / PneumaticValues.MAX_REDIRECTION_PER_IRON_BAR;
             for (ironBarsBeneath = 0; ironBarsBeneath < max; ironBarsBeneath++) {
-                if (!isValidGridBlock(getWorld().getBlockState(getPos().down(ironBarsBeneath + 1)).getBlock())) {
+                if (!isValidGridBlock(getLevel().getBlockState(getBlockPos().below(ironBarsBeneath + 1)).getBlock())) {
                     break;
                 }
             }
             for (ironBarsAbove = 0; ironBarsAbove < MAX_BARS_ABOVE; ironBarsAbove++) {
-                if (!isValidGridBlock(getWorld().getBlockState(getPos().up(ironBarsAbove + 1)).getBlock())) {
+                if (!isValidGridBlock(getLevel().getBlockState(getBlockPos().above(ironBarsAbove + 1)).getBlock())) {
                     break;
                 }
             }
         }
 
 
-        if (!getWorld().isRemote) {
+        if (!getLevel().isClientSide) {
             maybeLightningStrike();
 
             if (lastRedstoneState != rsController.shouldEmit()) {
@@ -96,39 +96,39 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase
 
     public int getStrikeChance() {
         int strikeChance = PNCConfig.Common.Machines.electrostaticLightningChance;
-        if (getWorld().isRaining()) strikeChance *= 0.5;  // slightly more likely if raining
-        if (getWorld().isThundering()) strikeChance *= 0.2; // much more likely if thundering
+        if (getLevel().isRaining()) strikeChance *= 0.5;  // slightly more likely if raining
+        if (getLevel().isThundering()) strikeChance *= 0.2; // much more likely if thundering
         strikeChance *= (1f - (0.02f * ironBarsAbove));
         return strikeChance;
     }
 
     private void maybeLightningStrike() {
-        Random rnd = getWorld().rand;
+        Random rnd = getLevel().random;
         if (rnd.nextInt(getStrikeChance()) == 0) {
             int dist = rnd.nextInt(6);
             float angle = rnd.nextFloat() * (float)Math.PI * 2;
-            int x = (int)(getPos().getX() + dist * MathHelper.sin(angle));
-            int z = (int)(getPos().getZ() + dist * MathHelper.cos(angle));
-            for (int y = getPos().getY() + 5; y > getPos().getY() - 5; y--) {
+            int x = (int)(getBlockPos().getX() + dist * MathHelper.sin(angle));
+            int z = (int)(getBlockPos().getZ() + dist * MathHelper.cos(angle));
+            for (int y = getBlockPos().getY() + 5; y > getBlockPos().getY() - 5; y--) {
                 BlockPos hitPos = new BlockPos(x, y, z);
-                BlockState state = getWorld().getBlockState(hitPos);
+                BlockState state = getLevel().getBlockState(hitPos);
                 if (state.getBlock() instanceof BlockElectrostaticCompressor || state.getBlock() == Blocks.IRON_BARS) {
                     Set<BlockPos> gridSet = new HashSet<>();
                     Set<TileEntityElectrostaticCompressor> compressorSet = new HashSet<>();
                     getElectrostaticGrid(gridSet, compressorSet, hitPos);
-                    LightningBoltEntity bolt = new LightningBoltEntity(EntityType.LIGHTNING_BOLT, getWorld());
-                    bolt.setPosition(x, y, z);
-                    getWorld().addEntity(bolt);
+                    LightningBoltEntity bolt = new LightningBoltEntity(EntityType.LIGHTNING_BOLT, getLevel());
+                    bolt.setPos(x, y, z);
+                    getLevel().addFreshEntity(bolt);
                     for (TileEntityElectrostaticCompressor compressor : compressorSet) {
                         compressor.addAir(PneumaticValues.PRODUCTION_ELECTROSTATIC_COMPRESSOR / compressorSet.size());
                         compressor.onStruckByLightning();
                     }
-                    AxisAlignedBB box = new AxisAlignedBB(getPos()).grow(16, 16, 16);
-                    for (LivingEntity entity : getWorld().getEntitiesWithinAABB(LivingEntity.class, box, EntityPredicates.IS_ALIVE)) {
-                        BlockPos pos = entity.getPosition();
-                        if (gridSet.contains(pos) || gridSet.contains(pos.down())) {
+                    AxisAlignedBB box = new AxisAlignedBB(getBlockPos()).inflate(16, 16, 16);
+                    for (LivingEntity entity : getLevel().getEntitiesOfClass(LivingEntity.class, box, EntityPredicates.ENTITY_STILL_ALIVE)) {
+                        BlockPos pos = entity.blockPosition();
+                        if (gridSet.contains(pos) || gridSet.contains(pos.below())) {
                             if (!net.minecraftforge.event.ForgeEventFactory.onEntityStruckByLightning(entity, bolt)) {
-                                entity.func_241841_a((ServerWorld) getWorld(), bolt);
+                                entity.thunderHit((ServerWorld) getLevel(), bolt);
                             }
                         }
                     }
@@ -173,17 +173,17 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase
     public void getElectrostaticGrid(Set<BlockPos> grid, Set<TileEntityElectrostaticCompressor> compressors, BlockPos pos) {
         Deque<BlockPos> pendingPos = new ArrayDeque<>(Collections.singleton(pos));
         grid.add(pos);
-        PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityElectrostaticCompressor.class).ifPresent(compressors::add);
+        PneumaticCraftUtils.getTileEntityAt(level, pos, TileEntityElectrostaticCompressor.class).ifPresent(compressors::add);
 
         while (!pendingPos.isEmpty()) {
             BlockPos checkingPos = pendingPos.pop();
             for (Direction d : DirectionUtil.VALUES) {
-                BlockPos newPos = checkingPos.offset(d);
-                Block block = world.getBlockState(newPos).getBlock();
+                BlockPos newPos = checkingPos.relative(d);
+                Block block = level.getBlockState(newPos).getBlock();
                 if ((isValidGridBlock(block) || block == ModBlocks.ELECTROSTATIC_COMPRESSOR.get())
                         && grid.size() < MAX_ELECTROSTATIC_GRID_SIZE && grid.add(newPos)) {
                     if (block == ModBlocks.ELECTROSTATIC_COMPRESSOR.get()) {
-                        PneumaticCraftUtils.getTileEntityAt(world, newPos, TileEntityElectrostaticCompressor.class).ifPresent(compressors::add);
+                        PneumaticCraftUtils.getTileEntityAt(level, newPos, TileEntityElectrostaticCompressor.class).ifPresent(compressors::add);
                     }
                     pendingPos.push(newPos);
                 }
@@ -198,7 +198,7 @@ public class TileEntityElectrostaticCompressor extends TileEntityPneumaticBase
     @Nullable
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        return new ContainerElectrostaticCompressor(i, playerInventory, getPos());
+        return new ContainerElectrostaticCompressor(i, playerInventory, getBlockPos());
     }
 
     @Override

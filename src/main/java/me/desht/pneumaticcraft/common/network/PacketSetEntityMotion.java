@@ -18,7 +18,7 @@ public class PacketSetEntityMotion extends LocationDoublePacket {
 
     public PacketSetEntityMotion(Entity entity, Vector3d motion) {
         super(motion);
-        entityId = entity.getEntityId();
+        entityId = entity.getId();
     }
 
     PacketSetEntityMotion(PacketBuffer buffer) {
@@ -34,13 +34,13 @@ public class PacketSetEntityMotion extends LocationDoublePacket {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            Entity entity = ClientUtils.getClientWorld().getEntityByID(entityId);
+            Entity entity = ClientUtils.getClientWorld().getEntity(entityId);
             if (entity != null) {
-                entity.setMotion(x, y, z);
+                entity.setDeltaMovement(x, y, z);
                 entity.setOnGround(false);
 //                entity.collided = false;
-                entity.collidedHorizontally = false;
-                entity.collidedVertically = false;
+                entity.horizontalCollision = false;
+                entity.verticalCollision = false;
                 if (entity instanceof LivingEntity) ((LivingEntity) entity).setJumping(true);
             }
         });

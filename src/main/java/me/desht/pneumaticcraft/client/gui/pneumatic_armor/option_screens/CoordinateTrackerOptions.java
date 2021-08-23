@@ -68,8 +68,8 @@ public class CoordinateTrackerOptions extends IOptionPage.SimpleOptionPage<Coord
      * See also: {@link CoordTrackClientHandler.Listener#onPlayerInteract(PlayerInteractEvent.RightClickBlock)}
      */
     private void selectTarget() {
-        mc.player.closeScreen();
-        mc.setGameFocused(true);
+        mc.player.closeContainer();
+        mc.setWindowActive(true);
         coordHandler.isListeningToCoordTrackerSetting = true;
         HUDHandler.getInstance().addMessage(xlate("pneumaticcraft.armor.message.coordinateTracker.settingCoord"),
                 Collections.singletonList(xlate("pneumaticcraft.armor.message.coordinateTracker.rightClickToSet")),
@@ -77,8 +77,8 @@ public class CoordinateTrackerOptions extends IOptionPage.SimpleOptionPage<Coord
     }
 
     private void navigateToSurface() {
-        mc.player.closeScreen();
-        mc.setGameFocused(true);
+        mc.player.closeContainer();
+        mc.setWindowActive(true);
         switch (coordHandler.navigateToSurface(mc.player)) {
             case EASY_PATH:
                 HUDHandler.getInstance().addMessage(new ArmorMessage(xlate("pneumaticcraft.armor.message.coordinateTracker.routeFound"), 90, 0x7000AA00));

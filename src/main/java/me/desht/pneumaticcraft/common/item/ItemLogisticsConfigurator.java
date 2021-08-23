@@ -25,15 +25,15 @@ public class ItemLogisticsConfigurator extends ItemPressurizable {
     @Override
     public ActionResultType onItemUseFirst(ItemStack stack, ItemUseContext ctx) {
         PlayerEntity player = ctx.getPlayer();
-        World world = ctx.getWorld();
-        BlockPos pos = ctx.getPos();
-        Direction side = ctx.getFace();
+        World world = ctx.getLevel();
+        BlockPos pos = ctx.getClickedPos();
+        Direction side = ctx.getClickedFace();
 
-        if (!world.isRemote
+        if (!world.isClientSide
                 && stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).map(h -> h.getPressure() > 0.1).orElseThrow(RuntimeException::new)) {
             Stream<ISemiBlock> semiBlocks = SemiblockTracker.getInstance().getAllSemiblocks(world, pos, side);
 
-            if (player.isSneaking()) {
+            if (player.isShiftKeyDown()) {
                 semiBlocks.filter(s -> !(s instanceof IDirectionalSemiblock) || ((IDirectionalSemiblock) s).getSide() == side)
                         .forEach(s -> s.removeSemiblock(player));
                 return ActionResultType.SUCCESS;
@@ -44,7 +44,7 @@ public class ItemLogisticsConfigurator extends ItemPressurizable {
                     return ActionResultType.SUCCESS;
                 }
             }
-        } else if (world.isRemote) {
+        } else if (world.isClientSide) {
             return ActionResultType.SUCCESS;
         }
         return ActionResultType.PASS;

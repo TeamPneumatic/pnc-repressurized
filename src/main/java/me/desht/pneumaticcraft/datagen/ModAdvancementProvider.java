@@ -43,7 +43,7 @@ public class ModAdvancementProvider extends AdvancementProvider {
     }
 
     @Override
-    public void act(DirectoryCache cache) throws IOException {
+    public void run(DirectoryCache cache) throws IOException {
         Path path = this.generator.getOutputFolder();
         Set<ResourceLocation> set = Sets.newHashSet();
         Consumer<Advancement> consumer = (advancement) -> {
@@ -52,7 +52,7 @@ public class ModAdvancementProvider extends AdvancementProvider {
             } else {
                 Path path1 = getPath(path, advancement);
                 try {
-                    IDataProvider.save(GSON, cache, advancement.copy().serialize(), path1);
+                    IDataProvider.save(GSON, cache, advancement.deconstruct().serializeToJson(), path1);
                 } catch (IOException e) {
                     Log.error("Couldn't save advancement {}", path1, e);
                 }
@@ -71,104 +71,104 @@ public class ModAdvancementProvider extends AdvancementProvider {
 
     public void register(Consumer<Advancement> t) {
         Advancement root = itemAdvancement("root", FrameType.TASK, ModItems.COMPRESSED_IRON_INGOT.get())
-                .withRewards(experience(10))
-                .register(t, id("root"));
+                .rewards(experience(10))
+                .save(t, id("root"));
 
         // oil tree
         Advancement oilBucket = itemAdvancement("oil_bucket", FrameType.TASK, ModItems.OIL_BUCKET.get())
-                .withParent(root)
-                .register(t, id("oil_bucket"));
+                .parent(root)
+                .save(t, id("oil_bucket"));
         Advancement refinery = itemAdvancement("refinery", FrameType.GOAL, ModBlocks.REFINERY.get(),
                 new ItemPredicate[] {
                         itemPredicate(ModBlocks.REFINERY.get(), 1),
                         itemPredicate(ModBlocks.REFINERY_OUTPUT.get(), 2),
                 })
-                .withParent(oilBucket)
-                .withRewards(experience(20))
-                .register(t, id("refinery"));
+                .parent(oilBucket)
+                .rewards(experience(20))
+                .save(t, id("refinery"));
         itemAdvancement("liquid_compressor", FrameType.TASK, ModBlocks.LIQUID_COMPRESSOR.get())
-                .withParent(refinery)
-                .withRewards(experience(10))
-                .register(t, id("liquid_compressor"));
+                .parent(refinery)
+                .rewards(experience(10))
+                .save(t, id("liquid_compressor"));
         Advancement vortexTube = itemAdvancement("vortex_tube", FrameType.TASK, ModBlocks.VORTEX_TUBE.get())
-                .withParent(refinery)
-                .register(t, id("vortex_tube"));
+                .parent(refinery)
+                .save(t, id("vortex_tube"));
         Advancement lpgBucket = itemAdvancement("lpg_bucket", FrameType.TASK, ModItems.LPG_BUCKET.get())
-                .withParent(vortexTube)
-                .withRewards(experience(20))
-                .register(t, id("lpg_bucket"));
+                .parent(vortexTube)
+                .rewards(experience(20))
+                .save(t, id("lpg_bucket"));
         Advancement tpp = itemAdvancement("tp_plant", FrameType.TASK, ModBlocks.THERMOPNEUMATIC_PROCESSING_PLANT.get())
-                .withParent(lpgBucket)
-                .withRewards(experience(10))
-                .register(t, id("tp_plant"));
+                .parent(lpgBucket)
+                .rewards(experience(10))
+                .save(t, id("tp_plant"));
         Advancement plastic = itemAdvancement("plastic", FrameType.GOAL, ModItems.PLASTIC.get())
-                .withParent(tpp)
-                .withRewards(experience(10))
-                .register(t, id("plastic"));
+                .parent(tpp)
+                .rewards(experience(10))
+                .save(t, id("plastic"));
         Advancement jackhammer = itemAdvancement("jackhammer", FrameType.GOAL, ModItems.JACKHAMMER.get())
-                .withParent(plastic)
-                .withRewards(experience(20))
-                .register(t, id("jackhammer"));
+                .parent(plastic)
+                .rewards(experience(20))
+                .save(t, id("jackhammer"));
         itemAdvancement("drill_bit_netherite", FrameType.CHALLENGE, ModItems.NETHERITE_DRILL_BIT.get())
-                .withParent(jackhammer)
-                .withRewards(experience(50))
-                .register(t, id("drill_bit_netherite"));
+                .parent(jackhammer)
+                .rewards(experience(50))
+                .save(t, id("drill_bit_netherite"));
         Advancement amadronTablet = itemAdvancement("amadron_tablet", FrameType.TASK, ModItems.AMADRON_TABLET.get())
-                .withParent(plastic)
-                .register(t, id("amadron_tablet"));
+                .parent(plastic)
+                .save(t, id("amadron_tablet"));
         Advancement pcbBlueprint = itemAdvancement("pcb_blueprint", FrameType.TASK, ModItems.PCB_BLUEPRINT.get())
-                .withParent(amadronTablet)
-                .withRewards(experience(20))
-                .register(t, id("pcb_blueprint"));
+                .parent(amadronTablet)
+                .rewards(experience(20))
+                .save(t, id("pcb_blueprint"));
         itemAdvancement("uv_light_box", FrameType.TASK, ModBlocks.UV_LIGHT_BOX.get())
-                .withParent(pcbBlueprint)
-                .register(t, id("uv_light_box"));
+                .parent(pcbBlueprint)
+                .save(t, id("uv_light_box"));
         Advancement lubricant = itemAdvancement("lubricant_bucket", FrameType.TASK, ModItems.LUBRICANT_BUCKET.get())
-                .withParent(tpp)
-                .register(t, id("lubricant_bucket"));
+                .parent(tpp)
+                .save(t, id("lubricant_bucket"));
         itemAdvancement("speed_upgrade", FrameType.TASK, EnumUpgrade.SPEED.getItem())
-                .withParent(lubricant)
-                .withRewards(experience(15))
-                .register(t, id("speed_upgrade"));
+                .parent(lubricant)
+                .rewards(experience(15))
+                .save(t, id("speed_upgrade"));
         Advancement yeast = itemAdvancement("yeast_culture", FrameType.TASK, ModItems.YEAST_CULTURE_BUCKET.get())
-                .withParent(tpp)
-                .withRewards(experience(10))
-                .register(t, id("yeast_culture"));
+                .parent(tpp)
+                .rewards(experience(10))
+                .save(t, id("yeast_culture"));
         Advancement ethanol = itemAdvancement("ethanol", FrameType.TASK, ModItems.ETHANOL_BUCKET.get())
-                .withParent(yeast)
-                .withRewards(experience(10))
-                .register(t, id("ethanol"));
+                .parent(yeast)
+                .rewards(experience(10))
+                .save(t, id("ethanol"));
         itemAdvancement("biodiesel", FrameType.GOAL, ModItems.BIODIESEL_BUCKET.get())
-                .withParent(ethanol)
-                .withRewards(experience(25))
-                .register(t, id("biodiesel"));
+                .parent(ethanol)
+                .rewards(experience(25))
+                .save(t, id("biodiesel"));
 
         // pressure tube tree
         Advancement pressureTube = itemAdvancement("pressure_tube", FrameType.TASK, ModBlocks.PRESSURE_TUBE.get())
-                .withParent(root)
-                .register(t, id("pressure_tube"));
+                .parent(root)
+                .save(t, id("pressure_tube"));
         itemAdvancement("air_compressor", FrameType.TASK, ModBlocks.AIR_COMPRESSOR.get())
-                .withParent(pressureTube)
-                .withRewards(experience(10))
-                .register(t, id("air_compressor"));
+                .parent(pressureTube)
+                .rewards(experience(10))
+                .save(t, id("air_compressor"));
         itemAdvancement("minigun", FrameType.TASK, ModItems.MINIGUN.get())
-                .withParent(pressureTube)
-                .withRewards(experience(10))
-                .register(t, id("minigun"));
+                .parent(pressureTube)
+                .rewards(experience(10))
+                .save(t, id("minigun"));
         Advancement wrench = itemAdvancement("pneumatic_wrench", FrameType.TASK, ModItems.PNEUMATIC_WRENCH.get(),
                 new ItemPredicate[] {
                         itemPredicateNoNBT(ModItems.PNEUMATIC_WRENCH.get(), 1)
                 })
-                .withParent(pressureTube)
-                .withRewards(experience(10))
-                .register(t, id("pneumatic_wrench"));
+                .parent(pressureTube)
+                .rewards(experience(10))
+                .save(t, id("pneumatic_wrench"));
         customAdvancement(AdvancementTriggers.CHARGED_WRENCH, "pneumatic_wrench_charged", FrameType.TASK, ModItems.PNEUMATIC_WRENCH.get())
-                .withParent(wrench)
-                .withRewards(experience(10))
-                .register(t, id("pneumatic_wrench_charged"));
+                .parent(wrench)
+                .rewards(experience(10))
+                .save(t, id("pneumatic_wrench_charged"));
         customAdvancement(AdvancementTriggers.MACHINE_VANDAL, "machine_vandal", FrameType.TASK, Items.IRON_PICKAXE)
-                .withParent(wrench)
-                .register(t, id("machine_vandal"));
+                .parent(wrench)
+                .save(t, id("machine_vandal"));
 
         // logistics tree
         Advancement frames = itemAdvancement("logistics_frame", FrameType.TASK, ModItems.LOGISTICS_FRAME_PASSIVE_PROVIDER.get(),
@@ -176,91 +176,91 @@ public class ModAdvancementProvider extends AdvancementProvider {
                         itemPredicate(ModItems.LOGISTICS_FRAME_PASSIVE_PROVIDER.get(), 1),
                         itemPredicate(ModItems.LOGISTICS_FRAME_REQUESTER.get(), 1),
                 })
-                .withParent(root)
-                .withRewards(experience(20))
-                .register(t, id("logistics_frame"));
+                .parent(root)
+                .rewards(experience(20))
+                .save(t, id("logistics_frame"));
         Advancement configurator = itemAdvancement("logistics_configurator", FrameType.TASK, ModItems.LOGISTICS_CONFIGURATOR.get())
-                .withParent(frames)
-                .withRewards(experience(10))
-                .register(t, id("logistics_configurator"));
+                .parent(frames)
+                .rewards(experience(10))
+                .save(t, id("logistics_configurator"));
         customAdvancement(AdvancementTriggers.LOGISTICS_DRONE_DEPLOYED, "logistics_drone", FrameType.GOAL, ModItems.LOGISTICS_DRONE.get())
-                .withParent(configurator)
-                .withRewards(experience(10))
-                .register(t, id("logistics_drone"));
+                .parent(configurator)
+                .rewards(experience(10))
+                .save(t, id("logistics_drone"));
 
         // pressure chamber tree
         Advancement pressureChamber = customAdvancement(AdvancementTriggers.PRESSURE_CHAMBER, "pressure_chamber", FrameType.GOAL, ModBlocks.PRESSURE_CHAMBER_WALL.get())
-                .withParent(root)
-                .withRewards(experience(20))
-                .register(t, id("pressure_chamber"));
+                .parent(root)
+                .rewards(experience(20))
+                .save(t, id("pressure_chamber"));
         Advancement etchingAcid = itemAdvancement("etchacid_bucket", FrameType.TASK, ModItems.ETCHING_ACID_BUCKET.get())
-                .withParent(pressureChamber)
-                .register(t, id("etchacid_bucket"));
+                .parent(pressureChamber)
+                .save(t, id("etchacid_bucket"));
         Advancement emptyPCB = itemAdvancement("empty_pcb", FrameType.TASK, ModItems.EMPTY_PCB.get())
-                .withParent(etchingAcid)
-                .register(t, id("empty_pcb"));
+                .parent(etchingAcid)
+                .save(t, id("empty_pcb"));
         Advancement unassembledPCB = itemAdvancement("unassembled_pcb", FrameType.TASK, ModItems.UNASSEMBLED_PCB.get())
-                .withParent(emptyPCB)
-                .register(t, id("unassembled_pcb"));
+                .parent(emptyPCB)
+                .save(t, id("unassembled_pcb"));
         Advancement pcb = itemAdvancement("printed_circuit_board", FrameType.GOAL, ModItems.PRINTED_CIRCUIT_BOARD.get())
-                .withParent(unassembledPCB)
-                .withRewards(experience(20))
-                .register(t, id("printed_circuit_board"));
+                .parent(unassembledPCB)
+                .rewards(experience(20))
+                .save(t, id("printed_circuit_board"));
         // armor subtree
         Advancement armor = customAdvancement(AdvancementTriggers.PNEUMATIC_ARMOR, "pneumatic_armor", FrameType.TASK, ModItems.PNEUMATIC_HELMET.get())
-                .withParent(pcb)
-                .withRewards(experience(20))
-                .register(t, id("pneumatic_armor"));
+                .parent(pcb)
+                .rewards(experience(20))
+                .save(t, id("pneumatic_armor"));
         Advancement jetBoots = customAdvancement(AdvancementTriggers.FLIGHT, "flight", FrameType.CHALLENGE, EnumUpgrade.JET_BOOTS.getItem())
-                .withParent(armor)
-                .withRewards(experience(50))
-                .register(t, id("flight"));
+                .parent(armor)
+                .rewards(experience(50))
+                .save(t, id("flight"));
         customAdvancement(AdvancementTriggers.FLY_INTO_WALL, "fly_into_wall", FrameType.TASK, Blocks.BRICKS)
-                .withParent(jetBoots)
-                .register(t, id("fly_into_wall"));
+                .parent(jetBoots)
+                .save(t, id("fly_into_wall"));
         customAdvancement(AdvancementTriggers.BLOCK_HACK, "block_hack", FrameType.TASK, EnumUpgrade.BLOCK_TRACKER.getItem())
-                .withParent(armor)
-                .withRewards(experience(10))
-                .register(t, id("block_hack"));
+                .parent(armor)
+                .rewards(experience(10))
+                .save(t, id("block_hack"));
         customAdvancement(AdvancementTriggers.ENTITY_HACK, "entity_hack", FrameType.TASK, EnumUpgrade.ENTITY_TRACKER.getItem())
-                .withParent(armor)
-                .withRewards(experience(10))
-                .register(t, id("entity_hack"));
+                .parent(armor)
+                .rewards(experience(10))
+                .save(t, id("entity_hack"));
         // assembly line subtree
         Advancement assembly = itemAdvancement("assembly_controller", FrameType.GOAL, ModBlocks.ASSEMBLY_CONTROLLER.get())
-                .withParent(pcb)
-                .withRewards(experience(30))
-                .register(t, id("assembly_controller"));
+                .parent(pcb)
+                .rewards(experience(30))
+                .save(t, id("assembly_controller"));
         Advancement advancedTube = itemAdvancement("advanced_pressure_tube", FrameType.TASK, ModBlocks.ADVANCED_PRESSURE_TUBE.get())
-                .withParent(assembly)
-                .withRewards(experience(10))
-                .register(t, id("advanced_pressure_tube"));
+                .parent(assembly)
+                .rewards(experience(10))
+                .save(t, id("advanced_pressure_tube"));
         itemAdvancement("aerial_interface", FrameType.TASK, ModBlocks.AERIAL_INTERFACE.get())
-                .withParent(advancedTube)
-                .withRewards(experience(10))
-                .register(t, id("aerial_interface"));
+                .parent(advancedTube)
+                .rewards(experience(10))
+                .save(t, id("aerial_interface"));
         itemAdvancement("programmable_controller", FrameType.TASK, ModBlocks.PROGRAMMABLE_CONTROLLER.get())
-                .withParent(advancedTube)
-                .withRewards(experience(10))
-                .register(t, id("programmable_controller"));
+                .parent(advancedTube)
+                .rewards(experience(10))
+                .save(t, id("programmable_controller"));
         itemAdvancement("flux_compressor", FrameType.TASK, ModBlocks.FLUX_COMPRESSOR.get())
-                .withParent(advancedTube)
-                .withRewards(experience(10))
-                .register(t, id("flux_compressor"));
+                .parent(advancedTube)
+                .rewards(experience(10))
+                .save(t, id("flux_compressor"));
         itemAdvancement("aphorism_tile", FrameType.TASK, ModBlocks.APHORISM_TILE.get())
-                .withParent(assembly)
-                .register(t, id("aphorism_tile"));
+                .parent(assembly)
+                .save(t, id("aphorism_tile"));
         // programmer subtree
         Advancement programmer = itemAdvancement("programmer", FrameType.TASK, ModBlocks.PROGRAMMER.get())
-                .withParent(pcb)
-                .register(t, id("programmer"));
+                .parent(pcb)
+                .save(t, id("programmer"));
         Advancement puzzle = itemAdvancement("programming_puzzle", FrameType.TASK, ModItems.PROGRAMMING_PUZZLE.get())
-                .withParent(programmer)
-                .register(t, id("programming_puzzle"));
+                .parent(programmer)
+                .save(t, id("programming_puzzle"));
         customAdvancement(AdvancementTriggers.PROGRAM_DRONE, "program_drone", FrameType.CHALLENGE, ModItems.DRONE.get())
-                .withParent(puzzle)
-                .withRewards(experience(50))
-                .register(t, id("program_drone"));
+                .parent(puzzle)
+                .rewards(experience(50))
+                .save(t, id("program_drone"));
     }
 
     /***************************************
@@ -268,39 +268,39 @@ public class ModAdvancementProvider extends AdvancementProvider {
      */
 
     private Advancement.Builder customAdvancement(CustomTrigger trigger, String name, FrameType type, IItemProvider itemDisp) {
-        return Advancement.Builder.builder()
-                .withDisplay(itemDisp,
+        return Advancement.Builder.advancement()
+                .display(itemDisp,
                         xlate("pneumaticcraft.advancement." + name),
                         xlate("pneumaticcraft.advancement." + name + ".desc"),
                         BACKGROUND_TEXTURE, type, true, true, false)
-                .withCriterion("0", trigger.getInstance());
+                .addCriterion("0", trigger.getInstance());
     }
     private Advancement.Builder itemAdvancement(String name, FrameType type, IItemProvider... items) {
         Validate.isTrue(items.length > 0);
-        return Advancement.Builder.builder()
-                .withDisplay(items[0],
+        return Advancement.Builder.advancement()
+                .display(items[0],
                         xlate("pneumaticcraft.advancement." + name),
                         xlate("pneumaticcraft.advancement." + name + ".desc"),
                         BACKGROUND_TEXTURE, type, true, true, false)
-                .withCriterion("0", InventoryChangeTrigger.Instance.forItems(items));
+                .addCriterion("0", InventoryChangeTrigger.Instance.hasItems(items));
     }
 
     private Advancement.Builder itemAdvancement(String name, FrameType type, IItemProvider item, ItemPredicate[] predicates) {
-        return Advancement.Builder.builder()
-                .withDisplay(item,
+        return Advancement.Builder.advancement()
+                .display(item,
                         xlate("pneumaticcraft.advancement." + name),
                         xlate("pneumaticcraft.advancement." + name + ".desc"),
                         BACKGROUND_TEXTURE, type, true, true, false)
-                .withCriterion("0", InventoryChangeTrigger.Instance.forItems(predicates));
+                .addCriterion("0", InventoryChangeTrigger.Instance.hasItems(predicates));
     }
 
     private ItemPredicate itemPredicate(IItemProvider item, int minCount) {
-        return new ItemPredicate(null, item.asItem(), MinMaxBounds.IntBound.atLeast(minCount), MinMaxBounds.IntBound.UNBOUNDED,
+        return new ItemPredicate(null, item.asItem(), MinMaxBounds.IntBound.atLeast(minCount), MinMaxBounds.IntBound.ANY,
                 new EnchantmentPredicate[0], new EnchantmentPredicate[0], null, NBTPredicate.ANY);
     }
 
     private ItemPredicate itemPredicateNoNBT(IItemProvider item, int minCount) {
-        return new ItemPredicate(null, item.asItem(), MinMaxBounds.IntBound.atLeast(minCount), MinMaxBounds.IntBound.UNBOUNDED,
+        return new ItemPredicate(null, item.asItem(), MinMaxBounds.IntBound.atLeast(minCount), MinMaxBounds.IntBound.ANY,
                 new EnchantmentPredicate[0], new EnchantmentPredicate[0], null, new NBTPredicate(null));
     }
 }

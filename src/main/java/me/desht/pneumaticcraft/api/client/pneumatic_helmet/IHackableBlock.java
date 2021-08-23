@@ -118,10 +118,10 @@ public interface IHackableBlock {
      * @return an optional ray trace result
      */
     default Optional<BlockRayTraceResult> fakeRayTrace(PlayerEntity player, BlockPos targetPos) {
-        BlockState state = player.world.getBlockState(targetPos);
-        AxisAlignedBB aabb = state.getShape(player.world, targetPos).getBoundingBox().offset(targetPos);
-        Optional<Vector3d> hit = aabb.rayTrace(player.getEyePosition(1f), aabb.getCenter());
-        Direction dir = Direction.getFacingDirections(player)[0];
+        BlockState state = player.level.getBlockState(targetPos);
+        AxisAlignedBB aabb = state.getShape(player.level, targetPos).bounds().move(targetPos);
+        Optional<Vector3d> hit = aabb.clip(player.getEyePosition(1f), aabb.getCenter());
+        Direction dir = Direction.orderedByNearest(player)[0];
         return hit.map(v -> new BlockRayTraceResult(v, dir.getOpposite(), targetPos, false));
     }
 }

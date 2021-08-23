@@ -23,15 +23,15 @@ public class TileEntityCreativeCompressor extends TileEntityPneumaticBase implem
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT tag) {
-        super.read(state, tag);
+    public void load(BlockState state, CompoundNBT tag) {
+        super.load(state, tag);
 
         pressureSetpoint = tag.getFloat("setpoint");
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT nbt) {
-        super.write(nbt);
+    public CompoundNBT save(CompoundNBT nbt) {
+        super.save(nbt);
         nbt.putFloat("setpoint", pressureSetpoint);
         return nbt;
     }
@@ -39,7 +39,7 @@ public class TileEntityCreativeCompressor extends TileEntityPneumaticBase implem
     @Override
     public void tick() {
         super.tick();
-        if (!world.isRemote) {
+        if (!level.isClientSide) {
             airHandler.setPressure(pressureSetpoint);
         }
     }
@@ -62,7 +62,7 @@ public class TileEntityCreativeCompressor extends TileEntityPneumaticBase implem
     @Nullable
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        return new ContainerCreativeCompressor(i, playerInventory, getPos());
+        return new ContainerCreativeCompressor(i, playerInventory, getBlockPos());
     }
 
 }

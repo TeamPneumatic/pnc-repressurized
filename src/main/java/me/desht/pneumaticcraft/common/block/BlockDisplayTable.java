@@ -35,25 +35,25 @@ public class BlockDisplayTable extends BlockPneumaticCraft {
     private static final BooleanProperty SW = BooleanProperty.create("sw");
     private static final BooleanProperty NW = BooleanProperty.create("nw");
 
-    private static final VoxelShape TOP = makeCuboidShape(0, 14, 0, 16, 16, 16);
-    private static final VoxelShape LEG1 = makeCuboidShape(1, 0, 1, 3, 14, 3);
-    private static final VoxelShape LEG2 = makeCuboidShape(1, 0, 13, 3, 14, 15);
-    private static final VoxelShape LEG3 = makeCuboidShape(13, 0, 1, 15, 14, 3);
-    private static final VoxelShape LEG4 = makeCuboidShape(13, 0, 13, 15, 14, 15);
+    private static final VoxelShape TOP = box(0, 14, 0, 16, 16, 16);
+    private static final VoxelShape LEG1 = box(1, 0, 1, 3, 14, 3);
+    private static final VoxelShape LEG2 = box(1, 0, 13, 3, 14, 15);
+    private static final VoxelShape LEG3 = box(13, 0, 1, 15, 14, 3);
+    private static final VoxelShape LEG4 = box(13, 0, 13, 15, 14, 15);
 
     public BlockDisplayTable() {
         super(ModBlocks.defaultProps());
-        setDefaultState(getStateContainer().getBaseState()
-                .with(NE, false)
-                .with(NW, false)
-                .with(SE, false)
-                .with(NW, false)
+        registerDefaultState(getStateDefinition().any()
+                .setValue(NE, false)
+                .setValue(NW, false)
+                .setValue(SE, false)
+                .setValue(NW, false)
         );
     }
 
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        super.fillStateContainer(builder);
+    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
 
         builder.add(NE, SW, SE, NW);
     }
@@ -62,26 +62,26 @@ public class BlockDisplayTable extends BlockPneumaticCraft {
     @Override
     public BlockState getStateForPlacement(BlockItemUseContext ctx) {
         BlockState state = super.getStateForPlacement(ctx);
-        boolean[] connected = getConnections(ctx.getWorld(), ctx.getPos(), state);
-        return state.with(NE, connected[0]).with(SE, connected[1]).with(SW, connected[2]).with(NW, connected[3]);
+        boolean[] connected = getConnections(ctx.getLevel(), ctx.getClickedPos(), state);
+        return state.setValue(NE, connected[0]).setValue(SE, connected[1]).setValue(SW, connected[2]).setValue(NW, connected[3]);
     }
 
     @Override
-    public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
+    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
         boolean[] connected = getConnections(worldIn, currentPos, stateIn);
-        return stateIn.with(NE, connected[0]).with(SE, connected[1]).with(SW, connected[2]).with(NW, connected[3]);
+        return stateIn.setValue(NE, connected[0]).setValue(SE, connected[1]).setValue(SW, connected[2]).setValue(NW, connected[3]);
     }
 
     private VoxelShape getCachedShape(BlockState state) {
-        int shapeIdx = (state.get(NE) ? 1 : 0) | (state.get(SE) ? 2 : 0) | (state.get(SW) ? 4 : 0) | (state.get(NW) ? 8 : 0);
+        int shapeIdx = (state.getValue(NE) ? 1 : 0) | (state.getValue(SE) ? 2 : 0) | (state.getValue(SW) ? 4 : 0) | (state.getValue(NW) ? 8 : 0);
         if (SHAPE_CACHE[shapeIdx] == null) {
             VoxelShape shape = TOP;
             for (Leg corner : Leg.values()) {
-                if (!state.get(corner.prop)) {
+                if (!state.getValue(corner.prop)) {
                     shape = VoxelShapes.or(shape, corner.shape);
                 }
             }
-            SHAPE_CACHE[shapeIdx] = shape.simplify();
+            SHAPE_CACHE[shapeIdx] = shape.optimize();
         }
         return SHAPE_CACHE[shapeIdx];
     }
@@ -103,7 +103,7 @@ public class BlockDisplayTable extends BlockPneumaticCraft {
     }
 
     private boolean isMatch(IWorld world, BlockPos pos, BlockState state, Direction dir) {
-        BlockState state2 = world.getBlockState(pos.offset(dir));
+        BlockState state2 = world.getBlockState(pos.relative(dir));
         return state2.getBlock() == this && getRotation(state) == getRotation(state2);
     }
 
@@ -128,18 +128,18 @@ public class BlockDisplayTable extends BlockPneumaticCraft {
     }
 
     @Override
-    public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
-        TileEntity te = world.getTileEntity(pos);
-        ItemStack heldStack = player.getHeldItem(hand);
-        if (player.isSneaking() || te instanceof INamedContainerProvider || ModdedWrenchUtils.getInstance().isWrench(heldStack)) {
-            return super.onBlockActivated(state, world, pos, player, hand, brtr);
+    public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
+        TileEntity te = world.getBlockEntity(pos);
+        ItemStack heldStack = player.getItemInHand(hand);
+        if (player.isShiftKeyDown() || te instanceof INamedContainerProvider || ModdedWrenchUtils.getInstance().isWrench(heldStack)) {
+            return super.use(state, world, pos, player, hand, brtr);
         } else if (te instanceof TileEntityDisplayTable) {
-            if (!world.isRemote) {
+            if (!world.isClientSide) {
                 TileEntityDisplayTable teDT = (TileEntityDisplayTable) te;
                 if (teDT.getPrimaryInventory().getStackInSlot(0).isEmpty()) {
                     // try to put the player's held item onto the table
-                    ItemStack excess = teDT.getPrimaryInventory().insertItem(0, player.getHeldItem(hand), false);
-                    if (!player.isCreative()) player.setHeldItem(hand, excess);
+                    ItemStack excess = teDT.getPrimaryInventory().insertItem(0, player.getItemInHand(hand), false);
+                    if (!player.isCreative()) player.setItemInHand(hand, excess);
                 } else {
                     // try to remove whatever is on the table
                     ItemStack stack = teDT.getPrimaryInventory().extractItem(0, 64, false);
@@ -152,10 +152,10 @@ public class BlockDisplayTable extends BlockPneumaticCraft {
     }
 
     private enum Leg {
-        NE( 1,-1, BlockDisplayTable.NE, Block.makeCuboidShape(13f, 0,  1f, 15f, 16,  3f)),
-        SE( 1, 1, BlockDisplayTable.SE, Block.makeCuboidShape(13f, 0, 13f, 15f, 16, 15f)),
-        SW(-1, 1, BlockDisplayTable.SW, Block.makeCuboidShape( 1f, 0, 13f,  3f, 16, 15f)),
-        NW(-1,-1, BlockDisplayTable.NW, Block.makeCuboidShape( 1f, 0,  1f,  3f, 16,  3f));
+        NE( 1,-1, BlockDisplayTable.NE, Block.box(13f, 0,  1f, 15f, 16,  3f)),
+        SE( 1, 1, BlockDisplayTable.SE, Block.box(13f, 0, 13f, 15f, 16, 15f)),
+        SW(-1, 1, BlockDisplayTable.SW, Block.box( 1f, 0, 13f,  3f, 16, 15f)),
+        NW(-1,-1, BlockDisplayTable.NW, Block.box( 1f, 0,  1f,  3f, 16,  3f));
 
         final int x;
         final int z;

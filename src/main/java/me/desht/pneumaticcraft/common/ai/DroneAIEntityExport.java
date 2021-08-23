@@ -10,12 +10,12 @@ public class DroneAIEntityExport<W extends ProgWidgetAreaItemBase> extends Drone
     }
 
     @Override
-    public boolean shouldExecute() {
+    public boolean canUse() {
         if (drone.getCarryingEntities().isEmpty()) return false;
         for (Entity e : drone.getCarryingEntities()) {
             if (!progWidget.isEntityValid(e)) return false;
         }
-        return super.shouldExecute();
+        return super.canUse();
     }
 
     @Override

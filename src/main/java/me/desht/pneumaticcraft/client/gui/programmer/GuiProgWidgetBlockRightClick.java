@@ -49,15 +49,15 @@ public class GuiProgWidgetBlockRightClick extends GuiProgWidgetDigAndPlace<ProgW
     }
 
     @Override
-    public void onClose() {
+    public void removed() {
         if (sideSelector.getSelectedElementIndex() >= 0) {
-            progWidget.setClickSide(Direction.byIndex(sideSelector.getSelectedElementIndex()));
+            progWidget.setClickSide(Direction.from3DDataValue(sideSelector.getSelectedElementIndex()));
         }
         if (clickTypeSelector.getSelectedElementIndex() >= 0) {
             progWidget.setClickType(RightClickType.values()[clickTypeSelector.getSelectedElementIndex()]);
         }
         progWidget.setSneaking(checkboxSneaking.checked);
 
-        super.onClose();
+        super.removed();
     }
 }

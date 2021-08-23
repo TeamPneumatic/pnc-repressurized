@@ -30,21 +30,21 @@ public class RenderHeatFrame extends RenderSemiblockBase<EntityHeatFrame> {
         float[] f = tint.getComponents(null);
         AxisAlignedBB aabb = entityIn.getBoundingBox();
 
-        matrixStackIn.push();
-        matrixStackIn.scale((float) aabb.getXSize(), (float) aabb.getYSize(), (float) aabb.getZSize());
+        matrixStackIn.pushPose();
+        matrixStackIn.scale((float) aabb.getXsize(), (float) aabb.getYsize(), (float) aabb.getZsize());
         matrixStackIn.translate(0, -0.5, 0);
         if (entityIn.getTimeSinceHit() > 0) {
             wobble(entityIn, partialTicks, matrixStackIn);
         }
 
-        IVertexBuilder builder = bufferIn.getBuffer(RenderType.getEntityCutout(getEntityTexture(entityIn)));
-        model.render(matrixStackIn, builder, kludgeLightingLevel(entityIn, packedLightIn), OverlayTexture.getPackedUV(0F, false), f[0], f[1], f[2], f[3]);
+        IVertexBuilder builder = bufferIn.getBuffer(RenderType.entityCutout(getTextureLocation(entityIn)));
+        model.renderToBuffer(matrixStackIn, builder, kludgeLightingLevel(entityIn, packedLightIn), OverlayTexture.pack(0F, false), f[0], f[1], f[2], f[3]);
 
-        matrixStackIn.pop();
+        matrixStackIn.popPose();
     }
 
     @Override
-    public ResourceLocation getEntityTexture(EntityHeatFrame entityHeatFrame) {
+    public ResourceLocation getTextureLocation(EntityHeatFrame entityHeatFrame) {
         return Textures.MODEL_HEAT_FRAME;
     }
 }

@@ -22,17 +22,17 @@ public class BlockUVLightBox extends BlockPneumaticCraft implements ColorHandler
     public static final BooleanProperty LOADED = BooleanProperty.create("loaded");
     public static final BooleanProperty LIT = RedstoneTorchBlock.LIT;
 
-    private static final VoxelShape SHAPE_EW = Block.makeCuboidShape(1, 0, 4.5, 15, 7, 11.5);
-    private static final VoxelShape SHAPE_NS = Block.makeCuboidShape(4.5, 0, 1, 11.5, 7, 15);
+    private static final VoxelShape SHAPE_EW = Block.box(1, 0, 4.5, 15, 7, 11.5);
+    private static final VoxelShape SHAPE_NS = Block.box(4.5, 0, 1, 11.5, 7, 15);
 
     public BlockUVLightBox() {
-        super(ModBlocks.defaultProps().setLightLevel(state -> state.get(LIT) ? 15 : 0));
-        setDefaultState(getStateContainer().getBaseState().with(LOADED, false).with(LIT, false));
+        super(ModBlocks.defaultProps().lightLevel(state -> state.getValue(LIT) ? 15 : 0));
+        registerDefaultState(getStateDefinition().any().setValue(LOADED, false).setValue(LIT, false));
     }
 
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        super.fillStateContainer(builder);
+    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
         builder.add(LOADED, LIT);
     }
 
@@ -48,7 +48,7 @@ public class BlockUVLightBox extends BlockPneumaticCraft implements ColorHandler
 
     @Override
     public int getLightValue(BlockState state, IBlockReader world, BlockPos pos) {
-        return state.get(LIT) ? 15 : 0;
+        return state.getValue(LIT) ? 15 : 0;
     }
 
 //    @Override
@@ -64,7 +64,7 @@ public class BlockUVLightBox extends BlockPneumaticCraft implements ColorHandler
     @Override
     public int getTintColor(BlockState state, @Nullable IBlockDisplayReader world, @Nullable BlockPos pos, int tintIndex) {
         if (world != null && pos != null) {
-            return state.hasProperty(BlockUVLightBox.LIT) && state.get(BlockUVLightBox.LIT) ? 0xFF4000FF : 0xFFAFAFE4;
+            return state.hasProperty(BlockUVLightBox.LIT) && state.getValue(BlockUVLightBox.LIT) ? 0xFF4000FF : 0xFFAFAFE4;
         }
         return 0xFFAFAFE4;
     }

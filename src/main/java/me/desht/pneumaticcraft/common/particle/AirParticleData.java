@@ -18,14 +18,14 @@ public class AirParticleData implements IParticleData {
 
     public static final IDeserializer<AirParticleData> DESERIALIZER = new IDeserializer<AirParticleData>() {
         @Override
-        public AirParticleData deserialize(ParticleType<AirParticleData> particleType, StringReader stringReader) throws CommandSyntaxException {
+        public AirParticleData fromCommand(ParticleType<AirParticleData> particleType, StringReader stringReader) throws CommandSyntaxException {
             stringReader.expect(' ');
             float alpha = stringReader.readFloat();
             return new AirParticleData(alpha);
         }
 
         @Override
-        public AirParticleData read(ParticleType<AirParticleData> particleType, PacketBuffer packetBuffer) {
+        public AirParticleData fromNetwork(ParticleType<AirParticleData> particleType, PacketBuffer packetBuffer) {
             return new AirParticleData(packetBuffer.readFloat());
         }
     };
@@ -49,12 +49,12 @@ public class AirParticleData implements IParticleData {
     }
 
     @Override
-    public void write(PacketBuffer packetBuffer) {
+    public void writeToNetwork(PacketBuffer packetBuffer) {
         packetBuffer.writeFloat(alpha);
     }
 
     @Override
-    public String getParameters() {
+    public String writeToString() {
         return String.format(Locale.ROOT, "%s %f", getType().getRegistryName(), alpha);
     }
 

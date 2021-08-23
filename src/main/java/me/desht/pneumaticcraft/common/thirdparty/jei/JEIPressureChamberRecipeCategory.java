@@ -38,7 +38,7 @@ public class JEIPressureChamberRecipeCategory implements IRecipeCategory<Pressur
 //        super(jeiHelpers);
         background = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_PRESSURE_CHAMBER, 5, 11, 166, 116);
         icon = JEIPlugin.jeiHelpers.getGuiHelper().createDrawableIngredient(new ItemStack(ModBlocks.PRESSURE_CHAMBER_WALL.get()));
-        localizedName = I18n.format("pneumaticcraft.gui.pressureChamber");
+        localizedName = I18n.get("pneumaticcraft.gui.pressureChamber");
         tickTimer = JEIPlugin.jeiHelpers.getGuiHelper().createTickTimer(60, 60, false);
     }
 
@@ -87,7 +87,7 @@ public class JEIPressureChamberRecipeCategory implements IRecipeCategory<Pressur
                 ImmutableList.Builder<Integer> builder = ImmutableList.builder();
                 // find matching stacks
                 for (int i = 0; i < stacks.size(); i++) {
-                    if (needle.isItemEqual(stacks.get(i))) {
+                    if (needle.sameItem(stacks.get(i))) {
                         builder.add(i);
                     }
                 }
@@ -148,7 +148,7 @@ public class JEIPressureChamberRecipeCategory implements IRecipeCategory<Pressur
         recipeLayout.getItemStacks().addTooltipCallback((slotIndex, input, ingredient, tooltip) -> {
             String tooltipKey = recipe.getTooltipKey(input, slotIndex);
             if (!tooltipKey.isEmpty()) {
-                tooltip.addAll(PneumaticCraftUtils.splitStringComponent(I18n.format(tooltipKey)));
+                tooltip.addAll(PneumaticCraftUtils.splitStringComponent(I18n.get(tooltipKey)));
             }
         });
     }
@@ -156,7 +156,7 @@ public class JEIPressureChamberRecipeCategory implements IRecipeCategory<Pressur
     @Override
     public void draw(PressureChamberRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
         float pressure = recipe.getCraftingPressureForDisplay() * ((float) tickTimer.getValue() / tickTimer.getMaxValue());
-        PressureGaugeRenderer2D.drawPressureGauge(matrixStack, Minecraft.getInstance().fontRenderer, -1, PneumaticValues.MAX_PRESSURE_PRESSURE_CHAMBER, PneumaticValues.DANGER_PRESSURE_PRESSURE_CHAMBER, recipe.getCraftingPressureForDisplay(), pressure, 130, 27);
+        PressureGaugeRenderer2D.drawPressureGauge(matrixStack, Minecraft.getInstance().font, -1, PneumaticValues.MAX_PRESSURE_PRESSURE_CHAMBER, PneumaticValues.DANGER_PRESSURE_PRESSURE_CHAMBER, recipe.getCraftingPressureForDisplay(), pressure, 130, 27);
     }
 
     @Override

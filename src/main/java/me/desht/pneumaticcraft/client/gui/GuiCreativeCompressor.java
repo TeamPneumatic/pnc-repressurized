@@ -58,15 +58,15 @@ public class GuiCreativeCompressor extends GuiPneumaticContainerBase<ContainerCr
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int x, int y) {
-        super.drawGuiContainerForegroundLayer(matrixStack, x, y);
-        drawCenteredString(matrixStack, font, PneumaticCraftUtils.roundNumberTo(te.getPressure(), 1) + " bar", width / 2 - guiLeft, height / 2 - guiTop, 0xFFFFFF);
+    protected void renderLabels(MatrixStack matrixStack, int x, int y) {
+        super.renderLabels(matrixStack, x, y);
+        drawCenteredString(matrixStack, font, PneumaticCraftUtils.roundNumberTo(te.getPressure(), 1) + " bar", width / 2 - leftPos, height / 2 - topPos, 0xFFFFFF);
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int i, int j){
+    protected void renderBg(MatrixStack matrixStack, float partialTicks, int i, int j){
         renderBackground(matrixStack);
-        super.drawGuiContainerBackgroundLayer(matrixStack, partialTicks, i, j);
+        super.renderBg(matrixStack, partialTicks, i, j);
     }
 
     @Override

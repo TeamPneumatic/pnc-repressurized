@@ -131,7 +131,7 @@ public abstract class HeatPropertiesRecipe extends PneumaticCraftRecipe {
         if (getBlock() instanceof FlowingFluidBlock) {
             return new FluidStack(((FlowingFluidBlock) getBlock()).getFluid(), 1000).getDisplayName();
         } else {
-            return new ItemStack(getBlock()).getDisplayName();
+            return new ItemStack(getBlock()).getHoverName();
         }
     }
 }

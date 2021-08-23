@@ -51,8 +51,8 @@ public class MagnetHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> 
     public void tick(ICommonArmorHandler commonArmorHandler, boolean enabled) {
         PlayerEntity player = commonArmorHandler.getPlayer();
 
-        if (player.world.isRemote || !enabled
-                || (player.world.getGameTime() & 0x3) != 0
+        if (player.level.isClientSide || !enabled
+                || (player.level.getGameTime() & 0x3) != 0
                 || !commonArmorHandler.hasMinPressure(EquipmentSlotType.CHEST))
             return;
 
@@ -60,20 +60,20 @@ public class MagnetHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> 
                 + Math.min(commonArmorHandler.getUpgradeCount(EquipmentSlotType.CHEST, EnumUpgrade.MAGNET), PneumaticValues.MAGNET_MAX_UPGRADES);
         int magnetRadiusSq = magnetRadius * magnetRadius;
 
-        AxisAlignedBB box = new AxisAlignedBB(player.getPosition()).grow(magnetRadius);
-        List<Entity> itemList = player.getEntityWorld().getEntitiesWithinAABB(Entity.class, box,
+        AxisAlignedBB box = new AxisAlignedBB(player.blockPosition()).inflate(magnetRadius);
+        List<Entity> itemList = player.getCommandSenderWorld().getEntitiesOfClass(Entity.class, box,
                 e -> (e instanceof ExperienceOrbEntity || e instanceof ItemEntity) && e.isAlive());
 
-        Vector3d playerVec = player.getPositionVec();
+        Vector3d playerVec = player.position();
         for (Entity item : itemList) {
-            if (item instanceof ItemEntity && ((ItemEntity) item).cannotPickup()) continue;
+            if (item instanceof ItemEntity && ((ItemEntity) item).hasPickUpDelay()) continue;
 
-            if (item.getPositionVec().squareDistanceTo(playerVec) <= magnetRadiusSq
+            if (item.position().distanceToSqr(playerVec) <= magnetRadiusSq
                     && !ItemRegistry.getInstance().shouldSuppressMagnet(item)
                     && !item.getPersistentData().getBoolean(Names.PREVENT_REMOTE_MOVEMENT)) {
                 if (!commonArmorHandler.hasMinPressure(EquipmentSlotType.CHEST)) break;
-                item.setPosition(player.getPosX(), player.getPosY(), player.getPosZ());
-                if (item instanceof ItemEntity) ((ItemEntity) item).setPickupDelay(0);
+                item.setPos(player.getX(), player.getY(), player.getZ());
+                if (item instanceof ItemEntity) ((ItemEntity) item).setPickUpDelay(0);
                 commonArmorHandler.addAir(EquipmentSlotType.CHEST, -PNCConfig.Common.Armor.magnetAirUsage);
             }
         }

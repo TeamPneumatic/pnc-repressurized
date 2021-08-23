@@ -22,7 +22,7 @@ public class TankRenderInfo {
             faces.set(0, 6, true);
         } else {
             for (Direction face : renderFaces) {
-                faces.set(face.getIndex(), true);
+                faces.set(face.get3DDataValue(), true);
             }
         }
     }
@@ -32,12 +32,12 @@ public class TankRenderInfo {
     }
 
     public TankRenderInfo without(Direction face) {
-        faces.clear(face.getIndex());
+        faces.clear(face.get3DDataValue());
         return this;
     }
 
     public boolean shouldRender(Direction face) {
-        return faces.get(face.getIndex());
+        return faces.get(face.get3DDataValue());
     }
 
     public IFluidTank getTank() {

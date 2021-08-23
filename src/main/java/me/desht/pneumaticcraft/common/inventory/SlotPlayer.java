@@ -25,32 +25,32 @@ public class SlotPlayer extends Slot {
     }
 
     @Override
-    public int getSlotStackLimit() {
-        return slotType == EquipmentSlotType.OFFHAND ? super.getSlotStackLimit() : 1;
+    public int getMaxStackSize() {
+        return slotType == EquipmentSlotType.OFFHAND ? super.getMaxStackSize() : 1;
     }
 
     @Override
-    public boolean isItemValid(ItemStack stack) {
-        return slotType == EquipmentSlotType.OFFHAND ? super.isItemValid(stack) : stack.canEquip(slotType, ((PlayerInventory) inventory).player);
+    public boolean mayPlace(ItemStack stack) {
+        return slotType == EquipmentSlotType.OFFHAND ? super.mayPlace(stack) : stack.canEquip(slotType, ((PlayerInventory) container).player);
     }
 
     @Override
-    public boolean canTakeStack(PlayerEntity playerIn) {
-        if (slotType == EquipmentSlotType.OFFHAND) return super.canTakeStack(playerIn);
+    public boolean mayPickup(PlayerEntity playerIn) {
+        if (slotType == EquipmentSlotType.OFFHAND) return super.mayPickup(playerIn);
 
-        ItemStack itemstack = this.getStack();
-        return (itemstack.isEmpty() || playerIn.isCreative() || !EnchantmentHelper.hasBindingCurse(itemstack)) && super.canTakeStack(playerIn);
+        ItemStack itemstack = this.getItem();
+        return (itemstack.isEmpty() || playerIn.isCreative() || !EnchantmentHelper.hasBindingCurse(itemstack)) && super.mayPickup(playerIn);
     }
 
     @Override
-    public Pair<ResourceLocation, ResourceLocation> getBackground() {
-        return slotType.getSlotType() == EquipmentSlotType.Group.ARMOR ?
-                Pair.of(PlayerContainer.LOCATION_BLOCKS_TEXTURE, ARMOR_SLOT_TEXTURES[slotType.getIndex()]) :
-                Pair.of(PlayerContainer.LOCATION_BLOCKS_TEXTURE, PlayerContainer.EMPTY_ARMOR_SLOT_SHIELD);
+    public Pair<ResourceLocation, ResourceLocation> getNoItemIcon() {
+        return slotType.getType() == EquipmentSlotType.Group.ARMOR ?
+                Pair.of(PlayerContainer.BLOCK_ATLAS, ARMOR_SLOT_TEXTURES[slotType.getIndex()]) :
+                Pair.of(PlayerContainer.BLOCK_ATLAS, PlayerContainer.EMPTY_ARMOR_SLOT_SHIELD);
     }
 
     private static int getIndexForSlot(EquipmentSlotType type) {
-        if (type.getSlotType() == EquipmentSlotType.Group.ARMOR) {
+        if (type.getType() == EquipmentSlotType.Group.ARMOR) {
             return 36 + type.getIndex();
         } else if (type == EquipmentSlotType.OFFHAND) {
             return 40;

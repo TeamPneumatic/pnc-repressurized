@@ -35,6 +35,6 @@ public interface ICustomDurabilityBar {
      * @return true if the item will already be showing a normal durability bar
      */
     default boolean isShowingOtherBar(ItemStack stack) {
-        return stack.getDamage() > 0;
+        return stack.getDamageValue() > 0;
     }
 }

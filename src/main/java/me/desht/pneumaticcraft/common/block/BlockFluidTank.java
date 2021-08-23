@@ -42,9 +42,9 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import javax.annotation.Nullable;
 
 public class BlockFluidTank extends BlockPneumaticCraft implements ColorHandlers.ITintableBlock {
-    private static final VoxelShape S1 = makeCuboidShape(0, 0, 1, 16, 16, 15);
-    private static final VoxelShape S2 = makeCuboidShape(1, 0, 0, 15, 16, 16);
-    private static final VoxelShape SHAPE = VoxelShapes.combineAndSimplify(S1, S2, IBooleanFunction.OR);
+    private static final VoxelShape S1 = box(0, 0, 1, 16, 16, 15);
+    private static final VoxelShape S2 = box(1, 0, 0, 15, 16, 16);
+    private static final VoxelShape SHAPE = VoxelShapes.join(S1, S2, IBooleanFunction.OR);
 
     private final Size size;
 
@@ -52,12 +52,12 @@ public class BlockFluidTank extends BlockPneumaticCraft implements ColorHandlers
         super(ModBlocks.defaultProps());
         this.size = size;
 
-        setDefaultState(getStateContainer().getBaseState().with(UP, false).with(DOWN, false));
+        registerDefaultState(getStateDefinition().any().setValue(UP, false).setValue(DOWN, false));
     }
 
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        super.fillStateContainer(builder);
+    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
 
         builder.add(UP, DOWN);
     }
@@ -80,32 +80,32 @@ public class BlockFluidTank extends BlockPneumaticCraft implements ColorHandlers
     @Override
     public BlockState getStateForPlacement(BlockItemUseContext ctx) {
         BlockState state = super.getStateForPlacement(ctx);
-        return state == null ? null : state.with(UP, false).with(DOWN, false);
+        return state == null ? null : state.setValue(UP, false).setValue(DOWN, false);
     }
 
     @Override
-    public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
-        BlockState up = worldIn.getBlockState(currentPos.up());
-        if (stateIn.get(UP) && !(up.getBlock() instanceof BlockFluidTank)) {
-            stateIn = stateIn.with(UP, false);
+    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
+        BlockState up = worldIn.getBlockState(currentPos.above());
+        if (stateIn.getValue(UP) && !(up.getBlock() instanceof BlockFluidTank)) {
+            stateIn = stateIn.setValue(UP, false);
         }
-        BlockState down = worldIn.getBlockState(currentPos.down());
-        if (stateIn.get(DOWN) && !(down.getBlock() instanceof BlockFluidTank)) {
-            stateIn = stateIn.with(DOWN, false);
+        BlockState down = worldIn.getBlockState(currentPos.below());
+        if (stateIn.getValue(DOWN) && !(down.getBlock() instanceof BlockFluidTank)) {
+            stateIn = stateIn.setValue(DOWN, false);
         }
         return stateIn;
     }
 
     @Override
     public boolean onWrenched(World world, PlayerEntity player, BlockPos pos, Direction side, Hand hand) {
-        if (!player.isSneaking()) {
+        if (!player.isShiftKeyDown()) {
             RayTraceResult rtr = RayTraceUtils.getMouseOverServer(player, PneumaticCraftUtils.getPlayerReachDistance(player));
             if (rtr.getType() == RayTraceResult.Type.BLOCK) {
                 BlockRayTraceResult brtr = (BlockRayTraceResult) rtr;
-                if (brtr.getPos().equals(pos)) {
+                if (brtr.getBlockPos().equals(pos)) {
                     TileEntityFluidTank te = getTankAt(world, pos);
                     if (te != null) {
-                        double y = brtr.getHitVec().y - (int) brtr.getHitVec().y;
+                        double y = brtr.getLocation().y - (int) brtr.getLocation().y;
                         return tryToggleConnection(te, y >= 0.5 ? Direction.UP : Direction.DOWN);
                     }
                 }
@@ -118,19 +118,19 @@ public class BlockFluidTank extends BlockPneumaticCraft implements ColorHandlers
 
     private boolean tryToggleConnection(TileEntityFluidTank thisTank, Direction dir) {
         BlockState state = thisTank.getBlockState();
-        TileEntityFluidTank neighbourTank = getTankAt(thisTank.getWorld(), thisTank.getPos().offset(dir));
+        TileEntityFluidTank neighbourTank = getTankAt(thisTank.getLevel(), thisTank.getBlockPos().relative(dir));
         if (neighbourTank == null) return false;
         BlockState stateOther = neighbourTank.getBlockState();
-        boolean isConnected = state.get(connectionProperty(dir));
+        boolean isConnected = state.getValue(connectionProperty(dir));
         if (isConnected) {
-            thisTank.getWorld().setBlockState(thisTank.getPos(), state.with(connectionProperty(dir), false));
-            thisTank.getWorld().setBlockState(neighbourTank.getPos(), stateOther.with(connectionProperty(dir.getOpposite()), false));
+            thisTank.getLevel().setBlockAndUpdate(thisTank.getBlockPos(), state.setValue(connectionProperty(dir), false));
+            thisTank.getLevel().setBlockAndUpdate(neighbourTank.getBlockPos(), stateOther.setValue(connectionProperty(dir.getOpposite()), false));
             return true;
         } else {
             FluidStack stack = thisTank.getTank().getFluid();
             if (neighbourTank.isFluidCompatible(stack, neighbourTank.getTank()) && neighbourTank.isNeighbourCompatible(stack, dir)) {
-                thisTank.getWorld().setBlockState(thisTank.getPos(), state.with(connectionProperty(dir), true));
-                thisTank.getWorld().setBlockState(neighbourTank.getPos(), stateOther.with(connectionProperty(dir.getOpposite()), true));
+                thisTank.getLevel().setBlockAndUpdate(thisTank.getBlockPos(), state.setValue(connectionProperty(dir), true));
+                thisTank.getLevel().setBlockAndUpdate(neighbourTank.getBlockPos(), stateOther.setValue(connectionProperty(dir.getOpposite()), true));
                 return true;
             }
         }
@@ -138,7 +138,7 @@ public class BlockFluidTank extends BlockPneumaticCraft implements ColorHandlers
     }
 
     private TileEntityFluidTank getTankAt(World world, BlockPos pos) {
-        TileEntity te = world.getTileEntity(pos);
+        TileEntity te = world.getBlockEntity(pos);
         return te instanceof TileEntityFluidTank ? (TileEntityFluidTank) te : null;
     }
 

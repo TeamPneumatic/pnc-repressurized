@@ -25,7 +25,7 @@ public class RenderAphorismTile extends TileEntityRenderer<TileEntityAphorismTil
 
     @Override
     public void render(TileEntityAphorismTile te, float v, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLight, int combinedOverlay) {
-        matrixStack.push();
+        matrixStack.pushPose();
 
         matrixStack.translate(0.5, 1.5, 0.5);
         matrixStack.scale(1, -1, -1);
@@ -33,8 +33,8 @@ public class RenderAphorismTile extends TileEntityRenderer<TileEntityAphorismTil
         double zOff = te.isInvisible() ? 0.01 : BlockAphorismTile.APHORISM_TILE_THICKNESS;
         matrixStack.translate(0, 1, 0.5 - zOff - 0.01);
 
-        FontRenderer fr = Minecraft.getInstance().getRenderManager().getFontRenderer();
-        int fh = fr.FONT_HEIGHT;
+        FontRenderer fr = Minecraft.getInstance().getEntityRenderDispatcher().getFont();
+        int fh = fr.lineHeight;
 
         GuiAphorismTile editor = getEditor(te);
 
@@ -43,7 +43,7 @@ public class RenderAphorismTile extends TileEntityRenderer<TileEntityAphorismTil
         float lineHeight = (fh * textLines.length) * (1 + (te.getMarginSize() + 1) * 0.075f);
         float textScale = Math.min(14 / 16F / lineWidth, 14 / 16F / lineHeight);
         matrixStack.scale(textScale, textScale, textScale);
-        matrixStack.rotate(Vector3f.ZP.rotationDegrees(te.textRotation * 90));
+        matrixStack.mulPose(Vector3f.ZP.rotationDegrees(te.textRotation * 90));
 
         int editedLine = editor == null ? -1 : editor.cursorY;
         boolean showCursor = editor != null && (editor.updateCounter & 0xf) < 8;
@@ -51,13 +51,13 @@ public class RenderAphorismTile extends TileEntityRenderer<TileEntityAphorismTil
 
         for (int i = 0; i < textLines.length; i++) {
             if (!te.getIconAt(i).isEmpty() && editor == null) {
-                matrixStack.push();
-                matrixStack.rotate(Vector3f.ZP.rotationDegrees(180));
+                matrixStack.pushPose();
+                matrixStack.mulPose(Vector3f.ZP.rotationDegrees(180));
                 matrixStack.translate(0, 8 * (mid - i), 0);
                 matrixStack.scale(ICON_SCALE, ICON_SCALE, ICON_SCALE);
                 Minecraft.getInstance().getItemRenderer()
-                        .renderItem(te.getIconAt(i), TransformType.FIXED, combinedLight, OverlayTexture.NO_OVERLAY, matrixStack, buffer);
-                matrixStack.pop();
+                        .renderStatic(te.getIconAt(i), TransformType.FIXED, combinedLight, OverlayTexture.NO_OVERLAY, matrixStack, buffer);
+                matrixStack.popPose();
             } else {
                 String textLine;
                 if (editedLine == i) {
@@ -67,22 +67,22 @@ public class RenderAphorismTile extends TileEntityRenderer<TileEntityAphorismTil
                 } else {
                     textLine = textLines[i];
                 }
-                float x = -fr.getStringWidth(textLine) / 2f;
+                float x = -fr.width(textLine) / 2f;
                 float y = -(textLines.length * fh) / 2f + i * fh + 1;
                 if (editor == null && te.isRedstoneLine(i)) {
                     textLine = textLine.replaceAll(Pattern.quote("{redstone}"), Integer.toString(te.pollRedstone()));
-                    x = -fr.getStringWidth(textLine) / 2f;
+                    x = -fr.width(textLine) / 2f;
                 }
-                fr.renderString(textLine, x, y, 0xFF000000, false, matrixStack.getLast().getMatrix(), buffer, false, 0, combinedLight);
+                fr.drawInBatch(textLine, x, y, 0xFF000000, false, matrixStack.last().pose(), buffer, false, 0, combinedLight);
             }
         }
 
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     private GuiAphorismTile getEditor(TileEntityAphorismTile te) {
-        return Minecraft.getInstance().currentScreen instanceof GuiAphorismTile
-                && ((GuiAphorismTile) Minecraft.getInstance().currentScreen).tile == te ?
-                (GuiAphorismTile) Minecraft.getInstance().currentScreen : null;
+        return Minecraft.getInstance().screen instanceof GuiAphorismTile
+                && ((GuiAphorismTile) Minecraft.getInstance().screen).tile == te ?
+                (GuiAphorismTile) Minecraft.getInstance().screen : null;
     }
 }

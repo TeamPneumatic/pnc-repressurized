@@ -30,7 +30,7 @@ public class BlockTrackEntryEnergy implements IBlockTrackEntry {
 
     @Override
     public List<BlockPos> getServerUpdatePositions(TileEntity te) {
-        return Collections.singletonList(te.getPos());
+        return Collections.singletonList(te.getBlockPos());
     }
 
     @Override

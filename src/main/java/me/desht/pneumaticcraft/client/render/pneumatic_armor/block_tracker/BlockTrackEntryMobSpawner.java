@@ -36,7 +36,7 @@ public class BlockTrackEntryMobSpawner implements IBlockTrackEntry {
 
     @Override
     public List<BlockPos> getServerUpdatePositions(TileEntity te) {
-        return Collections.singletonList(te.getPos());
+        return Collections.singletonList(te.getBlockPos());
     }
 
     @Override
@@ -48,8 +48,8 @@ public class BlockTrackEntryMobSpawner implements IBlockTrackEntry {
     public void addInformation(World world, BlockPos pos, TileEntity te, Direction face, List<ITextComponent> infoList) {
         // FIXME translations
         if (te instanceof MobSpawnerTileEntity) {
-            AbstractSpawner spawner = ((MobSpawnerTileEntity) te).getSpawnerBaseLogic();
-            Entity e = spawner.getCachedEntity();
+            AbstractSpawner spawner = ((MobSpawnerTileEntity) te).getSpawner();
+            Entity e = spawner.getOrCreateDisplayEntity();
             if (e == null) {
                 // seems to happen with enderman spawners, possibly related to EndermanEntity#readAdditional() doing a bad world cast
                 // certainly spams a lot a vanilla-related errors

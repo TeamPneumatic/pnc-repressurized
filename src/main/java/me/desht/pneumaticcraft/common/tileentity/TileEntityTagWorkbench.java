@@ -71,20 +71,20 @@ public class TileEntityTagWorkbench extends TileEntityDisplayTable implements IN
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tag) {
-        super.write(tag);
+    public CompoundNBT save(CompoundNBT tag) {
+        super.save(tag);
         tag.put("Items", inventory.serializeNBT());
         return tag;
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT tag) {
-        super.read(state, tag);
+    public void load(BlockState state, CompoundNBT tag) {
+        super.load(state, tag);
 
         inventory.deserializeNBT(tag.getCompound("Items"));
-        itemId = Item.getIdFromItem(inventory.getStackInSlot(0).getItem());
-        paperItemId = Item.getIdFromItem(inventory.getStackInSlot(1).getItem());
-        outputItemId = Item.getIdFromItem(inventory.getStackInSlot(2).getItem());
+        itemId = Item.getId(inventory.getStackInSlot(0).getItem());
+        paperItemId = Item.getId(inventory.getStackInSlot(1).getItem());
+        outputItemId = Item.getId(inventory.getStackInSlot(2).getItem());
     }
 
     @Override
@@ -106,7 +106,7 @@ public class TileEntityTagWorkbench extends TileEntityDisplayTable implements IN
     @Nullable
     @Override
     public Container createMenu(int windowId, PlayerInventory inv, PlayerEntity player) {
-        return new ContainerTagWorkbench(windowId, inv, getPos());
+        return new ContainerTagWorkbench(windowId, inv, getBlockPos());
     }
 
     private class TagMatcherItemHandler extends DisplayItemHandler {
@@ -129,9 +129,9 @@ public class TileEntityTagWorkbench extends TileEntityDisplayTable implements IN
             super.onContentsChanged(slot);
 
             if (slot == 1) {
-                outputItemId = Item.getIdFromItem(getStackInSlot(1).getItem());
+                outputItemId = Item.getId(getStackInSlot(1).getItem());
             } else if (slot == 2) {
-                paperItemId = Item.getIdFromItem(getStackInSlot(2).getItem());
+                paperItemId = Item.getId(getStackInSlot(2).getItem());
             }
         }
 

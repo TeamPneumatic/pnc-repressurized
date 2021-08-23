@@ -14,7 +14,7 @@ public abstract class DroneEntityBase<W extends IEntityProvider, E extends Entit
 
     protected DroneEntityBase(IDroneBase drone, W progWidget) {
         this.drone = drone;
-        setMutexFlags(EnumSet.allOf(Flag.class)); // so it won't run along with other AI tasks.
+        setFlags(EnumSet.allOf(Flag.class)); // so it won't run along with other AI tasks.
         this.progWidget = progWidget;
     }
 
@@ -22,7 +22,7 @@ public abstract class DroneEntityBase<W extends IEntityProvider, E extends Entit
      * Returns whether the EntityAIBase should begin execution.
      */
     @Override
-    public boolean shouldExecute() {
+    public boolean canUse() {
         List<Entity> pickableItems = progWidget.getValidEntities(drone.world());
 
         pickableItems.sort(new DistanceEntitySorter(drone));
@@ -47,9 +47,9 @@ public abstract class DroneEntityBase<W extends IEntityProvider, E extends Entit
      * Returns whether an in-progress EntityAIBase should continue executing
      */
     @Override
-    public boolean shouldContinueExecuting() {
+    public boolean canContinueToUse() {
         if (!targetedEntity.isAlive()) return false;
-        if (targetedEntity.getPositionVec().squareDistanceTo(drone.getDronePos()) < 2.25) {
+        if (targetedEntity.position().distanceToSqr(drone.getDronePos()) < 2.25) {
             return doAction();
         }
         return !drone.getPathNavigator().hasNoPath();

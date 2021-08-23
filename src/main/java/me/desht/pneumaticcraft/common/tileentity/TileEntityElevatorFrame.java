@@ -32,12 +32,12 @@ public class TileEntityElevatorFrame extends TileEntityBase {
 
     private TileEntityElevatorBase findElevatorBase() {
         BlockPos.Mutable pos1 = new BlockPos.Mutable();
-        pos1.setPos(pos);
+        pos1.set(worldPosition);
         while (true) {
             pos1.move(Direction.DOWN);
-            if (world.getBlockState(pos1).getBlock() == ModBlocks.ELEVATOR_BASE.get()) {
-                return (TileEntityElevatorBase) world.getTileEntity(pos1);
-            } else if (world.getBlockState(pos1).getBlock() != ModBlocks.ELEVATOR_FRAME.get() || pos1.getY() <= 0) {
+            if (level.getBlockState(pos1).getBlock() == ModBlocks.ELEVATOR_BASE.get()) {
+                return (TileEntityElevatorBase) level.getBlockEntity(pos1);
+            } else if (level.getBlockState(pos1).getBlock() != ModBlocks.ELEVATOR_FRAME.get() || pos1.getY() <= 0) {
                 return null;
             }
         }

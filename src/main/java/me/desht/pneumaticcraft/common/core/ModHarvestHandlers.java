@@ -27,7 +27,7 @@ public class ModHarvestHandlers {
             state.getBlock() == Blocks.SWEET_BERRY_BUSH, SweetBerryBushBlock.AGE, stack -> stack.getItem() == Items.SWEET_BERRIES) {
         @Override
         protected BlockState withMinAge(BlockState state) {
-            return state.with(SweetBerryBushBlock.AGE, 1);
+            return state.setValue(SweetBerryBushBlock.AGE, 1);
         }
     });
     public static final RegistryObject<HarvestHandler> COCOA = register("cocoa_beans", () -> new HarvestHandlerCropLike(state ->

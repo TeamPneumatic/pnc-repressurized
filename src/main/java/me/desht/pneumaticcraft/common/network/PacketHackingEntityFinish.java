@@ -22,7 +22,7 @@ public class PacketHackingEntityFinish {
     private final int entityId;
 
     public PacketHackingEntityFinish(Entity entity) {
-        entityId = entity.getEntityId();
+        entityId = entity.getId();
     }
 
     public PacketHackingEntityFinish(PacketBuffer buffer) {
@@ -36,7 +36,7 @@ public class PacketHackingEntityFinish {
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             PlayerEntity player = ClientUtils.getClientPlayer();
-            Entity entity = player.world.getEntityByID(entityId);
+            Entity entity = player.level.getEntity(entityId);
             if (entity != null) {
                 IHackableEntity hackableEntity = HackManager.getHackableForEntity(entity, player);
                 if (hackableEntity != null) {

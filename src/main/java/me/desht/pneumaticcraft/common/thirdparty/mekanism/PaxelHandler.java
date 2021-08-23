@@ -15,7 +15,7 @@ public class PaxelHandler extends HoeHandler {
         super(stack -> {
             ResourceLocation rl = stack.getItem().getRegistryName();
             return rl != null && rl.getNamespace().equals("mekanismtools") && rl.getPath().endsWith("_paxel");
-        }, (stack, player) -> stack.damageItem(1, player, p -> { }));
+        }, (stack, player) -> stack.hurtAndBreak(1, player, p -> { }));
     }
 
     @SubscribeEvent

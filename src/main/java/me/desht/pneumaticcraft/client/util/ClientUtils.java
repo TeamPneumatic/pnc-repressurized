@@ -60,8 +60,8 @@ public class ClientUtils {
      * @param particle the particle type
      */
     public static void emitParticles(World world, BlockPos pos, IParticleData particle, double yOffset) {
-        float xOff = world.rand.nextFloat() * 0.6F + 0.2F;
-        float zOff = world.rand.nextFloat() * 0.6F + 0.2F;
+        float xOff = world.random.nextFloat() * 0.6F + 0.2F;
+        float zOff = world.random.nextFloat() * 0.6F + 0.2F;
         getClientWorld().addParticle(particle,
                 pos.getX() + xOff, pos.getY() + yOffset, pos.getZ() + zOff,
                 0, 0, 0);
@@ -73,7 +73,7 @@ public class ClientUtils {
 
     @Nonnull
     public static ItemStack getWornArmor(EquipmentSlotType slot) {
-        return Minecraft.getInstance().player.getItemStackFromSlot(slot);
+        return Minecraft.getInstance().player.getItemBySlot(slot);
     }
 
     public static void addDroneToHudHandler(EntityDrone drone, BlockPos pos) {
@@ -81,11 +81,11 @@ public class ClientUtils {
                 .getClientHandler(ArmorUpgradeRegistry.getInstance().entityTrackerHandler, EntityTrackerClientHandler.class)
                 .getTargetsStream()
                 .filter(target -> target.entity == drone)
-                .forEach(target -> target.getDroneAIRenderer().addBlackListEntry(drone.world, pos));
+                .forEach(target -> target.getDroneAIRenderer().addBlackListEntry(drone.level, pos));
     }
 
     public static boolean isKeyDown(int keyCode) {
-        return InputMappings.isKeyDown(Minecraft.getInstance().getMainWindow().getHandle(), keyCode);
+        return InputMappings.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), keyCode);
     }
 
     /**
@@ -98,7 +98,7 @@ public class ClientUtils {
      * @param displayString container's display name
      */
     public static void openContainerGui(ContainerType<? extends Container> type, ITextComponent displayString) {
-        ScreenManager.openScreen(type, Minecraft.getInstance(), -1, displayString);
+        ScreenManager.create(type, Minecraft.getInstance(), -1, displayString);
     }
 
     /**
@@ -108,11 +108,11 @@ public class ClientUtils {
      */
     public static void closeContainerGui(Screen parentScreen) {
         Minecraft mc = Minecraft.getInstance();
-        mc.displayGuiScreen(parentScreen);
+        mc.setScreen(parentScreen);
         if (parentScreen instanceof ContainerScreen) {
-            mc.player.openContainer = ((ContainerScreen<?>) parentScreen).getContainer();
+            mc.player.containerMenu = ((ContainerScreen<?>) parentScreen).getMenu();
         } else if (parentScreen instanceof GuiProgWidgetOptionBase) {
-            mc.player.openContainer = ((GuiProgWidgetOptionBase<?>) parentScreen).getProgrammerContainer();
+            mc.player.containerMenu = ((GuiProgWidgetOptionBase<?>) parentScreen).getProgrammerContainer();
         }
     }
 
@@ -121,7 +121,7 @@ public class ClientUtils {
      * @return the client world
      */
     public static World getClientWorld() {
-        return Minecraft.getInstance().world;
+        return Minecraft.getInstance().level;
     }
 
     public static PlayerEntity getClientPlayer() {
@@ -137,7 +137,7 @@ public class ClientUtils {
      * @return a tile entity or null
      */
     public static TileEntity getClientTE(BlockPos pos) {
-        return Minecraft.getInstance().world.getTileEntity(pos);
+        return Minecraft.getInstance().level.getBlockEntity(pos);
     }
 
     /**
@@ -168,31 +168,31 @@ public class ClientUtils {
      * @return true if the screen res > 700x512
      */
     public static boolean isScreenHiRes() {
-        MainWindow mw = Minecraft.getInstance().getMainWindow();
-        return mw.getScaledWidth() > 700 && mw.getScaledHeight() > 512;
+        MainWindow mw = Minecraft.getInstance().getWindow();
+        return mw.getGuiScaledWidth() > 700 && mw.getGuiScaledHeight() > 512;
     }
 
     public static float getBrightnessAtWorldHeight() {
         PlayerEntity player = getClientPlayer();
-        BlockPos pos = new BlockPos.Mutable(player.getPosX(), getClientWorld().getHeight(), player.getPosZ());
-        if (player.world.isBlockLoaded(pos)) {
-            return player.world.getDimensionType().getAmbientLight(player.world.getLight(pos));
+        BlockPos pos = new BlockPos.Mutable(player.getX(), getClientWorld().getMaxBuildHeight(), player.getZ());
+        if (player.level.hasChunkAt(pos)) {
+            return player.level.dimensionType().brightness(player.level.getMaxLocalRawBrightness(pos));
         } else {
             return 0.0F;
         }
     }
 
     public static int getLightAt(BlockPos pos) {
-        return WorldRenderer.getCombinedLight(Minecraft.getInstance().world, pos);
+        return WorldRenderer.getLightColor(Minecraft.getInstance().level, pos);
     }
 
     public static int getStringWidth(String line) {
-        return Minecraft.getInstance().getRenderManager().getFontRenderer().getStringWidth(line);
+        return Minecraft.getInstance().getEntityRenderDispatcher().getFont().width(line);
     }
 
     public static boolean isGuiOpen(TileEntity te) {
-        if (Minecraft.getInstance().currentScreen instanceof GuiPneumaticContainerBase) {
-            return ((GuiPneumaticContainerBase<?,?>) Minecraft.getInstance().currentScreen).te == te;
+        if (Minecraft.getInstance().screen instanceof GuiPneumaticContainerBase) {
+            return ((GuiPneumaticContainerBase<?,?>) Minecraft.getInstance().screen).te == te;
         } else {
             return false;
         }
@@ -200,22 +200,22 @@ public class ClientUtils {
 
     public static float[] getTextureUV(BlockState state, Direction face) {
         if (state == null) return null;
-        IBakedModel model = Minecraft.getInstance().getBlockRendererDispatcher().getModelForState(state);
-        List<BakedQuad> quads = model.getQuads(state, face, Minecraft.getInstance().world.rand, EmptyModelData.INSTANCE);
+        IBakedModel model = Minecraft.getInstance().getBlockRenderer().getBlockModel(state);
+        List<BakedQuad> quads = model.getQuads(state, face, Minecraft.getInstance().level.random, EmptyModelData.INSTANCE);
         if (!quads.isEmpty()) {
             TextureAtlasSprite sprite = quads.get(0).getSprite();
-            return new float[] { sprite.getMinU(), sprite.getMinV(), sprite.getMaxU(), sprite.getMaxV() };
+            return new float[] { sprite.getU0(), sprite.getV0(), sprite.getU1(), sprite.getV1() };
         } else {
             return null;
         }
     }
 
     public static void spawnEntityClientside(Entity e) {
-        ((ClientWorld) getClientWorld()).addEntity(e.getEntityId(), e);
+        ((ClientWorld) getClientWorld()).putNonPlayerEntity(e.getId(), e);
     }
 
     public static String translateDirection(Direction d) {
-        return I18n.format("pneumaticcraft.gui.tooltip.direction." + d.toString());
+        return I18n.get("pneumaticcraft.gui.tooltip.direction." + d.toString());
     }
 
     public static ITextComponent translateDirectionComponent(Direction d) {
@@ -230,16 +230,16 @@ public class ClientUtils {
      */
     public static ITextComponent translateKeyBind(KeyBinding keyBinding) {
         return keyBinding.getKeyModifier().getCombinedName(keyBinding.getKey(), () -> {
-            ITextComponent s = keyBinding.getKey().func_237520_d_();
+            ITextComponent s = keyBinding.getKey().getDisplayName();
             // small kludge to clearly distinguish keypad from non-keypad keys
             if (keyBinding.getKey().getType() == InputMappings.Type.KEYSYM
-                    && keyBinding.getKey().getKeyCode() >= GLFW.GLFW_KEY_KP_0
-                    && keyBinding.getKey().getKeyCode() <= GLFW.GLFW_KEY_KP_EQUAL) {
+                    && keyBinding.getKey().getValue() >= GLFW.GLFW_KEY_KP_0
+                    && keyBinding.getKey().getValue() <= GLFW.GLFW_KEY_KP_EQUAL) {
                 return new StringTextComponent("KP_").append(s);
             } else {
                 return s;
             }
-        }).deepCopy().mergeStyle(TextFormatting.YELLOW);
+        }).copy().withStyle(TextFormatting.YELLOW);
     }
 
     /**
@@ -249,15 +249,15 @@ public class ClientUtils {
      * @param tooltip tooltip to add data to
      */
     public static void addGuiContextSensitiveTooltip(ItemStack stack, List<ITextComponent> tooltip) {
-        Screen screen = Minecraft.getInstance().currentScreen;
+        Screen screen = Minecraft.getInstance().screen;
 
         if (screen != null) {
             String subKey = screen.getClass().getSimpleName().toLowerCase(Locale.ROOT);
             Item item = stack.getItem();
             String base = item instanceof BlockItem ? "gui.tooltip.block" : "gui.tooltip.item";
             String k = String.join(".", base, item.getRegistryName().getNamespace(), item.getRegistryName().getPath(), subKey);
-            if (I18n.hasKey(k)) {
-                tooltip.addAll(GuiUtils.xlateAndSplit(k).stream().map(s -> s.deepCopy().mergeStyle(TextFormatting.GRAY)).collect(Collectors.toList()));
+            if (I18n.exists(k)) {
+                tooltip.addAll(GuiUtils.xlateAndSplit(k).stream().map(s -> s.copy().withStyle(TextFormatting.GRAY)).collect(Collectors.toList()));
             }
         }
     }
@@ -268,12 +268,12 @@ public class ClientUtils {
      * @return the squared render distance, in blocks
      */
     public static int getRenderDistanceThresholdSq() {
-        int d = Minecraft.getInstance().gameSettings.renderDistanceChunks * 16;
+        int d = Minecraft.getInstance().options.renderDistance * 16;
         return d * d;
     }
 
     public static boolean isFirstPersonCamera() {
-        return Minecraft.getInstance().gameSettings.getPointOfView().func_243192_a();
+        return Minecraft.getInstance().options.getCameraType().isFirstPerson();
     }
 
 }

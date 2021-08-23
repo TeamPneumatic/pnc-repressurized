@@ -23,22 +23,22 @@ import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
 
 public class BlockSpawnerExtractor extends BlockPneumaticCraft {
-    private static final VoxelShape BASE0 = makeCuboidShape(-1, -1, -1, 17, 0, 17);
-    private static final VoxelShape BASE1 = makeCuboidShape(0, 0, 0, 16, 2, 16);
-    private static final VoxelShape BASE2 = makeCuboidShape(2, 2, 2, 14, 4, 14);
-    private static final VoxelShape BASE3 = makeCuboidShape(6, 4, 7, 10, 12, 9);
-    private static final VoxelShape BASE4 = makeCuboidShape(7, 4, 6, 9, 12, 10);
+    private static final VoxelShape BASE0 = box(-1, -1, -1, 17, 0, 17);
+    private static final VoxelShape BASE1 = box(0, 0, 0, 16, 2, 16);
+    private static final VoxelShape BASE2 = box(2, 2, 2, 14, 4, 14);
+    private static final VoxelShape BASE3 = box(6, 4, 7, 10, 12, 9);
+    private static final VoxelShape BASE4 = box(7, 4, 6, 9, 12, 10);
     private static final VoxelShape SHAPE = VoxelShapeUtils.combine(IBooleanFunction.OR, BASE0, BASE1, BASE2, BASE3, BASE4);
 
     public BlockSpawnerExtractor() {
         super(ModBlocks.defaultProps());
 
-        setDefaultState(stateContainer.getBaseState().with(NORTH, false).with(SOUTH, false).with(WEST, false).with(EAST, false));
+        registerDefaultState(stateDefinition.any().setValue(NORTH, false).setValue(SOUTH, false).setValue(WEST, false).setValue(EAST, false));
     }
 
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        super.fillStateContainer(builder);
+    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
 
         builder.add(NORTH, SOUTH, WEST, EAST);
     }
@@ -54,27 +54,27 @@ public class BlockSpawnerExtractor extends BlockPneumaticCraft {
     }
 
     @Override
-    public boolean isValidPosition(BlockState state, IWorldReader worldIn, BlockPos pos) {
-        BlockState below = worldIn.getBlockState(pos.down());
+    public boolean canSurvive(BlockState state, IWorldReader worldIn, BlockPos pos) {
+        BlockState below = worldIn.getBlockState(pos.below());
         return below.getBlock() instanceof SpawnerBlock || below.getBlock() instanceof BlockEmptySpawner;
     }
 
     @Override
-    public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity entity, ItemStack stack) {
-        super.onBlockPlacedBy(world, pos, state, entity, stack);
+    public void setPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity entity, ItemStack stack) {
+        super.setPlacedBy(world, pos, state, entity, stack);
 
         PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntitySpawnerExtractor.class)
                 .ifPresent(TileEntitySpawnerExtractor::updateMode);
     }
 
     @Override
-    public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
-        if (!isValidPosition(stateIn, worldIn, currentPos)) {
-            return Blocks.AIR.getDefaultState();
+    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
+        if (!canSurvive(stateIn, worldIn, currentPos)) {
+            return Blocks.AIR.defaultBlockState();
         } else {
             PneumaticCraftUtils.getTileEntityAt(worldIn, currentPos, TileEntitySpawnerExtractor.class)
                     .ifPresent(TileEntitySpawnerExtractor::updateMode);
-            return super.updatePostPlacement(stateIn, facing, facingState, worldIn, currentPos, facingPos);
+            return super.updateShape(stateIn, facing, facingState, worldIn, currentPos, facingPos);
         }
     }
 }

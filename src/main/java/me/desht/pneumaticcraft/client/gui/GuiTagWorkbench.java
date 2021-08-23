@@ -44,24 +44,24 @@ public class GuiTagWorkbench extends GuiPneumaticContainerBase<ContainerTagWorkb
     public GuiTagWorkbench(ContainerTagWorkbench container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
 
-        xSize = 234;
-        ySize = 256;
+        imageWidth = 234;
+        imageHeight = 256;
     }
 
     @Override
     public void init() {
         super.init();
 
-        addButton(writeButton = new WidgetButtonExtended(guiLeft + 162, guiTop + 16, 20, 20, StringTextComponent.EMPTY, b -> writeTags())
+        addButton(writeButton = new WidgetButtonExtended(leftPos + 162, topPos + 16, 20, 20, StringTextComponent.EMPTY, b -> writeTags())
                 .setRenderStacks(new ItemStack(Items.WRITABLE_BOOK))
                 .setTooltipText(xlate("pneumaticcraft.gui.tooltip.tag_workbench.write_button")));
-        addButton(addButton = new WidgetButtonExtended(guiLeft + 108, guiTop + 90, 13, 13, GuiConstants.TRIANGLE_RIGHT,
+        addButton(addButton = new WidgetButtonExtended(leftPos + 108, topPos + 90, 13, 13, GuiConstants.TRIANGLE_RIGHT,
                 b -> addAvailable()));
-        addButton(removeButton = new WidgetButtonExtended(guiLeft + 108, guiTop + 106, 13, 13, GuiConstants.TRIANGLE_LEFT,
+        addButton(removeButton = new WidgetButtonExtended(leftPos + 108, topPos + 106, 13, 13, GuiConstants.TRIANGLE_LEFT,
                 b -> removeSelected()));
 
-        addButton(availableList = new WidgetList<>(guiLeft + AVAILABLE_X, guiTop + LIST_Y, LIST_WIDTH, LIST_HEIGHT, this::onSelected));
-        addButton(selectedList = new WidgetList<>(guiLeft + SELECTED_X, guiTop + LIST_Y, LIST_WIDTH, LIST_HEIGHT, this::onSelected));
+        addButton(availableList = new WidgetList<>(leftPos + AVAILABLE_X, topPos + LIST_Y, LIST_WIDTH, LIST_HEIGHT, this::onSelected));
+        addButton(selectedList = new WidgetList<>(leftPos + SELECTED_X, topPos + LIST_Y, LIST_WIDTH, LIST_HEIGHT, this::onSelected));
     }
 
     private void writeTags() {
@@ -98,15 +98,15 @@ public class GuiTagWorkbench extends GuiPneumaticContainerBase<ContainerTagWorkb
     public void tick() {
         super.tick();
 
-        ItemStack stack = container.getSlot(0).getStack();
+        ItemStack stack = menu.getSlot(0).getItem();
         if (stack.getItem() != lastItem) {
             availableList.clear();
             stack.getItem().getTags().forEach(rl -> availableList.add(rl));
             availableList.unselectAll();
             lastItem = stack.getItem();
         }
-        ItemStack stack1 = container.getSlot(1).getStack();
-        if (!ItemStack.areItemStacksEqual(stack1, lastPaperStack)) {
+        ItemStack stack1 = menu.getSlot(1).getItem();
+        if (!ItemStack.matches(stack1, lastPaperStack)) {
             if (stack1.getItem() == ModItems.TAG_FILTER.get()) {
                 Set<ResourceLocation> s = ItemTagFilter.getConfiguredTagList(stack1);
                 s.addAll(selectedList.getLines());
@@ -120,8 +120,8 @@ public class GuiTagWorkbench extends GuiPneumaticContainerBase<ContainerTagWorkb
         addButton.active = availableList.getSelectedLine() != null;
         removeButton.active = selectedList.getSelectedLine() != null;
         writeButton.active = selectedList.size() > 0
-                && (!container.getSlot(TileEntityTagWorkbench.PAPER_SLOT).getStack().isEmpty()
-                || !container.getSlot(TileEntityTagWorkbench.OUTPUT_SLOT).getStack().isEmpty());
+                && (!menu.getSlot(TileEntityTagWorkbench.PAPER_SLOT).getItem().isEmpty()
+                || !menu.getSlot(TileEntityTagWorkbench.OUTPUT_SLOT).getItem().isEmpty());
     }
 
     @Override

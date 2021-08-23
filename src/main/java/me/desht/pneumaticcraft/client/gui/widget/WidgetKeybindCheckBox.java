@@ -63,7 +63,7 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
             KeyDispatcher.id2checkBox.put(upgradeID, newCheckBox);
             KeyBinding keyBinding = ArmorUpgradeClientRegistry.getInstance().getKeybindingForUpgrade(upgradeID);
             if (keyBinding != null) {
-                KeyDispatcher.desc2checkbox.put(keyBinding.getKeyDescription(), newCheckBox);
+                KeyDispatcher.desc2checkbox.put(keyBinding.getName(), newCheckBox);
             }
             if (upgradeID.equals(ArmorUpgradeRegistry.getInstance().coreComponentsHandler.getID())) {
                 // stash this one since it's referenced a lot
@@ -106,12 +106,12 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
     @Override
     public boolean mouseClicked(double x, double y, int button) {
         if (this.clicked(x, y)) {
-            this.playDownSound(Minecraft.getInstance().getSoundHandler());
+            this.playDownSound(Minecraft.getInstance().getSoundManager());
             if (handleClick(x, y, button)) {
                 return true;
             } else if (isListeningForBinding) {
                 // add a mouse binding
-                InputMappings.Input input = InputMappings.Type.MOUSE.getOrMakeInput(button);
+                InputMappings.Input input = InputMappings.Type.MOUSE.getOrCreate(button);
                 updateBinding(input);
                 return true;
             }
@@ -161,12 +161,12 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
         } else if (button == 1) {
             // right click - update or clear key binding
             if (Screen.hasShiftDown()) {
-                updateBinding(InputMappings.INPUT_INVALID);
+                updateBinding(InputMappings.UNKNOWN);
             } else {
                 isListeningForBinding = !isListeningForBinding;
                 if (isListeningForBinding) {
                     oldCheckboxText = getMessage();
-                    setMessage(xlate("pneumaticcraft.gui.setKeybind").mergeStyle(TextFormatting.YELLOW));
+                    setMessage(xlate("pneumaticcraft.gui.setKeybind").withStyle(TextFormatting.YELLOW));
                 } else {
                     setMessage(oldCheckboxText);
                 }
@@ -206,7 +206,7 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (isListeningForBinding) {
-            InputMappings.Input input = InputMappings.Type.KEYSYM.getOrMakeInput(keyCode);
+            InputMappings.Input input = InputMappings.Type.KEYSYM.getOrCreate(keyCode);
             if (!KeyModifier.isKeyCodeModifier(input)) {
                 updateBinding(input);
             }
@@ -219,15 +219,15 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
     public void addTooltip(double mouseX, double mouseY, List<ITextComponent> curTooltip, boolean shiftPressed) {
         KeyBinding keyBinding = ArmorUpgradeClientRegistry.getInstance().getKeybindingForUpgrade(upgradeID);
         String k = IArmorUpgradeHandler.getStringKey(upgradeID) + ".desc";
-        if (I18n.hasKey(k)) {
+        if (I18n.exists(k)) {
             curTooltip.addAll(GuiUtils.xlateAndSplit(k));
         }
         if (keyBinding != null) {
-            curTooltip.add(xlate("pneumaticcraft.gui.keybindBoundKey", ClientUtils.translateKeyBind(keyBinding)).mergeStyle(TextFormatting.GOLD));
+            curTooltip.add(xlate("pneumaticcraft.gui.keybindBoundKey", ClientUtils.translateKeyBind(keyBinding)).withStyle(TextFormatting.GOLD));
             if (!isListeningForBinding) {
-                curTooltip.add(xlate("pneumaticcraft.gui.keybindRightClickToSet").mergeStyle(TextFormatting.GRAY));
-                if (keyBinding.getKey().getKeyCode() != GLFW.GLFW_KEY_UNKNOWN) {
-                    curTooltip.add(xlate("pneumaticcraft.gui.keybindShiftRightClickToClear").mergeStyle(TextFormatting.GRAY));
+                curTooltip.add(xlate("pneumaticcraft.gui.keybindRightClickToSet").withStyle(TextFormatting.GRAY));
+                if (keyBinding.getKey().getValue() != GLFW.GLFW_KEY_UNKNOWN) {
+                    curTooltip.add(xlate("pneumaticcraft.gui.keybindShiftRightClickToClear").withStyle(TextFormatting.GRAY));
                 }
             }
         }
@@ -242,11 +242,11 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
         isListeningForBinding = false;
         KeyBinding keyBinding = ArmorUpgradeClientRegistry.getInstance().getKeybindingForUpgrade(upgradeID);
         if (keyBinding != null) {
-            KeyModifier mod = input == InputMappings.INPUT_INVALID ? KeyModifier.NONE : KeyModifier.getActiveModifier();
+            KeyModifier mod = input == InputMappings.UNKNOWN ? KeyModifier.NONE : KeyModifier.getActiveModifier();
             keyBinding.setKeyModifierAndCode(mod, input);
-            Minecraft.getInstance().gameSettings.setKeyBindingCode(keyBinding, input);
-            KeyBinding.resetKeyBindingArrayAndHash();
-            Minecraft.getInstance().player.playSound(SoundEvents.BLOCK_NOTE_BLOCK_CHIME, 1.0f, input == InputMappings.INPUT_INVALID ? 0.5f :1.0f);
+            Minecraft.getInstance().options.setKey(keyBinding, input);
+            KeyBinding.resetMapping();
+            Minecraft.getInstance().player.playSound(SoundEvents.NOTE_BLOCK_CHIME, 1.0f, input == InputMappings.UNKNOWN ? 0.5f :1.0f);
         }
         setMessage(oldCheckboxText);
     }
@@ -266,20 +266,20 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
 
         @SubscribeEvent
         public static void onKeyPress(InputEvent.KeyInputEvent event) {
-            if (Minecraft.getInstance().currentScreen == null && event.getAction() == GLFW.GLFW_PRESS) {
-                KeyBinding binding = KEY_BINDING_MAP.lookupActive(InputMappings.Type.KEYSYM.getOrMakeInput(event.getKey()));
+            if (Minecraft.getInstance().screen == null && event.getAction() == GLFW.GLFW_PRESS) {
+                KeyBinding binding = KEY_BINDING_MAP.lookupActive(InputMappings.Type.KEYSYM.getOrCreate(event.getKey()));
                 if (binding != null) {
-                    getBoundWidget(binding.getKeyDescription()).ifPresent(w -> w.handleClick(0, 0, 0));
+                    getBoundWidget(binding.getName()).ifPresent(w -> w.handleClick(0, 0, 0));
                 }
             }
         }
 
         @SubscribeEvent
         public static void onMouseClick(InputEvent.MouseInputEvent event) {
-            if (Minecraft.getInstance().currentScreen == null && event.getAction() == GLFW.GLFW_PRESS) {
-                KeyBinding binding = KEY_BINDING_MAP.lookupActive(InputMappings.Type.MOUSE.getOrMakeInput(event.getButton()));
+            if (Minecraft.getInstance().screen == null && event.getAction() == GLFW.GLFW_PRESS) {
+                KeyBinding binding = KEY_BINDING_MAP.lookupActive(InputMappings.Type.MOUSE.getOrCreate(event.getButton()));
                 if (binding != null) {
-                    getBoundWidget(binding.getKeyDescription()).ifPresent(w -> w.handleClick(0, 0, 0));
+                    getBoundWidget(binding.getName()).ifPresent(w -> w.handleClick(0, 0, 0));
                 }
             }
         }

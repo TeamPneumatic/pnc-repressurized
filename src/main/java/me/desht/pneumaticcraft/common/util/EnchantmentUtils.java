@@ -24,15 +24,15 @@ public class EnchantmentUtils {
      * @return
      */
     public static int getPlayerXP(PlayerEntity player) {
-        return (int)(EnchantmentUtils.getExperienceForLevel(player.experienceLevel) + (player.experience * player.xpBarCap()));
+        return (int)(EnchantmentUtils.getExperienceForLevel(player.experienceLevel) + (player.experienceProgress * player.getXpNeededForNextLevel()));
     }
 
     public static void addPlayerXP(PlayerEntity player, int amount) {
         int experience = getPlayerXP(player) + amount;
-        player.experienceTotal = experience;
+        player.totalExperience = experience;
         player.experienceLevel = EnchantmentUtils.getLevelForExperience(experience);
         int expForLevel = EnchantmentUtils.getExperienceForLevel(player.experienceLevel);
-        player.experience = (float)(experience - expForLevel) / (float)player.xpBarCap();
+        player.experienceProgress = (float)(experience - expForLevel) / (float)player.getXpNeededForNextLevel();
     }
 
     public static int xpBarCap(int level) {
@@ -78,15 +78,15 @@ public class EnchantmentUtils {
         for (int deltaZ = -1; deltaZ <= 1; ++deltaZ) {
             for (int deltaX = -1; deltaX <= 1; ++deltaX) {
                 if ((deltaZ != 0 || deltaX != 0)
-                        && world.isAirBlock(position.add(deltaX, 0, deltaZ))
-                        && world.isAirBlock(position.add(deltaX, 1, deltaZ))) {
-                    power += getEnchantPower(world, position.add(deltaX * 2, 0, deltaZ * 2));
-                    power += getEnchantPower(world, position.add(deltaX * 2, 1, deltaZ * 2));
+                        && world.isEmptyBlock(position.offset(deltaX, 0, deltaZ))
+                        && world.isEmptyBlock(position.offset(deltaX, 1, deltaZ))) {
+                    power += getEnchantPower(world, position.offset(deltaX * 2, 0, deltaZ * 2));
+                    power += getEnchantPower(world, position.offset(deltaX * 2, 1, deltaZ * 2));
                     if (deltaX != 0 && deltaZ != 0) {
-                        power += getEnchantPower(world, position.add(deltaX * 2, 0, deltaZ));
-                        power += getEnchantPower(world, position.add(deltaX * 2, 1, deltaZ));
-                        power += getEnchantPower(world, position.add(deltaX, 0, deltaZ * 2));
-                        power += getEnchantPower(world, position.add(deltaX, 1, deltaZ * 2));
+                        power += getEnchantPower(world, position.offset(deltaX * 2, 0, deltaZ));
+                        power += getEnchantPower(world, position.offset(deltaX * 2, 1, deltaZ));
+                        power += getEnchantPower(world, position.offset(deltaX, 0, deltaZ * 2));
+                        power += getEnchantPower(world, position.offset(deltaX, 1, deltaZ * 2));
                     }
                 }
             }
@@ -100,6 +100,6 @@ public class EnchantmentUtils {
 
     public static void addAllBooks(Enchantment enchantment, List<ItemStack> items) {
         for (int i = enchantment.getMinLevel(); i <= enchantment.getMaxLevel(); i++)
-            items.add(EnchantedBookItem.getEnchantedItemStack(new EnchantmentData(enchantment, i)));
+            items.add(EnchantedBookItem.createForEnchantment(new EnchantmentData(enchantment, i)));
     }
 }

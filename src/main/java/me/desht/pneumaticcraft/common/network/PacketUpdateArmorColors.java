@@ -21,13 +21,13 @@ public class PacketUpdateArmorColors {
 
     public PacketUpdateArmorColors() {
         for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
-            ItemStack stack = ClientUtils.getClientPlayer().getItemStackFromSlot(slot);
+            ItemStack stack = ClientUtils.getClientPlayer().getItemBySlot(slot);
             if (stack.getItem() instanceof ItemPneumaticArmor) {
                 cols[slot.getIndex()][0] = ((ItemPneumaticArmor) stack.getItem()).getColor(stack);
                 cols[slot.getIndex()][1] = ((ItemPneumaticArmor) stack.getItem()).getSecondaryColor(stack);
             }
         }
-        ItemStack stack = ClientUtils.getClientPlayer().getItemStackFromSlot(EquipmentSlotType.HEAD);
+        ItemStack stack = ClientUtils.getClientPlayer().getItemBySlot(EquipmentSlotType.HEAD);
         if (stack.getItem() instanceof ItemPneumaticArmor) {
             eyepiece = ((ItemPneumaticArmor) stack.getItem()).getEyepieceColor(stack);
         } else {
@@ -56,13 +56,13 @@ public class PacketUpdateArmorColors {
             ServerPlayerEntity player = ctx.get().getSender();
             if (player != null) {
                 for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
-                    ItemStack stack = player.getItemStackFromSlot(slot);
+                    ItemStack stack = player.getItemBySlot(slot);
                     if (stack.getItem() instanceof ItemPneumaticArmor) {
                         ((ItemPneumaticArmor) stack.getItem()).setColor(stack, cols[slot.getIndex()][0]);
                         ((ItemPneumaticArmor) stack.getItem()).setSecondaryColor(stack, cols[slot.getIndex()][1]);
                     }
                 }
-                ItemStack stack = player.getItemStackFromSlot(EquipmentSlotType.HEAD);
+                ItemStack stack = player.getItemBySlot(EquipmentSlotType.HEAD);
                 if (stack.getItem() instanceof ItemPneumaticArmor) {
                     ((ItemPneumaticArmor) stack.getItem()).setEyepieceColor(stack, eyepiece);
                 }

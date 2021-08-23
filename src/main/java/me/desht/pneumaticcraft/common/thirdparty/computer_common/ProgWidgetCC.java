@@ -446,7 +446,7 @@ public class ProgWidgetCC extends ProgWidgetInventoryBase implements IBlockOrder
     public CraftingInventory getCraftingGrid() {
         CraftingInventory invCrafting = new CraftingInventory(new DummyContainer(), 3, 3);
         for (int i = 0; i < 9; i++) {
-            invCrafting.setInventorySlotContents(i, craftingGrid[i]);
+            invCrafting.setItem(i, craftingGrid[i]);
         }
         return invCrafting;
     }

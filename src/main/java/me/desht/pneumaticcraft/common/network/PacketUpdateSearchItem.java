@@ -39,7 +39,7 @@ public class PacketUpdateSearchItem {
             PlayerEntity player = ctx.get().getSender();
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
             if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().searchHandler, true)) {
-                ItemStack helmetStack = player.getItemStackFromSlot(EquipmentSlotType.HEAD);
+                ItemStack helmetStack = player.getItemBySlot(EquipmentSlotType.HEAD);
                 Item searchedItem = ForgeRegistries.ITEMS.getValue(itemId);
                 if (searchedItem != null && searchedItem != Items.AIR) {
                     ItemPneumaticArmor.setSearchedItem(helmetStack, searchedItem);

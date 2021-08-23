@@ -38,21 +38,21 @@ public class GuiProgWidgetCoordinateOperator extends GuiProgWidgetAreaShow<ProgW
 
         for (Direction.Axis axis : Direction.Axis.values()) {
             WidgetCheckBox checkBox = new WidgetCheckBox(guiLeft + 100, guiTop + 42 + axis.ordinal() * 12, 0xFF404040,
-                    new StringTextComponent(axis.getName2()), b -> progWidget.getAxisOptions().setCheck(axis, b.checked));
+                    new StringTextComponent(axis.getName()), b -> progWidget.getAxisOptions().setCheck(axis, b.checked));
             addButton(checkBox);
             checkBox.setChecked(progWidget.getAxisOptions().shouldCheck(axis));
         }
 
-        variableField = new WidgetComboBox(font, guiLeft + 7, guiTop + 100, 80, font.FONT_HEIGHT + 1);
+        variableField = new WidgetComboBox(font, guiLeft + 7, guiTop + 100, 80, font.lineHeight + 1);
         variableField.setElements(guiProgrammer.te.getAllVariables());
         addButton(variableField);
-        variableField.setText(progWidget.getVariable());
+        variableField.setValue(progWidget.getVariable());
     }
 
     @Override
-    public void onClose() {
-        progWidget.setVariable(variableField.getText());
+    public void removed() {
+        progWidget.setVariable(variableField.getValue());
 
-        super.onClose();
+        super.removed();
     }
 }

@@ -26,7 +26,7 @@ public class HackableJukebox implements IHackableBlock {
     @Override
     public boolean canHack(IBlockReader world, BlockPos pos, PlayerEntity player) {
         BlockState state = world.getBlockState(pos);
-        return state.getBlock() == Blocks.JUKEBOX && state.get(JukeboxBlock.HAS_RECORD);
+        return state.getBlock() == Blocks.JUKEBOX && state.getValue(JukeboxBlock.HAS_RECORD);
     }
 
     @Override
@@ -47,6 +47,6 @@ public class HackableJukebox implements IHackableBlock {
     @Override
     public void onHackComplete(World world, BlockPos pos, PlayerEntity player) {
         BlockState state = world.getBlockState(pos);
-        fakeRayTrace(player, pos).ifPresent(rtr -> state.onBlockActivated(world, player, Hand.MAIN_HAND, rtr));
+        fakeRayTrace(player, pos).ifPresent(rtr -> state.use(world, player, Hand.MAIN_HAND, rtr));
     }
 }

@@ -39,35 +39,35 @@ public class RenderTumblingBlock extends EntityRenderer<EntityTumblingBlock> {
             return;
         }
         Block block = ((BlockItem) stack.getItem()).getBlock();
-        BlockState state = block.getDefaultState();
-        if (state.getRenderType() == BlockRenderType.MODEL) {
-            World world = entity.getEntityWorld();
-            if (state != world.getBlockState(entity.getPosition()) && state.getRenderType() != BlockRenderType.INVISIBLE) {
-                matrixStackIn.push();
+        BlockState state = block.defaultBlockState();
+        if (state.getRenderShape() == BlockRenderType.MODEL) {
+            World world = entity.getCommandSenderWorld();
+            if (state != world.getBlockState(entity.blockPosition()) && state.getRenderShape() != BlockRenderType.INVISIBLE) {
+                matrixStackIn.pushPose();
                 if (entity.tumbleVec != null) {
                     // spin the block on the x & z axes
                     matrixStackIn.translate(0, 0.5, 0);
-                    float angle = ((entity.ticksExisted + partialTicks) * 18);
-                    matrixStackIn.rotate(entity.tumbleVec.rotationDegrees(angle));
+                    float angle = ((entity.tickCount + partialTicks) * 18);
+                    matrixStackIn.mulPose(entity.tumbleVec.rotationDegrees(angle));
                     matrixStackIn.translate(-0.5, -0.5, -0.5);
                 }
 
-                BlockPos blockpos = new BlockPos(entity.getPosX(), entity.getBoundingBox().maxY, entity.getPosZ());
-                BlockRendererDispatcher blockrendererdispatcher = Minecraft.getInstance().getBlockRendererDispatcher();
-                for (RenderType type : RenderType.getBlockRenderTypes()) {
+                BlockPos blockpos = new BlockPos(entity.getX(), entity.getBoundingBox().maxY, entity.getZ());
+                BlockRendererDispatcher blockrendererdispatcher = Minecraft.getInstance().getBlockRenderer();
+                for (RenderType type : RenderType.chunkBufferLayers()) {
                     if (RenderTypeLookup.canRenderInLayer(state, type)) {
                         ForgeHooksClient.setRenderLayer(type);
-                        blockrendererdispatcher.getBlockModelRenderer().renderModel(world, blockrendererdispatcher.getModelForState(state), state, blockpos, matrixStackIn, bufferIn.getBuffer(type), false, world.getRandom(), state.getPositionRandom(entity.getOrigin()), OverlayTexture.NO_OVERLAY, EmptyModelData.INSTANCE);
+                        blockrendererdispatcher.getModelRenderer().renderModel(world, blockrendererdispatcher.getBlockModel(state), state, blockpos, matrixStackIn, bufferIn.getBuffer(type), false, world.getRandom(), state.getSeed(entity.getOrigin()), OverlayTexture.NO_OVERLAY, EmptyModelData.INSTANCE);
                     }
                 }
                 ForgeHooksClient.setRenderLayer(null);
-                matrixStackIn.pop();
+                matrixStackIn.popPose();
             }
         }
     }
 
     @Override
-    public ResourceLocation getEntityTexture(EntityTumblingBlock entity) {
+    public ResourceLocation getTextureLocation(EntityTumblingBlock entity) {
         return null;
     }
 }

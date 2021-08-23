@@ -112,10 +112,10 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
     }
 
     private WidgetAnimatedStat addAnimatedStat(ITextComponent title, StatIcon icon, int color, boolean leftSided) {
-        int xStart = (width - xSize) / 2;
-        int yStart = (height - ySize) / 2;
+        int xStart = (width - imageWidth) / 2;
+        int yStart = (height - imageHeight) / 2;
 
-        WidgetAnimatedStat stat = new WidgetAnimatedStat(this, title, icon, xStart + (leftSided ? 0 : xSize + 1), leftSided && lastLeftStat != null || !leftSided && lastRightStat != null ? 3 : yStart + 5, color, leftSided ? lastLeftStat : lastRightStat, leftSided);
+        WidgetAnimatedStat stat = new WidgetAnimatedStat(this, title, icon, xStart + (leftSided ? 0 : imageWidth + 1), leftSided && lastLeftStat != null || !leftSided && lastRightStat != null ? 3 : yStart + 5, color, leftSided ? lastLeftStat : lastRightStat, leftSided);
         stat.setBeveled(true);
         addButton(stat);
         if (leftSided) {
@@ -183,7 +183,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
     protected void addJeiFilterInfoTab() {
         if (ModList.get().isLoaded(ModIds.JEI)) {
             addAnimatedStat(new StringTextComponent("JEI"), Textures.GUI_JEI_LOGO, 0xFFCEEDCE, true)
-                    .setText(xlate("pneumaticcraft.gui.jei.filterDrag").mergeStyle(TextFormatting.DARK_GRAY));
+                    .setText(xlate("pneumaticcraft.gui.jei.filterDrag").withStyle(TextFormatting.DARK_GRAY));
         }
     }
 
@@ -194,14 +194,14 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
     private void addUpgradeTab() {
         List<ITextComponent> text = new ArrayList<>();
         te.getApplicableUpgrades().keySet().stream()
-                .sorted(Comparator.comparing(o -> o.getItemStack().getDisplayName().getString()))
+                .sorted(Comparator.comparing(o -> o.getItemStack().getHoverName().getString()))
                 .forEach(upgrade -> {
                     int max = te.getApplicableUpgrades().get(upgrade);
-                    text.add(upgrade.getItemStack().getDisplayName().deepCopy().mergeStyle(TextFormatting.WHITE, TextFormatting.UNDERLINE));
-                    text.add(xlate("pneumaticcraft.gui.tab.upgrades.max", max).mergeStyle(TextFormatting.GRAY));
+                    text.add(upgrade.getItemStack().getHoverName().copy().withStyle(TextFormatting.WHITE, TextFormatting.UNDERLINE));
+                    text.add(xlate("pneumaticcraft.gui.tab.upgrades.max", max).withStyle(TextFormatting.GRAY));
                     String upgradeName = upgrade.toString().toLowerCase(Locale.ROOT);
                     String k = "pneumaticcraft.gui.tab.upgrades." + upgradeCategory() + "." + upgradeName;
-                    text.addAll(I18n.hasKey(k) ? GuiUtils.xlateAndSplit(k) : GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.upgrades.generic." + upgradeName));
+                    text.addAll(I18n.exists(k) ? GuiUtils.xlateAndSplit(k) : GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.upgrades.generic." + upgradeName));
                     text.add(StringTextComponent.EMPTY);
                 });
         if (!text.isEmpty()) {
@@ -258,7 +258,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
                 button.setRenderedIcon(Textures.GUI_X_BUTTON);
             }
             button.setTooltipText(ImmutableList.of(
-                    new StringTextComponent(relativeFace.toString()).mergeStyle(TextFormatting.YELLOW),
+                    new StringTextComponent(relativeFace.toString()).withStyle(TextFormatting.YELLOW),
                     sc.getFaceLabel(relativeFace)
             ));
         } catch (IllegalArgumentException e) {
@@ -308,24 +308,24 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int i, int j) {
+    protected void renderBg(MatrixStack matrixStack, float partialTicks, int i, int j) {
         if (shouldDrawBackground()) {
             GuiUtils.glColorHex(0xFF000000 | getBackgroundTint());
             bindGuiTexture();
-            int xStart = (width - xSize) / 2;
-            int yStart = (height - ySize) / 2;
-            blit(matrixStack, xStart, yStart, 0, 0, xSize, ySize);
+            int xStart = (width - imageWidth) / 2;
+            int yStart = (height - imageHeight) / 2;
+            blit(matrixStack, xStart, yStart, 0, 0, imageWidth, imageHeight);
         }
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int x, int y) {
+    protected void renderLabels(MatrixStack matrixStack, int x, int y) {
         if (getInvNameOffset() != null) {
-            font.func_238422_b_(matrixStack, title.func_241878_f(), xSize / 2f - font.getStringPropertyWidth(title) / 2f + getInvNameOffset().x, 5 + getInvNameOffset().y, getTitleColor());
+            font.draw(matrixStack, title.getVisualOrderText(), imageWidth / 2f - font.width(title) / 2f + getInvNameOffset().x, 5 + getInvNameOffset().y, getTitleColor());
         }
 
         if (getInvTextOffset() != null) {
-            font.drawString(matrixStack, I18n.format("container.inventory"), 8 + getInvTextOffset().x, ySize - 94 + getInvTextOffset().y, 0x404040);
+            font.draw(matrixStack, I18n.get("container.inventory"), 8 + getInvTextOffset().x, imageHeight - 94 + getInvTextOffset().y, 0x404040);
         }
 
         if (pressureStat != null) {
@@ -333,7 +333,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
             if (gaugeLocation != null) {
                 TileEntityPneumaticBase pneu = (TileEntityPneumaticBase) te;
                 float minWorking = te instanceof IMinWorkingPressure ? ((IMinWorkingPressure) te).getMinWorkingPressure() : -Float.MAX_VALUE;
-                PressureGaugeRenderer2D.drawPressureGauge(matrixStack, font, -1, pneu.getCriticalPressure(), pneu.getDangerPressure(), minWorking, pneu.getPressure(), gaugeLocation.x - guiLeft, gaugeLocation.y - guiTop);
+                PressureGaugeRenderer2D.drawPressureGauge(matrixStack, font, -1, pneu.getCriticalPressure(), pneu.getDangerPressure(), minWorking, pneu.getPressure(), gaugeLocation.x - leftPos, gaugeLocation.y - topPos);
             }
         }
     }
@@ -341,7 +341,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
     void bindGuiTexture() {
         ResourceLocation guiTexture = getGuiTexture();
         if (guiTexture != null) {
-            minecraft.getTextureManager().bindTexture(guiTexture);
+            minecraft.getTextureManager().bind(guiTexture);
             RenderSystem.enableTexture();
         }
     }
@@ -364,7 +364,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
 
         super.render(matrixStack, x, y, partialTick);
 
-        renderHoveredTooltip(matrixStack, x, y);
+        renderTooltip(matrixStack, x, y);
 
         List<ITextComponent> tooltip = new ArrayList<>();
         RenderSystem.color4f(1, 1, 1, 1);
@@ -381,15 +381,15 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         }
 
         if (!tooltip.isEmpty()) {
-            int max = Math.min(xSize * 4 / 3, width / 3);
+            int max = Math.min(imageWidth * 4 / 3, width / 3);
             renderTooltip(matrixStack, GuiUtils.wrapTextComponentList(tooltip, max, font), x, y);
         }
     }
 
     protected PointXY getGaugeLocation() {
-        int xStart = (width - xSize) / 2;
-        int yStart = (height - ySize) / 2;
-        return new PointXY(xStart + xSize * 3 / 4, yStart + ySize / 4 + 4);
+        int xStart = (width - imageWidth) / 2;
+        int yStart = (height - imageHeight) / 2;
+        return new PointXY(xStart + imageWidth * 3 / 4, yStart + imageHeight / 4 + 4);
     }
 
     protected int getTitleColor() { return 0x404040; }
@@ -418,7 +418,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
             addPressureStatInfo(pressureText);
             pressureStat.setText(pressureText);
         }
-        if (problemTab != null && ((Minecraft.getInstance().world.getGameTime() & 0x7) == 0 || firstUpdate)) {
+        if (problemTab != null && ((Minecraft.getInstance().level.getGameTime() & 0x7) == 0 || firstUpdate)) {
             handleProblemsTab();
         }
         if (redstoneTab != null && te instanceof IRedstoneControl) {
@@ -473,7 +473,7 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
         text.add(xlate("pneumaticcraft.gui.tooltip.baseVolume", String.format("%,d", baseVolume)));
         if (volume > baseVolume) {
             text.add(new StringTextComponent(GuiConstants.TRIANGLE_RIGHT + " " + upgrades + " x ")
-                    .append(EnumUpgrade.VOLUME.getItemStack().getDisplayName())
+                    .append(EnumUpgrade.VOLUME.getItemStack().getHoverName())
             );
             addExtraVolumeModifierInfo(text);
             text.add(xlate("pneumaticcraft.gui.tooltip.effectiveVolume", String.format("%,d",volume)));
@@ -552,12 +552,12 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
 
     @Override
     public int getGuiLeft() {
-        return guiLeft;
+        return leftPos;
     }
 
     @Override
     public int getGuiTop() {
-        return guiTop;
+        return topPos;
     }
 
     public List<Rectangle2d> getTabRectangles() {
@@ -567,9 +567,9 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
     }
 
     void refreshScreen() {
-        MainWindow mw = Minecraft.getInstance().getMainWindow();
-        int i = mw.getScaledWidth();
-        int j = mw.getScaledHeight();
+        MainWindow mw = Minecraft.getInstance().getWindow();
+        int i = mw.getGuiScaledWidth();
+        int j = mw.getGuiScaledHeight();
         init(Minecraft.getInstance(), i, j);
         buttons.stream().filter(widget -> widget instanceof ITickable).forEach(w -> ((ITickable) w).tick());
     }
@@ -591,10 +591,10 @@ public abstract class GuiPneumaticContainerBase<C extends ContainerPneumaticBase
     }
 
     @Override
-    public void onClose() {
+    public void removed() {
         if (sendDelay > 0) doDelayedAction();  // ensure any pending delayed action is done
 
-        super.onClose();
+        super.removed();
     }
 
     protected boolean shouldParseVariablesInTooltips() {

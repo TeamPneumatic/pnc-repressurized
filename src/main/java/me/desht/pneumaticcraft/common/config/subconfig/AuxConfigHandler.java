@@ -77,7 +77,7 @@ public class AuxConfigHandler {
     }
 
     private static File getWorldSpecificDir() {
-        return ServerLifecycleHooks.getCurrentServer().func_240776_a_(FOLDER).toFile();
+        return ServerLifecycleHooks.getCurrentServer().getWorldPath(FOLDER).toFile();
     }
 
     public static void clearPerWorldConfigs() {

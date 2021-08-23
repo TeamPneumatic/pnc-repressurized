@@ -42,9 +42,9 @@ public interface ICamouflageableTE {
      * @param te the tile entity
      */
     static void syncToClient(TileEntityBase te) {
-        if (te.getWorld() != null && !te.getWorld().isRemote) {
+        if (te.getLevel() != null && !te.getLevel().isClientSide) {
             te.sendDescriptionPacket();
-            te.markDirty();
+            te.setChanged();
         }
     }
 

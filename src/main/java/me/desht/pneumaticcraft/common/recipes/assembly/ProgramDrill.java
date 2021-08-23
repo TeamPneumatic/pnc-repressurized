@@ -22,7 +22,7 @@ public class ProgramDrill extends AssemblyProgram {
     public boolean executeStep(TileEntityAssemblyController.AssemblySystem system) {
         boolean useAir = true;
 
-        World world = system.getPlatform().getWorld();
+        World world = system.getPlatform().getLevel();
 
         if (!system.getPlatform().getHeldStack().isEmpty()) {
             if (canItemBeDrilled(world, system.getPlatform().getHeldStack())) {

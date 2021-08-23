@@ -60,8 +60,8 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tag) {
-        super.write(tag);
+    public CompoundNBT save(CompoundNBT tag) {
+        super.save(tag);
         // hot side heat exchanger is the default, and handled in TileEntityPneumaticBase
         tag.put("coldHeat", coldHeatExchanger.serializeNBT());
         tag.put("connector", connectingExchanger.serializeNBT());
@@ -69,8 +69,8 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT tag) {
-        super.read(state, tag);
+    public void load(BlockState state, CompoundNBT tag) {
+        super.load(state, tag);
 
         // hot side heat exchanger is the default, and handled in TileEntityPneumaticBase
         coldHeatExchanger.deserializeNBT(tag.getCompound("coldHeat"));
@@ -81,7 +81,7 @@ public class TileEntityVortexTube extends TileEntityPneumaticBase implements IHe
     public void tick() {
         super.tick();
 
-        if (!getWorld().isRemote) {
+        if (!getLevel().isClientSide) {
             // Only update the cold and connecting side; the hot side is handled in TileEntityPneumaticBase
             connectingExchanger.tick();
             coldHeatExchanger.tick();

@@ -17,10 +17,10 @@ import net.minecraft.world.World;
 
 public class BlockRefineryController extends BlockPneumaticCraft {
     private static final VoxelShape SHAPE_N = VoxelShapes.or(
-        makeCuboidShape(0, 0, 0, 16, 1, 16),
-        makeCuboidShape(0, 15, 0, 16, 16, 16),
-        makeCuboidShape(0, 1, 0, 16, 15, 8),
-        makeCuboidShape(1, 1, 8, 15, 15, 16)
+        box(0, 0, 0, 16, 1, 16),
+        box(0, 15, 0, 16, 16, 16),
+        box(0, 1, 0, 16, 15, 8),
+        box(1, 1, 8, 15, 15, 16)
     );
     private static final VoxelShape SHAPE_E = VoxelShapeUtils.rotateY(SHAPE_N, 90);
     private static final VoxelShape SHAPE_S = VoxelShapeUtils.rotateY(SHAPE_E, 90);
@@ -38,8 +38,8 @@ public class BlockRefineryController extends BlockPneumaticCraft {
 
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-        Direction d = state.get(directionProperty());
-        return SHAPES[d.getHorizontalIndex()];
+        Direction d = state.getValue(directionProperty());
+        return SHAPES[d.get2DDataValue()];
     }
 
     @Override

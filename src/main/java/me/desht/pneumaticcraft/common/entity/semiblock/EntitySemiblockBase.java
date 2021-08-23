@@ -42,8 +42,8 @@ import net.minecraftforge.fml.network.NetworkHooks;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, IGUIButtonSensitive {
-    private static final DataParameter<Integer> TIME_SINCE_HIT = EntityDataManager.createKey(EntitySemiblockBase.class, DataSerializers.VARINT);
-    private static final DataParameter<Float> DAMAGE_TAKEN = EntityDataManager.createKey(EntitySemiblockBase.class, DataSerializers.FLOAT);
+    private static final DataParameter<Integer> TIME_SINCE_HIT = EntityDataManager.defineId(EntitySemiblockBase.class, DataSerializers.INT);
+    private static final DataParameter<Float> DAMAGE_TAKEN = EntityDataManager.defineId(EntitySemiblockBase.class, DataSerializers.FLOAT);
 
     private static final float MAX_HEALTH = 40.0F;
 
@@ -62,24 +62,24 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
      * Called by onRemovedFromWorld(). Override in subclasses if needed, but be sure to call the super() method.
      */
     protected void onBroken() {
-        if (!world.isRemote) {
+        if (!level.isClientSide) {
             if (shouldDropItem) {
                 getDrops().forEach(this::dropItem);
             }
-            if (world.isAreaLoaded(blockPos, 1)) {
-                world.notifyNeighborsOfStateChange(blockPos, world.getBlockState(blockPos).getBlock());
+            if (level.isAreaLoaded(blockPos, 1)) {
+                level.updateNeighborsAt(blockPos, level.getBlockState(blockPos).getBlock());
             }
         }
     }
 
     private void dropItem(ItemStack stack) {
         if (!stack.isEmpty()) {
-            ItemEntity itemEntity = new ItemEntity(world, getPosX() + dropOffset.getX(), getPosY() + dropOffset.getY(), getPosZ() + dropOffset.getZ(), stack);
-            itemEntity.setDefaultPickupDelay();
+            ItemEntity itemEntity = new ItemEntity(level, getX() + dropOffset.x(), getY() + dropOffset.y(), getZ() + dropOffset.z(), stack);
+            itemEntity.setDefaultPickUpDelay();
             if (captureDrops() != null)
                 captureDrops().add(itemEntity);
             else
-                world.addEntity(itemEntity);
+                level.addFreshEntity(itemEntity);
         }
     }
 
@@ -87,10 +87,10 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
     public void tick() {
         super.tick();
 
-        if (ticksExisted == 1) {
+        if (tickCount == 1) {
             // can't do this in onAddedToWorld() because querying the blockstate then can cause a deadlock
             // add a small outset so the entity covers the block and becomes interactable
-            setBoundingBox(getBlockBounds().offset(blockPos));//.grow(0.01));
+            setBoundingBox(getBlockBounds().move(blockPos));//.grow(0.01));
             // a semiblock entity doesn't move once added to world
 
             lastBlock = getBlockState().getBlock();
@@ -103,7 +103,7 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
             this.setDamageTaken(this.getDamageTaken() - 1.0F);
         }
 
-        if (!world.isRemote && isAlive() && !canStay()) {
+        if (!level.isClientSide && isAlive() && !canStay()) {
             remove();
         }
 
@@ -116,24 +116,24 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
     }
 
     @Override
-    public ActionResultType applyPlayerInteraction(PlayerEntity player, Vector3d hitVec, Hand hand) {
+    public ActionResultType interactAt(PlayerEntity player, Vector3d hitVec, Hand hand) {
         Vector3d eye = player.getEyePosition(0f);
-        Vector3d end = eye.add(player.getLookVec().normalize().scale(5f));
+        Vector3d end = eye.add(player.getLookAngle().normalize().scale(5f));
         RayTraceContext ctx = new RayTraceContext(eye, end, RayTraceContext.BlockMode.OUTLINE, RayTraceContext.FluidMode.NONE, player);
-        BlockRayTraceResult brtr = player.world.rayTraceBlocks(ctx);
+        BlockRayTraceResult brtr = player.level.clip(ctx);
 
         if (brtr == null) {
             // shouldn't happen, but sanity checking...
             return ActionResultType.PASS;
         }
 
-        if (player.getHeldItem(hand).getItem() == ModItems.LOGISTICS_CONFIGURATOR.get()) {
-            if (player.isSneaking()) {
+        if (player.getItemInHand(hand).getItem() == ModItems.LOGISTICS_CONFIGURATOR.get()) {
+            if (player.isShiftKeyDown()) {
                 removeSemiblock(player);
                 return ActionResultType.SUCCESS;
             } else {
-                if (onRightClickWithConfigurator(player, brtr.getFace())) {
-                    player.getHeldItem(hand).getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
+                if (onRightClickWithConfigurator(player, brtr.getDirection())) {
+                    player.getItemInHand(hand).getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
                             .ifPresent(h -> h.addAir(-PneumaticValues.USAGE_LOGISTICS_CONFIGURATOR));
                     return ActionResultType.SUCCESS;
                 } else {
@@ -143,22 +143,22 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
         } else {
             // allow right-clicks to pass through to the inventory block being covered
             ItemUseContext itemCtx = new ItemUseContext(player, hand, brtr);
-            ActionResultType res = player.isSneaking() ? ActionResultType.PASS : getBlockState().onBlockActivated(world, player, hand, brtr);
-            if (res.isSuccessOrConsume() || res == ActionResultType.FAIL) return res;
-            res = player.getHeldItem(hand).onItemUseFirst(itemCtx);
-            return res == ActionResultType.PASS ? player.getHeldItem(hand).onItemUse(itemCtx) : res;
+            ActionResultType res = player.isShiftKeyDown() ? ActionResultType.PASS : getBlockState().use(level, player, hand, brtr);
+            if (res.consumesAction() || res == ActionResultType.FAIL) return res;
+            res = player.getItemInHand(hand).onItemUseFirst(itemCtx);
+            return res == ActionResultType.PASS ? player.getItemInHand(hand).useOn(itemCtx) : res;
         }
     }
 
     @Override
-    protected void registerData() {
-        this.dataManager.register(TIME_SINCE_HIT, 0);
-        this.dataManager.register(DAMAGE_TAKEN, 0.0F);
+    protected void defineSynchedData() {
+        this.entityData.define(TIME_SINCE_HIT, 0);
+        this.entityData.define(DAMAGE_TAKEN, 0.0F);
     }
 
     @Override
     public World getWorld() {
-        return world;
+        return level;
     }
 
     @Override
@@ -167,10 +167,10 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
     }
 
     @Override
-    public void setPosition(double x, double y, double z) {
+    public void setPos(double x, double y, double z) {
         // a semiblock is positioned when added to world, and not again
         if (!isAddedToWorld()) {
-            super.setPosition(x, y, z);
+            super.setPos(x, y, z);
             this.blockPos = new BlockPos(x, y, z);
         }
     }
@@ -187,13 +187,13 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
      * @return the blockstate
      */
     public BlockState getBlockState() {
-        return world.getBlockState(blockPos);
+        return level.getBlockState(blockPos);
     }
 
     @Override
     public TileEntity getCachedTileEntity() {
         if (cachedTE == null || cachedTE.isRemoved()) {
-            cachedTE = world.getTileEntity(blockPos);
+            cachedTE = level.getBlockEntity(blockPos);
         }
         return cachedTE;
     }
@@ -206,7 +206,7 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
      * @return the dropped item, or null if nothing should be dropped
      */
     protected Item getDroppedItem() {
-        return ForgeRegistries.ITEMS.getValue(getId());
+        return ForgeRegistries.ITEMS.getValue(getSemiblockId());
     }
 
     @Override
@@ -246,11 +246,11 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
     protected AxisAlignedBB calculateBlockBounds() {
         // default behaviour: try & fit around the block in this blockpos
         AxisAlignedBB aabb;
-        if (world != null) {
-            VoxelShape shape = world.getBlockState(blockPos).getShape(world, blockPos);
-            aabb = shape.isEmpty() ? VoxelShapes.fullCube().getBoundingBox() : shape.getBoundingBox();
+        if (level != null) {
+            VoxelShape shape = level.getBlockState(blockPos).getShape(level, blockPos);
+            aabb = shape.isEmpty() ? VoxelShapes.block().bounds() : shape.bounds();
         } else {
-            aabb = VoxelShapes.fullCube().getBoundingBox();
+            aabb = VoxelShapes.block().bounds();
         }
         return aabb;
     }
@@ -265,12 +265,12 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
     }
 
     @Override
-    public ResourceLocation getId() {
+    public ResourceLocation getSemiblockId() {
         return getType().getRegistryName();
     }
 
     @Override
-    public IPacket<?> createSpawnPacket() {
+    public IPacket<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
@@ -280,11 +280,11 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
     }
 
     @Override
-    protected void readAdditional(CompoundNBT compound) {
+    protected void readAdditionalSaveData(CompoundNBT compound) {
     }
 
     @Override
-    protected void writeAdditional(CompoundNBT compound) {
+    protected void addAdditionalSaveData(CompoundNBT compound) {
         serializeNBT(compound);
     }
 
@@ -297,12 +297,12 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
     public void onAddedToWorld() {
         super.onAddedToWorld();
 
-        if (!world.isRemote) {
+        if (!level.isClientSide) {
             Direction dir = this instanceof IDirectionalSemiblock ? ((IDirectionalSemiblock) this).getSide() : null;
-            if (SemiblockTracker.getInstance().putSemiblock(world, blockPos, this)) {
-                MinecraftForge.EVENT_BUS.post(new SemiblockEvent.PlaceEvent(world, blockPos, this));
+            if (SemiblockTracker.getInstance().putSemiblock(level, blockPos, this)) {
+                MinecraftForge.EVENT_BUS.post(new SemiblockEvent.PlaceEvent(level, blockPos, this));
             } else {
-                Log.error("found existing semiblock at %s, pos=%s, dir=%s", world, blockPos, dir);
+                Log.error("found existing semiblock at %s, pos=%s, dir=%s", level, blockPos, dir);
             }
         }
     }
@@ -311,28 +311,28 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
     public void onRemovedFromWorld() {
         super.onRemovedFromWorld();
 
-        if (!world.isRemote) {
+        if (!level.isClientSide) {
             Direction dir = this instanceof IDirectionalSemiblock ? ((IDirectionalSemiblock) this).getSide() : null;
-            SemiblockTracker.getInstance().clearSemiblock(world, blockPos, dir);
-            MinecraftForge.EVENT_BUS.post(new SemiblockEvent.BreakEvent(world, blockPos, this));
+            SemiblockTracker.getInstance().clearSemiblock(level, blockPos, dir);
+            MinecraftForge.EVENT_BUS.post(new SemiblockEvent.BreakEvent(level, blockPos, this));
         }
 
         onBroken();
     }
 
     @Override
-    public boolean hasNoGravity() {
+    public boolean isNoGravity() {
         return true;
     }
 
     @Override
-    public boolean canBeCollidedWith() {
+    public boolean isPickable() {
         return true;
     }
 
     @Override
     public int getTrackingId() {
-        return isAddedToWorld() ? getEntityId() : -1;
+        return isAddedToWorld() ? getId() : -1;
     }
 
     @Override
@@ -347,20 +347,20 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
 
     @Override
     public void removeSemiblock(PlayerEntity player) {
-        player.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 1.0f, 1.0f);
-        dropOffset = player.getPositionVec().subtract(this.getPositionVec()).normalize();
+        player.playSound(SoundEvents.ITEM_PICKUP, 1.0f, 1.0f);
+        dropOffset = player.position().subtract(this.position()).normalize();
         this.remove();
     }
 
     @Override
-    public boolean attackEntityFrom(DamageSource source, float amount) {
-        if (this.isInvulnerableTo(source) || !(source.getImmediateSource() instanceof PlayerEntity)) {
+    public boolean hurt(DamageSource source, float amount) {
+        if (this.isInvulnerableTo(source) || !(source.getDirectEntity() instanceof PlayerEntity)) {
             return false;
-        } else if (!this.world.isRemote && this.isAlive()) {
+        } else if (!this.level.isClientSide && this.isAlive()) {
             this.setTimeSinceHit(10);
             this.setDamageTaken(this.getDamageTaken() + amount * 10.0F);
-            boolean isCreative = source.getTrueSource() instanceof PlayerEntity
-                    && ((PlayerEntity)source.getTrueSource()).abilities.isCreativeMode;
+            boolean isCreative = source.getEntity() instanceof PlayerEntity
+                    && ((PlayerEntity)source.getEntity()).abilities.instabuild;
             if (isCreative || this.getDamageTaken() > MAX_HEALTH) {
                 shouldDropItem = !isCreative;
                 remove();
@@ -370,23 +370,23 @@ public abstract class EntitySemiblockBase extends Entity implements ISemiBlock, 
     }
 
     private void setDamageTaken(float damageTaken) {
-        this.dataManager.set(DAMAGE_TAKEN, damageTaken);
+        this.entityData.set(DAMAGE_TAKEN, damageTaken);
     }
 
     public float getDamageTaken() {
-        return this.dataManager.get(DAMAGE_TAKEN);
+        return this.entityData.get(DAMAGE_TAKEN);
     }
 
     private void setTimeSinceHit(int timeSinceHit) {
-        this.dataManager.set(TIME_SINCE_HIT, timeSinceHit);
+        this.entityData.set(TIME_SINCE_HIT, timeSinceHit);
     }
 
     public int getTimeSinceHit() {
-        return this.dataManager.get(TIME_SINCE_HIT);
+        return this.entityData.get(TIME_SINCE_HIT);
     }
 
     public boolean isAir() {
-        return getBlockState().isAir(world, blockPos);
+        return getBlockState().isAir(level, blockPos);
     }
 
     @Override

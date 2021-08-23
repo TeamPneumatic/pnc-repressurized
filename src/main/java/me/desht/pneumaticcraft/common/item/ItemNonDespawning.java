@@ -21,7 +21,7 @@ public class ItemNonDespawning extends Item {
 
     @Override
     public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entityItem) {
-        if (!entityItem.world.isRemote) entityItem.setNoDespawn();
+        if (!entityItem.level.isClientSide) entityItem.setExtendedLifetime();
         return false;
     }
 
@@ -30,8 +30,8 @@ public class ItemNonDespawning extends Item {
      */
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void addInformation(ItemStack stack, World worldIn, List<ITextComponent> curInfo, ITooltipFlag moreInfo) {
-        super.addInformation(stack, worldIn, curInfo, moreInfo);
+    public void appendHoverText(ItemStack stack, World worldIn, List<ITextComponent> curInfo, ITooltipFlag moreInfo) {
+        super.appendHoverText(stack, worldIn, curInfo, moreInfo);
         curInfo.add(xlate("pneumaticcraft.gui.tooltip.doesNotDespawn"));
     }
 }

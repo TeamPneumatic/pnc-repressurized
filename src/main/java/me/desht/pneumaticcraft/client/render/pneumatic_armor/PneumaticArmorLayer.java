@@ -39,13 +39,13 @@ public class PneumaticArmorLayer<T extends LivingEntity, M extends BipedModel<T>
     }
 
     private void renderSlot(MatrixStack matrixStack, IRenderTypeBuffer buffer, T entity, EquipmentSlotType slot, int light, A model) {
-        ItemStack stack = entity.getItemStackFromSlot(slot);
+        ItemStack stack = entity.getItemBySlot(slot);
         if (stack.getItem() instanceof ItemPneumaticArmor) {
-            if (((ItemPneumaticArmor) stack.getItem()).getEquipmentSlot() == slot) {
+            if (((ItemPneumaticArmor) stack.getItem()).getSlot() == slot) {
                 model = ForgeHooksClient.getArmorModel(entity, stack, slot, model);
-                this.getEntityModel().setModelAttributes(model);
+                this.getParentModel().copyPropertiesTo(model);
                 this.setModelSlotVisible(model, slot);
-                boolean glint = stack.hasEffect();
+                boolean glint = stack.hasFoil();
 
                 // secondary texture layer in all slots
                 float[] secondary = RenderUtils.decomposeColorF(((ItemPneumaticArmor) stack.getItem()).getSecondaryColor(stack));
@@ -67,30 +67,30 @@ public class PneumaticArmorLayer<T extends LivingEntity, M extends BipedModel<T>
 
     private void doRender(MatrixStack matrixStack, IRenderTypeBuffer buffer, int light, boolean glint, A model, float r, float g, float b, EquipmentSlotType slot, ExtraLayer extraLayer) {
         ResourceLocation armorResource = extraLayer.getArmorResource(slot);
-        IVertexBuilder ivertexbuilder = ItemRenderer.getArmorVertexBuilder(buffer, extraLayer.getRenderType(armorResource), false, glint);
-        model.render(matrixStack, ivertexbuilder, light, OverlayTexture.NO_OVERLAY, r, g, b, 1.0F);
+        IVertexBuilder ivertexbuilder = ItemRenderer.getArmorFoilBuffer(buffer, extraLayer.getRenderType(armorResource), false, glint);
+        model.renderToBuffer(matrixStack, ivertexbuilder, light, OverlayTexture.NO_OVERLAY, r, g, b, 1.0F);
     }
 
     protected void setModelSlotVisible(A model, EquipmentSlotType slotIn) {
-        model.setVisible(false);
+        model.setAllVisible(false);
         switch (slotIn) {
             case HEAD:
-                model.bipedHead.showModel = true;
-                model.bipedHeadwear.showModel = true;
+                model.head.visible = true;
+                model.hat.visible = true;
                 break;
             case CHEST:
-                model.bipedBody.showModel = true;
-                model.bipedRightArm.showModel = true;
-                model.bipedLeftArm.showModel = true;
+                model.body.visible = true;
+                model.rightArm.visible = true;
+                model.leftArm.visible = true;
                 break;
             case LEGS:
-                model.bipedBody.showModel = true;
-                model.bipedRightLeg.showModel = true;
-                model.bipedLeftLeg.showModel = true;
+                model.body.visible = true;
+                model.rightLeg.visible = true;
+                model.leftLeg.visible = true;
                 break;
             case FEET:
-                model.bipedRightLeg.showModel = true;
-                model.bipedLeftLeg.showModel = true;
+                model.rightLeg.visible = true;
+                model.leftLeg.visible = true;
         }
     }
 
@@ -109,7 +109,7 @@ public class PneumaticArmorLayer<T extends LivingEntity, M extends BipedModel<T>
         }
 
         RenderType getRenderType(ResourceLocation rl) {
-            return translucent ? ModRenderTypes.getArmorTranslucentNoCull(rl) :  RenderType.getArmorCutoutNoCull(rl);
+            return translucent ? ModRenderTypes.getArmorTranslucentNoCull(rl) :  RenderType.armorCutoutNoCull(rl);
         }
 
         ResourceLocation getArmorResource(EquipmentSlotType slot) {

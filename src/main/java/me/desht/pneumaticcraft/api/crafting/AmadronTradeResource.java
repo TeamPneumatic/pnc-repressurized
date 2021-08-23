@@ -80,9 +80,9 @@ public class AmadronTradeResource {
         Type type = Type.values()[pb.readByte()];
         switch (type) {
             case ITEM:
-                return new AmadronTradeResource(pb.readItemStack());
+                return new AmadronTradeResource(pb.readItem());
             case FLUID:
-                return new AmadronTradeResource(FluidStack.loadFluidStackFromNBT(pb.readCompoundTag()));
+                return new AmadronTradeResource(FluidStack.loadFluidStackFromNBT(pb.readNbt()));
         }
         throw new IllegalStateException("bad trade resource type: " + type);
     }
@@ -146,7 +146,7 @@ public class AmadronTradeResource {
                 Item item = ForgeRegistries.ITEMS.getValue(rl);
                 ItemStack stack = new ItemStack(item, amount);
                 if (obj.has("nbt")) {
-                    stack.setTag(JsonToNBT.getTagFromJson(JSONUtils.getString(obj, "nbt")));
+                    stack.setTag(JsonToNBT.parseTag(JSONUtils.getAsString(obj, "nbt")));
                 }
                 return new AmadronTradeResource(stack);
             case FLUID:
@@ -182,10 +182,10 @@ public class AmadronTradeResource {
         pb.writeByte(type.ordinal());
         switch (type) {
             case ITEM:
-                pb.writeItemStack(item);
+                pb.writeItem(item);
                 break;
             case FLUID:
-                pb.writeCompoundTag(fluid.writeToNBT(new CompoundNBT()));
+                pb.writeNbt(fluid.writeToNBT(new CompoundNBT()));
                 break;
         }
     }
@@ -193,7 +193,7 @@ public class AmadronTradeResource {
     public String getName() {
         switch (type) {
             case ITEM:
-                return item.getDisplayName().getString();
+                return item.getHoverName().getString();
             case FLUID:
                 return fluid.getDisplayName().getString();
             default:
@@ -212,7 +212,7 @@ public class AmadronTradeResource {
     public CompoundNBT writeToNBT() {
         CompoundNBT tag = new CompoundNBT();
         tag.putString("type", type.toString());
-        CompoundNBT subTag = type == Type.ITEM ? item.write(new CompoundNBT()) : fluid.writeToNBT(new CompoundNBT());
+        CompoundNBT subTag = type == Type.ITEM ? item.save(new CompoundNBT()) : fluid.writeToNBT(new CompoundNBT());
         tag.put("resource", subTag);
         return tag;
     }
@@ -222,7 +222,7 @@ public class AmadronTradeResource {
         if (this == o) return true;
         if (!(o instanceof AmadronTradeResource)) return false;
         AmadronTradeResource that = (AmadronTradeResource) o;
-        return type == Type.ITEM && ItemStack.areItemStacksEqual(item, that.item)
+        return type == Type.ITEM && ItemStack.matches(item, that.item)
                 || type == Type.FLUID && fluid.equals(that.fluid) && fluid.getAmount() == that.fluid.getAmount();
     }
 
@@ -235,7 +235,7 @@ public class AmadronTradeResource {
     public String toString() {
         switch (type) {
             case ITEM:
-                return item.getCount() + " x " + item.getDisplayName().getString();
+                return item.getCount() + " x " + item.getHoverName().getString();
             case FLUID:
                 return fluid.getAmount() + "mB " + fluid.getDisplayName().getString();
         }

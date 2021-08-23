@@ -161,9 +161,9 @@ public class TemperatureRange {
         if (!json.has("min_temp") && !json.has("max_temp")) {
             return TemperatureRange.any();
         }
-        if (!json.has("min_temp")) return TemperatureRange.max(JSONUtils.getInt(json,"max_temp"));
-        if (!json.has("max_temp")) return TemperatureRange.min(JSONUtils.getInt(json,"min_temp"));
-        return TemperatureRange.of(JSONUtils.getInt(json,"min_temp"), JSONUtils.getInt(json,"max_temp"));
+        if (!json.has("min_temp")) return TemperatureRange.max(JSONUtils.getAsInt(json,"max_temp"));
+        if (!json.has("max_temp")) return TemperatureRange.min(JSONUtils.getAsInt(json,"min_temp"));
+        return TemperatureRange.of(JSONUtils.getAsInt(json,"min_temp"), JSONUtils.getAsInt(json,"max_temp"));
     }
 
     public String asString(TemperatureScale scale) {

@@ -34,7 +34,7 @@ public class PressureChamberRecipeImpl extends PressureChamberRecipe {
     public PressureChamberRecipeImpl(ResourceLocation id, List<Ingredient> inputs, float pressureRequired, ItemStack... outputs) {
         super(id);
         this.inputs = ImmutableList.copyOf(inputs);
-        this.outputs = NonNullList.from(ItemStack.EMPTY, outputs);
+        this.outputs = NonNullList.of(ItemStack.EMPTY, outputs);
         this.pressureRequired = pressureRequired;
     }
 
@@ -102,7 +102,7 @@ public class PressureChamberRecipeImpl extends PressureChamberRecipe {
     }
 
     @Override
-    public ItemStack getIcon() {
+    public ItemStack getToastSymbol() {
         return new ItemStack(ModBlocks.PRESSURE_CHAMBER_WALL.get());
     }
 
@@ -117,8 +117,8 @@ public class PressureChamberRecipeImpl extends PressureChamberRecipe {
     public NonNullList<ItemStack> craftRecipe(@Nonnull IItemHandler chamberHandler, List<Integer> ingredientSlots, boolean simulate) {
         // remove the recipe's input items from the chamber
         for (Ingredient ingredient : inputs) {
-            if (ingredient.hasNoMatchingItems()) return NonNullList.create(); // sanity check
-            int nItems = ingredient.getMatchingStacks()[0].getCount();
+            if (ingredient.isEmpty()) return NonNullList.create(); // sanity check
+            int nItems = ingredient.getItems()[0].getCount();
             for (int i = 0; i < ingredientSlots.size() && nItems > 0; i++) {
                 int slot = ingredientSlots.get(i);
                 if (ingredient.test(chamberHandler.getStackInSlot(slot))) {
@@ -135,9 +135,9 @@ public class PressureChamberRecipeImpl extends PressureChamberRecipe {
     public void write(PacketBuffer buffer) {
         buffer.writeFloat(getCraftingPressureForDisplay());
         buffer.writeVarInt(inputs.size());
-        inputs.forEach(i -> i.write(buffer));
+        inputs.forEach(i -> i.toNetwork(buffer));
         buffer.writeVarInt(outputs.size());
-        outputs.forEach(buffer::writeItemStack);
+        outputs.forEach(buffer::writeItem);
     }
 
     public static class Serializer<T extends PressureChamberRecipe>
@@ -151,40 +151,40 @@ public class PressureChamberRecipeImpl extends PressureChamberRecipe {
         }
 
         @Override
-        public T read(ResourceLocation recipeId, JsonObject json) {
+        public T fromJson(ResourceLocation recipeId, JsonObject json) {
             JsonArray inputs = json.get("inputs").getAsJsonArray();
             List<Ingredient> inputIngredients = new ArrayList<>();
             for (JsonElement e : inputs) {
-                inputIngredients.add(Ingredient.deserialize(e.getAsJsonObject()));
+                inputIngredients.add(Ingredient.fromJson(e.getAsJsonObject()));
             }
-            float pressure = JSONUtils.getFloat(json, "pressure");
+            float pressure = JSONUtils.getAsFloat(json, "pressure");
             JsonArray outputs = json.get("results").getAsJsonArray();
             NonNullList<ItemStack> results = NonNullList.create();
             for (JsonElement e : outputs) {
-                results.add(ShapedRecipe.deserializeItem(e.getAsJsonObject()));
+                results.add(ShapedRecipe.itemFromJson(e.getAsJsonObject()));
             }
             return factory.create(recipeId, inputIngredients, pressure, results.toArray(new ItemStack[0]));
         }
 
         @Nullable
         @Override
-        public T read(ResourceLocation recipeId, PacketBuffer buffer) {
+        public T fromNetwork(ResourceLocation recipeId, PacketBuffer buffer) {
             float pressure = buffer.readFloat();
             int nInputs = buffer.readVarInt();
             List<Ingredient> in = new ArrayList<>();
             for (int i = 0; i < nInputs; i++) {
-                in.add(Ingredient.read(buffer));
+                in.add(Ingredient.fromNetwork(buffer));
             }
             int nOutputs = buffer.readVarInt();
             ItemStack[] out = new ItemStack[nOutputs];
             for (int i = 0; i < nOutputs; i++) {
-                out[i] = buffer.readItemStack();
+                out[i] = buffer.readItem();
             }
             return factory.create(recipeId, in, pressure, out);
         }
 
         @Override
-        public void write(PacketBuffer buffer, T recipe) {
+        public void toNetwork(PacketBuffer buffer, T recipe) {
             recipe.write(buffer);
         }
 

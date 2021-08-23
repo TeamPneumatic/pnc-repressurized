@@ -45,7 +45,7 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
     private final SmartSyncTank tank = new SmartSyncTank(this, PneumaticValues.NORMAL_TANK_CAPACITY) {
         @Override
         public boolean isFluidValid(FluidStack stack) {
-            return FuelRegistry.getInstance().getFuelValue(world, stack.getFluid()) > 0;
+            return FuelRegistry.getInstance().getFuelValue(level, stack.getFluid()) > 0;
         }
     };
 
@@ -87,7 +87,7 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
 
         tank.tick();
 
-        if (!getWorld().isRemote) {
+        if (!getLevel().isClientSide) {
             processFluidItem(INPUT_SLOT, OUTPUT_SLOT);
 
             isProducing = false;
@@ -97,12 +97,12 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
             if (rsController.shouldRun()) {
                 double usageRate = getBaseProduction() * this.getSpeedUsageMultiplierFromUpgrades() * burnMultiplier;
                 if (internalFuelBuffer < usageRate) {
-                    double fuelValue = FuelRegistry.getInstance().getFuelValue(world, tank.getFluid().getFluid()) / 1000D;
+                    double fuelValue = FuelRegistry.getInstance().getFuelValue(level, tank.getFluid().getFluid()) / 1000D;
                     if (fuelValue > 0) {
                         int usedFuel = Math.min(tank.getFluidAmount(), (int) (usageRate / fuelValue) + 1);
                         tank.drain(usedFuel, IFluidHandler.FluidAction.EXECUTE);
                         internalFuelBuffer += usedFuel * fuelValue;
-                        burnMultiplier = FuelRegistry.getInstance().getBurnRateMultiplier(world, tank.getFluid().getFluid());
+                        burnMultiplier = FuelRegistry.getInstance().getBurnRateMultiplier(level, tank.getFluid().getFluid());
                     }
                 }
                 if (internalFuelBuffer >= usageRate) {
@@ -119,8 +119,8 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
                 }
             }
         } else {
-            if (isProducing && world.rand.nextInt(5) == 0) {
-                ClientUtils.emitParticles(getWorld(), getPos(), ParticleTypes.SMOKE);
+            if (isProducing && level.random.nextInt(5) == 0) {
+                ClientUtils.emitParticles(getLevel(), getBlockPos(), ParticleTypes.SMOKE);
             }
         }
     }
@@ -144,8 +144,8 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tag) {
-        super.write(tag);
+    public CompoundNBT save(CompoundNBT tag) {
+        super.save(tag);
 
         tag.put("Items", itemHandler.serializeNBT());
         tag.putDouble("internalFuelBuffer", internalFuelBuffer);
@@ -155,8 +155,8 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT tag) {
-        super.read(state, tag);
+    public void load(BlockState state, CompoundNBT tag) {
+        super.load(state, tag);
 
         itemHandler.deserializeNBT(tag.getCompound("Items"));
         internalFuelBuffer = tag.getDouble("internalFuelBuffer");
@@ -203,6 +203,6 @@ public class TileEntityLiquidCompressor extends TileEntityPneumaticBase implemen
     @Nullable
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        return new ContainerLiquidCompressor(i, playerInventory, getPos());
+        return new ContainerLiquidCompressor(i, playerInventory, getBlockPos());
     }
 }

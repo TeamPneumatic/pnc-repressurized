@@ -53,29 +53,29 @@ public class PacketPneumaticKick {
     }
 
     private void handleKick(PlayerEntity player, int upgrades) {
-        Vector3d lookVec = new Vector3d(player.getLookVec().x, Math.max(0, player.getLookVec().y), player.getLookVec().z).normalize();
+        Vector3d lookVec = new Vector3d(player.getLookAngle().x, Math.max(0, player.getLookAngle().y), player.getLookAngle().z).normalize();
 
-        double playerFootY = player.getPosY() - player.getHeight() / 2;
-        AxisAlignedBB box = new AxisAlignedBB(player.getPosX(), playerFootY, player.getPosZ(), player.getPosX(), playerFootY, player.getPosZ())
-                .grow(1.5, 1.5, 1.5).offset(lookVec);
-        List<Entity> entities = player.world.getEntitiesWithinAABBExcludingEntity(player, box);
+        double playerFootY = player.getY() - player.getBbHeight() / 2;
+        AxisAlignedBB box = new AxisAlignedBB(player.getX(), playerFootY, player.getZ(), player.getX(), playerFootY, player.getZ())
+                .inflate(1.5, 1.5, 1.5).move(lookVec);
+        List<Entity> entities = player.level.getEntities(player, box);
         if (entities.isEmpty()) return;
-        entities.sort(Comparator.comparingDouble(o -> o.getDistanceSq(player)));
+        entities.sort(Comparator.comparingDouble(o -> o.distanceToSqr(player)));
 
         Entity target = entities.get(0);
-        if (!target.hitByEntity(player)) {
+        if (!target.skipAttackInteraction(player)) {
             if (target instanceof LivingEntity) {
-                target.attackEntityFrom(DamageSource.causePlayerDamage(player), 3.0f + upgrades * 0.5f);
+                target.hurt(DamageSource.playerAttack(player), 3.0f + upgrades * 0.5f);
                 ((LivingEntity) target).setJumping(true);
             }
             target.setOnGround(false);
-            target.collidedHorizontally = false;
-            target.collidedVertically = false;
-            target.setMotion(target.getMotion().add(lookVec.scale(1.0 + upgrades * 0.5)).add(0, upgrades * 0.1, 0));
+            target.horizontalCollision = false;
+            target.verticalCollision = false;
+            target.setDeltaMovement(target.getDeltaMovement().add(lookVec.scale(1.0 + upgrades * 0.5)).add(0, upgrades * 0.1, 0));
         }
-        player.world.playSound(null, target.getPosX(), target.getPosY(), target.getPosZ(), ModSounds.PUNCH.get(), SoundCategory.PLAYERS, 1f, 1f);
-        NetworkHandler.sendToAllTracking(new PacketSetEntityMotion(target, target.getMotion()), target);
-        NetworkHandler.sendToAllTracking(new PacketSpawnParticle(ParticleTypes.EXPLOSION, target.getPosX(), target.getPosY(), target.getPosZ(), 1.0D, 0.0D, 0.0D), target);
+        player.level.playSound(null, target.getX(), target.getY(), target.getZ(), ModSounds.PUNCH.get(), SoundCategory.PLAYERS, 1f, 1f);
+        NetworkHandler.sendToAllTracking(new PacketSetEntityMotion(target, target.getDeltaMovement()), target);
+        NetworkHandler.sendToAllTracking(new PacketSpawnParticle(ParticleTypes.EXPLOSION, target.getX(), target.getY(), target.getZ(), 1.0D, 0.0D, 0.0D), target);
         CommonArmorHandler.getHandlerForPlayer(player).addAir(EquipmentSlotType.FEET, -PneumaticValues.PNEUMATIC_KICK_AIR_USAGE * upgrades);
     }
 }

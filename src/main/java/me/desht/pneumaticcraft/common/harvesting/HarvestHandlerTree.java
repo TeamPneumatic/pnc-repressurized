@@ -20,7 +20,7 @@ public class HarvestHandlerTree extends HarvestHandler {
 
     @Override
     public boolean canHarvest(World world, IBlockReader chunkCache, BlockPos pos, BlockState state, IDrone drone) {
-        return state.getBlock().isIn(BlockTags.LOGS);
+        return state.getBlock().is(BlockTags.LOGS);
     }
 
     @Override
@@ -31,12 +31,12 @@ public class HarvestHandlerTree extends HarvestHandler {
         Block saplingBlock = TreePart.LOG.convert(state.getBlock(), TreePart.SAPLING);
 
         if (saplingBlock != null && saplingBlock != Blocks.AIR) {
-            BlockState saplingState = saplingBlock.getDefaultState();
-            if (saplingState.isValidPosition(world, pos)) {
-                List<ItemEntity> saplingItems = world.getEntitiesWithinAABB(ItemEntity.class, new AxisAlignedBB(pos).grow(SAPLING_PICK_RANGE), entityItem -> entityItem.getItem().getItem() == saplingBlock.asItem());
+            BlockState saplingState = saplingBlock.defaultBlockState();
+            if (saplingState.canSurvive(world, pos)) {
+                List<ItemEntity> saplingItems = world.getEntitiesOfClass(ItemEntity.class, new AxisAlignedBB(pos).inflate(SAPLING_PICK_RANGE), entityItem -> entityItem.getItem().getItem() == saplingBlock.asItem());
                 if (!saplingItems.isEmpty()){
                     saplingItems.get(0).getItem().shrink(1); // Use a sapling
-                    world.setBlockState(pos, saplingState);  // And plant it.
+                    world.setBlockAndUpdate(pos, saplingState);  // And plant it.
                     return true;
                 }
             }

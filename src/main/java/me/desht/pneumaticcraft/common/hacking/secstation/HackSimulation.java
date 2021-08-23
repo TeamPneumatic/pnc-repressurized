@@ -215,7 +215,7 @@ public class HackSimulation {
             }
             if (!found) getNodeAt(neighbour).outGoingHacks.add(Pair.of(pendingNukePos, 1f));
             getNodeAt(pos).setHackProgress(pos, 1f, false);
-            if (controller != null) controller.getHacker().playSound(SoundEvents.ENTITY_GENERIC_EXPLODE, 1f, 1f);
+            if (controller != null) controller.getHacker().playSound(SoundEvents.GENERIC_EXPLODE, 1f, 1f);
             nukeVirusCooldown = 60;
         }
         pendingNukePos = -1;
@@ -265,7 +265,7 @@ public class HackSimulation {
     public void wakeUp() {
         if (!awake) {
             awake = true;
-            if (controller != null) controller.getHacker().playSound(SoundEvents.ENTITY_BLAZE_HURT, 1f, 1f);
+            if (controller != null) controller.getHacker().playSound(SoundEvents.BLAZE_HURT, 1f, 1f);
         }
     }
 
@@ -355,9 +355,9 @@ public class HackSimulation {
             if (controller != null && isHacked() && !wasHacked) {
                 if (isStarted) {
                     if (side == HackingSide.AI && isAwake()) {
-                        controller.getHacker().playSound(SoundEvents.BLOCK_NOTE_BLOCK_BASEDRUM, 1f, 1f);
+                        controller.getHacker().playSound(SoundEvents.NOTE_BLOCK_BASEDRUM, 1f, 1f);
                     } else if (side == HackingSide.PLAYER) {
-                        controller.getHacker().playSound(SoundEvents.BLOCK_NOTE_BLOCK_FLUTE, 1f, 1f);
+                        controller.getHacker().playSound(SoundEvents.NOTE_BLOCK_FLUTE, 1f, 1f);
                     }
                 }
                 if (notifyController) controller.onNodeHacked(HackSimulation.this, pos);

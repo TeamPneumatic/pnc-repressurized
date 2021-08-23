@@ -114,7 +114,7 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
             // we should pretty much always have a world, but use the overworld as a fallback
             MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
             if (server != null) {
-                world = server.getWorld(World.OVERWORLD);
+                world = server.getLevel(World.OVERWORLD);
             }
             if (world == null) {
                 // still no world?  oh well
@@ -125,7 +125,7 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
 
         if (cachedRecipes.isEmpty()) {
             RecipeManager recipeManager = world.getRecipeManager();
-            List<T> recipes = recipeManager.getRecipes(this, PneumaticCraftRecipe.DummyIInventory.getInstance(), world);
+            List<T> recipes = recipeManager.getRecipesFor(this, PneumaticCraftRecipe.DummyIInventory.getInstance(), world);
             recipes.forEach(recipe -> cachedRecipes.put(recipe.getId(), recipe));
 
             if (this == ASSEMBLY_DRILL_LASER) {
@@ -160,7 +160,7 @@ public class PneumaticCraftRecipeType<T extends PneumaticCraftRecipe> implements
                 if (ServerLifecycleHooks.getCurrentServer() != null) {
                     NetworkHandler.sendToAll(new PacketClearRecipeCache());
                 }
-            }, gameExecutor).thenCompose(stage::markCompleteAwaitingOthers);
+            }, gameExecutor).thenCompose(stage::wait);
         }
     }
 }

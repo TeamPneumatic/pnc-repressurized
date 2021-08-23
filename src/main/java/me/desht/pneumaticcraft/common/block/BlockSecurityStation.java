@@ -26,11 +26,11 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 
 public class BlockSecurityStation extends BlockPneumaticCraft {
-    private static final VoxelShape BODY = Block.makeCuboidShape(1, 8, 1, 15, 11, 15);
-    private static final VoxelShape LEG1 = Block.makeCuboidShape(1, 0, 1, 3, 8, 3);
-    private static final VoxelShape LEG2 = Block.makeCuboidShape(13, 0, 13, 15, 8, 15);
-    private static final VoxelShape LEG3 = Block.makeCuboidShape(1, 0, 13, 3, 8, 15);
-    private static final VoxelShape LEG4 = Block.makeCuboidShape(13, 0, 1, 15, 8, 3);
+    private static final VoxelShape BODY = Block.box(1, 8, 1, 15, 11, 15);
+    private static final VoxelShape LEG1 = Block.box(1, 0, 1, 3, 8, 3);
+    private static final VoxelShape LEG2 = Block.box(13, 0, 13, 15, 8, 15);
+    private static final VoxelShape LEG3 = Block.box(1, 0, 13, 3, 8, 15);
+    private static final VoxelShape LEG4 = Block.box(13, 0, 1, 15, 8, 3);
     private static final VoxelShape SHAPE = VoxelShapes.or(BODY, LEG1, LEG2, LEG3, LEG4);
 
     public BlockSecurityStation() {
@@ -51,13 +51,13 @@ public class BlockSecurityStation extends BlockPneumaticCraft {
      * Called when the block is placed in the world.
      */
     @Override
-    public void onBlockPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity entityLiving, ItemStack iStack) {
+    public void setPlacedBy(World world, BlockPos pos, BlockState state, LivingEntity entityLiving, ItemStack iStack) {
         if (entityLiving instanceof PlayerEntity) {
             PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntitySecurityStation.class)
                     .ifPresent(te -> te.sharedUsers.add(((PlayerEntity) entityLiving).getGameProfile()));
         }
 
-        super.onBlockPlacedBy(world, pos, state, entityLiving, iStack);
+        super.setPlacedBy(world, pos, state, entityLiving, iStack);
     }
 
     @Override
@@ -66,23 +66,23 @@ public class BlockSecurityStation extends BlockPneumaticCraft {
     }
 
     @Override
-    public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
-        if (player.isSneaking()) {
+    public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
+        if (player.isShiftKeyDown()) {
             return ActionResultType.PASS;
         } else {
-            if (!world.isRemote) {
-                TileEntity te = world.getTileEntity(pos);
+            if (!world.isClientSide) {
+                TileEntity te = world.getBlockEntity(pos);
                 if (te instanceof TileEntitySecurityStation) {
                     TileEntitySecurityStation teSS = (TileEntitySecurityStation) te;
                     if (teSS.isPlayerOnWhiteList(player)) {
-                        return super.onBlockActivated(state, world, pos, player, hand, brtr);
+                        return super.use(state, world, pos, player, hand, brtr);
                     } else if (!teSS.hasValidNetwork()) {
-                        player.sendStatusMessage(PneumaticCraftUtils.xlate("pneumaticcraft.message.securityStation.outOfOrder").mergeStyle(TextFormatting.RED), false);
+                        player.displayClientMessage(PneumaticCraftUtils.xlate("pneumaticcraft.message.securityStation.outOfOrder").withStyle(TextFormatting.RED), false);
                     } else if (teSS.hasPlayerHacked(player)) {
-                        player.sendStatusMessage(PneumaticCraftUtils.xlate("pneumaticcraft.message.securityStation.alreadyHacked").mergeStyle(TextFormatting.GOLD), false);
+                        player.displayClientMessage(PneumaticCraftUtils.xlate("pneumaticcraft.message.securityStation.alreadyHacked").withStyle(TextFormatting.GOLD), false);
                     } else if (getPlayerHackLevel(player) < teSS.getSecurityLevel()) {
-                        player.sendStatusMessage(PneumaticCraftUtils.xlate("pneumaticcraft.message.securityStation.cantHack").mergeStyle(TextFormatting.GOLD), false);
-                        player.attackEntityFrom(DamageSource.OUT_OF_WORLD, 1f);
+                        player.displayClientMessage(PneumaticCraftUtils.xlate("pneumaticcraft.message.securityStation.cantHack").withStyle(TextFormatting.GOLD), false);
+                        player.hurt(DamageSource.OUT_OF_WORLD, 1f);
                     } else {
                         teSS.initiateHacking(player);
                     }
@@ -99,12 +99,12 @@ public class BlockSecurityStation extends BlockPneumaticCraft {
     }
 
     @Override
-    public boolean canProvidePower(BlockState state) {
+    public boolean isSignalSource(BlockState state) {
         return true;
     }
 
     @Override
-    public int getWeakPower(BlockState blockState, IBlockReader blockAccess, BlockPos pos, Direction side) {
+    public int getSignal(BlockState blockState, IBlockReader blockAccess, BlockPos pos, Direction side) {
         return PneumaticCraftUtils.getTileEntityAt(blockAccess, pos, TileEntitySecurityStation.class)
                 .map(teSS -> teSS.getRedstoneController().shouldEmit() ? 15 : 0).orElse(0);
     }

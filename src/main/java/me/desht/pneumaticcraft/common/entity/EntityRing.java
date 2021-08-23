@@ -26,27 +26,27 @@ public class EntityRing extends Entity {
     public EntityRing(World par1World, double startX, double startY, double startZ, Entity targetEntity, int color) {
         super(ModEntities.RING.get(), par1World);
 
-        setPosition(startX, startY, startZ);
-        lastTickPosX = startX;
-        lastTickPosY = startY;
-        lastTickPosZ = startZ;
+        setPos(startX, startY, startZ);
+        xOld = startX;
+        yOld = startY;
+        zOld = startZ;
         this.targetEntity = targetEntity;
         this.color = color;
 
-        double dx = targetEntity.getPosX() - getPosX();
-        double dy = targetEntity.getPosY() - getPosY();
-        double dz = targetEntity.getPosZ() - getPosZ();
+        double dx = targetEntity.getX() - getX();
+        double dy = targetEntity.getY() - getY();
+        double dz = targetEntity.getZ() - getZ();
         float f = MathHelper.sqrt(dx * dx + dz * dz);
-        prevRotationYaw = rotationYaw = (float) (Math.atan2(dx, dz) * 180.0D / Math.PI);
-        prevRotationPitch = rotationPitch = (float) (Math.atan2(dy, f) * 180.0D / Math.PI);
-        ignoreFrustumCheck = true;
-        if (par1World.isRemote) {
-            setRenderDistanceWeight(10.0D);
+        yRotO = yRot = (float) (Math.atan2(dx, dz) * 180.0D / Math.PI);
+        xRotO = xRot = (float) (Math.atan2(dy, f) * 180.0D / Math.PI);
+        noCulling = true;
+        if (par1World.isClientSide) {
+            setViewScale(10.0D);
         }
     }
 
     @Override
-    public IPacket<?> createSpawnPacket() {
+    public IPacket<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
@@ -54,12 +54,12 @@ public class EntityRing extends Entity {
     public void tick() {
         if (targetEntity == null) return;
 
-        Vector3d end = targetEntity.getPositionVec();
-        prevRotationYaw = rotationYaw;
-        prevRotationPitch = rotationPitch;
+        Vector3d end = targetEntity.position();
+        yRotO = yRot;
+        xRotO = xRot;
 
         if (ring == null) {
-            ring = new ProgressingLine(getPositionVec(), end);
+            ring = new ProgressingLine(position(), end);
         } else {
             if (oldRing == null) {
                 oldRing = new ProgressingLine(ring.startX, ring.startY, ring.startZ, ring.endX, ring.endY, ring.endZ);
@@ -72,12 +72,12 @@ public class EntityRing extends Entity {
             ring.endY = (float) end.y;
             ring.endZ = (float) end.z;
 
-            double dx = end.x - getPosX();
-            double dy = end.y - getPosY();
-            double dz = end.z - getPosZ();
+            double dx = end.x - getX();
+            double dy = end.y - getY();
+            double dz = end.z - getZ();
             float f = MathHelper.sqrt(dx * dx + dz * dz);
-            rotationYaw = (float) (Math.atan2(dx, dz) * 180.0D / Math.PI);
-            rotationPitch = (float) (Math.atan2(dy, f) * 180.0D / Math.PI);
+            yRot = (float) (Math.atan2(dx, dz) * 180.0D / Math.PI);
+            xRot = (float) (Math.atan2(dy, f) * 180.0D / Math.PI);
 
             oldRing.setProgress(ring.getProgress());
             if (ring.incProgress(0.05F)) {
@@ -87,15 +87,15 @@ public class EntityRing extends Entity {
     }
 
     @Override
-    protected void registerData() {
+    protected void defineSynchedData() {
     }
 
     @Override
-    protected void readAdditional(CompoundNBT compound) {
+    protected void readAdditionalSaveData(CompoundNBT compound) {
     }
 
     @Override
-    protected void writeAdditional(CompoundNBT compound) {
+    protected void addAdditionalSaveData(CompoundNBT compound) {
     }
 
 }

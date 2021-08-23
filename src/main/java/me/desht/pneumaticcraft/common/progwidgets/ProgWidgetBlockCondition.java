@@ -34,7 +34,7 @@ public class ProgWidgetBlockCondition extends ProgWidgetCondition {
             @Override
             protected boolean evaluate(BlockPos pos) {
                 boolean ret = false;
-                if (checkingForAir && drone.world().isAirBlock(pos)) {
+                if (checkingForAir && drone.world().isEmptyBlock(pos)) {
                     ret = true;
                 } else if (checkingForLiquids && PneumaticCraftUtils.isBlockLiquid(drone.world().getBlockState(pos).getBlock())) {
                     ret = true;

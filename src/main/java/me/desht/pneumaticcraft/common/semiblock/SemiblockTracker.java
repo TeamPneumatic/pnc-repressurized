@@ -89,7 +89,7 @@ public enum SemiblockTracker {
         Map<BlockPos, SemiblockCollection> map = semiblockMap.computeIfAbsent(getKey(world), k -> new HashMap<>());
         if (map.isEmpty()) return Stream.empty();
         SemiblockCollection sc = map.get(pos);
-        if (sc == null && offsetDir != null) sc = map.get(pos.offset(offsetDir));
+        if (sc == null && offsetDir != null) sc = map.get(pos.relative(offsetDir));
         return sc == null ? Stream.empty() : sc.getAll();
     }
 
@@ -140,7 +140,7 @@ public enum SemiblockTracker {
     }
 
     private ResourceLocation getKey(World world) {
-        return world.getDimensionKey().getLocation();
+        return world.dimension().location();
     }
 
     private static class SemiblockCollection {
@@ -153,7 +153,7 @@ public enum SemiblockTracker {
 
         public ISemiBlock get(Direction direction) {
             if (direction == null) return center.get();
-            return sides.isEmpty() ? null : sides.get(direction.getIndex()).get();
+            return sides.isEmpty() ? null : sides.get(direction.get3DDataValue()).get();
         }
 
         boolean set(ISemiBlock semiBlock) {
@@ -167,8 +167,8 @@ public enum SemiblockTracker {
                         sides.add(new WeakReference<>(null));
                     }
                 }
-                if (sides.get(dir.getIndex()).get() != null) return false;
-                sides.set(dir.getIndex(), new WeakReference<>(semiBlock));
+                if (sides.get(dir.get3DDataValue()).get() != null) return false;
+                sides.set(dir.get3DDataValue(), new WeakReference<>(semiBlock));
             }
             return true;
         }
@@ -177,7 +177,7 @@ public enum SemiblockTracker {
             if (direction == null) {
                 if (center != null) center.clear();
             } else {
-                if (!sides.isEmpty()) sides.get(direction.getIndex()).clear();
+                if (!sides.isEmpty()) sides.get(direction.get3DDataValue()).clear();
             }
         }
 

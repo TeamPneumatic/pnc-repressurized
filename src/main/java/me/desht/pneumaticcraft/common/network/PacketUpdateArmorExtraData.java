@@ -55,24 +55,24 @@ public class PacketUpdateArmorExtraData {
 
     PacketUpdateArmorExtraData(PacketBuffer buffer) {
         slot = EquipmentSlotType.values()[buffer.readByte()];
-        data = buffer.readCompoundTag();
+        data = buffer.readNbt();
         upgradeID = buffer.readResourceLocation();
     }
 
     public void toBytes(PacketBuffer buf) {
         buf.writeByte(slot.ordinal());
-        buf.writeCompoundTag(data);
+        buf.writeNbt(data);
         buf.writeResourceLocation(upgradeID);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             ServerPlayerEntity player = ctx.get().getSender();
-            ItemStack stack = player.getItemStackFromSlot(slot);
+            ItemStack stack = player.getItemBySlot(slot);
             if (stack.getItem() instanceof ItemPneumaticArmor) {
                 CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
                 NBTUtils.initNBTTagCompound(stack);
-                for (String key : data.keySet()) {
+                for (String key : data.getAllKeys()) {
                     INBT dataTag = data.get(key);
                     if (isKeyOKForSlot(key, slot, dataTag.getId())) {
                         stack.getTag().put(key, dataTag);

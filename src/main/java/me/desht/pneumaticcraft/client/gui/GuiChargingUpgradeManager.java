@@ -46,7 +46,7 @@ public abstract class GuiChargingUpgradeManager extends GuiPneumaticContainerBas
         super(container, inv, displayString);
         itemStack = te.getPrimaryInventory().getStackInSlot(TileEntityChargingStation.CHARGE_INVENTORY_INDEX);
 
-        ySize = 182;
+        imageHeight = 182;
     }
 
     @Override
@@ -58,8 +58,8 @@ public abstract class GuiChargingUpgradeManager extends GuiPneumaticContainerBas
     public void init() {
         super.init();
 
-        int xStart = (width - xSize) / 2;
-        int yStart = (height - ySize) / 2;
+        int xStart = (width - imageWidth) / 2;
+        int yStart = (height - imageHeight) / 2;
         guiBackButton = new WidgetButtonExtended(xStart + 8, yStart + 5, 16, 16, GuiConstants.TRIANGLE_LEFT).withTag("close_upgrades");
         addButton(guiBackButton);
     }
@@ -104,19 +104,19 @@ public abstract class GuiChargingUpgradeManager extends GuiPneumaticContainerBas
     protected abstract int getDefaultVolume();
 
     @Override
-    protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int x, int y) {
-        font.func_238422_b_(matrixStack, itemStack.getDisplayName().func_241878_f(), (xSize - font.getStringPropertyWidth(itemStack.getDisplayName())) / 2f, 5, 0x404040);
+    protected void renderLabels(MatrixStack matrixStack, int x, int y) {
+        font.draw(matrixStack, itemStack.getHoverName().getVisualOrderText(), (imageWidth - font.width(itemStack.getHoverName())) / 2f, 5, 0x404040);
 
-        int gaugeX = xSize * 3 / 4 + 10;
-        int gaugeY = ySize / 4 + 10;
+        int gaugeX = imageWidth * 3 / 4 + 10;
+        int gaugeY = imageHeight / 4 + 10;
 
         itemStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
                 .ifPresent(h -> PressureGaugeRenderer2D.drawPressureGauge(matrixStack, font, 0, h.maxPressure(), h.maxPressure(), 0, te.chargingItemPressure, gaugeX, gaugeY));
 
-        matrixStack.push();
+        matrixStack.pushPose();
         matrixStack.scale(2f, 2f, 2f);
         GuiUtils.renderItemStack(matrixStack, itemStack, 3, 22);
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     @Override
@@ -138,12 +138,12 @@ public abstract class GuiChargingUpgradeManager extends GuiPneumaticContainerBas
     public void tick() {
         super.tick();
 
-        long gameTime = Minecraft.getInstance().world.getGameTime();
+        long gameTime = Minecraft.getInstance().level.getGameTime();
         if (gameTime % TIER_CYCLE_TIME == 0) {
             cycleTabs.forEach((upgrade, tab) -> {
                 long tier = gameTime % (TIER_CYCLE_TIME * upgrade.getMaxTier()) / TIER_CYCLE_TIME;
                 ItemStack stack = new ItemStack(upgrade.getItem((int) tier + 1));
-                tab.setTitle(stack.getDisplayName());
+                tab.setTitle(stack.getHoverName());
                 tab.setTexture(stack);
             });
         }
@@ -157,15 +157,15 @@ public abstract class GuiChargingUpgradeManager extends GuiPneumaticContainerBas
                 if (max > 0) {
                     ItemStack upgradeStack = upgrade.getItemStack();
                     List<ITextComponent> text = new ArrayList<>();
-                    text.add(xlate("pneumaticcraft.gui.tab.upgrades.max", max).mergeStyle(TextFormatting.GRAY));
+                    text.add(xlate("pneumaticcraft.gui.tab.upgrades.max", max).withStyle(TextFormatting.GRAY));
                     for (String w : what) {
                         String key = "pneumaticcraft.gui.tab.info.item." + w + "." + upgrade.getName() + "Upgrade";
-                        if (I18n.hasKey(key)) {
+                        if (I18n.exists(key)) {
                             text.addAll(GuiUtils.xlateAndSplit(key));
                             break;
                         }
                     }
-                    IGuiAnimatedStat stat = addAnimatedStat(upgradeStack.getDisplayName(), upgradeStack, 0xFF244BB3, leftSided).setText(text);
+                    IGuiAnimatedStat stat = addAnimatedStat(upgradeStack.getHoverName(), upgradeStack, 0xFF244BB3, leftSided).setText(text);
                     stat.setForegroundColor(0xFF000000);
                     if (upgrade.getMaxTier() > 1) cycleTabs.put(upgrade, stat);
                     leftSided = !leftSided;

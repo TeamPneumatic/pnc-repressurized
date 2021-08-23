@@ -26,7 +26,7 @@ public class TileEntityCreativeCompressedIronBlock extends TileEntityCompressedI
 
     @Override
     public void tick() {
-        if (!world.isRemote) {
+        if (!level.isClientSide) {
             if (targetTemperature < 0) {
                 targetTemperature = (int) heatExchanger.getAmbientTemperature();
             }
@@ -43,15 +43,15 @@ public class TileEntityCreativeCompressedIronBlock extends TileEntityCompressedI
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tag) {
-        super.write(tag);
+    public CompoundNBT save(CompoundNBT tag) {
+        super.save(tag);
         tag.putInt("targetTemperature", targetTemperature);
         return tag;
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT tag) {
-        super.read(state, tag);
+    public void load(BlockState state, CompoundNBT tag) {
+        super.load(state, tag);
         targetTemperature = tag.getInt("targetTemperature");
     }
 
@@ -71,6 +71,6 @@ public class TileEntityCreativeCompressedIronBlock extends TileEntityCompressedI
     @Nullable
     @Override
     public Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        return new ContainerCreativeCompressedIronBlock(windowId, playerInventory, getPos());
+        return new ContainerCreativeCompressedIronBlock(windowId, playerInventory, getBlockPos());
     }
 }

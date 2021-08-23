@@ -28,16 +28,16 @@ public class RenderLogisticsFrame extends RenderSemiblockBase<EntityLogisticsFra
 
         float[] cols = RenderUtils.decomposeColorF(entity.getColor());
 
-        matrixStackIn.push();
+        matrixStackIn.pushPose();
 
         matrixStackIn.translate(-0.5, 0, -0.5);
         if (entity.getTimeSinceHit() > 0) {
             wobble(entity, partialTicks, matrixStackIn);
         }
-        AxisAlignedBB aabb = entity.getBlockBounds().offset(entity.antiZfight, entity.antiZfight, entity.antiZfight);
+        AxisAlignedBB aabb = entity.getBlockBounds().move(entity.antiZfight, entity.antiZfight, entity.antiZfight);
         RenderUtils.renderFrame(matrixStackIn, bufferIn, aabb, FRAME_WIDTH, cols[1], cols[2], cols[3], alpha, packedLightIn | 0x00F00000, false, entity.getSide());
 
-        matrixStackIn.pop();
+        matrixStackIn.popPose();
     }
 
     // TODO ridanisaurus replace above method with this
@@ -61,7 +61,7 @@ public class RenderLogisticsFrame extends RenderSemiblockBase<EntityLogisticsFra
 //    }
 
     @Override
-    public ResourceLocation getEntityTexture(EntityLogisticsFrame entityLogisticsFrame) {
+    public ResourceLocation getTextureLocation(EntityLogisticsFrame entityLogisticsFrame) {
         return null;
         // TODO ridanisaurus uncomment
 //        return entityLogisticsFrame.getTexture();

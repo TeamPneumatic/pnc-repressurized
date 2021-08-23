@@ -38,12 +38,12 @@ public class DroneAIEntityImport extends DroneEntityBase<IEntityProvider, Entity
             drone.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY).ifPresent(handler -> {
                 ExperienceOrbEntity orb = (ExperienceOrbEntity) targetedEntity;
                 ItemStack heldStack = drone.getInv().getStackInSlot(0);
-                if (!heldStack.isEmpty() && heldStack.isDamaged() && EnchantmentHelper.getEnchantmentLevel(Enchantments.MENDING, heldStack) > 0) {
-                    int toRepair = Math.min((int)(orb.xpValue * heldStack.getXpRepairRatio()), heldStack.getDamage());
-                    orb.xpValue -= toRepair / 2;  // see ExperienceOrbEntity#durabilityToXp()
-                    heldStack.setDamage(heldStack.getDamage() - toRepair);
+                if (!heldStack.isEmpty() && heldStack.isDamaged() && EnchantmentHelper.getItemEnchantmentLevel(Enchantments.MENDING, heldStack) > 0) {
+                    int toRepair = Math.min((int)(orb.value * heldStack.getXpRepairRatio()), heldStack.getDamageValue());
+                    orb.value -= toRepair / 2;  // see ExperienceOrbEntity#durabilityToXp()
+                    heldStack.setDamageValue(heldStack.getDamageValue() - toRepair);
                 }
-                if (orb.xpValue <= 0 || PneumaticCraftUtils.fillTankWithOrb(handler, orb, FluidAction.EXECUTE)) {
+                if (orb.value <= 0 || PneumaticCraftUtils.fillTankWithOrb(handler, orb, FluidAction.EXECUTE)) {
                     targetedEntity.remove();
                 }
             });

@@ -42,51 +42,51 @@ public class ItemMachineUpgrade extends Item implements IUpgradeItem {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void addInformation(ItemStack stack, World world, List<ITextComponent> infoList, ITooltipFlag par4) {
+    public void appendHoverText(ItemStack stack, World world, List<ITextComponent> infoList, ITooltipFlag par4) {
         if (ClientUtils.hasShiftDown()) {
             infoList.add(xlate("pneumaticcraft.gui.tooltip.item.upgrade.usedIn"));
             PneumaticRegistry.getInstance().getItemRegistry().addTooltip(upgrade, infoList);
         } else {
-            infoList.add(xlate("pneumaticcraft.gui.tooltip.item.upgrade.shiftMessage").mergeStyle(TextFormatting.AQUA));
+            infoList.add(xlate("pneumaticcraft.gui.tooltip.item.upgrade.shiftMessage").withStyle(TextFormatting.AQUA));
         }
         if (getUpgradeType() == EnumUpgrade.DISPENSER) {
             Direction dir = stack.hasTag() ? Direction.byName(NBTUtils.getString(stack, NBT_DIRECTION)) : null;
-            infoList.add(xlate("pneumaticcraft.message.dispenser.direction", dir == null ? "*" : dir.getString()));
+            infoList.add(xlate("pneumaticcraft.message.dispenser.direction", dir == null ? "*" : dir.getSerializedName()));
             infoList.add(xlate("pneumaticcraft.message.dispenser.clickToSet"));
         }
-        super.addInformation(stack, world, infoList, par4);
+        super.appendHoverText(stack, world, infoList, par4);
     }
 
     @Override
-    public ActionResultType onItemUse(ItemUseContext context) {
+    public ActionResultType useOn(ItemUseContext context) {
         if (getUpgradeType() == EnumUpgrade.DISPENSER) {
-            if (!context.getWorld().isRemote) {
-                setDirection(context.getPlayer(), context.getHand(), context.getFace());
+            if (!context.getLevel().isClientSide) {
+                setDirection(context.getPlayer(), context.getHand(), context.getClickedFace());
             }
             return ActionResultType.SUCCESS;
         }
-        return super.onItemUse(context);
+        return super.useOn(context);
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
+    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
         if (getUpgradeType() == EnumUpgrade.DISPENSER) {
-            if (!worldIn.isRemote) {
+            if (!worldIn.isClientSide) {
                 setDirection(playerIn, handIn, null);
             }
-            return ActionResult.resultSuccess(playerIn.getHeldItem(handIn));
+            return ActionResult.success(playerIn.getItemInHand(handIn));
         }
-        return super.onItemRightClick(worldIn, playerIn, handIn);
+        return super.use(worldIn, playerIn, handIn);
     }
 
     private void setDirection(PlayerEntity player, Hand hand, Direction facing) {
-        ItemStack stack = player.getHeldItem(hand);
+        ItemStack stack = player.getItemInHand(hand);
         if (facing == null) {
             stack.setTag(null);
-            player.sendStatusMessage(new TranslationTextComponent("pneumaticcraft.message.dispenser.direction", "*"), true);
+            player.displayClientMessage(new TranslationTextComponent("pneumaticcraft.message.dispenser.direction", "*"), true);
         } else {
-            NBTUtils.setString(stack, NBT_DIRECTION, facing.getString());
-            player.sendStatusMessage(new TranslationTextComponent("pneumaticcraft.message.dispenser.direction", facing.getString()), true);
+            NBTUtils.setString(stack, NBT_DIRECTION, facing.getSerializedName());
+            player.displayClientMessage(new TranslationTextComponent("pneumaticcraft.message.dispenser.direction", facing.getSerializedName()), true);
         }
     }
 
@@ -100,8 +100,8 @@ public class ItemMachineUpgrade extends Item implements IUpgradeItem {
     }
 
     @Override
-    public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
-        if (this.isInGroup(group)) {
+    public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items) {
+        if (this.allowdedIn(group)) {
             if (upgrade.isDepLoaded()) {
                 items.add(new ItemStack(this));
             }

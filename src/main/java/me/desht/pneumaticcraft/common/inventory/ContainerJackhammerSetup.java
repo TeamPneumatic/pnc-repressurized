@@ -29,12 +29,12 @@ public class ContainerJackhammerSetup extends ContainerPneumaticBase<TileEntityB
         super(ModContainers.JACKHAMMER_SETUP.get(), windowId, invPlayer);
         this.hand = hand;
 
-        drillBitHandler = ItemJackHammer.getDrillBitHandler(invPlayer.player.getHeldItem(hand));
+        drillBitHandler = ItemJackHammer.getDrillBitHandler(invPlayer.player.getItemInHand(hand));
         if (drillBitHandler != null) {
             addSlot(new SlotDrillBit(drillBitHandler, 0, 128, 19));
         }
 
-        enchantmentHandler = ItemJackHammer.getEnchantmentHandler(invPlayer.player.getHeldItem(hand));
+        enchantmentHandler = ItemJackHammer.getEnchantmentHandler(invPlayer.player.getItemInHand(hand));
         if (enchantmentHandler != null) {
             addSlot(new SlotEnchantmentHandler(enchantmentHandler, 0, 96, 19));
         }
@@ -43,21 +43,21 @@ public class ContainerJackhammerSetup extends ContainerPneumaticBase<TileEntityB
     }
 
     @Override
-    public void onContainerClosed(PlayerEntity playerIn) {
-        super.onContainerClosed(playerIn);
+    public void removed(PlayerEntity playerIn) {
+        super.removed(playerIn);
 
         drillBitHandler.save();
         enchantmentHandler.save();
     }
 
     @Override
-    public boolean canInteractWith(PlayerEntity player) {
-        return player.getHeldItem(hand).getItem() == ModItems.JACKHAMMER.get();
+    public boolean stillValid(PlayerEntity player) {
+        return player.getItemInHand(hand).getItem() == ModItems.JACKHAMMER.get();
     }
 
     @Override
     public void handleGUIButtonPress(String tag, boolean shiftHeld, ServerPlayerEntity player) {
-        ItemStack hammerStack = player.getHeldItem(hand);
+        ItemStack hammerStack = player.getItemInHand(hand);
         if (tag.startsWith("digmode:") && hammerStack.getItem() instanceof ItemJackHammer) {
             try {
                 ItemDrillBit.DrillBitType bitType = ((ItemJackHammer) hammerStack.getItem()).getDrillBit(hammerStack);
@@ -80,17 +80,17 @@ public class ContainerJackhammerSetup extends ContainerPneumaticBase<TileEntityB
         }
 
         @Override
-        public boolean isItemValid(@Nonnull ItemStack stack) {
+        public boolean mayPlace(@Nonnull ItemStack stack) {
             return stack.getItem() instanceof ItemDrillBit;
         }
 
         @Override
-        public void onSlotChanged() {
+        public void setChanged() {
             ((ItemJackHammer.DrillBitHandler) getItemHandler()).save();
         }
 
         @Override
-        public void onSlotChange(@Nonnull ItemStack oldStackIn, @Nonnull ItemStack newStackIn) {
+        public void onQuickCraft(@Nonnull ItemStack oldStackIn, @Nonnull ItemStack newStackIn) {
             ((ItemJackHammer.DrillBitHandler) getItemHandler()).save();
         }
     }
@@ -101,17 +101,17 @@ public class ContainerJackhammerSetup extends ContainerPneumaticBase<TileEntityB
         }
 
         @Override
-        public boolean isItemValid(@Nonnull ItemStack stack) {
+        public boolean mayPlace(@Nonnull ItemStack stack) {
             return ItemJackHammer.EnchantmentHandler.validateBook(stack);
         }
 
         @Override
-        public void onSlotChange(@Nonnull ItemStack oldStackIn, @Nonnull ItemStack newStackIn) {
+        public void onQuickCraft(@Nonnull ItemStack oldStackIn, @Nonnull ItemStack newStackIn) {
             ((ItemJackHammer.EnchantmentHandler) getItemHandler()).save();
         }
 
         @Override
-        public void onSlotChanged() {
+        public void setChanged() {
             ((ItemJackHammer.EnchantmentHandler) getItemHandler()).save();
         }
     }

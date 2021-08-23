@@ -33,7 +33,7 @@ public class GuiPneumaticArmor extends GuiChargingUpgradeManager {
         super(container, inv, displayString);
 
         registryName = itemStack.getItem().getRegistryName().getPath();
-        equipmentSlot = ((ArmorItem) itemStack.getItem()).getEquipmentSlot();
+        equipmentSlot = ((ArmorItem) itemStack.getItem()).getSlot();
     }
 
     @Override
@@ -57,7 +57,7 @@ public class GuiPneumaticArmor extends GuiChargingUpgradeManager {
         List<ITextComponent> text = new ArrayList<>();
 
         TextFormatting black = TextFormatting.BLACK;
-        text.add(xlate("pneumaticcraft.gui.tab.info.pneumatic_armor.usage").mergeStyle(TextFormatting.WHITE));
+        text.add(xlate("pneumaticcraft.gui.tab.info.pneumatic_armor.usage").withStyle(TextFormatting.WHITE));
         CommonArmorHandler commonArmorHandler = CommonArmorHandler.getHandlerForPlayer();
         float totalUsage = commonArmorHandler.getIdleAirUsage(equipmentSlot, true);
         if (totalUsage > 0F) {
@@ -67,24 +67,24 @@ public class GuiPneumaticArmor extends GuiChargingUpgradeManager {
                     IArmorUpgradeHandler<?> handler = handlers.get(i);
                     float upgradeUsage = handler.getIdleAirUsage(commonArmorHandler);
                     if (upgradeUsage > 0F) {
-                        text.add(new StringTextComponent(PneumaticCraftUtils.roundNumberTo(upgradeUsage, 1) + " mL/t (" + handler.getID() + ")").mergeStyle(black));
+                        text.add(new StringTextComponent(PneumaticCraftUtils.roundNumberTo(upgradeUsage, 1) + " mL/t (" + handler.getID() + ")").withStyle(black));
                     }
                 }
             }
-            text.add(new StringTextComponent("--------+").mergeStyle(black));
-            text.add(new StringTextComponent(PneumaticCraftUtils.roundNumberTo(totalUsage, 1) + " mL/t").mergeStyle(black));
+            text.add(new StringTextComponent("--------+").withStyle(black));
+            text.add(new StringTextComponent(PneumaticCraftUtils.roundNumberTo(totalUsage, 1) + " mL/t").withStyle(black));
         } else {
-            text.add(new StringTextComponent("0.0 mL/t").mergeStyle(black));
+            text.add(new StringTextComponent("0.0 mL/t").withStyle(black));
         }
-        text.add(xlate("pneumaticcraft.gui.tab.info.pneumatic_armor.timeRemaining").mergeStyle(TextFormatting.WHITE));
+        text.add(xlate("pneumaticcraft.gui.tab.info.pneumatic_armor.timeRemaining").withStyle(TextFormatting.WHITE));
         int airLeft = itemStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY)
                 .map(IAirHandler::getAir)
                 .orElseThrow(RuntimeException::new);
         if (totalUsage == 0) {
-            if (airLeft > 0) text.add(new StringTextComponent("∞").mergeStyle(black));
-            else text.add(new StringTextComponent("0s").mergeStyle(black));
+            if (airLeft > 0) text.add(new StringTextComponent("∞").withStyle(black));
+            else text.add(new StringTextComponent("0s").withStyle(black));
         } else {
-            text.add(new StringTextComponent(PneumaticCraftUtils.convertTicksToMinutesAndSeconds((int) (airLeft / totalUsage), false)).mergeStyle(black));
+            text.add(new StringTextComponent(PneumaticCraftUtils.convertTicksToMinutesAndSeconds((int) (airLeft / totalUsage), false)).withStyle(black));
         }
         return text;
     }

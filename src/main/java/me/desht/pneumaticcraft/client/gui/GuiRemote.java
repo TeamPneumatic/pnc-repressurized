@@ -21,9 +21,9 @@ public class GuiRemote extends GuiPneumaticContainerBase<ContainerRemote,TileEnt
     public GuiRemote(ContainerRemote container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
 
-        xSize = 183;
-        ySize = 202;
-        this.remote = inv.player.getHeldItem(container.getHand());
+        imageWidth = 183;
+        imageHeight = 202;
+        this.remote = inv.player.getItemInHand(container.getHand());
     }
 
     /**
@@ -31,7 +31,7 @@ public class GuiRemote extends GuiPneumaticContainerBase<ContainerRemote,TileEnt
      * @param varName variable that changed
      */
     public static void maybeHandleVariableChange(String varName) {
-        Screen screen = Minecraft.getInstance().currentScreen;
+        Screen screen = Minecraft.getInstance().screen;
         if (screen instanceof GuiRemote) {
             ((GuiRemote) screen).onGlobalVariableChange(varName);
         }
@@ -44,7 +44,7 @@ public class GuiRemote extends GuiPneumaticContainerBase<ContainerRemote,TileEnt
         super.init();
 
         if (remoteLayout == null) {
-            remoteLayout = new RemoteLayout(remote, guiLeft, guiTop);
+            remoteLayout = new RemoteLayout(remote, leftPos, topPos);
         }
         remoteLayout.getWidgets(!(this instanceof GuiRemoteEditor)).forEach(this::addButton);
     }

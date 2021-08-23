@@ -41,7 +41,7 @@ public class TOPInfoProvider {
     private static final TextFormatting COLOR = TextFormatting.GRAY;
 
     static void handleBlock(ProbeMode mode, IProbeInfo probeInfo, PlayerEntity player, World world, BlockState blockState, IProbeHitData data) {
-        TileEntity te = world.getTileEntity(data.getPos());
+        TileEntity te = world.getBlockEntity(data.getPos());
         if (te instanceof IInfoForwarder) {
             te = ((IInfoForwarder)te).getInfoTileEntity();
         }
@@ -76,9 +76,9 @@ public class TOPInfoProvider {
         if (!drops.isEmpty()) {
             ItemStack stack = drops.get(0);
             horiz.item(stack);
-            horiz.text(stack.getDisplayName());
+            horiz.text(stack.getHoverName());
             List<ITextComponent> currenttip = new ArrayList<>();
-            semiBlock.addTooltip(currenttip, player, stack.getTag(), player.isSneaking());
+            semiBlock.addTooltip(currenttip, player, stack.getTag(), player.isShiftKeyDown());
             currenttip.forEach(vert::text);
         }
     }
@@ -87,9 +87,9 @@ public class TOPInfoProvider {
         pneumaticMachine.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).ifPresent(airHandler -> {
             String pressure = PneumaticCraftUtils.roundNumberTo(airHandler.getPressure(), 2);
             String dangerPressure = PneumaticCraftUtils.roundNumberTo(airHandler.getDangerPressure(), 1);
-            probeInfo.text(xlate("pneumaticcraft.gui.tooltip.maxPressure", dangerPressure).mergeStyle(COLOR));
+            probeInfo.text(xlate("pneumaticcraft.gui.tooltip.maxPressure", dangerPressure).withStyle(COLOR));
             if (mode == ProbeMode.EXTENDED) {
-                probeInfo.text(new StringTextComponent("Pressure:").mergeStyle(COLOR));
+                probeInfo.text(new StringTextComponent("Pressure:").withStyle(COLOR));
                 probeInfo.horizontal()
                         .element(new ElementPressure(pneumaticMachine, airHandler))
                         .vertical()
@@ -119,7 +119,7 @@ public class TOPInfoProvider {
     }
 
     private static void handlePressureTube(ProbeMode mode, IProbeInfo probeInfo, TileEntityPressureTube te, Direction face, PlayerEntity player) {
-        TubeModule module = BlockPressureTube.getFocusedModule(te.getWorld(), te.getPos(), player);
+        TubeModule module = BlockPressureTube.getFocusedModule(te.getLevel(), te.getBlockPos(), player);
         if (module != null) {
             List<ITextComponent> currenttip = new ArrayList<>();
             module.addInfo(currenttip);
@@ -137,7 +137,7 @@ public class TOPInfoProvider {
                 ITextComponent fluidDesc = fluidStack.isEmpty() ?
                         xlate("pneumaticcraft.gui.misc.empty") :
                         new StringTextComponent(fluidStack.getAmount() + "mB ").append(xlate(fluidStack.getTranslationKey()));
-                probeInfo.text(xlate("pneumaticcraft.waila.tank", i + 1, fluidDesc.deepCopy().mergeStyle(TextFormatting.AQUA)));
+                probeInfo.text(xlate("pneumaticcraft.waila.tank", i + 1, fluidDesc.copy().withStyle(TextFormatting.AQUA)));
             }
         }
     }

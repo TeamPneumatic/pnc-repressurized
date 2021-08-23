@@ -126,7 +126,7 @@ public class IOHelper {
     }
 
     private static boolean matchStacks(ItemStack stack1, ItemStack stack2, boolean matchNBT) {
-        return ItemStack.areItemsEqual(stack1, stack2) && (!matchNBT || ItemStack.areItemStackTagsEqual(stack1, stack2));
+        return ItemStack.isSame(stack1, stack2) && (!matchNBT || ItemStack.tagMatches(stack1, stack2));
     }
 
     @Nonnull
@@ -186,8 +186,8 @@ public class IOHelper {
     public static void insertOrDrop(World world, ItemStack stack, IItemHandler handler, Vector3d dropPos, boolean simulate) {
         ItemStack remainder = ItemHandlerHelper.insertItem(handler, stack, simulate);
         if (!remainder.isEmpty() && !simulate) {
-            ItemEntity item = new ItemEntity(world, dropPos.getX(), dropPos.getY(), dropPos.getZ(), remainder);
-            world.addEntity(item);
+            ItemEntity item = new ItemEntity(world, dropPos.x(), dropPos.y(), dropPos.z(), remainder);
+            world.addFreshEntity(item);
         }
     }
 

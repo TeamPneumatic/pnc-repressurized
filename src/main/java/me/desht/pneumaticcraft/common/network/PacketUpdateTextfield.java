@@ -22,12 +22,12 @@ public class PacketUpdateTextfield {
 
     public PacketUpdateTextfield(PacketBuffer buffer) {
         textFieldID = buffer.readInt();
-        text = buffer.readString(32767);
+        text = buffer.readUtf(32767);
     }
 
     public void toBytes(PacketBuffer buffer) {
         buffer.writeInt(textFieldID);
-        buffer.writeString(text);
+        buffer.writeUtf(text);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {

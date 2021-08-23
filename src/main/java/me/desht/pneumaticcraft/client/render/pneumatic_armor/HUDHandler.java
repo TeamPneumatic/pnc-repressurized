@@ -83,7 +83,7 @@ public enum HUDHandler implements IKeyListener {
         Minecraft mc = Minecraft.getInstance();
         PlayerEntity player = mc.player;
 
-        if (player == null || mc.gameSettings.hideGUI || mc.currentScreen != null
+        if (player == null || mc.options.hideGui || mc.screen != null
                 || !ItemPneumaticArmor.isPneumaticArmorPiece(player, EquipmentSlotType.HEAD)
                 || WidgetKeybindCheckBox.getCoreComponents() == null
                 || !WidgetKeybindCheckBox.getCoreComponents().checked) {
@@ -92,16 +92,16 @@ public enum HUDHandler implements IKeyListener {
 
         CommonArmorHandler commonArmorHandler = CommonArmorHandler.getHandlerForPlayer(player);
         if (commonArmorHandler.getArmorPressure(EquipmentSlotType.HEAD) > 0F) {
-            IRenderTypeBuffer.Impl buffer = Minecraft.getInstance().getRenderTypeBuffers().getBufferSource();
+            IRenderTypeBuffer.Impl buffer = Minecraft.getInstance().renderBuffers().bufferSource();
             MatrixStack matrixStack = event.getMatrixStack();
-            matrixStack.push();
+            matrixStack.pushPose();
 
-            Vector3d projectedView = Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getProjectedView();
+            Vector3d projectedView = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
             matrixStack.translate(-projectedView.x, -projectedView.y, -projectedView.z);
 
             for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
                 if (commonArmorHandler.isArmorReady(slot)) {
-                    GlStateManager.disableTexture();
+                    GlStateManager._disableTexture();
                     List<IArmorUpgradeClientHandler<?>> clientHandlers = ArmorUpgradeClientRegistry.getInstance().getHandlersForSlot(slot);
                     for (int i = 0; i < clientHandlers.size(); i++) {
                         if (commonArmorHandler.isUpgradeInserted(slot, i)
@@ -109,11 +109,11 @@ public enum HUDHandler implements IKeyListener {
                             clientHandlers.get(i).render3D(matrixStack, buffer, event.getPartialTicks());
                         }
                     }
-                    GlStateManager.enableTexture();
+                    GlStateManager._enableTexture();
                 }
             }
 
-            matrixStack.pop();
+            matrixStack.popPose();
         }
     }
 
@@ -127,7 +127,7 @@ public enum HUDHandler implements IKeyListener {
         Minecraft mc = Minecraft.getInstance();
         PlayerEntity player = mc.player;
 
-        if (player == null || mc.gameSettings.hideGUI || mc.currentScreen != null
+        if (player == null || mc.options.hideGui || mc.screen != null
                 || !ItemPneumaticArmor.isPlayerWearingAnyPneumaticArmor(player)) {
             return;
         }
@@ -137,13 +137,13 @@ public enum HUDHandler implements IKeyListener {
         MatrixStack matrixStack = event.getMatrixStack();
 
         MainWindow mw = event.getWindow();
-        matrixStack.push();
+        matrixStack.pushPose();
         RenderSystem.color4f(0, 1, 0, 0.8F);
         CommonArmorHandler comHudHandler = CommonArmorHandler.getHandlerForPlayer(player);
 
         boolean anyArmorInInit = false;
         for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
-            ItemStack armorStack = player.getItemStackFromSlot(slot);
+            ItemStack armorStack = player.getItemBySlot(slot);
             if (armorStack.getItem() instanceof ItemPneumaticArmor && comHudHandler.getArmorPressure(slot) >= 0.0001f && !comHudHandler.isArmorReady(slot)) {
                 anyArmorInInit = true;
                 break;
@@ -151,22 +151,22 @@ public enum HUDHandler implements IKeyListener {
         }
 
         for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
-            ItemStack armorStack = player.getItemStackFromSlot(slot);
+            ItemStack armorStack = player.getItemBySlot(slot);
             if (!(armorStack.getItem() instanceof ItemPneumaticArmor) || comHudHandler.getArmorPressure(slot) < 0.0001F) {
                 continue;
             }
             if (anyArmorInInit) {
                 // draw initialization progress bar(s)
                 if (comHudHandler.isArmorEnabled()) {
-                    int xLeft = mw.getScaledWidth() / 2;
+                    int xLeft = mw.getGuiScaledWidth() / 2;
                     int yOffset = 10 + (3 - slot.getIndex()) * PROGRESS_BAR_HEIGHT;
                     float progress = comHudHandler.getTicksSinceEquipped(slot) * 100f / comHudHandler.getStartupTime(slot);
                     progress = Math.min(100, progress + event.getPartialTicks());
                     RenderSystem.disableTexture();
                     RenderSystem.enableBlend();
                     RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-                    RenderProgressBar.render2d(matrixStack,mw.getScaledWidth() / 2f, yOffset,
-                            mw.getScaledWidth() - 10, yOffset + PROGRESS_BAR_HEIGHT - 1, -90F,
+                    RenderProgressBar.render2d(matrixStack,mw.getGuiScaledWidth() / 2f, yOffset,
+                            mw.getGuiScaledWidth() - 10, yOffset + PROGRESS_BAR_HEIGHT - 1, -90F,
                             progress,0xAAFFC000, 0xAA00FF00);
                     RenderSystem.disableBlend();
                     RenderSystem.enableTexture();
@@ -179,7 +179,7 @@ public enum HUDHandler implements IKeyListener {
                 handlePressureWarnings(player, slot, pressure);
 
                 // all enabled upgrades do their 2D rendering here
-                if (WidgetKeybindCheckBox.getCoreComponents().checked || Minecraft.getInstance().currentScreen == null) {
+                if (WidgetKeybindCheckBox.getCoreComponents().checked || Minecraft.getInstance().screen == null) {
                     List<IArmorUpgradeClientHandler<?>> renderHandlers = ArmorUpgradeClientRegistry.getInstance().getHandlersForSlot(slot);
                     for (int i = 0; i < renderHandlers.size(); i++) {
                         IArmorUpgradeClientHandler<?> clientHandler = renderHandlers.get(i);
@@ -198,7 +198,7 @@ public enum HUDHandler implements IKeyListener {
         // render every pending message
         pendingMessages.forEach(message -> message.renderMessage(matrixStack, partialTicks));
 
-        matrixStack.pop();
+        matrixStack.popPose();
 
         RenderSystem.color4f(1, 1, 1, 1);
 
@@ -207,7 +207,7 @@ public enum HUDHandler implements IKeyListener {
             for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
                 if (isPneumaticArmorPiece(player, slot) && comHudHandler.getArmorPressure(slot) > 0F) {
                     String text = Math.min(100, comHudHandler.getTicksSinceEquipped(slot) * 100 / comHudHandler.getStartupTime(slot)) + "%";
-                    mc.fontRenderer.drawStringWithShadow(matrixStack, text, mw.getScaledWidth() * 0.75f - 8, 14 + PROGRESS_BAR_HEIGHT * (3 - slot.getIndex()), 0xFFFF40);
+                    mc.font.drawShadow(matrixStack, text, mw.getGuiScaledWidth() * 0.75f - 8, 14 + PROGRESS_BAR_HEIGHT * (3 - slot.getIndex()), 0xFFFF40);
                 }
             }
         }
@@ -218,12 +218,12 @@ public enum HUDHandler implements IKeyListener {
     private void handlePressureWarnings(PlayerEntity player, EquipmentSlotType slot, float pressure) {
         // low/no pressure warnings
         if (pressure <= CRITICAL_PRESSURE && !gaveCriticalWarning[slot.getIndex()]) {
-            addMessage(new ArmorMessage(xlate("pneumaticcraft.armor.message.outOfAir", player.getItemStackFromSlot(slot).getDisplayName()),
+            addMessage(new ArmorMessage(xlate("pneumaticcraft.armor.message.outOfAir", player.getItemBySlot(slot).getHoverName()),
                     100, 0x70FF0000));
             gaveCriticalWarning[slot.getIndex()] = true;
             player.playSound(ModSounds.MINIGUN_STOP.get(), 1f, 2f);
         } else if (pressure > CRITICAL_PRESSURE && pressure <= LOW_PRESSURE && !gaveLowPressureWarning[slot.getIndex()]) {
-            addMessage(new ArmorMessage(xlate("pneumaticcraft.armor.message.almostOutOfAir", player.getItemStackFromSlot(slot).getDisplayName()),
+            addMessage(new ArmorMessage(xlate("pneumaticcraft.armor.message.almostOutOfAir", player.getItemBySlot(slot).getHoverName()),
                     60, 0x70FF8000));
             gaveLowPressureWarning[slot.getIndex()] = true;
         }
@@ -237,7 +237,7 @@ public enum HUDHandler implements IKeyListener {
         if (event.phase == TickEvent.Phase.START) {
             Minecraft mc = Minecraft.getInstance();
             PlayerEntity player = event.player;
-            if (player == mc.player && player.world.isRemote) {
+            if (player == mc.player && player.level.isClientSide) {
                 boolean anyArmorEquipped = false;
                 CommonArmorHandler comHudHandler = CommonArmorHandler.getHandlerForPlayer();
                 for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
@@ -277,10 +277,10 @@ public enum HUDHandler implements IKeyListener {
         List<IArmorUpgradeHandler<?>> upgradeHandlers = ArmorUpgradeRegistry.getInstance().getHandlersForSlot(slot);
         List<IArmorUpgradeClientHandler<?>> clientHandlers = ArmorUpgradeClientRegistry.getInstance().getHandlersForSlot(slot);
 
-        ItemStack armorStack = player.getItemStackFromSlot(slot);
+        ItemStack armorStack = player.getItemBySlot(slot);
         int ticksSinceEquipped = commonArmorHandler.getTicksSinceEquipped(slot);
         int startupTime = commonArmorHandler.getStartupTime(slot);
-        ITextComponent itemName = armorStack.getDisplayName();
+        ITextComponent itemName = armorStack.getHoverName();
 
         if (ticksSinceEquipped > startupTime && armorEnabled) {
             // After full init: tick the client handler for each installed upgrade and open/close stat windows as needed
@@ -329,7 +329,7 @@ public enum HUDHandler implements IKeyListener {
                     playArmorInitSound(player, 0.5F + (float) (i + 1) / (upgradeHandlers.size() + 2) * 0.5F);
                     boolean upgradeEnabled = commonArmorHandler.isUpgradeInserted(slot, i);
                     ITextComponent message = xlate(upgradeHandlers.get(i).getTranslationKey())
-                            .appendString(upgradeEnabled ? " installed" : " not installed");
+                            .append(upgradeEnabled ? " installed" : " not installed");
                     addMessage(new ArmorMessage(message, 80, upgradeEnabled ? 0x7000AA00 : 0x70FF8000));
                 }
             }
@@ -338,17 +338,17 @@ public enum HUDHandler implements IKeyListener {
 
     private void playArmorInitSound(PlayerEntity player, float pitch) {
         // avoid playing sounds too often... if many upgrades are installed it could get really noisy
-        long when = player.world.getGameTime();
+        long when = player.level.getGameTime();
         if (when - lastArmorInitSound >= 30) {
-            player.playSound(ModSounds.HUD_INIT.get(), SoundCategory.PLAYERS, 0.2F, pitch);
+            player.playNotifySound(ModSounds.HUD_INIT.get(), SoundCategory.PLAYERS, 0.2F, pitch);
         }
         lastArmorInitSound = when;
     }
 
     private void playArmorInitCompleteSound(PlayerEntity player) {
-        long when = player.world.getGameTime();
+        long when = player.level.getGameTime();
         if (when - lastArmorInitCompleteSound >= 30) {
-            player.playSound(ModSounds.HUD_INIT_COMPLETE.get(), SoundCategory.PLAYERS, 0.2F, (float) 1.0);
+            player.playNotifySound(ModSounds.HUD_INIT_COMPLETE.get(), SoundCategory.PLAYERS, 0.2F, (float) 1.0);
         }
         lastArmorInitCompleteSound = when;
     }
@@ -359,7 +359,7 @@ public enum HUDHandler implements IKeyListener {
     }
 
     public void addFeatureToggleMessage(String key, String subKey, boolean enabled) {
-        ITextComponent msg = xlate(key).appendString(": ").append(xlate(subKey));
+        ITextComponent msg = xlate(key).append(": ").append(xlate(subKey));
         addMessage(xlate("pneumaticcraft.armor.message." + (enabled ? "enable" : "disable") + "Setting", msg),
                 Collections.emptyList(), 60, 0x7000AA00);
     }
@@ -379,13 +379,13 @@ public enum HUDHandler implements IKeyListener {
     @Override
     public void handleInput(KeyBinding key) {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.isGameFocused()) {
+        if (mc.isWindowActive()) {
             ArmorUpgradeClientRegistry c = ArmorUpgradeClientRegistry.getInstance();
             ArmorUpgradeRegistry r = ArmorUpgradeRegistry.getInstance();
             KeyHandler keyHandler = KeyHandler.getInstance();
             if (key == keyHandler.keybindOpenOptions) {
                 if (ItemPneumaticArmor.isPlayerWearingAnyPneumaticArmor(mc.player)) {
-                    mc.displayGuiScreen(GuiArmorMainScreen.getInstance());
+                    mc.setScreen(GuiArmorMainScreen.getInstance());
                 }
             } else if (key == keyHandler.keybindHack
                     && HackClientHandler.enabledForPlayer(mc.player)) {
@@ -398,7 +398,7 @@ public enum HUDHandler implements IKeyListener {
                     && CommonArmorHandler.getHandlerForPlayer().getUpgradeCount(EquipmentSlotType.FEET, EnumUpgrade.DISPENSER) > 0) {
                 NetworkHandler.sendToServer(new PacketPneumaticKick());
             } else if (key == keyHandler.keybindLauncher
-                    && !mc.player.getHeldItemOffhand().isEmpty()) {
+                    && !mc.player.getOffhandItem().isEmpty()) {
                 c.getClientHandler(r.chestplateLauncherHandler, ChestplateLauncherClientHandler.class).maybeStartCharging(key);
             }
         }
@@ -416,23 +416,23 @@ public enum HUDHandler implements IKeyListener {
     @SubscribeEvent
     public void handleResolutionChange(GuiScreenEvent.InitGuiEvent event) {
         Screen gui = event.getGui();
-        if (gui.getMinecraft().world != null) {
-            MainWindow mw = gui.getMinecraft().getMainWindow();
-            if (mw.getScaledWidth() != lastScaledWidth || mw.getScaledHeight() != lastScaledHeight) {
+        if (gui.getMinecraft().level != null) {
+            MainWindow mw = gui.getMinecraft().getWindow();
+            if (mw.getGuiScaledWidth() != lastScaledWidth || mw.getGuiScaledHeight() != lastScaledHeight) {
                 for (EquipmentSlotType slot : ArmorUpgradeRegistry.ARMOR_SLOTS) {
                     for (IArmorUpgradeClientHandler<?> handler : ArmorUpgradeClientRegistry.getInstance().getHandlersForSlot(slot)) {
                         handler.onResolutionChanged();
                     }
                 }
-                lastScaledWidth = mw.getScaledWidth();
-                lastScaledHeight = mw.getScaledHeight();
+                lastScaledWidth = mw.getGuiScaledWidth();
+                lastScaledHeight = mw.getGuiScaledHeight();
             }
         }
     }
 
     public int getStatOverlayColor() {
         // based on the eyepiece color but with the alpha locked to 3/16
-        ItemStack stack = Minecraft.getInstance().player.getItemStackFromSlot(EquipmentSlotType.HEAD);
+        ItemStack stack = Minecraft.getInstance().player.getItemBySlot(EquipmentSlotType.HEAD);
         int eyepieceColor = stack.getItem() instanceof ItemPneumaticArmor ?
                 ((ItemPneumaticArmor) stack.getItem()).getEyepieceColor(stack) :
                 GuiArmorColors.SelectorType.EYEPIECE.getDefaultColor();

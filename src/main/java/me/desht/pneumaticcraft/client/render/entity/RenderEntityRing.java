@@ -21,14 +21,14 @@ public class RenderEntityRing extends EntityRenderer<EntityRing> {
     @Override
     public void render(EntityRing ring, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
         if (ring.oldRing != null) {
-            float yaw = MathHelper.lerp(partialTicks, ring.prevRotationYaw, ring.rotationYaw);
-            float pitch = MathHelper.lerp(partialTicks, ring.prevRotationPitch, ring.rotationPitch);
+            float yaw = MathHelper.lerp(partialTicks, ring.yRotO, ring.yRot);
+            float pitch = MathHelper.lerp(partialTicks, ring.xRotO, ring.xRot);
             RenderUtils.renderRing(ring.ring, ring.oldRing, matrixStackIn, bufferIn, partialTicks, yaw, pitch, ring.color);
         }
     }
 
     @Override
-    public ResourceLocation getEntityTexture(EntityRing entity) {
+    public ResourceLocation getTextureLocation(EntityRing entity) {
         return null;
     }
 }

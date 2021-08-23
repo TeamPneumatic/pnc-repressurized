@@ -19,9 +19,9 @@ import net.minecraft.world.IBlockReader;
 import javax.annotation.Nullable;
 
 public class BlockPneumaticDynamo extends BlockPneumaticCraft {
-    private static final VoxelShape BASE = Block.makeCuboidShape(0, 0, 0, 16, 10, 16);
-    private static final VoxelShape COIL = Block.makeCuboidShape(4, 10, 4, 12, 16, 12);
-    private static final VoxelShape SHAPE_UP = VoxelShapes.combineAndSimplify(BASE, COIL, IBooleanFunction.OR);
+    private static final VoxelShape BASE = Block.box(0, 0, 0, 16, 10, 16);
+    private static final VoxelShape COIL = Block.box(4, 10, 4, 12, 16, 12);
+    private static final VoxelShape SHAPE_UP = VoxelShapes.join(BASE, COIL, IBooleanFunction.OR);
     private static final VoxelShape SHAPE_NORTH = VoxelShapeUtils.rotateX(SHAPE_UP, 270);
     private static final VoxelShape SHAPE_DOWN = VoxelShapeUtils.rotateX(SHAPE_NORTH, 270);
     private static final VoxelShape SHAPE_SOUTH = VoxelShapeUtils.rotateY(SHAPE_NORTH, 180);
@@ -35,7 +35,7 @@ public class BlockPneumaticDynamo extends BlockPneumaticCraft {
 
     public BlockPneumaticDynamo() {
         super(ModBlocks.defaultProps());
-        setDefaultState(getStateContainer().getBaseState().with(ACTIVE, false));
+        registerDefaultState(getStateDefinition().any().setValue(ACTIVE, false));
     }
 
     @Override
@@ -44,8 +44,8 @@ public class BlockPneumaticDynamo extends BlockPneumaticCraft {
     }
 
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        super.fillStateContainer(builder);
+    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
         builder.add(ACTIVE);
     }
 
@@ -63,11 +63,11 @@ public class BlockPneumaticDynamo extends BlockPneumaticCraft {
     @Override
     public BlockState getStateForPlacement(BlockItemUseContext ctx) {
         // coil faces the block it's placed against
-        return super.getStateForPlacement(ctx).with(directionProperty(), ctx.getFace());
+        return super.getStateForPlacement(ctx).setValue(directionProperty(), ctx.getClickedFace());
     }
 
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-        return SHAPES[getRotation(state).getIndex()];
+        return SHAPES[getRotation(state).get3DDataValue()];
     }
 }

@@ -65,13 +65,13 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
         addButton(gpsButton2);
 
         // variable textfields
-        variableField1 = new WidgetComboBox(font, guiLeft + 28, guiTop + 35, 88, font.FONT_HEIGHT + 1);
-        variableField2 = new WidgetComboBox(font, guiLeft + 155, guiTop + 35, 88, font.FONT_HEIGHT + 1);
+        variableField1 = new WidgetComboBox(font, guiLeft + 28, guiTop + 35, 88, font.lineHeight + 1);
+        variableField2 = new WidgetComboBox(font, guiLeft + 155, guiTop + 35, 88, font.lineHeight + 1);
         Set<String> variables = guiProgrammer == null ? Collections.emptySet() : guiProgrammer.te.getAllVariables();
         variableField1.setElements(variables);
         variableField2.setElements(variables);
-        variableField1.setText(progWidget.getCoord1Variable());
-        variableField2.setText(progWidget.getCoord2Variable());
+        variableField1.setValue(progWidget.getCoord1Variable());
+        variableField2.setValue(progWidget.getCoord2Variable());
         if (advancedMode) {
             addButton(variableField1);
             addButton(variableField2);
@@ -128,8 +128,8 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
             ItemGPSTool.setGPSLocation(gpsStack, new BlockPos(progWidget.x2, progWidget.y2, progWidget.z2));
         }
         ClientUtils.openContainerGui(ModContainers.INVENTORY_SEARCHER.get(), new StringTextComponent("Inventory Searcher (GPS)"));
-        if (minecraft.currentScreen instanceof GuiInventorySearcher) {
-            invSearchGui = (GuiInventorySearcher) minecraft.currentScreen;
+        if (minecraft.screen instanceof GuiInventorySearcher) {
+            invSearchGui = (GuiInventorySearcher) minecraft.screen;
             invSearchGui.setStackPredicate(itemStack -> itemStack.getItem() instanceof IPositionProvider);
             invSearchGui.setSearchStack(ItemGPSTool.getGPSLocation(gpsStack) != null ? gpsStack : ItemStack.EMPTY);
         }
@@ -153,25 +153,25 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
             WidgetLabel titleWidget = new WidgetLabel(x, curY, xlate(areaTypeWidget.title));
             addButton(titleWidget);
             areaTypeStaticWidgets.add(titleWidget);
-            curY += font.FONT_HEIGHT + 1;
+            curY += font.lineHeight + 1;
 
             if (areaTypeWidget instanceof AreaTypeWidgetInteger) {
                 AreaTypeWidgetInteger intWidget = (AreaTypeWidgetInteger) areaTypeWidget;
-                WidgetTextFieldNumber intField = new WidgetTextFieldNumber(font, x, curY, 40, font.FONT_HEIGHT + 1).setRange(0, Integer.MAX_VALUE);
+                WidgetTextFieldNumber intField = new WidgetTextFieldNumber(font, x, curY, 40, font.lineHeight + 1).setRange(0, Integer.MAX_VALUE);
                 intField.setValue(intWidget.readAction.get());
                 addButton(intField);
                 areaTypeValueWidgets.add(new ImmutablePair<>(areaTypeWidget, intField));
 
-                curY += font.FONT_HEIGHT + 20;
+                curY += font.lineHeight + 20;
             } else if (areaTypeWidget instanceof AreaTypeWidgetEnum<?>) {
                 AreaTypeWidgetEnum<?> enumWidget = (AreaTypeWidgetEnum<?>) areaTypeWidget;
-                WidgetComboBox enumCbb = new WidgetComboBox(font, x, curY, 80, font.FONT_HEIGHT + 1).setFixedOptions();
+                WidgetComboBox enumCbb = new WidgetComboBox(font, x, curY, 80, font.lineHeight + 1).setFixedOptions();
                 enumCbb.setElements(getEnumNames(enumWidget.enumClass));
-                enumCbb.setText(enumWidget.readAction.get().toString());
+                enumCbb.setValue(enumWidget.readAction.get().toString());
                 addButton(enumCbb);
                 areaTypeValueWidgets.add(new ImmutablePair<>(areaTypeWidget, enumCbb));
 
-                curY += font.FONT_HEIGHT + 20;
+                curY += font.lineHeight + 20;
             } else {
                 throw new IllegalStateException("Invalid widget type: " + areaTypeWidget.getClass());
             }
@@ -184,14 +184,14 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
             Widget guiWidget = entry.getRight();
             if (widget instanceof AreaTypeWidgetInteger) {
                 AreaTypeWidgetInteger intWidget = (AreaTypeWidgetInteger) widget;
-                intWidget.writeAction.accept(((WidgetTextFieldNumber) guiWidget).getValue());
+                intWidget.writeAction.accept(((WidgetTextFieldNumber) guiWidget).getIntValue());
             } else if (widget instanceof AreaTypeWidgetEnum<?>) {
                 @SuppressWarnings("unchecked")
                 AreaTypeWidgetEnum<Enum<?>> enumWidget = (AreaTypeWidgetEnum<Enum<?>>) widget;
                 WidgetComboBox cbb = (WidgetComboBox) guiWidget;
                 List<String> enumNames = getEnumNames(enumWidget.enumClass);
                 Object[] enumValues = enumWidget.enumClass.getEnumConstants();
-                Object selectedValue = enumValues[enumNames.indexOf(cbb.getText())];
+                Object selectedValue = enumValues[enumNames.indexOf(cbb.getValue())];
                 enumWidget.writeAction.accept((Enum<?>) selectedValue);
             }
         }
@@ -219,12 +219,12 @@ public class GuiProgWidgetArea extends GuiProgWidgetAreaShow<ProgWidgetArea> {
     }
 
     @Override
-    public void onClose() {
-        progWidget.setCoord1Variable(variableField1.getText());
-        progWidget.setCoord2Variable(variableField2.getText());
+    public void removed() {
+        progWidget.setCoord1Variable(variableField1.getValue());
+        progWidget.setCoord2Variable(variableField2.getValue());
         saveWidgets();
 
-        super.onClose();
+        super.removed();
     }
 
 }

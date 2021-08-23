@@ -20,7 +20,7 @@ public class PacketTubeModuleColor extends LocationIntPacket {
     private final Direction side;
 
     public PacketTubeModuleColor(TubeModule module) {
-        super(module.getTube().getPos());
+        super(module.getTube().getBlockPos());
 
         this.ourColor = ((INetworkedModule) module).getColorChannel();
         this.side = module.getDirection();
@@ -30,7 +30,7 @@ public class PacketTubeModuleColor extends LocationIntPacket {
         super(buffer);
 
         this.ourColor = buffer.readByte();
-        this.side = Direction.byIndex(buffer.readByte());
+        this.side = Direction.from3DDataValue(buffer.readByte());
     }
 
     @Override
@@ -38,14 +38,14 @@ public class PacketTubeModuleColor extends LocationIntPacket {
         super.toBytes(buf);
 
         buf.writeByte(ourColor);
-        buf.writeByte(side.getIndex());
+        buf.writeByte(side.get3DDataValue());
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             ServerPlayerEntity player = ctx.get().getSender();
             if (player != null) {
-                PneumaticCraftUtils.getTileEntityAt(player.world, pos, TileEntityPressureTube.class).ifPresent(te -> {
+                PneumaticCraftUtils.getTileEntityAt(player.level, pos, TileEntityPressureTube.class).ifPresent(te -> {
                     TubeModule module = te.getModule(side);
                     if (module instanceof INetworkedModule) {
                         ((INetworkedModule) module).setColorChannel(ourColor);

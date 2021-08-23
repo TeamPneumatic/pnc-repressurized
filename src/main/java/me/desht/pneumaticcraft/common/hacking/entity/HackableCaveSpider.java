@@ -41,13 +41,13 @@ public class HackableCaveSpider implements IHackableEntity {
 
     @Override
     public void onHackFinished(Entity entity, PlayerEntity player) {
-        if (!entity.world.isRemote) {
+        if (!entity.level.isClientSide) {
             entity.remove();
-            SpiderEntity spider = new SpiderEntity(EntityType.SPIDER, entity.world);
-            spider.setPositionAndRotation(entity.getPosX(), entity.getPosY(), entity.getPosZ(), entity.rotationYaw, entity.rotationPitch);
+            SpiderEntity spider = new SpiderEntity(EntityType.SPIDER, entity.level);
+            spider.absMoveTo(entity.getX(), entity.getY(), entity.getZ(), entity.yRot, entity.xRot);
             spider.setHealth(((SpiderEntity) entity).getHealth());
-            spider.renderYawOffset = ((SpiderEntity) entity).renderYawOffset;
-            entity.world.addEntity(spider);
+            spider.yBodyRot = ((SpiderEntity) entity).yBodyRot;
+            entity.level.addFreshEntity(spider);
         }
     }
 

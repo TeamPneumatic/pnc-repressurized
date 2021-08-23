@@ -36,11 +36,11 @@ public class ProgWidgetEnergyCondition extends ProgWidgetCondition {
         return new DroneAIBlockCondition(drone, (ProgWidgetAreaItemBase) widget) {
             @Override
             protected boolean evaluate(BlockPos pos) {
-                TileEntity te = drone.world().getTileEntity(pos);
+                TileEntity te = drone.world().getBlockEntity(pos);
                 if (te == null) return false;
                 int energy = 0;
                 for (Direction face : DirectionUtil.VALUES) {
-                    if (getSides()[face.getIndex()]) {
+                    if (getSides()[face.get3DDataValue()]) {
                         energy = Math.max(energy, getEnergy(te, face));
                     }
                 }

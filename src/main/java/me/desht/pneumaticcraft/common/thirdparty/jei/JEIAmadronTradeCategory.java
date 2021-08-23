@@ -31,7 +31,7 @@ public class JEIAmadronTradeCategory implements IRecipeCategory<AmadronRecipe> {
     JEIAmadronTradeCategory() {
         icon = JEIPlugin.jeiHelpers.getGuiHelper().createDrawableIngredient(new ItemStack(ModItems.AMADRON_TABLET.get()));
         background = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.WIDGET_AMADRON_OFFER, 0, 0, 73, 35);
-        localizedName = I18n.format(ModItems.AMADRON_TABLET.get().getTranslationKey());
+        localizedName = I18n.get(ModItems.AMADRON_TABLET.get().getDescriptionId());
     }
 
     @Override
@@ -93,9 +93,9 @@ public class JEIAmadronTradeCategory implements IRecipeCategory<AmadronRecipe> {
 
     @Override
     public void draw(AmadronRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
-        FontRenderer fr = Minecraft.getInstance().fontRenderer;
-        int x = (background.getWidth() - fr.getStringWidth(recipe.getVendor())) / 2;
-        fr.drawString(matrixStack, recipe.getVendor(), x, 3, 0xFF404040);
+        FontRenderer fr = Minecraft.getInstance().font;
+        int x = (background.getWidth() - fr.width(recipe.getVendor())) / 2;
+        fr.draw(matrixStack, recipe.getVendor(), x, 3, 0xFF404040);
     }
 
     @Override
@@ -128,8 +128,8 @@ public class JEIAmadronTradeCategory implements IRecipeCategory<AmadronRecipe> {
 
         @Override
         public void draw(MatrixStack matrixStack, int x, int y) {
-            FontRenderer fr = Minecraft.getInstance().fontRenderer;
-            fr.drawStringWithShadow(matrixStack, text, x + getWidth() - fr.getStringWidth(text), y + getHeight() - fr.FONT_HEIGHT, 0xFFFFFFFF);
+            FontRenderer fr = Minecraft.getInstance().font;
+            fr.drawShadow(matrixStack, text, x + getWidth() - fr.width(text), y + getHeight() - fr.lineHeight, 0xFFFFFFFF);
         }
     }
 }

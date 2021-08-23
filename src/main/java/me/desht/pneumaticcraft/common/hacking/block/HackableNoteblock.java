@@ -39,6 +39,6 @@ public class HackableNoteblock implements IHackableBlock {
     @Override
     public void onHackComplete(World world, BlockPos pos, PlayerEntity player) {
         BlockState state = world.getBlockState(pos);
-        fakeRayTrace(player, pos).ifPresent(rtr -> state.onBlockActivated(world, player, Hand.MAIN_HAND, rtr));
+        fakeRayTrace(player, pos).ifPresent(rtr -> state.use(world, player, Hand.MAIN_HAND, rtr));
     }
 }

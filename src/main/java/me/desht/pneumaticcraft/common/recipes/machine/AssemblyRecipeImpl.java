@@ -45,7 +45,7 @@ public class AssemblyRecipeImpl extends AssemblyRecipe {
 
     @Override
     public int getInputAmount() {
-        return input.getMatchingStacks().length > 0 ? input.getMatchingStacks()[0].getCount() : 0;
+        return input.getItems().length > 0 ? input.getItems()[0].getCount() : 0;
     }
 
     @Override
@@ -65,8 +65,8 @@ public class AssemblyRecipeImpl extends AssemblyRecipe {
 
     @Override
     public void write(PacketBuffer buffer) {
-        input.write(buffer);
-        buffer.writeItemStack(output);
+        input.toNetwork(buffer);
+        buffer.writeItem(output);
         buffer.writeVarInt(program.ordinal());
     }
 
@@ -123,10 +123,10 @@ public class AssemblyRecipeImpl extends AssemblyRecipe {
         }
 
         @Override
-        public T read(ResourceLocation recipeId, JsonObject json) {
-            Ingredient input = Ingredient.deserialize(json.get("input"));
-            ItemStack result = ShapedRecipe.deserializeItem(JSONUtils.getJsonObject(json, "result"));
-            String program = JSONUtils.getString(json, "program").toUpperCase(Locale.ROOT);
+        public T fromJson(ResourceLocation recipeId, JsonObject json) {
+            Ingredient input = Ingredient.fromJson(json.get("input"));
+            ItemStack result = ShapedRecipe.itemFromJson(JSONUtils.getAsJsonObject(json, "result"));
+            String program = JSONUtils.getAsString(json, "program").toUpperCase(Locale.ROOT);
             try {
                 AssemblyProgramType programType = AssemblyProgramType.valueOf(program);
                 Validate.isTrue(programType != AssemblyProgramType.DRILL_LASER, "'drill_laser' may not be used in recipe JSON!");
@@ -138,15 +138,15 @@ public class AssemblyRecipeImpl extends AssemblyRecipe {
 
         @Nullable
         @Override
-        public T read(ResourceLocation recipeId, PacketBuffer buffer) {
-            Ingredient input = Ingredient.read(buffer);
-            ItemStack out = buffer.readItemStack();
+        public T fromNetwork(ResourceLocation recipeId, PacketBuffer buffer) {
+            Ingredient input = Ingredient.fromNetwork(buffer);
+            ItemStack out = buffer.readItem();
             AssemblyProgramType program = AssemblyProgramType.values()[buffer.readVarInt()];
             return factory.create(recipeId, input, out, program);
         }
 
         @Override
-        public void write(PacketBuffer buffer, T recipe) {
+        public void toNetwork(PacketBuffer buffer, T recipe) {
             recipe.write(buffer);
         }
 

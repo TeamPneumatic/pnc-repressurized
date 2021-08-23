@@ -47,7 +47,7 @@ public class PNC2MekHeatProvider implements ICapabilityProvider {
             }
         }
 
-        int idx = side == null ? 6 : side.getIndex();
+        int idx = side == null ? 6 : side.get3DDataValue();
         if (!handlers.get(idx).isPresent()) {
             LazyOptional<IHeatExchangerLogic> heatExchanger = teRef.get().getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY, side);
             if (heatExchanger.isPresent()) {

@@ -57,13 +57,13 @@ public class ModLootTablesProvider extends LootTableProvider {
             for (RegistryObject<Block> ro: ModBlocks.BLOCKS.getEntries()) {
                 Block b = ro.get();
                 if (b instanceof BlockPneumaticCraft
-                        && b.hasTileEntity(b.getDefaultState())
+                        && b.hasTileEntity(b.defaultBlockState())
                         && ForgeRegistries.ITEMS.containsKey(b.getRegistryName())) {
                     addStandardSerializedDrop(b);
                 } else if (b == ModBlocks.REINFORCED_BRICK_SLAB.get() || b == ModBlocks.REINFORCED_STONE_SLAB.get()) {
-                    registerLootTable(b, BlockLootTables::droppingSlab);
+                    add(b, BlockLootTables::createSlabItemTable);
                 } else if (b.asItem() != Items.AIR) {
-                    registerDropSelfLootTable(b);
+                    dropSelf(b);
                 }
             }
         }
@@ -80,14 +80,14 @@ public class ModLootTablesProvider extends LootTableProvider {
         }
 
         private void addStandardSerializedDrop(Block block) {
-            LootPool.Builder builder = LootPool.builder()
+            LootPool.Builder builder = LootPool.lootPool()
                     .name(block.getRegistryName().getPath())
-                    .acceptCondition(SurvivesExplosion.builder())
-                    .rolls(ConstantRange.of(1))
-                    .addEntry(ItemLootEntry.builder(block)
-                            .acceptFunction(CopyName.builder(CopyName.Source.BLOCK_ENTITY))
-                            .acceptFunction(TileEntitySerializerFunction.builder()));
-            registerLootTable(block, LootTable.builder().addLootPool(builder));
+                    .when(SurvivesExplosion.survivesExplosion())
+                    .setRolls(ConstantRange.exactly(1))
+                    .add(ItemLootEntry.lootTableItem(block)
+                            .apply(CopyName.copyName(CopyName.Source.BLOCK_ENTITY))
+                            .apply(TileEntitySerializerFunction.builder()));
+            add(block, LootTable.lootTable().withPool(builder));
         }
 
     }
@@ -100,39 +100,39 @@ public class ModLootTablesProvider extends LootTableProvider {
     private static class ChestLootTablePNC extends ChestLootTables {
         @Override
         public void accept(BiConsumer<ResourceLocation, LootTable.Builder> consumer) {
-            LootPool.Builder lootPool = LootPool.builder();
-            lootPool.rolls(new ConstantRange(4))
-                    .addEntry(createEntry(ModItems.COMPRESSED_IRON_INGOT.get(), 10, 4, 12))
-                    .addEntry(createEntry(ModItems.AMADRON_TABLET.get(), 2, 1, 1))
-                    .addEntry(createEntry(ModItems.AIR_CANISTER.get(), 10, 1, 5))
-                    .addEntry(createEntry(ModItems.PNEUMATIC_CYLINDER.get(), 5, 2, 4))
-                    .addEntry(createEntry(ModItems.LOGISTICS_CORE.get(), 8, 4, 8))
-                    .addEntry(createEntry(ModItems.CAPACITOR.get(), 4, 4, 8))
-                    .addEntry(createEntry(ModItems.TRANSISTOR.get(), 4, 4, 8))
-                    .addEntry(createEntry(ModItems.TURBINE_ROTOR.get(), 5, 2, 4))
-                    .addEntry(createEntry(ModBlocks.COMPRESSED_IRON_BLOCK.get(), 2, 1, 2))
-                    .addEntry(createEntry(ModBlocks.VORTEX_TUBE.get(), 5, 1, 1))
-                    .addEntry(createEntry(ModBlocks.PRESSURE_TUBE.get(), 10, 3, 8))
-                    .addEntry(createEntry(ModBlocks.ADVANCED_PRESSURE_TUBE.get(), 4, 3, 8))
-                    .addEntry(createEntry(ModBlocks.HEAT_PIPE.get(), 8, 3, 8))
-                    .addEntry(createEntry(ModBlocks.APHORISM_TILE.get(), 5, 2, 3));
+            LootPool.Builder lootPool = LootPool.lootPool();
+            lootPool.setRolls(new ConstantRange(4))
+                    .add(createEntry(ModItems.COMPRESSED_IRON_INGOT.get(), 10, 4, 12))
+                    .add(createEntry(ModItems.AMADRON_TABLET.get(), 2, 1, 1))
+                    .add(createEntry(ModItems.AIR_CANISTER.get(), 10, 1, 5))
+                    .add(createEntry(ModItems.PNEUMATIC_CYLINDER.get(), 5, 2, 4))
+                    .add(createEntry(ModItems.LOGISTICS_CORE.get(), 8, 4, 8))
+                    .add(createEntry(ModItems.CAPACITOR.get(), 4, 4, 8))
+                    .add(createEntry(ModItems.TRANSISTOR.get(), 4, 4, 8))
+                    .add(createEntry(ModItems.TURBINE_ROTOR.get(), 5, 2, 4))
+                    .add(createEntry(ModBlocks.COMPRESSED_IRON_BLOCK.get(), 2, 1, 2))
+                    .add(createEntry(ModBlocks.VORTEX_TUBE.get(), 5, 1, 1))
+                    .add(createEntry(ModBlocks.PRESSURE_TUBE.get(), 10, 3, 8))
+                    .add(createEntry(ModBlocks.ADVANCED_PRESSURE_TUBE.get(), 4, 3, 8))
+                    .add(createEntry(ModBlocks.HEAT_PIPE.get(), 8, 3, 8))
+                    .add(createEntry(ModBlocks.APHORISM_TILE.get(), 5, 2, 3));
 
-            LootTable.Builder lootTable = LootTable.builder();
-            lootTable.addLootPool(lootPool);
+            LootTable.Builder lootTable = LootTable.lootTable();
+            lootTable.withPool(lootPool);
             consumer.accept(RL("chests/mechanic_house"), lootTable);
         }
 
         private LootEntry.Builder<?> createEntry(IItemProvider item, int weight, int min, int max)
         {
             return createEntry(new ItemStack(item), weight)
-                    .acceptFunction(SetCount.builder(new RandomValueRange(min, max)));
+                    .apply(SetCount.setCount(new RandomValueRange(min, max)));
         }
 
         private StandaloneLootEntry.Builder<?> createEntry(ItemStack item, int weight)
         {
-            StandaloneLootEntry.Builder<?> ret = ItemLootEntry.builder(item.getItem()).weight(weight);
+            StandaloneLootEntry.Builder<?> ret = ItemLootEntry.lootTableItem(item.getItem()).setWeight(weight);
             if(item.hasTag())
-                ret.acceptFunction(SetNBT.builder(item.getOrCreateTag()));
+                ret.apply(SetNBT.setTag(item.getOrCreateTag()));
             return ret;
         }
     }

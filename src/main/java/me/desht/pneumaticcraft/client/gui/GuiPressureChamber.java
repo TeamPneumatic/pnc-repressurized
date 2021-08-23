@@ -32,18 +32,18 @@ public class GuiPressureChamber extends GuiPneumaticContainerBase<ContainerPress
         int sIn = te.multiBlockSize - 2;
         addAnimatedStat(xlate("pneumaticcraft.gui.tab.status"), new ItemStack(ModBlocks.PRESSURE_CHAMBER_WALL.get()), 0xFFFFAA00, false)
                 .setText(ImmutableList.of(
-                        xlate("pneumaticcraft.gui.tab.pressureChamber.chamberSize").mergeStyle(TextFormatting.WHITE),
-                        new StringTextComponent( sOut + "x" + sOut + "x" + sOut + " (outside)").mergeStyle(TextFormatting.BLACK),
-                        new StringTextComponent( sIn + "x" + sIn + "x" + sIn + " (inside)").mergeStyle(TextFormatting.BLACK)
+                        xlate("pneumaticcraft.gui.tab.pressureChamber.chamberSize").withStyle(TextFormatting.WHITE),
+                        new StringTextComponent( sOut + "x" + sOut + "x" + sOut + " (outside)").withStyle(TextFormatting.BLACK),
+                        new StringTextComponent( sIn + "x" + sIn + "x" + sIn + " (inside)").withStyle(TextFormatting.BLACK)
                 ));
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int x, int y) {
-        super.drawGuiContainerForegroundLayer(matrixStack, x, y);
+    protected void renderLabels(MatrixStack matrixStack, int x, int y) {
+        super.renderLabels(matrixStack, x, y);
 
         ITextComponent title = xlate("pneumaticcraft.gui.pressureChamberTitle", te.multiBlockSize + "x" + te.multiBlockSize + "x" + te.multiBlockSize);
-        font.func_238422_b_(matrixStack, title.func_241878_f(), (xSize - font.getStringPropertyWidth(title)) / 2f, 6, 0x404040);
+        font.draw(matrixStack, title.getVisualOrderText(), (imageWidth - font.width(title)) / 2f, 6, 0x404040);
     }
 
     @Override

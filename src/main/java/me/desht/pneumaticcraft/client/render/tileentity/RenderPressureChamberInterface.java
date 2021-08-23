@@ -26,51 +26,51 @@ public class RenderPressureChamberInterface extends AbstractTileModelRenderer<Ti
 
         input = new ModelRenderer(128, 128, 0, 84);
         input.addBox(0F, 0F, 0F, 10, 10, 2);
-        input.setRotationPoint(-5F, 11F, -7.2F);
+        input.setPos(-5F, 11F, -7.2F);
         input.mirror = true;
         output = new ModelRenderer(128, 128, 24, 84);
         output.addBox(0F, 0F, 0F, 10, 10, 2);
-        output.setRotationPoint(-5F, 11F, 5.2F);
+        output.setPos(-5F, 11F, 5.2F);
         output.mirror = true;
     }
 
     @Override
     public void renderModel(TileEntityPressureChamberInterface te, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        IVertexBuilder builder = bufferIn.getBuffer(RenderType.getEntityCutout(Textures.MODEL_PRESSURE_CHAMBER_INTERFACE));
+        IVertexBuilder builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_PRESSURE_CHAMBER_INTERFACE));
 
         RenderUtils.rotateMatrixForDirection(matrixStackIn, te.getRotation());
 
         float inputProgress = MathHelper.lerp(partialTicks, te.oldInputProgress, te.inputProgress) / MAX_PROGRESS;
         float outputProgress = MathHelper.lerp(partialTicks, te.oldOutputProgress, te.outputProgress) / MAX_PROGRESS;
         if (inputProgress < 1f) {
-            matrixStackIn.push();
+            matrixStackIn.pushPose();
             matrixStackIn.translate((1F - (float) Math.cos(inputProgress * Math.PI)) * 0.37F, 0, 0);
             matrixStackIn.scale(1F - inputProgress, 1, 1);
             input.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-            matrixStackIn.pop();
+            matrixStackIn.popPose();
         }
         if (outputProgress < 1f) {
-            matrixStackIn.push();
+            matrixStackIn.pushPose();
             matrixStackIn.translate((1F - (float) Math.cos(outputProgress * Math.PI)) * 0.37F, 0, 0);
             matrixStackIn.scale(1F - outputProgress, 1, 1);
             output.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-            matrixStackIn.pop();
+            matrixStackIn.popPose();
         }
     }
 
     @Override
     protected void renderExtras(TileEntityPressureChamberInterface te, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer buffer, int combinedLightIn, int combinedOverlayIn) {
         if (!te.getStackInInterface().isEmpty()) {
-            matrixStack.push();
+            matrixStack.pushPose();
 
             matrixStack.translate(0.5, 0.5, 0.5);
             RenderUtils.rotateMatrixForDirection(matrixStack, te.getRotation());
             matrixStack.scale(0.5F, 0.5F, 0.5F);
             ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
-            IBakedModel ibakedmodel = itemRenderer.getItemModelWithOverrides(te.getStackInInterface(), te.getWorld(), null);
-            itemRenderer.renderItem(te.getStackInInterface(), ItemCameraTransforms.TransformType.FIXED, true, matrixStack, buffer, combinedLightIn, combinedOverlayIn, ibakedmodel);
+            IBakedModel ibakedmodel = itemRenderer.getModel(te.getStackInInterface(), te.getLevel(), null);
+            itemRenderer.render(te.getStackInInterface(), ItemCameraTransforms.TransformType.FIXED, true, matrixStack, buffer, combinedLightIn, combinedOverlayIn, ibakedmodel);
 
-            matrixStack.pop();
+            matrixStack.popPose();
         }
     }
 }

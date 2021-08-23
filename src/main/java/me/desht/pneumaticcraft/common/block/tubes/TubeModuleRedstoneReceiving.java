@@ -37,7 +37,7 @@ public abstract class TubeModuleRedstoneReceiving extends TubeModule {
 
     @Override
     public void onNeighborBlockUpdate() {
-        redstoneLevel = pressureTube.getWorld().getRedstonePowerFromNeighbors(pressureTube.getPos());
+        redstoneLevel = pressureTube.getLevel().getBestNeighborSignal(pressureTube.getBlockPos());
     }
 
     public int getReceivingRedstoneLevel() {
@@ -57,7 +57,7 @@ public abstract class TubeModuleRedstoneReceiving extends TubeModule {
     public void update() {
         if (upgraded && !advancedConfig && higherBound != lowerBound) {
             higherBound = lowerBound;
-            if (!getTube().getWorld().isRemote) sendDescriptionPacket();
+            if (!getTube().getLevel().isClientSide) sendDescriptionPacket();
         }
     }
 }

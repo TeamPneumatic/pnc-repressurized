@@ -71,9 +71,9 @@ public class HeatFrameCoolingRecipeImpl extends HeatFrameCoolingRecipe {
 
     @Override
     public void write(PacketBuffer buffer) {
-        input.write(buffer);
+        input.toNetwork(buffer);
         buffer.writeInt(temperature);
-        buffer.writeItemStack(output);
+        buffer.writeItem(output);
         buffer.writeFloat(bonusMultiplier);
         buffer.writeFloat(bonusLimit);
     }
@@ -114,33 +114,33 @@ public class HeatFrameCoolingRecipeImpl extends HeatFrameCoolingRecipe {
         }
 
         @Override
-        public T read(ResourceLocation recipeId, JsonObject json) {
-            Ingredient input = Ingredient.deserialize(json.get("input"));
-            ItemStack result = ShapedRecipe.deserializeItem(JSONUtils.getJsonObject(json, "result"));
-            int maxTemp = JSONUtils.getInt(json,"max_temp", 273);
+        public T fromJson(ResourceLocation recipeId, JsonObject json) {
+            Ingredient input = Ingredient.fromJson(json.get("input"));
+            ItemStack result = ShapedRecipe.itemFromJson(JSONUtils.getAsJsonObject(json, "result"));
+            int maxTemp = JSONUtils.getAsInt(json,"max_temp", 273);
             float bonusMultiplier = 0f;
             float bonusLimit = 0f;
             if (json.has("bonus_output")) {
                 JsonObject bonus = json.getAsJsonObject("bonus_output");
-                bonusMultiplier = JSONUtils.getFloat(bonus, "multiplier");
-                bonusLimit = JSONUtils.getFloat(bonus, "limit");
+                bonusMultiplier = JSONUtils.getAsFloat(bonus, "multiplier");
+                bonusLimit = JSONUtils.getAsFloat(bonus, "limit");
             }
             return factory.create(recipeId, input, maxTemp, result, bonusMultiplier, bonusLimit);
         }
 
         @Nullable
         @Override
-        public T read(ResourceLocation recipeId, PacketBuffer buffer) {
-            Ingredient input = Ingredient.read(buffer);
+        public T fromNetwork(ResourceLocation recipeId, PacketBuffer buffer) {
+            Ingredient input = Ingredient.fromNetwork(buffer);
             int temperature = buffer.readInt();
-            ItemStack out = buffer.readItemStack();
+            ItemStack out = buffer.readItem();
             float bonusMultiplier = buffer.readFloat();
             float bonusLimit = buffer.readFloat();
             return factory.create(recipeId, input, temperature, out, bonusMultiplier, bonusLimit);
         }
 
         @Override
-        public void write(PacketBuffer buffer, T recipe) {
+        public void toNetwork(PacketBuffer buffer, T recipe) {
             recipe.write(buffer);
         }
 

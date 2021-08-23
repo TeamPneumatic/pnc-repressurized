@@ -18,7 +18,7 @@ public class BlockPressureChamberWall extends BlockPressureChamberWallBase {
         NONE, CENTER, XEDGE, ZEDGE, YEDGE, XMIN_YMIN_ZMIN, XMIN_YMIN_ZMAX, XMIN_YMAX_ZMIN, XMIN_YMAX_ZMAX;
 
         @Override
-        public String getString() {
+        public String getSerializedName() {
             return toString().toLowerCase(Locale.ROOT);
         }
     }
@@ -30,8 +30,8 @@ public class BlockPressureChamberWall extends BlockPressureChamberWallBase {
     private static final EnumProperty<EnumWallState> WALL_STATE = EnumProperty.create("wall_state", EnumWallState.class);
 
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        super.fillStateContainer(builder);
+    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
         builder.add(WALL_STATE);
     }
 
@@ -72,7 +72,7 @@ public class BlockPressureChamberWall extends BlockPressureChamberWallBase {
                     wallState = EnumWallState.CENTER;
                 }
             }
-            return state.with(WALL_STATE, wallState);
+            return state.setValue(WALL_STATE, wallState);
         }).orElse(state);
     }
 }

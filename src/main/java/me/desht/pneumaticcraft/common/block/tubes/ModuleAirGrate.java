@@ -66,15 +66,15 @@ public class ModuleAirGrate extends TubeModule {
     public void update() {
         super.update();
 
-        World world = pressureTube.getWorld();
-        BlockPos pos = pressureTube.getPos();
+        World world = pressureTube.getLevel();
+        BlockPos pos = pressureTube.getBlockPos();
 
         if ((world.getGameTime() & 0x1f) == 0) traceabilityCache.clear();
 
         int oldGrateRange = grateRange;
         grateRange = calculateRange();
         if (oldGrateRange != grateRange) {
-            if (!world.isRemote) {
+            if (!world.isClientSide) {
                 getTube().getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY)
                         .ifPresent(h -> NetworkHandler.sendToAllTracking(new PacketUpdatePressureBlock(getTube(), null, h.getSideLeaking(), h.getAir()), getTube()));
             } else {
@@ -84,8 +84,8 @@ public class ModuleAirGrate extends TubeModule {
             }
         }
 
-        if (!world.isRemote) coolHeatSinks();
-        Vector3d tileVec = Vector3d.copyCentered(pos).add(getDirection().getXOffset() * 0.49, getDirection().getYOffset() * 0.49, getDirection().getZOffset() * 0.49);
+        if (!world.isClientSide) coolHeatSinks();
+        Vector3d tileVec = Vector3d.atCenterOf(pos).add(getDirection().getStepX() * 0.49, getDirection().getStepY() * 0.49, getDirection().getStepZ() * 0.49);
         pushEntities(world, pos, tileVec);
     }
 
@@ -96,8 +96,8 @@ public class ModuleAirGrate extends TubeModule {
     }
 
     private AxisAlignedBB getAffectedAABB() {
-        BlockPos pos = pressureTube.getPos().offset(getDirection(), grateRange + 1);
-        return new AxisAlignedBB(pos).grow(grateRange);
+        BlockPos pos = pressureTube.getBlockPos().relative(getDirection(), grateRange + 1);
+        return new AxisAlignedBB(pos).inflate(grateRange);
     }
 
     private int calculateRange() {
@@ -109,42 +109,42 @@ public class ModuleAirGrate extends TubeModule {
 
     private void pushEntities(World world, BlockPos pos, Vector3d traceVec) {
         AxisAlignedBB bbBox = getAffectedAABB();
-        List<Entity> entities = world.getEntitiesWithinAABB(Entity.class, bbBox, entityFilter);
+        List<Entity> entities = world.getEntitiesOfClass(Entity.class, bbBox, entityFilter);
         double d0 = grateRange * 3;
         int entitiesMoved = 0;
         for (Entity entity : entities) {
             if (ignoreEntity(entity) || !entity.isAlive() || !rayTraceOK(entity, traceVec)) {
                 continue;
             }
-            if (!entity.world.isRemote) {
+            if (!entity.level.isClientSide) {
                 tryInsertion(traceVec, entity);
             }
-            double x = (entity.getPosX() - pos.getX() - 0.5D) / d0;
-            double y = (entity.getPosY() + entity.getEyeHeight() - pos.getY() - 0.5D) / d0;
-            BlockPos entityPos = entity.getPosition();
-            if (!Block.hasEnoughSolidSide(world, entityPos, Direction.UP) && !world.isAirBlock(entityPos)) {
+            double x = (entity.getX() - pos.getX() - 0.5D) / d0;
+            double y = (entity.getY() + entity.getEyeHeight() - pos.getY() - 0.5D) / d0;
+            BlockPos entityPos = entity.blockPosition();
+            if (!Block.canSupportCenter(world, entityPos, Direction.UP) && !world.isEmptyBlock(entityPos)) {
                 y -= 0.15;  // kludge: avoid entities getting stuck on edges, e.g. farmland->full block
             }
-            double z = (entity.getPosZ() - pos.getZ() - 0.5D) / d0;
+            double z = (entity.getZ() - pos.getZ() - 0.5D) / d0;
             double d4 = Math.sqrt(x * x + y * y + z * z);
             double d5 = 1.0D - d4;
 
             if (d5 > 0.0D) {
                 d5 *= d5;
                 if (vacuum) d5 *= -1;
-                if (entity.isOnGround()) entity.setMotion(entity.getMotion().add(0, 0.25, 0));
+                if (entity.isOnGround()) entity.setDeltaMovement(entity.getDeltaMovement().add(0, 0.25, 0));
                 entity.move(MoverType.SELF, new Vector3d(x * d5, y * d5, z * d5));
                 entitiesMoved++;
-                if (world.isRemote && world.rand.nextDouble() < 0.2) {
+                if (world.isClientSide && world.random.nextDouble() < 0.2) {
                     if (vacuum) {
-                        world.addParticle(AirParticleData.DENSE, entity.getPosX(), entity.getPosY(), entity.getPosZ(), -x, -y, -z);
+                        world.addParticle(AirParticleData.DENSE, entity.getX(), entity.getY(), entity.getZ(), -x, -y, -z);
                     } else {
-                        world.addParticle(AirParticleData.DENSE, pos.getX() + 0.5 + getDirection().getXOffset(), pos.getY() + 0.5 + getDirection().getYOffset(), pos.getZ() + 0.5 + getDirection().getZOffset(), x, y, z);
+                        world.addParticle(AirParticleData.DENSE, pos.getX() + 0.5 + getDirection().getStepX(), pos.getY() + 0.5 + getDirection().getStepY(), pos.getZ() + 0.5 + getDirection().getStepZ(), x, y, z);
                     }
                 }
             }
         }
-        if (!world.isRemote) {
+        if (!world.isClientSide) {
             pressureTube.addAir(-entitiesMoved * PneumaticValues.USAGE_AIR_GRATE);
         }
     }
@@ -178,34 +178,34 @@ public class ModuleAirGrate extends TubeModule {
     }
 
     private boolean isCloseEnough(Entity entity, Vector3d traceVec) {
-        return entity.getDistanceSq(traceVec) < 1D;
+        return entity.distanceToSqr(traceVec) < 1D;
     }
 
     private boolean ignoreEntity(Entity entity) {
         if (entity instanceof PlayerEntity) {
-            return ((PlayerEntity) entity).isCreative() || entity.isSneaking() || entity.isSpectator();
+            return ((PlayerEntity) entity).isCreative() || entity.isShiftKeyDown() || entity.isSpectator();
         }
         if (entity instanceof ItemEntity || entity instanceof ExperienceOrbEntity) {
             return false;
         }
         // don't touch semiblocks, at all
-        return !entity.canBePushed() || entity instanceof EntitySemiblockBase;
+        return !entity.isPushable() || entity instanceof EntitySemiblockBase;
     }
 
     private boolean rayTraceOK(Entity entity, Vector3d traceVec) {
         BlockPos pos = new BlockPos(entity.getEyePosition(0f));
         return traceabilityCache.computeIfAbsent(pos, k -> {
-            Vector3d entityVec = new Vector3d(entity.getPosX(), entity.getPosY() + entity.getEyeHeight(), entity.getPosZ());
+            Vector3d entityVec = new Vector3d(entity.getX(), entity.getY() + entity.getEyeHeight(), entity.getZ());
             RayTraceContext ctx = new RayTraceContext(entityVec, traceVec, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, entity);
-            BlockRayTraceResult trace = entity.getEntityWorld().rayTraceBlocks(ctx);
-            return trace.getPos().equals(pressureTube.getPos());
+            BlockRayTraceResult trace = entity.getCommandSenderWorld().clip(ctx);
+            return trace.getBlockPos().equals(pressureTube.getBlockPos());
         });
     }
 
     private LazyOptional<IItemHandler> getItemInsertionCap() {
         if (itemInsertionCap == null) {
             for (Direction dir : DirectionUtil.VALUES) {
-                TileEntity te = pressureTube.getWorld().getTileEntity(pressureTube.getPos().offset(dir));
+                TileEntity te = pressureTube.getLevel().getBlockEntity(pressureTube.getBlockPos().relative(dir));
                 if (te != null) {
                     LazyOptional<IItemHandler> cap = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, dir.getOpposite());
                     // bit of a kludge: exclude TE's which also offer a fluid capability on this side
@@ -224,7 +224,7 @@ public class ModuleAirGrate extends TubeModule {
     private LazyOptional<IFluidHandler> getFluidInsertionCap() {
         if (fluidInsertionCap == null) {
             for (Direction dir : DirectionUtil.VALUES) {
-                TileEntity te = pressureTube.getWorld().getTileEntity(pressureTube.getPos().offset(dir));
+                TileEntity te = pressureTube.getLevel().getBlockEntity(pressureTube.getBlockPos().relative(dir));
                 if (te != null) {
                     LazyOptional<IFluidHandler> cap = te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dir.getOpposite());
                     if (cap.isPresent()) {
@@ -241,9 +241,9 @@ public class ModuleAirGrate extends TubeModule {
 
     private void coolHeatSinks() {
         if (grateRange >= 2) {
-            int curTeIndex = (int) (pressureTube.getWorld().getGameTime() % 27);
-            BlockPos curPos = pressureTube.getPos().offset(dir, 2).add(-1 + curTeIndex % 3, -1 + curTeIndex / 3 % 3, -1 + curTeIndex / 9 % 3);
-            TileEntity te = pressureTube.getWorld().getTileEntity(curPos);
+            int curTeIndex = (int) (pressureTube.getLevel().getGameTime() % 27);
+            BlockPos curPos = pressureTube.getBlockPos().relative(dir, 2).offset(-1 + curTeIndex % 3, -1 + curTeIndex / 3 % 3, -1 + curTeIndex / 9 % 3);
+            TileEntity te = pressureTube.getLevel().getBlockEntity(curPos);
             if (te instanceof TileEntityHeatSink) heatSinks.add((TileEntityHeatSink) te);
 
             Iterator<TileEntityHeatSink> iterator = heatSinks.iterator();
@@ -287,12 +287,12 @@ public class ModuleAirGrate extends TubeModule {
     public void addInfo(List<ITextComponent> curInfo) {
         super.addInfo(curInfo);
         String k = grateRange == 0 ? "idle" : vacuum ? "attracting" : "repelling";
-        curInfo.add(xlate("pneumaticcraft.waila.airGrateModule." + k).mergeStyle(TextFormatting.WHITE));
+        curInfo.add(xlate("pneumaticcraft.waila.airGrateModule." + k).withStyle(TextFormatting.WHITE));
         if (grateRange != 0) {
-            curInfo.add(xlate("pneumaticcraft.message.misc.range", grateRange).mergeStyle(TextFormatting.WHITE));
+            curInfo.add(xlate("pneumaticcraft.message.misc.range", grateRange).withStyle(TextFormatting.WHITE));
         }
         if (entityFilter != null) {
-            curInfo.add(xlate("pneumaticcraft.gui.entityFilter.show", entityFilter.toString()).mergeStyle(TextFormatting.WHITE));
+            curInfo.add(xlate("pneumaticcraft.gui.entityFilter.show", entityFilter.toString()).withStyle(TextFormatting.WHITE));
         }
     }
 
@@ -303,7 +303,7 @@ public class ModuleAirGrate extends TubeModule {
 
     @Override
     public AxisAlignedBB getRenderBoundingBox() {
-        return new AxisAlignedBB(pressureTube.getPos().offset(getDirection(), grateRange + 1)).grow(grateRange * 2);
+        return new AxisAlignedBB(pressureTube.getBlockPos().relative(getDirection(), grateRange + 1)).inflate(grateRange * 2);
     }
 
     public String getEntityFilterString() {
@@ -329,7 +329,7 @@ public class ModuleAirGrate extends TubeModule {
 
     @Override
     public void onRemoved() {
-        if (pressureTube.getWorld().isRemote) {
+        if (pressureTube.getLevel().isClientSide) {
             AreaRenderManager.getInstance().removeHandlers(pressureTube);
         }
     }

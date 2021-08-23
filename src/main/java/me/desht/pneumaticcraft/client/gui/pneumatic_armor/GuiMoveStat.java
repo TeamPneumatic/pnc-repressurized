@@ -150,8 +150,8 @@ public class GuiMoveStat extends GuiPneumaticScreenBase {
     }
 
     @Override
-    public void closeScreen() {
-        minecraft.displayGuiScreen(GuiArmorMainScreen.getInstance());
+    public void onClose() {
+        minecraft.setScreen(GuiArmorMainScreen.getInstance());
     }
 
     @Override
@@ -184,7 +184,7 @@ public class GuiMoveStat extends GuiPneumaticScreenBase {
         otherStats.forEach(IGuiAnimatedStat::tickWidget);
 
         if (helpText.isEmpty()) {
-            helpText.add(xlate(ArmorUpgradeRegistry.getStringKey(renderHandler.getCommonHandler().getID())).mergeStyle(TextFormatting.GREEN, TextFormatting.UNDERLINE));
+            helpText.add(xlate(ArmorUpgradeRegistry.getStringKey(renderHandler.getCommonHandler().getID())).withStyle(TextFormatting.GREEN, TextFormatting.UNDERLINE));
             helpText.add(StringTextComponent.EMPTY);
             helpText.add(xlate("pneumaticcraft.armor.moveStat.move"));
             helpText.add(new StringTextComponent("<REPLACEME>"));
@@ -197,10 +197,10 @@ public class GuiMoveStat extends GuiPneumaticScreenBase {
     }
 
     private void save() {
-        MainWindow sr = minecraft.getMainWindow();
+        MainWindow sr = minecraft.getWindow();
         ArmorHUDLayout.INSTANCE.updateLayout(layoutItem,
-                ((float) movedStat.getBaseX() / (float) sr.getScaledWidth()),
-                ((float) movedStat.getBaseY() / (float) sr.getScaledHeight()),
+                ((float) movedStat.getBaseX() / (float) sr.getGuiScaledWidth()),
+                ((float) movedStat.getBaseY() / (float) sr.getGuiScaledHeight()),
                 movedStat.isLeftSided());
     }
 }

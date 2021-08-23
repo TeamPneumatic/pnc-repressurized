@@ -17,9 +17,9 @@ import java.util.Arrays;
 public class ProgrammedDroneUtils {
     public static CreatureEntity deliverItemsAmazonStyle(GlobalPos gPos, ItemStack... deliveredStacks) {
         World world = GlobalPosHelper.getWorldForGlobalPos(gPos);
-        BlockPos pos = gPos.getPos();
+        BlockPos pos = gPos.pos();
 
-        if (world == null || world.isRemote) return null;
+        if (world == null || world.isClientSide) return null;
         Validate.isTrue(deliveredStacks.length > 0 && deliveredStacks.length <= 36,
                 "You can only deliver between 0 & 36 stacks at once!");
         Arrays.stream(deliveredStacks).forEach(stack -> Validate.isTrue(!stack.isEmpty(),
@@ -39,27 +39,27 @@ public class ProgrammedDroneUtils {
                 area.y1 = pos.getY() + i;
             }
         } else {
-            area.y1 = world.getHeight(Heightmap.Type.WORLD_SURFACE, pos).getY() + 10;
+            area.y1 = world.getHeightmapPos(Heightmap.Type.WORLD_SURFACE, pos).getY() + 10;
             if (!drone.isBlockValidPathfindBlock(new BlockPos(area.x1, area.y1, area.z1)))
                 area.y1 = 260; // Worst case scenario; there are definitely no blocks here.
         }
         builder.add(new ProgWidgetDropItem(), area);
-        builder.add(new ProgWidgetGoToLocation(), ProgWidgetArea.fromPosition(drone.getPosition()));
+        builder.add(new ProgWidgetGoToLocation(), ProgWidgetArea.fromPosition(drone.blockPosition()));
         builder.add(new ProgWidgetSuicide());
         drone.progWidgets.addAll(builder.build());
 
         for (int i = 0; i < deliveredStacks.length; i++) {
             drone.getInv().setStackInSlot(i, deliveredStacks[i].copy());
         }
-        world.addEntity(drone);
+        world.addFreshEntity(drone);
         return drone;
     }
 
     public static CreatureEntity deliverFluidAmazonStyle(GlobalPos gPos, FluidStack deliveredFluid) {
         World world = GlobalPosHelper.getWorldForGlobalPos(gPos);
-        BlockPos pos = gPos.getPos();
+        BlockPos pos = gPos.pos();
 
-        if (world == null || world.isRemote) return null;
+        if (world == null || world.isClientSide) return null;
         Validate.notNull(deliveredFluid, "Can't deliver a null FluidStack");
         Validate.isTrue(deliveredFluid.getAmount() > 0, "Can't deliver a FluidStack with an amount of <= 0");
 
@@ -71,20 +71,20 @@ public class ProgrammedDroneUtils {
         ProgWidgetLiquidExport liquidExport = new ProgWidgetLiquidExport();
         liquidExport.setSides(ISidedWidget.ALL_SIDES);
         builder.add(liquidExport, ProgWidgetArea.fromPosition(pos));
-        builder.add(new ProgWidgetGoToLocation(), ProgWidgetArea.fromPosition(drone.getPosition()));
+        builder.add(new ProgWidgetGoToLocation(), ProgWidgetArea.fromPosition(drone.blockPosition()));
         builder.add(new ProgWidgetSuicide());
         drone.progWidgets.addAll(builder.build());
 
         drone.getFluidTank().fill(deliveredFluid, IFluidHandler.FluidAction.EXECUTE);
-        world.addEntity(drone);
+        world.addFreshEntity(drone);
         return drone;
     }
 
     public static CreatureEntity retrieveItemsAmazonStyle(GlobalPos gPos, ItemStack... queriedStacks) {
         World world = GlobalPosHelper.getWorldForGlobalPos(gPos);
-        BlockPos pos = gPos.getPos();
+        BlockPos pos = gPos.pos();
 
-        if (world == null || world.isRemote) return null;
+        if (world == null || world.isClientSide) return null;
         Validate.isTrue(queriedStacks.length > 0 && queriedStacks.length <= 36, "Must retrieve between 1 & 36 itemstacks!");
         Arrays.stream(queriedStacks).forEach(stack -> Validate.isTrue(!stack.isEmpty(), "Cannot retrieve an empty stack!"));
 
@@ -101,19 +101,19 @@ public class ProgrammedDroneUtils {
             filter.useNBT = stack.hasTag();
             builder.add(widgetImport, ProgWidgetArea.fromPosition(pos), filter);
         }
-        builder.add(new ProgWidgetGoToLocation(), ProgWidgetArea.fromPosition(drone.getPosition()));
+        builder.add(new ProgWidgetGoToLocation(), ProgWidgetArea.fromPosition(drone.blockPosition()));
         builder.add(new ProgWidgetSuicide());
         drone.progWidgets.addAll(builder.build());
 
-        world.addEntity(drone);
+        world.addFreshEntity(drone);
         return drone;
     }
 
     public static CreatureEntity retrieveFluidAmazonStyle(GlobalPos gPos, FluidStack queriedFluid) {
         World world = GlobalPosHelper.getWorldForGlobalPos(gPos);
-        BlockPos pos = gPos.getPos();
+        BlockPos pos = gPos.pos();
 
-        if (world == null || world.isRemote) return null;
+        if (world == null || world.isClientSide) return null;
         Validate.notNull(queriedFluid, "Can't retrieve a null FluidStack");
         Validate.isTrue(queriedFluid.getAmount() > 0, "Can't retrieve a FluidStack with an amount of <= 0");
 
@@ -126,11 +126,11 @@ public class ProgrammedDroneUtils {
         liquidImport.setUseCount(true);
         liquidImport.setCount(queriedFluid.getAmount());
         builder.add(liquidImport, ProgWidgetArea.fromPosition(pos), ProgWidgetLiquidFilter.withFilter(queriedFluid.getFluid()));
-        builder.add(new ProgWidgetGoToLocation(), ProgWidgetArea.fromPosition(drone.getPosition()));
+        builder.add(new ProgWidgetGoToLocation(), ProgWidgetArea.fromPosition(drone.blockPosition()));
         builder.add(new ProgWidgetSuicide());
         drone.progWidgets.addAll(builder.build());
 
-        world.addEntity(drone);
+        world.addFreshEntity(drone);
         return drone;
     }
 }

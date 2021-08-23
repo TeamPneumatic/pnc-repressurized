@@ -36,8 +36,8 @@ public class BlockComparatorSensor implements IBlockAndCoordinatePollSensor {
         int maxStrength = 0;
         for (BlockPos p : positions) {
             BlockState state = world.getBlockState(p);
-            if (state.hasComparatorInputOverride()) {
-                maxStrength = Math.max(maxStrength, state.getComparatorInputOverride(world, p));
+            if (state.hasAnalogOutputSignal()) {
+                maxStrength = Math.max(maxStrength, state.getAnalogOutputSignal(world, p));
             }
         }
         return maxStrength;

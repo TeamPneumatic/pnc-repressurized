@@ -12,22 +12,22 @@ import javax.annotation.Nullable;
 public class NodeProcessorDrone extends FlyingNodeProcessor {
     @Nullable
     @Override
-    protected PathPoint openPoint(int x, int y, int z) {
-        return ((EntityDrone) entity).isBlockValidPathfindBlock(new BlockPos(x, y, z)) ? super.openPoint(x, y, z) : null;
+    protected PathPoint getNode(int x, int y, int z) {
+        return ((EntityDrone) mob).isBlockValidPathfindBlock(new BlockPos(x, y, z)) ? super.getNode(x, y, z) : null;
     }
 
     /**
      * Override this, because the super method adds diagonals, this is fancy but doesn't work well with drones (drones stuck behind a wall).
      */
     @Override
-    public int func_222859_a(PathPoint[] pathOptions, PathPoint currentPoint) {
+    public int getNeighbors(PathPoint[] pathOptions, PathPoint currentPoint) {
         // findPathOptions
 
         int i = 0;
 
         for(Direction dir : DirectionUtil.VALUES){
-            PathPoint point = openPoint(currentPoint.x + dir.getXOffset(), currentPoint.y + dir.getYOffset(), currentPoint.z + dir.getZOffset());
-            if(point != null && !point.visited) {
+            PathPoint point = getNode(currentPoint.x + dir.getStepX(), currentPoint.y + dir.getStepY(), currentPoint.z + dir.getStepZ());
+            if(point != null && !point.closed) {
                 pathOptions[i++] = point;
             }
         }

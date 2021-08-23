@@ -24,7 +24,7 @@ public class DroneEntityAIPickupItems extends Goal {
 
     public DroneEntityAIPickupItems(IDroneBase drone, ProgWidgetAreaItemBase progWidgetPickupItem) {
         this.drone = drone;
-        setMutexFlags(EnumSet.allOf(Flag.class)); // so it won't run along with other AI tasks.
+        setFlags(EnumSet.allOf(Flag.class)); // so it won't run along with other AI tasks.
         itemPickupWidget = progWidgetPickupItem;
         theNearestAttackableTargetSorter = new DistanceEntitySorter(drone);
         if (progWidgetPickupItem instanceof IItemPickupWidget) {
@@ -38,7 +38,7 @@ public class DroneEntityAIPickupItems extends Goal {
      * Returns whether the EntityAIBase should begin execution.
      */
     @Override
-    public boolean shouldExecute() {
+    public boolean canUse() {
         List<Entity> pickableItems = itemPickupWidget.getEntitiesInArea(drone.world(), entity -> entity instanceof ItemEntity && entity.isAlive());
 
         if (pickableItems.isEmpty()) {
@@ -71,11 +71,11 @@ public class DroneEntityAIPickupItems extends Goal {
     };
 
     private boolean tryMoveToItem(Entity ent) {
-        if (!drone.isBlockValidPathfindBlock(ent.getPosition())) {
+        if (!drone.isBlockValidPathfindBlock(ent.blockPosition())) {
             // the item's in some block space that the drone can't pathfind to (e.g. bamboo, stairs...)
             // maybe we can find a clear adjacent block?
             for (Direction d : DIRECTIONS) {
-                BlockPos pos2 = ent.getPosition().offset(d);
+                BlockPos pos2 = ent.blockPosition().relative(d);
                 if (drone.isBlockValidPathfindBlock(pos2)
                         && drone.getPathNavigator().moveToXYZ(pos2.getX() + 0.5, pos2.getY() + 0.5, pos2.getZ() + 0.5)) {
                     curPickingUpEntity = (ItemEntity) ent;
@@ -97,9 +97,9 @@ public class DroneEntityAIPickupItems extends Goal {
      * Returns whether an in-progress EntityAIBase should continue executing
      */
     @Override
-    public boolean shouldContinueExecuting() {
+    public boolean canContinueToUse() {
         if (!curPickingUpEntity.isAlive()) return false;
-        if (curPickingUpEntity.getPositionVec().squareDistanceTo(drone.getDronePos()) < 4) {
+        if (curPickingUpEntity.position().distanceToSqr(drone.getDronePos()) < 4) {
             ItemStack stack = curPickingUpEntity.getItem();
             if (itemPickupWidget.isItemValidForFilters(stack)) {
                 tryPickupItem(drone, curPickingUpEntity);

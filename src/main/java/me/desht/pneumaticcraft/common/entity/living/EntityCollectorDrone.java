@@ -39,7 +39,7 @@ public class EntityCollectorDrone extends EntityBasicDrone {
         List<IProgWidget> params = new ArrayList<>();
         int rangeUpgrades = UpgradableItemUtils.getUpgrades(droneStack, EnumUpgrade.RANGE);
         params.add(ProgWidgetArea.fromPosition(pos, 16 + rangeUpgrades * 2));
-        LazyOptional<IItemHandler> itemCap = IOHelper.getInventoryForTE(world.getTileEntity(clickPos), facing);
+        LazyOptional<IItemHandler> itemCap = IOHelper.getInventoryForTE(level.getBlockEntity(clickPos), facing);
         if (itemCap.isPresent()) {
             // placed on a chest; filter on the chest's contents, if any
             Set<Item> filtered = getFilteredItems(itemCap);
@@ -54,7 +54,7 @@ public class EntityCollectorDrone extends EntityBasicDrone {
 
         ProgWidgetInventoryExport export = new ProgWidgetInventoryExport();
         boolean[] sides = new boolean[6];
-        sides[facing.getIndex()] = true;
+        sides[facing.get3DDataValue()] = true;
         export.setSides(sides);
         builder.add(export, ProgWidgetArea.fromPosition(invPos));
 
@@ -69,9 +69,9 @@ public class EntityCollectorDrone extends EntityBasicDrone {
 
     private BlockPos findAdjacentInventory(BlockPos pos) {
         return Arrays.stream(Direction.values())
-                .filter(d -> IOHelper.getInventoryForTE(world.getTileEntity(pos.offset(d)), d.getOpposite()).isPresent())
+                .filter(d -> IOHelper.getInventoryForTE(level.getBlockEntity(pos.relative(d)), d.getOpposite()).isPresent())
                 .findFirst()
-                .map(pos::offset)
+                .map(pos::relative)
                 .orElse(pos);
     }
 

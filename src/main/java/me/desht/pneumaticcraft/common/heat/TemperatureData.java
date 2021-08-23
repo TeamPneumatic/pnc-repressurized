@@ -41,7 +41,7 @@ public class TemperatureData implements INBTSerializable<CompoundNBT> {
             isMultisided = true;
             for (Direction face : DirectionUtil.VALUES) {
                 provider.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY, face)
-                        .ifPresent(h -> temp[face.getIndex()] = h.getTemperature());
+                        .ifPresent(h -> temp[face.get3DDataValue()] = h.getTemperature());
             }
         } else if (heatExchangers.size() == 1) {
             isMultisided = false;
@@ -57,11 +57,11 @@ public class TemperatureData implements INBTSerializable<CompoundNBT> {
     }
 
     public double getTemperature(Direction face) {
-        return face == null ? temp[6] : temp[face.getIndex()];
+        return face == null ? temp[6] : temp[face.get3DDataValue()];
     }
 
     public boolean hasData(Direction face) {
-        return face == null ? temp[6] != null : temp[face.getIndex()] != null;
+        return face == null ? temp[6] != null : temp[face.get3DDataValue()] != null;
     }
 
     public CompoundNBT toNBT() {
@@ -69,9 +69,9 @@ public class TemperatureData implements INBTSerializable<CompoundNBT> {
         if (isMultisided()) {
             ListNBT tagList = new ListNBT();
             for (Direction face : DirectionUtil.VALUES) {
-                if (temp[face.getIndex()] != null) {
+                if (temp[face.get3DDataValue()] != null) {
                     CompoundNBT heatTag = new CompoundNBT();
-                    heatTag.putByte("side", (byte) face.getIndex());
+                    heatTag.putByte("side", (byte) face.get3DDataValue());
                     heatTag.putInt("temp", (int) getTemperature(face));
                     tagList.add(heatTag);
                 }
@@ -90,7 +90,7 @@ public class TemperatureData implements INBTSerializable<CompoundNBT> {
             ListNBT tagList = new ListNBT();
             for (Direction face : DirectionUtil.VALUES) {
                 CompoundNBT heatTag = new CompoundNBT();
-                heatTag.putByte("side", (byte) face.getIndex());
+                heatTag.putByte("side", (byte) face.get3DDataValue());
                 heatTag.putInt("temp", (int) getTemperature(face));
                 tagList.add(heatTag);
             }

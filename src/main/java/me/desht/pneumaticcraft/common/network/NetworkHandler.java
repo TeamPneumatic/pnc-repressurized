@@ -224,8 +224,8 @@ public class NetworkHandler {
 	}
 
 	public static void sendToAllTracking(Object message, TileEntity te) {
-    	if (te.getWorld() != null) {
-    		sendToAllTracking(message, te.getWorld(), te.getPos());
+    	if (te.getLevel() != null) {
+    		sendToAllTracking(message, te.getLevel(), te.getBlockPos());
 		}
     }
 
@@ -249,7 +249,7 @@ public class NetworkHandler {
 				sendToAll(packet);
 			} else {
 				for (ServerPlayerEntity player : server.getPlayerList().getPlayers()) {
-					if (!player.server.isServerOwner(player.getGameProfile())) {
+					if (!player.server.isSingleplayerOwner(player.getGameProfile())) {
 						sendToPlayer(packet, player);
 					}
 				}
@@ -263,7 +263,7 @@ public class NetworkHandler {
 	 * @param packet the packet to send
 	 */
 	public static void sendNonLocal(ServerPlayerEntity player, Object packet) {
-		if (!player.server.isServerOwner(player.getGameProfile())) {
+		if (!player.server.isSingleplayerOwner(player.getGameProfile())) {
 			sendToPlayer(packet, player);
 		}
 	}

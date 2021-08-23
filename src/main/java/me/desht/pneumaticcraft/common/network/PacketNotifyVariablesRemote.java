@@ -24,20 +24,20 @@ public class PacketNotifyVariablesRemote {
     public PacketNotifyVariablesRemote(PacketBuffer buffer) {
         variables = new String[buffer.readVarInt()];
         for (int i = 0; i < variables.length; i++) {
-            variables[i] = buffer.readString();
+            variables[i] = buffer.readUtf();
         }
     }
 
     public void toBytes(PacketBuffer buf) {
         buf.writeVarInt(variables.length);
-        Arrays.stream(variables).forEach(buf::writeString);
+        Arrays.stream(variables).forEach(buf::writeUtf);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             PlayerEntity player = ClientUtils.getClientPlayer();
-            if (player.openContainer instanceof ContainerRemote) {
-                ((ContainerRemote) player.openContainer).variables = variables;
+            if (player.containerMenu instanceof ContainerRemote) {
+                ((ContainerRemote) player.containerMenu).variables = variables;
             }
         });
         ctx.get().setPacketHandled(true);

@@ -25,7 +25,7 @@ public class FluidEthanol {
         }
 
         @Override
-        public int getTickRate(IWorldReader world) {
+        public int getTickDelay(IWorldReader world) {
             return 2;
         }
     }

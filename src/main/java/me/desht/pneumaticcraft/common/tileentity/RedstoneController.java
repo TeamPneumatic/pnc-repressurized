@@ -66,7 +66,7 @@ public class RedstoneController<T extends TileEntity & IRedstoneControl<T>> {
             T te = teRef.get();
             if (te != null) {
                 te.onRedstoneModeChanged(this.currentMode);
-                te.markDirty();
+                te.setChanged();
             }
         }
     }
@@ -123,7 +123,7 @@ public class RedstoneController<T extends TileEntity & IRedstoneControl<T>> {
     public void updateRedstonePower() {
         T te = teRef.get();
         if (te != null) {
-            currentRedstonePower = te.getWorld().getRedstonePowerFromNeighbors(te.getPos());
+            currentRedstonePower = te.getLevel().getBestNeighborSignal(te.getBlockPos());
         }
     }
 
@@ -139,7 +139,7 @@ public class RedstoneController<T extends TileEntity & IRedstoneControl<T>> {
     public ITextComponent getDescription() {
         T te = teRef.get();
         if (te != null) {
-            return te.getRedstoneTabTitle().appendString(": ").append(xlate(modes.get(currentMode).getTranslationKey()).mergeStyle(TextFormatting.YELLOW));
+            return te.getRedstoneTabTitle().append(": ").append(xlate(modes.get(currentMode).getTranslationKey()).withStyle(TextFormatting.YELLOW));
         } else {
             return StringTextComponent.EMPTY;
         }

@@ -52,10 +52,10 @@ public class GuiProgrammableController extends GuiPneumaticContainerBase<Contain
     public void init() {
         super.init();
 
-        te.getCapability(CapabilityEnergy.ENERGY).ifPresent(handler -> addButton(new WidgetEnergy(guiLeft + 12, guiTop + 20, handler)));
+        te.getCapability(CapabilityEnergy.ENERGY).ifPresent(handler -> addButton(new WidgetEnergy(leftPos + 12, topPos + 20, handler)));
 
         List<ITextComponent> exc = TileEntityProgrammableController.BLACKLISTED_WIDGETS.stream()
-                .map(s -> GuiConstants.BULLET + " " + I18n.format("programmingPuzzle." + s.getNamespace() + "." + s.getPath() + ".name"))
+                .map(s -> GuiConstants.BULLET + " " + I18n.get("programmingPuzzle." + s.getNamespace() + "." + s.getPath() + ".name"))
                 .sorted()
                 .map(StringTextComponent::new)
                 .collect(Collectors.toList());
@@ -91,7 +91,7 @@ public class GuiProgrammableController extends GuiPneumaticContainerBase<Contain
                 PneumaticValues.USAGE_PROGRAMMABLE_CONTROLLER_CHUNKLOAD_WORK;
         usage += PneumaticValues.USAGE_PROGRAMMABLE_CONTROLLER;
         chunkTab.setText(Collections.singletonList(xlate("pneumaticcraft.gui.tab.info.pneumatic_armor.usage")
-                .appendString(" " + usage + "mL/t")));
+                .append(" " + usage + "mL/t")));
         chunkTab.setTexture(chunkloadSelf.checked || chunkloadWork.checked ? EYE_ON : EYE_OFF);
     }
 

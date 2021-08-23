@@ -15,7 +15,7 @@ public class RenderCoordWireframe {
     public int ticksExisted;
 
     public RenderCoordWireframe(World world, BlockPos pos) {
-        this.worldKey = world.getDimensionKey();
+        this.worldKey = world.dimension();
         this.pos = pos;
     }
 
@@ -27,41 +27,41 @@ public class RenderCoordWireframe {
         float maxY = 1;
         float maxZ = 1;
         float progress = (ticksExisted % 20 + partialTicks) / 20;
-        matrixStack.push();
+        matrixStack.pushPose();
         matrixStack.translate(pos.getX(), pos.getY(), pos.getZ());
         float g = progress < 0.5F ? progress + 0.5F : 1.5F - progress;
-        Matrix4f posMat = matrixStack.getLast().getMatrix();
+        Matrix4f posMat = matrixStack.last().pose();
         IVertexBuilder builder = buffer.getBuffer(ModRenderTypes.BLOCK_TRACKER);
-        builder.pos(posMat, minX, minY, minZ).color(0, g, 1, 1).endVertex();
-        builder.pos(posMat, minX, maxY, minZ).color(0, g, 1, 1).endVertex();
-        builder.pos(posMat, minX, minY, maxZ).color(0, g, 1, 1).endVertex();
-        builder.pos(posMat, minX, maxY, maxZ).color(0, g, 1, 1).endVertex();
+        builder.vertex(posMat, minX, minY, minZ).color(0, g, 1, 1).endVertex();
+        builder.vertex(posMat, minX, maxY, minZ).color(0, g, 1, 1).endVertex();
+        builder.vertex(posMat, minX, minY, maxZ).color(0, g, 1, 1).endVertex();
+        builder.vertex(posMat, minX, maxY, maxZ).color(0, g, 1, 1).endVertex();
 
-        builder.pos(posMat, maxX, minY, minZ).color(0, g, 1, 1).endVertex();
-        builder.pos(posMat, maxX, maxY, minZ).color(0, g, 1, 1).endVertex();
-        builder.pos(posMat, maxX, minY, maxZ).color(0, g, 1, 1).endVertex();
-        builder.pos(posMat, maxX, maxY, maxZ).color(0, g, 1, 1).endVertex();
+        builder.vertex(posMat, maxX, minY, minZ).color(0, g, 1, 1).endVertex();
+        builder.vertex(posMat, maxX, maxY, minZ).color(0, g, 1, 1).endVertex();
+        builder.vertex(posMat, maxX, minY, maxZ).color(0, g, 1, 1).endVertex();
+        builder.vertex(posMat, maxX, maxY, maxZ).color(0, g, 1, 1).endVertex();
 
-        builder.pos(posMat, minX, minY, minZ).color(0, g, 1, 1).endVertex();
-        builder.pos(posMat, maxX, minY, minZ).color(0, g, 1, 1).endVertex();
-        builder.pos(posMat, minX, minY, maxZ).color(0, g, 1, 1).endVertex();
-        builder.pos(posMat, maxX, minY, maxZ).color(0, g, 1, 1).endVertex();
+        builder.vertex(posMat, minX, minY, minZ).color(0, g, 1, 1).endVertex();
+        builder.vertex(posMat, maxX, minY, minZ).color(0, g, 1, 1).endVertex();
+        builder.vertex(posMat, minX, minY, maxZ).color(0, g, 1, 1).endVertex();
+        builder.vertex(posMat, maxX, minY, maxZ).color(0, g, 1, 1).endVertex();
 
-        builder.pos(posMat, minX, maxY, minZ).color(0, g, 1, 1).endVertex();
-        builder.pos(posMat, maxX, maxY, minZ).color(0, g, 1, 1).endVertex();
-        builder.pos(posMat, minX, maxY, maxZ).color(0, g, 1, 1).endVertex();
-        builder.pos(posMat, maxX, maxY, maxZ).color(0, g, 1, 1).endVertex();
+        builder.vertex(posMat, minX, maxY, minZ).color(0, g, 1, 1).endVertex();
+        builder.vertex(posMat, maxX, maxY, minZ).color(0, g, 1, 1).endVertex();
+        builder.vertex(posMat, minX, maxY, maxZ).color(0, g, 1, 1).endVertex();
+        builder.vertex(posMat, maxX, maxY, maxZ).color(0, g, 1, 1).endVertex();
 
-        builder.pos(posMat, minX, minY, minZ).color(0, g, 1, 1).endVertex();
-        builder.pos(posMat, minX, minY, maxZ).color(0, g, 1, 1).endVertex();
-        builder.pos(posMat, maxX, minY, minZ).color(0, g, 1, 1).endVertex();
-        builder.pos(posMat, maxX, minY, maxZ).color(0, g, 1, 1).endVertex();
+        builder.vertex(posMat, minX, minY, minZ).color(0, g, 1, 1).endVertex();
+        builder.vertex(posMat, minX, minY, maxZ).color(0, g, 1, 1).endVertex();
+        builder.vertex(posMat, maxX, minY, minZ).color(0, g, 1, 1).endVertex();
+        builder.vertex(posMat, maxX, minY, maxZ).color(0, g, 1, 1).endVertex();
 
-        builder.pos(posMat, minX, maxY, minZ).color(0, g, 1, 1).endVertex();
-        builder.pos(posMat, minX, maxY, maxZ).color(0, g, 1, 1).endVertex();
-        builder.pos(posMat, maxX, maxY, minZ).color(0, g, 1, 1).endVertex();
-        builder.pos(posMat, maxX, maxY, maxZ).color(0, g, 1, 1).endVertex();
+        builder.vertex(posMat, minX, maxY, minZ).color(0, g, 1, 1).endVertex();
+        builder.vertex(posMat, minX, maxY, maxZ).color(0, g, 1, 1).endVertex();
+        builder.vertex(posMat, maxX, maxY, minZ).color(0, g, 1, 1).endVertex();
+        builder.vertex(posMat, maxX, maxY, maxZ).color(0, g, 1, 1).endVertex();
 
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 }

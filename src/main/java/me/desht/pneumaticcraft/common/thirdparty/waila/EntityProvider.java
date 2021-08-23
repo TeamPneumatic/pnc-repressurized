@@ -41,7 +41,7 @@ public class EntityProvider {
     public static class Component implements IEntityComponentProvider {
         @Override
         public void appendHead(List<ITextComponent> tooltip, IEntityAccessor accessor, IPluginConfig config) {
-            tooltip.add(accessor.getEntity().getDisplayName().deepCopy().mergeStyle(TextFormatting.WHITE));
+            tooltip.add(accessor.getEntity().getDisplayName().copy().withStyle(TextFormatting.WHITE));
         }
 
         @Override
@@ -55,17 +55,17 @@ public class EntityProvider {
             }
             if (accessor.getEntity() instanceof ISemiBlock) {
                 ISemiBlock semiBlock = (ISemiBlock) accessor.getEntity();
-                semiBlock.addTooltip(tooltip, accessor.getPlayer(), accessor.getServerData(), accessor.getPlayer().isSneaking());
+                semiBlock.addTooltip(tooltip, accessor.getPlayer(), accessor.getServerData(), accessor.getPlayer().isShiftKeyDown());
                 BlockPos pos = semiBlock.getBlockPos();
                 BlockState state = accessor.getWorld().getBlockState(pos);
-                tooltip.add(state.getBlock().getTranslatedName().mergeStyle(TextFormatting.YELLOW));
+                tooltip.add(state.getBlock().getName().withStyle(TextFormatting.YELLOW));
             }
         }
 
         @Override
         public void appendTail(List<ITextComponent> tooltip, IEntityAccessor accessor, IPluginConfig config) {
             String modName = ModNameCache.getModName(Names.MOD_ID);
-            tooltip.add(new StringTextComponent(modName).mergeStyle(TextFormatting.BLUE, TextFormatting.ITALIC));
+            tooltip.add(new StringTextComponent(modName).withStyle(TextFormatting.BLUE, TextFormatting.ITALIC));
         }
     }
 }

@@ -61,13 +61,13 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
         int rangeUpgrades = armorHandler.getUpgradeCount(EquipmentSlotType.HEAD, EnumUpgrade.RANGE);
         PlayerEntity player = armorHandler.getPlayer();
 
-        if ((Minecraft.getInstance().world.getGameTime() & 0xf) == 0 && WidgetKeybindCheckBox.isHandlerEnabled(ArmorUpgradeRegistry.getInstance().searchHandler)) {
+        if ((Minecraft.getInstance().level.getGameTime() & 0xf) == 0 && WidgetKeybindCheckBox.isHandlerEnabled(ArmorUpgradeRegistry.getInstance().searchHandler)) {
             ArmorUpgradeClientRegistry.getInstance()
                     .getClientHandler(ArmorUpgradeRegistry.getInstance().searchHandler, SearchClientHandler.class)
                     .trackItemEntities(player, rangeUpgrades);
         }
 
-        ItemStack helmetStack = player.getItemStackFromSlot(EquipmentSlotType.HEAD);
+        ItemStack helmetStack = player.getItemBySlot(EquipmentSlotType.HEAD);
         String filterStr = helmetStack.isEmpty() ? "" : ItemPneumaticArmor.getEntityFilter(helmetStack);
         if (!entityFilter.toString().equals(filterStr)) {
             EntityFilter newFilter = EntityFilter.fromString(filterStr);
@@ -78,20 +78,20 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
 
         double entityTrackRange = ENTITY_TRACKING_RANGE + rangeUpgrades * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE;
         AxisAlignedBB bbBox = getAABBFromRange(player, rangeUpgrades);
-        List<Entity> entities = armorHandler.getPlayer().world.getEntitiesWithinAABB(Entity.class, bbBox,
+        List<Entity> entities = armorHandler.getPlayer().level.getEntitiesOfClass(Entity.class, bbBox,
                 new EntityTrackerSelector(player, entityFilter, entityTrackRange));
         for (Entity entity : entities) {
-            RenderEntityTarget target = targets.get(entity.getEntityId());
+            RenderEntityTarget target = targets.get(entity.getId());
             if (target != null) {
                 target.ticksExisted = Math.abs(target.ticksExisted); // cancel lost targets
             } else {
-                targets.put(entity.getEntityId(), new RenderEntityTarget(entity));
+                targets.put(entity.getId(), new RenderEntityTarget(entity));
             }
         }
 
         List<Integer> toRemove = new ArrayList<>();
         targets.forEach((entityId, target) -> {
-            if (!target.entity.isAlive() || player.getDistance(target.entity) > entityTrackRange + 5 || !entityFilter.test(target.entity)) {
+            if (!target.entity.isAlive() || player.distanceTo(target.entity) > entityTrackRange + 5 || !entityFilter.test(target.entity)) {
                 if (target.ticksExisted > 0) {
                     target.ticksExisted = -60;
                 } else if (target.ticksExisted == -1) {
@@ -109,16 +109,16 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
             target.update();
             if (target.isLookingAtTarget) {
                 if (target.isInitialized()) {
-                    text.add(target.entity.getDisplayName().deepCopy().mergeStyle(TextFormatting.GRAY));
+                    text.add(target.entity.getDisplayName().copy().withStyle(TextFormatting.GRAY));
                     text.addAll(target.getEntityText());
                 } else {
-                    text.add(xlate("pneumaticcraft.entityTracker.info.acquiring").mergeStyle(TextFormatting.GRAY));
+                    text.add(xlate("pneumaticcraft.entityTracker.info.acquiring").withStyle(TextFormatting.GRAY));
                 }
             }
         }
         if (text.isEmpty()) {
             String f = entityFilter.toString();
-            text.add(xlate("pneumaticcraft.gui.entityFilter").appendString(": " + (f.isEmpty() ? "-" : f)));
+            text.add(xlate("pneumaticcraft.gui.entityFilter").append(": " + (f.isEmpty() ? "-" : f)));
         }
         entityTrackInfo.setText(text);
     }
@@ -126,7 +126,7 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
     static AxisAlignedBB getAABBFromRange(PlayerEntity player, int rangeUpgrades) {
         double entityTrackRange = ENTITY_TRACKING_RANGE + Math.min(10, rangeUpgrades) * PneumaticValues.RANGE_UPGRADE_HELMET_RANGE_INCREASE;
 
-        return new AxisAlignedBB(player.getPosition()).grow(entityTrackRange);
+        return new AxisAlignedBB(player.blockPosition()).inflate(entityTrackRange);
     }
 
     @Override
@@ -197,7 +197,7 @@ public class EntityTrackerClientHandler extends IArmorUpgradeClientHandler.Abstr
             return entity != player
                     && (entity instanceof LivingEntity || entity instanceof HangingEntity || entity instanceof AbstractMinecartEntity)
                     && entity.isAlive()
-                    && player.getDistance(entity) < threshold
+                    && player.distanceTo(entity) < threshold
                     && !MinecraftForge.EVENT_BUS.post(new EntityTrackEvent(entity))
                     && super.test(entity);
         }

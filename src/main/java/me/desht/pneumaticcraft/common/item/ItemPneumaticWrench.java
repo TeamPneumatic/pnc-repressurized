@@ -31,15 +31,15 @@ public class ItemPneumaticWrench extends ItemPressurizable {
     @Override
     public ActionResultType onItemUseFirst(ItemStack stack, ItemUseContext ctx) {
         Hand hand = ctx.getHand();
-        World world = ctx.getWorld();
-        BlockPos pos = ctx.getPos();
-        if (!world.isRemote) {
+        World world = ctx.getLevel();
+        BlockPos pos = ctx.getClickedPos();
+        if (!world.isClientSide) {
             BlockState state = world.getBlockState(pos);
             boolean didWork = stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).map(h -> {
                 float pressure = h.getPressure();
                 IPneumaticWrenchable wrenchable = IPneumaticWrenchable.forBlock(state.getBlock());
                 if (wrenchable != null && pressure > 0.1f) {
-                    if (wrenchable.onWrenched(world, ctx.getPlayer(), pos, ctx.getFace(), hand)) {
+                    if (wrenchable.onWrenched(world, ctx.getPlayer(), pos, ctx.getClickedFace(), hand)) {
                         if (ctx.getPlayer() != null && !ctx.getPlayer().isCreative()) {
                             h.addAir(-PneumaticValues.USAGE_PNEUMATIC_WRENCH);
                         }
@@ -51,7 +51,7 @@ public class ItemPneumaticWrench extends ItemPressurizable {
                     // rotating normal blocks doesn't use pressure
                     BlockState rotated = state.rotate(Rotation.CLOCKWISE_90);
                     if (rotated != state) {
-                        world.setBlockState(pos, rotated);
+                        world.setBlockAndUpdate(pos, rotated);
                         return true;
                     } else {
                         return false;
@@ -71,19 +71,19 @@ public class ItemPneumaticWrench extends ItemPressurizable {
     }
 
     @Override
-    public ActionResultType itemInteractionForEntity(ItemStack iStack, PlayerEntity player, LivingEntity target, Hand hand) {
-        if (player.world.isRemote) {
+    public ActionResultType interactLivingEntity(ItemStack iStack, PlayerEntity player, LivingEntity target, Hand hand) {
+        if (player.level.isClientSide) {
             return ActionResultType.SUCCESS;
         } else if (target.isAlive() && target instanceof IPneumaticWrenchable) {
             return iStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).map(h -> {
                 if (!player.isCreative() && h.getAir() < PneumaticValues.USAGE_PNEUMATIC_WRENCH) {
                     return ActionResultType.FAIL;
                 }
-                if (((IPneumaticWrenchable) target).onWrenched(target.world, player, null, null, hand)) {
+                if (((IPneumaticWrenchable) target).onWrenched(target.level, player, null, null, hand)) {
                     if (!player.isCreative()) {
                         h.addAir(-PneumaticValues.USAGE_PNEUMATIC_WRENCH);
                     }
-                    playWrenchSound(target.world, target.getPosition());
+                    playWrenchSound(target.level, target.blockPosition());
                     return ActionResultType.SUCCESS;
                 } else {
                     return ActionResultType.PASS;

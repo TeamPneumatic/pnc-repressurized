@@ -10,7 +10,7 @@ import net.minecraft.world.IBlockReader;
 
 public class BlockEmptySpawner extends BlockPneumaticCraft {
     public BlockEmptySpawner() {
-        super(ModBlocks.defaultProps().notSolid());
+        super(ModBlocks.defaultProps().noOcclusion());
     }
 
     @Override

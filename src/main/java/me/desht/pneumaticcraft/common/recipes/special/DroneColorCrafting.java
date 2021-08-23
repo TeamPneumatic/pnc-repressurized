@@ -23,20 +23,20 @@ public class DroneColorCrafting extends ShapelessRecipe {
     // you'd think using Ingredient.fromTag(Tags.Items.Dyes) would work, but nope
     private static final Item[] DYES = new Item[DyeColor.values().length];
     static {
-        Arrays.setAll(DYES, i -> DyeItem.getItem(DyeColor.values()[i]));
+        Arrays.setAll(DYES, i -> DyeItem.byColor(DyeColor.values()[i]));
     }
 
     public DroneColorCrafting(ResourceLocation idIn) {
-        super(idIn, "", new ItemStack(ModItems.DRONE.get()), NonNullList.from(Ingredient.EMPTY,
-                    Ingredient.fromItems(DYES), Ingredient.fromItems(ModItems.DRONE.get()))
+        super(idIn, "", new ItemStack(ModItems.DRONE.get()), NonNullList.of(Ingredient.EMPTY,
+                    Ingredient.of(DYES), Ingredient.of(ModItems.DRONE.get()))
         );
     }
 
     private Pair<ItemStack, DyeColor> findItems(CraftingInventory inv) {
         ItemStack drone = ItemStack.EMPTY;
         DyeColor dye = null;
-        for (int i = 0; i < inv.getSizeInventory(); i++) {
-            ItemStack stack = inv.getStackInSlot(i);
+        for (int i = 0; i < inv.getContainerSize(); i++) {
+            ItemStack stack = inv.getItem(i);
             if (stack.getItem() == ModItems.DRONE.get()) {
                 if (!drone.isEmpty()) return null;
                 drone = stack.copy();
@@ -59,7 +59,7 @@ public class DroneColorCrafting extends ShapelessRecipe {
     }
 
     @Override
-    public ItemStack getCraftingResult(CraftingInventory inv) {
+    public ItemStack assemble(CraftingInventory inv) {
         Pair<ItemStack, DyeColor> data = findItems(inv);
         if (data == null) return ItemStack.EMPTY;
         ItemStack drone = data.getLeft();

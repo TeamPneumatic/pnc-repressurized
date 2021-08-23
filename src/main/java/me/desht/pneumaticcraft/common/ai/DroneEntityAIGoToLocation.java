@@ -17,7 +17,7 @@ public class DroneEntityAIGoToLocation extends Goal {
 
     public DroneEntityAIGoToLocation(IDroneBase drone, ProgWidget gotoWidget) {
         this.drone = drone;
-        setMutexFlags(EnumSet.allOf(Flag.class)); // so it won't run along with other AI tasks.
+        setFlags(EnumSet.allOf(Flag.class)); // so it won't run along with other AI tasks.
         this.gotoWidget = gotoWidget;
         Set<BlockPos> set = new HashSet<>();
         ((IAreaProvider) gotoWidget).getArea(set);
@@ -29,11 +29,11 @@ public class DroneEntityAIGoToLocation extends Goal {
      * Returns whether the EntityAIBase should begin execution.
      */
     @Override
-    public boolean shouldExecute() {
+    public boolean canUse() {
         validArea.sort(positionSorter);
         for (BlockPos c : validArea) {
             // 0.75 is the squared dist from a block corner to its center (0.5^2 + 0.5^2 + 0.5^2)
-            if (drone.getDronePos().squareDistanceTo(new Vector3d(c.getX() + 0.5, c.getY() + 0.5, c.getZ() + 0.5)) < 0.75)
+            if (drone.getDronePos().distanceToSqr(new Vector3d(c.getX() + 0.5, c.getY() + 0.5, c.getZ() + 0.5)) < 0.75)
                 return false;
             if (drone.getPathNavigator().moveToXYZ(c.getX(), c.getY(), c.getZ())) {
                 return !((IGotoWidget) gotoWidget).doneWhenDeparting();
@@ -54,7 +54,7 @@ public class DroneEntityAIGoToLocation extends Goal {
      * Returns whether an in-progress EntityAIBase should continue executing
      */
     @Override
-    public boolean shouldContinueExecuting() {
+    public boolean canContinueToUse() {
         return !drone.getPathNavigator().hasNoPath();
     }
 }

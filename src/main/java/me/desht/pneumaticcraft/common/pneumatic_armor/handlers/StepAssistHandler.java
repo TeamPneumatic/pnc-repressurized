@@ -38,19 +38,19 @@ public class StepAssistHandler extends BaseArmorUpgradeHandler<IArmorExtensionDa
         // mods which grant step assist
         if (commonArmorHandler.hasMinPressure(EquipmentSlotType.FEET) && enabled) {
             PlayerEntity player = commonArmorHandler.getPlayer();
-            player.stepHeight = player.isSneaking() ? 0.6001F : 1.25F;
+            player.maxUpStep = player.isShiftKeyDown() ? 0.6001F : 1.25F;
         }
     }
 
     @Override
     public void onToggle(ICommonArmorHandler commonArmorHandler, boolean newState) {
         if (!newState) {
-            commonArmorHandler.getPlayer().stepHeight = 0.6F;
+            commonArmorHandler.getPlayer().maxUpStep = 0.6F;
         }
     }
 
     @Override
     public void onShutdown(ICommonArmorHandler commonArmorHandler) {
-        commonArmorHandler.getPlayer().stepHeight = 0.6F;
+        commonArmorHandler.getPlayer().maxUpStep = 0.6F;
     }
 }

@@ -23,7 +23,7 @@ public class CustomTrigger extends AbstractCriterionTrigger<CustomTrigger.Instan
     }
 
     public void trigger(ServerPlayerEntity parPlayer) {
-        this.triggerListeners(parPlayer, Instance::test);
+        this.trigger(parPlayer, Instance::test);
     }
 
     @Override
@@ -32,7 +32,7 @@ public class CustomTrigger extends AbstractCriterionTrigger<CustomTrigger.Instan
     }
 
     @Override
-    protected Instance deserializeTrigger(JsonObject jsonIn, EntityPredicate.AndPredicate entityPredicateIn, ConditionArrayParser conditionsParserIn) {
+    protected Instance createInstance(JsonObject jsonIn, EntityPredicate.AndPredicate entityPredicateIn, ConditionArrayParser conditionsParserIn) {
         return new CustomTrigger.Instance(this.getId());
     }
 
@@ -42,7 +42,7 @@ public class CustomTrigger extends AbstractCriterionTrigger<CustomTrigger.Instan
 
     public static class Instance extends CriterionInstance {
         public Instance(ResourceLocation parID) {
-            super(parID, EntityPredicate.AndPredicate.ANY_AND);
+            super(parID, EntityPredicate.AndPredicate.ANY);
         }
 
         public boolean test() {

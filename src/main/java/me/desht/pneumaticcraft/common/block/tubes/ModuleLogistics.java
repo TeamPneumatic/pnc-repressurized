@@ -103,7 +103,7 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
 
     public EntityLogisticsFrame getFrame() {
         if (cachedFrame == null) {
-            ISemiBlock semiBlock = SemiblockTracker.getInstance().getSemiblock(getTube().getWorld(), getTube().getPos().offset(dir), dir.getOpposite());
+            ISemiBlock semiBlock = SemiblockTracker.getInstance().getSemiblock(getTube().getLevel(), getTube().getBlockPos().relative(dir), dir.getOpposite());
             if (semiBlock instanceof EntityLogisticsFrame) {
                 cachedFrame = (EntityLogisticsFrame) semiBlock;
             }
@@ -113,11 +113,11 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
 
     @Override
     public boolean onActivated(PlayerEntity player, Hand hand) {
-        ItemStack heldStack = player.getHeldItem(hand);
-        DyeColor color = DyeColor.getColor(player.getHeldItem(hand));
+        ItemStack heldStack = player.getItemInHand(hand);
+        DyeColor color = DyeColor.getColor(player.getItemInHand(hand));
         if (color != null) {
             int colorId = color.getId();
-            if (!player.world.isRemote) {
+            if (!player.level.isClientSide) {
                 setColorChannel(colorId);
                 NetworkHandler.sendToAllTracking(new PacketUpdateLogisticsModule(this, 0), getTube());
                 if (PNCConfig.Common.General.useUpDyesWhenColoring && !player.isCreative()) {
@@ -133,7 +133,7 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
     public void update() {
         super.update();
         if (cachedFrame != null && !cachedFrame.isValid()) cachedFrame = null;
-        if (!getTube().getWorld().isRemote) {
+        if (!getTube().getLevel().isClientSide) {
             if (powered != getTube().getPressure() >= PNCConfig.Common.Logistics.minPressure) {
                 powered = !powered;
                 NetworkHandler.sendToAllTracking(new PacketUpdateLogisticsModule(this, 0), getTube());
@@ -141,7 +141,7 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
             if (--ticksUntilNextCycle <= 0) {
                 LogisticsManager manager = new LogisticsManager();
                 Map<Integer, ModuleLogistics> frame2module = new Int2ObjectOpenHashMap<>();
-                for (TubeModule module : ModuleNetworkManager.getInstance(getTube().getWorld()).getConnectedModules(this)) {
+                for (TubeModule module : ModuleNetworkManager.getInstance(getTube().getLevel()).getConnectedModules(this)) {
                     if (module instanceof ModuleLogistics) {
                         ModuleLogistics logistics = (ModuleLogistics) module;
                         if (logistics.getColorChannel() == getColorChannel()) {
@@ -151,7 +151,7 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
                             logistics.ticksUntilNextCycle = 100;
                             if (logistics.hasPower() && logistics.getFrame() != null) {
                                 // record the frame->module mapping and add the frame to the logistics manager
-                                frame2module.put(logistics.getFrame().getEntityId(), logistics);
+                                frame2module.put(logistics.getFrame().getId(), logistics);
                                 manager.addLogisticFrame(logistics.getFrame());
                             }
                         }
@@ -162,9 +162,9 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
                 for (LogisticsTask task : tasks) {
                     if (task.isStillValid(task.transportingItem.isEmpty() ? task.transportingFluid : task.transportingItem)) {
                         if (!task.transportingItem.isEmpty()) {
-                            handleItems(frame2module.get(task.provider.getEntityId()), frame2module.get(task.requester.getEntityId()), task);
+                            handleItems(frame2module.get(task.provider.getSemiblockId()), frame2module.get(task.requester.getSemiblockId()), task);
                         } else {
-                            handleFluids(frame2module.get(task.provider.getEntityId()), frame2module.get(task.requester.getEntityId()), task);
+                            handleFluids(frame2module.get(task.provider.getSemiblockId()), frame2module.get(task.requester.getSemiblockId()), task);
                         }
                     }
                 }
@@ -200,7 +200,7 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
         IAirHandlerMachine receiverAirHandler = requestingModule.getTube().getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY)
                 .orElseThrow(RuntimeException::new);
 
-        int airUsed = (int) (PNCConfig.Common.Logistics.itemTransportCost * extractedStack.getCount() * PneumaticCraftUtils.distBetween(providingModule.getTube().getPos(), requestingModule.getTube().getPos()));
+        int airUsed = (int) (PNCConfig.Common.Logistics.itemTransportCost * extractedStack.getCount() * PneumaticCraftUtils.distBetween(providingModule.getTube().getBlockPos(), requestingModule.getTube().getBlockPos()));
 
         if (airUsed > receiverAirHandler.getAir()) {
             // not enough air to move all the items - scale back the number to be moved
@@ -242,7 +242,7 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
         IAirHandlerMachine receiverAirHandler = requestingModule.getTube().getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY)
                 .orElseThrow(RuntimeException::new);
 
-        double airUsed = (PNCConfig.Common.Logistics.fluidTransportCost * extractedFluid.getAmount() * PneumaticCraftUtils.distBetween(providingModule.getTube().getPos(), requestingModule.getTube().getPos()));
+        double airUsed = (PNCConfig.Common.Logistics.fluidTransportCost * extractedFluid.getAmount() * PneumaticCraftUtils.distBetween(providingModule.getTube().getBlockPos(), requestingModule.getTube().getBlockPos()));
         if (airUsed > receiverAirHandler.getAir()) {
             // not enough air to move it all - scale back the amount of fluid to be moved
             double scaleBack = receiverAirHandler.getAir() / airUsed;
@@ -278,7 +278,7 @@ public class ModuleLogistics extends TubeModule implements INetworkedModule {
         } else {
             status = "pneumaticcraft.waila.logisticsModule.noPower";
         }
-        curInfo.add(PneumaticCraftUtils.xlate("pneumaticcraft.hud.msg.state").appendString(": ").append(PneumaticCraftUtils.xlate(status)));
+        curInfo.add(PneumaticCraftUtils.xlate("pneumaticcraft.hud.msg.state").append(": ").append(PneumaticCraftUtils.xlate(status)));
     }
 
     @Override

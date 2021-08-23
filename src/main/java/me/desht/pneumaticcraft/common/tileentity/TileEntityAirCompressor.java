@@ -60,7 +60,7 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
     @Nullable
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        return new ContainerAirCompressor(i, playerInventory, getPos());
+        return new ContainerAirCompressor(i, playerInventory, getBlockPos());
     }
 
     public boolean isActive() {
@@ -71,7 +71,7 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
     public void tick() {
         super.tick();
 
-        if (!getWorld().isRemote) {
+        if (!getLevel().isClientSide) {
             airPerTick = getBaseProduction() * getSpeedMultiplierFromUpgrades() * getHeatEfficiency() / 100F;
 
             if (rsController.shouldRun() && burnTime < curFuelUsage) {
@@ -91,7 +91,7 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
             curFuelUsage = (int) (getBaseProduction() * getSpeedUsageMultiplierFromUpgrades() / 10);
             if (burnTime >= curFuelUsage) {
                 burnTime -= curFuelUsage;
-                if (!getWorld().isRemote) {
+                if (!getLevel().isClientSide) {
                     airBuffer += airPerTick;
                     if (airBuffer >= 1f) {
                         int toAdd = (int) airBuffer;
@@ -106,7 +106,7 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
             if (wasActive != isActive) {
                 BlockState state = getBlockState();
                 if (state.hasProperty(BlockAirCompressor.ON)) {
-                    getWorld().setBlockState(getPos(), state.with(BlockAirCompressor.ON, isActive));
+                    getLevel().setBlockAndUpdate(getBlockPos(), state.setValue(BlockAirCompressor.ON, isActive));
                 }
             }
             airHandler.setSideLeaking(hasNoConnectedAirHandlers() ? getRotation() : null);
@@ -128,28 +128,28 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
     }
 
     private void spawnBurningParticle() {
-        if (getWorld().rand.nextInt(3) != 0) return;
-        float px = getPos().getX() + 0.5F;
-        float py = getPos().getY() + getWorld().rand.nextFloat() * 6.0F / 16.0F;
-        float pz = getPos().getZ() + 0.5F;
+        if (getLevel().random.nextInt(3) != 0) return;
+        float px = getBlockPos().getX() + 0.5F;
+        float py = getBlockPos().getY() + getLevel().random.nextFloat() * 6.0F / 16.0F;
+        float pz = getBlockPos().getZ() + 0.5F;
         float f3 = 0.5F;
-        float f4 = getWorld().rand.nextFloat() * 0.4F - 0.2F;
+        float f4 = getLevel().random.nextFloat() * 0.4F - 0.2F;
         switch (getRotation()) {
             case EAST:
-                getWorld().addParticle(ParticleTypes.SMOKE, px - f3, py, pz + f4, 0.0D, 0.0D, 0.0D);
-                getWorld().addParticle(ParticleTypes.FLAME, px - f3, py, pz + f4, 0.0D, 0.0D, 0.0D);
+                getLevel().addParticle(ParticleTypes.SMOKE, px - f3, py, pz + f4, 0.0D, 0.0D, 0.0D);
+                getLevel().addParticle(ParticleTypes.FLAME, px - f3, py, pz + f4, 0.0D, 0.0D, 0.0D);
                 break;
             case WEST:
-                getWorld().addParticle(ParticleTypes.SMOKE, px + f3, py, pz + f4, 0.0D, 0.0D, 0.0D);
-                getWorld().addParticle(ParticleTypes.FLAME, px + f3, py, pz + f4, 0.0D, 0.0D, 0.0D);
+                getLevel().addParticle(ParticleTypes.SMOKE, px + f3, py, pz + f4, 0.0D, 0.0D, 0.0D);
+                getLevel().addParticle(ParticleTypes.FLAME, px + f3, py, pz + f4, 0.0D, 0.0D, 0.0D);
                 break;
             case SOUTH:
-                getWorld().addParticle(ParticleTypes.SMOKE, px + f4, py, pz - f3, 0.0D, 0.0D, 0.0D);
-                getWorld().addParticle(ParticleTypes.FLAME, px + f4, py, pz - f3, 0.0D, 0.0D, 0.0D);
+                getLevel().addParticle(ParticleTypes.SMOKE, px + f4, py, pz - f3, 0.0D, 0.0D, 0.0D);
+                getLevel().addParticle(ParticleTypes.FLAME, px + f4, py, pz - f3, 0.0D, 0.0D, 0.0D);
                 break;
             case NORTH:
-                getWorld().addParticle(ParticleTypes.SMOKE, px + f4, py, pz + f3, 0.0D, 0.0D, 0.0D);
-                getWorld().addParticle(ParticleTypes.FLAME, px + f4, py, pz + f3, 0.0D, 0.0D, 0.0D);
+                getLevel().addParticle(ParticleTypes.SMOKE, px + f4, py, pz + f3, 0.0D, 0.0D, 0.0D);
+                getLevel().addParticle(ParticleTypes.FLAME, px + f4, py, pz + f3, 0.0D, 0.0D, 0.0D);
                 break;
         }
     }
@@ -171,7 +171,7 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
 
     @Override
     public AxisAlignedBB getRenderBoundingBox() {
-        return new AxisAlignedBB(getPos().getX(), getPos().getY(), getPos().getZ(), getPos().getX() + 1, getPos().getY() + 1, getPos().getZ() + 1);
+        return new AxisAlignedBB(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(), getBlockPos().getX() + 1, getBlockPos().getY() + 1, getBlockPos().getZ() + 1);
     }
 
     @Override
@@ -186,8 +186,8 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT tag) {
-        super.read(state, tag);
+    public void load(BlockState state, CompoundNBT tag) {
+        super.load(state, tag);
 
         burnTime = tag.getInt("burnTime");
         maxBurnTime = tag.getInt("maxBurn");
@@ -195,8 +195,8 @@ public class TileEntityAirCompressor extends TileEntityPneumaticBase implements 
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tag) {
-        super.write(tag);
+    public CompoundNBT save(CompoundNBT tag) {
+        super.save(tag);
         tag.putInt("burnTime", burnTime);
         tag.putInt("maxBurn", maxBurnTime);
         tag.put("Items", itemHandler.serializeNBT());

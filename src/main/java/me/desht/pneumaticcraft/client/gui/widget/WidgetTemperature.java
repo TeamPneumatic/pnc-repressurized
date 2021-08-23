@@ -76,7 +76,7 @@ public class WidgetTemperature extends Widget implements ITooltipProvider {
     public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         if (this.visible) {
             RenderSystem.disableLighting();
-            Minecraft.getInstance().getTextureManager().bindTexture(Textures.WIDGET_TEMPERATURE);
+            Minecraft.getInstance().getTextureManager().bind(Textures.WIDGET_TEMPERATURE);
             RenderSystem.color4f(1, 1, 1, 1);
 
             // the background frame
@@ -89,7 +89,7 @@ public class WidgetTemperature extends Widget implements ITooltipProvider {
             // ticks
             drawTicks(matrixStack);
             if (drawText) {
-                GuiUtils.drawScaledText(matrixStack, Minecraft.getInstance().fontRenderer, CELSIUS.symbol(), x + 7, y + height + 1, 0xFF404040, 0.5f);
+                GuiUtils.drawScaledText(matrixStack, Minecraft.getInstance().font, CELSIUS.symbol(), x + 7, y + height + 1, 0xFF404040, 0.5f);
             }
 
             // operating temp markers, if necessary
@@ -98,7 +98,7 @@ public class WidgetTemperature extends Widget implements ITooltipProvider {
     }
 
     public void drawTicks(MatrixStack matrixStack) {
-        FontRenderer font = Minecraft.getInstance().fontRenderer;
+        FontRenderer font = Minecraft.getInstance().font;
         int tickTempC = findNearestCelsius(totalRange.getMin() - 273, tickInterval);
         int n = 0;
         while (tickTempC <= totalRange.getMax() - 273) {
@@ -110,7 +110,7 @@ public class WidgetTemperature extends Widget implements ITooltipProvider {
             }
             if (drawText && n % 2 == 0) { // && (tickInterval > 10 || n > 0)) {
                 String s = Integer.toString(tickTempC);
-                GuiUtils.drawScaledText(matrixStack, font, s, x + 4 - font.getStringWidth(s) / 2, y - 2 + height - yOffset, 0xFF404040, 0.5f);
+                GuiUtils.drawScaledText(matrixStack, font, s, x + 4 - font.width(s) / 2, y - 2 + height - yOffset, 0xFF404040, 0.5f);
             }
             n++;
             tickTempC += tickInterval;
@@ -153,7 +153,7 @@ public class WidgetTemperature extends Widget implements ITooltipProvider {
         curTip.add(HeatUtil.formatHeatString(temperature));
         if (operatingRange != null && showOperatingRange) {
             TextFormatting tf = operatingRange.inRange(temperature) ? TextFormatting.GREEN : TextFormatting.GOLD;
-            curTip.add(xlate("pneumaticcraft.gui.misc.requiredTemperatureString", operatingRange.asString(CELSIUS)).mergeStyle(tf));
+            curTip.add(xlate("pneumaticcraft.gui.misc.requiredTemperatureString", operatingRange.asString(CELSIUS)).withStyle(tf));
         }
     }
 

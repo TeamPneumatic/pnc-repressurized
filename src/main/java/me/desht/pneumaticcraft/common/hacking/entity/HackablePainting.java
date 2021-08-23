@@ -43,14 +43,14 @@ public class HackablePainting implements IHackableEntity {
 
     @Override
     public void onHackFinished(Entity entity, PlayerEntity player) {
-        PaintingType art = ((PaintingEntity) entity).art;
+        PaintingType art = ((PaintingEntity) entity).motive;
         List<PaintingType> candidate = new ArrayList<>();
         for (PaintingType a : ForgeRegistries.PAINTING_TYPES.getValues()) {
             if (a.getHeight() == art.getHeight() && a.getWidth() == art.getWidth()) {
                 candidate.add(a);
             }
         }
-        ((PaintingEntity) entity).art = candidate.get(entity.world.rand.nextInt(candidate.size()));
+        ((PaintingEntity) entity).motive = candidate.get(entity.level.random.nextInt(candidate.size()));
     }
 
     @Override

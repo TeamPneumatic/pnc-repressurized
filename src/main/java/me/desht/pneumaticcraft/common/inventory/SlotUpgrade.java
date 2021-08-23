@@ -17,17 +17,17 @@ public class SlotUpgrade extends SlotItemHandler {
     }
 
     @Override
-    public boolean isItemValid(@Nonnull ItemStack stack) {
+    public boolean mayPlace(@Nonnull ItemStack stack) {
         return getItemHandler().isItemValid(getSlotIndex(), stack);
     }
 
     @Override
-    public void onSlotChanged() {
+    public void setChanged() {
         te.getUpgradeCache().invalidate();
     }
 
     @Override
-    public int getItemStackLimit(@Nonnull ItemStack stack) {
+    public int getMaxStackSize(@Nonnull ItemStack stack) {
         return ApplicableUpgradesDB.getInstance().getMaxUpgrades(te, EnumUpgrade.from(stack));
     }
 }

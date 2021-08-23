@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.client.render.pressure_gauge;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import me.desht.pneumaticcraft.client.render.ModRenderTypes;
-import me.desht.pneumaticcraft.client.render.pressure_gauge.PressureGaugeRenderer2D.*;
 import me.desht.pneumaticcraft.client.util.RenderUtils;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.RenderType;
@@ -119,10 +118,10 @@ public class PressureGaugeRenderer3D {
                 currentScale--;
                 float r1 = maxPressure > 10 && textScalers.size() % 5 == 1 ? 0.8F : 0.92F;
                 float r2 = maxPressure > 10 && textScalers.size() % 5 == 1 ? 1.15F : 1.08F;
-                builder.pos(posMat, x * RADIUS * r1 + xPos, y * RADIUS * r1 + yPos, 0f)
+                builder.vertex(posMat, x * RADIUS * r1 + xPos, y * RADIUS * r1 + yPos, 0f)
                         .color(0, 0, 0, 255)
                         .endVertex();
-                builder.pos(posMat, x * RADIUS * r2 + xPos, y * RADIUS * r2 + yPos, 0f)
+                builder.vertex(posMat, x * RADIUS * r2 + xPos, y * RADIUS * r2 + yPos, 0f)
                         .color(0, 0, 0, 255)
                         .endVertex();
             }
@@ -132,13 +131,13 @@ public class PressureGaugeRenderer3D {
     private static void drawNeedle(Matrix4f posMat, IVertexBuilder builder, int xPos, int yPos, float angle, int fgColor) {
         // vertex builder is set up for GL_LINE_LOOP
         float[] cols = RenderUtils.decomposeColorF(fgColor);
-        builder.pos(posMat, MathHelper.cos(angle + 0.89F * PI_F) * RADIUS * 0.3F + xPos, MathHelper.sin(angle + 0.89F * PI_F) * RADIUS * 0.3F + yPos, 0f)
+        builder.vertex(posMat, MathHelper.cos(angle + 0.89F * PI_F) * RADIUS * 0.3F + xPos, MathHelper.sin(angle + 0.89F * PI_F) * RADIUS * 0.3F + yPos, 0f)
                 .color(cols[1], cols[2], cols[3], cols[0])
                 .endVertex();
-        builder.pos(posMat, MathHelper.cos(angle + 1.11F * PI_F) * RADIUS * 0.3F + xPos, MathHelper.sin(angle + 1.11F * PI_F) * RADIUS * 0.3F + yPos, 0f)
+        builder.vertex(posMat, MathHelper.cos(angle + 1.11F * PI_F) * RADIUS * 0.3F + xPos, MathHelper.sin(angle + 1.11F * PI_F) * RADIUS * 0.3F + yPos, 0f)
                 .color(cols[1], cols[2], cols[3], cols[0])
                 .endVertex();
-        builder.pos(posMat, MathHelper.cos(angle) * RADIUS * 0.8F + xPos, MathHelper.sin(angle) * RADIUS * 0.8F + yPos, 0f)
+        builder.vertex(posMat, MathHelper.cos(angle) * RADIUS * 0.8F + xPos, MathHelper.sin(angle) * RADIUS * 0.8F + yPos, 0f)
                 .color(cols[1], cols[2], cols[3], cols[0])
                 .endVertex();
     }
@@ -147,11 +146,11 @@ public class PressureGaugeRenderer3D {
         for (int i = 0; i < textScalers.size(); i++) {
             if (textScalers.size() <= 11 || i % 5 == 0) {
                 TextScaler scaler = textScalers.get(i);
-                matrixStack.push();
+                matrixStack.pushPose();
                 matrixStack.translate(xPos + scaler.x - 1.5, yPos + scaler.y - 1.5, 0);
                 matrixStack.scale(0.5f, 0.5f, 1f);
                 RenderUtils.renderString3d(Integer.toString(scaler.pressure), 0, 0, fgColor, matrixStack, buffer, false, false);
-                matrixStack.pop();
+                matrixStack.popPose();
             }
         }
     }

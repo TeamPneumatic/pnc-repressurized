@@ -46,7 +46,7 @@ public interface IInventoryItem {
      * @param curStacks a list of stacks to fill
      */
     static void getStacks(ItemStack stack, List<ItemStack> curStacks) {
-        CompoundNBT sub = stack.getChildTag(NBTKeys.BLOCK_ENTITY_TAG);
+        CompoundNBT sub = stack.getTagElement(NBTKeys.BLOCK_ENTITY_TAG);
         if (sub != null && sub.contains(NBT_ITEMS, Constants.NBT.TAG_COMPOUND)) {
             ItemStackHandler handler = new ItemStackHandler();
             handler.deserializeNBT(sub.getCompound(NBT_ITEMS));

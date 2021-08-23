@@ -28,12 +28,12 @@ public class GuiAirCompressor extends GuiPneumaticContainerBase<ContainerAirComp
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int x, int y) {
-        super.drawGuiContainerBackgroundLayer(matrixStack, partialTicks, x, y);
+    protected void renderBg(MatrixStack matrixStack, float partialTicks, int x, int y) {
+        super.renderBg(matrixStack, partialTicks, x, y);
 
         int yOff = te.getBurnTimeRemainingScaled(12);
         if (te.burnTime >= te.curFuelUsage) {
-            blit(matrixStack, guiLeft + getFuelSlotXOffset(), guiTop + 38 + 12 - yOff, 176, 12 - yOff, 14, yOff + 2);
+            blit(matrixStack, leftPos + getFuelSlotXOffset(), topPos + 38 + 12 - yOff, 176, 12 - yOff, 14, yOff + 2);
         }
     }
 
@@ -46,7 +46,7 @@ public class GuiAirCompressor extends GuiPneumaticContainerBase<ContainerAirComp
         super.addPressureStatInfo(pressureStatText);
 
         pressureStatText.add(xlate("pneumaticcraft.gui.tooltip.maxProduction",
-                PneumaticCraftUtils.roundNumberTo(te.airPerTick, 2)).mergeStyle(TextFormatting.BLACK));
+                PneumaticCraftUtils.roundNumberTo(te.airPerTick, 2)).withStyle(TextFormatting.BLACK));
     }
 
     @Override

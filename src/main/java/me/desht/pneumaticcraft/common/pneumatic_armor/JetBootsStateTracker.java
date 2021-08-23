@@ -23,7 +23,7 @@ public class JetBootsStateTracker {
     }
 
     public static JetBootsStateTracker getTracker(PlayerEntity player) {
-        return player.world.isRemote ? getClientTracker() : getServerTracker();
+        return player.level.isClientSide ? getClientTracker() : getServerTracker();
     }
 
     private JetBootsStateTracker() {
@@ -39,14 +39,14 @@ public class JetBootsStateTracker {
      * @param builderMode in builder mode?
      */
     public void setJetBootsState(PlayerEntity player, boolean enabled, boolean active, boolean builderMode) {
-        if (!player.world.isRemote) {
-            JetBootsState state = stateMap.computeIfAbsent(player.getUniqueID(), uuid -> new JetBootsState(false, false, false));
+        if (!player.level.isClientSide) {
+            JetBootsState state = stateMap.computeIfAbsent(player.getUUID(), uuid -> new JetBootsState(false, false, false));
 
             boolean sendPacket = state.enabled != enabled || state.active != active || state.builderMode != builderMode;
             state.enabled = enabled;
             state.active = active;
             state.builderMode = builderMode;
-            if (sendPacket) NetworkHandler.sendToAllTracking(new PacketJetBootsStateSync(player, state), player.world, player.getPosition());
+            if (sendPacket) NetworkHandler.sendToAllTracking(new PacketJetBootsStateSync(player, state), player.level, player.blockPosition());
         }
     }
 
@@ -61,7 +61,7 @@ public class JetBootsStateTracker {
     }
 
     public JetBootsState getJetBootsState(PlayerEntity player) {
-        return stateMap.getOrDefault(player.getUniqueID(), new JetBootsState(false, false, false));
+        return stateMap.getOrDefault(player.getUUID(), new JetBootsState(false, false, false));
     }
 
     /**

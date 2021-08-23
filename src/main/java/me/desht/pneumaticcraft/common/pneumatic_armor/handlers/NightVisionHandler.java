@@ -38,18 +38,18 @@ public class NightVisionHandler extends BaseArmorUpgradeHandler<IArmorExtensionD
     public void tick(ICommonArmorHandler commonArmorHandler, boolean enabled) {
         PlayerEntity player = commonArmorHandler.getPlayer();
         boolean hasPressure = commonArmorHandler.hasMinPressure(EquipmentSlotType.HEAD);
-        if (!player.world.isRemote) {
-            EffectInstance nvInstance = player.getActivePotionEffect(Effects.NIGHT_VISION);
+        if (!player.level.isClientSide) {
+            EffectInstance nvInstance = player.getEffect(Effects.NIGHT_VISION);
             if (enabled && hasPressure && (nvInstance == null || nvInstance.getDuration() <= 220)) {
-                player.addPotionEffect(new EffectInstance(Effects.NIGHT_VISION, 500, 0, false, false));
+                player.addEffect(new EffectInstance(Effects.NIGHT_VISION, 500, 0, false, false));
             } else if ((!enabled || !hasPressure) && nvInstance != null) {
-                player.removePotionEffect(Effects.NIGHT_VISION);
+                player.removeEffect(Effects.NIGHT_VISION);
             }
         }
     }
 
     @Override
     public void onShutdown(ICommonArmorHandler commonArmorHandler) {
-        commonArmorHandler.getPlayer().removePotionEffect(Effects.NIGHT_VISION);
+        commonArmorHandler.getPlayer().removeEffect(Effects.NIGHT_VISION);
     }
 }

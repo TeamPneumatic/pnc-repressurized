@@ -28,7 +28,7 @@ public class DroneSpecialVariableHandler {
         DISPATCH_MAP.put("player", (event, extra) -> getPosForPlayer(PneumaticCraftUtils.getPlayerFromName(extra)));
         // this method gets the block above the drone's position for historical reasons
         // https://github.com/TeamPneumatic/pnc-repressurized/issues/601 for more discussion
-        DISPATCH_MAP.put("drone", (event, extra) -> new BlockPos(event.drone.getDronePos()).offset(Direction.UP));
+        DISPATCH_MAP.put("drone", (event, extra) -> new BlockPos(event.drone.getDronePos()).relative(Direction.UP));
     }
 
     @SubscribeEvent
@@ -40,15 +40,15 @@ public class DroneSpecialVariableHandler {
 
     private static BlockPos getPosForPlayer(PlayerEntity player) {
         // offset UP because "$owner" and "$player" get the player's head position, not feet position
-        return player == null ? BlockPos.ZERO : player.getPosition().offset(Direction.UP);
+        return player == null ? BlockPos.ZERO : player.blockPosition().relative(Direction.UP);
     }
 
     private static BlockPos getPlayerLookVec(PlayerEntity player) {
         if (player == null) return BlockPos.ZERO;
 
-        Direction d = player.getHorizontalFacing();
-        float pitch = player.getPitch(0f);
+        Direction d = player.getDirection();
+        float pitch = player.getViewXRot(0f);
         int yDir = Math.abs(pitch) < 45 ? 0 : (int) Math.signum(-pitch);
-        return new BlockPos(d.getXOffset(), yDir, d.getZOffset());
+        return new BlockPos(d.getStepX(), yDir, d.getStepZ());
     }
 }

@@ -10,20 +10,20 @@ public class ModelTransferGadget extends EntityModel<EntityTransferGadget> {
     private final ModelRenderer mainPart;
 
     public ModelTransferGadget() {
-        textureWidth = 32;
-        textureHeight = 32;
+        texWidth = 32;
+        texHeight = 32;
 
         mainPart = new ModelRenderer(this);
-        mainPart.setRotationPoint(0.0F, 12.0F, 0.0F);
-        mainPart.setTextureOffset(0, 0).addBox(-0.5F, 6.0F, -6.0F, 1.0F, 12.0F, 12.0F, 0.0F, false);
+        mainPart.setPos(0.0F, 12.0F, 0.0F);
+        mainPart.texOffs(0, 0).addBox(-0.5F, 6.0F, -6.0F, 1.0F, 12.0F, 12.0F, 0.0F, false);
     }
 
     @Override
-    public void setRotationAngles(EntityTransferGadget entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void setupAnim(EntityTransferGadget entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
     }
 
     @Override
-    public void render(MatrixStack matrixStackIn, IVertexBuilder bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
+    public void renderToBuffer(MatrixStack matrixStackIn, IVertexBuilder bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
         mainPart.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
     }
 }

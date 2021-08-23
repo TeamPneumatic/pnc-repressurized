@@ -34,14 +34,14 @@ public class DroneAINearestAttackableTarget extends TargetGoal {
         this.drone = drone;
         this.widget = widget;
         distanceSorter = new DistanceSorter(drone);
-        setMutexFlags(EnumSet.of(Flag.TARGET));
+        setFlags(EnumSet.of(Flag.TARGET));
     }
 
     /**
      * Returns whether the EntityAIBase should begin execution.
      */
     @Override
-    public boolean shouldExecute() {
+    public boolean canUse() {
         if (drone.hasMinigun() && drone.getSlotForAmmo() < 0) {
             return false;
         }
@@ -52,10 +52,10 @@ public class DroneAINearestAttackableTarget extends TargetGoal {
             }
         }
 
-        List<Entity> list = ((IEntityProvider) widget).getValidEntities(drone.world);
+        List<Entity> list = ((IEntityProvider) widget).getValidEntities(drone.level);
         list.sort(distanceSorter);
         for (Entity entity : list) {
-            if (entity.isAlive() && entity != goalOwner && entity instanceof LivingEntity && !shouldIgnore(entity)) {
+            if (entity.isAlive() && entity != mob && entity instanceof LivingEntity && !shouldIgnore(entity)) {
                 targetEntity = (LivingEntity) entity;
                 return true;
             }
@@ -71,9 +71,9 @@ public class DroneAINearestAttackableTarget extends TargetGoal {
      * Execute a one shot task or start executing a continuous task
      */
     @Override
-    public void startExecuting() {
-        goalOwner.setAttackTarget(targetEntity);
-        super.startExecuting();
+    public void start() {
+        mob.setTarget(targetEntity);
+        super.start();
     }
 
     public static class DistanceSorter implements Comparator<Entity> {
@@ -85,7 +85,7 @@ public class DroneAINearestAttackableTarget extends TargetGoal {
 
         @Override
         public int compare(Entity e1, Entity e2) {
-            return Double.compare(entity.getDistanceSq(e1), entity.getDistanceSq(e2));
+            return Double.compare(entity.distanceToSqr(e1), entity.distanceToSqr(e2));
         }
     }
 }

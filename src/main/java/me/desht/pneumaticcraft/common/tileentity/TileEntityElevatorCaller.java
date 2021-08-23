@@ -41,16 +41,16 @@ public class TileEntityElevatorCaller extends TileEntityTickableBase implements 
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT tag) {
-        super.read(state, tag);
+    public void load(BlockState state, CompoundNBT tag) {
+        super.load(state, tag);
         emittingRedstone = tag.getBoolean("emittingRedstone");
         thisFloor = tag.getInt("thisFloor");
         shouldUpdateNeighbors = tag.getBoolean("shouldUpdateNeighbors");
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tag) {
-        super.write(tag);
+    public CompoundNBT save(CompoundNBT tag) {
+        super.save(tag);
         tag.putBoolean("emittingRedstone", emittingRedstone);
         tag.putInt("thisFloor", thisFloor);
         tag.putBoolean("shouldUpdateNeighbors", shouldUpdateNeighbors);
@@ -83,7 +83,7 @@ public class TileEntityElevatorCaller extends TileEntityTickableBase implements 
         boolean wasPowered = getRedstoneController().getCurrentRedstonePower() > 0;
         super.onNeighborBlockUpdate(fromPos);
         if (getRedstoneController().getCurrentRedstonePower() > 0 && !wasPowered) {
-            BlockElevatorCaller.setSurroundingElevators(getWorld(), getPos(), thisFloor);
+            BlockElevatorCaller.setSurroundingElevators(getLevel(), getBlockPos(), thisFloor);
         }
     }
 
@@ -104,7 +104,7 @@ public class TileEntityElevatorCaller extends TileEntityTickableBase implements 
 
     @Override
     public AxisAlignedBB getRenderBoundingBox() {
-        return new AxisAlignedBB(getPos().getX(), getPos().getY(), getPos().getZ(), getPos().getX() + 1, getPos().getY() + 1, getPos().getZ() + 1);
+        return new AxisAlignedBB(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ(), getBlockPos().getX() + 1, getBlockPos().getY() + 1, getBlockPos().getZ() + 1);
     }
 
     @Override

@@ -164,7 +164,7 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
     @Override
     public void writeToPacket(PacketBuffer buf) {
         super.writeToPacket(buf);
-        buf.writeString(variable);
+        buf.writeUtf(variable);
         buf.writeByte(operator.ordinal());
         axisOptions.writeToBuffer(buf);
     }
@@ -172,7 +172,7 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
     @Override
     public void readFromPacket(PacketBuffer buf) {
         super.readFromPacket(buf);
-        variable = buf.readString(GlobalVariableManager.MAX_VARIABLE_LEN);
+        variable = buf.readUtf(GlobalVariableManager.MAX_VARIABLE_LEN);
         operator = EnumOperator.values()[buf.readByte()];
         axisOptions.readFromBuffer(buf);
     }
@@ -209,8 +209,8 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
         super.getTooltip(curTooltip);
 
         curTooltip.add(xlate("pneumaticcraft.gui.progWidget.itemAssign.settingVariable", variable));
-        curTooltip.add(xlate("pneumaticcraft.gui.progWidget.coordinateOperator.operator").appendString(" ").append(xlate(operator.getTranslationKey())));
-        getAxesString().ifPresent(t -> curTooltip.add(xlate("pneumaticcraft.gui.progWidget.coordinateOperator.axes").appendString(" ").append(t)));
+        curTooltip.add(xlate("pneumaticcraft.gui.progWidget.coordinateOperator.operator").append(" ").append(xlate(operator.getTranslationKey())));
+        getAxesString().ifPresent(t -> curTooltip.add(xlate("pneumaticcraft.gui.progWidget.coordinateOperator.axes").append(" ").append(t)));
     }
 
     @Override
@@ -224,7 +224,7 @@ public class ProgWidgetCoordinateOperator extends ProgWidget implements IVariabl
     private Optional<ITextComponent> getAxesString() {
         List<String> l = Arrays.stream(Axis.values())
                 .filter(axisOptions::shouldCheck)
-                .map(axis -> axis.getName2().toUpperCase())
+                .map(axis -> axis.getName().toUpperCase())
                 .collect(Collectors.toList());
         return !l.isEmpty() && l.size() < 3 ? Optional.of(new StringTextComponent(String.join("/", l))) : Optional.empty();
     }

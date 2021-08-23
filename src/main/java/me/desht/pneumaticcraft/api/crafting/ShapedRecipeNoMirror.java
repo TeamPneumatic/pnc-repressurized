@@ -48,7 +48,7 @@ public class ShapedRecipeNoMirror extends ShapedRecipe {
                     ingredient = this.recipeItemsIn.get(k + l * this.getRecipeWidth());
                 }
 
-                if (!ingredient.test(craftingInventory.getStackInSlot(i + j * craftingInventory.getWidth()))) {
+                if (!ingredient.test(craftingInventory.getItem(i + j * craftingInventory.getWidth()))) {
                     return false;
                 }
             }
@@ -64,21 +64,21 @@ public class ShapedRecipeNoMirror extends ShapedRecipe {
 
     public static class Serializer extends ShapedRecipe.Serializer {
         @Override
-        public ShapedRecipe read(ResourceLocation recipeId, JsonObject json) {
-            ShapedRecipe r = super.read(recipeId, json);
-            return new ShapedRecipeNoMirror(r.getId(), r.getGroup(), r.getRecipeWidth(), r.getRecipeHeight(), r.getIngredients(), r.getRecipeOutput());
+        public ShapedRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
+            ShapedRecipe r = super.fromJson(recipeId, json);
+            return new ShapedRecipeNoMirror(r.getId(), r.getGroup(), r.getRecipeWidth(), r.getRecipeHeight(), r.getIngredients(), r.getResultItem());
         }
 
         @Nullable
         @Override
-        public ShapedRecipe read(ResourceLocation recipeId, PacketBuffer buffer) {
-            ShapedRecipe r = super.read(recipeId, buffer);
-            return new ShapedRecipeNoMirror(r.getId(), r.getGroup(), r.getRecipeWidth(), r.getRecipeHeight(), r.getIngredients(), r.getRecipeOutput());
+        public ShapedRecipe fromNetwork(ResourceLocation recipeId, PacketBuffer buffer) {
+            ShapedRecipe r = super.fromNetwork(recipeId, buffer);
+            return new ShapedRecipeNoMirror(r.getId(), r.getGroup(), r.getRecipeWidth(), r.getRecipeHeight(), r.getIngredients(), r.getResultItem());
         }
 
         @Override
-        public void write(PacketBuffer buffer, ShapedRecipe recipe) {
-            super.write(buffer, recipe);
+        public void toNetwork(PacketBuffer buffer, ShapedRecipe recipe) {
+            super.toNetwork(buffer, recipe);
         }
     }
 }

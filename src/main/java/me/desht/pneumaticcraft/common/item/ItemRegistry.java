@@ -52,7 +52,7 @@ public enum ItemRegistry implements IItemRegistry {
         if (acceptors != null) {
             List<String> tempList = new ArrayList<>(acceptors.size());
             for (IUpgradeAcceptor acceptor : acceptors) {
-                tempList.add(GuiConstants.BULLET + " " + I18n.format(acceptor.getUpgradeAcceptorTranslationKey()));
+                tempList.add(GuiConstants.BULLET + " " + I18n.get(acceptor.getUpgradeAcceptorTranslationKey()));
             }
             Collections.sort(tempList);
             tooltip.addAll(tempList.stream().map(StringTextComponent::new).collect(Collectors.toList()));

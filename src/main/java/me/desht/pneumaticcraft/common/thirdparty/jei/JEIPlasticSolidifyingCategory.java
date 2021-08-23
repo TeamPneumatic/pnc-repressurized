@@ -28,7 +28,7 @@ public class JEIPlasticSolidifyingCategory implements IRecipeCategory<JEIPlastic
     private final IDrawable icon;
 
     JEIPlasticSolidifyingCategory() {
-        localizedName = I18n.format("pneumaticcraft.gui.jei.title.plasticSolidifying");
+        localizedName = I18n.get("pneumaticcraft.gui.jei.title.plasticSolidifying");
         background = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_MISC_RECIPES, 0, 0, 82, 18);
         icon = JEIPlugin.jeiHelpers.getGuiHelper().createDrawableIngredient(new ItemStack(ModItems.PLASTIC.get()));
     }
@@ -85,7 +85,7 @@ public class JEIPlasticSolidifyingCategory implements IRecipeCategory<JEIPlastic
     public List<ITextComponent> getTooltipStrings(PlasticSolidifyingRecipe recipe, double mouseX, double mouseY) {
         List<ITextComponent> res = new ArrayList<>();
         if (mouseX >= 23 && mouseX <= 60) {
-            res.addAll(PneumaticCraftUtils.splitStringComponent(I18n.format("pneumaticcraft.gui.jei.tooltip.plasticSolidifying")));
+            res.addAll(PneumaticCraftUtils.splitStringComponent(I18n.get("pneumaticcraft.gui.jei.tooltip.plasticSolidifying")));
         }
         return res;
     }
@@ -97,7 +97,7 @@ public class JEIPlasticSolidifyingCategory implements IRecipeCategory<JEIPlastic
                         new ItemStack(ModItems.PLASTIC.get())
                 ),
                 new PlasticSolidifyingRecipe(
-                        Ingredient.fromStacks(new ItemStack(ModItems.PLASTIC_BUCKET.get())),
+                        Ingredient.of(new ItemStack(ModItems.PLASTIC_BUCKET.get())),
                         new ItemStack(ModItems.PLASTIC.get())
                 )
         );

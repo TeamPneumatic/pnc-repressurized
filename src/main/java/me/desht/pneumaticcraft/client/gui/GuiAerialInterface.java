@@ -51,7 +51,7 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<ContainerAeria
                 Textures.GUI_BUILDCRAFT_ENERGY, 0xFFA02222, false)
                 .setText(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.info.aerialInterface.interfacingRF.info"));
 
-        te.getCapability(CapabilityEnergy.ENERGY).ifPresent(storage -> addButton(new WidgetEnergy(guiLeft + 20, guiTop + 20, storage)));
+        te.getCapability(CapabilityEnergy.ENERGY).ifPresent(storage -> addButton(new WidgetEnergy(leftPos + 20, topPos + 20, storage)));
 
         if (te.dispenserUpgradeInserted) {
             // Experience Tab
@@ -79,7 +79,7 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<ContainerAeria
             for (int i = 0; i < FeedMode.values().length; i++) {
                 FeedMode mode = FeedMode.values()[i];
                 List<ITextComponent> l = new ArrayList<>();
-                l.add(xlate(mode.getTranslationKey()).mergeStyle(TextFormatting.YELLOW));
+                l.add(xlate(mode.getTranslationKey()).withStyle(TextFormatting.YELLOW));
                 l.addAll(GuiUtils.xlateAndSplit(mode.getDescTranslationKey()));
                 WidgetButtonExtended button = new WidgetButtonExtended(5 + 25 * i, 20, 20, 20)
                         .withTag(mode.toString())
@@ -131,7 +131,7 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<ContainerAeria
             String modName = ModNameCache.getModName(fluid.getRegistryName().getNamespace());
             xpButton.setTooltipText(ImmutableList.of(
                     fluidStack.getDisplayName(),
-                    new StringTextComponent(modName).mergeStyle(TextFormatting.ITALIC, TextFormatting.BLUE))
+                    new StringTextComponent(modName).withStyle(TextFormatting.ITALIC, TextFormatting.BLUE))
             );
         } else {
             xpButton.setRenderStacks(new ItemStack(Items.BUCKET));
@@ -144,15 +144,15 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<ContainerAeria
         liquidXpText.add(StringTextComponent.EMPTY);
         List<Fluid> availableXp = XPFluidManager.getInstance().getAvailableLiquidXPs();
         if (availableXp.isEmpty()) {
-            liquidXpText.add(xlate("pneumaticcraft.gui.misc.none").mergeStyle(TextFormatting.BLACK, TextFormatting.ITALIC));
+            liquidXpText.add(xlate("pneumaticcraft.gui.misc.none").withStyle(TextFormatting.BLACK, TextFormatting.ITALIC));
         } else {
             for (Fluid f : availableXp) {
                 FluidStack stack = new FluidStack(f, 1000);
                 String modName = ModNameCache.getModName(f.getRegistryName().getNamespace());
                 StringTextComponent modNameText = new StringTextComponent(" (" + modName + ")");
-                liquidXpText.add(GuiConstants.bullet().mergeStyle(TextFormatting.BLACK)
-                        .append(stack.getDisplayName().deepCopy().mergeStyle(TextFormatting.BLACK))
-                        .append(modNameText.mergeStyle(TextFormatting.DARK_BLUE))
+                liquidXpText.add(GuiConstants.bullet().withStyle(TextFormatting.BLACK)
+                        .append(stack.getDisplayName().copy().withStyle(TextFormatting.BLACK))
+                        .append(modNameText.withStyle(TextFormatting.DARK_BLUE))
                 );
             }
         }
@@ -170,7 +170,7 @@ public class GuiAerialInterface extends GuiPneumaticContainerBase<ContainerAeria
 
         if (te.getPressure() >= te.getMinWorkingPressure() && te.isConnectedToPlayer) {
             pressureStatText.add(xlate("pneumaticcraft.gui.tooltip.airUsage",
-                    PneumaticCraftUtils.roundNumberTo(PneumaticValues.USAGE_AERIAL_INTERFACE, 1)).mergeStyle(TextFormatting.BLACK));
+                    PneumaticCraftUtils.roundNumberTo(PneumaticValues.USAGE_AERIAL_INTERFACE, 1)).withStyle(TextFormatting.BLACK));
         }
     }
 

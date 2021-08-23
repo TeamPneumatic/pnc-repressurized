@@ -25,8 +25,8 @@ public class RenderFluidTank extends AbstractFluidTER<TileEntityFluidTank> {
 
     @Override
     Collection<TankRenderInfo> getTanksToRender(TileEntityFluidTank te) {
-        boolean up = te.getBlockState().get(BlockPneumaticCraft.UP);
-        boolean down = te.getBlockState().get(BlockPneumaticCraft.DOWN);
+        boolean up = te.getBlockState().getValue(BlockPneumaticCraft.UP);
+        boolean down = te.getBlockState().getValue(BlockPneumaticCraft.DOWN);
         AxisAlignedBB bounds;
         if (up && down)
             bounds = BOUNDS_BOTH;

@@ -50,7 +50,7 @@ public class PacketDescription extends LocationIntPacket {
             byte type = buf.readByte();
             fields.add(new IndexedField(idx, type, SyncedField.fromBytes(buf, type)));
         }
-        extraData = buf.readCompoundTag();
+        extraData = buf.readNbt();
     }
 
     @Override
@@ -64,7 +64,7 @@ public class PacketDescription extends LocationIntPacket {
             buf.writeByte(indexedField.type);
             SyncedField.toBytes(buf, indexedField.value, indexedField.type);
         }
-        buf.writeCompoundTag(extraData);
+        buf.writeNbt(extraData);
     }
 
     public void process(Supplier<NetworkEvent.Context> ctx) {

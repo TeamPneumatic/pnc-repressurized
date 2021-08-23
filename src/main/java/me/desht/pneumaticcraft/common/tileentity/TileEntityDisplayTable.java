@@ -36,18 +36,18 @@ public class TileEntityDisplayTable extends TileEntityBase implements IComparato
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tag) {
+    public CompoundNBT save(CompoundNBT tag) {
         tag.put("Items", inventory.serializeNBT());
 
-        return super.write(tag);
+        return super.save(tag);
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT tag) {
-        super.read(state, tag);
+    public void load(BlockState state, CompoundNBT tag) {
+        super.load(state, tag);
 
         inventory.deserializeNBT(tag.getCompound("Items"));
-        itemId = Item.getIdFromItem(inventory.getStackInSlot(0).getItem());
+        itemId = Item.getId(inventory.getStackInSlot(0).getItem());
     }
 
     @Override
@@ -79,8 +79,8 @@ public class TileEntityDisplayTable extends TileEntityBase implements IComparato
             super.onContentsChanged(slot);
 
             if (slot == 0) {
-                itemId = Item.getIdFromItem(getStackInSlot(0).getItem());
-                if (!world.isRemote) sendDescriptionPacket();
+                itemId = Item.getId(getStackInSlot(0).getItem());
+                if (!level.isClientSide) sendDescriptionPacket();
             }
         }
 

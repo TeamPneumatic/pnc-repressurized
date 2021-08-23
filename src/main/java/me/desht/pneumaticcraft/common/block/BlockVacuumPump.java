@@ -11,8 +11,8 @@ import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
 
 public class BlockVacuumPump extends BlockPneumaticCraft {
-    private static final VoxelShape BASE_SHAPE = Block.makeCuboidShape(2, 0, 2, 14, 11, 14);
-    private static final VoxelShape COLLISION_SHAPE = Block.makeCuboidShape(2, 2, 2, 14, 14, 14);
+    private static final VoxelShape BASE_SHAPE = Block.box(2, 0, 2, 14, 11, 14);
+    private static final VoxelShape COLLISION_SHAPE = Block.box(2, 2, 2, 14, 14, 14);
 
     public BlockVacuumPump() {
         super(ModBlocks.defaultProps());

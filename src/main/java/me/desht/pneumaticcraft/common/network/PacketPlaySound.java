@@ -55,7 +55,7 @@ public class PacketPlaySound extends LocationDoublePacket {
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> ClientUtils.getClientWorld().playSound(x, y, z, soundEvent, category, volume, pitch, distanceDelay));
+        ctx.get().enqueueWork(() -> ClientUtils.getClientWorld().playLocalSound(x, y, z, soundEvent, category, volume, pitch, distanceDelay));
         ctx.get().setPacketHandled(true);
     }
 }

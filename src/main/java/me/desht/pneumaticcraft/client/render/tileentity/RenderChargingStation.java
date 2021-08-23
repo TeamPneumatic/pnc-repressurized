@@ -18,18 +18,18 @@ public class RenderChargingStation extends TileEntityRenderer<TileEntityCharging
 
     @Override
     public void render(TileEntityChargingStation te, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        if (te.getChargingStackSynced().isEmpty() || !te.getWorld().isAreaLoaded(te.getPos(), 0)) return;
+        if (te.getChargingStackSynced().isEmpty() || !te.getLevel().isAreaLoaded(te.getBlockPos(), 0)) return;
 
-        matrixStackIn.push();
+        matrixStackIn.pushPose();
 
         matrixStackIn.translate(0.5, 0.5, 0.5);
         RenderUtils.rotateMatrixForDirection(matrixStackIn, te.getRotation());
         matrixStackIn.scale(0.5F, 0.5F, 0.5F);
 
         ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
-        IBakedModel ibakedmodel = itemRenderer.getItemModelWithOverrides(te.getChargingStackSynced(), te.getWorld(), null);
-        itemRenderer.renderItem(te.getChargingStackSynced(), ItemCameraTransforms.TransformType.FIXED, true, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn, ibakedmodel);
+        IBakedModel ibakedmodel = itemRenderer.getModel(te.getChargingStackSynced(), te.getLevel(), null);
+        itemRenderer.render(te.getChargingStackSynced(), ItemCameraTransforms.TransformType.FIXED, true, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn, ibakedmodel);
 
-        matrixStackIn.pop();
+        matrixStackIn.popPose();
     }
 }

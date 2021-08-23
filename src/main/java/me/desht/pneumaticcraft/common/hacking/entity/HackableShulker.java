@@ -51,8 +51,8 @@ public class HackableShulker implements IHackableEntity {
 
     @Override
     public boolean afterHackTick(Entity entity) {
-        if (entity.getEntityWorld().rand.nextInt(5) < 4) {
-            ((ShulkerEntity) entity).updateArmorModifier(100);
+        if (entity.getCommandSenderWorld().random.nextInt(5) < 4) {
+            ((ShulkerEntity) entity).setRawPeekAmount(100);
         }
         return false;
     }

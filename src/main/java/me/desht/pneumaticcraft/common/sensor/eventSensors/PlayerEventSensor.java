@@ -26,7 +26,7 @@ abstract class PlayerEventSensor implements IEventSensorSetting {
     public int emitRedstoneOnEvent(Event event, TileEntity sensor, int range, String textboxText) {
         if (event instanceof PlayerEvent) {
             PlayerEntity player = ((PlayerEvent) event).getPlayer();
-            if (Math.abs(player.getPosX() - sensor.getPos().getX() + 0.5D) < range + 0.5D && Math.abs(player.getPosY() - sensor.getPos().getY() + 0.5D) < range + 0.5D && Math.abs(player.getPosZ() - sensor.getPos().getZ() + 0.5D) < range + 0.5D) {
+            if (Math.abs(player.getX() - sensor.getBlockPos().getX() + 0.5D) < range + 0.5D && Math.abs(player.getY() - sensor.getBlockPos().getY() + 0.5D) < range + 0.5D && Math.abs(player.getZ() - sensor.getBlockPos().getZ() + 0.5D) < range + 0.5D) {
                 return emitRedstoneOnEvent((PlayerEvent) event, sensor, range);
             }
         }

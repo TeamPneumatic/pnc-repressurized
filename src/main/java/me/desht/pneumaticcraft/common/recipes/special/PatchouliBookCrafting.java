@@ -22,7 +22,7 @@ public class PatchouliBookCrafting extends ShapelessRecipe {
 
     public PatchouliBookCrafting(ResourceLocation idIn) {
         super(idIn, "", makeGuideBook(),
-                NonNullList.from(Ingredient.EMPTY, Ingredient.fromItems(Items.BOOK), Ingredient.fromItems(ModItems.COMPRESSED_IRON_INGOT.get()))
+                NonNullList.of(Ingredient.EMPTY, Ingredient.of(Items.BOOK), Ingredient.of(ModItems.COMPRESSED_IRON_INGOT.get()))
         );
     }
 

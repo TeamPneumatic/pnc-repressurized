@@ -48,14 +48,14 @@ public class Mek2PNCHeatProvider implements ICapabilityProvider {
             }
         }
 
-        int idx = side == null ? 6 : side.getIndex();
+        int idx = side == null ? 6 : side.get3DDataValue();
         if (!handlers.get(idx).isPresent()) {
             TileEntity te = teRef.get();
             LazyOptional<IHeatHandler> heatHandler = te.getCapability(MekanismIntegration.CAPABILITY_HEAT_HANDLER, side);
             if (heatHandler.isPresent()) {
                 heatHandler.addListener(l -> handlers.set(idx, LazyOptional.empty()));
                 Mek2PNCHeatAdapter adapter = new Mek2PNCHeatAdapter(side, heatHandler,
-                        HeatExchangerLogicAmbient.atPosition(te.getWorld(), te.getPos()).getAmbientTemperature(),
+                        HeatExchangerLogicAmbient.atPosition(te.getLevel(), te.getBlockPos()).getAmbientTemperature(),
                         getResistanceMultiplier(te));
                 handlers.set(idx, LazyOptional.of(() -> adapter));
             }

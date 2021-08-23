@@ -59,8 +59,8 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadr
     public GuiAmadronAddTrade(ContainerAmadronAddTrade container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
 
-        xSize = 183;
-        ySize = 202;
+        imageWidth = 183;
+        imageHeight = 202;
     }
 
     @Override
@@ -85,19 +85,19 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadr
 
         initSide(INPUT_SLOT);
         initSide(OUTPUT_SLOT);
-        setListener(amountFields[INPUT_SLOT]);
-        addButton(addButton = new WidgetButtonExtended(guiLeft + 50, guiTop + 171, 85, 20, "Add Trade", b -> addTrade()));
+        setFocused(amountFields[INPUT_SLOT]);
+        addButton(addButton = new WidgetButtonExtended(leftPos + 50, topPos + 171, 85, 20, "Add Trade", b -> addTrade()));
 
         addJeiFilterInfoTab();
     }
 
     public void setStack(int slot, ItemStack stack) {
         fluidFilters[slot].setFluid(Fluids.EMPTY);
-        container.setStack(slot, stack);
+        menu.setStack(slot, stack);
     }
 
     public void setFluid(int slot, Fluid stack) {
-        container.setStack(slot, ItemStack.EMPTY);
+        menu.setStack(slot, ItemStack.EMPTY);
         fluidFilters[slot].setFluid(stack);
     }
 
@@ -105,44 +105,44 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadr
         int xOffset = slot == INPUT_SLOT ? 0 : 89;
 
         String s = slot == INPUT_SLOT ? "selling" : "buying";
-        addButton(new WidgetLabel(guiLeft + 48 + xOffset, guiTop + 7,
+        addButton(new WidgetLabel(leftPos + 48 + xOffset, topPos + 7,
                 xlate("pneumaticcraft.gui.amadron.addTrade." + s), 0xFFFFFFFF).setAlignment(WidgetLabel.Alignment.CENTRE));
 
-        addButton(new WidgetButtonExtended(guiLeft + 4 + xOffset, guiTop + 20, 85, 20,
+        addButton(new WidgetButtonExtended(leftPos + 4 + xOffset, topPos + 20, 85, 20,
                 xlate("pneumaticcraft.gui.misc.searchItem"), b -> openItemSearchGui(slot)));
-        addButton(new WidgetButtonExtended(guiLeft + 4 + xOffset, guiTop + 42, 85, 20,
+        addButton(new WidgetButtonExtended(leftPos + 4 + xOffset, topPos + 42, 85, 20,
                 xlate("pneumaticcraft.gui.misc.searchInventory"), b -> openInventorySearchGui(slot)));
-        addButton(new WidgetButtonExtended(guiLeft + 4 + xOffset, guiTop + 64, 85, 20,
+        addButton(new WidgetButtonExtended(leftPos + 4 + xOffset, topPos + 64, 85, 20,
                 xlate("pneumaticcraft.gui.misc.searchFluid"), b -> openFluidSearchGui(slot)));
 
         Fluid prev = fluidFilters[slot] != null ? fluidFilters[slot].getFluid() : Fluids.EMPTY;
-        addButton(fluidFilters[slot] = new WidgetFluidFilter(guiLeft + 37 + xOffset, guiTop + 90, prev));
+        addButton(fluidFilters[slot] = new WidgetFluidFilter(leftPos + 37 + xOffset, topPos + 90, prev));
 
         String tip = slot == INPUT_SLOT ? "pneumaticcraft.gui.amadron.button.selectSellingBlock.tooltip" : "pneumaticcraft.gui.amadron.button.selectPaymentBlock.tooltip";
-        addButton(new WidgetButtonExtended(guiLeft + 10 + xOffset, guiTop + 115, 20, 20, "", b -> openGPSGui(slot))
+        addButton(new WidgetButtonExtended(leftPos + 10 + xOffset, topPos + 115, 20, 20, "", b -> openGPSGui(slot))
                 .setRenderStacks(new ItemStack(ModItems.GPS_TOOL.get()))
                 .setTooltipKey(tip)
         );
 
         int coarse = fluidFilters[slot].getFluid() == Fluids.EMPTY ? 10 : 1000;
         int max = fluidFilters[slot].getFluid() == Fluids.EMPTY ? 64 : Integer.MAX_VALUE;
-        amountFields[slot] = new WidgetTextFieldNumber(font, guiLeft + 22 + xOffset, guiTop + 145, 40, font.FONT_HEIGHT)
-                .setValue(amountFields[slot] != null ? amountFields[slot].getValue() : 1).setRange(1, max).setAdjustments(1, coarse);
+        amountFields[slot] = new WidgetTextFieldNumber(font, leftPos + 22 + xOffset, topPos + 145, 40, font.lineHeight)
+                .setValue(amountFields[slot] != null ? amountFields[slot].getIntValue() : 1).setRange(1, max).setAdjustments(1, coarse);
         addButton(amountFields[slot]);
 
-        addButton(new WidgetLabel(guiLeft + 65 + xOffset, guiTop + 145,
+        addButton(new WidgetLabel(leftPos + 65 + xOffset, topPos + 145,
                 new StringTextComponent(fluidFilters[slot].getFluid() != Fluids.EMPTY ? "mB" : "") , 0xFFFFFFFF));
         GlobalPos p = getPosition(slot);
-        if (p != null && GlobalPosHelper.isSameWorld(p, minecraft.world)) {
-            BlockState state = minecraft.world.getBlockState(p.getPos());
-            ITextComponent name = new ItemStack(state.getBlock().asItem()).getDisplayName();
-            addButton(new WidgetLabel(guiLeft + 32 + xOffset, guiTop + 118,
+        if (p != null && GlobalPosHelper.isSameWorld(p, minecraft.level)) {
+            BlockState state = minecraft.level.getBlockState(p.pos());
+            ITextComponent name = new ItemStack(state.getBlock().asItem()).getHoverName();
+            addButton(new WidgetLabel(leftPos + 32 + xOffset, topPos + 118,
                     name, 0xFFFFFFFF)).setScale(0.5f);
-            addButton(new WidgetLabel(guiLeft + 32 + xOffset, guiTop + 124,
-                    new StringTextComponent(" @ " + posToString(p.getPos())), 0xFFFFFFFF)).setScale(0.5f);
+            addButton(new WidgetLabel(leftPos + 32 + xOffset, topPos + 124,
+                    new StringTextComponent(" @ " + posToString(p.pos())), 0xFFFFFFFF)).setScale(0.5f);
         }
         if (positions[slot] == null) {
-            addButton(new WidgetLabel(guiLeft + 32 + xOffset, guiTop + 130, new StringTextComponent("[Default]"), 0xFFC0C0C0)).setScale(0.5f);
+            addButton(new WidgetLabel(leftPos + 32 + xOffset, topPos + 130, new StringTextComponent("[Default]"), 0xFFC0C0C0)).setScale(0.5f);
         }
     }
 
@@ -156,7 +156,7 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadr
     }
 
     @Override
-    public void onClose() {
+    public void removed() {
         if (!openingSubGUI) {
             NetworkHandler.sendToServer(new PacketGuiButton("showAmadron"));
         }
@@ -165,29 +165,29 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadr
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-            onClose();
+            removed();
             return true;
         } else if (keyCode == GLFW.GLFW_KEY_TAB) {
             WidgetTextFieldNumber amountIn = amountFields[INPUT_SLOT];
             WidgetTextFieldNumber amountOut = amountFields[OUTPUT_SLOT];
             if (amountIn.isFocused()) {
-                amountIn.setCursorPosition(amountIn.getCursorPosition());
-                amountIn.setFocused2(false);
-                setListener(amountOut);
-                amountOut.setCursorPosition(0);
-                amountOut.setSelectionPos(amountOut.getText().length());
+                amountIn.moveCursorTo(amountIn.getCursorPosition());
+                amountIn.setFocus(false);
+                setFocused(amountOut);
+                amountOut.moveCursorTo(0);
+                amountOut.setHighlightPos(amountOut.getValue().length());
             } else if (amountOut.isFocused()) {
-                amountOut.setCursorPosition(amountOut.getCursorPosition());
-                amountOut.setFocused2(false);
-                setListener(amountIn);
-                amountIn.setCursorPosition(0);
-                amountIn.setSelectionPos(amountIn.getText().length());
+                amountOut.moveCursorTo(amountOut.getCursorPosition());
+                amountOut.setFocus(false);
+                setFocused(amountIn);
+                amountIn.moveCursorTo(0);
+                amountIn.setHighlightPos(amountIn.getValue().length());
             }
         }
 
-        if (getListener() instanceof WidgetTextField) {
-            WidgetTextField tf = (WidgetTextField) getListener();
-            return tf.keyPressed(keyCode, scanCode, modifiers) || tf.canWrite() || super.keyPressed(keyCode, scanCode, modifiers);
+        if (getFocused() instanceof WidgetTextField) {
+            WidgetTextField tf = (WidgetTextField) getFocused();
+            return tf.keyPressed(keyCode, scanCode, modifiers) || tf.canConsumeInput() || super.keyPressed(keyCode, scanCode, modifiers);
         } else {
             return super.keyPressed(keyCode, scanCode, modifiers);
         }
@@ -207,10 +207,10 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadr
         openingSubGUI = true;
         ClientUtils.openContainerGui(ModContainers.ITEM_SEARCHER.get(),
                 new TranslationTextComponent("pneumaticcraft.gui.amadron.addTrade.itemSearch"));
-        if (minecraft.currentScreen instanceof GuiItemSearcher) {
+        if (minecraft.screen instanceof GuiItemSearcher) {
             settingSlot = slot;
-            searchGui = (GuiItemSearcher) minecraft.currentScreen;
-            searchGui.setSearchStack(container.getStack(slot));
+            searchGui = (GuiItemSearcher) minecraft.screen;
+            searchGui.setSearchStack(menu.getStack(slot));
         }
     }
 
@@ -218,10 +218,10 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadr
         openingSubGUI = true;
         ClientUtils.openContainerGui(ModContainers.INVENTORY_SEARCHER.get(),
                 new TranslationTextComponent("pneumaticcraft.gui.amadron.addTrade.invSearch"));
-        if (minecraft.currentScreen instanceof GuiInventorySearcher) {
+        if (minecraft.screen instanceof GuiInventorySearcher) {
             settingSlot = slot;
-            invSearchGui = (GuiInventorySearcher) minecraft.currentScreen;
-            invSearchGui.setSearchStack(container.getStack(slot));
+            invSearchGui = (GuiInventorySearcher) minecraft.screen;
+            invSearchGui.setSearchStack(menu.getStack(slot));
         }
     }
 
@@ -230,20 +230,20 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadr
         settingSlot = slot;
         fluidGui = new GuiLogisticsLiquidFilter(this);
         fluidGui.setFilter(fluidFilters[slot].getFluid());
-        minecraft.displayGuiScreen(fluidGui);
+        minecraft.setScreen(fluidGui);
     }
 
     private void openGPSGui(int slot) {
         openingSubGUI = true;
         ClientUtils.openContainerGui(ModContainers.INVENTORY_SEARCHER.get(),
                 new TranslationTextComponent("pneumaticcraft.gui.amadron.addTrade.gpsSearch"));
-        if (minecraft.currentScreen instanceof GuiInventorySearcher) {
-            gpsSearchGui = (GuiInventorySearcher) minecraft.currentScreen;
+        if (minecraft.screen instanceof GuiInventorySearcher) {
+            gpsSearchGui = (GuiInventorySearcher) minecraft.screen;
             gpsSearchGui.setStackPredicate(itemStack -> itemStack.getItem() instanceof IPositionProvider);
             settingSlot = slot;
             ItemStack gps = new ItemStack(ModItems.GPS_TOOL.get());
             GlobalPos gPos = getPosition(slot);
-            if (gPos != null) ItemGPSTool.setGPSLocation(gps, gPos.getPos());
+            if (gPos != null) ItemGPSTool.setGPSLocation(gps, gPos.pos());
             gpsSearchGui.setSearchStack(ItemGPSTool.getGPSLocation(gps) != null ? gps : ItemStack.EMPTY);
         }
     }
@@ -251,13 +251,13 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadr
     private void addTrade() {
         AmadronTradeResource[] resources = new AmadronTradeResource[2];
         for (int slot = 0; slot < resources.length; slot++) {
-            if (!container.getStack(slot).isEmpty()) {
-                resources[slot] = AmadronTradeResource.of(ItemHandlerHelper.copyStackWithSize(container.getStack(slot), amountFields[slot].getValue()));
+            if (!menu.getStack(slot).isEmpty()) {
+                resources[slot] = AmadronTradeResource.of(ItemHandlerHelper.copyStackWithSize(menu.getStack(slot), amountFields[slot].getIntValue()));
             } else {
-                resources[slot] = AmadronTradeResource.of(new FluidStack(fluidFilters[slot].getFluid(), amountFields[slot].getValue()));
+                resources[slot] = AmadronTradeResource.of(new FluidStack(fluidFilters[slot].getFluid(), amountFields[slot].getIntValue()));
             }
         }
-        String id = minecraft.player.getName().getUnformattedComponentText().toLowerCase() + "_" + (System.currentTimeMillis() / 1000);
+        String id = minecraft.player.getName().getContents().toLowerCase() + "_" + (System.currentTimeMillis() / 1000);
         AmadronPlayerOffer trade = new AmadronPlayerOffer(RL(id), resources[OUTPUT_SLOT], resources[INPUT_SLOT], minecraft.player)
                 .setProvidingPosition(getPosition(INPUT_SLOT))
                 .setReturningPosition(getPosition(OUTPUT_SLOT));
@@ -266,12 +266,12 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadr
 
     private GlobalPos getPosition(int slot) {
         if (positions[slot] != null) {
-            return GlobalPosHelper.makeGlobalPos(playerInventory.player.world, positions[slot]);
+            return GlobalPosHelper.makeGlobalPos(inventory.player.level, positions[slot]);
         }
-        if (!container.getStack(slot).isEmpty()) {
-            return ItemAmadronTablet.getItemProvidingLocation(playerInventory.player.getHeldItemMainhand());
+        if (!menu.getStack(slot).isEmpty()) {
+            return ItemAmadronTablet.getItemProvidingLocation(inventory.player.getMainHandItem());
         } else if (fluidFilters[slot].getFluid() != Fluids.EMPTY) {
-            return ItemAmadronTablet.getFluidProvidingLocation(playerInventory.player.getHeldItemMainhand());
+            return ItemAmadronTablet.getFluidProvidingLocation(inventory.player.getMainHandItem());
         } else {
             return null;
         }
@@ -289,9 +289,9 @@ public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadr
         GlobalPos inPos = getPosition(INPUT_SLOT);
         GlobalPos outPos = getPosition(OUTPUT_SLOT);
 
-        addButton.active = amountFields[INPUT_SLOT].getValue() > 0 && amountFields[OUTPUT_SLOT].getValue() > 0
-                && (fluidFilters[INPUT_SLOT].getFluid() != Fluids.EMPTY || !container.getInputStack().isEmpty())
-                && (fluidFilters[OUTPUT_SLOT].getFluid() != Fluids.EMPTY || !container.getOutputStack().isEmpty())
+        addButton.active = amountFields[INPUT_SLOT].getIntValue() > 0 && amountFields[OUTPUT_SLOT].getIntValue() > 0
+                && (fluidFilters[INPUT_SLOT].getFluid() != Fluids.EMPTY || !menu.getInputStack().isEmpty())
+                && (fluidFilters[OUTPUT_SLOT].getFluid() != Fluids.EMPTY || !menu.getOutputStack().isEmpty())
                 && inPos != null && outPos != null;
     }
 

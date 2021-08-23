@@ -15,12 +15,12 @@ public class DroneAIVoidLiquid extends Goal {
     }
 
     @Override
-    public boolean shouldExecute() {
+    public boolean canUse() {
         return widget.isFluidValid(drone.getFluidTank().getFluid().getFluid());
     }
 
     @Override
-    public void startExecuting() {
+    public void start() {
         int amount = drone.getFluidTank().getFluidAmount();
         if (amount > 0 && widget.isFluidValid(drone.getFluidTank().getFluid().getFluid())) {
             drone.getFluidTank().drain(Integer.MAX_VALUE, IFluidHandler.FluidAction.EXECUTE);

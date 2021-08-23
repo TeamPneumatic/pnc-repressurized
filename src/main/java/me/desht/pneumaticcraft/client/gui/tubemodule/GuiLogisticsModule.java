@@ -41,8 +41,8 @@ public class GuiLogisticsModule extends GuiTubeModule<ModuleLogistics> {
     }
 
     @Override
-    public void onClose() {
-        super.onClose();
+    public void removed() {
+        super.removed();
 
         module.setColorChannel(ourColor);
         NetworkHandler.sendToServer(new PacketTubeModuleColor(module));

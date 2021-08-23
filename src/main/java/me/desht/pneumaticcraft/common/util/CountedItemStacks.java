@@ -13,14 +13,14 @@ public class CountedItemStacks extends Object2IntOpenCustomHashMap<ItemStack> {
     private static class ItemStackHashingStrategy implements Strategy<ItemStack> {
         @Override
         public int hashCode(ItemStack object) {
-            return 31 * Item.getIdFromItem(object.getItem()) + object.getDamage();
+            return 31 * Item.getId(object.getItem()) + object.getDamageValue();
         }
 
         @Override
         public boolean equals(ItemStack o1, ItemStack o2) {
             return (o1 == o2) || !(o1 == null || o2 == null)
                     && o1.getItem() == o2.getItem()
-                    && o1.getDamage() == o2.getDamage();
+                    && o1.getDamageValue() == o2.getDamageValue();
             // ignore NBT for these purposes
         }
     }

@@ -28,9 +28,9 @@ public class GuiProgWidgetImportExport<P extends IProgWidget & ISidedWidget & IC
         if (showSides()) {
             for (Direction dir : DirectionUtil.VALUES) {
                 ITextComponent sideName = ClientUtils.translateDirectionComponent(dir);
-                WidgetCheckBox checkBox = new WidgetCheckBox(guiLeft + 8, guiTop + 32 + dir.getIndex() * 12, 0xFF404040,
-                        sideName, b -> progWidget.getSides()[dir.getIndex()] = b.checked);
-                checkBox.checked = progWidget.getSides()[dir.getIndex()];
+                WidgetCheckBox checkBox = new WidgetCheckBox(guiLeft + 8, guiTop + 32 + dir.get3DDataValue() * 12, 0xFF404040,
+                        sideName, b -> progWidget.getSides()[dir.get3DDataValue()] = b.checked);
+                checkBox.checked = progWidget.getSides()[dir.get3DDataValue()];
                 addButton(checkBox);
 
                 addLabel(xlate("pneumaticcraft.gui.progWidget.inventory.accessingSides"), guiLeft + 6, guiTop + 20);
@@ -39,14 +39,14 @@ public class GuiProgWidgetImportExport<P extends IProgWidget & ISidedWidget & IC
 
         WidgetCheckBox useItemCount = new WidgetCheckBox(guiLeft + 8, guiTop + (showSides() ? 115 : 30), 0xFF404040,
                 xlate("pneumaticcraft.gui.progWidget.itemFilter.useItemCount"),
-                b -> { progWidget.setUseCount(b.checked); textField.setEnabled(b.checked); }
+                b -> { progWidget.setUseCount(b.checked); textField.setEditable(b.checked); }
         ).setTooltipKey("pneumaticcraft.gui.progWidget.itemFilter.useItemCount.tooltip").setChecked(progWidget.useCount());
         addButton(useItemCount);
 
         textField = new WidgetTextFieldNumber(font, guiLeft + 10, guiTop + (showSides() ? 128 : 43), 50, 11).setRange(0, Integer.MAX_VALUE);
         textField.setValue(progWidget.getCount());
-        textField.setEnabled(useItemCount.checked);
-        textField.setResponder(s -> progWidget.setCount(textField.getValue()));
+        textField.setEditable(useItemCount.checked);
+        textField.setResponder(s -> progWidget.setCount(textField.getIntValue()));
         addButton(textField);
 
     }

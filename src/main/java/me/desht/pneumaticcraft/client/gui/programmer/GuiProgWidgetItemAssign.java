@@ -21,17 +21,17 @@ public class GuiProgWidgetItemAssign extends GuiProgWidgetOptionBase<ProgWidgetI
 
         textfield = new WidgetComboBox(font, guiLeft + 10, guiTop + 40, 160, 10);
         textfield.setElements(guiProgrammer.te.getAllVariables());
-        textfield.setMaxStringLength(GlobalVariableManager.MAX_VARIABLE_LEN);
-        textfield.setText(progWidget.getVariable());
+        textfield.setMaxLength(GlobalVariableManager.MAX_VARIABLE_LEN);
+        textfield.setValue(progWidget.getVariable());
         addButton(textfield);
 
         addButton(new WidgetLabel(guiLeft + 10, guiTop + 30, xlate("pneumaticcraft.gui.progWidget.itemFilter.variableLabel")));
     }
 
     @Override
-    public void onClose() {
-        progWidget.setVariable(textfield.getText());
+    public void removed() {
+        progWidget.setVariable(textfield.getValue());
 
-        super.onClose();
+        super.removed();
     }
 }

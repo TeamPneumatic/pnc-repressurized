@@ -26,8 +26,8 @@ public class ItemEmptyPCB extends ItemNonDespawning implements ICustomDurability
     private static final String NBT_ETCH_PROGRESS = "pneumaticcraft:etch_progress";
 
     @Override
-    public void addInformation(ItemStack stack, World player, List<ITextComponent> infoList, ITooltipFlag par4) {
-        super.addInformation(stack, player, infoList, par4);
+    public void appendHoverText(ItemStack stack, World player, List<ITextComponent> infoList, ITooltipFlag par4) {
+        super.appendHoverText(stack, player, infoList, par4);
         int uvProgress = TileEntityUVLightBox.getExposureProgress(stack);
         int etchProgress = getEtchProgress(stack);
 
@@ -36,10 +36,10 @@ public class ItemEmptyPCB extends ItemNonDespawning implements ICustomDurability
         }
         infoList.add(xlate("pneumaticcraft.gui.tooltip.item.uvLightBox.successChance", uvProgress));
         if (uvProgress < 100 && etchProgress == 0) {
-            infoList.add(xlate("pneumaticcraft.gui.tooltip.item.uvLightBox.putInLightBox").mergeStyle(TextFormatting.GRAY));
+            infoList.add(xlate("pneumaticcraft.gui.tooltip.item.uvLightBox.putInLightBox").withStyle(TextFormatting.GRAY));
         }
         if (uvProgress > 0) {
-            infoList.add(xlate("pneumaticcraft.gui.tooltip.item.uvLightBox.putInAcid").mergeStyle(TextFormatting.GRAY));
+            infoList.add(xlate("pneumaticcraft.gui.tooltip.item.uvLightBox.putInAcid").withStyle(TextFormatting.GRAY));
         }
     }
 
@@ -73,28 +73,28 @@ public class ItemEmptyPCB extends ItemNonDespawning implements ICustomDurability
     public boolean onEntityItemUpdate(ItemStack stack, ItemEntity entityItem) {
         super.onEntityItemUpdate(stack, entityItem);
 
-        if (entityItem.world.getFluidState(entityItem.getPosition()).getFluid().isIn(PneumaticCraftTags.Fluids.ETCHING_ACID)) {
+        if (entityItem.level.getFluidState(entityItem.blockPosition()).getType().is(PneumaticCraftTags.Fluids.ETCHING_ACID)) {
             if (!stack.hasTag()) {
                 stack.setTag(new CompoundNBT());
             }
             int etchProgress = getEtchProgress(stack);
             if (etchProgress < 100) {
-                if (entityItem.ticksExisted % (TileEntityConstants.PCB_ETCH_TIME / 5) == 0) {
+                if (entityItem.tickCount % (TileEntityConstants.PCB_ETCH_TIME / 5) == 0) {
                     setEtchProgress(stack, etchProgress + 1);
                 }
-                World world = entityItem.getEntityWorld();
-                if (world.rand.nextInt(15) == 0) {
-                    double x = entityItem.getPosX() + world.rand.nextDouble() * 0.3 - 0.15;
-                    double y = entityItem.getPosY() - 0.15;
-                    double z = entityItem.getPosZ() + world.rand.nextDouble() * 0.3 - 0.15;
+                World world = entityItem.getCommandSenderWorld();
+                if (world.random.nextInt(15) == 0) {
+                    double x = entityItem.getX() + world.random.nextDouble() * 0.3 - 0.15;
+                    double y = entityItem.getY() - 0.15;
+                    double z = entityItem.getZ() + world.random.nextDouble() * 0.3 - 0.15;
                     world.addParticle(ParticleTypes.CLOUD, x, y, z, 0.0, 0.05, 0.0);
                 }
-            } else if (!entityItem.world.isRemote) {
+            } else if (!entityItem.level.isClientSide) {
                 int successCount = 0;
                 int failedCount = 0;
                 int uvProgress = TileEntityUVLightBox.getExposureProgress(stack);
                 for (int i = 0; i < stack.getCount(); i++) {
-                    if (entityItem.world.rand.nextInt(100) <= uvProgress) {
+                    if (entityItem.level.random.nextInt(100) <= uvProgress) {
                         successCount++;
                     } else {
                         failedCount++;
@@ -108,7 +108,7 @@ public class ItemEmptyPCB extends ItemNonDespawning implements ICustomDurability
                 // Only when we have failed items and the existing item entity wasn't reused already for the failed items.
                 if (successCount > 0 && failedCount > 0) {
                     ItemStack failedStack = new ItemStack(ModItems.FAILED_PCB.get(), failedCount);
-                    entityItem.world.addEntity(new ItemEntity(entityItem.world, entityItem.getPosX(), entityItem.getPosY(), entityItem.getPosZ(), failedStack));
+                    entityItem.level.addFreshEntity(new ItemEntity(entityItem.level, entityItem.getX(), entityItem.getY(), entityItem.getZ(), failedStack));
                 }
             }
         }
@@ -116,8 +116,8 @@ public class ItemEmptyPCB extends ItemNonDespawning implements ICustomDurability
     }
 
     @Override
-    public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
-        if (this.isInGroup(group)) {
+    public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items) {
+        if (this.allowdedIn(group)) {
             items.add(new ItemStack(this));
 
             ItemStack stack = new ItemStack(this);
@@ -133,7 +133,7 @@ public class ItemEmptyPCB extends ItemNonDespawning implements ICustomDurability
 
     @Override
     public int getCustomDurabilityColour(ItemStack stack) {
-        return MaterialColor.EMERALD.colorValue;
+        return MaterialColor.EMERALD.col;
     }
 
     @Override

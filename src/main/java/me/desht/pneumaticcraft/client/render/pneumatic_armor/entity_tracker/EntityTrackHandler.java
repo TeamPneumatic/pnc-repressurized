@@ -122,14 +122,14 @@ public class EntityTrackHandler {
             if (DroneDebugClientHandler.enabledForPlayer(player)) {
                 ITextComponent debugKey = ClientUtils.translateKeyBind(KeyHandler.getInstance().keybindDebuggingDrone);
                 if (ItemPneumaticArmor.isPlayerDebuggingDrone(player, droneBase)) {
-                    curInfo.add(xlate("pneumaticcraft.entityTracker.info.drone.debugging").mergeStyle(TextFormatting.GOLD));
+                    curInfo.add(xlate("pneumaticcraft.entityTracker.info.drone.debugging").withStyle(TextFormatting.GOLD));
                     ITextComponent optionsKey = ClientUtils.translateKeyBind(KeyHandler.getInstance().keybindOpenOptions);
-                    curInfo.add(xlate("pneumaticcraft.entityTracker.info.drone.debugging.key", optionsKey).mergeStyle(TextFormatting.GOLD));
+                    curInfo.add(xlate("pneumaticcraft.entityTracker.info.drone.debugging.key", optionsKey).withStyle(TextFormatting.GOLD));
                     if (isLookingAtTarget) {
-                        curInfo.add(xlate("pneumaticcraft.entityTracker.info.drone.stopDebugging.key", debugKey).mergeStyle(TextFormatting.GOLD));
+                        curInfo.add(xlate("pneumaticcraft.entityTracker.info.drone.stopDebugging.key", debugKey).withStyle(TextFormatting.GOLD));
                     }
                 } else if (isLookingAtTarget) {
-                    curInfo.add(xlate("pneumaticcraft.entityTracker.info.drone.pressDebugKey", debugKey).mergeStyle(TextFormatting.GOLD));
+                    curInfo.add(xlate("pneumaticcraft.entityTracker.info.drone.pressDebugKey", debugKey).withStyle(TextFormatting.GOLD));
                 }
             }
         }
@@ -178,7 +178,7 @@ public class EntityTrackHandler {
 
         @Override
         public void addInfo(Entity entity, List<ITextComponent> curInfo, boolean isLookingAtTarget) {
-            int size = ((SlimeEntity) entity).getSlimeSize();
+            int size = ((SlimeEntity) entity).getSize();
             if (size >= 1 && size <= 3) {
                 curInfo.add(xlate(MESSAGES[size]));
             } else {
@@ -195,7 +195,7 @@ public class EntityTrackHandler {
 
         @Override
         public void addInfo(Entity entity, List<ITextComponent> curInfo, boolean isLookingAtTarget) {
-            Entity target = ((MonsterEntity) entity).getAttackTarget();
+            Entity target = ((MonsterEntity) entity).getTarget();
             if (target != null) {
                 curInfo.add(xlate("pneumaticcraft.entityTracker.info.target", target.getDisplayName().getString()));
             }
@@ -212,7 +212,7 @@ public class EntityTrackHandler {
 
         @Override
         public void addInfo(Entity entity, List<ITextComponent> curInfo, boolean isLookingAtTarget) {
-            int growingAge = ((AgeableEntity) entity).getGrowingAge();
+            int growingAge = ((AgeableEntity) entity).getAge();
             if (growingAge > 0) {
                 curInfo.add(xlate("pneumaticcraft.entityTracker.info.canBreedIn", PneumaticCraftUtils.convertTicksToMinutesAndSeconds(growingAge, false)));
             } else if (growingAge < 0) {
@@ -250,7 +250,7 @@ public class EntityTrackHandler {
 
         @Override
         public void update(Entity entity) {
-            if (((CreeperEntity) entity).getCreeperState() == 1) {
+            if (((CreeperEntity) entity).getSwellDir() == 1) {
                 creeperInFuseTime++;
                 if (creeperInFuseTime > 30) creeperInFuseTime = 30;
             } else {
@@ -262,10 +262,10 @@ public class EntityTrackHandler {
         @Override
         public void addInfo(Entity entity, List<ITextComponent> curInfo, boolean isLookingAtTarget) {
             if (creeperInFuseTime > 0) {
-                if (((CreeperEntity) entity).getCreeperState() == 1) {
-                    curInfo.add(xlate("pneumaticcraft.entityTracker.info.creeper.fuse", Math.round((30 - creeperInFuseTime) / 20F * 10F) / 10F + "s !").mergeStyle(TextFormatting.RED));
+                if (((CreeperEntity) entity).getSwellDir() == 1) {
+                    curInfo.add(xlate("pneumaticcraft.entityTracker.info.creeper.fuse", Math.round((30 - creeperInFuseTime) / 20F * 10F) / 10F + "s !").withStyle(TextFormatting.RED));
                 } else {
-                    curInfo.add(xlate("pneumaticcraft.entityTracker.info.creeper.coolDown", Math.round((30 - creeperInFuseTime) / 20F * 10F) / 10F + "s !").mergeStyle(TextFormatting.DARK_GREEN));
+                    curInfo.add(xlate("pneumaticcraft.entityTracker.info.creeper.coolDown", Math.round((30 - creeperInFuseTime) / 20F * 10F) / 10F + "s !").withStyle(TextFormatting.DARK_GREEN));
                 }
             }
         }
@@ -281,12 +281,12 @@ public class EntityTrackHandler {
         public void addInfo(Entity entity, List<ITextComponent> curInfo, boolean isLookingAtTarget) {
             PlayerEntity player = (PlayerEntity) entity;
 
-            addInventory("pneumaticcraft.entityTracker.info.player.armor", curInfo, player.inventory.armorInventory);
-            addInventory("pneumaticcraft.entityTracker.info.player.holding", curInfo, player.inventory.mainInventory);
+            addInventory("pneumaticcraft.entityTracker.info.player.armor", curInfo, player.inventory.armor);
+            addInventory("pneumaticcraft.entityTracker.info.player.holding", curInfo, player.inventory.items);
         }
 
         private static void addInventory(String key, List<ITextComponent> curInfo, NonNullList<ItemStack> stacks) {
-            curInfo.add(xlate(key).mergeStyle(TextFormatting.GRAY));
+            curInfo.add(xlate(key).withStyle(TextFormatting.GRAY));
             List<ITextComponent> l = new ArrayList<>();
             PneumaticCraftUtils.summariseItemStacks(l, asItemStackArray(stacks));
             if (l.isEmpty()) {
@@ -348,7 +348,7 @@ public class EntityTrackHandler {
 
         @Override
         public void addInfo(Entity entity, List<ITextComponent> curInfo, boolean isLookingAtTarget) {
-            PaintingType art = ((PaintingEntity) entity).art;
+            PaintingType art = ((PaintingEntity) entity).motive;
 
             if (art != null) {
                 curInfo.add(xlate("pneumaticcraft.entityTracker.info.painting.art", art.getRegistryName().getPath()));
@@ -377,10 +377,10 @@ public class EntityTrackHandler {
         @Override
         public void addInfo(Entity entity, List<ITextComponent> curInfo, boolean isLookingAtTarget) {
             ItemFrameEntity frame = (ItemFrameEntity) entity;
-            ItemStack stack = frame.getDisplayedItem();
+            ItemStack stack = frame.getItem();
 
             if (!stack.isEmpty()) {
-                curInfo.add(xlate("pneumaticcraft.entityTracker.info.itemframe.item", stack.getDisplayName().getString()));
+                curInfo.add(xlate("pneumaticcraft.entityTracker.info.itemframe.item", stack.getHoverName().getString()));
                 if (frame.getRotation() != 0) {
                     curInfo.add(xlate("pneumaticcraft.entityTracker.info.itemframe.rotation", frame.getRotation() * 45));
                 }

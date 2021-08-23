@@ -18,28 +18,28 @@ public abstract class PacketUpdateTubeModule extends LocationIntPacket {
     private final Direction moduleSide;
 
     public PacketUpdateTubeModule(TubeModule module) {
-        super(module.getTube().getPos());
+        super(module.getTube().getBlockPos());
         this.moduleSide = module.getDirection();
     }
 
     public PacketUpdateTubeModule(PacketBuffer buffer) {
         super(buffer);
-        this.moduleSide = Direction.byIndex(buffer.readByte());
+        this.moduleSide = Direction.from3DDataValue(buffer.readByte());
     }
 
     @Override
     public void toBytes(PacketBuffer buffer) {
         super.toBytes(buffer);
-        buffer.writeByte((byte) moduleSide.getIndex());
+        buffer.writeByte((byte) moduleSide.get3DDataValue());
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             PlayerEntity player = ctx.get().getSender();
             if (player != null) {
-                PneumaticCraftUtils.getTileEntityAt(player.getEntityWorld(), pos, TileEntityPressureTube.class).ifPresent(te -> {
+                PneumaticCraftUtils.getTileEntityAt(player.getCommandSenderWorld(), pos, TileEntityPressureTube.class).ifPresent(te -> {
                     TubeModule tm = te.getModule(moduleSide);
-                    if (tm != null && PneumaticCraftUtils.canPlayerReach(player, te.getPos())) {
+                    if (tm != null && PneumaticCraftUtils.canPlayerReach(player, te.getBlockPos())) {
                         onModuleUpdate(tm, player);
                     }
                 });

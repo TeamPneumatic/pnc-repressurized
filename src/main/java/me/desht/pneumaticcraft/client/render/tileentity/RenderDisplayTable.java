@@ -24,31 +24,31 @@ public class RenderDisplayTable extends TileEntityRenderer<TileEntityDisplayTabl
 
     @Override
     public void render(TileEntityDisplayTable te, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        if (!te.getWorld().getChunkProvider().isChunkLoaded(new ChunkPos(te.getPos()))) return;
-        ItemStack stack = new ItemStack(Item.getItemById(te.itemId));
+        if (!te.getLevel().getChunkSource().isEntityTickingChunk(new ChunkPos(te.getBlockPos()))) return;
+        ItemStack stack = new ItemStack(Item.byId(te.itemId));
 
-        matrixStackIn.push();
+        matrixStackIn.pushPose();
         matrixStackIn.translate(0.5, 1, 0.5);
         renderItemAt(matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn, stack, 0, 0, 0.5f, te.getRotation());
-        matrixStackIn.pop();
+        matrixStackIn.popPose();
     }
 
     static void renderItemAt(MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn, ItemStack stack, double xOffset, double zOffset, float scale, Direction rot) {
         if (!stack.isEmpty()) {
-            matrixStackIn.push();
+            matrixStackIn.pushPose();
             RenderUtils.rotateMatrixForDirection(matrixStackIn, rot);
             if (stack.getItem() instanceof BlockItem) {
                 matrixStackIn.translate(xOffset, scale / 4d, zOffset);
             } else {
                 // lie items flat
                 matrixStackIn.translate(xOffset, 0.025, zOffset);
-                matrixStackIn.rotate(Vector3f.XP.rotationDegrees(90));
+                matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(90));
             }
             matrixStackIn.scale(scale, scale, scale);
             ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
-            IBakedModel ibakedmodel = itemRenderer.getItemModelWithOverrides(stack, Minecraft.getInstance().world, null);
-            itemRenderer.renderItem(stack, ItemCameraTransforms.TransformType.FIXED, true, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn, ibakedmodel);
-            matrixStackIn.pop();
+            IBakedModel ibakedmodel = itemRenderer.getModel(stack, Minecraft.getInstance().level, null);
+            itemRenderer.render(stack, ItemCameraTransforms.TransformType.FIXED, true, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn, ibakedmodel);
+            matrixStackIn.popPose();
         }
     }
 }

@@ -25,7 +25,7 @@ public class HackableSecurityStation implements IHackableBlock {
 
     @Override
     public boolean canHack(IBlockReader world, BlockPos pos, PlayerEntity player) {
-        TileEntity te = world.getTileEntity(pos);
+        TileEntity te = world.getBlockEntity(pos);
         return te instanceof TileEntitySecurityStation && !((TileEntitySecurityStation) te).doesAllowPlayer(player);
     }
 
@@ -47,6 +47,6 @@ public class HackableSecurityStation implements IHackableBlock {
     @Override
     public void onHackComplete(World world, BlockPos pos, PlayerEntity player) {
         BlockState state = world.getBlockState(pos);
-        fakeRayTrace(player, pos).ifPresent(rtr -> state.onBlockActivated(world, player, Hand.MAIN_HAND, rtr));
+        fakeRayTrace(player, pos).ifPresent(rtr -> state.use(world, player, Hand.MAIN_HAND, rtr));
     }
 }

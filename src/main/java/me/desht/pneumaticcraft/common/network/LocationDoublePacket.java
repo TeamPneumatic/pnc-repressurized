@@ -46,6 +46,6 @@ public abstract class LocationDoublePacket {
     }
 
     PacketDistributor.TargetPoint getTargetPoint(World world) {
-        return new PacketDistributor.TargetPoint(x, y, z, TileEntityConstants.PACKET_UPDATE_DISTANCE, world.getDimensionKey());
+        return new PacketDistributor.TargetPoint(x, y, z, TileEntityConstants.PACKET_UPDATE_DISTANCE, world.dimension());
     }
 }

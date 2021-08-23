@@ -73,7 +73,7 @@ public class DroneItemHandler extends ItemStackHandler {
      * Call this when it's safe to create a fake player (i.e. NOT when reading NBT during entity/tile entity creation!)
      */
     public void setFakePlayerReady() {
-        if (!fakePlayerReady && !holder.world().isRemote) {
+        if (!fakePlayerReady && !holder.world().isClientSide) {
             fakePlayerReady = true;
             for (int slot = 0; slot < getSlots(); slot++) {
                 copyItemToFakePlayer(slot);
@@ -90,8 +90,8 @@ public class DroneItemHandler extends ItemStackHandler {
         if (!fakePlayerReady) return;
 
         PlayerInventory fakeInv = holder.getFakePlayer().inventory;
-        for (int slot = 1; slot < fakeInv.getSizeInventory(); slot++) {
-            ItemStack stack = fakeInv.getStackInSlot(slot);
+        for (int slot = 1; slot < fakeInv.getContainerSize(); slot++) {
+            ItemStack stack = fakeInv.getItem(slot);
             if (!stack.isEmpty()) {
                 if (slot < useableSlots) {
                     // using super method here to avoid unnecessary copy of the item back to the fake player again
@@ -99,7 +99,7 @@ public class DroneItemHandler extends ItemStackHandler {
                 } else {
                     PneumaticCraftUtils.dropItemOnGround(stack, holder.world(), new BlockPos(holder.getDronePos()));
                 }
-                fakeInv.setInventorySlotContents(slot, ItemStack.EMPTY);
+                fakeInv.setItem(slot, ItemStack.EMPTY);
             }
         }
     }
@@ -117,21 +117,21 @@ public class DroneItemHandler extends ItemStackHandler {
 
         // As it stands, drone inv can't go above 36 items (max 35 inv upgrades),
         // but let's be paranoid here
-        if (slot >= fakePlayer.inventory.mainInventory.size()) return;
+        if (slot >= fakePlayer.inventory.items.size()) return;
 
         // not a copy: any changes to items in the fake player should also be reflected in the drone's item handler
         ItemStack newStack = getStackInSlot(slot);
 
-        fakePlayer.inventory.mainInventory.set(slot, newStack);
-        if (slot == fakePlayer.inventory.currentItem) {
+        fakePlayer.inventory.items.set(slot, newStack);
+        if (slot == fakePlayer.inventory.selected) {
             // currentItem is always 0 but we'll use that rather than a literal 0
             // maybe one day drones will be able to change their current held-item slot
-            fakePlayer.setHeldItem(Hand.MAIN_HAND, newStack);
+            fakePlayer.setItemInHand(Hand.MAIN_HAND, newStack);
             if (!prevHeldStack.isEmpty()) {
-                fakePlayer.getAttributeManager().removeModifiers(prevHeldStack.getAttributeModifiers(EquipmentSlotType.MAINHAND));
+                fakePlayer.getAttributes().removeAttributeModifiers(prevHeldStack.getAttributeModifiers(EquipmentSlotType.MAINHAND));
             }
             if (!newStack.isEmpty()) {
-                fakePlayer.getAttributeManager().reapplyModifiers(newStack.getAttributeModifiers(EquipmentSlotType.MAINHAND));
+                fakePlayer.getAttributes().addTransientAttributeModifiers(newStack.getAttributeModifiers(EquipmentSlotType.MAINHAND));
             }
             prevHeldStack = newStack.copy();
         }

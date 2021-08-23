@@ -58,7 +58,7 @@ public class RefineryRecipeImpl extends RefineryRecipe {
 
 	@Override
 	public void write(PacketBuffer buffer) {
-		input.write(buffer);
+		input.toNetwork(buffer);
 		operatingTemp.write(buffer);
 		buffer.writeVarInt(outputs.size());
 		outputs.forEach(fluidStack -> fluidStack.writeToPacket(buffer));
@@ -80,7 +80,7 @@ public class RefineryRecipeImpl extends RefineryRecipe {
 	}
 
 	@Override
-	public ItemStack getIcon() {
+	public ItemStack getToastSymbol() {
 		return new ItemStack(ModBlocks.REFINERY.get());
 	}
 
@@ -92,8 +92,8 @@ public class RefineryRecipeImpl extends RefineryRecipe {
 		}
 
 		@Override
-        public T read(ResourceLocation recipeId, JsonObject json) {
-        	Ingredient input = FluidIngredient.deserialize(json.get("input"));
+        public T fromJson(ResourceLocation recipeId, JsonObject json) {
+        	Ingredient input = FluidIngredient.fromJson(json.get("input"));
         	TemperatureRange tempRange;
         	if (json.has("temperature")) {
 				tempRange = TemperatureRange.fromJson(json.getAsJsonObject("temperature"));
@@ -113,8 +113,8 @@ public class RefineryRecipeImpl extends RefineryRecipe {
 
         @Nullable
         @Override
-        public T read(ResourceLocation recipeId, PacketBuffer buffer) {
-            FluidIngredient input = (FluidIngredient) Ingredient.read(buffer);
+        public T fromNetwork(ResourceLocation recipeId, PacketBuffer buffer) {
+            FluidIngredient input = (FluidIngredient) Ingredient.fromNetwork(buffer);
             TemperatureRange range = TemperatureRange.read(buffer);
             int nOutputs = buffer.readVarInt();
             FluidStack[] outputs = new FluidStack[nOutputs];
@@ -125,7 +125,7 @@ public class RefineryRecipeImpl extends RefineryRecipe {
         }
 
         @Override
-        public void write(PacketBuffer buffer, T recipe) {
+        public void toNetwork(PacketBuffer buffer, T recipe) {
         	recipe.write(buffer);
         }
 

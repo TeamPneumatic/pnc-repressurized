@@ -132,7 +132,7 @@ public enum AmadronOfferManager {
         CombinedInvWrapper inv = new CombinedInvWrapper(new PlayerMainInvWrapper(player.inventory), new PlayerOffhandInvWrapper(player.inventory));
         for (int i = 0; i < inv.getSlots(); i++) {
             if (inv.getStackInSlot(i).getItem() instanceof ItemAmadronTablet) {
-                player.sendStatusMessage(xlate("pneumaticcraft.message.amadron.offersUpdated"), false);
+                player.displayClientMessage(xlate("pneumaticcraft.message.amadron.offersUpdated"), false);
                 break;
             }
         }
@@ -142,7 +142,7 @@ public enum AmadronOfferManager {
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
         if (server != null && !server.isDedicatedServer()) {
             for (PlayerEntity player : server.getPlayerList().getPlayers()) {
-                if (server.isServerOwner(player.getGameProfile())) {
+                if (server.isSingleplayerOwner(player.getGameProfile())) {
                     maybeNotifyPlayerOfUpdates(player);
                     break;
                 }
@@ -323,15 +323,15 @@ public enum AmadronOfferManager {
         if (villagerTrades.isEmpty()) {
             Set<VillagerProfession> validSet = new HashSet<>();
             Random rand = ThreadLocalRandom.current();
-            VillagerTrades.VILLAGER_DEFAULT_TRADES.forEach((profession, tradeMap) -> tradeMap.forEach((level, trades) -> {
+            VillagerTrades.TRADES.forEach((profession, tradeMap) -> tradeMap.forEach((level, trades) -> {
                 IntStream.range(0, trades.length).forEach(i -> {
                     try {
                         String key = profession.toString() + "_" + level;
                         MerchantOffer offer = trades[i].getOffer(null, rand);
                         ResourceLocation offerId = new ResourceLocation(profession.toString() + "_" + level + "_" + i);
                         villagerTrades.computeIfAbsent(key, k -> new ArrayList<>()).add(new AmadronOffer(offerId,
-                                AmadronTradeResource.of(offer.getBuyingStackFirst()),
-                                AmadronTradeResource.of(offer.getSellingStack()),
+                                AmadronTradeResource.of(offer.getBaseCostA()),
+                                AmadronTradeResource.of(offer.getResult()),
                                 false,
                                 level,
                                 offer.getMaxUses()

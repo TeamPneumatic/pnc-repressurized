@@ -1,227 +1,159 @@
+import se.bjurr.gitchangelog.plugin.gradle.GitChangelogTask
+
 buildscript {
-    repositories {
-        maven { url = 'https://files.minecraftforge.net/maven' }
-        jcenter()
-        mavenCentral()
-    }
-    dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '4.1.+', changing: true
-    }
+	repositories {
+		maven { url = 'https://files.minecraftforge.net/maven' }
+		maven { url = 'https://maven.parchmentmc.org' }
+		mavenCentral()
+	}
+	// This is only here while FG is under active development
+	configurations.classpath {
+		resolutionStrategy {
+			cacheDynamicVersionsFor 10, 'seconds'
+			cacheChangingModulesFor 0, 'seconds'
+		}
+	}
+	dependencies {
+		classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+		classpath 'org.parchmentmc:librarian:1.+'
+	}
 }
 
+plugins {
+	id 'java'
+	id 'eclipse'
+	id 'idea'
+	id 'com.matthewprenger.cursegradle' version '1.4.0'
+	id 'se.bjurr.gitchangelog.git-changelog-gradle-plugin' version '1.71.4'
+}
 apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'org.parchmentmc.librarian.forgegradle'
 
-// All jar files from this folder will be added automatically as runtime mod dependencies
-def extraModsDir = "extra-mods-${mc_version}"
+//apply from: 'buildtools/ColoredOutput.gradle'
 
-repositories {
-    mavenLocal()
-    flatDir {
-        name "extra-mods"
-        dir file(extraModsDir)
-    }
-    maven {
-        name "JEI"
-        url "http://dvs1.progwml6.com/files/maven"
-    }
-    maven {
-        name 'CC: Tweaked'
-        url 'https://squiddev.cc/maven/'
-    }
-    maven {
-        name "The One Probe"
-        url "http://maven.tterrag.com/"
-    }
-    maven {
-        name 'Crafttweaker/Patchouli/Botania/Immersive Engineering'
-        url 'http://maven.blamejared.com/'
-    }
-    maven {
-        name 'Curios'
-        url "https://maven.theillusivec4.top/"
-    }
-    maven {
-        name 'Gigaherz mappings'
-        url 'https://dogforce-games.com/maven/'
-    }
-    maven {
-        name "K-4u Mod maven"
-        url "https://modmaven.dev/"
-    }
-    maven {
-        url "https://www.cursemaven.com"
-        content {
-            includeGroup "curse.maven"
-        }
-    }
+//adds the build number to the end of the version string if on a build server
+String build_number = System.getenv().BUILD_NUMBER
+if (build_number == null) {
+	build_number = 'CUSTOM'
 }
 
-// Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
-ext.configFile = file('gradle.properties')
-ext.config = parseConfig(configFile)
+String semver = "${mod_version_massive}.${mod_version_major}.${mod_version_minor}"
 
-version = "${mc_version}-${mod_version_massive}.${mod_version_major}.${mod_version_minor}"
-group = "me.desht.pneumaticcraft"
+// these two are required for the java plugin to generate jar files with a version
+version = "${semver}-${build_number}"
+group = 'me.desht' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "pneumaticcraft-repressurized"
 
-if (System.getenv().BUILD_NUMBER != null) {
-    version += "-${System.getenv().BUILD_NUMBER}"
-} else {
-    version += "-CUSTOM"
+// All jar files from this folder will be added automatically as runtime mod dependencies
+def extraModsDir = "extra-mods-${project.mc_version}"
+
+sourceSets {
+	api
+	main {
+		compileClasspath += sourceSets.api.output
+		runtimeClasspath += sourceSets.api.output
+		resources {
+			srcDir 'src/generated/resources'
+		}
+	}
+	test {
+		compileClasspath += sourceSets.api.output
+		runtimeClasspath += sourceSets.api.output
+	}
 }
 
-sourceCompatibility = targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
-
-// prevent java 8's strict doclint for javadocs from failing builds
-allprojects {
-    tasks.withType(Javadoc) {
-        options.addStringOption('Xdoclint:none', '-quiet')
-    }
+configurations {
+	apiImplementation.extendsFrom(implementation)
+	apiRuntimeOnly.extendsFrom(runtimeOnly)
 }
 
-jar {
-    manifest {
-        attributes([
-            'FMLAT': 'accesstransformer.cfg',
-            "Specification-Title": "${config.mod_id}",
-            "Specification-Vendor": "desht",
-            "Specification-Version": "1", // We are version 1 of ourselves
-            "Implementation-Title": "${config.mod_id}",
-            "Implementation-Version": "${version}",
-            "Implementation-Vendor" :"desht",
-            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
-        ])
-    }
-}
+java.toolchain.languageVersion = JavaLanguageVersion.of(8)
 
-task sourcesJar(type: Jar) {
-    classifier = 'sources'
-    from sourceSets.main.allJava
-}
-
-task apiJar(type: Jar) {
-    classifier = 'api'
-    from(sourceSets.main.output) {
-        include "me/desht/pneumaticcraft/api/**"
-    }
-}
-
-task("uploadJars", dependsOn:"reobf") {
-    description = "uploads JARs"
-    if (System.getenv("local_maven") != null) {
-        apply plugin: 'maven'
-        uploadArchives {
-            repositories {
-                mavenDeployer {
-                    repository(url: "file://" + System.getenv("local_maven"))
-                }
-            }
-        }
-    }
-}
-
-artifacts {
-    archives sourcesJar
-    archives apiJar
-}
-
-compileJava {
-    sourceCompatibility = targetCompatibility = '1.8'
-}
-
-sourceSets.main.resources {
-    srcDir 'src/generated/resources'
-}
-
-minecraft {
-    mappings channel: 'snapshot', version: "${mappings_version}"
-    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
-    runs {
-        client {
-            // recommended logging data for a userdev environment
-            property 'forge.logging.markers', ''
-            property 'fml.earlyprogresswindow', 'false'
-            // recommended logging level for the console
-            property 'forge.logging.console.level', 'debug'
-
-//            property 'mixin.env.disableRefMap', 'true'
-            property 'mixin.env.remapRefMap', 'true'
-            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-            ideaModule "${project.name}.main"
-            workingDirectory project.file('run').canonicalPath
-            mods {
-                pneumaticcraft {
-                    source sourceSets.main
-                }
-            }
-        }
-        server {
-            property 'forge.logging.markers', 'CONFIG'
-            property 'forge.logging.console.level', 'debug'
-            property 'mixin.env.disableRefMap', 'true'
-            ideaModule "${project.name}.main"
-            workingDirectory project.file('run').canonicalPath
-            mods {
-                pneumaticcraft {
-                    source sourceSets.main
-                }
-            }
-        }
-        data {
-            property 'forge.logging.console.level', 'debug'
-            property 'fml.earlyprogresswindow', 'false'
-            property 'mixin.env.disableRefMap', 'true'
-            ideaModule "${project.name}.main"
-            workingDirectory project.file('run')
-            forceExit false
-            mods {
-                pneumaticcraft {
-                    source sourceSets.main
-                }
-            }
-            args '--mod', 'pneumaticcraft', '--all', '--output', file('src/generated/resources/'),
-                    '--existing', sourceSets.main.resources.srcDirs[0]
-            environment 'target', 'fmluserdevdata'
-        }
-    }
+repositories {
+	mavenCentral()
+	flatDir {
+		name "extra-mods"
+		dir file(extraModsDir)
+	}
+	maven {
+		name "JEI"
+		url "https://dvs1.progwml6.com/files/maven"
+	}
+	maven {
+		name 'CC: Tweaked'
+		url 'https://squiddev.cc/maven/'
+	}
+	maven {
+		name "The One Probe"
+		url "https://maven.tterrag.com/"
+	}
+	maven {
+		name 'Crafttweaker/Patchouli/Botania/Immersive Engineering'
+		url 'https://maven.blamejared.com/'
+	}
+	maven {
+		name 'Curios'
+		url "https://maven.theillusivec4.top/"
+	}
+	maven {
+		name 'Gigaherz mappings'
+		url 'https://dogforce-games.com/maven/'
+	}
+	maven {
+		name "K-4u Mod maven"
+		url "https://modmaven.dev/"
+	}
+	maven {
+		url "https://www.cursemaven.com"
+		content {
+			includeGroup "curse.maven"
+		}
+	}
 }
 
 dependencies {
-    minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
-    compileOnly fg.deobf ("mcjty.theoneprobe:TheOneProbe-1.16:${top_version}:api")
-    runtimeOnly fg.deobf ("mcjty.theoneprobe:TheOneProbe-1.16:${top_version}")
-    compileOnly fg.deobf("mezz.jei:jei-1.16.4:${jei_version}:api")
-    runtimeOnly fg.deobf("mezz.jei:jei-1.16.4:${jei_version}")
-    compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}:api")
-    runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}")
-    compileOnly fg.deobf("vazkii.botania:Botania:${botania_version}:api")
-    runtimeOnly fg.deobf("vazkii.botania:Botania:${botania_version}")
-    compileOnly fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}:api")
-    runtimeOnly fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}")
-    compileOnly fg.deobf("org.squiddev:cc-tweaked-1.16.4:${cc_tweaked_version}")
-    runtimeOnly fg.deobf("org.squiddev:cc-tweaked-1.16.4:${cc_tweaked_version}")
-    compileOnly fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:${immersive_engineering_version}")
-    runtimeOnly fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:${immersive_engineering_version}")
-    compileOnly fg.deobf("curse.maven:mekanism-268560:${mekanism_curse_id}")
-    runtimeOnly fg.deobf("curse.maven:mekanism-268560:${mekanism_curse_id}")
-    compileOnly fg.deobf("curse.maven:hwyla-253449:${hwyla_curse_id}")
-    runtimeOnly fg.deobf("curse.maven:hwyla-253449:${hwyla_curse_id}")
-    compileOnly fg.deobf("curse.maven:cofh_core-69162:${cofh_core_curse_id}")
-    runtimeOnly fg.deobf("curse.maven:cofh_core-69162:${cofh_core_curse_id}")
-    compileOnly fg.deobf("appeng:appliedenergistics2:${ae2_version}:api")
-    runtimeOnly fg.deobf("appeng:appliedenergistics2:${ae2_version}")
-    compileOnly fg.deobf("com.blamejared.crafttweaker:CraftTweaker-1.16.5:${crafttweaker_version}")
-    runtimeOnly fg.deobf("com.blamejared.crafttweaker:CraftTweaker-1.16.5:${crafttweaker_version}")
+	minecraft([
+			group  : "net.minecraftforge",
+			name   : 'forge',
+			version: "${project.mc_version}-${project.forge_version}"
+	])
+	testImplementation "org.junit.jupiter:junit-jupiter-api:5.7.2"
+	testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.7.2"
 
-    // Locally sourced extra mods for runtime (i.e. testing) - thanks AE2 for this idea
-    for (extraModJar in fileTree(dir: extraModsDir, include: '*.jar')) {
-        def basename = extraModJar.name.substring(0, extraModJar.name.length() - ".jar".length())
-        def versionSep = basename.lastIndexOf('-')
-        assert versionSep != -1
-        def artifactId = basename.substring(0, versionSep)
-        def version = basename.substring(versionSep + 1)
-        runtimeOnly fg.deobf("extra-mods:$artifactId:$version")
-    }
+	compileOnly fg.deobf ("mcjty.theoneprobe:TheOneProbe-1.16:${top_version}:api")
+	runtimeOnly fg.deobf ("mcjty.theoneprobe:TheOneProbe-1.16:${top_version}")
+	compileOnly fg.deobf("mezz.jei:jei-1.16.4:${jei_version}:api")
+	runtimeOnly fg.deobf("mezz.jei:jei-1.16.4:${jei_version}")
+	compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}:api")
+	runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}")
+	compileOnly fg.deobf("vazkii.botania:Botania:${botania_version}:api")
+	runtimeOnly fg.deobf("vazkii.botania:Botania:${botania_version}")
+	compileOnly fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}:api")
+	runtimeOnly fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}")
+	compileOnly fg.deobf("org.squiddev:cc-tweaked-1.16.4:${cc_tweaked_version}")
+	runtimeOnly fg.deobf("org.squiddev:cc-tweaked-1.16.4:${cc_tweaked_version}")
+	compileOnly fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:${immersive_engineering_version}")
+	runtimeOnly fg.deobf("blusunrize.immersiveengineering:ImmersiveEngineering:${immersive_engineering_version}")
+	compileOnly fg.deobf("curse.maven:mekanism-268560:${mekanism_curse_id}")
+	runtimeOnly fg.deobf("curse.maven:mekanism-268560:${mekanism_curse_id}")
+	compileOnly fg.deobf("curse.maven:hwyla-253449:${hwyla_curse_id}")
+	runtimeOnly fg.deobf("curse.maven:hwyla-253449:${hwyla_curse_id}")
+	compileOnly fg.deobf("curse.maven:cofh_core-69162:${cofh_core_curse_id}")
+	runtimeOnly fg.deobf("curse.maven:cofh_core-69162:${cofh_core_curse_id}")
+	compileOnly fg.deobf("appeng:appliedenergistics2:${ae2_version}:api")
+	runtimeOnly fg.deobf("appeng:appliedenergistics2:${ae2_version}")
+	compileOnly fg.deobf("com.blamejared.crafttweaker:CraftTweaker-1.16.5:${crafttweaker_version}")
+	runtimeOnly fg.deobf("com.blamejared.crafttweaker:CraftTweaker-1.16.5:${crafttweaker_version}")
+
+	// Locally sourced extra mods for runtime (i.e. testing) - thanks AE2 for this idea
+	for (extraModJar in fileTree(dir: extraModsDir, include: '*.jar')) {
+		def basename = extraModJar.name.substring(0, extraModJar.name.length() - ".jar".length())
+		def versionSep = basename.lastIndexOf('-')
+		assert versionSep != -1
+		def artifactId = basename.substring(0, versionSep)
+		def version = basename.substring(versionSep + 1)
+		runtimeOnly fg.deobf("extra-mods:$artifactId:$version")
+	}
 
 //    runtimeOnly fg.deobf("curse.maven:modernui:3158102")
 //    compileOnly "li.cil.oc:OpenComputers:MC1.12.2-${oc_version}:api"
@@ -233,25 +165,192 @@ dependencies {
 //    compileOnly "com.github.glitchfiend.biomesoplenty:ToughAsNails:${tan_version}:universal"
 }
 
+minecraft {
+	mappings channel: 'parchment', version: "2021.08.08-${project.mc_version}"
+
+	accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+
+	runs {
+		client {
+			property 'forge.logging.console.level', 'debug'
+			workingDirectory file('run')
+			property 'mixin.env.remapRefMap', 'true'
+			property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+			ideaModule "${project.name}.main"
+			mods {
+				pneumaticcraft.sources((SourceSet[]) [sourceSets.main, sourceSets.api])
+			}
+		}
+		server {
+			property 'forge.logging.console.level', 'debug'
+			workingDirectory file('run')
+			ideaModule "${project.name}.main"
+			mods {
+				pneumaticcraft.sources((SourceSet[]) [sourceSets.main, sourceSets.api])
+			}
+		}
+		data {
+			property 'forge.logging.console.level', 'debug'
+			property 'fml.earlyprogresswindow', 'false'
+			property 'mixin.env.disableRefMap', 'true'
+			workingDirectory file('run')
+			ideaModule "${project.name}.main"
+			forceExit false
+			args '--mod', 'pneumaticcraft', '--all', '--output', file('src/generated/resources/'), '--existing', sourceSets.main.resources.srcDirs[0]
+			mods {
+				pneumaticcraft.sources((SourceSet[]) [sourceSets.main, sourceSets.api])
+			}
+		}
+	}
+}
+
+def replaceResources = tasks.register("replaceResources", Copy) {
+	it.outputs.upToDateWhen { false }
+	//Copy it into the build dir
+	it.from(sourceSets.main.resources) {
+		include "META-INF/mods.toml"
+		expand 'version': version, 'mc_version': minecraft_version_range, 'forge_version': forge_version_range
+	}
+	it.into "$buildDir/resources/main/"
+}
+
 processResources {
-    from(sourceSets.main.resources.srcDirs) {
-        include 'META-INF/mods.toml'
-        expand 'version': project.version
-    }
-
-    // copy everything else, thats not the mods.toml
-    from(sourceSets.main.resources.srcDirs) {
-        exclude 'META-INF/mods.toml'
-    }
+	duplicatesStrategy(DuplicatesStrategy.FAIL)
+	exclude('META-INF/mods.toml')
+	configure { finalizedBy(replaceResources) }
 }
 
-def parseConfig(File config) {
-    config.withReader {
-        def prop = new Properties()
-        prop.load(it)
-        return (new ConfigSlurper().parse(prop))
-    }
+classes.configure {
+	dependsOn(replaceResources)
 }
 
-//idea { module { inheritOutputDirs = true } }
+javadoc {
+	source = [sourceSets.main.allJava, sourceSets.api.allJava]
+	// prevent java 8's strict doclint for javadocs from failing builds
+	options.addStringOption('Xdoclint:none', '-quiet')
+}
 
+//task makeChangelog(type: GitChangelogTask) {
+//	file = file('changelog.html')
+//	untaggedName = "Current release ${project.version}"
+//	fromCommit = '2fe051cf727adce1be210a46f778aa8fe031331e'
+//	toRef = 'HEAD'
+//	templateContent = file('changelog.mustache').getText('UTF-8')
+//}
+
+curseforge {
+	apiKey = project.findProperty('curseforge_apikey') ?: '0'
+	project {
+		id = curse_project_id
+		changelog = file('changelog.html')
+		changelogType = 'html'
+		releaseType = 'beta'
+	}
+}
+
+//afterEvaluate {
+//	tasks.curseforge281849.dependsOn makeChangelog
+//}
+
+jar {
+	from sourceSets.main.output
+	from sourceSets.api.output
+
+	manifest.attributes([
+			'FMLAT': 'accesstransformer.cfg',
+			"Specification-Title": "PneumaticCraft: Repressurized",
+			"Specification-Vendor": "desht",
+			"Specification-Version": "${semver}",
+			"Implementation-Title": project.name,
+			"Implementation-Version": "${project.version}",
+			"Implementation-Vendor" :"desht",
+			"Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+	])
+
+	finalizedBy 'reobfJar'
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+	duplicatesStrategy(DuplicatesStrategy.FAIL)
+	archiveClassifier.set('javadoc')
+	from javadoc.destinationDir
+}
+
+task sourcesJar(type: Jar) {
+	duplicatesStrategy(DuplicatesStrategy.FAIL)
+	archiveClassifier.set('sources')
+	from sourceSets.main.allJava
+	from sourceSets.api.allJava
+}
+
+task apiJar(type: Jar) {
+	duplicatesStrategy(DuplicatesStrategy.FAIL)
+	archiveClassifier.set('api')
+	from sourceSets.api.output
+	from(sourceSets.main.output) {
+		include "me/desht/pneumaticcraft/api/**"
+	}
+	afterEvaluate { finalizedBy reobfApiJar }
+
+	// TODO: when FG bug is fixed, remove allJava from the api jar.
+	// https://github.com/MinecraftForge/ForgeGradle/issues/369
+	// Gradle should be able to pull them from the -sources jar.
+	from sourceSets.api.allJava
+}
+
+task deobfJar(type: Jar) {
+	duplicatesStrategy(DuplicatesStrategy.FAIL)
+	archiveClassifier.set('deobf')
+	from sourceSets.main.output
+	from sourceSets.api.output
+}
+
+artifacts {
+	archives javadocJar
+	archives sourcesJar
+	archives apiJar
+	archives deobfJar
+}
+
+reobf {
+	apiJar { classpath.from(sourceSets.api.compileClasspath) }
+	jar { classpath.from(sourceSets.main.compileClasspath) }
+}
+
+task reobf {
+	dependsOn reobfJar
+	dependsOn reobfApiJar
+}
+
+task uploadJars(dependsOn: build) {
+	description = 'Uploads JARs'
+	if (project.hasProperty('local_maven')) {
+		apply plugin: 'maven-publish'
+		publishing {
+			publications { PublicationContainer publicationContainer ->
+				publicationContainer.register("maven", MavenPublication) { MavenPublication publication ->
+					publication.artifacts = [apiJar, jar, javadocJar, deobfJar, sourcesJar]
+				}
+			}
+			repositories {
+				maven {
+					url("file://${local_maven}")
+				}
+			}
+		}
+	}
+}
+
+idea {
+	module {
+		for (String exclude in ['run', 'out', 'logs']) {
+			excludeDirs += file(exclude)
+		}
+	}
+}
+
+//test {
+//	useJUnitPlatform()
+//	include 'mezz/jei/**'
+//	exclude 'mezz/jei/lib/**'
+//}

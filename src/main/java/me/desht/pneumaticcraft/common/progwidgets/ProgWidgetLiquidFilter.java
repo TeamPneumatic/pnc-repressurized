@@ -91,7 +91,7 @@ public class ProgWidgetLiquidFilter extends ProgWidget {
         super.getTooltip(curTooltip);
         if (fluid != null) {
             curTooltip.add(new StringTextComponent("Fluid: " )
-                    .mergeStyle(TextFormatting.AQUA)
+                    .withStyle(TextFormatting.AQUA)
                     .append(asTextComponent()));
         }
     }

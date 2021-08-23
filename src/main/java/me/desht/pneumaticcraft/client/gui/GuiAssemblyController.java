@@ -40,9 +40,9 @@ public class GuiAssemblyController extends GuiPneumaticContainerBase<ContainerAs
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int x, int y) {
-        super.drawGuiContainerForegroundLayer(matrixStack, x, y);
-        font.drawString(matrixStack, "Prog.", 70, 24, 0x404040);
+    protected void renderLabels(MatrixStack matrixStack, int x, int y) {
+        super.renderLabels(matrixStack, x, y);
+        font.draw(matrixStack, "Prog.", 70, 24, 0x404040);
     }
 
     @Override
@@ -66,9 +66,9 @@ public class GuiAssemblyController extends GuiPneumaticContainerBase<ContainerAs
         for (EnumMachine m : EnumMachine.values()) {
             if (m == EnumMachine.CONTROLLER) continue; // we *are* the controller!
             IFormattableTextComponent s = foundMachines.contains(m) ?
-                    new StringTextComponent(GuiConstants.TICK_MARK).mergeStyle(TextFormatting.DARK_GREEN) :
-                    new StringTextComponent(GuiConstants.X_MARK).mergeStyle(TextFormatting.RED);
-            text.add(s.appendString(" ").append(xlate(m.getTranslationKey()).mergeStyle(TextFormatting.WHITE)));
+                    new StringTextComponent(GuiConstants.TICK_MARK).withStyle(TextFormatting.DARK_GREEN) :
+                    new StringTextComponent(GuiConstants.X_MARK).withStyle(TextFormatting.RED);
+            text.add(s.append(" ").append(xlate(m.getTranslationKey()).withStyle(TextFormatting.WHITE)));
         }
         return text;
     }
@@ -81,10 +81,10 @@ public class GuiAssemblyController extends GuiPneumaticContainerBase<ContainerAs
             textList.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.assembly_controller.no_program"));
         } else {
             if (te.isMachineDuplicate) {
-                String s = te.duplicateMachine == null ? "<???>" : I18n.format(te.duplicateMachine.getTranslationKey());
+                String s = te.duplicateMachine == null ? "<???>" : I18n.get(te.duplicateMachine.getTranslationKey());
                 textList.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.assembly_controller.duplicateMachine", s));
             } else if (te.isMachineMissing) {
-                String s = te.missingMachine == null ? "<???>" : I18n.format(te.missingMachine.getTranslationKey());
+                String s = te.missingMachine == null ? "<???>" : I18n.get(te.missingMachine.getTranslationKey());
                 textList.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.assembly_controller.missingMachine", s));
             } else {
                 te.curProgram.addProgramProblem(textList);

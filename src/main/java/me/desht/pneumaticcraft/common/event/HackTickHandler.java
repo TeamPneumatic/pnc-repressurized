@@ -56,12 +56,12 @@ public enum HackTickHandler {
         if (iHackable.getHackableId() != null) {
             entity.getCapability(PNCCapabilities.HACKING_CAPABILITY).ifPresent(hacking -> {
                 hacking.addHackable(iHackable);
-                hackedEntities.computeIfAbsent(getKey(entity.world), k -> new HashSet<>()).add(entity);
+                hackedEntities.computeIfAbsent(getKey(entity.level), k -> new HashSet<>()).add(entity);
             });
         }
     }
 
     private ResourceLocation getKey(World w) {
-        return w.getDimensionKey().getLocation();
+        return w.dimension().location();
     }
 }

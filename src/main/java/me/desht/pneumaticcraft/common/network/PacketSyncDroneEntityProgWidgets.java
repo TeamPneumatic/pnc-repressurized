@@ -23,12 +23,12 @@ public class PacketSyncDroneEntityProgWidgets extends PacketDroneDebugBase {
 
     PacketSyncDroneEntityProgWidgets(PacketBuffer buffer) {
         super(buffer);
-        progWidgets = TileEntityProgrammer.getWidgetsFromNBT(buffer.readCompoundTag());
+        progWidgets = TileEntityProgrammer.getWidgetsFromNBT(buffer.readNbt());
     }
 
     public void toBytes(PacketBuffer buf) {
         super.toBytes(buf);
-        buf.writeCompoundTag(TileEntityProgrammer.putWidgetsToNBT(progWidgets, new CompoundNBT()));
+        buf.writeNbt(TileEntityProgrammer.putWidgetsToNBT(progWidgets, new CompoundNBT()));
     }
 
     @Override

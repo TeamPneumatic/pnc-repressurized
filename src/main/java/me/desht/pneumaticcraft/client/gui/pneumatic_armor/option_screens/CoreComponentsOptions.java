@@ -31,7 +31,7 @@ public class CoreComponentsOptions extends IOptionPage.SimpleOptionPage<CoreComp
     public void populateGui(IGuiScreen gui) {
         gui.addWidget(new WidgetButtonExtended(30, 128, 150, 20,
                 xlate("pneumaticcraft.armor.gui.misc.movePressureScreen"),
-                b -> Minecraft.getInstance().displayGuiScreen(new GuiMoveStat(getClientUpgradeHandler(), ArmorHUDLayout.LayoutType.POWER)))
+                b -> Minecraft.getInstance().setScreen(new GuiMoveStat(getClientUpgradeHandler(), ArmorHUDLayout.LayoutType.POWER)))
         );
 
         gui.addWidget(new WidgetButtonExtended(30, 150, 150, 20,
@@ -39,12 +39,12 @@ public class CoreComponentsOptions extends IOptionPage.SimpleOptionPage<CoreComp
             getClientUpgradeHandler().testMessageStat = new WidgetAnimatedStat(null, new StringTextComponent("Test Message, keep in mind messages can be long!"),
                     WidgetAnimatedStat.StatIcon.NONE, HUDHandler.getInstance().getStatOverlayColor(), null, ArmorHUDLayout.INSTANCE.messageStat);
             getClientUpgradeHandler().testMessageStat.openStat();
-            Minecraft.getInstance().displayGuiScreen(
+            Minecraft.getInstance().setScreen(
                     new GuiMoveStat(getClientUpgradeHandler(), ArmorHUDLayout.LayoutType.MESSAGE, getClientUpgradeHandler().testMessageStat));
         }));
 
         gui.addWidget(new WidgetButtonExtended(30, 194, 150, 20,
-                xlate("pneumaticcraft.armor.gui.misc.colors"), b -> Minecraft.getInstance().displayGuiScreen(new GuiArmorColors())));
+                xlate("pneumaticcraft.armor.gui.misc.colors"), b -> Minecraft.getInstance().setScreen(new GuiArmorColors())));
 
         gui.addWidget(new WidgetCheckBox(5, 45, 0xFFFFFFFF, xlate("pneumaticcraft.armor.gui.misc.showPressureNumerically"), b -> {
             getClientUpgradeHandler().setShowPressureNumerically(b.checked);

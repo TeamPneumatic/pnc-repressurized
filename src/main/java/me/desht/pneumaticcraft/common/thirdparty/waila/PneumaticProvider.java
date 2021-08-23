@@ -38,9 +38,9 @@ public class PneumaticProvider {
             if (te instanceof IInfoForwarder) {
                 teInfo = ((IInfoForwarder) te).getInfoTileEntity();
                 if (teInfo != null) {
-                    compoundNBT.putInt("infoX", teInfo.getPos().getX());
-                    compoundNBT.putInt("infoY", teInfo.getPos().getY());
-                    compoundNBT.putInt("infoZ", teInfo.getPos().getZ());
+                    compoundNBT.putInt("infoX", teInfo.getBlockPos().getX());
+                    compoundNBT.putInt("infoY", teInfo.getBlockPos().getY());
+                    compoundNBT.putInt("infoZ", teInfo.getBlockPos().getZ());
                 }
             } else {
                 teInfo = te;
@@ -72,7 +72,7 @@ public class PneumaticProvider {
             TileEntity te = accessor.getTileEntity();
             if (te instanceof IInfoForwarder){
                 BlockPos infoPos = new BlockPos(tag.getInt("infoX"), tag.getInt("infoY"), tag.getInt("infoZ"));
-                te = accessor.getWorld().getTileEntity(infoPos);
+                te = accessor.getWorld().getBlockEntity(infoPos);
             }
             if (te != null) {
                 te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).ifPresent(h -> {
@@ -94,8 +94,8 @@ public class PneumaticProvider {
                 FluidStack fluidStack = FluidStack.loadFluidStackFromNBT(subtag);
                 ITextComponent fluidDesc = fluidStack.isEmpty() ?
                         xlate("pneumaticcraft.gui.misc.empty") :
-                        xlate("pneumaticcraft.message.misc.fluidmB", fluidStack.getAmount()).appendString(" ").append(xlate(fluidStack.getTranslationKey()));
-                tooltip.add(xlate("pneumaticcraft.waila.tank", i + 1, fluidDesc.deepCopy().mergeStyle(TextFormatting.AQUA)));
+                        xlate("pneumaticcraft.message.misc.fluidmB", fluidStack.getAmount()).append(" ").append(xlate(fluidStack.getTranslationKey()));
+                tooltip.add(xlate("pneumaticcraft.waila.tank", i + 1, fluidDesc.copy().withStyle(TextFormatting.AQUA)));
             }
         }
 

@@ -45,28 +45,28 @@ public class ModBlocks {
     }
 
     private static Supplier<BlockItem> item(final RegistryObject<? extends Block> block, final Supplier<Callable<ItemStackTileEntityRenderer>> renderMethod) {
-        return () -> new BlockItem(block.get(), new Item.Properties().group(ModItems.ItemGroups.PNC_CREATIVE_TAB).setISTER(renderMethod));
+        return () -> new BlockItem(block.get(), new Item.Properties().tab(ModItems.ItemGroups.PNC_CREATIVE_TAB).setISTER(renderMethod));
     }
 
     private static Supplier<BlockItem> item(final RegistryObject<? extends Block> block, final ItemGroup itemGroup) {
-        return () -> new BlockItem(block.get(), new Item.Properties().group(itemGroup));
+        return () -> new BlockItem(block.get(), new Item.Properties().tab(itemGroup));
     }
 
     public static Block.Properties defaultProps() {
-        return Block.Properties.create(Material.IRON)
-                .hardnessAndResistance(3f, 10f)
+        return Block.Properties.of(Material.METAL)
+                .strength(3f, 10f)
                 .sound(SoundType.METAL);
     }
 
     public static Block.Properties reinforcedStoneProps() {
-        return Block.Properties.create(Material.ROCK, MaterialColor.GRAY)
-                .setRequiresTool()
-                .hardnessAndResistance(3f, 1200f)
+        return Block.Properties.of(Material.STONE, MaterialColor.COLOR_GRAY)
+                .requiresCorrectToolForDrops()
+                .strength(3f, 1200f)
                 .sound(SoundType.STONE);
     }
 
     private static Block.Properties fluidProps() {
-        return Block.Properties.create(Material.WATER).doesNotBlockMovement().hardnessAndResistance(100f).noDrops();
+        return Block.Properties.of(Material.WATER).noCollission().strength(100f).noDrops();
     }
 
     public static final RegistryObject<BlockPressureTube> PRESSURE_TUBE = register("pressure_tube",
@@ -211,11 +211,11 @@ public class ModBlocks {
     public static final List<RegistryObject<BlockWallLamp>> WALL_LAMPS_INVERTED = new ArrayList<>();
     static {
         for (DyeColor color : DyeColor.values()) {
-            PLASTIC_BRICKS.add(register("plastic_brick_" + color.getTranslationKey(), () -> new BlockPlasticBrick(color),
+            PLASTIC_BRICKS.add(register("plastic_brick_" + color.getName(), () -> new BlockPlasticBrick(color),
                     block -> () -> new BlockPlasticBrick.ItemPlasticBrick(block.get())));
-            WALL_LAMPS.add(register("wall_lamp_" + color.getTranslationKey(), () -> new BlockWallLamp(color, false),
+            WALL_LAMPS.add(register("wall_lamp_" + color.getName(), () -> new BlockWallLamp(color, false),
                     block -> () -> new BlockWallLamp.ItemWallLamp(block.get())));
-            WALL_LAMPS_INVERTED.add(register("wall_lamp_inverted_" + color.getTranslationKey(), () -> new BlockWallLamp(color, true),
+            WALL_LAMPS_INVERTED.add(register("wall_lamp_inverted_" + color.getName(), () -> new BlockWallLamp(color, true),
                     block -> () -> new BlockWallLamp.ItemWallLamp(block.get())));
         }
     }
@@ -227,7 +227,7 @@ public class ModBlocks {
     public static final RegistryObject<Block> REINFORCED_BRICK_TILE = register("reinforced_brick_tile",
             () -> new Block(reinforcedStoneProps()));
     public static final RegistryObject<Block> REINFORCED_BRICK_STAIRS = register("reinforced_brick_stairs",
-            () -> new StairsBlock(() -> REINFORCED_BRICKS.get().getDefaultState(),
+            () -> new StairsBlock(() -> REINFORCED_BRICKS.get().defaultBlockState(),
                     reinforcedStoneProps()));
     public static final RegistryObject<Block> REINFORCED_BRICK_SLAB = register("reinforced_brick_slab",
             () -> new SlabBlock(reinforcedStoneProps()));

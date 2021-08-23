@@ -36,10 +36,10 @@ public class GuiInventorySearcher extends ContainerScreen<ContainerInventorySear
     public GuiInventorySearcher(ContainerInventorySearcher container, PlayerInventory inv, ITextComponent title) {
         super(container, inv, title);
 
-        inv.player.openContainer = container;
+        inv.player.containerMenu = container;
         passEvents = true;
-        ySize = 176;
-        parentScreen = Minecraft.getInstance().currentScreen;
+        imageHeight = 176;
+        parentScreen = Minecraft.getInstance().screen;
         container.init(inventory);
     }
 
@@ -47,7 +47,7 @@ public class GuiInventorySearcher extends ContainerScreen<ContainerInventorySear
     protected void init() {
         super.init();
 
-        addButton(label = new WidgetLabel(guiLeft + 105, guiTop + 28, StringTextComponent.EMPTY, 0xFF404080));
+        addButton(label = new WidgetLabel(leftPos + 105, topPos + 28, StringTextComponent.EMPTY, 0xFF404080));
     }
 
     @Override
@@ -56,12 +56,12 @@ public class GuiInventorySearcher extends ContainerScreen<ContainerInventorySear
     }
 
     @Override
-    public void closeScreen() {
-        minecraft.keyboardListener.enableRepeatEvents(false);
+    public void onClose() {
+        minecraft.keyboardHandler.setSendRepeatsToGui(false);
         if (parentScreen != null) {
             ClientUtils.closeContainerGui(parentScreen);
         } else {
-            super.closeScreen();
+            super.onClose();
         }
     }
 
@@ -81,14 +81,14 @@ public class GuiInventorySearcher extends ContainerScreen<ContainerInventorySear
     }
 
     @Override
-    protected void handleMouseClick(Slot slot, int slotId, int mouseButton, ClickType clickType) {
+    protected void slotClicked(Slot slot, int slotId, int mouseButton, ClickType clickType) {
         if (slot != null) {
-            if (slot.slotNumber == 36) {
+            if (slot.index == 36) {
                 clickedMouseButton = 0;
-                slot.putStack(ItemStack.EMPTY);
+                slot.set(ItemStack.EMPTY);
             } else {
                 clickedMouseButton = mouseButton;
-                setSearchStack(slot.getStack());
+                setSearchStack(slot.getItem());
             }
         }
     }
@@ -136,24 +136,24 @@ public class GuiInventorySearcher extends ContainerScreen<ContainerInventorySear
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float par1, int par2, int par3) {
+    protected void renderBg(MatrixStack matrixStack, float par1, int par2, int par3) {
         renderBackground(matrixStack);
-        minecraft.getTextureManager().bindTexture(Textures.GUI_INVENTORY_SEARCHER);
-        int xStart = (width - xSize) / 2;
-        int yStart = (height - ySize) / 2;
-        blit(matrixStack, xStart, yStart, 0, 0, xSize, ySize);
+        minecraft.getTextureManager().bind(Textures.GUI_INVENTORY_SEARCHER);
+        int xStart = (width - imageWidth) / 2;
+        int yStart = (height - imageHeight) / 2;
+        blit(matrixStack, xStart, yStart, 0, 0, imageWidth, imageHeight);
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int mouseX, int mouseY) {
-        font.func_238422_b_(matrixStack, getTitle().func_241878_f(), this.width / 2f, 5, 0x404040);
+    protected void renderLabels(MatrixStack matrixStack, int mouseX, int mouseY) {
+        font.draw(matrixStack, getTitle().getVisualOrderText(), this.width / 2f, 5, 0x404040);
 
         // darken out all non-matching slots
-        for (int i = 0; i < this.container.inventorySlots.size() - 1; ++i) {
-            Slot slot = this.container.inventorySlots.get(i);
-            if (!stackPredicate.test(slot.getStack())) {
+        for (int i = 0; i < this.menu.slots.size() - 1; ++i) {
+            Slot slot = this.menu.slots.get(i);
+            if (!stackPredicate.test(slot.getItem())) {
                 RenderSystem.colorMask(true, true, true, false);
-                this.fillGradient(matrixStack, slot.xPos, slot.yPos, slot.xPos + 16, slot.yPos + 16, 0xC0202020, 0xC0202020);
+                this.fillGradient(matrixStack, slot.x, slot.y, slot.x + 16, slot.y + 16, 0xC0202020, 0xC0202020);
                 RenderSystem.colorMask(true, true, true, true);
             }
         }
@@ -163,8 +163,8 @@ public class GuiInventorySearcher extends ContainerScreen<ContainerInventorySear
     public void render(MatrixStack matrixStack, int par1, int par2, float par3) {
         super.render(matrixStack, par1, par2, par3);
 
-        if (this.hoveredSlot != null && stackPredicate.test(this.hoveredSlot.getStack())) {
-            renderHoveredTooltip(matrixStack, par1, par2);
+        if (this.hoveredSlot != null && stackPredicate.test(this.hoveredSlot.getItem())) {
+            renderTooltip(matrixStack, par1, par2);
         }
     }
 }

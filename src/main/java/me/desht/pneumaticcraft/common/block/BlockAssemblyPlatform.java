@@ -12,8 +12,8 @@ import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 
 public class BlockAssemblyPlatform extends BlockPneumaticCraft {
-    private static final VoxelShape BASE_SHAPE = Block.makeCuboidShape(0, 0, 0, 16, 1, 16);
-    private static final VoxelShape SHAPE = VoxelShapes.or(BASE_SHAPE, Block.makeCuboidShape(4, 1, 4, 12, 6, 12));
+    private static final VoxelShape BASE_SHAPE = Block.box(0, 0, 0, 16, 1, 16);
+    private static final VoxelShape SHAPE = VoxelShapes.or(BASE_SHAPE, Block.box(4, 1, 4, 12, 6, 12));
 
     public BlockAssemblyPlatform() {
         super(ModBlocks.defaultProps());

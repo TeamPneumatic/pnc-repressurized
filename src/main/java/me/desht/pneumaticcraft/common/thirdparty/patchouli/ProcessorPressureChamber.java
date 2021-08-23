@@ -22,7 +22,7 @@ public class ProcessorPressureChamber implements IComponentProcessor {
     @Override
     public void setup(IVariableProvider iVariableProvider) {
         ResourceLocation recipeId = new ResourceLocation(iVariableProvider.get("recipe").asString());
-        this.recipe = PneumaticCraftRecipeType.PRESSURE_CHAMBER.getRecipe(Minecraft.getInstance().world, recipeId);
+        this.recipe = PneumaticCraftRecipeType.PRESSURE_CHAMBER.getRecipe(Minecraft.getInstance().level, recipeId);
         this.header = iVariableProvider.has("header") ? iVariableProvider.get("header").asString() : "";
     }
 
@@ -45,7 +45,7 @@ public class ProcessorPressureChamber implements IComponentProcessor {
             }
         } else if (s.equals("pressure")) {
             String pr = PneumaticCraftUtils.roundNumberTo(recipe.getCraftingPressureForDisplay(), 1);
-            return IVariable.wrap(I18n.format("pneumaticcraft.patchouli.processor.pressureChamber.desc", pr));
+            return IVariable.wrap(I18n.get("pneumaticcraft.patchouli.processor.pressureChamber.desc", pr));
         }
 
         return null;
@@ -57,7 +57,7 @@ public class ProcessorPressureChamber implements IComponentProcessor {
         if (!results.isEmpty()) {
             List<ItemStack> stacks = results.get(0);
             if (!stacks.isEmpty()) {
-                return stacks.get(0).getDisplayName().getString();
+                return stacks.get(0).getHoverName().getString();
             }
         }
         return "";

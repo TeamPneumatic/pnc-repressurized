@@ -13,12 +13,12 @@ public class DummyContainer extends Container {
     }
 
     @Override
-    public boolean canInteractWith(PlayerEntity playerIn) {
+    public boolean stillValid(PlayerEntity playerIn) {
         return false;
     }
 
     @Override
-    public void onCraftMatrixChanged(IInventory inventoryIn) {
+    public void slotsChanged(IInventory inventoryIn) {
         // do nothing; default behaviour is to call detectAndSendChanges() which is unnecessary for drone
         // crafting purposes, and just wastes CPU cycles
     }

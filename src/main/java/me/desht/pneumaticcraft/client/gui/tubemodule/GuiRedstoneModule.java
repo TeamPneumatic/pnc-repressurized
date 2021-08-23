@@ -62,7 +62,7 @@ public class GuiRedstoneModule extends GuiTubeModule<ModuleRedstone> {
                 getDirText(module), b -> toggleRedstoneDirection())
                 .setTooltipText(ImmutableList.of(
                         xlate(module.getRedstoneDirection().getTranslationKey()),
-                        xlate("pneumaticcraft.gui.redstoneModule.clickToToggle").mergeStyle(TextFormatting.GRAY)
+                        xlate("pneumaticcraft.gui.redstoneModule.clickToToggle").withStyle(TextFormatting.GRAY)
                 ))
         );
 
@@ -167,7 +167,7 @@ public class GuiRedstoneModule extends GuiTubeModule<ModuleRedstone> {
             l.add(xlate(key, dyeColorDesc(ourColor)));
         }
         if (!upgraded) {
-            l.add(xlate("pneumaticcraft.gui.redstoneModule.addAdvancedPCB").mergeStyle(TextFormatting.DARK_BLUE));
+            l.add(xlate("pneumaticcraft.gui.redstoneModule.addAdvancedPCB").withStyle(TextFormatting.DARK_BLUE));
         }
         lowerText.addAll(GuiUtils.wrapTextComponentList(l, xSize - 20, font));
     }
@@ -176,9 +176,9 @@ public class GuiRedstoneModule extends GuiTubeModule<ModuleRedstone> {
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         super.render(matrixStack, mouseX, mouseY, partialTicks);
 
-        int yBase = guiTop + ySize - lowerText.size() * font.FONT_HEIGHT - 10;
+        int yBase = guiTop + ySize - lowerText.size() * font.lineHeight - 10;
         for (int i = 0; i < lowerText.size(); i++) {
-            font.func_238422_b_(matrixStack, lowerText.get(i), guiLeft + 10, yBase + i * font.FONT_HEIGHT, 0xFF404040);
+            font.draw(matrixStack, lowerText.get(i), guiLeft + 10, yBase + i * font.lineHeight, 0xFF404040);
         }
     }
 
@@ -187,13 +187,13 @@ public class GuiRedstoneModule extends GuiTubeModule<ModuleRedstone> {
     }
 
     @Override
-    public void onClose() {
-        super.onClose();
+    public void removed() {
+        super.removed();
 
         module.setColorChannel(ourColor);
         if (output) {
             module.setInverted(invertCheckBox.checked);
-            module.setOperation(getSelectedOp(), otherColor, textField.getValue());
+            module.setOperation(getSelectedOp(), otherColor, textField.getIntValue());
         } else {
             module.setComparatorInput(comparatorInputCheckBox.checked);
         }
@@ -204,8 +204,8 @@ public class GuiRedstoneModule extends GuiTubeModule<ModuleRedstone> {
         module.setRedstoneDirection(module.getRedstoneDirection().toggle());
 
         // close and re-open... will call onClose() to sync the settings
-        onClose();
-        minecraft.displayGuiScreen(new GuiRedstoneModule(module));
+        removed();
+        minecraft.setScreen(new GuiRedstoneModule(module));
         minecraft.player.playSound(ModSounds.INTERFACE_DOOR.get(), 0.7f, 2f);
     }
 

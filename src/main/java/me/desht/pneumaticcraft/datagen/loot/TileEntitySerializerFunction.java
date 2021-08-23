@@ -34,17 +34,17 @@ public class TileEntitySerializerFunction extends LootFunction {
     }
 
     @Override
-    protected ItemStack doApply(ItemStack stack, LootContext context) {
-        return applyTEdata(stack, context.get(LootParameters.BLOCK_ENTITY));
+    protected ItemStack run(ItemStack stack, LootContext context) {
+        return applyTEdata(stack, context.getParamOrNull(LootParameters.BLOCK_ENTITY));
     }
 
     public static LootFunction.Builder<?> builder() {
-        return builder(TileEntitySerializerFunction::new);
+        return simpleBuilder(TileEntitySerializerFunction::new);
     }
 
     private ItemStack applyTEdata(ItemStack teStack, TileEntity te) {
         // augment existing BlockEntityTag if present, otherwise create a new one
-        CompoundNBT nbt = teStack.getChildTag(NBTKeys.BLOCK_ENTITY_TAG);
+        CompoundNBT nbt = teStack.getTagElement(NBTKeys.BLOCK_ENTITY_TAG);
         final CompoundNBT subTag = nbt == null ? new CompoundNBT() : nbt;
 
         // fluid tanks
@@ -109,7 +109,7 @@ public class TileEntitySerializerFunction extends LootFunction {
     }
 
     @Override
-    public LootFunctionType getFunctionType() {
+    public LootFunctionType getType() {
         return ModLootFunctions.TE_SERIALIZER;
     }
 

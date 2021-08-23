@@ -22,7 +22,7 @@ public class IDEDebug {
      */
     @SuppressWarnings("unused")
     public static boolean ungrabMouse() {
-        Minecraft.getInstance().mouseHelper.ungrabMouse();
+        Minecraft.getInstance().mouseHandler.releaseMouse();
         return true;
     }
 }

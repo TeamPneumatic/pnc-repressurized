@@ -48,31 +48,31 @@ public class PressureGaugeRenderer2D {
         RenderSystem.disableTexture();
         RenderSystem.lineWidth(1.0F);
 
-        BufferBuilder wr = Tessellator.getInstance().getBuffer();
+        BufferBuilder wr = Tessellator.getInstance().getBuilder();
 
         // Draw the green and red surface in the gauge.
         wr.begin(GL11.GL_TRIANGLE_FAN, DefaultVertexFormats.POSITION_COLOR);
         drawGaugeBackground(matrixStack, wr, minPressure, maxPressure, dangerPressure, minWorkingPressure, xPos, yPos);
-        Tessellator.getInstance().draw();
+        Tessellator.getInstance().end();
 
         // Draw the surrounding circle in the foreground colour
         wr.begin(GL11.GL_LINE_LOOP, DefaultVertexFormats.POSITION_COLOR);
         drawGaugeSurround(matrixStack, wr, xPos, yPos, fgColor);
-        Tessellator.getInstance().draw();
+        Tessellator.getInstance().end();
 
         // Draw the scale
         int currentScale = (int) maxPressure;
         List<TextScaler> textScalers = new ArrayList<>();
         wr.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR);
         drawScale(matrixStack, wr, minPressure, maxPressure, xPos, yPos, currentScale, textScalers);
-        Tessellator.getInstance().draw();
+        Tessellator.getInstance().end();
 
         // Draw the needle.
         float angleIndicator = GAUGE_POINTS - (int) ((currentPressure - minPressure) / (maxPressure - minPressure) * GAUGE_POINTS);
         angleIndicator = -angleIndicator / CIRCLE_POINTS * 2F * PI_F - STOP_ANGLE;
         wr.begin(GL11.GL_LINE_LOOP, DefaultVertexFormats.POSITION_COLOR);
         drawNeedle(matrixStack, wr, xPos, yPos, angleIndicator, fgColor);
-        Tessellator.getInstance().draw();
+        Tessellator.getInstance().end();
 
         RenderSystem.enableTexture();
 
@@ -83,21 +83,21 @@ public class PressureGaugeRenderer2D {
     private static void drawNeedle(MatrixStack matrixStack, IVertexBuilder builder, int xPos, int yPos, float angle, int fgColor) {
         // vertex builder is set up for GL_LINE_LOOP
         float[] cols = RenderUtils.decomposeColorF(fgColor);
-        Matrix4f posMat = matrixStack.getLast().getMatrix();
-        builder.pos(posMat, MathHelper.cos(angle + 0.89F * PI_F) * RADIUS * 0.3F + xPos, MathHelper.sin(angle + 0.89F * PI_F) * RADIUS * 0.3F + yPos, 0F)
+        Matrix4f posMat = matrixStack.last().pose();
+        builder.vertex(posMat, MathHelper.cos(angle + 0.89F * PI_F) * RADIUS * 0.3F + xPos, MathHelper.sin(angle + 0.89F * PI_F) * RADIUS * 0.3F + yPos, 0F)
                 .color(cols[1], cols[2], cols[3], cols[0])
                 .endVertex();
-        builder.pos(posMat, MathHelper.cos(angle + 1.11F * PI_F) * RADIUS * 0.3F + xPos, MathHelper.sin(angle + 1.11F * PI_F) * RADIUS * 0.3F + yPos, 0F)
+        builder.vertex(posMat, MathHelper.cos(angle + 1.11F * PI_F) * RADIUS * 0.3F + xPos, MathHelper.sin(angle + 1.11F * PI_F) * RADIUS * 0.3F + yPos, 0F)
                 .color(cols[1], cols[2], cols[3], cols[0])
                 .endVertex();
-        builder.pos(posMat, MathHelper.cos(angle) * RADIUS * 0.8F + xPos, MathHelper.sin(angle) * RADIUS * 0.8F + yPos, 0.0F)
+        builder.vertex(posMat, MathHelper.cos(angle) * RADIUS * 0.8F + xPos, MathHelper.sin(angle) * RADIUS * 0.8F + yPos, 0.0F)
                 .color(cols[1], cols[2], cols[3], cols[0])
                 .endVertex();
     }
 
     private static void drawScale(MatrixStack matrixStack, IVertexBuilder builder, float minPressure, float maxPressure, int xPos, int yPos, int currentScale, List<TextScaler> textScalers) {
         // vertex builder is set up for GL_LINES
-        Matrix4f posMat = matrixStack.getLast().getMatrix();
+        Matrix4f posMat = matrixStack.last().pose();
         for (int i = 0; i <= GAUGE_POINTS; i++) {
             float angle = (float) -i / (float) CIRCLE_POINTS * 2F * PI_F - STOP_ANGLE;
             if (i == GAUGE_POINTS - (int) ((currentScale - minPressure) / (maxPressure - minPressure) * GAUGE_POINTS)) {
@@ -107,8 +107,8 @@ public class PressureGaugeRenderer2D {
                 currentScale--;
                 float r1 = maxPressure > 10 && textScalers.size() % 5 == 1 ? 0.8F : 0.92F;
                 float r2 = maxPressure > 10 && textScalers.size() % 5 == 1 ? 1.15F : 1.08F;
-                builder.pos(posMat, x * RADIUS * r1 + xPos, y * RADIUS * r1 + yPos, 0F).color(0, 0, 0, 1).endVertex();
-                builder.pos(posMat, x * RADIUS * r2 + xPos, y * RADIUS * r2 + yPos, 0F).color(0, 0, 0, 1).endVertex();
+                builder.vertex(posMat, x * RADIUS * r1 + xPos, y * RADIUS * r1 + yPos, 0F).color(0, 0, 0, 1).endVertex();
+                builder.vertex(posMat, x * RADIUS * r2 + xPos, y * RADIUS * r2 + yPos, 0F).color(0, 0, 0, 1).endVertex();
             }
         }
     }
@@ -117,11 +117,11 @@ public class PressureGaugeRenderer2D {
         for (int i = 0; i < textScalers.size(); i++) {
             if (textScalers.size() <= 11 || i % 5 == 0) {
                 TextScaler scaler = textScalers.get(i);
-                matrixStack.push();
+                matrixStack.pushPose();
                 matrixStack.translate(xPos + scaler.x - 1.5, yPos + scaler.y - 1.5, 0);
                 matrixStack.scale(0.5f, 0.5f, 1f);
-                fontRenderer.drawString(matrixStack, Integer.toString(scaler.pressure), 0, 0, fgColor);
-                matrixStack.pop();
+                fontRenderer.draw(matrixStack, Integer.toString(scaler.pressure), 0, 0, fgColor);
+                matrixStack.popPose();
             }
         }
     }
@@ -130,8 +130,8 @@ public class PressureGaugeRenderer2D {
         // vertex builder is set up to draw GL_TRIANGLE_FAN
         float[] color = RED;
 
-        Matrix4f posMat = matrixStack.getLast().getMatrix();
-        builder.pos(posMat, xPos, yPos, 0f).color(color[0], color[1], color[2], color[3]).endVertex();
+        Matrix4f posMat = matrixStack.last().pose();
+        builder.vertex(posMat, xPos, yPos, 0f).color(color[0], color[1], color[2], color[3]).endVertex();
 
         int explodeBoundary = GAUGE_POINTS - (int) ((dangerPressure - minPressure) / (maxPressure - minPressure) * GAUGE_POINTS);
         int workingBoundary = GAUGE_POINTS - (int) ((minWorkingPressure - minPressure) / (maxPressure - minPressure) * GAUGE_POINTS);
@@ -143,18 +143,18 @@ public class PressureGaugeRenderer2D {
         for (int i = 0; i < GAUGE_POINTS; i++) {
             if (i == explodeBoundary && !changedColorGreen) {
                 color = minWorkingPressure < 0 && minWorkingPressure >= -1 ? YELLOW : GREEN;
-                builder.pos(posMat, xPos, yPos, 0F).color(color[0], color[1], color[2], color[3]).endVertex();
+                builder.vertex(posMat, xPos, yPos, 0F).color(color[0], color[1], color[2], color[3]).endVertex();
                 i--;
                 changedColorGreen = true;
             }
             if (i == workingBoundary && !changedColorYellow) {
                 color = minWorkingPressure < 0 && minWorkingPressure >= -1 ? GREEN : YELLOW;
-                builder.pos(posMat, xPos, yPos, 0F).color(color[0], color[1], color[2], color[3]).endVertex();
+                builder.vertex(posMat, xPos, yPos, 0F).color(color[0], color[1], color[2], color[3]).endVertex();
                 i--;
                 changedColorYellow = true;
             }
             float angle = (float) -i / (float) CIRCLE_POINTS * 2F * PI_F - STOP_ANGLE;
-            builder.pos(posMat, MathHelper.cos(angle) * RADIUS + xPos, MathHelper.sin(angle) * RADIUS + yPos, 0F)
+            builder.vertex(posMat, MathHelper.cos(angle) * RADIUS + xPos, MathHelper.sin(angle) * RADIUS + yPos, 0F)
                     .color(color[0], color[1], color[2], color[3])
                     .endVertex();
         }
@@ -163,10 +163,10 @@ public class PressureGaugeRenderer2D {
     private static void drawGaugeSurround(MatrixStack matrixStack, IVertexBuilder builder, int xPos, int yPos, int fgColor) {
         // vertex builder is set up for GL_LINE_LOOP
         float[] cols = RenderUtils.decomposeColorF(fgColor);
-        Matrix4f posMat = matrixStack.getLast().getMatrix();
+        Matrix4f posMat = matrixStack.last().pose();
         for (int i = 0; i < CIRCLE_POINTS; i++) {
             float angle = (float) i / (float) CIRCLE_POINTS * 2F * PI_F;
-            builder.pos(posMat, MathHelper.cos(angle) * RADIUS + xPos, MathHelper.sin(angle) * RADIUS + yPos, 0F)
+            builder.vertex(posMat, MathHelper.cos(angle) * RADIUS + xPos, MathHelper.sin(angle) * RADIUS + yPos, 0F)
                     .color(cols[1], cols[2], cols[3], cols[0])
                     .endVertex();
         }

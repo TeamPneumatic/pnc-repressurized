@@ -42,29 +42,29 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
     }
 
     @Override
-    public boolean tryMoveToEntityLiving(Entity p_75497_1_, double p_75497_2_) {
-        return super.tryMoveToEntityLiving(p_75497_1_, p_75497_2_) || isGoingToTeleport();
+    public boolean moveTo(Entity p_75497_1_, double p_75497_2_) {
+        return super.moveTo(p_75497_1_, p_75497_2_) || isGoingToTeleport();
     }
 
     /**
      * Returns the path to the given EntityLiving
      */
     @Override
-    public Path getPathToEntity(Entity par1Entity, int p2) {
-        BlockPos pos = new BlockPos(par1Entity.getPosX(), par1Entity.getBoundingBox().minY, par1Entity.getPosZ());
+    public Path createPath(Entity par1Entity, int p2) {
+        BlockPos pos = new BlockPos(par1Entity.getX(), par1Entity.getBoundingBox().minY, par1Entity.getZ());
 
         if ((par1Entity instanceof ItemEntity && !droneEntity.isBlockValidPathfindBlock(pos)) || par1Entity instanceof AbstractMinecartEntity) {
             // items can end up with a blockpos of the ground they're sitting on,
             // which will prevent the drone pathfinding to them
             // minecarts apparently prevent the drone moving to the same blockpos
-            if (droneEntity.isBlockValidPathfindBlock(pos.up())) {
-                pos = pos.up();
+            if (droneEntity.isBlockValidPathfindBlock(pos.above())) {
+                pos = pos.above();
             }
         }
 
         // p2 parameter shortens the path length. It appears vanilla uses it for villagers when they navigate to their work site.
         // Drones generally don't use it and just pass 0 to the super call, apart from a kludge related to "tall" blocks like walls; see below
-        return getPathToPos(pos, p2);
+        return createPath(pos, p2);
     }
 
     void setForceTeleport(boolean forceTeleport) {
@@ -73,13 +73,13 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
 
     @Nullable
     @Override
-    public Path getPathToPos(BlockPos pos, int p2) {
+    public Path createPath(BlockPos pos, int p2) {
         // When the destination is not a valid block, we can stop right away
         if (!droneEntity.isBlockValidPathfindBlock(pos))
             return null;
 
         // 0.75 is the squared dist from a block corner to its center (0.5^2 + 0.5^2 + 0.5^2)
-        if (droneEntity.getDistanceSq(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) < 0.75) {
+        if (droneEntity.distanceToSqr(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) < 0.75) {
             // TODO 1.14 what does this boolean do?  true or false here?  appears to be villager-related...
             return new Path(Lists.newArrayList(new PathPoint(pos.getX(), pos.getY(), pos.getZ())), pos, true);
         }
@@ -97,22 +97,22 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
 
         Path path;
         boolean tallBlockKludge = false;
-        BlockPos below = pos.down();
-        VoxelShape shape = world.getBlockState(below).getCollisionShape(world, below);
-        if (!shape.isEmpty() && shape.getBoundingBox().maxY > 1) {
+        BlockPos below = pos.below();
+        VoxelShape shape = level.getBlockState(below).getCollisionShape(level, below);
+        if (!shape.isEmpty() && shape.bounds().maxY > 1) {
             // pathfinding to the space above a "tall" block and using distance == 0 doesn't work
             // walls and fences are the main culprit here (any others?)
-            path = super.getPathToPos(pos, 1);
+            path = super.createPath(pos, 1);
             tallBlockKludge = true;
         } else {
-            path = super.getPathToPos(pos, 0);
+            path = super.createPath(pos, 0);
         }
 
         // Only paths that actually end up where we want to are valid, not just partway
         // (but if we had to stop short due to a "tall" block, account for that)
         if (path != null) {
-            PathPoint lastPoint = path.getFinalPathPoint();
-            if (lastPoint != null && pos.manhattanDistance(lastPoint.func_224759_a()) > (tallBlockKludge ? 1 : 0)) {
+            PathPoint lastPoint = path.getEndNode();
+            if (lastPoint != null && pos.distManhattan(lastPoint.asBlockPos()) > (tallBlockKludge ? 1 : 0)) {
                 path = null;
             }
         }
@@ -130,7 +130,7 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
 
     private boolean teleportationAllowed(BlockPos pos) {
         int max = PNCConfig.Common.Advanced.maxDroneTeleportRange;
-        return !droneEntity.isTeleportRangeLimited() || max == 0 || pos.withinDistance(droneEntity.getDronePos(), max);
+        return !droneEntity.isTeleportRangeLimited() || max == 0 || pos.closerThan(droneEntity.getDronePos(), max);
     }
 
     @Override
@@ -139,24 +139,24 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
     }
 
     @Override
-    public boolean noPath() {
-        return super.noPath() && !isGoingToTeleport();
+    public boolean isDone() {
+        return super.isDone() && !isGoingToTeleport();
     }
 
     @Override
     public void tick() {
-        ++totalTicks;
+        ++tick;
         if (isGoingToTeleport()) {
             if (teleportCounter == 0 || teleportCounter == 60) {
-                droneEntity.world.playSound(null, droneEntity.getPosition(), ModSounds.HUD_INIT.get(), SoundCategory.NEUTRAL, 0.3f, teleportCounter == 0 ? 0.7F : 1F);
+                droneEntity.level.playSound(null, droneEntity.blockPosition(), ModSounds.HUD_INIT.get(), SoundCategory.NEUTRAL, 0.3f, teleportCounter == 0 ? 0.7F : 1F);
             }
 
             if (teleportCounter < TELEPORT_TICKS - 40) {
-                Random rand = droneEntity.getRNG();
+                Random rand = droneEntity.getRandom();
                 float f = (rand.nextFloat() - 0.5F) * 0.02F * teleportCounter;
                 float f1 = (rand.nextFloat() - 0.5F) * 0.02F * teleportCounter;
                 float f2 = (rand.nextFloat() - 0.5F) * 0.02F * teleportCounter;
-                NetworkHandler.sendToAllTracking(new PacketSpawnParticle(ParticleTypes.PORTAL, droneEntity.getPosX(), droneEntity.getPosY(), droneEntity.getPosZ(), f, f1, f2), droneEntity);
+                NetworkHandler.sendToAllTracking(new PacketSpawnParticle(ParticleTypes.PORTAL, droneEntity.getX(), droneEntity.getY(), droneEntity.getZ(), f, f1, f2), droneEntity);
             }
 
             if (++teleportCounter > TELEPORT_TICKS) {
@@ -164,29 +164,29 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
                     teleport();
                 }
                 teleportCounter = -1;
-                setPath(null, 0);
-                droneEntity.getMoveHelper().setMoveTo(telPos.getX(), telPos.getY(), telPos.getZ(), droneEntity.getSpeed());
+                moveTo((Path) null, 0);
+                droneEntity.getMoveControl().setWantedPosition(telPos.getX(), telPos.getY(), telPos.getZ(), droneEntity.getDroneSpeed());
                 droneEntity.addAirToDrone(-PneumaticValues.DRONE_USAGE_TELEPORT);
             }
         } else {
-            if (!noPath()) {
-                pathFollow();
-                if (currentPath != null && !currentPath.isFinished()) {
-                    if (PNCConfig.Common.Advanced.stuckDroneTeleportTicks > 0 && entity.getMotion().lengthSquared() < 0.0001) {
+            if (!isDone()) {
+                followThePath();
+                if (path != null && !path.isDone()) {
+                    if (PNCConfig.Common.Advanced.stuckDroneTeleportTicks > 0 && mob.getDeltaMovement().lengthSqr() < 0.0001) {
                         if (stuckTicks++ > PNCConfig.Common.Advanced.stuckDroneTeleportTicks) {
                             Vector3d v = droneEntity.getDronePos();
                             droneEntity.getDebugger().addEntry("pneumaticcraft.gui.progWidget.general.debug.stuckBlock",
                                     new BlockPos(Math.round(v.x), Math.round(v.y), Math.round(v.z)));
                             teleportCounter = 0;
-                            telPos = currentPath.getTarget();
+                            telPos = path.getTarget();
                             stuckTicks = 0;
                         }
                     } else {
                         stuckTicks = 0;
                     }
-                    if (!noPath()) {
-                        Vector3d vec32 = currentPath.getPosition(entity);
-                        entity.getMoveHelper().setMoveTo(vec32.x, vec32.y, vec32.z, speed);
+                    if (!isDone()) {
+                        Vector3d vec32 = path.getNextEntityPos(mob);
+                        mob.getMoveControl().setWantedPosition(vec32.x, vec32.y, vec32.z, speedModifier);
                     }
                 }
             }
@@ -194,25 +194,25 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
     }
 
     public void teleport() {
-        Vector3d dest = Vector3d.copyCentered(telPos);
+        Vector3d dest = Vector3d.atCenterOf(telPos);
         NetworkHandler.sendToAllTracking(new PacketSpawnParticleTrail(ParticleTypes.PORTAL,
-                        droneEntity.getPosX(), droneEntity.getPosY(), droneEntity.getPosZ(),
+                        droneEntity.getX(), droneEntity.getY(), droneEntity.getZ(),
                         dest.x, dest.y, dest.z),
                 droneEntity);
-        droneEntity.playSound(SoundEvents.ENTITY_ENDERMAN_TELEPORT, 1.0F, 1.0F);
-        droneEntity.setPosition(dest.x, dest.y, dest.z);
+        droneEntity.playSound(SoundEvents.ENDERMAN_TELEPORT, 1.0F, 1.0F);
+        droneEntity.setPos(dest.x, dest.y, dest.z);
     }
 
     @Override
     public boolean moveToXYZ(double x, double y, double z) {
-        boolean success = tryMoveToXYZ(x, y, z, droneEntity.getSpeed());
+        boolean success = moveTo(x, y, z, droneEntity.getDroneSpeed());
         if (success) forceRidingEntityPaths();
         return success;
     }
 
     @Override
     public boolean moveToEntity(Entity entity) {
-        boolean success = tryMoveToEntityLiving(entity, droneEntity.getSpeed());
+        boolean success = moveTo(entity, droneEntity.getDroneSpeed());
         if (success) forceRidingEntityPaths();
         return success;
     }
@@ -221,8 +221,8 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
      * Override to prevent MobEntity#updateEntityActionState() assigning a path with a higher speed.
      */
     @Override
-    public boolean setPath(Path pathentityIn, double speedIn) {
-        return super.setPath(pathentityIn, droneEntity.getSpeed());
+    public boolean moveTo(Path pathentityIn, double speedIn) {
+        return super.moveTo(pathentityIn, droneEntity.getDroneSpeed());
     }
 
     /**
@@ -232,35 +232,35 @@ public class EntityPathNavigateDrone extends FlyingPathNavigator implements IPat
         for (Entity ridingEntity : droneEntity.getPassengers()) {
             if (ridingEntity instanceof MobEntity) {
                 MobEntity ridingLiving = (MobEntity) ridingEntity;
-                ridingLiving.getNavigator().setPath(droneEntity.getNavigator().getPath(), droneEntity.getSpeed());
+                ridingLiving.getNavigation().moveTo(droneEntity.getNavigation().getPath(), droneEntity.getDroneSpeed());
             }
         }
     }
 
     @Override
     public boolean hasNoPath() {
-        return noPath();
+        return isDone();
     }
 
     @Override
-    public boolean isDirectPathBetweenPoints(Vector3d p_75493_1_, Vector3d p_75493_2_, int p_75493_3_, int p_75493_4_, int p_75493_5_) {
+    public boolean canMoveDirectly(Vector3d p_75493_1_, Vector3d p_75493_2_, int p_75493_3_, int p_75493_4_, int p_75493_5_) {
         return false;
     }
 
     @Override
-    protected PathFinder getPathFinder(int r) {
-        this.nodeProcessor = new NodeProcessorDrone();
+    protected PathFinder createPathFinder(int r) {
+        this.nodeEvaluator = new NodeProcessorDrone();
         // no longer a need for PathFinderDrone subclass, since vanilla PathFinder takes a max distance param.
-        return new PathFinder(this.nodeProcessor, 1000);
+        return new PathFinder(this.nodeEvaluator, 1000);
     }
 
     @Override
-    protected Vector3d getEntityPosition() {
+    protected Vector3d getTempMobPos() {
         return droneEntity.getDronePos();
     }
 
     @Override
-    protected boolean canNavigate() {
+    protected boolean canUpdatePath() {
         return true;
     }
 }

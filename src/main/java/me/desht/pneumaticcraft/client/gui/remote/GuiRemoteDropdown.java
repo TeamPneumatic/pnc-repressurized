@@ -25,8 +25,8 @@ public class GuiRemoteDropdown extends GuiRemoteVariable<ActionWidgetDropdown> {
         addLabel(xlate("pneumaticcraft.gui.remote.dropdown.dropDownElements"), guiLeft + 10, guiTop + 40);
 
         dropDownElementsField = new WidgetTextField(font, guiLeft + 10, guiTop + 50, 160, 10);
-        dropDownElementsField.setMaxStringLength(1024);
-        dropDownElementsField.setText(actionWidget.getDropDownElements());
+        dropDownElementsField.setMaxLength(1024);
+        dropDownElementsField.setValue(actionWidget.getDropDownElements());
         dropDownElementsField.setTooltip(xlate("pneumaticcraft.gui.remote.dropdown.dropDownElements.tooltip"));
         addButton(dropDownElementsField);
 
@@ -42,11 +42,11 @@ public class GuiRemoteDropdown extends GuiRemoteVariable<ActionWidgetDropdown> {
     }
 
     @Override
-    public void onClose() {
-        actionWidget.setDropDownElements(dropDownElementsField.getText());
-        actionWidget.setWidth(widthField.getValue());
+    public void removed() {
+        actionWidget.setDropDownElements(dropDownElementsField.getValue());
+        actionWidget.setWidth(widthField.getIntValue());
         actionWidget.setSorted(sortCheckBox.checked);
 
-        super.onClose();
+        super.removed();
     }
 }

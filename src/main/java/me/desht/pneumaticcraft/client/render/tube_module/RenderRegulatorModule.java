@@ -14,14 +14,14 @@ public class RenderRegulatorModule extends TubeModuleRendererBase<ModuleRegulato
     public RenderRegulatorModule() {
         shape1 = new ModelRenderer(64, 32, 0, 0);
         shape1.addBox(0F, 0F, 0F, 7, 7, 7);
-        shape1.setRotationPoint(-3.5F, 12.5F, -3F);
-        shape1.setTextureSize(64, 32);
+        shape1.setPos(-3.5F, 12.5F, -3F);
+        shape1.setTexSize(64, 32);
         shape1.mirror = true;
         setRotation(shape1, 0F, 0F, 0F);
         valve = new ModelRenderer(64, 32, 0, 16);
         valve.addBox(0F, 0F, 0F, 4, 4, 4);
-        valve.setRotationPoint(-2F, 14F, 4F);
-        valve.setTextureSize(64, 32);
+        valve.setPos(-2F, 14F, 4F);
+        valve.setTexSize(64, 32);
         valve.mirror = true;
         setRotation(valve, 0F, 0F, 0F);
     }

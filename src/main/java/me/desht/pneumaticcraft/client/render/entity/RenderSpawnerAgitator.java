@@ -26,21 +26,21 @@ public class RenderSpawnerAgitator extends RenderSemiblockBase<EntitySpawnerAgit
 
     @Override
     public void render(EntitySpawnerAgitator entity, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
-        float g = 0.1f * MathHelper.sin((entity.world.getGameTime() + partialTicks) / 12f);
+        float g = 0.1f * MathHelper.sin((entity.level.getGameTime() + partialTicks) / 12f);
 
-        matrixStackIn.push();
+        matrixStackIn.pushPose();
         matrixStackIn.translate(0, -0.5, 0);
         if (entity.getTimeSinceHit() > 0) {
             wobble(entity, partialTicks, matrixStackIn);
         }
-        IVertexBuilder builder = bufferIn.getBuffer(RenderType.getEntityCutout(getEntityTexture(entity)));
-        model.render(matrixStackIn, builder, packedLightIn, OverlayTexture.getPackedUV(0F, false), BRIGHTNESS, 0.8f + g, BRIGHTNESS, 1f);
-        matrixStackIn.pop();
+        IVertexBuilder builder = bufferIn.getBuffer(RenderType.entityCutout(getTextureLocation(entity)));
+        model.renderToBuffer(matrixStackIn, builder, packedLightIn, OverlayTexture.pack(0F, false), BRIGHTNESS, 0.8f + g, BRIGHTNESS, 1f);
+        matrixStackIn.popPose();
 
     }
 
     @Override
-    public ResourceLocation getEntityTexture(EntitySpawnerAgitator entity) {
+    public ResourceLocation getTextureLocation(EntitySpawnerAgitator entity) {
         return Textures.MODEL_HEAT_FRAME;
     }
 }

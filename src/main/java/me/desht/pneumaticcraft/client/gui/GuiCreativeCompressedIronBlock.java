@@ -84,17 +84,17 @@ public class GuiCreativeCompressedIronBlock extends GuiPneumaticContainerBase<Co
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int x, int y) {
-        super.drawGuiContainerForegroundLayer(matrixStack, x, y);
+    protected void renderLabels(MatrixStack matrixStack, int x, int y) {
+        super.renderLabels(matrixStack, x, y);
         ITextComponent txt = HeatUtil.formatHeatString(te.targetTemperature);
-        drawCenteredString(matrixStack, font, txt, width / 2 - guiLeft, height / 2 - guiTop - 20, 0xFFFFFF);
-        drawCenteredString(matrixStack, font, xlate("pneumaticcraft.gui.misc.holdShiftFastAdjust"), width / 2 - guiLeft, height / 2 - guiTop + 20, 0x808080);
+        drawCenteredString(matrixStack, font, txt, width / 2 - leftPos, height / 2 - topPos - 20, 0xFFFFFF);
+        drawCenteredString(matrixStack, font, xlate("pneumaticcraft.gui.misc.holdShiftFastAdjust"), width / 2 - leftPos, height / 2 - topPos + 20, 0x808080);
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int i, int j){
+    protected void renderBg(MatrixStack matrixStack, float partialTicks, int i, int j){
         renderBackground(matrixStack);
-        super.drawGuiContainerBackgroundLayer(matrixStack, partialTicks, i, j);
+        super.renderBg(matrixStack, partialTicks, i, j);
     }
 
     private void setText(WidgetButtonExtended b, String txt1, String txt2) {

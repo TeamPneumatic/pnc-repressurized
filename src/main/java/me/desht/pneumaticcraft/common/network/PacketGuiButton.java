@@ -22,20 +22,20 @@ public class PacketGuiButton {
     }
 
     public PacketGuiButton(PacketBuffer buffer) {
-        tag = buffer.readString(1024);
+        tag = buffer.readUtf(1024);
         shiftHeld = buffer.readBoolean();
     }
 
     public void toBytes(PacketBuffer buffer) {
-        buffer.writeString(tag);
+        buffer.writeUtf(tag);
         buffer.writeBoolean(shiftHeld);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             ServerPlayerEntity player = ctx.get().getSender();
-            if (player != null && player.openContainer instanceof IGUIButtonSensitive) {
-                ((IGUIButtonSensitive) player.openContainer).handleGUIButtonPress(tag, shiftHeld, player);
+            if (player != null && player.containerMenu instanceof IGUIButtonSensitive) {
+                ((IGUIButtonSensitive) player.containerMenu).handleGUIButtonPress(tag, shiftHeld, player);
             }
         });
         ctx.get().setPacketHandled(true);

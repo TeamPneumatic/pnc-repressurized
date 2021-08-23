@@ -21,25 +21,25 @@ public class RenderAssemblyController extends AbstractTileModelRenderer<TileEnti
         super(dispatcher);
         screen = new ModelRenderer(64, 64, 33, 32);
         screen.addBox(0F, 0F, 0F, 10, 6, 1);
-        screen.setRotationPoint(-5F, 8F, 1F);
+        screen.setPos(-5F, 8F, 1F);
         screen.mirror = true;
-        screen.rotateAngleX = -0.5934119F;
+        screen.xRot = -0.5934119F;
     }
 
     @Override
     public void renderModel(TileEntityAssemblyController te, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        IVertexBuilder builder = bufferIn.getBuffer(RenderType.getEntityCutout(Textures.MODEL_ASSEMBLY_CONTROLLER));
+        IVertexBuilder builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_ASSEMBLY_CONTROLLER));
 
         // have the screen face the player
-        matrixStackIn.rotate(Vector3f.YP.rotationDegrees(180 + Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getYaw()));
+        matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(180 + Minecraft.getInstance().gameRenderer.getMainCamera().getYRot()));
 
         screen.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
 
         // status text
         matrixStackIn.translate(-0.25D, 0.53D, 0.04D);
-        matrixStackIn.rotate(Vector3f.XP.rotationDegrees(-34));
+        matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(-34));
         matrixStackIn.scale(TEXT_SIZE, TEXT_SIZE, TEXT_SIZE);
-        Minecraft.getInstance().fontRenderer.renderString(te.displayedText, 1, 4, 0xFFFFFFFF, false,  matrixStackIn.getLast().getMatrix(), bufferIn, false, 0, combinedLightIn);
+        Minecraft.getInstance().font.drawInBatch(te.displayedText, 1, 4, 0xFFFFFFFF, false,  matrixStackIn.last().pose(), bufferIn, false, 0, combinedLightIn);
 
         // possible problem icon
         if (te.hasProblem) {

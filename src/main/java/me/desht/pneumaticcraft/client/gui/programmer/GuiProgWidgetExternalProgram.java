@@ -26,9 +26,9 @@ public class GuiProgWidgetExternalProgram extends GuiProgWidgetAreaShow<ProgWidg
     }
 
     @Override
-    public void onClose() {
+    public void removed() {
         progWidget.shareVariables = shareVariables.checked;
 
-        super.onClose();
+        super.removed();
     }
 }

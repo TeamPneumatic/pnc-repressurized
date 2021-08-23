@@ -31,7 +31,7 @@ public class PneumaticCraftTags {
         public static final ITag.INamedTag<Block> JACKHAMMER_ORES = modTag("jackhammer_ores");
 
         static ITag.INamedTag<Block> tag(String modid, String name) {
-            return BlockTags.makeWrapperTag(new ResourceLocation(modid, name).toString());
+            return BlockTags.bind(new ResourceLocation(modid, name).toString());
         }
 
         static ITag.INamedTag<Block> modTag(String name) {
@@ -69,7 +69,7 @@ public class PneumaticCraftTags {
         public static final ITag.INamedTag<Item> BREAD = forgeTag("bread");
 
         static ITag.INamedTag<Item> tag(String modid, String name) {
-            return ItemTags.makeWrapperTag(new ResourceLocation(modid, name).toString());
+            return ItemTags.bind(new ResourceLocation(modid, name).toString());
         }
 
         static ITag.INamedTag<Item> modTag(String name) {
@@ -98,7 +98,7 @@ public class PneumaticCraftTags {
         public static final ITag.INamedTag<Fluid> YEAST_CULTURE = modTag("yeast_culture");
 
         static ITag.INamedTag<Fluid> tag(String modid, String name) {
-            return FluidTags.makeWrapperTag(new ResourceLocation(modid, name).toString());
+            return FluidTags.bind(new ResourceLocation(modid, name).toString());
         }
 
         static ITag.INamedTag<Fluid> modTag(String name) {

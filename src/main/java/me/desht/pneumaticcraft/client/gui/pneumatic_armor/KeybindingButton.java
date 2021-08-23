@@ -49,17 +49,17 @@ public class KeybindingButton extends WidgetButtonExtended implements IKeybindin
     private void setBindingMode(boolean newMode) {
         bindingMode = newMode;
         if (bindingMode) {
-            setMessage(xlate("pneumaticcraft.gui.setKeybind").mergeStyle(TextFormatting.YELLOW));
+            setMessage(xlate("pneumaticcraft.gui.setKeybind").withStyle(TextFormatting.YELLOW));
             setTooltipText(StringTextComponent.EMPTY);
         } else {
             setMessage(origButtonText);
             addTooltip();
             switch (action) {
                 case ADD:
-                    Minecraft.getInstance().player.playSound(SoundEvents.BLOCK_NOTE_BLOCK_CHIME, 1.0f, 1.0f);
+                    Minecraft.getInstance().player.playSound(SoundEvents.NOTE_BLOCK_CHIME, 1.0f, 1.0f);
                     break;
                 case REMOVE:
-                    Minecraft.getInstance().player.playSound(SoundEvents.BLOCK_GLASS_BREAK, 1.0f, 1.0f);
+                    Minecraft.getInstance().player.playSound(SoundEvents.GLASS_BREAK, 1.0f, 1.0f);
                     break;
             }
             action = Action.NONE;
@@ -70,17 +70,17 @@ public class KeybindingButton extends WidgetButtonExtended implements IKeybindin
     public boolean receiveKey(InputMappings.Type type, int keyCode) {
         if (bindingMode) {
             if (type == InputMappings.Type.KEYSYM && keyCode == GLFW.GLFW_KEY_ESCAPE) {
-                keyBinding.setKeyModifierAndCode(KeyModifier.NONE, InputMappings.INPUT_INVALID);
-                Minecraft.getInstance().gameSettings.setKeyBindingCode(keyBinding, InputMappings.INPUT_INVALID);
+                keyBinding.setKeyModifierAndCode(KeyModifier.NONE, InputMappings.UNKNOWN);
+                Minecraft.getInstance().options.setKey(keyBinding, InputMappings.UNKNOWN);
                 action = Action.REMOVE;
             } else {
-                InputMappings.Input input = type.getOrMakeInput(keyCode);
+                InputMappings.Input input = type.getOrCreate(keyCode);
                 modifier = KeyModifier.isKeyCodeModifier(input);
                 keyBinding.setKeyModifierAndCode(KeyModifier.getActiveModifier(), input);
-                Minecraft.getInstance().gameSettings.setKeyBindingCode(keyBinding, input);
+                Minecraft.getInstance().options.setKey(keyBinding, input);
                 action = Action.ADD;
             }
-            KeyBinding.resetKeyBindingArrayAndHash();
+            KeyBinding.resetMapping();
             onPress();
             return true;
         }

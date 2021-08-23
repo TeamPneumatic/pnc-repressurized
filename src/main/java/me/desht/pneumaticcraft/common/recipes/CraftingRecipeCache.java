@@ -27,7 +27,7 @@ public enum CraftingRecipeCache {
         if (recipeCache.containsKey(key)) {
             return recipeCache.getAndMoveToFirst(key);
         } else {
-            Optional<ICraftingRecipe> newRecipe = world.getRecipeManager().getRecipe(IRecipeType.CRAFTING, inv, world);
+            Optional<ICraftingRecipe> newRecipe = world.getRecipeManager().getRecipeFor(IRecipeType.CRAFTING, inv, world);
             if (recipeCache.size() == MAX_CACHE_SIZE) {
                 recipeCache.removeLast();
             }
@@ -42,8 +42,8 @@ public enum CraftingRecipeCache {
 
     private int makeKey(CraftingInventory inv) {
         List<Integer> c = new ArrayList<>();
-        for (int i = 0; i < inv.getSizeInventory(); i++) {
-            ItemStack stack = inv.getStackInSlot(i);
+        for (int i = 0; i < inv.getContainerSize(); i++) {
+            ItemStack stack = inv.getItem(i);
             if (!stack.isEmpty()) {
                 c.add(i);
                 c.add(stack.getItem().hashCode());

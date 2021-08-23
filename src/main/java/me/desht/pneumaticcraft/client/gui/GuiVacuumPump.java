@@ -34,23 +34,23 @@ public class GuiVacuumPump extends GuiPneumaticContainerBase<ContainerVacuumPump
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int x, int y) {
-        super.drawGuiContainerForegroundLayer(matrixStack, x, y);
+    protected void renderLabels(MatrixStack matrixStack, int x, int y) {
+        super.renderLabels(matrixStack, x, y);
 
-        font.drawString(matrixStack, "+", 32, 47, 0xFF00AA00);
-        font.drawString(matrixStack, "-", 138, 47, 0xFFFF0000);
+        font.draw(matrixStack, "+", 32, 47, 0xFF00AA00);
+        font.draw(matrixStack, "-", 138, 47, 0xFFFF0000);
 
         float pressure = te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, te.getInputSide())
                 .orElseThrow(RuntimeException::new).getPressure();
         PressureGaugeRenderer2D.drawPressureGauge(matrixStack, font, -1, PneumaticValues.MAX_PRESSURE_VACUUM_PUMP,
                 PneumaticValues.DANGER_PRESSURE_VACUUM_PUMP, PneumaticValues.MIN_PRESSURE_VACUUM_PUMP, pressure,
-                xSize / 5, ySize / 5 + 4);
+                imageWidth / 5, imageHeight / 5 + 4);
 
         float vacPressure = te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, te.getVacuumSide())
                 .orElseThrow(RuntimeException::new).getPressure();
         PressureGaugeRenderer2D.drawPressureGauge(matrixStack, font, -1, PneumaticValues.MAX_PRESSURE_VACUUM_PUMP,
                 PneumaticValues.DANGER_PRESSURE_VACUUM_PUMP, -1, vacPressure,
-                xSize * 4 / 5, ySize / 5 + 4);
+                imageWidth * 4 / 5, imageHeight / 5 + 4);
     }
 
     @Override
@@ -80,7 +80,7 @@ public class GuiVacuumPump extends GuiPneumaticContainerBase<ContainerVacuumPump
                 String.format("%,d", PneumaticValues.VOLUME_VACUUM_PUMP)));
         if (volume > inputAirHandler.getBaseVolume()) {
             pressureStatText.add(new StringTextComponent(GuiConstants.TRIANGLE_RIGHT + " " + upgrades + " x ")
-                    .append(EnumUpgrade.VOLUME.getItemStack().getDisplayName())
+                    .append(EnumUpgrade.VOLUME.getItemStack().getHoverName())
             );
             pressureStatText.add(xlate("pneumaticcraft.gui.tooltip.effectiveVolume", String.format("%,d",volume)));
         }
@@ -98,7 +98,7 @@ public class GuiVacuumPump extends GuiPneumaticContainerBase<ContainerVacuumPump
                 .map(IAirHandlerMachine::getPressure).orElseThrow(RuntimeException::new);
         if (pressure < PneumaticValues.MIN_PRESSURE_VACUUM_PUMP) {
             textList.add(xlate("pneumaticcraft.gui.tab.problems.notEnoughPressure"));
-            textList.add(xlate("pneumaticcraft.gui.tab.problems.applyPressure", PneumaticValues.MIN_PRESSURE_VACUUM_PUMP).mergeStyle(TextFormatting.BLACK));
+            textList.add(xlate("pneumaticcraft.gui.tab.problems.applyPressure", PneumaticValues.MIN_PRESSURE_VACUUM_PUMP).withStyle(TextFormatting.BLACK));
         }
     }
 

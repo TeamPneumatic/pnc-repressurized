@@ -21,26 +21,26 @@ public class RenderRedstoneModule extends TubeModuleRendererBase<ModuleRedstone>
 
     public RenderRedstoneModule() {
         this.frame1 = new ModelRenderer(64, 32, 39, 0);
-        this.frame1.setRotationPoint(-4F, 11.5F, 6.0F);
+        this.frame1.setPos(-4F, 11.5F, 6.0F);
         this.frame1.addBox(0.0F, 0.0F, 0.0F, 8, 1, 1, 0.0F);
         this.frame2 = new ModelRenderer(64, 32, 42, 2);
-        this.frame2.setRotationPoint(-4F, 19.5F, 6.0F);
+        this.frame2.setPos(-4F, 19.5F, 6.0F);
         this.frame2.addBox(0.0F, 0.0F, 0.0F, 8, 1, 1, 0.0F);
         this.frame3 = new ModelRenderer(64, 32, 59, 3);
-        this.frame3.setRotationPoint(3.5F, 12.5F, 6.0F);
+        this.frame3.setPos(3.5F, 12.5F, 6.0F);
         this.frame3.addBox(0.0F, 0.0F, 0.0F, 1, 7, 1, 0.0F);
         this.frame4 = new ModelRenderer(64, 32, 42, 4);
-        this.frame4.setRotationPoint(-4.5F, 12.5F, 6.0F);
+        this.frame4.setPos(-4.5F, 12.5F, 6.0F);
         this.frame4.addBox(0.0F, 0.0F, 0.0F, 1, 7, 1, 0.0F);
 
         this.tubeConnector = new ModelRenderer(64, 32, 30, 0);
-        this.tubeConnector.setRotationPoint(-1.5F, 14.5F, 2.0F);
+        this.tubeConnector.setPos(-1.5F, 14.5F, 2.0F);
         this.tubeConnector.addBox(0.0F, 0.0F, 0.0F, 3, 3, 3, 0.0F);
         this.faceplate = new ModelRenderer(64, 32, 12, 0);
-        this.faceplate.setRotationPoint(-4.0F, 12.0F, 5.0F);
+        this.faceplate.setPos(-4.0F, 12.0F, 5.0F);
         this.faceplate.addBox(0.0F, 0.0F, 0.0F, 8, 8, 1, 0.0F);
         this.redstoneConnector = new ModelRenderer(64, 32, 0, 0);
-        this.redstoneConnector.setRotationPoint(-1.5F, 14.5F, 6.05F);
+        this.redstoneConnector.setPos(-1.5F, 14.5F, 6.05F);
         this.redstoneConnector.addBox(0.0F, 0.0F, 0.0F, 3, 3, 3, 0.0F);
     }
 
@@ -53,14 +53,14 @@ public class RenderRedstoneModule extends TubeModuleRendererBase<ModuleRedstone>
         if (!module.isFake()) {
             int l = module.getRedstoneDirection() == ModuleRedstone.EnumRedstoneDirection.INPUT ? module.getInputLevel() : module.getRedstoneLevel();
             cols = RenderUtils.decomposeColorF(0xFF300000 | (l * 13 << 16));
-            matrixStack.push();
+            matrixStack.pushPose();
             matrixStack.translate(0, 0, 5.2 / 16);
             matrixStack.scale(1, 1, 0.25f + 0.72f * MathHelper.lerp(partialTicks, module.lastExtension, module.extension));
             matrixStack.translate(0, 0, -5.2 / 16);
         }
         redstoneConnector.render(matrixStack, builder, combinedLight, combinedOverlay, cols[1], cols[2], cols[3], cols[0]);
         if (!module.isFake()) {
-            matrixStack.pop();
+            matrixStack.popPose();
         }
         cols = RenderUtils.decomposeColorF(0xFF000000 | DyeColor.byId(module.getColorChannel()).getColorValue());
         frame1.render(matrixStack, builder, combinedLight, combinedOverlay, cols[1], cols[2], cols[3], cols[0]);

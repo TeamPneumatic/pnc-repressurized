@@ -106,16 +106,16 @@ public class TileEntityAssemblyLaser extends TileEntityAssemblyRobot {
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tag) {
-        super.write(tag);
+    public CompoundNBT save(CompoundNBT tag) {
+        super.save(tag);
         tag.putBoolean("laser", isLaserOn);
         tag.putInt("laserStep", laserStep);
         return tag;
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT tag) {
-        super.read(state, tag);
+    public void load(BlockState state, CompoundNBT tag) {
+        super.load(state, tag);
         isLaserOn = tag.getBoolean("laser");
         laserStep = tag.getInt("laserStep");
     }
@@ -132,7 +132,7 @@ public class TileEntityAssemblyLaser extends TileEntityAssemblyRobot {
 
     @Nonnull
     private ItemStack getLaseredOutputForItem(ItemStack input) {
-        return PneumaticCraftRecipeType.ASSEMBLY_LASER.stream(world)
+        return PneumaticCraftRecipeType.ASSEMBLY_LASER.stream(level)
                 .filter(recipe -> recipe.matches(input))
                 .findFirst()
                 .map(recipe -> recipe.getOutput().copy())

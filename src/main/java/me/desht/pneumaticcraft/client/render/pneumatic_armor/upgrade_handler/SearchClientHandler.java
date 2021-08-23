@@ -75,10 +75,10 @@ public class SearchClientHandler extends IArmorUpgradeClientHandler.AbstractHand
         Item item = ItemPneumaticArmor.getSearchedItem(ClientUtils.getWornArmor(EquipmentSlotType.HEAD));
         List<ITextComponent> textList = new ArrayList<>();
         if (item == null || item == Items.AIR) {
-            textList.add(xlate("pneumaticcraft.armor.search.configure", I18n.format(KeyHandler.getInstance().keybindOpenOptions.getTranslationKey())));
+            textList.add(xlate("pneumaticcraft.armor.search.configure", I18n.get(KeyHandler.getInstance().keybindOpenOptions.saveString())));
         } else {
             if (searchedStack.getItem() != item) searchedStack = new ItemStack(item);
-            textList.add(searchedStack.getDisplayName().deepCopy().append(xlate("pneumaticcraft.armor.search.found", totalSearchedItemCount)));
+            textList.add(searchedStack.getHoverName().copy().append(xlate("pneumaticcraft.armor.search.found", totalSearchedItemCount)));
         }
         searchInfo.setText(textList);
     }
@@ -88,11 +88,11 @@ public class SearchClientHandler extends IArmorUpgradeClientHandler.AbstractHand
         IVertexBuilder builder = buffer.getBuffer(ModRenderTypes.getTextureRenderColored(Textures.GLOW_RESOURCE, true));
 
         searchedItems.forEach((item, value) -> {
-            float height = MathHelper.sin((item.getAge() + partialTicks) / 10.0F + item.hoverStart) * 0.1F + 0.2F;
+            float height = MathHelper.sin((item.getAge() + partialTicks) / 10.0F + item.bobOffs) * 0.1F + 0.2F;
             RenderSearchItemBlock.renderSearch(matrixStack, builder,
-                    item.lastTickPosX + (item.getPosX() - item.lastTickPosX) * partialTicks,
-                    item.lastTickPosY + (item.getPosY() - item.lastTickPosY) * partialTicks + height,
-                    item.lastTickPosZ + (item.getPosZ() - item.lastTickPosZ) * partialTicks, value,
+                    item.xOld + (item.getX() - item.xOld) * partialTicks,
+                    item.yOld + (item.getY() - item.yOld) * partialTicks + height,
+                    item.zOld + (item.getZ() - item.zOld) * partialTicks, value,
                     totalSearchedItemCount, partialTicks
             );
         });
@@ -113,7 +113,7 @@ public class SearchClientHandler extends IArmorUpgradeClientHandler.AbstractHand
         PlayerEntity player = ClientUtils.getClientPlayer();
         List<BlockPos> toRemove = new ArrayList<>();
         for (Map.Entry<BlockPos,RenderSearchItemBlock> entry : trackedInventories.entrySet()) {
-            int nItems = entry.getKey().distanceSq(player.getPosition()) < blockTrackRangeSq ?
+            int nItems = entry.getKey().distSqr(player.blockPosition()) < blockTrackRangeSq ?
                     entry.getValue().getSearchedItemCount() : 0;
 
             if (nItems == 0) {
@@ -138,7 +138,7 @@ public class SearchClientHandler extends IArmorUpgradeClientHandler.AbstractHand
         Item searchedItem = ItemPneumaticArmor.getSearchedItem(ClientUtils.getWornArmor(EquipmentSlotType.HEAD));
         if (searchedItem == null || searchedItem == Items.AIR) return;
 
-        List<ItemEntity> items = player.world.getEntitiesWithinAABB(ItemEntity.class, EntityTrackerClientHandler.getAABBFromRange(player, rangeUpgrades));
+        List<ItemEntity> items = player.level.getEntitiesOfClass(ItemEntity.class, EntityTrackerClientHandler.getAABBFromRange(player, rangeUpgrades));
         for (ItemEntity itemEntity : items) {
             if (!itemEntity.getItem().isEmpty()) {
                 if (itemEntity.getItem().getItem() == searchedItem) {
@@ -176,7 +176,7 @@ public class SearchClientHandler extends IArmorUpgradeClientHandler.AbstractHand
             if (searchedItem != null) {
                 te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, face).ifPresent(handler -> {
                     if (checkForItems(handler, searchedItem)) {
-                        trackedInventories.put(te.getPos(), new RenderSearchItemBlock(te.getWorld(), te.getPos()));
+                        trackedInventories.put(te.getBlockPos(), new RenderSearchItemBlock(te.getLevel(), te.getBlockPos()));
                     }
                 });
             }

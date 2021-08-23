@@ -44,7 +44,7 @@ public class ChestplateLauncherClientHandler extends IArmorUpgradeClientHandler.
     @Override
     public void tickClient(ICommonArmorHandler armorHandler) {
         if (launcherProgress > 0) {
-            if (!KeyHandler.getInstance().keybindLauncher.isKeyDown()) {
+            if (!KeyHandler.getInstance().keybindLauncher.isDown()) {
                 NetworkHandler.sendToServer(new PacketChestplateLauncher((float) launcherProgress / (float) MAX_PROGRESS));
                 launcherProgress = 0;
             } else if (launcherProgress > 0 && launcherProgress < MAX_PROGRESS) {
@@ -57,22 +57,22 @@ public class ChestplateLauncherClientHandler extends IArmorUpgradeClientHandler.
     public void render2D(MatrixStack matrixStack, float partialTicks, boolean armorPieceHasPressure) {
         if (launcherProgress == 0) return;
 
-        MainWindow mw = Minecraft.getInstance().getMainWindow();
+        MainWindow mw = Minecraft.getInstance().getWindow();
 
-        matrixStack.push();
+        matrixStack.pushPose();
         RenderSystem.disableTexture();
-        if (Minecraft.getInstance().player.getPrimaryHand() == HandSide.LEFT) {
-            matrixStack.translate(mw.getScaledWidth() - 30, mw.getScaledHeight() - 30, -90);
+        if (Minecraft.getInstance().player.getMainArm() == HandSide.LEFT) {
+            matrixStack.translate(mw.getGuiScaledWidth() - 30, mw.getGuiScaledHeight() - 30, -90);
             matrixStack.scale(-1, 1, 1);
         } else {
-            matrixStack.translate(30, mw.getScaledHeight() - 30, -90);
+            matrixStack.translate(30, mw.getGuiScaledHeight() - 30, -90);
         }
-        matrixStack.rotate(Vector3f.ZP.rotationDegrees(-60));
+        matrixStack.mulPose(Vector3f.ZP.rotationDegrees(-60));
         float progress = Math.min(100f, (launcherProgress + partialTicks) * 100f / MAX_PROGRESS);
-        RenderProgressBar.render2d(matrixStack, 0, 0, mw.getScaledWidth() / 6f - 30, 12, 0,
+        RenderProgressBar.render2d(matrixStack, 0, 0, mw.getGuiScaledWidth() / 6f - 30, 12, 0,
                 progress, 0xAA0000A0, 0xAA40A0FF);
         RenderSystem.enableTexture();
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     public void maybeStartCharging(KeyBinding key) {
@@ -81,7 +81,7 @@ public class ChestplateLauncherClientHandler extends IArmorUpgradeClientHandler.
             if (handler.isArmorReady(EquipmentSlotType.CHEST)
                     && handler.getUpgradeCount(EquipmentSlotType.CHEST, EnumUpgrade.DISPENSER) > 0
                     && handler.getArmorPressure(EquipmentSlotType.CHEST) > 0.1f
-                    && key.isKeyDown()) {
+                    && key.isDown()) {
                 launcherProgress = 1;
             }
         }

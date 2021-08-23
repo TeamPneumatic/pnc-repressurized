@@ -18,11 +18,11 @@ public class EntityAINoAIWhenRidingDrone extends Goal {
     
     public EntityAINoAIWhenRidingDrone(MobEntity entity){
         this.entity = entity;
-        setMutexFlags(EnumSet.allOf(Flag.class)); //All bits to block all other AI's
+        setFlags(EnumSet.allOf(Flag.class)); //All bits to block all other AI's
     }
     
     @Override
-    public boolean shouldExecute(){
-        return entity.getRidingEntity() instanceof EntityDrone;
+    public boolean canUse(){
+        return entity.getVehicle() instanceof EntityDrone;
     }
 }

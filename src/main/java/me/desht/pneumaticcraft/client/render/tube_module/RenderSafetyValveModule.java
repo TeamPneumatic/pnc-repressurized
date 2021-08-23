@@ -15,15 +15,15 @@ public class RenderSafetyValveModule extends TubeModuleRendererBase<ModuleSafety
     public RenderSafetyValveModule(){
         shape1 = new ModelRenderer(64, 32, 32, 0);
         shape1.addBox(0F, 0F, 0F, 3, 3, 2);
-        shape1.setRotationPoint(-1.5F, 14.5F, 2F);
+        shape1.setPos(-1.5F, 14.5F, 2F);
         shape1.mirror = true;
         shape2 = new ModelRenderer(64, 32, 0, 0);
         shape2.addBox(0F, 0F, 0F, 2, 2, 3);
-        shape2.setRotationPoint(-1F, 15F, 4F);
+        shape2.setPos(-1F, 15F, 4F);
         shape2.mirror = true;
         shape3 = new ModelRenderer(64, 32, 32, 0);
         shape3.addBox(0F, 0F, 0F, 1, 1, 3);
-        shape3.setRotationPoint(2F, 15.5F, 4F);
+        shape3.setPos(2F, 15.5F, 4F);
         shape3.mirror = true;
         setRotation(shape3, 0F, -0.5934119F, 0F);
     }

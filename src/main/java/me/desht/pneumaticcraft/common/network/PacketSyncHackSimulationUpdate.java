@@ -31,7 +31,7 @@ public class PacketSyncHackSimulationUpdate extends LocationIntPacket {
     private final boolean playerWon;
 
     public PacketSyncHackSimulationUpdate(TileEntitySecurityStation te) {
-        super(te.getPos());
+        super(te.getBlockPos());
 
         HackSimulation aiSim = te.getSimulationController().getSimulation(HackingSide.AI);
         HackSimulation playerSim = te.getSimulationController().getSimulation(HackingSide.PLAYER);

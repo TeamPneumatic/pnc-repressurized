@@ -82,7 +82,7 @@ public class PneumaticHelmetRegistry implements IPneumaticHelmetRegistry {
      */
     public void resolveBlockTags(ITagCollection<Block> tags) {
         hackableTaggedBlocks.clear();
-        pendingBlockTags.forEach((id, hackable) -> tags.get(id).getAllElements().forEach(block -> hackableTaggedBlocks.put(block, hackable)));
+        pendingBlockTags.forEach((id, hackable) -> tags.getTag(id).getValues().forEach(block -> hackableTaggedBlocks.put(block, hackable)));
     }
 
     @Override

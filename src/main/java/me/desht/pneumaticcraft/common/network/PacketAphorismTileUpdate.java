@@ -30,19 +30,19 @@ public class PacketAphorismTileUpdate extends LocationIntPacket {
         int lines = buffer.readVarInt();
         text = new String[lines];
         for (int i = 0; i < lines; i++) {
-            text[i] = buffer.readString(MAX_LENGTH);
+            text[i] = buffer.readUtf(MAX_LENGTH);
         }
         margin = buffer.readByte();
         invis = buffer.readBoolean();
     }
 
     public PacketAphorismTileUpdate(TileEntityAphorismTile tile) {
-        super(tile.getPos());
+        super(tile.getBlockPos());
 
         text = tile.getTextLines();
         textRotation = tile.textRotation;
         margin = tile.getMarginSize();
-        invis = tile.getBlockState().get(BlockAphorismTile.INVISIBLE);
+        invis = tile.getBlockState().getValue(BlockAphorismTile.INVISIBLE);
     }
 
     @Override
@@ -51,7 +51,7 @@ public class PacketAphorismTileUpdate extends LocationIntPacket {
 
         buffer.writeByte(textRotation);
         buffer.writeVarInt(text.length);
-        Arrays.stream(text).forEach(s -> buffer.writeString(s, MAX_LENGTH));
+        Arrays.stream(text).forEach(s -> buffer.writeUtf(s, MAX_LENGTH));
         buffer.writeByte(margin);
         buffer.writeBoolean(invis);
     }
@@ -60,7 +60,7 @@ public class PacketAphorismTileUpdate extends LocationIntPacket {
         ctx.get().enqueueWork(() -> {
             PlayerEntity player = Objects.requireNonNull(ctx.get().getSender());
             if (PneumaticCraftUtils.canPlayerReach(player, pos)) {
-                PneumaticCraftUtils.getTileEntityAt(player.world, pos, TileEntityAphorismTile.class).ifPresent(te -> {
+                PneumaticCraftUtils.getTileEntityAt(player.level, pos, TileEntityAphorismTile.class).ifPresent(te -> {
                     te.setTextLines(text, false);
                     te.textRotation = textRotation;
                     te.setMarginSize(margin);

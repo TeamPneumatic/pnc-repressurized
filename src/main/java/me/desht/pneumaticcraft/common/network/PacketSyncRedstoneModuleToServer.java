@@ -27,7 +27,7 @@ public class PacketSyncRedstoneModuleToServer extends LocationIntPacket {
     private final boolean comparatorInput;
 
     public PacketSyncRedstoneModuleToServer(ModuleRedstone module) {
-        super(module.getTube().getPos());
+        super(module.getTube().getBlockPos());
 
         this.input = module.getRedstoneDirection() == EnumRedstoneDirection.INPUT;
         this.side = (byte) module.getDirection().ordinal();
@@ -79,8 +79,8 @@ public class PacketSyncRedstoneModuleToServer extends LocationIntPacket {
         ctx.get().enqueueWork(() -> {
             PlayerEntity player = ctx.get().getSender();
             if (PneumaticCraftUtils.canPlayerReach(player, pos)) {
-                PneumaticCraftUtils.getTileEntityAt(player.world, pos, TileEntityPressureTube.class).ifPresent(te -> {
-                    TubeModule tm = te.getModule(Direction.byIndex(side));
+                PneumaticCraftUtils.getTileEntityAt(player.level, pos, TileEntityPressureTube.class).ifPresent(te -> {
+                    TubeModule tm = te.getModule(Direction.from3DDataValue(side));
                     if (tm instanceof ModuleRedstone) {
                         ModuleRedstone mr = (ModuleRedstone) tm;
                         mr.setRedstoneDirection(input ? EnumRedstoneDirection.INPUT : EnumRedstoneDirection.OUTPUT);

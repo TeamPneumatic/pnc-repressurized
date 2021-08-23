@@ -31,17 +31,17 @@ public abstract class PneumaticCraftRecipe implements IRecipe<PneumaticCraftReci
     }
 
     @Override
-    public ItemStack getCraftingResult(DummyIInventory inv) {
+    public ItemStack assemble(DummyIInventory inv) {
         return ItemStack.EMPTY;
     }
 
     @Override
-    public boolean canFit(int width, int height) {
+    public boolean canCraftInDimensions(int width, int height) {
         return true;
     }
 
     @Override
-    public ItemStack getRecipeOutput() {
+    public ItemStack getResultItem() {
         return ItemStack.EMPTY;
     }
 
@@ -51,7 +51,7 @@ public abstract class PneumaticCraftRecipe implements IRecipe<PneumaticCraftReci
     }
 
     @Override
-    public boolean isDynamic() {
+    public boolean isSpecial() {
         return true;
     }
 
@@ -66,7 +66,7 @@ public abstract class PneumaticCraftRecipe implements IRecipe<PneumaticCraftReci
         }
 
         @Override
-        public int getSizeInventory() {
+        public int getContainerSize() {
             return 0;
         }
 
@@ -76,35 +76,35 @@ public abstract class PneumaticCraftRecipe implements IRecipe<PneumaticCraftReci
         }
 
         @Override
-        public ItemStack getStackInSlot(int index) {
+        public ItemStack getItem(int index) {
             return ItemStack.EMPTY;
         }
 
         @Override
-        public ItemStack decrStackSize(int index, int count) {
+        public ItemStack removeItem(int index, int count) {
             return ItemStack.EMPTY;
         }
 
         @Override
-        public ItemStack removeStackFromSlot(int index) {
+        public ItemStack removeItemNoUpdate(int index) {
             return ItemStack.EMPTY;
         }
 
         @Override
-        public void setInventorySlotContents(int index, ItemStack stack) {
+        public void setItem(int index, ItemStack stack) {
         }
 
         @Override
-        public void markDirty() {
+        public void setChanged() {
         }
 
         @Override
-        public boolean isUsableByPlayer(PlayerEntity player) {
+        public boolean stillValid(PlayerEntity player) {
             return false;
         }
 
         @Override
-        public void clear() {
+        public void clearContent() {
         }
     }
 }

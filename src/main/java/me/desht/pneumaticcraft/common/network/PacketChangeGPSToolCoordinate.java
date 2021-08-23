@@ -30,7 +30,7 @@ public class PacketChangeGPSToolCoordinate extends LocationIntPacket {
 
     public PacketChangeGPSToolCoordinate(PacketBuffer buf) {
         super(buf);
-        variable = buf.readString(32767);
+        variable = buf.readUtf(32767);
         index = buf.readByte();
         hand = buf.readBoolean() ? Hand.MAIN_HAND : Hand.OFF_HAND;
     }
@@ -38,7 +38,7 @@ public class PacketChangeGPSToolCoordinate extends LocationIntPacket {
     @Override
     public void toBytes(PacketBuffer buf) {
         super.toBytes(buf);
-        buf.writeString(variable);
+        buf.writeUtf(variable);
         buf.writeByte(index);
         buf.writeBoolean(hand == Hand.MAIN_HAND);
     }
@@ -46,7 +46,7 @@ public class PacketChangeGPSToolCoordinate extends LocationIntPacket {
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             ServerPlayerEntity player = ctx.get().getSender();
-            ItemStack playerStack = player.getHeldItem(hand);
+            ItemStack playerStack = player.getItemInHand(hand);
             if (playerStack.getItem() == ModItems.GPS_TOOL.get()) {
                 ItemGPSTool.setVariable(playerStack, variable);
                 if (pos.getY() >= 0) {

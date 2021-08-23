@@ -46,32 +46,32 @@ public class ItemAmadronTablet extends ItemPressurizable implements IPositionPro
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
-        if (!worldIn.isRemote) {
+    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
+        if (!worldIn.isClientSide) {
             openGui(playerIn, handIn);
         }
-        return ActionResult.resultSuccess(playerIn.getHeldItem(handIn));
+        return ActionResult.success(playerIn.getItemInHand(handIn));
     }
 
     @Override
-    public ActionResultType onItemUse(ItemUseContext ctx) {
-        Direction facing = ctx.getFace();
+    public ActionResultType useOn(ItemUseContext ctx) {
+        Direction facing = ctx.getClickedFace();
         PlayerEntity player = ctx.getPlayer();
-        World worldIn = ctx.getWorld();
-        BlockPos pos = ctx.getPos();
+        World worldIn = ctx.getLevel();
+        BlockPos pos = ctx.getClickedPos();
 
-        TileEntity te = worldIn.getTileEntity(pos);
+        TileEntity te = worldIn.getBlockEntity(pos);
         if (te == null) return ActionResultType.PASS;
 
         if (te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing).isPresent()) {
-            if (!worldIn.isRemote) {
-                setFluidProvidingLocation(player.getHeldItem(ctx.getHand()), GlobalPosHelper.makeGlobalPos(worldIn, pos));
+            if (!worldIn.isClientSide) {
+                setFluidProvidingLocation(player.getItemInHand(ctx.getHand()), GlobalPosHelper.makeGlobalPos(worldIn, pos));
             } else {
                 ctx.getPlayer().playSound(ModSounds.CHIRP.get(), 1.0f, 1.5f);
             }
         } else if (te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, facing).isPresent()) {
-            if (!worldIn.isRemote) {
-                setItemProvidingLocation(player.getHeldItem(ctx.getHand()), GlobalPosHelper.makeGlobalPos(worldIn, pos));
+            if (!worldIn.isClientSide) {
+                setItemProvidingLocation(player.getItemInHand(ctx.getHand()), GlobalPosHelper.makeGlobalPos(worldIn, pos));
             } else {
                 ctx.getPlayer().playSound(ModSounds.CHIRP.get(), 1.0f, 1.5f);
             }
@@ -82,18 +82,18 @@ public class ItemAmadronTablet extends ItemPressurizable implements IPositionPro
     }
 
     @Override
-    public void addInformation(ItemStack stack, World worldIn, List<ITextComponent> infoList, ITooltipFlag flag) {
-        super.addInformation(stack, worldIn, infoList, flag);
+    public void appendHoverText(ItemStack stack, World worldIn, List<ITextComponent> infoList, ITooltipFlag flag) {
+        super.appendHoverText(stack, worldIn, infoList, flag);
         GlobalPos gPos = getItemProvidingLocation(stack);
         if (gPos != null) {
-            infoList.add(xlate("pneumaticcraft.gui.tooltip.amadronTablet.itemLocation", GlobalPosHelper.prettyPrint(gPos)).mergeStyle(TextFormatting.YELLOW));
+            infoList.add(xlate("pneumaticcraft.gui.tooltip.amadronTablet.itemLocation", GlobalPosHelper.prettyPrint(gPos)).withStyle(TextFormatting.YELLOW));
         } else {
             infoList.add(xlate("pneumaticcraft.gui.tooltip.amadronTablet.selectItemLocation"));
         }
 
         gPos = getFluidProvidingLocation(stack);
         if (gPos != null) {
-            infoList.add(xlate("pneumaticcraft.gui.tooltip.amadronTablet.fluidLocation", GlobalPosHelper.prettyPrint(gPos)).mergeStyle(TextFormatting.YELLOW));
+            infoList.add(xlate("pneumaticcraft.gui.tooltip.amadronTablet.fluidLocation", GlobalPosHelper.prettyPrint(gPos)).withStyle(TextFormatting.YELLOW));
         } else {
             infoList.add(xlate("pneumaticcraft.gui.tooltip.amadronTablet.selectFluidLocation"));
         }
@@ -146,9 +146,9 @@ public class ItemAmadronTablet extends ItemPressurizable implements IPositionPro
     public static Map<ResourceLocation, Integer> loadShoppingCart(ItemStack tablet) {
         Map<ResourceLocation, Integer> offers = new HashMap<>();
 
-        CompoundNBT subTag = tablet.getChildTag("shoppingCart");
+        CompoundNBT subTag = tablet.getTagElement("shoppingCart");
         if (subTag != null) {
-            for (String key : subTag.keySet()) {
+            for (String key : subTag.getAllKeys()) {
                 offers.put(new ResourceLocation(key), subTag.getInt(key));
             }
         }
@@ -165,7 +165,7 @@ public class ItemAmadronTablet extends ItemPressurizable implements IPositionPro
     public List<BlockPos> getStoredPositions(World world, @Nonnull ItemStack stack) {
         GlobalPos gp1 = getItemProvidingLocation(stack);
         GlobalPos gp2 = getFluidProvidingLocation(stack);
-        return Arrays.asList(gp1 == null ? null : gp1.getPos(), gp2 == null ? null : gp2.getPos());
+        return Arrays.asList(gp1 == null ? null : gp1.pos(), gp2 == null ? null : gp2.pos());
     }
 
     @Override
@@ -181,7 +181,7 @@ public class ItemAmadronTablet extends ItemPressurizable implements IPositionPro
         NetworkHooks.openGui((ServerPlayerEntity) playerIn, new INamedContainerProvider() {
             @Override
             public ITextComponent getDisplayName() {
-                return playerIn.getHeldItem(handIn).getDisplayName();
+                return playerIn.getItemInHand(handIn).getHoverName();
             }
 
             @Override

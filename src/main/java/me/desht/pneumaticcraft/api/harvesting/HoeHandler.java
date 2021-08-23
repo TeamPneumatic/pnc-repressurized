@@ -38,7 +38,7 @@ public class HoeHandler extends ForgeRegistryEntry<HoeHandler> implements Predic
      */
     public static class DefaultHoeHandler extends HoeHandler {
         public DefaultHoeHandler() {
-            super(stack -> stack.getItem() instanceof HoeItem, (stack, player) -> stack.damageItem(1, player, p -> { }));
+            super(stack -> stack.getItem() instanceof HoeItem, (stack, player) -> stack.hurtAndBreak(1, player, p -> { }));
         }
     }
 }

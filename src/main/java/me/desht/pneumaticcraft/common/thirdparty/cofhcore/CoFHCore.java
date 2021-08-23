@@ -38,18 +38,18 @@ public class CoFHCore implements IThirdParty {
             holdingEnchantment = ForgeRegistries.ENCHANTMENTS.getValue(new ResourceLocation("cofh_core", "holding"));
             if (holdingEnchantment != null) {
                 PneumaticRegistry.getInstance().getItemRegistry().registerPneumaticVolumeModifier(
-                        (stack, oldVolume) -> oldVolume * (1 + EnchantmentHelper.getEnchantmentLevel(holdingEnchantment, stack))
+                        (stack, oldVolume) -> oldVolume * (1 + EnchantmentHelper.getItemEnchantmentLevel(holdingEnchantment, stack))
                 );
             }
         }
     }
 
     public static int getHoldingUpgrades(ItemStack stack) {
-        return holdingEnchantment == null ? 0 : EnchantmentHelper.getEnchantmentLevel(holdingEnchantment, stack);
+        return holdingEnchantment == null ? 0 : EnchantmentHelper.getItemEnchantmentLevel(holdingEnchantment, stack);
     }
 
     public static ITextComponent holdingEnchantmentName(int level) {
-        return holdingEnchantment == null ? StringTextComponent.EMPTY : holdingEnchantment.getDisplayName(level);
+        return holdingEnchantment == null ? StringTextComponent.EMPTY : holdingEnchantment.getFullname(level);
     }
 
     private static boolean versionOK() {

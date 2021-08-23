@@ -44,7 +44,7 @@ public class TileEntityAdvancedAirCompressor extends TileEntityAirCompressor imp
     @Nullable
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        return new ContainerAdvancedAirCompressor(i, playerInventory, getPos());
+        return new ContainerAdvancedAirCompressor(i, playerInventory, getBlockPos());
     }
 
     @Override

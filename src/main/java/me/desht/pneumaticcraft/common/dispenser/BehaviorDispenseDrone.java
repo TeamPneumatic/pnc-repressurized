@@ -10,10 +10,10 @@ import net.minecraft.util.math.BlockPos;
 
 public class BehaviorDispenseDrone extends DefaultDispenseItemBehavior {
     @Override
-    protected ItemStack dispenseStack(IBlockSource source, ItemStack stack){
-        Direction facing = source.getBlockState().get(DispenserBlock.FACING);
-        BlockPos placePos = source.getBlockPos().offset(facing);
-        ((ItemDrone)stack.getItem()).spawnDrone(null, source.getWorld(), null, null, placePos, stack);
+    protected ItemStack execute(IBlockSource source, ItemStack stack){
+        Direction facing = source.getBlockState().getValue(DispenserBlock.FACING);
+        BlockPos placePos = source.getPos().relative(facing);
+        ((ItemDrone)stack.getItem()).spawnDrone(null, source.getLevel(), null, null, placePos, stack);
         
         stack.shrink(1);
         return stack;

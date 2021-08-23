@@ -54,7 +54,7 @@ public class BlockHeatSensor implements IBlockAndCoordinatePollSensor {
         for (BlockPos p : positions) {
             temperature = Math.max(temperature, HeatExchangerManager.getInstance().getLogic(world, p, null)
                     .map(IHeatExchangerLogic::getTemperature).orElse(0d));
-            TileEntity te = world.getTileEntity(p);
+            TileEntity te = world.getBlockEntity(p);
             if (te != null) {
                 // possibly sided TE?
                 for (Direction side : DirectionUtil.VALUES) {

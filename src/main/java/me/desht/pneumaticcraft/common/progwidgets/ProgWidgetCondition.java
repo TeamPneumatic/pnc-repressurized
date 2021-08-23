@@ -55,7 +55,7 @@ public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implem
     public void getTooltip(List<ITextComponent> curTooltip) {
         super.getTooltip(curTooltip);
         if (!measureVar.isEmpty()) {
-            curTooltip.add(xlate("pneumaticcraft.gui.progWidget.condition.measure").appendString(measureVar));
+            curTooltip.add(xlate("pneumaticcraft.gui.progWidget.condition.measure").append(measureVar));
         }
     }
 
@@ -156,7 +156,7 @@ public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implem
         super.writeToPacket(buf);
         buf.writeBoolean(isAndFunction);
         buf.writeByte(operator.ordinal());
-        buf.writeString(measureVar, GlobalVariableManager.MAX_VARIABLE_LEN);
+        buf.writeUtf(measureVar, GlobalVariableManager.MAX_VARIABLE_LEN);
     }
 
     @Override
@@ -164,7 +164,7 @@ public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implem
         super.readFromPacket(buf);
         isAndFunction = buf.readBoolean();
         operator = Operator.values()[buf.readByte()];
-        measureVar = buf.readString(GlobalVariableManager.MAX_VARIABLE_LEN);
+        measureVar = buf.readUtf(GlobalVariableManager.MAX_VARIABLE_LEN);
     }
 
     @Override
@@ -175,7 +175,7 @@ public abstract class ProgWidgetCondition extends ProgWidgetInventoryBase implem
     @Override
     public List<ITextComponent> getExtraStringInfo() {
         IFormattableTextComponent anyAll = xlate(isAndFunction() ? "pneumaticcraft.gui.progWidget.condition.all" : "pneumaticcraft.gui.progWidget.condition.any")
-                .appendString(" " + getOperator().toString() + " " + getRequiredCount());
+                .append(" " + getOperator().toString() + " " + getRequiredCount());
         return measureVar.isEmpty() ? Collections.singletonList(anyAll) : ImmutableList.of(anyAll, varAsTextComponent(measureVar));
     }
 

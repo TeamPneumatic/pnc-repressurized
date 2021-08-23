@@ -17,11 +17,11 @@ public class MovingSoundJackhammer extends TickableSound {
     public MovingSoundJackhammer(PlayerEntity player) {
         super(ModSounds.JACKHAMMER_LOOP.get(), SoundCategory.PLAYERS);
         this.player = player;
-        x = player.getPosX();
-        y = player.getPosY();
-        z = player.getPosZ();
-        repeat = true;
-        repeatDelay = 0;
+        x = player.getX();
+        y = player.getY();
+        z = player.getZ();
+        looping = true;
+        delay = 0;
         volume = (float) PNCConfig.Client.Sound.jackhammerVolume;
     }
 
@@ -32,28 +32,28 @@ public class MovingSoundJackhammer extends TickableSound {
         } else {
             res = null;  // don't start another one
         }
-        timers.put(player.getUniqueID(), player.world.getGameTime());
+        timers.put(player.getUUID(), player.level.getGameTime());
         return res;
     }
 
     @Override
     public void tick() {
-        x = player.getPosX();
-        y = player.getPosY();
-        z = player.getPosZ();
+        x = player.getX();
+        y = player.getY();
+        z = player.getZ();
         if (lastJackHammerTime(player) == 15) {
-            player.world.playSound(player, player.getPosX(), player.getPosY(), player.getPosZ(),
+            player.level.playSound(player, player.getX(), player.getY(), player.getZ(),
                     ModSounds.JACKHAMMER_STOP.get(), SoundCategory.PLAYERS,
                     (float) PNCConfig.Client.Sound.jackhammerVolume, 1f);
         }
     }
 
     @Override
-    public boolean isDonePlaying() {
+    public boolean isStopped() {
         return lastJackHammerTime(player) > 15;
     }
 
     public static long lastJackHammerTime(PlayerEntity player) {
-        return player.getEntityWorld().getGameTime() - timers.getOrDefault(player.getUniqueID(), 0L);
+        return player.getCommandSenderWorld().getGameTime() - timers.getOrDefault(player.getUUID(), 0L);
     }
 }

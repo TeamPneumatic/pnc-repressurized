@@ -51,9 +51,9 @@ public class ThermoPlantRecipeBuilder extends PneumaticCraftRecipeBuilder<Thermo
         }
 
         @Override
-        public void serialize(JsonObject json) {
-            if (inputItem != Ingredient.EMPTY) json.add("item_input", inputItem.serialize());
-            if (inputFluid != FluidIngredient.EMPTY) json.add("fluid_input", inputFluid.serialize());
+        public void serializeRecipeData(JsonObject json) {
+            if (inputItem != Ingredient.EMPTY) json.add("item_input", inputItem.toJson());
+            if (inputFluid != FluidIngredient.EMPTY) json.add("fluid_input", inputFluid.toJson());
             if (!outputItem.isEmpty()) json.add("item_output", SerializerHelper.serializeOneItemStack(outputItem));
             if (!outputFluid.isEmpty()) json.add("fluid_output", ModCraftingHelper.fluidStackToJson(outputFluid));
             if (!operatingTemperature.isAny()) json.add("temperature", operatingTemperature.toJson());

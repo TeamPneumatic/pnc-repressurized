@@ -31,11 +31,11 @@ public class RenderAssemblyPlatform extends AbstractTileModelRenderer<TileEntity
 
         claw1 = new ModelRenderer(64, 64, 0, 32);
         claw1.addBox(0F, 0F, 0F, 2, 1, 1);
-        claw1.setRotationPoint(-1F, 17F, 0F);
+        claw1.setPos(-1F, 17F, 0F);
         claw1.mirror = true;
         claw2 = new ModelRenderer(64, 64, 0, 32);
         claw2.addBox(0F, 0F, 0F, 2, 1, 1);
-        claw2.setRotationPoint(-1F, 17F, -1F);
+        claw2.setPos(-1F, 17F, -1F);
         claw2.mirror = true;
     }
 
@@ -43,25 +43,25 @@ public class RenderAssemblyPlatform extends AbstractTileModelRenderer<TileEntity
     public void renderModel(TileEntityAssemblyPlatform te, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int combinedLightIn, int combinedOverlayIn) {
         ItemStack heldStack = te.getPrimaryInventory().getStackInSlot(0);
         Pair<IAssemblyRenderOverriding, Float> clawTranslation = getClawTranslation(MathHelper.lerp(partialTicks, te.oldClawProgress, te.clawProgress), heldStack);
-        IVertexBuilder builder = bufferIn.getBuffer(RenderType.getEntityCutout(Textures.MODEL_ASSEMBLY_PLATFORM));
+        IVertexBuilder builder = bufferIn.getBuffer(RenderType.entityCutout(Textures.MODEL_ASSEMBLY_PLATFORM));
 
-        matrixStackIn.push();
+        matrixStackIn.pushPose();
         matrixStackIn.translate(0, 0, clawTranslation.getRight());
         claw1.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
         matrixStackIn.translate(0, 0, -2 * clawTranslation.getRight());
         claw2.render(matrixStackIn, builder, combinedLightIn, combinedOverlayIn);
-        matrixStackIn.pop();
+        matrixStackIn.popPose();
 
         if (!heldStack.isEmpty()) {
             IAssemblyRenderOverriding renderOverride = clawTranslation.getLeft();
             if (renderOverride == null || renderOverride.applyRenderChangePlatform(matrixStackIn, heldStack)) {
-                matrixStackIn.rotate(Vector3f.XP.rotationDegrees(180));
+                matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(180));
                 double yOffset = heldStack.getItem() instanceof BlockItem ? -16.5 / 16F : -17.5 / 16F;
                 matrixStackIn.translate(0, yOffset + 0.05, 0);
                 matrixStackIn.scale(ITEM_SCALE, ITEM_SCALE, ITEM_SCALE);
                 ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
-                IBakedModel ibakedmodel = itemRenderer.getItemModelWithOverrides(heldStack, te.getWorld(), null);
-                itemRenderer.renderItem(heldStack, ItemCameraTransforms.TransformType.FIXED, true, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn, ibakedmodel);
+                IBakedModel ibakedmodel = itemRenderer.getModel(heldStack, te.getLevel(), null);
+                itemRenderer.render(heldStack, ItemCameraTransforms.TransformType.FIXED, true, matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn, ibakedmodel);
             }
         }
     }

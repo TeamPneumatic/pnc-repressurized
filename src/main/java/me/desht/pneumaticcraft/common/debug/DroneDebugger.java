@@ -110,22 +110,22 @@ public class DroneDebugger {
         public static void onLivingUpdateEvent(LivingEvent.LivingUpdateEvent event) {
             if (!PNCConfig.Common.General.droneDebuggerPathParticles
                     || !(event.getEntityLiving() instanceof EntityDrone)
-                    || event.getEntityLiving().world.isRemote) {
+                    || event.getEntityLiving().level.isClientSide) {
                 return;
             }
 
             EntityDrone drone = (EntityDrone) event.getEntityLiving();
             if (drone.getDebugger().debuggingPlayers.isEmpty()) return;
 
-            PathNavigator navi = drone.getNavigator();
-            if (drone.world instanceof ServerWorld && drone.world.getGameTime() % 10 == 0) { // only generate every 0.5 seconds, to try and cut back on packet spam
+            PathNavigator navi = drone.getNavigation();
+            if (drone.level instanceof ServerWorld && drone.level.getGameTime() % 10 == 0) { // only generate every 0.5 seconds, to try and cut back on packet spam
                 Path path = navi.getPath();
                 if (path != null) {
-                    for (int i = path.getCurrentPathIndex(); i < path.getCurrentPathLength(); i++) {
+                    for (int i = path.getNextNodeIndex(); i < path.getNodeCount(); i++) {
                         //get current point
-                        BlockPos pos = path.getPathPointFromIndex(i).func_224759_a();  // func_224759_a() = copy()
+                        BlockPos pos = path.getNode(i).asBlockPos();  // asBlockPos() = copy()
                         //get next point (or current point)
-                        BlockPos nextPos = (i+1) != path.getCurrentPathLength() ? path.getPathPointFromIndex(i+1).func_224759_a() : pos;
+                        BlockPos nextPos = (i+1) != path.getNodeCount() ? path.getNode(i+1).asBlockPos() : pos;
                         //get difference for vector
                         BlockPos endPos = nextPos.subtract(pos);
                         spawnParticle(drone.getDebugger().debuggingPlayers, ParticleTypes.HAPPY_VILLAGER,
@@ -139,7 +139,7 @@ public class DroneDebugger {
                     // render end point
                     BlockPos pos = navi.getTargetPos();  // yes, this *can* be null: https://github.com/TeamPneumatic/pnc-repressurized/issues/761
                     //noinspection ConstantConditions
-                    if (pos != null && drone.getDronePos().squareDistanceTo(Vector3d.copyCentered(pos)) > 1) {
+                    if (pos != null && drone.getDronePos().distanceToSqr(Vector3d.atCenterOf(pos)) > 1) {
                         spawnParticle(drone.getDebugger().debuggingPlayers, ParticleTypes.HEART,
                                 pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 0,
                                 0, 0, 0, 0);
@@ -150,7 +150,7 @@ public class DroneDebugger {
 
         private static <T extends IParticleData> void spawnParticle(Set<ServerPlayerEntity> players, T type, double posX, double posY, double posZ, int particleCount, double xOffset, double yOffset, double zOffset, double speed) {
             SSpawnParticlePacket packet = new SSpawnParticlePacket(type, false, posX, posY, posZ, (float)xOffset, (float)yOffset, (float)zOffset, (float)speed, particleCount);
-            players.forEach(player -> player.connection.sendPacket(packet));
+            players.forEach(player -> player.connection.send(packet));
         }
     }
 }

@@ -58,7 +58,7 @@ public class PacketSpawnParticle extends LocationDoublePacket {
     }
 
     private <T extends IParticleData> T readParticle(ParticleType<T> type, PacketBuffer buffer) {
-        return type.getDeserializer().read(type, buffer);
+        return type.getDeserializer().fromNetwork(type, buffer);
     }
 
     @Override
@@ -75,16 +75,16 @@ public class PacketSpawnParticle extends LocationDoublePacket {
             buffer.writeDouble(ry);
             buffer.writeDouble(rz);
         }
-        particle.write(new PacketBuffer(buffer));
+        particle.writeToNetwork(new PacketBuffer(buffer));
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             World world = ClientUtils.getClientWorld();
             for (int i = 0; i < numParticles; i++) {
-                double x1 = x + (numParticles == 1 ? 0 : world.rand.nextDouble() * rx);
-                double y1 = y + (numParticles == 1 ? 0 : world.rand.nextDouble() * ry);
-                double z1 = z + (numParticles == 1 ? 0 : world.rand.nextDouble() * rz);
+                double x1 = x + (numParticles == 1 ? 0 : world.random.nextDouble() * rx);
+                double y1 = y + (numParticles == 1 ? 0 : world.random.nextDouble() * ry);
+                double z1 = z + (numParticles == 1 ? 0 : world.random.nextDouble() * rz);
                 world.addParticle(particle, x1, y1, z1, dx, dy, dz);
             }
         });

@@ -30,12 +30,12 @@ import static net.minecraft.command.arguments.EntityArgument.getPlayer;
 public class ModCommands {
     public static void register(CommandDispatcher<CommandSource> dispatcher) {
         dispatcher.register(Commands.literal("dumpNBT")
-                .requires(cs -> cs.hasPermissionLevel(2))
+                .requires(cs -> cs.hasPermission(2))
                 .executes(ModCommands::dumpNBT)
         );
 
         dispatcher.register(Commands.literal("amadrone_deliver")
-                .requires(cs -> cs.hasPermissionLevel(2))
+                .requires(cs -> cs.hasPermission(2))
                 .then(argument("toPos", BlockPosArgument.blockPos())
                         .then(argument("fromPos", BlockPosArgument.blockPos())
                                 .executes(ctx -> amadroneDeliver(ctx.getSource(), getLoadedBlockPos(ctx, "toPos"), getLoadedBlockPos(ctx, "fromPos")))
@@ -43,7 +43,7 @@ public class ModCommands {
                 )
                 .then(argument("player", EntityArgument.player())
                         .then(argument("fromPos", BlockPosArgument.blockPos())
-                                .executes(ctx -> amadroneDeliver(ctx.getSource(), getPlayer(ctx, "player").getPosition(), getLoadedBlockPos(ctx, "fromPos")))
+                                .executes(ctx -> amadroneDeliver(ctx.getSource(), getPlayer(ctx, "player").blockPosition(), getLoadedBlockPos(ctx, "fromPos")))
                         )
                 )
         );
@@ -66,22 +66,22 @@ public class ModCommands {
     private static int dumpNBT(CommandContext<CommandSource> ctx) {
         CommandSource source = ctx.getSource();
         if (source.getEntity() instanceof PlayerEntity) {
-            ItemStack held = ((PlayerEntity) source.getEntity()).getHeldItemMainhand();
+            ItemStack held = ((PlayerEntity) source.getEntity()).getMainHandItem();
             if (held.getTag() == null) {
-                source.sendErrorMessage(new StringTextComponent("No NBT"));
+                source.sendFailure(new StringTextComponent("No NBT"));
                 return 0;
             } else if (held.getTag().isEmpty()) {
-                source.sendErrorMessage(new StringTextComponent("Empty NBT"));
+                source.sendFailure(new StringTextComponent("Empty NBT"));
                 return 0;
             }
-            source.sendFeedback(new StringTextComponent(held.getTag().toString()), false);
+            source.sendSuccess(new StringTextComponent(held.getTag().toString()), false);
             return 1;
         }
         return 0;
     }
 
     private static int amadroneDeliver(CommandSource source, BlockPos toPos, BlockPos fromPos) {
-        TileEntity te = source.getWorld().getTileEntity(fromPos);
+        TileEntity te = source.getLevel().getBlockEntity(fromPos);
 
         int status = IOHelper.getInventoryForTE(te).map(inv -> {
             List<ItemStack> deliveredStacks = new ArrayList<>();
@@ -89,17 +89,17 @@ public class ModCommands {
                 if (!inv.getStackInSlot(i).isEmpty()) deliveredStacks.add(inv.getStackInSlot(i));
             }
             if (deliveredStacks.size() > 0) {
-                GlobalPos gPos = GlobalPosHelper.makeGlobalPos(source.getWorld(), toPos);
+                GlobalPos gPos = GlobalPosHelper.makeGlobalPos(source.getLevel(), toPos);
                 PneumaticRegistry.getInstance().getDroneRegistry().deliverItemsAmazonStyle(gPos, deliveredStacks.toArray(new ItemStack[0]));
-                source.sendFeedback(xlate("pneumaticcraft.command.deliverAmazon.success", PneumaticCraftUtils.posToString(fromPos), PneumaticCraftUtils.posToString(toPos)), false);
+                source.sendSuccess(xlate("pneumaticcraft.command.deliverAmazon.success", PneumaticCraftUtils.posToString(fromPos), PneumaticCraftUtils.posToString(toPos)), false);
                 return 1;
             } else {
-                source.sendErrorMessage(xlate("pneumaticcraft.command.deliverAmazon.noItems", PneumaticCraftUtils.posToString(fromPos)));
+                source.sendFailure(xlate("pneumaticcraft.command.deliverAmazon.noItems", PneumaticCraftUtils.posToString(fromPos)));
                 return 0;
             }
         }).orElse(-1);
 
-        if (status == -1) source.sendErrorMessage(xlate("pneumaticcraft.command.deliverAmazon.noInventory", PneumaticCraftUtils.posToString(fromPos)));
+        if (status == -1) source.sendFailure(xlate("pneumaticcraft.command.deliverAmazon.noInventory", PneumaticCraftUtils.posToString(fromPos)));
         return status;
     }
 
@@ -108,7 +108,7 @@ public class ModCommands {
         if (varName.startsWith("#")) varName = varName.substring(1);
         BlockPos pos = GlobalVariableManager.getInstance().getPos(varName);
         ItemStack stack = GlobalVariableManager.getInstance().getItem(varName);
-        source.sendFeedback(xlate("pneumaticcraft.command.getGlobalVariable.output", varName, PneumaticCraftUtils.posToString(pos), stack.getDisplayName().getString()), false);
+        source.sendSuccess(xlate("pneumaticcraft.command.getGlobalVariable.output", varName, PneumaticCraftUtils.posToString(pos), stack.getHoverName().getString()), false);
         return 1;
     }
 
@@ -116,7 +116,7 @@ public class ModCommands {
         CommandSource source = ctx.getSource();
         if (varName.startsWith("#")) varName = varName.substring(1);
         GlobalVariableManager.getInstance().set(varName, pos);
-        source.sendFeedback(xlate("pneumaticcraft.command.setGlobalVariable.output", varName, PneumaticCraftUtils.posToString(pos)), false);
+        source.sendSuccess(xlate("pneumaticcraft.command.setGlobalVariable.output", varName, PneumaticCraftUtils.posToString(pos)), false);
         return 1;
     }
 }

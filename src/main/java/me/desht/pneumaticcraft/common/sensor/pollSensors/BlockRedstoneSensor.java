@@ -34,7 +34,7 @@ public class BlockRedstoneSensor implements IBlockAndCoordinatePollSensor {
     public int getRedstoneValue(World world, BlockPos pos, int sensorRange, String textBoxText, Set<BlockPos> positions) {
         int redstonePower = 0;
         for (BlockPos pos1 : positions) {
-            redstonePower = Math.max(redstonePower, world.getRedstonePowerFromNeighbors(pos1));
+            redstonePower = Math.max(redstonePower, world.getBestNeighborSignal(pos1));
             if (redstonePower == 15) return 15;
         }
         return redstonePower;

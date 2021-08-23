@@ -81,10 +81,10 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
     public void tick() {
         super.tick();
         oldProgress = progress;
-        if (!getWorld().isRemote) {
+        if (!getLevel().isClientSide) {
             if (getPressure() >= PneumaticValues.MIN_PRESSURE_PNEUMATIC_DOOR) {
-                if ((getWorld().getGameTime() & 0x3f) == 0) {
-                    TileEntity te = getWorld().getTileEntity(getPos().offset(getRotation(), 3));
+                if ((getLevel().getGameTime() & 0x3f) == 0) {
+                    TileEntity te = getLevel().getBlockEntity(getBlockPos().relative(getRotation(), 3));
                     if (te instanceof TileEntityPneumaticDoorBase) {
                         doubleDoor = (TileEntityPneumaticDoorBase) te;
                     } else {
@@ -115,13 +115,13 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
             }
             if (progress < targetProgress) progress = targetProgress;
         }
-        if (!getWorld().isRemote && !PneumaticCraftUtils.epsilonEquals(oldProgress, progress)) {
+        if (!getLevel().isClientSide && !PneumaticCraftUtils.epsilonEquals(oldProgress, progress)) {
             addAir((int) (-Math.abs(oldProgress - progress) * PneumaticValues.USAGE_PNEUMATIC_DOOR * (getSpeedUsageMultiplierFromUpgrades() / speedMultiplier)));
         }
         door = getDoor();
         if (door != null) {
             door.setRotationAngle(progress * 90);
-            if (!getWorld().isRemote) rightGoing = door.rightGoing;
+            if (!getLevel().isClientSide) rightGoing = door.rightGoing;
         }
     }
 
@@ -131,17 +131,17 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
             case RS_MODE_NEAR:
             case RS_MODE_NEAR_LOOKING:
                 int range = TileEntityConstants.RANGE_PNEUMATIC_DOOR_BASE + this.getUpgrades(EnumUpgrade.RANGE);
-                AxisAlignedBB aabb = new AxisAlignedBB(getPos()).grow(range);
-                for (PlayerEntity player : getWorld().getEntitiesWithinAABB(PlayerEntity.class, aabb)) {
-                    if (TileEntitySecurityStation.isProtectedFromPlayer(player, getPos(), false)) {
+                AxisAlignedBB aabb = new AxisAlignedBB(getBlockPos()).inflate(range);
+                for (PlayerEntity player : getLevel().getEntitiesOfClass(PlayerEntity.class, aabb)) {
+                    if (TileEntitySecurityStation.isProtectedFromPlayer(player, getBlockPos(), false)) {
                         continue;
                     }
                     if (rsController.getCurrentMode() == RS_MODE_NEAR) {
                         return true;
                     } else {
                         Vector3d eyePos = player.getEyePosition(0f);
-                        Vector3d endPos = eyePos.add(player.getLookVec().normalize().scale(range * 1.4142f));
-                        return door.getRenderBoundingBox().rayTrace(eyePos, endPos).isPresent();
+                        Vector3d endPos = eyePos.add(player.getLookAngle().normalize().scale(range * 1.4142f));
+                        return door.getRenderBoundingBox().clip(eyePos, endPos).isPresent();
                     }
                 }
                 return false;
@@ -156,7 +156,7 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
         boolean wasOpening = this.opening;
         this.opening = opening;
         if (this.opening != wasOpening) {
-            NetworkHandler.sendToAllTracking(new PacketPlaySound(ModSounds.PNEUMATIC_DOOR.get(), SoundCategory.BLOCKS, getPos(), 1.0F, 1.0F, false),this);
+            NetworkHandler.sendToAllTracking(new PacketPlaySound(ModSounds.PNEUMATIC_DOOR.get(), SoundCategory.BLOCKS, getBlockPos(), 1.0F, 1.0F, false),this);
             sendDescriptionPacket();
         }
     }
@@ -181,10 +181,10 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
     }
 
     private TileEntityPneumaticDoor getDoor() {
-        return PneumaticCraftUtils.getTileEntityAt(getWorld(), getPos().offset(getRotation()).down(), TileEntityPneumaticDoor.class).map(teDoor -> {
-            if (getRotation().rotateY() == teDoor.getRotation() && !teDoor.rightGoing) {
+        return PneumaticCraftUtils.getTileEntityAt(getLevel(), getBlockPos().relative(getRotation()).below(), TileEntityPneumaticDoor.class).map(teDoor -> {
+            if (getRotation().getClockWise() == teDoor.getRotation() && !teDoor.rightGoing) {
                 return teDoor;
-            } else if (getRotation().rotateYCCW() == teDoor.getRotation() && teDoor.rightGoing) {
+            } else if (getRotation().getCounterClockWise() == teDoor.getRotation() && teDoor.rightGoing) {
                 return teDoor;
             } else {
                 return null;
@@ -193,8 +193,8 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT tag) {
-        super.read(state, tag);
+    public void load(BlockState state, CompoundNBT tag) {
+        super.load(state, tag);
 
         progress = tag.getFloat("extension");
         opening = tag.getBoolean("opening");
@@ -203,8 +203,8 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tag) {
-        super.write(tag);
+    public CompoundNBT save(CompoundNBT tag) {
+        super.save(tag);
         tag.putFloat("extension", progress);
         tag.putBoolean("opening", opening);
         tag.putBoolean("rightGoing", rightGoing);
@@ -233,7 +233,7 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
         if (tag.equals("pass_signal")) {
             passSignal = !passSignal;
             updateNeighbours();
-            markDirty();
+            setChanged();
         }
     }
 
@@ -271,7 +271,7 @@ public class TileEntityPneumaticDoorBase extends TileEntityPneumaticBase impleme
     @Nullable
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        return new ContainerPneumaticDoorBase(i, playerInventory, getPos());
+        return new ContainerPneumaticDoorBase(i, playerInventory, getBlockPos());
     }
 
     public boolean shouldPassSignalToDoor() {

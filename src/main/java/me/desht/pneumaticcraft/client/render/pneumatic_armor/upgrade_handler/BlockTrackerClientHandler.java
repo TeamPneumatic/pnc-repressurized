@@ -67,7 +67,7 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
         long now = System.nanoTime();
 
         PlayerEntity player = armorHandler.getPlayer();
-        World world = armorHandler.getPlayer().world;
+        World world = armorHandler.getPlayer().level;
 
         BlockPos.Mutable pos = new BlockPos.Mutable();
         for (int i = 0; i < HARD_MAX_BLOCKS_PER_TICK; i++) {
@@ -80,9 +80,9 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
 
             if (!world.isAreaLoaded(pos, 0)) break;
 
-            if (world.isAirBlock(pos)) continue;
+            if (world.isEmptyBlock(pos)) continue;
 
-            TileEntity te = world.getTileEntity(pos);
+            TileEntity te = world.getBlockEntity(pos);
 
             if (!MinecraftForge.EVENT_BUS.post(new BlockTrackEvent(world, pos, te))) {
                 if (te != null && te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent()) {
@@ -103,9 +103,9 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
                         // we already have a tracker active for this pos
                         blockTarget.ticksExisted = Math.abs(blockTarget.ticksExisted); // cancel possible "lost target" status
                         blockTarget.setTileEntity(te);
-                    } else if (pos.distanceSq(player.getPosition()) < blockTrackRangeSq) {
+                    } else if (pos.distSqr(player.blockPosition()) < blockTrackRangeSq) {
                         // no tracker currently active for this pos - add a new one
-                        addBlockTarget(new RenderBlockTarget(world, player, pos.toImmutable(), te, this));
+                        addBlockTarget(new RenderBlockTarget(world, player, pos.immutable(), te, this));
                     }
                 }
             }
@@ -123,16 +123,16 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
         focusedFace = null;
         Vector3d eyes = player.getEyePosition(1.0f);
         Vector3d v = eyes;
-        Vector3d lookVec = player.getLookVec();
+        Vector3d lookVec = player.getLookAngle();
         for (int i = 0; i < blockTrackRange * 4; i++) {
             v = v.add(lookVec.scale(0.25));  // scale down to minimise clipping across a corner and missing the block
             BlockPos checkPos = new BlockPos(v.x, v.y, v.z);
             if (blockTargets.containsKey(checkPos)) {
-                BlockState state = player.world.getBlockState(checkPos);
-                BlockRayTraceResult brtr = state.getShape(player.world, checkPos).rayTrace(eyes, v, checkPos);
+                BlockState state = player.level.getBlockState(checkPos);
+                BlockRayTraceResult brtr = state.getShape(player.level, checkPos).clip(eyes, v, checkPos);
                 if (brtr != null && brtr.getType() == RayTraceResult.Type.BLOCK) {
                     focusedTarget = blockTargets.get(checkPos);
-                    focusedFace = brtr.getFace();
+                    focusedFace = brtr.getDirection();
                     break;
                 }
             }
@@ -226,7 +226,7 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
                 }
                 break;
         }
-        pos.setPos(player.getPosX() + xOff, MathHelper.clamp(player.getPosY() + yOff, 0, 255), player.getPosZ() + zOff);
+        pos.set(player.getX() + xOff, MathHelper.clamp(player.getY() + yOff, 0, 255), player.getZ() + zOff);
     }
 
     private void updateBlockTypeCounts() {
@@ -254,7 +254,7 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
             blockTarget.tick();
 
             BlockPos pos = blockTarget.getPos();
-            if (player.getDistanceSq(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D) > rangeSq || !blockTarget.isTargetStillValid()) {
+            if (player.distanceToSqr(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D) > rangeSq || !blockTarget.isTargetStillValid()) {
                 if (blockTarget.ticksExisted > 0) {
                     blockTarget.ticksExisted = -100;
                 } else if (blockTarget.ticksExisted == -1) {

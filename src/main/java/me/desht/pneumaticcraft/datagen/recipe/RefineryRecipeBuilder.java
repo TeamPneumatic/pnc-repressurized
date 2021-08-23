@@ -34,8 +34,8 @@ public class RefineryRecipeBuilder extends PneumaticCraftRecipeBuilder<RefineryR
         }
 
         @Override
-        public void serialize(JsonObject json) {
-            json.add("input", input.serialize());
+        public void serializeRecipeData(JsonObject json) {
+            json.add("input", input.toJson());
             json.add("temperature", operatingTemp.toJson());
             JsonArray o = new JsonArray();
             for (FluidStack f : outputs) {

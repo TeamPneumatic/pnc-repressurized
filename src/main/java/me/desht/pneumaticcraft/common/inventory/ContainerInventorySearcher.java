@@ -38,17 +38,17 @@ public class ContainerInventorySearcher extends Container {
      */
     @Nonnull
     @Override
-    public ItemStack transferStackInSlot(PlayerEntity par1EntityPlayer, int par2) {
+    public ItemStack quickMoveStack(PlayerEntity par1EntityPlayer, int par2) {
         return ItemStack.EMPTY;
     }
 
     @Override
-    public void putStackInSlot(int par1, @Nonnull ItemStack par2ItemStack) {
+    public void setItem(int par1, @Nonnull ItemStack par2ItemStack) {
         //override this to do nothing, as NEI tries to place items in this container which makes it crash.
     }
 
     @Override
-    public boolean canInteractWith(@Nonnull PlayerEntity entityplayer) {
+    public boolean stillValid(@Nonnull PlayerEntity entityplayer) {
         return true;
     }
 

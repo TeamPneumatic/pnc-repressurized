@@ -51,7 +51,7 @@ public class HackableGuardian implements IHackableEntity {
                 .forEach(tasks::removeGoal);
 
         if (entity instanceof ElderGuardianEntity) {
-            player.removeActivePotionEffect(Effects.MINING_FATIGUE);
+            player.removeEffectNoUpdate(Effects.DIG_SLOWDOWN);
         }
     }
 

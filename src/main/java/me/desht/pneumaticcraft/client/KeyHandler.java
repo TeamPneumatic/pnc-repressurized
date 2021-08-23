@@ -67,7 +67,7 @@ public class KeyHandler {
     @SubscribeEvent
     public void onKey(InputEvent.KeyInputEvent event) {
         for (KeyBinding key : keys) {
-            if (key.isPressed()) {
+            if (key.consumeClick()) {
                 dispatchInput(key);
             }
         }
@@ -76,7 +76,7 @@ public class KeyHandler {
     @SubscribeEvent
     public void onMouse(InputEvent.MouseInputEvent event) {
         for (KeyBinding key : keys) {
-            if (key.isPressed()) {
+            if (key.consumeClick()) {
                 dispatchInput(key);
             }
         }

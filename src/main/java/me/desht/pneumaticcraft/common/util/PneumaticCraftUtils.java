@@ -67,13 +67,13 @@ public class PneumaticCraftUtils {
      * @return the entity's facing direction
      */
     public static Direction getDirectionFacing(LivingEntity entity, boolean includeUpAndDown) {
-        double yaw = entity.rotationYaw;
+        double yaw = entity.yRot;
         while (yaw < 0)
             yaw += 360;
         yaw = yaw % 360;
         if (includeUpAndDown) {
-            if (entity.rotationPitch > 45) return Direction.DOWN;
-            else if (entity.rotationPitch < -45) return Direction.UP;
+            if (entity.xRot > 45) return Direction.DOWN;
+            else if (entity.xRot < -45) return Direction.UP;
         }
         if (yaw < 45) return Direction.SOUTH;
         else if (yaw < 135) return Direction.WEST;
@@ -285,16 +285,16 @@ public class PneumaticCraftUtils {
     public static void summariseItemStacks(List<ITextComponent> textList, ItemStack[] originalStacks, String prefix) {
         ItemStack[] stacks = Arrays.copyOf(originalStacks, originalStacks.length);
 
-        Arrays.sort(stacks, (o1, o2) -> o1.getDisplayName().getString().compareToIgnoreCase(o2.getDisplayName().getString()));
+        Arrays.sort(stacks, (o1, o2) -> o1.getHoverName().getString().compareToIgnoreCase(o2.getHoverName().getString()));
 
         int itemCount = 0;
         ItemStack prevItemStack = ItemStack.EMPTY;
         List<ItemStack> prevInventoryItems = null;
         for (ItemStack stack : stacks) {
             if (!stack.isEmpty()) {
-                if (!stack.isItemEqual(prevItemStack) || prevInventoryItems != null && prevInventoryItems.size() > 0) {
+                if (!stack.sameItem(prevItemStack) || prevInventoryItems != null && prevInventoryItems.size() > 0) {
                     if (!prevItemStack.isEmpty()) {
-                        addText(textList, prefix  + PneumaticCraftUtils.convertAmountToString(itemCount) + " x " + prevItemStack.getDisplayName().getString());
+                        addText(textList, prefix  + PneumaticCraftUtils.convertAmountToString(itemCount) + " x " + prevItemStack.getHoverName().getString());
                     }
                     if (prevInventoryItems != null) {
                         summariseItemStacks(textList, prevInventoryItems.toArray(new ItemStack[0]), prefix + GuiConstants.ARROW_DOWN_RIGHT + " ");
@@ -308,7 +308,7 @@ public class PneumaticCraftUtils {
             }
         }
         if (itemCount > 0 && !prevItemStack.isEmpty()) {
-            addText(textList,prefix + PneumaticCraftUtils.convertAmountToString(itemCount) + " x " + prevItemStack.getDisplayName().getString());
+            addText(textList,prefix + PneumaticCraftUtils.convertAmountToString(itemCount) + " x " + prevItemStack.getHoverName().getString());
             summariseItemStacks(textList, prevInventoryItems.toArray(new ItemStack[0]), prefix + GuiConstants.ARROW_DOWN_RIGHT + " ");
         }
     }
@@ -385,7 +385,7 @@ public class PneumaticCraftUtils {
 
         if (filterStack.getItem() != stack.getItem()) return false;
 
-        boolean durabilityOK = !checkDurability || (filterStack.getMaxDamage() > 0 && filterStack.getDamage() == stack.getDamage());
+        boolean durabilityOK = !checkDurability || (filterStack.getMaxDamage() > 0 && filterStack.getDamageValue() == stack.getDamageValue());
         boolean nbtOK = !checkNBT || (filterStack.hasTag() ? filterStack.getTag().equals(stack.getTag()) : !stack.hasTag());
 
         return durabilityOK && nbtOK;
@@ -400,9 +400,9 @@ public class PneumaticCraftUtils {
     }
 
     public static void dropItemOnGround(ItemStack stack, World world, double x, double y, double z) {
-        float dX = world.rand.nextFloat() * 0.8F + 0.1F;
-        float dY = world.rand.nextFloat() * 0.8F + 0.1F;
-        float dZ = world.rand.nextFloat() * 0.8F + 0.1F;
+        float dX = world.random.nextFloat() * 0.8F + 0.1F;
+        float dY = world.random.nextFloat() * 0.8F + 0.1F;
+        float dZ = world.random.nextFloat() * 0.8F + 0.1F;
 
         ItemEntity entityItem = new ItemEntity(world, x + dX, y + dY, z + dZ, stack.copy());
 
@@ -411,8 +411,8 @@ public class PneumaticCraftUtils {
         }
 
         float factor = 0.05F;
-        entityItem.setMotion(world.rand.nextGaussian() * factor, world.rand.nextGaussian() * factor + 0.2, world.rand.nextGaussian() * factor);
-        world.addEntity(entityItem);
+        entityItem.setDeltaMovement(world.random.nextGaussian() * factor, world.random.nextGaussian() * factor + 0.2, world.random.nextGaussian() * factor);
+        world.addFreshEntity(entityItem);
         stack.setCount(0);
     }
 
@@ -422,21 +422,21 @@ public class PneumaticCraftUtils {
         if (stack.hasTag()) {
             entityItem.getItem().setTag(stack.getTag().copy());
         }
-        entityItem.setMotion(0, 0, 0);
-        world.addEntity(entityItem);
+        entityItem.setDeltaMovement(0, 0, 0);
+        world.addFreshEntity(entityItem);
         stack.setCount(0);
     }
 
     public static PlayerEntity getPlayerFromId(UUID uuid) {
-        return ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByUUID(uuid);
+        return ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayer(uuid);
     }
 
     public static PlayerEntity getPlayerFromName(String name) {
-        return ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByUsername(name);
+        return ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayerByName(name);
     }
 
     public static boolean isPlayerOp(PlayerEntity player) {
-        return player.hasPermissionLevel(2);
+        return player.hasPermissions(2);
     }
 
     /**
@@ -450,9 +450,9 @@ public class PneumaticCraftUtils {
      * @return true if the block could be placed, false otherwise
      */
     public static boolean tryPlaceBlock(World w, BlockPos pos, PlayerEntity player, Direction face, BlockState newState) {
-        BlockSnapshot snapshot = BlockSnapshot.create(w.getDimensionKey(), w, pos);
+        BlockSnapshot snapshot = BlockSnapshot.create(w.dimension(), w, pos);
         if (!ForgeEventFactory.onBlockPlace(player, snapshot, face)) {
-            w.setBlockState(pos, newState);
+            w.setBlockAndUpdate(pos, newState);
             return true;
         }
         return false;
@@ -467,14 +467,14 @@ public class PneumaticCraftUtils {
      * @return a dummy player-sized living entity
      */
     public static MobEntity createDummyEntity(PlayerEntity player) {
-        ZombieEntity dummy = new ZombieEntity(player.world) {
+        ZombieEntity dummy = new ZombieEntity(player.level) {
 //            @Override
 //            protected void registerAttributes() {
 //                super.registerAttributes();
 //                this.getAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(CoordTrackUpgradeHandler.SEARCH_RANGE);
 //            }
         };
-        dummy.setPosition(player.getPosX(), player.getPosY(), player.getPosZ());
+        dummy.setPos(player.getX(), player.getY(), player.getZ());
         return dummy;
     }
 
@@ -486,11 +486,11 @@ public class PneumaticCraftUtils {
      * @return true if an item was consumed
      */
     public static boolean consumeInventoryItem(PlayerInventory inv, Item item) {
-        for (int i = 0; i < inv.mainInventory.size(); ++i) {
-            if (inv.mainInventory.get(i).getItem() == item) {
-                inv.mainInventory.get(i).shrink(1);
-                if (inv.mainInventory.get(i).getCount() <= 0) {
-                    inv.mainInventory.set(i, ItemStack.EMPTY);
+        for (int i = 0; i < inv.items.size(); ++i) {
+            if (inv.items.get(i).getItem() == item) {
+                inv.items.get(i).shrink(1);
+                if (inv.items.get(i).getCount() <= 0) {
+                    inv.items.set(i, ItemStack.EMPTY);
                 }
                 return true;
             }
@@ -523,9 +523,9 @@ public class PneumaticCraftUtils {
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean consumeInventoryItem(PlayerInventory inv, ItemStack stack) {
         int toConsume = stack.getCount();
-        for (int i = 0; i < inv.mainInventory.size(); ++i) {
-            ItemStack invStack = inv.mainInventory.get(i);
-            if (ItemStack.areItemsEqual(invStack, stack)) {
+        for (int i = 0; i < inv.items.size(); ++i) {
+            ItemStack invStack = inv.items.get(i);
+            if (ItemStack.isSame(invStack, stack)) {
                 int consumed = Math.min(invStack.getCount(), stack.getCount());
                 invStack.shrink(consumed);
                 toConsume -= consumed;
@@ -556,8 +556,8 @@ public class PneumaticCraftUtils {
     }
 
     public static ITextComponent dyeColorDesc(int c) {
-        return new TranslationTextComponent("color.minecraft." + DyeColor.byId(c).getTranslationKey())
-                .mergeStyle(TextFormatting.BOLD);
+        return new TranslationTextComponent("color.minecraft." + DyeColor.byId(c).getName())
+                .withStyle(TextFormatting.BOLD);
     }
 
     public static void copyItemHandler(IItemHandler source, ItemStackHandler dest, int maxSlots) {
@@ -573,7 +573,7 @@ public class PneumaticCraftUtils {
     }
 
     public static BlockPos getPosForEntity(Entity e) {
-        return new BlockPos(e.getPosX(), e.getPosY(), e.getPosZ());
+        return new BlockPos(e.getX(), e.getY(), e.getZ());
     }
 
     public static String posToString(BlockPos pos) {
@@ -582,7 +582,7 @@ public class PneumaticCraftUtils {
 
     public static <T extends TileEntity> Optional<T> getTileEntityAt(IBlockReader w, BlockPos pos, Class<T> cls) {
         if (w != null && pos != null) {
-            TileEntity te = w.getTileEntity(pos);
+            TileEntity te = w.getBlockEntity(pos);
             if (te != null && cls.isAssignableFrom(te.getClass())) {
                 //noinspection unchecked
                 return Optional.of((T) te);
@@ -603,11 +603,11 @@ public class PneumaticCraftUtils {
      */
     public static boolean fillTankWithOrb(IFluidHandler handler, ExperienceOrbEntity orb, FluidAction action) {
         int ratio = XPFluidManager.getInstance().getXPRatio(ModFluids.MEMORY_ESSENCE.get());
-        int fluidAmount = orb.getXpValue() * ratio;
+        int fluidAmount = orb.getValue() * ratio;
         FluidStack toFill = new FluidStack(ModFluids.MEMORY_ESSENCE.get(), fluidAmount);
         int filled = handler.fill(toFill, action);
         if (filled > 0 && filled < fluidAmount && action.execute()) {
-            orb.xpValue = orb.xpValue - Math.max(1, filled / ratio);  // partial fill, adjust the orb
+            orb.value = orb.value - Math.max(1, filled / ratio);  // partial fill, adjust the orb
         }
         return filled == fluidAmount;
     }
@@ -623,7 +623,7 @@ public class PneumaticCraftUtils {
     public static boolean canPlayerReach(PlayerEntity player, BlockPos pos) {
         if (player == null) return false;
         double dist = getPlayerReachDistance(player);
-        return player.getDistanceSq(Vector3d.copyCentered(pos)) <= dist * dist;
+        return player.distanceToSqr(Vector3d.atCenterOf(pos)) <= dist * dist;
     }
 
     /**

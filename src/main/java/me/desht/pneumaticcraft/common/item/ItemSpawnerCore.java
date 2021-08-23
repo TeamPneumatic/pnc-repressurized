@@ -42,30 +42,30 @@ public class ItemSpawnerCore extends Item implements ColorHandlers.ITintableItem
     }
 
     @Override
-    public void addInformation(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
-        super.addInformation(stack, worldIn, tooltip, flagIn);
+    public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
+        super.appendHoverText(stack, worldIn, tooltip, flagIn);
 
         ISpawnerCoreStats stats = SpawnerCoreStats.forItemStack(stack);
         if (stats != null) {
             if (stats.getUnusedPercentage() < 100) {
                 stats.getEntities().stream()
-                        .sorted(Comparator.comparing(t -> I18n.format(t.getTranslationKey())))
+                        .sorted(Comparator.comparing(t -> I18n.get(t.getDescriptionId())))
                         .forEach(type -> tooltip.add(GuiConstants.bullet()
-                                .append(xlate(type.getTranslationKey()).mergeStyle(TextFormatting.YELLOW))
-                                .appendString(": " + stats.getPercentage(type) + "%").mergeStyle(TextFormatting.WHITE))
+                                .append(xlate(type.getDescriptionId()).withStyle(TextFormatting.YELLOW))
+                                .append(": " + stats.getPercentage(type) + "%").withStyle(TextFormatting.WHITE))
                         );
                 tooltip.add(GuiConstants.bullet()
-                        .append(xlate("pneumaticcraft.gui.misc.empty").mergeStyle(TextFormatting.YELLOW, TextFormatting.ITALIC))
-                        .appendString(": " + stats.getUnusedPercentage() + "%").mergeStyle(TextFormatting.WHITE));
+                        .append(xlate("pneumaticcraft.gui.misc.empty").withStyle(TextFormatting.YELLOW, TextFormatting.ITALIC))
+                        .append(": " + stats.getUnusedPercentage() + "%").withStyle(TextFormatting.WHITE));
             } else {
-                tooltip.add(xlate("pneumaticcraft.gui.misc.empty").mergeStyle(TextFormatting.YELLOW));
+                tooltip.add(xlate("pneumaticcraft.gui.misc.empty").withStyle(TextFormatting.YELLOW));
             }
         }
     }
 
     @Override
-    public ActionResultType onItemUse(ItemUseContext context) {
-        if (!context.getWorld().isRemote) {
+    public ActionResultType useOn(ItemUseContext context) {
+        if (!context.getLevel().isClientSide) {
             return trySpawnEntity(context) ? ActionResultType.CONSUME : ActionResultType.PASS;
         } else {
             return ActionResultType.SUCCESS;
@@ -73,25 +73,25 @@ public class ItemSpawnerCore extends Item implements ColorHandlers.ITintableItem
     }
 
     private boolean trySpawnEntity(ItemUseContext context) {
-        ItemStack stack = context.getItem();
+        ItemStack stack = context.getItemInHand();
         if (stack.getCount() != 1) return false;
         ISpawnerCoreStats stats = SpawnerCoreStats.forItemStack(stack);
         if (stats != null) {
-            World world = context.getWorld();
+            World world = context.getLevel();
             EntityType<?> type = stats.pickEntity(false);
             if (type != null && type.getRegistryName() != null) {
-                Vector3d vec = context.getHitVec();
-                if (world.hasNoCollisions(type.getBoundingBoxWithSizeApplied(vec.getX(), vec.getY(), vec.getZ()))) {
+                Vector3d vec = context.getClickLocation();
+                if (world.noCollision(type.getAABB(vec.x(), vec.y(), vec.z()))) {
                     ServerWorld serverworld = (ServerWorld)world;
                     CompoundNBT nbt = new CompoundNBT();
                     nbt.putString("id", type.getRegistryName().toString());
-                    Entity entity = EntityType.loadEntityAndExecute(nbt, world, (e1) -> {
-                        e1.setLocationAndAngles(vec.getX(), vec.getY(), vec.getZ(), e1.rotationYaw, e1.rotationPitch);
+                    Entity entity = EntityType.loadEntityRecursive(nbt, world, (e1) -> {
+                        e1.moveTo(vec.x(), vec.y(), vec.z(), e1.yRot, e1.xRot);
                         return e1;
                     });
                     if (entity != null) {
-                        entity.setLocationAndAngles(entity.getPosX(), entity.getPosY(), entity.getPosZ(), world.rand.nextFloat() * 360.0F, 0.0F);
-                        if (serverworld.func_242106_g(entity)) {
+                        entity.moveTo(entity.getX(), entity.getY(), entity.getZ(), world.random.nextFloat() * 360.0F, 0.0F);
+                        if (serverworld.tryAddFreshEntityWithPassengers(entity)) {
                             stats.addAmount(type, -1);
                             stats.serialize(stack);
                             return true;
@@ -126,7 +126,7 @@ public class ItemSpawnerCore extends Item implements ColorHandlers.ITintableItem
             int total = 0;
             if (nbt0 != null && nbt0.contains(NBT_SPAWNER_CORE)) {
                 CompoundNBT nbt = nbt0.getCompound(NBT_SPAWNER_CORE);
-                for (String k : nbt.keySet()) {
+                for (String k : nbt.getAllKeys()) {
                     EntityType<?> type = ForgeRegistries.ENTITIES.getValue(new ResourceLocation(k));
                     if (type != null) {
                         int amount = nbt.getInt(k);
@@ -149,7 +149,7 @@ public class ItemSpawnerCore extends Item implements ColorHandlers.ITintableItem
                     CompoundNBT tag = stack.getTag();
                     if (tag != null) tag.remove(NBT_SPAWNER_CORE);
                 } else {
-                    CompoundNBT subTag = stack.getOrCreateChildTag(NBT_SPAWNER_CORE);
+                    CompoundNBT subTag = stack.getOrCreateTagElement(NBT_SPAWNER_CORE);
                     entityCounts.forEach((type, amount) -> {
                         if (type.getRegistryName() != null) {
                             if (amount > 0) {

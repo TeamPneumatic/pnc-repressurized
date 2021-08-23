@@ -26,12 +26,12 @@ public class PacketPlayMovingSound {
     }
 
     public PacketPlayMovingSound(PacketBuffer buffer) {
-        sound = buffer.readEnumValue(MovingSounds.Sound.class);
+        sound = buffer.readEnum(MovingSounds.Sound.class);
         source = SoundSource.fromBytes(buffer);
     }
 
     public void toBytes(PacketBuffer buffer) {
-        buffer.writeEnumValue(sound);
+        buffer.writeEnum(sound);
         source.toBytes(buffer);
     }
 
@@ -69,7 +69,7 @@ public class PacketPlayMovingSound {
         }
 
         public static SoundSource of(int id) {
-            Entity e = ClientUtils.getClientWorld().getEntityByID(id);
+            Entity e = ClientUtils.getClientWorld().getEntity(id);
             return e == null ? null : of(e);
         }
 
@@ -78,20 +78,20 @@ public class PacketPlayMovingSound {
         }
 
         public static SoundSource of(TileEntity te) {
-            return new SoundSource(Either.right(te.getPos()));
+            return new SoundSource(Either.right(te.getBlockPos()));
         }
 
         public static SoundSource fromBytes(PacketBuffer buf) {
-            SourceType type = buf.readEnumValue(SourceType.class);
+            SourceType type = buf.readEnum(SourceType.class);
             return type.getSource(buf);
         }
 
         void toBytes(PacketBuffer buf) {
             entityOrPos.ifLeft(id -> {
-                buf.writeEnumValue(SourceType.ENTITY);
-                buf.writeInt(id.getEntityId());
+                buf.writeEnum(SourceType.ENTITY);
+                buf.writeInt(id.getId());
             }).ifRight(pos -> {
-                buf.writeEnumValue(SourceType.STATIC_POS);
+                buf.writeEnum(SourceType.STATIC_POS);
                 buf.writeBlockPos(pos);
             });
         }

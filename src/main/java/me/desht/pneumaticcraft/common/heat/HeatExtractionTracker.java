@@ -21,7 +21,7 @@ public class HeatExtractionTracker extends WorldSavedData {
     }
 
     public static HeatExtractionTracker getInstance(World world) {
-        return ((ServerWorld) world).getSavedData().getOrCreate(HeatExtractionTracker::new, DATA_NAME);
+        return ((ServerWorld) world).getDataStorage().computeIfAbsent(HeatExtractionTracker::new, DATA_NAME);
     }
 
     public double getHeatExtracted(BlockPos pos) {
@@ -35,11 +35,11 @@ public class HeatExtractionTracker extends WorldSavedData {
         } else {
             extracted.put(pos, newAmount);
         }
-        markDirty();
+        setDirty();
     }
 
     @Override
-    public void read(CompoundNBT nbt) {
+    public void load(CompoundNBT nbt) {
         extracted.clear();
 
         ListNBT list = nbt.getList("extracted", Constants.NBT.TAG_COMPOUND);
@@ -51,7 +51,7 @@ public class HeatExtractionTracker extends WorldSavedData {
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT compound) {
+    public CompoundNBT save(CompoundNBT compound) {
         ListNBT list = new ListNBT();
         extracted.forEach((pos, heat) -> {
             CompoundNBT sub = new CompoundNBT();

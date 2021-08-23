@@ -63,9 +63,9 @@ public class HackClientHandler extends IArmorUpgradeClientHandler.AbstractHandle
 
     public static void addKeybindTooltip(List<ITextComponent> curInfo) {
         KeyBinding hack = KeyHandler.getInstance().keybindHack;
-        if (hack.getKey().getKeyCode() != 0) {
+        if (hack.getKey().getValue() != 0) {
             IFormattableTextComponent str = xlate("pneumaticcraft.armor.hacking.pressToHack", ClientUtils.translateKeyBind(hack));
-            curInfo.add(str.mergeStyle(TextFormatting.GOLD));
+            curInfo.add(str.withStyle(TextFormatting.GOLD));
         }
     }
 }

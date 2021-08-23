@@ -41,13 +41,13 @@ public class PacketUpdateGui {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            if (Minecraft.getInstance().currentScreen instanceof ContainerScreen) {
-                Container container = ((ContainerScreen<?>) Minecraft.getInstance().currentScreen).getContainer();
+            if (Minecraft.getInstance().screen instanceof ContainerScreen) {
+                Container container = ((ContainerScreen<?>) Minecraft.getInstance().screen).getMenu();
                 if (container instanceof ContainerPneumaticBase) {
                     ((ContainerPneumaticBase<?>) container).updateField(syncId, value);
                 }
-                if (Minecraft.getInstance().currentScreen instanceof GuiPneumaticContainerBase) {
-                    ((GuiPneumaticContainerBase<?,?>) Minecraft.getInstance().currentScreen).onGuiUpdate();
+                if (Minecraft.getInstance().screen instanceof GuiPneumaticContainerBase) {
+                    ((GuiPneumaticContainerBase<?,?>) Minecraft.getInstance().screen).onGuiUpdate();
                 }
             }
         });

@@ -24,23 +24,23 @@ public class RenderCropSupport extends RenderSemiblockBase<EntityCropSupport> {
 
     @Override
     public void render(EntityCropSupport entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
-        IVertexBuilder builder = bufferIn.getBuffer(RenderType.getEntityCutout(getEntityTexture(entityIn)));
+        IVertexBuilder builder = bufferIn.getBuffer(RenderType.entityCutout(getTextureLocation(entityIn)));
         AxisAlignedBB aabb = entityIn.getBoundingBox();
 
-        matrixStackIn.push();
+        matrixStackIn.pushPose();
 
         matrixStackIn.translate(0, -12/16F, 0);
         if (entityIn.getTimeSinceHit() > 0) {
             wobble(entityIn, partialTicks, matrixStackIn);
         }
         matrixStackIn.scale((float)(aabb.maxX - aabb.minX), 1f, (float)(aabb.maxZ - aabb.minZ));
-        model.render(matrixStackIn, builder, packedLightIn, OverlayTexture.getPackedUV(0F, false), 0.33f, 0.25f, 0.12f, 1F);
+        model.renderToBuffer(matrixStackIn, builder, packedLightIn, OverlayTexture.pack(0F, false), 0.33f, 0.25f, 0.12f, 1F);
 
-        matrixStackIn.pop();
+        matrixStackIn.popPose();
     }
 
     @Override
-    public ResourceLocation getEntityTexture(EntityCropSupport entity) {
+    public ResourceLocation getTextureLocation(EntityCropSupport entity) {
         return Textures.MODEL_HEAT_FRAME;
     }
 }

@@ -28,13 +28,13 @@ public class PacketSendArmorHUDMessage {
     }
 
     PacketSendArmorHUDMessage(PacketBuffer buffer) {
-        this.message = buffer.readTextComponent();
+        this.message = buffer.readComponent();
         this.duration = buffer.readInt();
         this.color = buffer.readInt();
     }
 
     public void toBytes(PacketBuffer buf) {
-        buf.writeTextComponent(this.message);
+        buf.writeComponent(this.message);
         buf.writeInt(this.duration);
         buf.writeInt(this.color);
     }

@@ -72,11 +72,11 @@ public class CommonArmorHandler implements ICommonArmorHandler {
     }
 
     private static CommonArmorHandler getManagerInstance(PlayerEntity player) {
-        return player.world.isRemote ? clientHandler : serverHandler;
+        return player.level.isClientSide ? clientHandler : serverHandler;
     }
 
     public static CommonArmorHandler getHandlerForPlayer(PlayerEntity player) {
-        return getManagerInstance(player).playerHandlers.computeIfAbsent(player.getUniqueID(), v -> new CommonArmorHandler(player));
+        return getManagerInstance(player).playerHandlers.computeIfAbsent(player.getUUID(), v -> new CommonArmorHandler(player));
     }
 
     public static CommonArmorHandler getHandlerForPlayer() {
@@ -107,7 +107,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
             // handler must be updated to reflect that
             if (event.getEntity() instanceof PlayerEntity) {
                 PlayerEntity player = (PlayerEntity) event.getEntity();
-                CommonArmorHandler handler = getManagerInstance(player).playerHandlers.get(player.getUniqueID());
+                CommonArmorHandler handler = getManagerInstance(player).playerHandlers.get(player.getUUID());
                 if (handler != null) handler.player = player;
             }
         }
@@ -146,11 +146,11 @@ public class CommonArmorHandler implements ICommonArmorHandler {
 
     private static void clearHandlerForPlayer(PlayerEntity player) {
         CommonArmorHandler h = getManagerInstance(player);
-        h.playerHandlers.computeIfPresent(player.getUniqueID(), (name, val) -> { val.invalidate(); return null; } );
+        h.playerHandlers.computeIfPresent(player.getUUID(), (name, val) -> { val.invalidate(); return null; } );
     }
 
     public void tickArmorPiece(EquipmentSlotType slot) {
-        ItemStack armorStack = player.getItemStackFromSlot(slot);
+        ItemStack armorStack = player.getItemBySlot(slot);
         boolean armorActive = false;
         if (armorStack.getItem() instanceof ItemPneumaticArmor) {
             airHandlers.set(slot.getIndex(), armorStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY));
@@ -160,7 +160,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
             ticksSinceEquip[slot.getIndex()]++;
             if (isArmorEnabled() && getArmorPressure(slot) > 0F) {
                 armorActive = true;
-                if (!player.world.isRemote && isArmorReady(slot) && !player.isCreative()) {
+                if (!player.level.isClientSide && isArmorReady(slot) && !player.isCreative()) {
                     // use up air in the armor piece
                     float airUsage = getIdleAirUsage(slot, false);
                     if (airUsage != 0) {
@@ -223,14 +223,14 @@ public class CommonArmorHandler implements ICommonArmorHandler {
 
         // flippers & repairing are special cases; they don't have upgrade handlers
 
-        if (slot == EquipmentSlotType.FEET && player.world.isRemote && player.isInWater() && player.moveForward > 0) {
+        if (slot == EquipmentSlotType.FEET && player.level.isClientSide && player.isInWater() && player.zza > 0) {
             // doing this client-side only appears to be effective
             if (isArmorReady(EquipmentSlotType.FEET) && getUpgradeCount(EquipmentSlotType.FEET, EnumUpgrade.FLIPPERS) > 0) {
                 player.moveRelative((float) (player.isOnGround() ? Armor.flippersSpeedBoostGround : Armor.flippersSpeedBoostFloating), FORWARD);
             }
         }
 
-        if (!player.world.isRemote && getUpgradeCount(slot, EnumUpgrade.ITEM_LIFE) > 0) {
+        if (!player.level.isClientSide && getUpgradeCount(slot, EnumUpgrade.ITEM_LIFE) > 0) {
             tryRepairArmor(slot);
         }
     }
@@ -240,12 +240,12 @@ public class CommonArmorHandler implements ICommonArmorHandler {
         int interval = 120 - (20 * upgrades);
         int airUsage = Armor.repairAirUsage * upgrades;
 
-        ItemStack armorStack = player.getItemStackFromSlot(slot);
-        if (armorStack.getDamage() > 0
+        ItemStack armorStack = player.getItemBySlot(slot);
+        if (armorStack.getDamageValue() > 0
                 && hasMinPressure(slot)
                 && ticksSinceEquip[slot.getIndex()] % interval == 0) {
             addAir(slot, -airUsage);
-            armorStack.setDamage(armorStack.getDamage() - 1);
+            armorStack.setDamageValue(armorStack.getDamageValue() - 1);
         }
     }
 
@@ -259,7 +259,7 @@ public class CommonArmorHandler implements ICommonArmorHandler {
      */
     public void initArmorInventory(EquipmentSlotType slot) {
         // armorStack has already been validated as a pneumatic armor piece at this point
-        ItemStack armorStack = player.getItemStackFromSlot(slot);
+        ItemStack armorStack = player.getItemBySlot(slot);
 
         // record which upgrades / render-handlers are inserted
         ItemStack[] upgradeStacks = UpgradableItemUtils.getUpgradeStacks(armorStack);

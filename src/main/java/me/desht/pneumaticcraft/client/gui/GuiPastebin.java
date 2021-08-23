@@ -50,7 +50,7 @@ public class GuiPastebin extends GuiPneumaticScreenBase {
         ySize = 202;
         this.pastingNBT = tag;
         this.parentScreen = parentScreen;
-        Minecraft.getInstance().keyboardListener.enableRepeatEvents(true);
+        Minecraft.getInstance().keyboardHandler.setSendRepeatsToGui(true);
     }
 
     @Override
@@ -79,8 +79,8 @@ public class GuiPastebin extends GuiPneumaticScreenBase {
             @Override
             protected void onFocusedChanged(boolean focused) {
                 if (focused) {
-                    setCursorPositionEnd();
-                    setSelectionPos(0);
+                    moveCursorToEnd();
+                    setHighlightPos(0);
                 }
                 super.onFocusedChanged(focused);
             }
@@ -119,7 +119,7 @@ public class GuiPastebin extends GuiPneumaticScreenBase {
     }
 
     private void login() {
-        PastebinHandler.login(usernameBox.getText(), passwordBox.getText());
+        PastebinHandler.login(usernameBox.getValue(), passwordBox.getValue());
         state = EnumState.LOGIN;
         statusMessage = xlate("pneumaticcraft.gui.pastebin.loggingIn");
     }
@@ -136,18 +136,18 @@ public class GuiPastebin extends GuiPneumaticScreenBase {
     }
 
     private void getFromPastebin() {
-        PastebinHandler.get(pastebinBox.getText());
+        PastebinHandler.get(pastebinBox.getValue());
         state = EnumState.GETTING;
         statusMessage = xlate("pneumaticcraft.gui.pastebin.retrievingFromPastebin");
     }
 
     private void putToClipboard() {
-        minecraft.keyboardListener.setClipboardString(new NBTToJsonConverter(pastingNBT).convert(prettyCB.checked));
+        minecraft.keyboardHandler.setClipboard(new NBTToJsonConverter(pastingNBT).convert(prettyCB.checked));
         statusMessage = xlate("pneumaticcraft.gui.pastebin.clipboardSetToContents");
     }
 
     private void getFromClipboard() {
-        readFromString(minecraft.keyboardListener.getClipboardString());
+        readFromString(minecraft.keyboardHandler.getClipboard());
 //        statusMessage = xlate("pneumaticcraft.gui.pastebin.retrievedFromClipboard");
     }
 
@@ -178,7 +178,7 @@ public class GuiPastebin extends GuiPneumaticScreenBase {
                         pastebinText = PastebinHandler.getHandler().getLink;
                         if (pastebinText == null) pastebinText = "<ERROR>";
                         if (pastebinText.contains("pastebin.com")) {
-                            pastebinBox.setText(pastebinText);
+                            pastebinBox.setValue(pastebinText);
                             setTempMessage(xlate("pneumaticcraft.gui.pastebin.uploadedToPastebin"));
                         } else {
                             statusMessage = new StringTextComponent(pastebinText);
@@ -212,7 +212,7 @@ public class GuiPastebin extends GuiPneumaticScreenBase {
             setTempMessage(xlate("pneumaticcraft.gui.pastebin.retrievedFromPastebin"));
         } catch (Exception e) {
             e.printStackTrace();
-            setTempMessage(xlate("pneumaticcraft.gui.pastebin.invalidFormattedPastebin").mergeStyle(TextFormatting.GOLD));
+            setTempMessage(xlate("pneumaticcraft.gui.pastebin.invalidFormattedPastebin").withStyle(TextFormatting.GOLD));
         }
     }
 
@@ -259,13 +259,13 @@ public class GuiPastebin extends GuiPneumaticScreenBase {
     }
 
     @Override
-    public void onClose() {
-        minecraft.keyboardListener.enableRepeatEvents(false);
+    public void removed() {
+        minecraft.keyboardHandler.setSendRepeatsToGui(false);
     }
 
     @Override
-    public void closeScreen() {
-        minecraft.displayGuiScreen(parentScreen);
+    public void onClose() {
+        minecraft.setScreen(parentScreen);
     }
 
     @Override

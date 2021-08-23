@@ -42,16 +42,16 @@ public class RenderDrone extends MobRenderer<EntityDroneBase, ModelDrone> {
 
     @Override
     public void render(EntityDroneBase entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
-        matrixStackIn.push();
+        matrixStackIn.pushPose();
 //        matrixStackIn.translate(entityIn.getWidth() / 2, entityIn.getHeight() / 2, entityIn.getWidth() / 2);
         matrixStackIn.scale(scale, scale, scale);
 //        matrixStackIn.translate(-entityIn.getWidth() / 2, -entityIn.getHeight() / 2, -entityIn.getWidth() / 2);
         super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
-        matrixStackIn.pop();
+        matrixStackIn.popPose();
     }
 
     @Override
-    public ResourceLocation getEntityTexture(EntityDroneBase entity) {
+    public ResourceLocation getTextureLocation(EntityDroneBase entity) {
         return Textures.DRONE_ENTITY;
     }
 }

@@ -24,18 +24,18 @@ public class PacketUpdateRemoteLayout {
     }
 
     public PacketUpdateRemoteLayout(PacketBuffer buffer) {
-        this.layout = buffer.readCompoundTag();
+        this.layout = buffer.readNbt();
         this.hand = buffer.readBoolean() ? Hand.MAIN_HAND : Hand.OFF_HAND;
     }
 
     public void toBytes(PacketBuffer buf) {
-        buf.writeCompoundTag(layout);
+        buf.writeNbt(layout);
         buf.writeBoolean(hand == Hand.MAIN_HAND);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            ItemStack remote = ctx.get().getSender().getHeldItem(hand);
+            ItemStack remote = ctx.get().getSender().getItemInHand(hand);
             if (remote.getItem() instanceof ItemRemote) {
                 CompoundNBT tag = remote.getTag();
                 if (tag == null) {

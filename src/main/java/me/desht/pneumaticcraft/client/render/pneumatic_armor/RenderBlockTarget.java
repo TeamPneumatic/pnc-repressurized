@@ -63,9 +63,9 @@ public class RenderBlockTarget {
         this.blockTracker = blockTracker;
 
         BlockState state = world.getBlockState(pos);
-        ItemStack stack = state.getBlock().getPickBlock(state, Minecraft.getInstance().objectMouseOver, world, pos, player);
+        ItemStack stack = state.getBlock().getPickBlock(state, Minecraft.getInstance().hitResult, world, pos, player);
 
-        ITextComponent title = stack.isEmpty() ? xlate(world.getBlockState(pos).getBlock().getTranslationKey()) : stack.getDisplayName();
+        ITextComponent title = stack.isEmpty() ? xlate(world.getBlockState(pos).getBlock().getDescriptionId()) : stack.getHoverName();
         stat = new WidgetAnimatedStat(null, title, WidgetAnimatedStat.StatIcon.of(stack), 20, -20, HUDHandler.getInstance().getStatOverlayColor(), null, false);
         stat.setMinimumContractedDimensions(0, 0);
         stat.setAutoLineWrap(false);
@@ -85,7 +85,7 @@ public class RenderBlockTarget {
     }
 
     private List<IBlockTrackEntry> getApplicableEntries() {
-        return world.isBlockLoaded(pos) ?
+        return world.hasChunkAt(pos) ?
                 BlockTrackEntryList.INSTANCE.getEntriesForCoordinate(world, pos, te) :
                 Collections.emptyList();
     }
@@ -115,7 +115,7 @@ public class RenderBlockTarget {
             requestServerUpdate(applicableTrackEntries);
         }
 
-        if (!world.isAirBlock(pos)) {
+        if (!world.isEmptyBlock(pos)) {
             List<ITextComponent> textList = new ArrayList<>();
             if (ticksExisted > 120) {
                 stat.closeStat();
@@ -143,7 +143,7 @@ public class RenderBlockTarget {
     }
 
     public void render(MatrixStack matrixStack, IRenderTypeBuffer buffer, float partialTicks) {
-        matrixStack.push();
+        matrixStack.pushPose();
 
         double x = pos.getX() + 0.5D;
         double y = pos.getY() + 0.5D;
@@ -151,7 +151,7 @@ public class RenderBlockTarget {
 
         matrixStack.translate(x, y, z);
 
-        if (!world.isAirBlock(pos)) {
+        if (!world.isEmptyBlock(pos)) {
             renderBlockHighlight(matrixStack, buffer, world, pos, partialTicks);
         }
 
@@ -165,25 +165,25 @@ public class RenderBlockTarget {
 
         matrixStack.scale(STAT_SCALE, STAT_SCALE, STAT_SCALE);
 
-        if (!world.isAirBlock(pos)) {
+        if (!world.isEmptyBlock(pos)) {
             if (ticksExisted > 120) {
                 if (isPlayerLookingAtTarget()) {
                     // a bit of growing or shrinking to keep the stat on screen and/or of legible size
-                    float mul = getStatSizeMultiplier(MathHelper.sqrt(ClientUtils.getClientPlayer().getDistanceSq(x, y, z)));
+                    float mul = getStatSizeMultiplier(MathHelper.sqrt(ClientUtils.getClientPlayer().distanceToSqr(x, y, z)));
                     matrixStack.scale(mul, mul, mul);
                     stat.renderStat(matrixStack, buffer, partialTicks);
                 }
             } else if (ticksExisted > 50) {
-                RenderUtils.renderString3d(I18n.format("pneumaticcraft.entityTracker.info.acquiring"), 0, 0, 0xFFD0D0D0, matrixStack, buffer, false, true);
+                RenderUtils.renderString3d(I18n.get("pneumaticcraft.entityTracker.info.acquiring"), 0, 0, 0xFFD0D0D0, matrixStack, buffer, false, true);
                 RenderUtils.renderString3d((int)targetAcquireProgress + "%", 37, 24, 0xFFD0D0D0, matrixStack, buffer, false, true);
             } else if (ticksExisted < -30) {
                 matrixStack.scale(1.5F, 1.5F, 1.5F);
                 stat.renderStat(matrixStack, buffer, partialTicks);
-                RenderUtils.renderString3d(I18n.format("pneumaticcraft.blockTracker.info.lostTarget"), 0, -ticksExisted / 2.5f, 0xFFFF0000, matrixStack, buffer, false, true);
+                RenderUtils.renderString3d(I18n.get("pneumaticcraft.blockTracker.info.lostTarget"), 0, -ticksExisted / 2.5f, 0xFFFF0000, matrixStack, buffer, false, true);
             }
         }
 
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     private float getStatSizeMultiplier(double dist) {
@@ -204,18 +204,18 @@ public class RenderBlockTarget {
         float progress = ((world.getGameTime() & 0x1f) + partialTicks) / 32f;
         float cycle = MathHelper.sin((float) (progress * Math.PI));
 
-        float shrink = (shape == VoxelShapes.fullCube() ? 0.05f : 0f) + cycle / 60f;
-        AxisAlignedBB aabb = shape.getBoundingBox().shrink(shrink);
+        float shrink = (shape == VoxelShapes.block() ? 0.05f : 0f) + cycle / 60f;
+        AxisAlignedBB aabb = shape.bounds().deflate(shrink);
 
         float alpha = 0.5f;
         if (blockTracker.getFocusedPos() != null) {
             alpha = blockTracker.getFocusedPos().equals(pos) ? 0.75f : 0.15f;
         }
-        matrixStack.push();
+        matrixStack.pushPose();
         matrixStack.translate(-0.5, -0.5, -0.5);
         RenderType type = RenderUtils.renderFrame(matrixStack, buffer, aabb, 1/64f, 0.25f, 0.75f, 0.75f, alpha, RenderUtils.FULL_BRIGHT, true);
         RenderUtils.finishBuffer(buffer, type);
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
     private boolean isInitialized() {

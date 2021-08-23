@@ -54,6 +54,6 @@ public interface IBlockInteractHandler {
      * @return true if the face is accessible
      */
     default boolean isSideAccessible(Direction face) {
-        return getSides()[face.getIndex()];
+        return getSides()[face.get3DDataValue()];
     }
 }

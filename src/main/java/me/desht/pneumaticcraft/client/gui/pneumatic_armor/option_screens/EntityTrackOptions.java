@@ -40,16 +40,16 @@ public class EntityTrackOptions extends IOptionPage.SimpleOptionPage<EntityTrack
     public void populateGui(IGuiScreen gui) {
         gui.addWidget(new WidgetButtonExtended(30, 128, 150, 20,
                 xlate("pneumaticcraft.armor.gui.misc.moveStatScreen"), b -> {
-            Minecraft.getInstance().player.closeScreen();
-            Minecraft.getInstance().displayGuiScreen(new GuiMoveStat(getClientUpgradeHandler(), ArmorHUDLayout.LayoutType.ENTITY_TRACKER));
+            Minecraft.getInstance().player.closeContainer();
+            Minecraft.getInstance().setScreen(new GuiMoveStat(getClientUpgradeHandler(), ArmorHUDLayout.LayoutType.ENTITY_TRACKER));
         }));
 
         textField = new TextFieldWidget(gui.getFontRenderer(), 35, 60, 140, 10, StringTextComponent.EMPTY);
         if (Minecraft.getInstance().player != null) {
-            textField.setText(ItemPneumaticArmor.getEntityFilter(Minecraft.getInstance().player.getItemStackFromSlot(EquipmentSlotType.HEAD)));
+            textField.setValue(ItemPneumaticArmor.getEntityFilter(Minecraft.getInstance().player.getItemBySlot(EquipmentSlotType.HEAD)));
         }
         textField.setResponder(s -> {
-            if (validateEntityFilter(textField.getText())) {
+            if (validateEntityFilter(textField.getValue())) {
                 sendTimer = 5;
             }
         });
@@ -62,15 +62,15 @@ public class EntityTrackOptions extends IOptionPage.SimpleOptionPage<EntityTrack
         warningButton.setRenderedIcon(Textures.GUI_PROBLEMS_TEXTURE);
         gui.addWidget(warningButton);
 
-        validateEntityFilter(textField.getText());
+        validateEntityFilter(textField.getValue());
     }
 
     @Override
     public void renderPost(MatrixStack matrixStack, int x, int y, float partialTicks) {
-        FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
-        fontRenderer.drawString(matrixStack, I18n.format("pneumaticcraft.gui.entityFilter"), 35, 50, 0xFFFFFFFF);
+        FontRenderer fontRenderer = Minecraft.getInstance().font;
+        fontRenderer.draw(matrixStack, I18n.get("pneumaticcraft.gui.entityFilter"), 35, 50, 0xFFFFFFFF);
         if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {
-            GuiUtils.showPopupHelpScreen(matrixStack, Minecraft.getInstance().currentScreen, fontRenderer,
+            GuiUtils.showPopupHelpScreen(matrixStack, Minecraft.getInstance().screen, fontRenderer,
                     GuiUtils.xlateAndSplit("pneumaticcraft.gui.entityFilter.helpText"));
         }
     }
@@ -83,7 +83,7 @@ public class EntityTrackOptions extends IOptionPage.SimpleOptionPage<EntityTrack
             return true;
         } catch (Exception e) {
             warningButton.visible = true;
-            warningButton.setTooltipText(new StringTextComponent(e.getMessage()).mergeStyle(TextFormatting.GOLD));
+            warningButton.setTooltipText(new StringTextComponent(e.getMessage()).withStyle(TextFormatting.GOLD));
             return false;
         }
     }
@@ -92,7 +92,7 @@ public class EntityTrackOptions extends IOptionPage.SimpleOptionPage<EntityTrack
     public void tick() {
         if (sendTimer > 0 && --sendTimer == 0) {
             CompoundNBT tag = new CompoundNBT();
-            tag.putString(ItemPneumaticArmor.NBT_ENTITY_FILTER, textField.getText());
+            tag.putString(ItemPneumaticArmor.NBT_ENTITY_FILTER, textField.getValue());
             NetworkHandler.sendToServer(new PacketUpdateArmorExtraData(EquipmentSlotType.HEAD, tag, getClientUpgradeHandler().getCommonHandler().getID()));
         }
     }

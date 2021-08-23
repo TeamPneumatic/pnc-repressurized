@@ -55,7 +55,7 @@ public class HeatBehaviourCustomTransition extends HeatBehaviourTransition {
                 transformFluidBlocks(hot, getHeatEntry().getTransformHotFlowing());
                 return true;
             } else {
-                return getWorld().setBlockState(getPos(), hot);
+                return getWorld().setBlockAndUpdate(getPos(), hot);
             }
         } else {
             return false;
@@ -70,7 +70,7 @@ public class HeatBehaviourCustomTransition extends HeatBehaviourTransition {
                 transformFluidBlocks(cold, getHeatEntry().getTransformColdFlowing());
                 return true;
             } else {
-                return getWorld().setBlockState(getPos(), cold);
+                return getWorld().setBlockAndUpdate(getPos(), cold);
             }
         } else {
             return false;
@@ -90,7 +90,7 @@ public class HeatBehaviourCustomTransition extends HeatBehaviourTransition {
      */
     private void transformFluidBlocks(BlockState turningBlockSource, BlockState turningBlockFlowing) {
         if (FluidUtils.isSourceFluidBlock(getWorld(), getPos())) {
-            getWorld().setBlockState(getPos(), turningBlockSource);
+            getWorld().setBlockAndUpdate(getPos(), turningBlockSource);
             onTransition(getPos());
         } else {
             // a flowing block: follow it back to the source
@@ -101,15 +101,15 @@ public class HeatBehaviourCustomTransition extends HeatBehaviourTransition {
             while (!pending.isEmpty()) {
                 BlockPos pos = pending.pop();
                 for (Direction d : DirectionUtil.VALUES) {
-                    BlockPos newPos = pos.offset(d);
+                    BlockPos newPos = pos.relative(d);
                     Block checkingBlock = getWorld().getBlockState(newPos).getBlock();
                     if (checkingBlock == getBlockState().getBlock() && traversed.add(newPos)) {
                         if (FluidUtils.isSourceFluidBlock(getWorld(), newPos)) {
-                            getWorld().setBlockState(newPos, turningBlockSource);
+                            getWorld().setBlockAndUpdate(newPos, turningBlockSource);
                             onTransition(newPos);
                             return;
                         } else {
-                            getWorld().setBlockState(newPos, turningBlockFlowing);
+                            getWorld().setBlockAndUpdate(newPos, turningBlockFlowing);
                             onTransition(newPos);
                             pending.push(newPos);
                         }

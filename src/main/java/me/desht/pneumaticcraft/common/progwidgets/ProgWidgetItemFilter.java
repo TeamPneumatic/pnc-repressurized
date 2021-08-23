@@ -99,27 +99,27 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
         super.getTooltip(curTooltip);
 
         if (!variable.isEmpty()) {
-            curTooltip.add(xlate("pneumaticcraft.gui.progWidget.coordinate.variable").appendString(": ").append(varAsTextComponent(variable)).mergeStyle(TextFormatting.AQUA));
+            curTooltip.add(xlate("pneumaticcraft.gui.progWidget.coordinate.variable").append(": ").append(varAsTextComponent(variable)).withStyle(TextFormatting.AQUA));
         } else if (!filter.isEmpty()) {
-            curTooltip.add(xlate("pneumaticcraft.gui.progWidget.itemFilter.filterLabel").mergeStyle(TextFormatting.AQUA)
-                    .appendString(": ").append(filter.getDisplayName()));
+            curTooltip.add(xlate("pneumaticcraft.gui.progWidget.itemFilter.filterLabel").withStyle(TextFormatting.AQUA)
+                    .append(": ").append(filter.getHoverName()));
             if (filter.getItem() == ModItems.TAG_FILTER.get()) {
                 curTooltip.addAll(ItemTagFilter.getConfiguredTagList(filter).stream()
-                        .map(s -> GuiConstants.bullet().append(new StringTextComponent(s.toString()).mergeStyle(TextFormatting.YELLOW)))
+                        .map(s -> GuiConstants.bullet().append(new StringTextComponent(s.toString()).withStyle(TextFormatting.YELLOW)))
                         .collect(Collectors.toList()));
             }
         }
         if (useModSimilarity) {
             curTooltip.add(xlate("pneumaticcraft.gui.progWidget.itemFilter.matchMod", ModNameCache.getModName(filter.getItem()))
-                    .mergeStyle(TextFormatting.DARK_AQUA));
+                    .withStyle(TextFormatting.DARK_AQUA));
         } else if (matchBlock) {
             curTooltip.add(xlate("pneumaticcraft.gui.progWidget.itemFilter.matchBlock")
-                    .mergeStyle(TextFormatting.DARK_AQUA));
+                    .withStyle(TextFormatting.DARK_AQUA));
         } else {
             curTooltip.add(xlate("pneumaticcraft.gui.progWidget.itemFilter." + (useItemDurability ? "useDurability" : "ignoreDurability"))
-                    .mergeStyle(TextFormatting.DARK_AQUA));
+                    .withStyle(TextFormatting.DARK_AQUA));
             curTooltip.add(xlate("pneumaticcraft.gui.progWidget.itemFilter." + (useNBT ? "useNBT" : "ignoreNBT"))
-                    .mergeStyle(TextFormatting.DARK_AQUA));
+                    .withStyle(TextFormatting.DARK_AQUA));
         }
     }
 
@@ -147,7 +147,7 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
     public void writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
         if (!filter.isEmpty()) {
-            filter.write(tag);
+            filter.save(tag);
         }
         if (useItemDurability) tag.putBoolean("useMetadata", true);
         if (useNBT) tag.putBoolean("useNBT", true);
@@ -159,7 +159,7 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
     @Override
     public void readFromNBT(CompoundNBT tag) {
         super.readFromNBT(tag);
-        filter = ItemStack.read(tag);
+        filter = ItemStack.of(tag);
         useItemDurability = filter.getMaxDamage() > 0 && tag.getBoolean("useMetadata");
         useNBT = tag.getBoolean("useNBT");
         useModSimilarity = tag.getBoolean("useModSimilarity");
@@ -170,23 +170,23 @@ public class ProgWidgetItemFilter extends ProgWidget implements IVariableWidget 
     @Override
     public void writeToPacket(PacketBuffer buf) {
         super.writeToPacket(buf);
-        buf.writeItemStack(filter);
+        buf.writeItem(filter);
         buf.writeBoolean(useItemDurability);
         buf.writeBoolean(useNBT);
         buf.writeBoolean(useModSimilarity);
         buf.writeBoolean(matchBlock);
-        buf.writeString(variable);
+        buf.writeUtf(variable);
     }
 
     @Override
     public void readFromPacket(PacketBuffer buf) {
         super.readFromPacket(buf);
-        filter = buf.readItemStack();
+        filter = buf.readItem();
         useItemDurability = buf.readBoolean();
         useNBT = buf.readBoolean();
         useModSimilarity = buf.readBoolean();
         matchBlock = buf.readBoolean();
-        variable = buf.readString(GlobalVariableManager.MAX_VARIABLE_LEN);
+        variable = buf.readUtf(GlobalVariableManager.MAX_VARIABLE_LEN);
     }
 
     public static boolean isItemValidForFilters(ItemStack item, List<ProgWidgetItemFilter> whitelist, List<ProgWidgetItemFilter> blacklist, BlockState blockState) {

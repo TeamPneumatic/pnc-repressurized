@@ -21,9 +21,9 @@ public class DroneAIHarvest<W extends ProgWidgetAreaItemBase & IToolUser> extend
     }
 
     @Override
-    public boolean shouldExecute() {
+    public boolean canUse() {
         if (abortIfRequiredHoeIsMissing()) return false;
-        return super.shouldExecute();
+        return super.canUse();
     }
 
     @Override

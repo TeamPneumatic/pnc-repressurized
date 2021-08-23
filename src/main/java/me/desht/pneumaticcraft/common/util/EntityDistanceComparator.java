@@ -10,11 +10,11 @@ public class EntityDistanceComparator implements Comparator<Entity> {
     private final Vector3d origin;
 
     public EntityDistanceComparator(BlockPos pos) {
-        origin = Vector3d.copyCentered(pos);
+        origin = Vector3d.atCenterOf(pos);
     }
 
     @Override
     public int compare(Entity e1, Entity e2) {
-        return Double.compare(e1.getDistanceSq(origin), e2.getDistanceSq(origin));
+        return Double.compare(e1.distanceToSqr(origin), e2.distanceToSqr(origin));
     }
 }

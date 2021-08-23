@@ -21,7 +21,7 @@ public class EntityProgrammableController extends EntityDroneBase {
     public EntityProgrammableController(EntityType<EntityProgrammableController> type, World world) {
         super(type, world);
 
-        this.preventEntitySpawning = false;
+        this.blocksBuilding = false;
     }
 
     public void setController(TileEntityProgrammableController controller) {
@@ -29,19 +29,19 @@ public class EntityProgrammableController extends EntityDroneBase {
     }
 
     @Override
-    public boolean canBeCollidedWith() {
+    public boolean isPickable() {
         return false;
     }
 
     @Override
-    public boolean canBePushed() {
+    public boolean isPushable() {
         return false;
     }
 
     @Override
     public void tick() {
-        if (world.isRemote && controller != null) {
-            TileEntity te = world.getTileEntity(controller.getPos());
+        if (level.isClientSide && controller != null) {
+            TileEntity te = level.getBlockEntity(controller.getBlockPos());
             if (te != controller) {
                 // expire stale minidrones
                 remove();
@@ -63,7 +63,7 @@ public class EntityProgrammableController extends EntityDroneBase {
     }
 
     @Override
-    public boolean attackEntityFrom(DamageSource source, float amount) {
+    public boolean hurt(DamageSource source, float amount) {
         return false;
     }
 
@@ -74,7 +74,7 @@ public class EntityProgrammableController extends EntityDroneBase {
 
     @Override
     public ItemStack getDroneHeldItem() {
-        return controller == null ? ItemStack.EMPTY : controller.getFakePlayer().getHeldItemMainhand();
+        return controller == null ? ItemStack.EMPTY : controller.getFakePlayer().getMainHandItem();
     }
 
     @Override
@@ -98,7 +98,7 @@ public class EntityProgrammableController extends EntityDroneBase {
     }
 
     public BlockPos getControllerPos() {
-        return controller.getPos();
+        return controller.getBlockPos();
     }
 
     public TileEntityProgrammableController getController() {

@@ -75,10 +75,10 @@ public class FluidMixerRecipeImpl extends FluidMixerRecipe {
 
     @Override
     public void write(PacketBuffer buffer) {
-        input1.write(buffer);
-        input2.write(buffer);
+        input1.toNetwork(buffer);
+        input2.toNetwork(buffer);
         outputFluid.writeToPacket(buffer);
-        buffer.writeItemStack(outputItem);
+        buffer.writeItem(outputItem);
         buffer.writeFloat(pressure);
         buffer.writeVarInt(processingTime);
     }
@@ -101,28 +101,28 @@ public class FluidMixerRecipeImpl extends FluidMixerRecipe {
         }
 
         @Override
-        public T read(ResourceLocation recipeId, JsonObject json) {
-            Ingredient input1 = FluidIngredient.deserialize(json.get("input1"));
-            Ingredient input2 = FluidIngredient.deserialize(json.get("input2"));
+        public T fromJson(ResourceLocation recipeId, JsonObject json) {
+            Ingredient input1 = FluidIngredient.fromJson(json.get("input1"));
+            Ingredient input2 = FluidIngredient.fromJson(json.get("input2"));
             FluidStack outputFluid = json.has("fluid_output") ?
                     ModCraftingHelper.fluidStackFromJson(json.getAsJsonObject("fluid_output")):
                     FluidStack.EMPTY;
             ItemStack outputItem = json.has("item_output") ?
-                    ShapedRecipe.deserializeItem(JSONUtils.getJsonObject(json, "item_output")) :
+                    ShapedRecipe.itemFromJson(JSONUtils.getAsJsonObject(json, "item_output")) :
                     ItemStack.EMPTY;
-            float pressure = JSONUtils.getFloat(json, "pressure");
-            int processingTime = JSONUtils.getInt(json, "time", 200);
+            float pressure = JSONUtils.getAsFloat(json, "pressure");
+            int processingTime = JSONUtils.getAsInt(json, "time", 200);
 
             return factory.create(recipeId, (FluidIngredient) input1, (FluidIngredient) input2, outputFluid, outputItem, pressure, processingTime);
         }
 
         @Nullable
         @Override
-        public T read(ResourceLocation recipeId, PacketBuffer buffer) {
-            FluidIngredient input1 = (FluidIngredient) Ingredient.read(buffer);
-            FluidIngredient input2 = (FluidIngredient) Ingredient.read(buffer);
+        public T fromNetwork(ResourceLocation recipeId, PacketBuffer buffer) {
+            FluidIngredient input1 = (FluidIngredient) Ingredient.fromNetwork(buffer);
+            FluidIngredient input2 = (FluidIngredient) Ingredient.fromNetwork(buffer);
             FluidStack outputFluid = FluidStack.readFromPacket(buffer);
-            ItemStack outputItem = buffer.readItemStack();
+            ItemStack outputItem = buffer.readItem();
             float pressure = buffer.readFloat();
             int processingTime = buffer.readVarInt();
 
@@ -130,7 +130,7 @@ public class FluidMixerRecipeImpl extends FluidMixerRecipe {
         }
 
         @Override
-        public void write(PacketBuffer buffer, T recipe) {
+        public void toNetwork(PacketBuffer buffer, T recipe) {
             recipe.write(buffer);
         }
 

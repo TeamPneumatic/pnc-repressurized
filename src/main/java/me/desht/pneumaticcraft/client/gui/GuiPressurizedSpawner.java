@@ -32,7 +32,7 @@ public class GuiPressurizedSpawner extends GuiPneumaticContainerBase<ContainerPr
     public void init() {
         super.init();
 
-        addButton(rangeButton = new WidgetRangeToggleButton(guiLeft + 152, guiTop + 66, te));
+        addButton(rangeButton = new WidgetRangeToggleButton(leftPos + 152, topPos + 66, te));
 
         infoStat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.status"), new ItemStack(ModBlocks.PRESSURIZED_SPAWNER.get()), 0xFF4E4066, false);
     }
@@ -54,9 +54,9 @@ public class GuiPressurizedSpawner extends GuiPneumaticContainerBase<ContainerPr
 
     @Override
     protected PointXY getGaugeLocation() {
-        int xStart = (width - xSize) / 2;
-        int yStart = (height - ySize) / 2;
-        return new PointXY(xStart + (int)(xSize * 0.82), yStart + ySize / 4);
+        int xStart = (width - imageWidth) / 2;
+        int yStart = (height - imageHeight) / 2;
+        return new PointXY(xStart + (int)(imageWidth * 0.82), yStart + imageHeight / 4);
     }
 
     @Override

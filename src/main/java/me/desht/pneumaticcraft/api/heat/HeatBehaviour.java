@@ -70,7 +70,7 @@ public abstract class HeatBehaviour<T extends TileEntity> implements INBTSeriali
 
     public T getTileEntity() {
         if (cachedTE == null || cachedTE.isRemoved()) //noinspection unchecked
-            cachedTE = (T) world.getTileEntity(pos);
+            cachedTE = (T) world.getBlockEntity(pos);
         return cachedTE;
     }
 

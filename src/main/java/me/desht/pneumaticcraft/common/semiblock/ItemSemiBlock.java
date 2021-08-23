@@ -23,7 +23,7 @@ public class ItemSemiBlock extends Item {
 
     @Override
     public ActionResultType onItemUseFirst(ItemStack stack, ItemUseContext context) {
-        if (context.getWorld().isRemote) {
+        if (context.getLevel().isClientSide) {
             return ActionResultType.SUCCESS;
         } else {
             return placeSemiblock(context);
@@ -31,8 +31,8 @@ public class ItemSemiBlock extends Item {
     }
 
     @Override
-    public ActionResultType onItemUse(ItemUseContext context) {
-        return super.onItemUse(context);
+    public ActionResultType useOn(ItemUseContext context) {
+        return super.useOn(context);
     }
 
     /**
@@ -51,8 +51,8 @@ public class ItemSemiBlock extends Item {
         if (type != null) {
             Entity e = type.create(world);
             if (e != null) {
-                e.setLocationAndAngles(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0f, 0f);
-                EntityType.applyItemNBT(world, player, e, stack.getTag());
+                e.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 0f, 0f);
+                EntityType.updateCustomEntityTag(world, player, e, stack.getTag());
                 return e instanceof EntitySemiblockBase ? (EntitySemiblockBase) e : null;
             }
         }
@@ -60,17 +60,17 @@ public class ItemSemiBlock extends Item {
     }
 
     private ActionResultType placeSemiblock(ItemUseContext context) {
-        World world = context.getWorld();
-        ItemStack itemstack = context.getItem();
-        BlockPos blockpos = context.getPos();
-        Direction direction = context.getFace();
+        World world = context.getLevel();
+        ItemStack itemstack = context.getItemInHand();
+        BlockPos blockpos = context.getClickedPos();
+        Direction direction = context.getClickedFace();
         PlayerEntity player = context.getPlayer();
 
-        EntitySemiblockBase eSemi = createEntity(context.getWorld(), itemstack, context.getPlayer(), blockpos);
+        EntitySemiblockBase eSemi = createEntity(context.getLevel(), itemstack, context.getPlayer(), blockpos);
         if (eSemi != null) {
             if (!eSemi.canPlace(direction)) {
                 // if the semiblock can't go in the clicked pos, maybe it can go adjacent to it?
-                eSemi.setPosition(eSemi.getPosX() + direction.getXOffset(), eSemi.getPosY() + direction.getYOffset(), eSemi.getPosZ() + direction.getZOffset());
+                eSemi.setPos(eSemi.getX() + direction.getStepX(), eSemi.getY() + direction.getStepY(), eSemi.getZ() + direction.getStepZ());
                 if (!eSemi.canPlace(direction)) {
                     return ActionResultType.FAIL;
                 }
@@ -84,9 +84,9 @@ public class ItemSemiBlock extends Item {
                 return ActionResultType.FAIL;
             }
 
-            world.addEntity(eSemi);
-            eSemi.onPlaced(player, context.getItem(), direction);
-            world.notifyNeighborsOfStateChange(blockpos, world.getBlockState(blockpos).getBlock());
+            world.addFreshEntity(eSemi);
+            eSemi.onPlaced(player, context.getItemInHand(), direction);
+            world.updateNeighborsAt(blockpos, world.getBlockState(blockpos).getBlock());
             if (!player.isCreative()) {
                 itemstack.shrink(1);
             }

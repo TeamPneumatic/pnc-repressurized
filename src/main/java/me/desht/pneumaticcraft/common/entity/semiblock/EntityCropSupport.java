@@ -32,11 +32,11 @@ public class EntityCropSupport extends EntitySemiblockBase {
     public void tick() {
         super.tick();
 
-        if (world.rand.nextDouble() < cropSticksGrowthBoostChance && !getBlockState().isAir(world, getBlockPos())) {
-            if (!world.isRemote) {
-                getBlockState().tick((ServerWorld) world, getBlockPos(), world.rand);
+        if (level.random.nextDouble() < cropSticksGrowthBoostChance && !getBlockState().isAir(level, getBlockPos())) {
+            if (!level.isClientSide) {
+                getBlockState().tick((ServerWorld) level, getBlockPos(), level.random);
             } else {
-                world.addParticle(ParticleTypes.HAPPY_VILLAGER, getBlockPos().getX() + 0.5, getBlockPos().getY() + 0.5, getBlockPos().getZ() + 0.5, 0, 0, 0);
+                level.addParticle(ParticleTypes.HAPPY_VILLAGER, getBlockPos().getX() + 0.5, getBlockPos().getY() + 0.5, getBlockPos().getZ() + 0.5, 0, 0, 0);
             }
         }
     }
@@ -44,35 +44,35 @@ public class EntityCropSupport extends EntitySemiblockBase {
     @Override
     public boolean canPlace(Direction facing) {
         BlockState state = getBlockState();
-        return (state.getBlock().isAir(state, world, getBlockPos()) || state.getBlock() instanceof IPlantable) && canStay();
+        return (state.getBlock().isAir(state, level, getBlockPos()) || state.getBlock() instanceof IPlantable) && canStay();
     }
 
     @Override
     public boolean canStay() {
         BlockState state = getBlockState();
-        if (!state.getBlock().isAir(state, world, getBlockPos())) {
+        if (!state.getBlock().isAir(state, level, getBlockPos())) {
             return true;
         }
 
-        BlockPos posBelow = getBlockPos().offset(Direction.DOWN);
-        BlockState stateBelow = world.getBlockState(posBelow);
-        return !stateBelow.getBlock().isAir(stateBelow, world, posBelow);
+        BlockPos posBelow = getBlockPos().relative(Direction.DOWN);
+        BlockState stateBelow = level.getBlockState(posBelow);
+        return !stateBelow.getBlock().isAir(stateBelow, level, posBelow);
     }
 
     @Override
-    public ActionResultType applyPlayerInteraction(PlayerEntity player, Vector3d hitVec, Hand hand) {
+    public ActionResultType interactAt(PlayerEntity player, Vector3d hitVec, Hand hand) {
         BlockState state = getBlockState();
-        if (state.getBlock().isAir(state, world, getBlockPos())) {
+        if (state.getBlock().isAir(state, level, getBlockPos())) {
             // try a right click on the block below - makes it easier to plant crops in an empty crop support
-            BlockPos below = getBlockPos().down();
+            BlockPos below = getBlockPos().below();
             Vector3d eye = player.getEyePosition(0f);
-            Vector3d end = Vector3d.copyCentered(below).add(0, 0.25, 0);
+            Vector3d end = Vector3d.atCenterOf(below).add(0, 0.25, 0);
             RayTraceContext ctx = new RayTraceContext(eye, end, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, player);
-            BlockRayTraceResult brtr = player.world.rayTraceBlocks(ctx);
-            if (brtr.getType() == RayTraceResult.Type.BLOCK && brtr.getPos().equals(below)) {
-                return player.getHeldItem(hand).onItemUse(new ItemUseContext(player, hand, brtr));
+            BlockRayTraceResult brtr = player.level.clip(ctx);
+            if (brtr.getType() == RayTraceResult.Type.BLOCK && brtr.getBlockPos().equals(below)) {
+                return player.getItemInHand(hand).useOn(new ItemUseContext(player, hand, brtr));
             }
         }
-        return super.applyPlayerInteraction(player, hitVec, hand);
+        return super.interactAt(player, hitVec, hand);
     }
 }

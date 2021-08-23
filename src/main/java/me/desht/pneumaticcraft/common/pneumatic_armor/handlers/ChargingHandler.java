@@ -43,8 +43,8 @@ public class ChargingHandler extends BaseArmorUpgradeHandler<IArmorExtensionData
     @Override
     public void tick(ICommonArmorHandler commonArmorHandler, boolean enabled) {
         PlayerEntity player = commonArmorHandler.getPlayer();
-        if (player.world.isRemote || !enabled
-                || player.world.getGameTime() % PneumaticValues.ARMOR_CHARGER_INTERVAL != 5)
+        if (player.level.isClientSide || !enabled
+                || player.level.getGameTime() % PneumaticValues.ARMOR_CHARGER_INTERVAL != 5)
             return;
 
         int upgrades = commonArmorHandler.getUpgradeCount(EquipmentSlotType.CHEST, EnumUpgrade.CHARGING);
@@ -53,10 +53,10 @@ public class ChargingHandler extends BaseArmorUpgradeHandler<IArmorExtensionData
         for (EquipmentSlotType slot : EquipmentSlotType.values()) {
             if (slot != EquipmentSlotType.CHEST) {
                 if (!commonArmorHandler.hasMinPressure(EquipmentSlotType.CHEST)) return;
-                tryPressurize(commonArmorHandler, airAmount, player.getItemStackFromSlot(slot));
+                tryPressurize(commonArmorHandler, airAmount, player.getItemBySlot(slot));
             }
         }
-        for (ItemStack stack : player.inventory.mainInventory) {
+        for (ItemStack stack : player.inventory.items) {
             if (!commonArmorHandler.hasMinPressure(EquipmentSlotType.CHEST)) return;
             tryPressurize(commonArmorHandler, airAmount, stack);
         }

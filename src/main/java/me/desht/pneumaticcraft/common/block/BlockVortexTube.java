@@ -15,30 +15,30 @@ import net.minecraft.world.IBlockReader;
 public class BlockVortexTube extends BlockPneumaticCraft implements ColorHandlers.IHeatTintable {
 
     private static final VoxelShape[] SHAPES = new VoxelShape[] {  // DUNSWE order
-            Block.makeCuboidShape(0,0, 0, 15, 15, 15),
-            Block.makeCuboidShape(0,1, 1, 15, 16, 16),
-            Block.makeCuboidShape(1,0, 0, 16, 15, 15),
-            Block.makeCuboidShape(0,0, 1, 15, 15, 16),
-            Block.makeCuboidShape(0,0, 0, 15, 15, 15),
-            Block.makeCuboidShape(1,0, 1, 16, 15, 16),
+            Block.box(0,0, 0, 15, 15, 15),
+            Block.box(0,1, 1, 15, 16, 16),
+            Block.box(1,0, 0, 16, 15, 15),
+            Block.box(0,0, 1, 15, 15, 16),
+            Block.box(0,0, 0, 15, 15, 15),
+            Block.box(1,0, 1, 16, 15, 16),
     };
 
     public BlockVortexTube() {
         super(ModBlocks.defaultProps());
 
-        setDefaultState(getStateContainer().getBaseState()
-            .with(DOWN, false)
-            .with(UP, false)
-            .with(NORTH, false)
-            .with(SOUTH, false)
-            .with(WEST, false)
-            .with(EAST, false)
+        registerDefaultState(getStateDefinition().any()
+            .setValue(DOWN, false)
+            .setValue(UP, false)
+            .setValue(NORTH, false)
+            .setValue(SOUTH, false)
+            .setValue(WEST, false)
+            .setValue(EAST, false)
         );
     }
 
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        super.fillStateContainer(builder);
+    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
         builder.add(CONNECTION_PROPERTIES);
     }
 
@@ -49,7 +49,7 @@ public class BlockVortexTube extends BlockPneumaticCraft implements ColorHandler
 
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-        return SHAPES[getRotation(state).getIndex()];
+        return SHAPES[getRotation(state).get3DDataValue()];
     }
 
     @Override

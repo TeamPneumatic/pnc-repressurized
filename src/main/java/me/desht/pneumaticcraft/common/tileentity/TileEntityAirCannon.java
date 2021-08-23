@@ -147,14 +147,14 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
 
         if (destUpdateNeeded) updateDestination();
         updateRotationAngles();
-        if (!world.isRemote) {
+        if (!level.isClientSide) {
             updateTrackedItems();
             updateTrackedTNT();
         }
 
         super.tick();
 
-        if (!getWorld().isRemote) {
+        if (!getLevel().isClientSide) {
             airHandler.setSideLeaking(hasNoConnectedAirHandlers() ? getRotation() : null);
         }
     }
@@ -166,7 +166,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
             if (!e.isAlive()) {
                 iter.remove();
             } else {
-                if (e.ticksExisted > 5 && e.getMotion().lengthSquared() < 0.01) {
+                if (e.tickCount > 5 && e.getDeltaMovement().lengthSqr() < 0.01) {
                     e.setFuse(0);
                 }
             }
@@ -176,7 +176,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     private boolean checkGPSSlot() {
         ItemStack gpsStack = itemHandler.getStackInSlot(GPS_SLOT);
         if (gpsStack.getItem() instanceof IPositionProvider && !externalControl) {
-            List<BlockPos> posList = ((IPositionProvider) gpsStack.getItem()).getStoredPositions(world, gpsStack);
+            List<BlockPos> posList = ((IPositionProvider) gpsStack.getItem()).getStoredPositions(level, gpsStack);
             if (!posList.isEmpty() && posList.get(0) != null) {
                 int destinationX = posList.get(0).getX();
                 int destinationY = posList.get(0).getY();
@@ -236,8 +236,8 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     private void updateTrackedItems() {
         if (trackedItemIds != null) {
             trackedItems.clear();
-            ((ServerWorld) world).getEntities()
-                    .filter(entity -> trackedItemIds.contains(entity.getUniqueID()) && entity instanceof ItemEntity)
+            ((ServerWorld) level).getEntities()
+                    .filter(entity -> trackedItemIds.contains(entity.getUUID()) && entity instanceof ItemEntity)
                     .map(entity -> (ItemEntity) entity)
                     .forEach(trackedItems::add);
             trackedItemIds = null;
@@ -245,20 +245,20 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
         Iterator<ItemEntity> iterator = trackedItems.iterator();
         while (iterator.hasNext()) {
             ItemEntity item = iterator.next();
-            if (item.world != getWorld() || !item.isAlive()) {
+            if (item.level != getLevel() || !item.isAlive()) {
                 iterator.remove();
             } else {
                 Map<BlockPos, Direction> positions = new HashMap<>();
                 double range = 0.2;
                 for (Direction d : Direction.values()) {
-                    double posX = item.getPosX() + d.getXOffset() * range;
-                    double posY = item.getPosY() + d.getYOffset() * range;
-                    double posZ = item.getPosZ() + d.getZOffset() * range;
+                    double posX = item.getX() + d.getStepX() * range;
+                    double posY = item.getY() + d.getStepY() * range;
+                    double posZ = item.getZ() + d.getStepZ() * range;
                     positions.put(new BlockPos((int) Math.floor(posX), (int) Math.floor(posY), (int) Math.floor(posZ)), d.getOpposite());
                 }
                 for (Entry<BlockPos, Direction> entry : positions.entrySet()) {
                     BlockPos pos = entry.getKey();
-                    TileEntity te = getWorld().getTileEntity(pos);
+                    TileEntity te = getLevel().getBlockEntity(pos);
                     if (te == null) continue;
                     boolean inserted = IOHelper.getInventoryForTE(te, entry.getValue()).map(inv -> {
                         ItemStack remainder = ItemHandlerHelper.insertItem(inv, item.getItem(), false);
@@ -269,9 +269,9 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
                         } else {
                             item.remove();
                             iterator.remove();
-                            lastInsertingInventory = te.getPos();
+                            lastInsertingInventory = te.getBlockPos();
                             lastInsertingInventorySide = entry.getValue();
-                            world.playSound(null, te.getPos(), SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 1.0f, 1.0f);
+                            level.playSound(null, te.getBlockPos(), SoundEvents.ITEM_PICKUP, SoundCategory.BLOCKS, 1.0f, 1.0f);
                             return true;
                         }
                     }).orElse(false);
@@ -329,8 +329,8 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
         }
 
         // calculate the heading.
-        double deltaX = gpsX - getPos().getX();
-        double deltaZ = gpsZ - getPos().getZ();
+        double deltaX = gpsX - getBlockPos().getX();
+        double deltaZ = gpsZ - getBlockPos().getZ();
         float calculatedRotationAngle;
         if (deltaX >= 0 && deltaZ < 0) {
             calculatedRotationAngle = (float) (Math.atan(Math.abs(deltaX / deltaZ)) / Math.PI * 180D);
@@ -344,7 +344,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
 
         // calculate the height angle.
         double distance = Math.sqrt(deltaX * deltaX + deltaZ * deltaZ);
-        double deltaY = gpsY - getPos().getY();
+        double deltaY = gpsY - getBlockPos().getY();
         float calculatedHeightAngle = calculateBestHeightAngle(distance, deltaY, getForce(), payloadGravity, payloadFrictionX, payloadFrictionY);
 
         setTargetAngles(calculatedRotationAngle, calculatedHeightAngle);
@@ -422,8 +422,8 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT tag) {
-        super.read(state, tag);
+    public void load(BlockState state, CompoundNBT tag) {
+        super.load(state, tag);
         targetRotationAngle = tag.getFloat("targetRotationAngle");
         targetHeightAngle = tag.getFloat("targetHeightAngle");
         rotationAngle = tag.getFloat("rotationAngle");
@@ -444,7 +444,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
 
         if (tag.contains("inventoryX")) {
             lastInsertingInventory = new BlockPos(tag.getInt("inventoryX"), tag.getInt("inventoryY"), tag.getInt("inventoryZ"));
-            lastInsertingInventorySide = Direction.byIndex(tag.getByte("inventorySide"));
+            lastInsertingInventorySide = Direction.from3DDataValue(tag.getByte("inventorySide"));
         } else {
             lastInsertingInventory = null;
             lastInsertingInventorySide = null;
@@ -452,8 +452,8 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tag) {
-        super.write(tag);
+    public CompoundNBT save(CompoundNBT tag) {
+        super.save(tag);
         tag.putFloat("targetRotationAngle", targetRotationAngle);
         tag.putFloat("targetHeightAngle", targetHeightAngle);
         tag.putFloat("rotationAngle", rotationAngle);
@@ -467,7 +467,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
 
         ListNBT tagList = new ListNBT();
         for (ItemEntity entity : trackedItems) {
-            UUID uuid = entity.getUniqueID();
+            UUID uuid = entity.getUUID();
             CompoundNBT t = new CompoundNBT();
             t.putLong("UUIDMost", uuid.getMostSignificantBits());
             t.putLong("UUIDLeast", uuid.getLeastSignificantBits());
@@ -479,7 +479,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
             tag.putInt("inventoryX", lastInsertingInventory.getX());
             tag.putInt("inventoryY", lastInsertingInventory.getY());
             tag.putInt("inventoryZ", lastInsertingInventory.getZ());
-            tag.putByte("inventorySide", (byte) lastInsertingInventorySide.getIndex());
+            tag.putByte("inventorySide", (byte) lastInsertingInventorySide.get3DDataValue());
         }
 
         return tag;
@@ -488,7 +488,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     @Nullable
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        return new ContainerAirCannon(i, playerInventory, getPos());
+        return new ContainerAirCannon(i, playerInventory, getBlockPos());
     }
 
     @Override
@@ -563,7 +563,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
         if (itemHandler.getStackInSlot(CANNON_SLOT).isEmpty())
             return true;
 
-        TileEntity te = getWorld().getTileEntity(lastInsertingInventory);
+        TileEntity te = getLevel().getBlockEntity(lastInsertingInventory);
         return IOHelper.getInventoryForTE(te, lastInsertingInventorySide).map(inv -> {
             ItemStack remainder = ItemHandlerHelper.insertItem(inv, itemHandler.getStackInSlot(CANNON_SLOT).copy(), true);
             insertingInventoryHasSpace = remainder.isEmpty();
@@ -595,23 +595,23 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
                     if (getUpgrades(EnumUpgrade.BLOCK_TRACKER) > 0) {
                         trackedItems.add((ItemEntity) launchedEntity);
                     }
-                    ((ItemEntity) launchedEntity).setPickupDelay(20);
+                    ((ItemEntity) launchedEntity).setPickUpDelay(20);
                 } else {
                     itemHandler.extractItem(CANNON_SLOT, 1, false);
                 }
             } else if (launchedEntity instanceof PlayerEntity) {
                 ServerPlayerEntity entityplayermp = (ServerPlayerEntity) launchedEntity;
-                if (entityplayermp.connection.getNetworkManager().isChannelOpen()) {
+                if (entityplayermp.connection.getConnection().isConnected()) {
                     // This is a nasty hack to get around "player moved wrongly!" messages, which can be caused if player movement
                     // triggers a player teleport (e.g. player moves onto pressure plate, triggers air cannon with an entity tracker).
                     // todo 1.14 reflection
-                    entityplayermp.invulnerableDimensionChange = true;
-                    entityplayermp.setPositionAndUpdate(getPos().getX() + 0.5D, getPos().getY() + 1.8D, getPos().getZ() + 0.5D);
+                    entityplayermp.isChangingDimension = true;
+                    entityplayermp.teleportTo(getBlockPos().getX() + 0.5D, getBlockPos().getY() + 1.8D, getBlockPos().getZ() + 0.5D);
                 }
             }
 
             ItemLaunching.launchEntity(launchedEntity,
-                    new Vector3d(getPos().getX() + 0.5D, getPos().getY() + 1.8D, getPos().getZ() + 0.5D),
+                    new Vector3d(getBlockPos().getX() + 0.5D, getBlockPos().getY() + 1.8D, getBlockPos().getZ() + 0.5D),
                     new Vector3d(velocity[0], velocity[1], velocity[2]),
                     shootingInventory);
             return true;
@@ -621,7 +621,7 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     }
 
     private Entity getPayloadEntity() {
-        Entity e = ItemLaunching.getEntityToLaunch(getWorld(), itemHandler.getStackInSlot(CANNON_SLOT), getFakePlayer(),
+        Entity e = ItemLaunching.getEntityToLaunch(getLevel(), itemHandler.getStackInSlot(CANNON_SLOT), getFakePlayer(),
                 getUpgrades(EnumUpgrade.DISPENSER) > 0, false);
         if (e instanceof ItemEntity) {
             // 1200 ticks left to live = 60s
@@ -634,9 +634,9 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
 
     private PlayerEntity getFakePlayer() {
         if (fakePlayer == null) {
-            fakePlayer = FakePlayerFactory.get((ServerWorld) getWorld(), new GameProfile(FP_UUID, FP_NAME));
+            fakePlayer = FakePlayerFactory.get((ServerWorld) getLevel(), new GameProfile(FP_UUID, FP_NAME));
             fakePlayer.connection = new FakeNetHandlerPlayerServer(ServerLifecycleHooks.getCurrentServer(), fakePlayer);
-            fakePlayer.setPosition(getPos().getX() + 0.5, getPos().getY() + 0.5, getPos().getZ() + 0.5);
+            fakePlayer.setPos(getBlockPos().getX() + 0.5, getBlockPos().getY() + 0.5, getBlockPos().getZ() + 0.5);
         }
         return fakePlayer;
     }
@@ -646,9 +646,9 @@ public class TileEntityAirCannon extends TileEntityPneumaticBase
     private Entity getCloseEntityIfUpgraded() {
         int entityUpgrades = Math.min(5, getUpgrades(EnumUpgrade.ENTITY_TRACKER));
         if (entityUpgrades > 0) {
-            List<LivingEntity> entities = getWorld().getEntitiesWithinAABB(LivingEntity.class, new AxisAlignedBB(getPos()).grow(entityUpgrades));
+            List<LivingEntity> entities = getLevel().getEntitiesOfClass(LivingEntity.class, new AxisAlignedBB(getBlockPos()).inflate(entityUpgrades));
             if (!entities.isEmpty()) {
-                entities.sort(new EntityDistanceComparator(getPos()));
+                entities.sort(new EntityDistanceComparator(getBlockPos()));
                 return entities.get(0);
             }
         }

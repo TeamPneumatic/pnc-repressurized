@@ -22,7 +22,7 @@ public class MinigunPlayerTracker {
     private int ammoColor;
 
     public static MinigunPlayerTracker getInstance(PlayerEntity player) {
-        return player.world.isRemote ? clientInstance : serverInstances.computeIfAbsent(player.getUniqueID(), k -> new MinigunPlayerTracker());
+        return player.level.isClientSide ? clientInstance : serverInstances.computeIfAbsent(player.getUUID(), k -> new MinigunPlayerTracker());
     }
 
     private MinigunPlayerTracker() {

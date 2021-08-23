@@ -47,8 +47,8 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
 
     public GuiAmadron(ContainerAmadron container, PlayerInventory inv, @SuppressWarnings("unused") ITextComponent displayString) {
         super(container, inv, new StringTextComponent(""));
-        xSize = 176;
-        ySize = 202;
+        imageWidth = 176;
+        imageHeight = 202;
     }
 
     @Override
@@ -56,8 +56,8 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
         super.init();
 
         ITextComponent amadron = xlate("pneumaticcraft.gui.amadron.title");
-        addLabel(amadron, guiLeft + xSize / 2 - font.getStringPropertyWidth(amadron) / 2, guiTop + 5, 0xFFFFFF);
-        addLabel(xlate("pneumaticcraft.gui.search"), guiLeft + 76 - font.getStringWidth(I18n.format("pneumaticcraft.gui.search")), guiTop + 41, 0xFFFFFF);
+        addLabel(amadron, leftPos + imageWidth / 2 - font.width(amadron) / 2, topPos + 5, 0xFFFFFF);
+        addLabel(xlate("pneumaticcraft.gui.search"), leftPos + 76 - font.width(I18n.get("pneumaticcraft.gui.search")), topPos + 41, 0xFFFFFF);
 
         addInfoTab(xlate("gui.tooltip.item.pneumaticcraft.amadron_tablet"));
         addAnimatedStat(xlate("pneumaticcraft.gui.tab.info.ghostSlotInteraction.title"), Textures.GUI_MOUSE_LOCATION, 0xFF00AAFF, true)
@@ -66,14 +66,14 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
                 .setText(xlate("pneumaticcraft.gui.tab.amadron.disclaimer"));
         customTradesTab = addAnimatedStat(xlate("pneumaticcraft.gui.tab.amadron.customTrades"), new ItemStack(Items.DIAMOND), 0xFFD07000, false);
         customTradesTab.setMinimumExpandedDimensions(80, 50);
-        searchBar = new WidgetTextField(font, guiLeft + 79, guiTop + 40, 73, font.FONT_HEIGHT);
+        searchBar = new WidgetTextField(font, leftPos + 79, topPos + 40, 73, font.lineHeight);
         searchBar.setResponder(s -> sendDelayed(8));
         addButton(searchBar);
-        setListener(searchBar);
+        setFocused(searchBar);
 
-        addButton(scrollbar = new WidgetVerticalScrollbar(guiLeft + 156, guiTop + 54, 142).setStates(1).setListening(true));
+        addButton(scrollbar = new WidgetVerticalScrollbar(leftPos + 156, topPos + 54, 142).setStates(1).setListening(true));
 
-        orderButton = new WidgetButtonExtended(guiLeft + 52, guiTop + 16, 72, 20, xlate("pneumaticcraft.gui.amadron.button.order"))
+        orderButton = new WidgetButtonExtended(leftPos + 52, topPos + 16, 72, 20, xlate("pneumaticcraft.gui.amadron.button.order"))
                 .withTag("order");
         addButton(orderButton);
         updateOrderButtonTooltip();
@@ -119,20 +119,20 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
             setPage(scrollbar.getState());
         }
         for (WidgetAmadronOffer offer : widgetOffers) {
-            offer.setCanBuy(container.buyableOffers[container.activeOffers.indexOf(offer.getOffer())]);
-            offer.setShoppingAmount(container.getShoppingCartAmount(offer.getOffer()));
+            offer.setCanBuy(menu.buyableOffers[menu.activeOffers.indexOf(offer.getOffer())]);
+            offer.setShoppingAmount(menu.getShoppingCartAmount(offer.getOffer()));
         }
-        if (!hadProblem && container.problemState != EnumProblemState.NO_PROBLEMS) {
+        if (!hadProblem && menu.problemState != EnumProblemState.NO_PROBLEMS) {
             problemTab.openStat();
         }
-        hadProblem = container.problemState != EnumProblemState.NO_PROBLEMS;
-        addTradeButton.active = container.currentOffers < container.maxOffers;
+        hadProblem = menu.problemState != EnumProblemState.NO_PROBLEMS;
+        addTradeButton.active = menu.currentOffers < menu.maxOffers;
         ITextComponent text = xlate("pneumaticcraft.gui.amadron.button.addTrade.tooltip.offerCount",
-                container.currentOffers,
-                container.maxOffers == Integer.MAX_VALUE ? GuiConstants.INFINITY : container.maxOffers);
+                menu.currentOffers,
+                menu.maxOffers == Integer.MAX_VALUE ? GuiConstants.INFINITY : menu.maxOffers);
         customTradesTab.setText(text);
 
-        orderButton.active = !container.isBasketEmpty() && container.problemState == EnumProblemState.NO_PROBLEMS;
+        orderButton.active = !menu.isBasketEmpty() && menu.problemState == EnumProblemState.NO_PROBLEMS;
 
         if (needTooltipUpdate) {
             updateOrderButtonTooltip();
@@ -141,21 +141,21 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
 
         // since amadron problems cap the order, the order amount stays valid
         // so the problem report should time out after a few seconds
-        if (problemTimer == 0 && container.problemState != EnumProblemState.NO_PROBLEMS) {
+        if (problemTimer == 0 && menu.problemState != EnumProblemState.NO_PROBLEMS) {
             problemTimer = 70;
         } else if (problemTimer > 0) {
-            if (--problemTimer <= 0) container.problemState = EnumProblemState.NO_PROBLEMS;
+            if (--problemTimer <= 0) menu.problemState = EnumProblemState.NO_PROBLEMS;
         }
     }
 
     private void updateOrderButtonTooltip() {
         ImmutableList.Builder<ITextComponent> builder = ImmutableList.builder();
         builder.add(xlate("pneumaticcraft.gui.amadron.button.order.tooltip"));
-        if (!container.isBasketEmpty()) {
+        if (!menu.isBasketEmpty()) {
             builder.add(StringTextComponent.EMPTY);
-            builder.add(xlate("pneumaticcraft.gui.amadron.basket").mergeStyle(TextFormatting.AQUA, TextFormatting.UNDERLINE));
+            builder.add(xlate("pneumaticcraft.gui.amadron.basket").withStyle(TextFormatting.AQUA, TextFormatting.UNDERLINE));
             for (AmadronRecipe offer : AmadronOfferManager.getInstance().getActiveOffers()) {
-                int nOrders = container.getShoppingCartAmount(offer);
+                int nOrders = menu.getShoppingCartAmount(offer);
                 if (nOrders > 0) {
                     String in = (offer.getInput().getAmount() * nOrders) + " x " + offer.getInput().getName();
                     String out = (offer.getOutput().getAmount() * nOrders) + " x " + offer.getOutput().getName();
@@ -170,11 +170,11 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-            minecraft.player.closeScreen();
+            minecraft.player.closeContainer();
         }
 
         return searchBar.keyPressed(keyCode, scanCode, modifiers)
-                || searchBar.canWrite()
+                || searchBar.canConsumeInput()
                 || super.keyPressed(keyCode, scanCode, modifiers);
     }
 
@@ -186,14 +186,14 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
     private void updateVisibleOffers() {
         needsRefreshing = false;
         int invSize = ContainerAmadron.ROWS * 2;
-        container.clearStacks();
+        menu.clearStacks();
         List<Pair<Integer,AmadronRecipe>> visibleOffers = new ArrayList<>();
         int skippedOffers = 0;
         int applicableOffers = 0;
 
-        for (int i = 0; i < container.activeOffers.size(); i++) {
-            AmadronRecipe offer = container.activeOffers.get(i);
-            if (offer.passesQuery(searchBar.getText())) {
+        for (int i = 0; i < menu.activeOffers.size(); i++) {
+            AmadronRecipe offer = menu.activeOffers.get(i);
+            if (offer.passesQuery(searchBar.getValue())) {
                 applicableOffers++;
                 if (skippedOffers < page * invSize) {
                     skippedOffers++;
@@ -211,27 +211,27 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
             int offerId = visibleOffers.get(i).getLeft();
             AmadronRecipe offer = visibleOffers.get(i).getRight();
             if (!offer.getInput().getItem().isEmpty()) {
-                container.getSlot(i * 2).putStack(offer.getInput().getItem());
-                ((SlotUntouchable) container.getSlot(i * 2)).setEnabled(true);
+                menu.getSlot(i * 2).set(offer.getInput().getItem());
+                ((SlotUntouchable) menu.getSlot(i * 2)).setEnabled(true);
             }
             if (!offer.getOutput().getItem().isEmpty()) {
-                container.getSlot(i * 2 + 1).putStack(offer.getOutput().getItem());
-                ((SlotUntouchable) container.getSlot(i * 2 + 1)).setEnabled(true);
+                menu.getSlot(i * 2 + 1).set(offer.getOutput().getItem());
+                ((SlotUntouchable) menu.getSlot(i * 2 + 1)).setEnabled(true);
             }
 
-            WidgetAmadronOffer widget = new WidgetAmadronOfferAdjustable(offerId, guiLeft + 6 + 73 * (i % 2), guiTop + 55 + 35 * (i / 2), offer);
+            WidgetAmadronOffer widget = new WidgetAmadronOfferAdjustable(offerId, leftPos + 6 + 73 * (i % 2), topPos + 55 + 35 * (i / 2), offer);
             addButton(widget);
             widgetOffers.add(widget);
         }
 
         // avoid drawing phantom slot highlights where there's no widget
-        for (int i = visibleOffers.size() * 2; i < container.inventorySlots.size(); i++) {
-            ((SlotUntouchable) container.getSlot(i)).setEnabled(false);
+        for (int i = visibleOffers.size() * 2; i < menu.slots.size(); i++) {
+            ((SlotUntouchable) menu.getSlot(i)).setEnabled(false);
         }
 
         // the server also needs to know what's in the tablet, or the next
         // "window items" packet will empty all the client-side slots
-        NetworkHandler.sendToServer(new PacketAmadronInvSync(container.getInventory()));
+        NetworkHandler.sendToServer(new PacketAmadronInvSync(menu.getItems()));
     }
 
     @Override
@@ -242,8 +242,8 @@ public class GuiAmadron extends GuiPneumaticContainerBase<ContainerAmadron,TileE
     @Override
     protected void addProblems(List<ITextComponent> curInfo) {
         super.addProblems(curInfo);
-        if (container.problemState != EnumProblemState.NO_PROBLEMS) {
-            curInfo.addAll(GuiUtils.xlateAndSplit(container.problemState.getTranslationKey()));
+        if (menu.problemState != EnumProblemState.NO_PROBLEMS) {
+            curInfo.addAll(GuiUtils.xlateAndSplit(menu.problemState.getTranslationKey()));
         }
     }
 

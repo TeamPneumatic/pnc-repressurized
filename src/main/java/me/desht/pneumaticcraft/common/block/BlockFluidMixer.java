@@ -15,10 +15,10 @@ import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
 
 public class BlockFluidMixer extends BlockPneumaticCraft {
-    private static final VoxelShape INPUT1 = makeCuboidShape(10, 0, 1, 16,8, 7);
-    private static final VoxelShape INPUT2 = makeCuboidShape(0, 0, 1, 6,8, 7);
-    private static final VoxelShape MAIN = makeCuboidShape(2, 0, 7, 14,8, 15);
-    private static final VoxelShape OUTPUT = makeCuboidShape(5, 8, 8, 11,16, 14);
+    private static final VoxelShape INPUT1 = box(10, 0, 1, 16,8, 7);
+    private static final VoxelShape INPUT2 = box(0, 0, 1, 6,8, 7);
+    private static final VoxelShape MAIN = box(2, 0, 7, 14,8, 15);
+    private static final VoxelShape OUTPUT = box(5, 8, 8, 11,16, 14);
 
     private static final VoxelShape[] SHAPES = new VoxelShape[4];
     static {
@@ -31,17 +31,17 @@ public class BlockFluidMixer extends BlockPneumaticCraft {
 
     public BlockFluidMixer() {
         super(ModBlocks.defaultProps());
-        setDefaultState(getStateContainer().getBaseState()
-                .with(BlockPneumaticCraft.NORTH, false)
-                .with(BlockPneumaticCraft.SOUTH, false)
-                .with(BlockPneumaticCraft.WEST, false)
-                .with(BlockPneumaticCraft.EAST, false)
+        registerDefaultState(getStateDefinition().any()
+                .setValue(BlockPneumaticCraft.NORTH, false)
+                .setValue(BlockPneumaticCraft.SOUTH, false)
+                .setValue(BlockPneumaticCraft.WEST, false)
+                .setValue(BlockPneumaticCraft.EAST, false)
         );
     }
 
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        super.fillStateContainer(builder);
+    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
         builder.add(BlockPneumaticCraft.NORTH, BlockPneumaticCraft.SOUTH, BlockPneumaticCraft.WEST, BlockPneumaticCraft.EAST);
     }
 
@@ -57,8 +57,8 @@ public class BlockFluidMixer extends BlockPneumaticCraft {
 
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
-        Direction d = state.get(directionProperty());
-        return SHAPES[d.getHorizontalIndex()];
+        Direction d = state.getValue(directionProperty());
+        return SHAPES[d.get2DDataValue()];
     }
 
     @Override

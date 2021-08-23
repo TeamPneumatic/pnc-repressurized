@@ -44,8 +44,8 @@ import javax.annotation.Nonnull;
  * block, not just when it lands on top of another block.
  */
 public class EntityTumblingBlock extends ThrowableEntity {
-    private static final DataParameter<BlockPos> ORIGIN = EntityDataManager.createKey(EntityTumblingBlock.class, DataSerializers.BLOCK_POS);
-    private static final DataParameter<ItemStack> STATE_STACK = EntityDataManager.createKey(EntityTumblingBlock.class, DataSerializers.ITEMSTACK);
+    private static final DataParameter<BlockPos> ORIGIN = EntityDataManager.defineId(EntityTumblingBlock.class, DataSerializers.BLOCK_POS);
+    private static final DataParameter<ItemStack> STATE_STACK = EntityDataManager.defineId(EntityTumblingBlock.class, DataSerializers.ITEM_STACK);
     private static FakePlayer fakePlayer;
 
     private static final Vector3d Y_POS = new Vector3d(0, 1, 0);
@@ -61,43 +61,43 @@ public class EntityTumblingBlock extends ThrowableEntity {
         super(ModEntities.TUMBLING_BLOCK.get(), worldIn);
         Validate.isTrue(!stack.isEmpty() && stack.getItem() instanceof BlockItem);
 
-        setShooter(thrower);
-        this.preventEntitySpawning = true;
-        this.setPosition(x, y + (double)((1.0F - this.getHeight()) / 2.0F), z);
-        this.setMotion(0, 0, 0);
-        this.prevPosX = x;
-        this.prevPosY = y;
-        this.prevPosZ = z;
+        setOwner(thrower);
+        this.blocksBuilding = true;
+        this.setPos(x, y + (double)((1.0F - this.getBbHeight()) / 2.0F), z);
+        this.setDeltaMovement(0, 0, 0);
+        this.xo = x;
+        this.yo = y;
+        this.zo = z;
         this.tumbleVec = makeTumbleVec(worldIn, thrower);
-        this.setOrigin(getPosition());
-        dataManager.set(STATE_STACK, stack);
+        this.setOrigin(blockPosition());
+        entityData.set(STATE_STACK, stack);
     }
 
     private Vector3f makeTumbleVec(World world, LivingEntity thrower) {
         if (thrower != null) {
-            return new Vector3f(thrower.getLookVec().crossProduct(Y_POS));
-        } else if (world != null && world.isRemote) {
+            return new Vector3f(thrower.getLookAngle().cross(Y_POS));
+        } else if (world != null && world.isClientSide) {
             PlayerEntity player = ClientUtils.getClientPlayer();
-            return player == null ? null : new Vector3f(player.getLookVec().crossProduct(Y_POS));
+            return player == null ? null : new Vector3f(player.getLookAngle().cross(Y_POS));
         } else {
             return null;
         }
     }
 
     @Override
-    public IPacket<?> createSpawnPacket() {
+    public IPacket<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     @Override
-    protected void registerData() {
-        dataManager.register(ORIGIN, BlockPos.ZERO);
-        dataManager.register(STATE_STACK, ItemStack.EMPTY);
+    protected void defineSynchedData() {
+        entityData.define(ORIGIN, BlockPos.ZERO);
+        entityData.define(STATE_STACK, ItemStack.EMPTY);
     }
 
     // shoot()
     @Override
-    public void func_234612_a_(Entity entityThrower, float rotationPitchIn, float rotationYawIn, float pitchOffset, float velocity, float inaccuracy) {
+    public void shootFromRotation(Entity entityThrower, float rotationPitchIn, float rotationYawIn, float pitchOffset, float velocity, float inaccuracy) {
         // velocities etc. get set up in TileEntityAirCannon#launchEntity()
     }
 
@@ -106,29 +106,29 @@ public class EntityTumblingBlock extends ThrowableEntity {
     }
 
     public ItemStack getStack() {
-        return dataManager.get(STATE_STACK);
+        return entityData.get(STATE_STACK);
     }
 
     public BlockPos getOrigin()
     {
-        return this.dataManager.get(ORIGIN);
+        return this.entityData.get(ORIGIN);
     }
 
     private void setOrigin(BlockPos pos) {
-        dataManager.set(ORIGIN, pos);
+        entityData.set(ORIGIN, pos);
     }
 
     @Override
     public void tick() {
-        this.prevPosX = this.getPosX();
-        this.prevPosY = this.getPosY();
-        this.prevPosZ = this.getPosZ();
+        this.xo = this.getX();
+        this.yo = this.getY();
+        this.zo = this.getZ();
 
         super.tick();  // handles nearly all of the in-flight logic
 
-        if (!world.isRemote) {
-            BlockPos blockpos1 = getPosition(); //new BlockPos(this);
-            if (!onGround && (ticksExisted > 100 && (blockpos1.getY() < 1 || blockpos1.getY() > 256) || ticksExisted > 600)) {
+        if (!level.isClientSide) {
+            BlockPos blockpos1 = blockPosition(); //new BlockPos(this);
+            if (!onGround && (tickCount > 100 && (blockpos1.getY() < 1 || blockpos1.getY() > 256) || tickCount > 600)) {
                 dropAsItem();
                 remove();
             }
@@ -136,8 +136,8 @@ public class EntityTumblingBlock extends ThrowableEntity {
     }
 
     @Override
-    protected void onImpact(RayTraceResult result) {
-        if (!world.isRemote) {
+    protected void onHit(RayTraceResult result) {
+        if (!level.isClientSide) {
             remove();
             if (result.getType() == RayTraceResult.Type.BLOCK) {
                 if (!tryPlaceAsBlock((BlockRayTraceResult) result)) {
@@ -154,18 +154,18 @@ public class EntityTumblingBlock extends ThrowableEntity {
         if (!(stack.getItem() instanceof BlockItem)) {
             return false;
         }
-        BlockPos pos0 = brtr.getPos();
-        Direction face = brtr.getFace();
-        // func_234616_v_ = getThrower
-        PlayerEntity placer = func_234616_v_() instanceof PlayerEntity ? (PlayerEntity) func_234616_v_() : getFakePlayer();
-        BlockState state = world.getBlockState(pos0);
+        BlockPos pos0 = brtr.getBlockPos();
+        Direction face = brtr.getDirection();
+        // getOwner = getThrower
+        PlayerEntity placer = getOwner() instanceof PlayerEntity ? (PlayerEntity) getOwner() : getFakePlayer();
+        BlockState state = level.getBlockState(pos0);
         BlockItemUseContext ctx = new LocalBlockItemUseContext(new ItemUseContext(placer, Hand.MAIN_HAND, brtr));
-        BlockPos pos = state.isReplaceable(ctx) ? pos0 : pos0.offset(face);
+        BlockPos pos = state.canBeReplaced(ctx) ? pos0 : pos0.relative(face);
 
-        if (world.getBlockState(pos).isReplaceable(ctx)) {
-            BlockSnapshot snapshot = BlockSnapshot.create(world.getDimensionKey(), world, pos);
+        if (level.getBlockState(pos).canBeReplaced(ctx)) {
+            BlockSnapshot snapshot = BlockSnapshot.create(level.dimension(), level, pos);
             if (!ForgeEventFactory.onBlockPlace(placer, snapshot, face)) {
-                ActionResultType res = ((BlockItem) stack.getItem()).tryPlace(ctx);
+                ActionResultType res = ((BlockItem) stack.getItem()).place(ctx);
                 return res == ActionResultType.SUCCESS || res == ActionResultType.CONSUME;
             }
         }
@@ -173,18 +173,18 @@ public class EntityTumblingBlock extends ThrowableEntity {
     }
 
     private void dropAsItem() {
-        if (this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
-            entityDropItem(getStack().copy(), 0.0F);
+        if (this.level.getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
+            spawnAtLocation(getStack().copy(), 0.0F);
         }
     }
 
     private PlayerEntity getFakePlayer() {
         if (fakePlayer == null) {
-            fakePlayer = FakePlayerFactory.get((ServerWorld) world, new GameProfile(null, "[Tumbling Block]"));
+            fakePlayer = FakePlayerFactory.get((ServerWorld) level, new GameProfile(null, "[Tumbling Block]"));
             fakePlayer.connection = new FakeNetHandlerPlayerServer(ServerLifecycleHooks.getCurrentServer(), fakePlayer);
         }
-        fakePlayer.setPosition(getPosX(), getPosY(), getPosZ());
-        fakePlayer.setHeldItem(Hand.MAIN_HAND, getStack());
+        fakePlayer.setPos(getX(), getY(), getZ());
+        fakePlayer.setItemInHand(Hand.MAIN_HAND, getStack());
         return fakePlayer;
     }
 
@@ -198,11 +198,11 @@ public class EntityTumblingBlock extends ThrowableEntity {
 
         public LocalBlockItemUseContext(ItemUseContext context) {
             super(context);
-            stack = context.getItem().copy();
+            stack = context.getItemInHand().copy();
         }
 
         @Override
-        public ItemStack getItem() {
+        public ItemStack getItemInHand() {
             return stack == null ? ItemStack.EMPTY : stack;
         }
     }

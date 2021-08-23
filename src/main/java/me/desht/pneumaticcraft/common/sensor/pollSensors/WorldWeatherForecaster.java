@@ -35,7 +35,7 @@ public class WorldWeatherForecaster implements IPollSensorSetting {
 
     @Override
     public int getRedstoneValue(World world, BlockPos pos, int sensorRange, String textBoxText) {
-        IWorldInfo info = world.getWorldInfo();
+        IWorldInfo info = world.getLevelData();
         if (info instanceof IServerWorldInfo) {
             return Math.max(0, 15 - ((IServerWorldInfo) info).getRainTime() / 1200);
         } else {

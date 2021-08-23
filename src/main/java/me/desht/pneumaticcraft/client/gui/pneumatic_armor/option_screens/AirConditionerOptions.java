@@ -22,8 +22,8 @@ public class AirConditionerOptions extends IOptionPage.SimpleOptionPage<AirConCl
 
         gui.addWidget(new WidgetButtonExtended(30, 128, 150, 20,
                 xlate("pneumaticcraft.armor.gui.misc.moveStatScreen"), b -> {
-            Minecraft.getInstance().player.closeScreen();
-            Minecraft.getInstance().displayGuiScreen(new GuiMoveStat(getClientUpgradeHandler(), ArmorHUDLayout.LayoutType.AIR_CON));
+            Minecraft.getInstance().player.closeContainer();
+            Minecraft.getInstance().setScreen(new GuiMoveStat(getClientUpgradeHandler(), ArmorHUDLayout.LayoutType.AIR_CON));
         }));
     }
 }

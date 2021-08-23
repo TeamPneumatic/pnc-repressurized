@@ -24,7 +24,7 @@ public abstract class FluidGasoline {
         }
 
         @Override
-        public int getTickRate(IWorldReader world) {
+        public int getTickDelay(IWorldReader world) {
             return 3;
         }
     }

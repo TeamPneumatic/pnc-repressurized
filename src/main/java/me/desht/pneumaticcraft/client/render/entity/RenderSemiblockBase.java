@@ -34,9 +34,9 @@ abstract class RenderSemiblockBase<T extends EntitySemiblockBase> extends Entity
         }
 
         if (f > 0.0F) {
-            Vector3d look = Minecraft.getInstance().player.getLook(partialTicks);
-            Vector3f wobble = new Vector3f((float)look.getZ(), 0.0F, -(float)look.getX());
-            matrixStack.rotate(wobble.rotationDegrees(MathHelper.sin(f) * f * f1 / 10.0F * 1));
+            Vector3d look = Minecraft.getInstance().player.getViewVector(partialTicks);
+            Vector3f wobble = new Vector3f((float)look.z(), 0.0F, -(float)look.x());
+            matrixStack.mulPose(wobble.rotationDegrees(MathHelper.sin(f) * f * f1 / 10.0F * 1));
         }
     }
 
@@ -52,11 +52,11 @@ abstract class RenderSemiblockBase<T extends EntitySemiblockBase> extends Entity
         if (packedLight == 0) {
             BlockPos pos = entityIn.getBlockPos();
             for (Direction d : LIGHTING_DIRS) {
-                BlockPos pos2 = pos.offset(d);
-                if (!Block.hasEnoughSolidSide(entityIn.world, pos2, d.getOpposite())) {
-                    int block = entityIn.world.getLightFor(LightType.BLOCK, pos2);
-                    int sky = entityIn.world.getLightFor(LightType.SKY, pos2);
-                    return LightTexture.packLight(block, sky);
+                BlockPos pos2 = pos.relative(d);
+                if (!Block.canSupportCenter(entityIn.level, pos2, d.getOpposite())) {
+                    int block = entityIn.level.getBrightness(LightType.BLOCK, pos2);
+                    int sky = entityIn.level.getBrightness(LightType.SKY, pos2);
+                    return LightTexture.pack(block, sky);
                 }
             }
         }

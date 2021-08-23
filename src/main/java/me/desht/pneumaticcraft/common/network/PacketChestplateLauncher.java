@@ -46,21 +46,21 @@ public class PacketChestplateLauncher {
     private void handleLaunch(ServerPlayerEntity player) {
         if (player == null) return;
 
-        ItemStack stack = player.getHeldItemOffhand();
+        ItemStack stack = player.getOffhandItem();
         CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
 
         if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().chestplateLauncherHandler, false) && !stack.isEmpty()) {
             ItemStack toFire = player.isCreative() ? ItemHandlerHelper.copyStackWithSize(stack, 1) : stack.split(1);
-            Entity launchedEntity = ItemLaunching.getEntityToLaunch(player.getEntityWorld(), toFire, player,true, true);
+            Entity launchedEntity = ItemLaunching.getEntityToLaunch(player.getCommandSenderWorld(), toFire, player,true, true);
             int upgrades = handler.getUpgradeCount(EquipmentSlotType.CHEST, EnumUpgrade.DISPENSER, PneumaticValues.PNEUMATIC_LAUNCHER_MAX_UPGRADES);
 
             if (launchedEntity instanceof AbstractArrowEntity) {
                 AbstractArrowEntity arrow = (AbstractArrowEntity) launchedEntity;
-                arrow.pickupStatus = player.isCreative() ? AbstractArrowEntity.PickupStatus.CREATIVE_ONLY : AbstractArrowEntity.PickupStatus.ALLOWED;
-                arrow.setDamage(arrow.getDamage() + 0.25 * upgrades * amount);
+                arrow.pickup = player.isCreative() ? AbstractArrowEntity.PickupStatus.CREATIVE_ONLY : AbstractArrowEntity.PickupStatus.ALLOWED;
+                arrow.setBaseDamage(arrow.getBaseDamage() + 0.25 * upgrades * amount);
             }
 
-            Vector3d velocity = player.getLookVec().normalize().scale(amount * upgrades * SCALE_FACTOR);
+            Vector3d velocity = player.getLookAngle().normalize().scale(amount * upgrades * SCALE_FACTOR);
             ItemLaunching.launchEntity(launchedEntity, player.getEyePosition(1f).add(0, -0.1, 0), velocity, true);
 
             if (!player.isCreative()) {

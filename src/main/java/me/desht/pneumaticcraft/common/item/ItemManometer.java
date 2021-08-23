@@ -42,31 +42,31 @@ public class ItemManometer extends ItemPressurizable {
     public ActionResultType onItemUseFirst(ItemStack stack, ItemUseContext context) {
         PlayerEntity player = context.getPlayer();
         if (player == null) return ActionResultType.PASS;
-        World world = context.getWorld();
+        World world = context.getLevel();
 
-        if (world.isRemote) return ActionResultType.SUCCESS;
+        if (world.isClientSide) return ActionResultType.SUCCESS;
 
         return stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).map(h -> {
             if (h.getAir() < PneumaticValues.USAGE_ITEM_MANOMETER) {
-                player.sendStatusMessage(xlate("pneumaticcraft.message.misc.outOfAir", stack.getDisplayName()).mergeStyle(TextFormatting.RED), true);
+                player.displayClientMessage(xlate("pneumaticcraft.message.misc.outOfAir", stack.getHoverName()).withStyle(TextFormatting.RED), true);
                 return ActionResultType.FAIL;
             }
 
             List<ITextComponent> curInfo = new ArrayList<>();
-            Direction side = context.getFace();
-            BlockPos pos = context.getPos();
+            Direction side = context.getClickedFace();
+            BlockPos pos = context.getClickedPos();
 
-            BlockState state = world.getBlockState(pos.offset(side));
-            if (!player.isSneaking() && state.getBlock() instanceof FlowingFluidBlock) {
-                pos = pos.offset(side);
+            BlockState state = world.getBlockState(pos.relative(side));
+            if (!player.isShiftKeyDown() && state.getBlock() instanceof FlowingFluidBlock) {
+                pos = pos.relative(side);
             }
-            TileEntity te = world.getTileEntity(pos);
+            TileEntity te = world.getBlockEntity(pos);
             if (te != null) {
                 if (te instanceof INameable) {
-                    curInfo.add(((INameable) te).getDisplayName().deepCopy().mergeStyle(TextFormatting.AQUA));
+                    curInfo.add(((INameable) te).getDisplayName().copy().withStyle(TextFormatting.AQUA));
                 } else {
                     ItemStack stack1 = new ItemStack(te.getBlockState().getBlock());
-                    curInfo.add(stack1.getDisplayName().deepCopy().mergeStyle(TextFormatting.AQUA));
+                    curInfo.add(stack1.getHoverName().copy().withStyle(TextFormatting.AQUA));
                 }
 
                 if (te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).isPresent()) {
@@ -99,10 +99,10 @@ public class ItemManometer extends ItemPressurizable {
                 if (state1.getBlock() instanceof FlowingFluidBlock) {
                     Fluid f = ((FlowingFluidBlock) state1.getBlock()).getFluid();
                     FluidStack fs = new FluidStack(f, 1000);
-                    curInfo.add(fs.getDisplayName().deepCopy().mergeStyle(TextFormatting.AQUA));
+                    curInfo.add(fs.getDisplayName().copy().withStyle(TextFormatting.AQUA));
                 } else {
                     ItemStack stack1 = new ItemStack(world.getBlockState(pos).getBlock());
-                    curInfo.add(stack1.getDisplayName().deepCopy().mergeStyle(TextFormatting.AQUA));
+                    curInfo.add(stack1.getHoverName().copy().withStyle(TextFormatting.AQUA));
                 }
                 HeatExchangerManager.INSTANCE.getLogic(world, pos, side)
                         .ifPresent(logic -> curInfo.add(HeatUtil.formatHeatString(logic.getTemperatureAsInt())));
@@ -114,7 +114,7 @@ public class ItemManometer extends ItemPressurizable {
                     curInfo.set(i, GuiConstants.bullet().append(curInfo.get(i)));
                 }
                 h.addAir(-PneumaticValues.USAGE_ITEM_MANOMETER);
-                curInfo.forEach(s -> player.sendStatusMessage(s, false));
+                curInfo.forEach(s -> player.displayClientMessage(s, false));
             }
             return ActionResultType.SUCCESS;
         }).orElse(ActionResultType.PASS);
@@ -123,7 +123,7 @@ public class ItemManometer extends ItemPressurizable {
     private void checkForHeatExtraction(World world, BlockPos pos, List<ITextComponent> curInfo) {
         // look for a heat handling TE adjacent to our pos which has a heat transition behaviour for our pos
         for (Direction d : DirectionUtil.VALUES) {
-            TileEntity te1 = world.getTileEntity(pos.offset(d));
+            TileEntity te1 = world.getBlockEntity(pos.relative(d));
             if (te1 != null) {
                 te1.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY, d.getOpposite())
                         .ifPresent(handler -> handler.getHeatBehaviour(pos, HeatBehaviourTransition.class)
@@ -142,40 +142,40 @@ public class ItemManometer extends ItemPressurizable {
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
-        ItemStack stack = playerIn.getHeldItem(handIn);
-        if (worldIn.isRemote) return ActionResult.resultSuccess(stack);
+    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
+        ItemStack stack = playerIn.getItemInHand(handIn);
+        if (worldIn.isClientSide) return ActionResult.success(stack);
         return stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).map(h -> {
             if (h.getPressure() >= 0.1f) {
-                double temp = HeatExchangerLogicAmbient.getAmbientTemperature(worldIn, playerIn.getPosition());
-                playerIn.sendStatusMessage(ItemStack.EMPTY.getDisplayName().deepCopy().mergeStyle(TextFormatting.AQUA), false);
-                playerIn.sendStatusMessage(GuiConstants.bullet().append(HeatUtil.formatHeatString((int) temp)), false);
-                return ActionResult.resultConsume(stack);
+                double temp = HeatExchangerLogicAmbient.getAmbientTemperature(worldIn, playerIn.blockPosition());
+                playerIn.displayClientMessage(ItemStack.EMPTY.getHoverName().copy().withStyle(TextFormatting.AQUA), false);
+                playerIn.displayClientMessage(GuiConstants.bullet().append(HeatUtil.formatHeatString((int) temp)), false);
+                return ActionResult.consume(stack);
             }
-            return ActionResult.resultFail(stack);
-        }).orElse(ActionResult.resultPass(stack));
+            return ActionResult.fail(stack);
+        }).orElse(ActionResult.pass(stack));
     }
 
     @Override
-    public ActionResultType itemInteractionForEntity(ItemStack iStack, PlayerEntity player, LivingEntity entity, Hand hand) {
-        if (!player.world.isRemote) {
+    public ActionResultType interactLivingEntity(ItemStack iStack, PlayerEntity player, LivingEntity entity, Hand hand) {
+        if (!player.level.isClientSide) {
             return iStack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).map(h -> {
                 if (h.getAir() < PneumaticValues.USAGE_ITEM_MANOMETER) {
-                    player.sendStatusMessage(xlate("pneumaticcraft.message.misc.outOfAir", iStack.getDisplayName()).mergeStyle(TextFormatting.RED), true);
+                    player.displayClientMessage(xlate("pneumaticcraft.message.misc.outOfAir", iStack.getHoverName()).withStyle(TextFormatting.RED), true);
                     return ActionResultType.FAIL;
                 }
                 List<ITextComponent> curInfo = new ArrayList<>();
                 if (entity instanceof IManoMeasurable) {
                     ((IManoMeasurable) entity).printManometerMessage(player, curInfo);
                 } else {
-                    curInfo.add(entity.getDisplayName().deepCopy().mergeStyle(TextFormatting.AQUA));
+                    curInfo.add(entity.getDisplayName().copy().withStyle(TextFormatting.AQUA));
                 }
                 if (curInfo.size() > 0) {
                     h.addAir(-PneumaticValues.USAGE_ITEM_MANOMETER);
                     for (int i = 1; i < curInfo.size(); i++) {
                         curInfo.set(i, GuiConstants.bullet().append(curInfo.get(i)));
                     }
-                    curInfo.forEach(s -> player.sendStatusMessage(s, false));
+                    curInfo.forEach(s -> player.displayClientMessage(s, false));
                 }
                 return ActionResultType.SUCCESS;
             }).orElse(ActionResultType.PASS);

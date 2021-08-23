@@ -63,8 +63,8 @@ public class GuiItemSearcher extends ContainerScreen<ContainerItemSearcher> {
         super(container, playerInventory, displayString);
 
         passEvents = true;
-        ySize = 176;
-        parentScreen = Minecraft.getInstance().currentScreen;
+        imageHeight = 176;
+        parentScreen = Minecraft.getInstance().screen;
         container.init(this);
     }
 
@@ -83,12 +83,12 @@ public class GuiItemSearcher extends ContainerScreen<ContainerItemSearcher> {
     }
 
     @Override
-    protected void handleMouseClick(Slot slot, int slotId, int mouseButton, ClickType type) {
+    protected void slotClicked(Slot slot, int slotId, int mouseButton, ClickType type) {
         if (slot != null) {
-            if (slot.slotNumber == SEARCH_SLOT) {
-                slot.putStack(ItemStack.EMPTY);
+            if (slot.index == SEARCH_SLOT) {
+                slot.set(ItemStack.EMPTY);
             } else {
-                inventory.setStackInSlot(SEARCH_SLOT, slot.getStack());
+                inventory.setStackInSlot(SEARCH_SLOT, slot.getItem());
             }
         }
     }
@@ -103,37 +103,37 @@ public class GuiItemSearcher extends ContainerScreen<ContainerItemSearcher> {
         buttons.clear();
         children.clear();
 
-        minecraft.keyboardListener.enableRepeatEvents(true);
+        minecraft.keyboardHandler.setSendRepeatsToGui(true);
 
-        searchField = new WidgetTextField(font, guiLeft + 8, guiTop + 36, 89, font.FONT_HEIGHT);
-        searchField.setMaxStringLength(15);
-        searchField.setEnableBackgroundDrawing(true);
+        searchField = new WidgetTextField(font, leftPos + 8, topPos + 36, 89, font.lineHeight);
+        searchField.setMaxLength(15);
+        searchField.setBordered(true);
         searchField.setVisible(true);
         searchField.setTextColor(0xFFFFFF);
         searchField.setResponder(s -> textFieldResponder());
         addButton(searchField);
-        setListener(searchField);
-        searchField.setFocused2(true);
+        setFocused(searchField);
+        searchField.setFocus(true);
 
-        scrollArea = new Rectangle2d(guiLeft + 156, guiTop + 48, 14, 112);
+        scrollArea = new Rectangle2d(leftPos + 156, topPos + 48, 14, 112);
 
         updateCreativeSearch();
     }
 
     private void textFieldResponder() {
-        if (!searchField.getText().equals(lastSearch)) {
+        if (!searchField.getValue().equals(lastSearch)) {
             updateCounter = 5;
         }
-        lastSearch = searchField.getText();
+        lastSearch = searchField.getValue();
     }
 
     @Override
-    public void closeScreen() {
-        minecraft.keyboardListener.enableRepeatEvents(false);
+    public void onClose() {
+        minecraft.keyboardHandler.setSendRepeatsToGui(false);
         if (parentScreen != null) {
             ClientUtils.closeContainerGui(parentScreen);
         } else {
-            super.closeScreen();
+            super.onClose();
         }
     }
 
@@ -146,23 +146,23 @@ public class GuiItemSearcher extends ContainerScreen<ContainerItemSearcher> {
         }
 
         if (parentScreen instanceof GuiArmorMainScreen
-                && minecraft.player.getItemStackFromSlot(EquipmentSlotType.HEAD).getItem() != ModItems.PNEUMATIC_HELMET.get()) {
-            closeScreen();
+                && minecraft.player.getItemBySlot(EquipmentSlotType.HEAD).getItem() != ModItems.PNEUMATIC_HELMET.get()) {
+            onClose();
         }
     }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-            closeScreen();
+            onClose();
         }
         return !searchField.keyPressed(keyCode, scanCode, modifiers)
-                && searchField.canWrite() || super.keyPressed(keyCode, scanCode, modifiers);
+                && searchField.canConsumeInput() || super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     private void getAllEnchantedBooks(Enchantment enchantment, NonNullList<ItemStack> list) {
         for (int i = enchantment.getMinLevel(); i <= enchantment.getMaxLevel(); ++i) {
-            list.add(EnchantedBookItem.getEnchantedItemStack(new EnchantmentData(enchantment, i)));
+            list.add(EnchantedBookItem.createForEnchantment(new EnchantmentData(enchantment, i)));
         }
     }
 
@@ -172,12 +172,12 @@ public class GuiItemSearcher extends ContainerScreen<ContainerItemSearcher> {
 
             for (Item item : ForgeRegistries.ITEMS.getValues()) {
                 NonNullList<ItemStack> l = NonNullList.create();
-                if (item != null && item.getGroup() != null) item.fillItemGroup(item.getGroup(), l);
+                if (item != null && item.getItemCategory() != null) item.fillItemCategory(item.getItemCategory(), l);
                 itemList.addAll(l);
             }
 
             for (Enchantment enchantment : ForgeRegistries.ENCHANTMENTS.getValues()) {
-                if (enchantment != null && enchantment.type != null) {
+                if (enchantment != null && enchantment.category != null) {
                     getAllEnchantedBooks(enchantment, itemList);
                 }
             }
@@ -188,32 +188,32 @@ public class GuiItemSearcher extends ContainerScreen<ContainerItemSearcher> {
     }
 
     private void updateCreativeSearch() {
-        container.itemList.clear();
+        menu.itemList.clear();
 
-        String s = searchField.getText().toLowerCase();
+        String s = searchField.getValue().toLowerCase();
 
         List<ItemStack> applicableEntries = getSearchEntries()
                                                 .filter(entry -> entry.test(s))
                                                 .map(entry -> entry.stack)
                                                 .collect(Collectors.toList());
 
-        container.itemList.addAll(applicableEntries);
+        menu.itemList.addAll(applicableEntries);
 
         currentScroll = 0.0F;
-        container.scrollTo(0.0F);
+        menu.scrollTo(0.0F);
     }
 
     private boolean needsScrollBars() {
-        return container.hasMoreThan1PageOfItemsInList();
+        return menu.hasMoreThan1PageOfItemsInList();
     }
 
     @Override
     public boolean mouseScrolled(double x, double y, double dir) {
         if (dir != 0 && needsScrollBars()) {
-            int j = container.itemList.size() / 9 - 5 + 1;
+            int j = menu.itemList.size() / 9 - 5 + 1;
             float i = dir > 0 ? 1f : -1f;
             currentScroll = MathHelper.clamp(currentScroll - i / j, 0.0, 1.0);
-            container.scrollTo(currentScroll);
+            menu.scrollTo(currentScroll);
             return true;
         }
         return super.mouseScrolled(x, y, dir);
@@ -241,7 +241,7 @@ public class GuiItemSearcher extends ContainerScreen<ContainerItemSearcher> {
     private void scrollTo(double mouseY) {
         currentScroll = (mouseY - scrollArea.getY()) / scrollArea.getHeight();
         currentScroll = MathHelper.clamp(currentScroll, 0F, 1F);
-        container.scrollTo(currentScroll);
+        menu.scrollTo(currentScroll);
     }
 
     @Override
@@ -257,26 +257,26 @@ public class GuiItemSearcher extends ContainerScreen<ContainerItemSearcher> {
 
         super.render(matrixStack, x, y, partialTicks);
 
-        renderHoveredTooltip(matrixStack, x, y);
+        renderTooltip(matrixStack, x, y);
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int par1, int par2) {
-        font.drawString(matrixStack, I18n.format("pneumaticcraft.armor.upgrade.search"), 5, 5, 0x404040);
-        font.drawString(matrixStack, I18n.format("pneumaticcraft.gui.progWidget.itemFilter.filterLabel"), 8, 25, 0x404040);
+    protected void renderLabels(MatrixStack matrixStack, int par1, int par2) {
+        font.draw(matrixStack, I18n.get("pneumaticcraft.armor.upgrade.search"), 5, 5, 0x404040);
+        font.draw(matrixStack, I18n.get("pneumaticcraft.gui.progWidget.itemFilter.filterLabel"), 8, 25, 0x404040);
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float par1, int par2, int par3) {
-        minecraft.getTextureManager().bindTexture(GUI_TEXTURE);
-        int xStart = (width - xSize) / 2;
-        int yStart = (height - ySize) / 2;
-        blit(matrixStack, xStart, yStart, 0, 0, xSize, ySize);
+    protected void renderBg(MatrixStack matrixStack, float par1, int par2, int par3) {
+        minecraft.getTextureManager().bind(GUI_TEXTURE);
+        int xStart = (width - imageWidth) / 2;
+        int yStart = (height - imageHeight) / 2;
+        blit(matrixStack, xStart, yStart, 0, 0, imageWidth, imageHeight);
 
         int x = scrollArea.getX();
         int y1 = scrollArea.getY();
         int y2 = y1 + scrollArea.getHeight();
-        minecraft.getTextureManager().bindTexture(SCROLL_TEXTURE);
+        minecraft.getTextureManager().bind(SCROLL_TEXTURE);
         blit(matrixStack, x, y1 + (int) ((y2 - y1 - 17) * currentScroll), 232 + (needsScrollBars() ? 0 : 12), 0, 12, 15);
 
     }
@@ -294,7 +294,7 @@ public class GuiItemSearcher extends ContainerScreen<ContainerItemSearcher> {
 
             List<String> l;
             try {
-                l = stack.getTooltip(minecraft.player, minecraft.gameSettings.advancedItemTooltips ? TooltipFlags.ADVANCED : TooltipFlags.NORMAL).stream()
+                l = stack.getTooltipLines(minecraft.player, minecraft.options.advancedItemTooltips ? TooltipFlags.ADVANCED : TooltipFlags.NORMAL).stream()
                         .map(ITextComponent::getString)
                         .collect(Collectors.toList());
             } catch (Exception ignored) {

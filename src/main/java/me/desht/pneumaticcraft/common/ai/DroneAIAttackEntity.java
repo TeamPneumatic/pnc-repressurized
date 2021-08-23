@@ -32,28 +32,28 @@ public class DroneAIAttackEntity extends MeleeAttackGoal {
     }
 
     @Override
-    public boolean shouldExecute() {
+    public boolean canUse() {
         if (isRanged && attacker.getSlotForAmmo() < 0) {
             attacker.getDebugger().addEntry("pneumaticcraft.gui.progWidget.entityAttack.debug.noAmmo");
             return false;
         }
 
-        LivingEntity target = attacker.getAttackTarget();
+        LivingEntity target = attacker.getTarget();
         if (target == null || !target.isAlive()) {
             attacker.getDebugger().addEntry("pneumaticcraft.gui.progWidget.entityAttack.debug.noEntityToAttack");
         }
 
-        return super.shouldExecute();
+        return super.canUse();
     }
 
     @Override
-    public void startExecuting() {
-        super.startExecuting();
+    public void start() {
+        super.start();
 
         attacker.incAttackCount();
 
         // switch to the carried melee weapon with the highest attack damage
-        if (attacker.getAttackTarget() != null && attacker.getInv().getSlots() > 1) {
+        if (attacker.getTarget() != null && attacker.getInv().getSlots() > 1) {
             int bestSlot = 0;
             double bestDmg = 0;
             for (int i = 0; i < attacker.getInv().getSlots(); i++) {
@@ -61,9 +61,9 @@ public class DroneAIAttackEntity extends MeleeAttackGoal {
                 if (!stack.isEmpty()) {
                     ModifiableAttributeInstance damage = new ModifiableAttributeInstance(Attributes.ATTACK_DAMAGE, c -> {});
                     for (AttributeModifier modifier : stack.getAttributeModifiers(EquipmentSlotType.MAINHAND).get(Attributes.ATTACK_DAMAGE)) {
-                        damage.applyNonPersistentModifier(modifier);
+                        damage.addTransientModifier(modifier);
                     }
-                    float f1 = EnchantmentHelper.getModifierForCreature(stack, attacker.getAttackTarget().getCreatureAttribute());
+                    float f1 = EnchantmentHelper.getDamageBonus(stack, attacker.getTarget().getMobType());
                     if (damage.getValue() + f1 > bestDmg) {
                         bestDmg = damage.getValue() + f1;
                         bestSlot = i;
@@ -79,34 +79,34 @@ public class DroneAIAttackEntity extends MeleeAttackGoal {
     }
 
     @Override
-    public boolean shouldContinueExecuting() {
+    public boolean canContinueToUse() {
         if (isRanged) {
-            LivingEntity target = attacker.getAttackTarget();
+            LivingEntity target = attacker.getTarget();
             if (target == null || !target.isAlive()) return false;
             if (attacker.getSlotForAmmo() < 0) return false;
-            double dist = attacker.getDistanceSq(target.getPosX(), target.getBoundingBox().minY, target.getPosZ());
-            if (dist < Math.pow(rangedAttackRange, 2) && attacker.getEntitySenses().canSee(target))
+            double dist = attacker.distanceToSqr(target.getX(), target.getBoundingBox().minY, target.getZ());
+            if (dist < Math.pow(rangedAttackRange, 2) && attacker.getSensing().canSee(target))
                 return true;
         }
-        return super.shouldContinueExecuting();
+        return super.canContinueToUse();
     }
 
     @Override
-    public void resetTask() {
-        super.resetTask();
+    public void stop() {
+        super.stop();
     }
 
     @Override
     public void tick() {
         if (isRanged) {
-            LivingEntity target = attacker.getAttackTarget();
+            LivingEntity target = attacker.getTarget();
             if (target != null) {
-                double dist = attacker.getDistanceSq(target.getPosX(), target.getBoundingBox().minY, target.getPosZ());
-                if (dist < Math.pow(rangedAttackRange, 2) && attacker.getEntitySenses().canSee(target)) {
-                    attacker.getFakePlayer().setPosition(attacker.getPosX(), attacker.getPosY(), attacker.getPosZ());
+                double dist = attacker.distanceToSqr(target.getX(), target.getBoundingBox().minY, target.getZ());
+                if (dist < Math.pow(rangedAttackRange, 2) && attacker.getSensing().canSee(target)) {
+                    attacker.getFakePlayer().setPos(attacker.getX(), attacker.getY(), attacker.getZ());
                     attacker.tryFireMinigun(target);
                     if (dist < Math.pow(rangedAttackRange * 0.75, 2)) {
-                        attacker.getNavigator().clearPath();
+                        attacker.getNavigation().stop();
                     }
                 }
             }

@@ -41,7 +41,7 @@ public class HackableDispenser implements IHackableBlock {
     public void onHackComplete(World world, BlockPos pos, PlayerEntity player) {
         if (world instanceof ServerWorld) {
             BlockState state = world.getBlockState(pos);
-            state.tick((ServerWorld) world, pos, player.getRNG());
+            state.tick((ServerWorld) world, pos, player.getRandom());
         }
     }
 }

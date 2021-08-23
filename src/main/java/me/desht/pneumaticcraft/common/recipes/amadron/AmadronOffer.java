@@ -139,9 +139,9 @@ public class AmadronOffer extends AmadronRecipe {
         return new AmadronOffer(id,
                 AmadronTradeResource.fromJson(json.getAsJsonObject("input")),
                 AmadronTradeResource.fromJson(json.getAsJsonObject("output")),
-                JSONUtils.getBoolean(json, "static", true),
-                JSONUtils.getInt(json, "level", 1),
-                JSONUtils.getInt(json, "maxStock", -1)
+                JSONUtils.getAsBoolean(json, "static", true),
+                JSONUtils.getAsInt(json, "level", 1),
+                JSONUtils.getAsInt(json, "maxStock", -1)
         );
     }
 
@@ -195,14 +195,14 @@ public class AmadronOffer extends AmadronRecipe {
         }
 
         @Override
-        public T read(ResourceLocation recipeId, JsonObject json) {
+        public T fromJson(ResourceLocation recipeId, JsonObject json) {
             try {
-                int max = JSONUtils.getInt(json, "maxStock", -1);
+                int max = JSONUtils.getAsInt(json, "maxStock", -1);
                 return factory.create(recipeId,
                         AmadronTradeResource.fromJson(json.getAsJsonObject("input")),
                         AmadronTradeResource.fromJson(json.getAsJsonObject("output")),
-                        JSONUtils.getBoolean(json, "static", true),
-                        JSONUtils.getInt(json, "level", 1),
+                        JSONUtils.getAsBoolean(json, "static", true),
+                        JSONUtils.getAsInt(json, "level", 1),
                         max, max
                 );
             } catch (CommandSyntaxException e) {
@@ -212,7 +212,7 @@ public class AmadronOffer extends AmadronRecipe {
 
         @Nullable
         @Override
-        public T read(ResourceLocation recipeId, PacketBuffer buffer) {
+        public T fromNetwork(ResourceLocation recipeId, PacketBuffer buffer) {
             return factory.create(recipeId,
                     AmadronTradeResource.fromPacketBuf(buffer),
                     AmadronTradeResource.fromPacketBuf(buffer),
@@ -224,7 +224,7 @@ public class AmadronOffer extends AmadronRecipe {
         }
 
         @Override
-        public void write(PacketBuffer buffer, T recipe) {
+        public void toNetwork(PacketBuffer buffer, T recipe) {
             recipe.write(buffer);
         }
 

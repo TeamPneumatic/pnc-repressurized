@@ -29,14 +29,14 @@ public class WidgetRadioButton extends Widget implements ITooltipProvider {
     public boolean enabled = true;
     public final int color;
     private final Consumer<WidgetRadioButton> pressable;
-    private final FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
+    private final FontRenderer fontRenderer = Minecraft.getInstance().font;
     private List<ITextComponent> tooltip = new ArrayList<>();
     private List<? extends WidgetRadioButton> otherChoices = null;
 
     public WidgetRadioButton(int x, int y, int color, ITextComponent text, Consumer<WidgetRadioButton> pressable) {
         super(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, text);
 
-        this.width = BUTTON_WIDTH + fontRenderer.getStringPropertyWidth(getMessage());
+        this.width = BUTTON_WIDTH + fontRenderer.width(getMessage());
         this.height = BUTTON_HEIGHT;
         this.color = color;
         this.pressable = pressable;
@@ -53,8 +53,8 @@ public class WidgetRadioButton extends Widget implements ITooltipProvider {
         if (checked) {
             drawCircle(matrixStack, x + BUTTON_WIDTH / 2f, y + BUTTON_HEIGHT / 2f, 1, enabled ? 0xFFFFFFFF : 0xFFAAAAAA);
         }
-        fontRenderer.func_238422_b_(matrixStack, getMessage().func_241878_f(), x + 1 + BUTTON_WIDTH,
-                y + BUTTON_HEIGHT / 2f - fontRenderer.FONT_HEIGHT / 2f, enabled ? color : 0xFF888888);
+        fontRenderer.draw(matrixStack, getMessage().getVisualOrderText(), x + 1 + BUTTON_WIDTH,
+                y + BUTTON_HEIGHT / 2f - fontRenderer.lineHeight / 2f, enabled ? color : 0xFF888888);
     }
 
     public boolean isChecked() {
@@ -69,25 +69,25 @@ public class WidgetRadioButton extends Widget implements ITooltipProvider {
     private static final float N_POINTS = 12f;
 
     private void drawCircle(MatrixStack matrixStack, float x, float y, float radius, int color) {
-        BufferBuilder wr = Tessellator.getInstance().getBuffer();
+        BufferBuilder wr = Tessellator.getInstance().getBuilder();
         int[] cols = RenderUtils.decomposeColor(color);
         RenderSystem.enableBlend();
         RenderSystem.disableTexture();
         RenderSystem.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         wr.begin(GL11.GL_TRIANGLE_FAN, DefaultVertexFormats.POSITION_COLOR);
-        Matrix4f posMat = matrixStack.getLast().getMatrix();
+        Matrix4f posMat = matrixStack.last().pose();
         for (int i = 0; i < N_POINTS; i++) {
             float sin = MathHelper.sin(i / N_POINTS * (float) Math.PI * 2f);
             float cos = MathHelper.cos(i / N_POINTS * (float) Math.PI * 2f);
-            wr.pos(posMat, x + sin * radius, y + cos * radius, 0f).color(cols[1], cols[2], cols[2], cols[0]).endVertex();
+            wr.vertex(posMat, x + sin * radius, y + cos * radius, 0f).color(cols[1], cols[2], cols[2], cols[0]).endVertex();
         }
-        Tessellator.getInstance().draw();
+        Tessellator.getInstance().end();
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
     }
 
     public Rectangle2d getBounds() {
-        return new Rectangle2d(x, y, BUTTON_WIDTH + fontRenderer.getStringPropertyWidth(getMessage()), BUTTON_HEIGHT);
+        return new Rectangle2d(x, y, BUTTON_WIDTH + fontRenderer.width(getMessage()), BUTTON_HEIGHT);
     }
 
     @Override

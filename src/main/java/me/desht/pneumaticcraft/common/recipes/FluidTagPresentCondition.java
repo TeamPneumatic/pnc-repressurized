@@ -31,8 +31,8 @@ public class FluidTagPresentCondition implements ICondition {
 
     @Override
     public boolean test() {
-        ITag<Fluid> tag = TagCollectionManager.getManager().getFluidTags().get(tagName);
-        return tag != null && !tag.getAllElements().isEmpty();
+        ITag<Fluid> tag = TagCollectionManager.getInstance().getFluids().getTag(tagName);
+        return tag != null && !tag.getValues().isEmpty();
     }
 
     public static class Serializer implements IConditionSerializer<FluidTagPresentCondition> {
@@ -45,7 +45,7 @@ public class FluidTagPresentCondition implements ICondition {
 
         @Override
         public FluidTagPresentCondition read(JsonObject json) {
-            return new FluidTagPresentCondition(new ResourceLocation(JSONUtils.getString(json, "tag")));
+            return new FluidTagPresentCondition(new ResourceLocation(JSONUtils.getAsString(json, "tag")));
         }
 
         @Override

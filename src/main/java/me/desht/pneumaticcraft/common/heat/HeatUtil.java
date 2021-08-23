@@ -72,14 +72,14 @@ public class HeatUtil {
 
     public static ITextComponent formatHeatString(String temp) {
         return PneumaticCraftUtils.xlate("pneumaticcraft.waila.temperature")
-                .appendString(TextFormatting.WHITE.toString() + temp)
-                .mergeStyle(TextFormatting.GRAY);
+                .append(TextFormatting.WHITE.toString() + temp)
+                .withStyle(TextFormatting.GRAY);
     }
 
     public static ITextComponent formatHeatString(Direction face, String temp) {
         return PneumaticCraftUtils.xlate("pneumaticcraft.waila.temperature." + face.toString().toLowerCase(Locale.ROOT))
-                .appendString(TextFormatting.WHITE.toString() + temp)
-                .mergeStyle(TextFormatting.GRAY);
+                .append(TextFormatting.WHITE.toString() + temp)
+                .withStyle(TextFormatting.GRAY);
     }
 
     public static int countExposedFaces(Collection<? extends TileEntity> teList) {
@@ -87,7 +87,7 @@ public class HeatUtil {
 
         for (TileEntity te : teList) {
             for (Direction face : Direction.values()) {
-                if (te.getWorld().isAirBlock(te.getPos().offset(face))) {
+                if (te.getLevel().isEmptyBlock(te.getBlockPos().relative(face))) {
                     exposed++;
                 }
             }

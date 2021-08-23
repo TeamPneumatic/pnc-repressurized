@@ -167,11 +167,11 @@ public class WidgetButtonExtended extends ExtendedButton implements ITaggedWidge
         if (visible) {
             if (renderedStacks != null) {
                 int startX = getIconX();
-                RenderHelper.enableStandardItemLighting();
+                RenderHelper.turnBackOn();
                 for (int i = renderedStacks.length - 1; i >= 0; i--) {
                     GuiUtils.renderItemStack(matrixStack, renderedStacks[i], startX + i * iconSpacing, this.y + 2);
                 }
-                RenderHelper.disableStandardItemLighting();
+                RenderHelper.turnOff();
             }
             if (resLoc != null) {
                 RenderSystem.enableBlend();

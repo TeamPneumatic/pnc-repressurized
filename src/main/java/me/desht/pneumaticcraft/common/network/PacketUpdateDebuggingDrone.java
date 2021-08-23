@@ -34,7 +34,7 @@ public class PacketUpdateDebuggingDrone extends PacketDroneDebugBase {
         if (player instanceof ServerPlayerEntity) {
             CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
             if (handler.upgradeUsable(ArmorUpgradeRegistry.getInstance().droneDebugHandler, false)) {
-                ItemStack stack = player.getItemStackFromSlot(EquipmentSlotType.HEAD);
+                ItemStack stack = player.getItemBySlot(EquipmentSlotType.HEAD);
                 if (droneBase == null) {
                     NBTUtils.removeTag(stack, NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE);
                     NBTUtils.removeTag(stack, NBTKeys.PNEUMATIC_HELMET_DEBUGGING_PC);

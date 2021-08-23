@@ -100,7 +100,7 @@ public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase imp
             return Collections.singletonList(NONE_TEXT);
         } else {
             List<String> l = Arrays.stream(DirectionUtil.VALUES)
-                    .filter(side -> accessingSides[side.getIndex()])
+                    .filter(side -> accessingSides[side.get3DDataValue()])
                     .map(ClientUtils::translateDirection)
                     .collect(Collectors.toList());
             return Collections.singletonList(new StringTextComponent(Strings.join(l, ", ")));
@@ -111,7 +111,7 @@ public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase imp
     public void writeToNBT(CompoundNBT tag) {
         super.writeToNBT(tag);
         for (int i = 0; i < 6; i++) {
-            if (accessingSides[i]) tag.putBoolean(Direction.byIndex(i).name(), true);
+            if (accessingSides[i]) tag.putBoolean(Direction.from3DDataValue(i).name(), true);
         }
         if (useCount) tag.putBoolean("useCount", true);
         tag.putInt("count", count);
@@ -121,7 +121,7 @@ public abstract class ProgWidgetInventoryBase extends ProgWidgetAreaItemBase imp
     public void readFromNBT(CompoundNBT tag) {
         super.readFromNBT(tag);
         for (int i = 0; i < 6; i++) {
-            accessingSides[i] = tag.getBoolean(Direction.byIndex(i).name());
+            accessingSides[i] = tag.getBoolean(Direction.from3DDataValue(i).name());
         }
         useCount = tag.getBoolean("useCount");
         count = tag.getInt("count");

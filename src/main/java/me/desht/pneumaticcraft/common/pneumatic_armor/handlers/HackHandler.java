@@ -53,7 +53,7 @@ public class HackHandler extends BaseArmorUpgradeHandler<HackHandler.HackData> {
     @Override
     public void tick(ICommonArmorHandler commonArmorHandler, boolean enabled) {
         PlayerEntity player = commonArmorHandler.getPlayer();
-        if (!player.world.isRemote) {
+        if (!player.level.isClientSide) {
             commonArmorHandler.getExtensionData(this).tickServerSide(player);
         }
     }
@@ -76,9 +76,9 @@ public class HackHandler extends BaseArmorUpgradeHandler<HackHandler.HackData> {
             if (hackableBlock != null) {
                 IBlockReader world = hackedBlockPos.world;
                 if (++hackTime >= hackableBlock.getHackTime(world, hackedBlockPos.pos, player)) {
-                    hackableBlock.onHackComplete(player.world, hackedBlockPos.pos, player);
-                    HackTickHandler.instance().trackBlock(player.world, hackedBlockPos.pos, hackableBlock);
-                    NetworkHandler.sendToAllTracking(new PacketHackingBlockFinish(hackedBlockPos), player.world, player.getPosition());
+                    hackableBlock.onHackComplete(player.level, hackedBlockPos.pos, player);
+                    HackTickHandler.instance().trackBlock(player.level, hackedBlockPos.pos, hackableBlock);
+                    NetworkHandler.sendToAllTracking(new PacketHackingBlockFinish(hackedBlockPos), player.level, player.blockPosition());
                     setHackedBlockPos(null);
                     AdvancementTriggers.BLOCK_HACK.trigger((ServerPlayerEntity) player);  // safe to cast, this is server-side
                 }

@@ -18,11 +18,11 @@ public class MovingSoundAirLeak extends TickableSound {
         super(ModSounds.LEAKING_GAS.get(), SoundCategory.BLOCKS);
         this.te = te;
         this.dir = dir;
-        this.x = te.getPos().getX();
-        this.y = te.getPos().getY();
-        this.z = te.getPos().getZ();
-        this.repeat = true;
-        this.repeatDelay = 0;
+        this.x = te.getBlockPos().getX();
+        this.y = te.getBlockPos().getY();
+        this.z = te.getBlockPos().getZ();
+        this.looping = true;
+        this.delay = 0;
         this.targetPitch = 1F;
         this.volume = (float) PNCConfig.Client.Sound.airLeakVolume;
     }
@@ -37,7 +37,7 @@ public class MovingSoundAirLeak extends TickableSound {
     }
 
     @Override
-    public boolean isDonePlaying() {
+    public boolean isStopped() {
         return te.isRemoved() || te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY, dir)
                 .map(h -> h.getSideLeaking() == null || h.getAir() == 0)
                 .orElse(true);

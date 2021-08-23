@@ -27,7 +27,7 @@ public class GuiProgWidgetEntityAttack extends GuiProgWidgetAreaShow<ProgWidgetE
                 .setChecked(progWidget.useMaxActions());
         addButton(useMaxActions);
 
-        textField = new WidgetTextFieldNumber(font, guiLeft + 20, useMaxActions.y + useMaxActions.getHeightRealms() + 2, 30, 11)
+        textField = new WidgetTextFieldNumber(font, guiLeft + 20, useMaxActions.y + useMaxActions.getHeight() + 2, 30, 11)
                 .setRange(1, Integer.MAX_VALUE)
                 .setAdjustments(1, 10);
         textField.setValue(progWidget.getMaxActions());
@@ -36,9 +36,9 @@ public class GuiProgWidgetEntityAttack extends GuiProgWidgetAreaShow<ProgWidgetE
     }
 
     @Override
-    public void onClose() {
-        progWidget.setMaxActions(textField.getValue());
+    public void removed() {
+        progWidget.setMaxActions(textField.getIntValue());
 
-        super.onClose();
+        super.removed();
     }
 }

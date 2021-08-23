@@ -35,7 +35,7 @@ public class JEIRefineryCategory implements IRecipeCategory<RefineryRecipe> {
     JEIRefineryCategory() {
         icon = JEIPlugin.jeiHelpers.getGuiHelper().createDrawableIngredient(new ItemStack(ModBlocks.REFINERY.get()));
         background = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_REFINERY, 6, 15, 166, 79);
-        localizedName = I18n.format(ModBlocks.REFINERY.get().getTranslationKey());
+        localizedName = I18n.get(ModBlocks.REFINERY.get().getDescriptionId());
         tickTimer = JEIPlugin.jeiHelpers.getGuiHelper().createTickTimer(60, 60, false);
     }
 

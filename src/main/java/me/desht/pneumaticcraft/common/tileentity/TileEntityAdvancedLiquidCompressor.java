@@ -44,7 +44,7 @@ public class TileEntityAdvancedLiquidCompressor extends TileEntityLiquidCompress
     @Nullable
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        return new ContainerAdvancedLiquidCompressor(i, playerInventory, getPos());
+        return new ContainerAdvancedLiquidCompressor(i, playerInventory, getBlockPos());
     }
 
     @Override

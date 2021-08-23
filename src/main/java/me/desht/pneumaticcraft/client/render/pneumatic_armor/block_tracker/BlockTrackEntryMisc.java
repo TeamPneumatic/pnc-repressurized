@@ -21,7 +21,7 @@ public class BlockTrackEntryMisc implements IBlockTrackEntry {
 
     @Override
     public boolean shouldTrackWithThisEntry(IBlockReader world, BlockPos pos, BlockState state, TileEntity te) {
-        return state.getBlock().isIn(PneumaticCraftTags.Blocks.BLOCK_TRACKER_MISC);
+        return state.getBlock().is(PneumaticCraftTags.Blocks.BLOCK_TRACKER_MISC);
     }
 
     @Override

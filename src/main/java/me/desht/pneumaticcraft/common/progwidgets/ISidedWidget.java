@@ -11,13 +11,13 @@ public interface ISidedWidget {
     boolean[] getSides();
 
     default boolean isSideSelected(Direction side) {
-        return getSides()[side.getIndex()];
+        return getSides()[side.get3DDataValue()];
     }
 
     static Direction getDirForSides(boolean[] sides) {
         for (int i = 0; i < sides.length; i++) {
             if (sides[i]) {
-                return Direction.byIndex(i);
+                return Direction.from3DDataValue(i);
             }
         }
         Log.error("[ISidedWidget] sides array contains all false values (default: down) !");

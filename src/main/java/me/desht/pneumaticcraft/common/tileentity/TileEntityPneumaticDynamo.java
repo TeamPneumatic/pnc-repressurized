@@ -58,8 +58,8 @@ public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implement
     public void tick() {
         super.tick();
 
-        if (!world.isRemote) {
-            if (world.getGameTime() % 20 == 0) {
+        if (!level.isClientSide) {
+            if (level.getGameTime() % 20 == 0) {
                 int efficiency = Math.max(1, PNCConfig.Common.Machines.pneumaticDynamoEfficiency);
                 airPerTick = (int) (40 * this.getSpeedUsageMultiplierFromUpgrades() * 100 / efficiency);
                 rfPerTick = (int) (40 * this.getSpeedUsageMultiplierFromUpgrades() * getEfficiency() / 100);
@@ -74,10 +74,10 @@ public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implement
             } else {
                 newEnabled = false;
             }
-            if ((world.getGameTime() & 0xf) == 0 && newEnabled != isEnabled) {
+            if ((level.getGameTime() & 0xf) == 0 && newEnabled != isEnabled) {
                 isEnabled = newEnabled;
-                BlockState state = world.getBlockState(pos);
-                world.setBlockState(pos, state.with(BlockPneumaticDynamo.ACTIVE, isEnabled));
+                BlockState state = level.getBlockState(worldPosition);
+                level.setBlockAndUpdate(worldPosition, state.setValue(BlockPneumaticDynamo.ACTIVE, isEnabled));
             }
 
             TileEntity receiver = getCachedNeighbor(getRotation());
@@ -149,16 +149,16 @@ public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implement
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tag) {
-        super.write(tag);
+    public CompoundNBT save(CompoundNBT tag) {
+        super.save(tag);
 
         energy.writeToNBT(tag);
         return tag;
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT tag) {
-        super.read(state, tag);
+    public void load(BlockState state, CompoundNBT tag) {
+        super.load(state, tag);
 
         energy.readFromNBT(tag);
     }
@@ -166,7 +166,7 @@ public class TileEntityPneumaticDynamo extends TileEntityPneumaticBase implement
     @Nullable
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        return new ContainerEnergy<TileEntityPneumaticDynamo>(ModContainers.PNEUMATIC_DYNAMO.get(), i, playerInventory, getPos());
+        return new ContainerEnergy<TileEntityPneumaticDynamo>(ModContainers.PNEUMATIC_DYNAMO.get(), i, playerInventory, getBlockPos());
     }
 
     @Nullable

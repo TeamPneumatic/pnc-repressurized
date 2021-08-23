@@ -33,8 +33,8 @@ public class EntityTransferGadget extends EntitySemiblockBase implements IDirect
     private static final double THICKNESS = 1/32D;
     private static final double ANTI_Z_FIGHT = 0.001D;
 
-    private static final DataParameter<Integer> IO_MODE = EntityDataManager.createKey(EntityTransferGadget.class, DataSerializers.VARINT);
-    private static final DataParameter<Integer> SIDE = EntityDataManager.createKey(EntityTransferGadget.class, DataSerializers.VARINT);
+    private static final DataParameter<Integer> IO_MODE = EntityDataManager.defineId(EntityTransferGadget.class, DataSerializers.INT);
+    private static final DataParameter<Integer> SIDE = EntityDataManager.defineId(EntityTransferGadget.class, DataSerializers.INT);
 
     private int counter;
 
@@ -43,18 +43,18 @@ public class EntityTransferGadget extends EntitySemiblockBase implements IDirect
     }
 
     @Override
-    protected void registerData() {
-        super.registerData();
+    protected void defineSynchedData() {
+        super.defineSynchedData();
 
-        getDataManager().register(IO_MODE, IOMode.OUTPUT.ordinal());
-        getDataManager().register(SIDE, Direction.UP.getIndex());
+        getEntityData().define(IO_MODE, IOMode.OUTPUT.ordinal());
+        getEntityData().define(SIDE, Direction.UP.get3DDataValue());
     }
 
     @Override
     public void tick() {
         super.tick();
 
-        if (!world.isRemote && isAlive()  && ++counter >= TRANSFER_INTERVAL) {
+        if (!level.isClientSide && isAlive()  && ++counter >= TRANSFER_INTERVAL) {
             counter = 0;
             doTransfer();
         }
@@ -79,20 +79,20 @@ public class EntityTransferGadget extends EntitySemiblockBase implements IDirect
     }
 
     @Override
-    public ActionResultType applyPlayerInteraction(PlayerEntity player, Vector3d hitVec, Hand hand) {
+    public ActionResultType interactAt(PlayerEntity player, Vector3d hitVec, Hand hand) {
         // since this is a cheap early game item, let's allow toggling with empty hand
         // not force the player to craft & charge up a logistics configurator
-        if (player.getHeldItem(hand).isEmpty()) {
+        if (player.getItemInHand(hand).isEmpty()) {
             toggle(player);
             return ActionResultType.SUCCESS;
         } else {
-            return super.applyPlayerInteraction(player, hitVec, hand);
+            return super.interactAt(player, hitVec, hand);
         }
     }
 
     private void toggle(PlayerEntity player) {
         setIOMode(getIOMode().toggle());
-        player.playSound(SoundEvents.ENTITY_ITEM_PICKUP, 1.0f, 1.0f);
+        player.playSound(SoundEvents.ITEM_PICKUP, 1.0f, 1.0f);
     }
 
     @Override
@@ -108,37 +108,37 @@ public class EntityTransferGadget extends EntitySemiblockBase implements IDirect
 
     @Override
     public Direction getSide() {
-        return Direction.values()[getDataManager().get(SIDE)];
+        return Direction.values()[getEntityData().get(SIDE)];
     }
 
     @Override
     public void setSide(Direction facing) {
-        getDataManager().set(SIDE, facing.getIndex());
+        getEntityData().set(SIDE, facing.get3DDataValue());
     }
 
     public IOMode getIOMode() {
-        return IOMode.values()[getDataManager().get(IO_MODE)];
+        return IOMode.values()[getEntityData().get(IO_MODE)];
     }
 
     private void setIOMode(IOMode mode) {
-        getDataManager().set(IO_MODE, mode.ordinal());
+        getEntityData().set(IO_MODE, mode.ordinal());
     }
 
     @Override
-    protected void readAdditional(CompoundNBT compound) {
-        super.readAdditional(compound);
+    protected void readAdditionalSaveData(CompoundNBT compound) {
+        super.readAdditionalSaveData(compound);
 
         counter = compound.getInt("counter");
-        setSide(Direction.byIndex(compound.getByte("facing")));
+        setSide(Direction.from3DDataValue(compound.getByte("facing")));
         setIOMode(compound.getBoolean("input") ? IOMode.INPUT : IOMode.OUTPUT);
     }
 
     @Override
-    protected void writeAdditional(CompoundNBT compound) {
-        super.writeAdditional(compound);
+    protected void addAdditionalSaveData(CompoundNBT compound) {
+        super.addAdditionalSaveData(compound);
 
         compound.putInt("counter", counter);
-        compound.putByte("facing", (byte) getSide().getIndex());
+        compound.putByte("facing", (byte) getSide().get3DDataValue());
         compound.putBoolean("input", getIOMode() == IOMode.INPUT);
     }
 
@@ -180,7 +180,7 @@ public class EntityTransferGadget extends EntitySemiblockBase implements IDirect
         TileEntity inputTE = getCachedTileEntity();
         Direction side = getSide();
         Direction otherSide = getSide().getOpposite();
-        TileEntity outputTE = world.getTileEntity(getBlockPos().offset(side));
+        TileEntity outputTE = level.getBlockEntity(getBlockPos().relative(side));
         if (inputTE != null && outputTE != null) {
             if (getIOMode() == IOMode.OUTPUT) {
                 tryTransferItem(inputTE, outputTE, side, otherSide);

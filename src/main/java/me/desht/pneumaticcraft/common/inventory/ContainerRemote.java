@@ -35,7 +35,7 @@ public class ContainerRemote extends ContainerPneumaticBase<TileEntityBase> {
         super(type, windowId, playerInventory);
 
         this.hand = hand;
-        syncedVars = new ArrayList<>(getRelevantVariableNames(playerInventory.player.getHeldItem(hand)));
+        syncedVars = new ArrayList<>(getRelevantVariableNames(playerInventory.player.getItemInHand(hand)));
         lastValues = new BlockPos[syncedVars.size()];
     }
 
@@ -73,8 +73,8 @@ public class ContainerRemote extends ContainerPneumaticBase<TileEntityBase> {
     }
 
     @Override
-    public void detectAndSendChanges() {
-        super.detectAndSendChanges();
+    public void broadcastChanges() {
+        super.broadcastChanges();
 
         for (int i = 0; i < lastValues.length; i++) {
             String varName = syncedVars.get(i);
@@ -82,7 +82,7 @@ public class ContainerRemote extends ContainerPneumaticBase<TileEntityBase> {
             BlockPos newValue = GlobalVariableManager.getInstance().getPos(varName);
             if (!newValue.equals(lastValues[i])) {
                 lastValues[i] = newValue;
-                for (Object o : listeners) {
+                for (Object o : containerListeners) {
                     if (o instanceof ServerPlayerEntity)
                         NetworkHandler.sendToPlayer(new PacketSetGlobalVariable(varName, newValue), (ServerPlayerEntity) o);
                 }
@@ -91,8 +91,8 @@ public class ContainerRemote extends ContainerPneumaticBase<TileEntityBase> {
     }
 
     @Override
-    public boolean canInteractWith(PlayerEntity player) {
-        return player.getHeldItem(hand).getItem() == ModItems.REMOTE.get();
+    public boolean stillValid(PlayerEntity player) {
+        return player.getItemInHand(hand).getItem() == ModItems.REMOTE.get();
     }
 
     public Hand getHand() {

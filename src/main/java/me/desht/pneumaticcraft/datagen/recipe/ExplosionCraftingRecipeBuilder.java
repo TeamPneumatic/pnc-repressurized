@@ -32,8 +32,8 @@ public class ExplosionCraftingRecipeBuilder extends PneumaticCraftRecipeBuilder<
         }
 
         @Override
-        public void serialize(JsonObject json) {
-            json.add("input", input.serialize());
+        public void serializeRecipeData(JsonObject json) {
+            json.add("input", input.toJson());
             json.add("results", SerializerHelper.serializeItemStacks(outputs));
             json.addProperty("loss_rate", lossRate);
         }

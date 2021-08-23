@@ -56,8 +56,8 @@ public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest
     public GuiSmartChest(ContainerSmartChest container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
 
-        this.xSize = 234;
-        this.ySize = 216;
+        this.imageWidth = 234;
+        this.imageHeight = 216;
         this.filter = te.getFilter();
     }
 
@@ -72,7 +72,7 @@ public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest
 
         addPushPullTab();
 
-        showRangeButton = new WidgetButtonExtended(guiLeft + 196, guiTop + 189, 12, 12, "A", b -> previewRange());
+        showRangeButton = new WidgetButtonExtended(leftPos + 196, topPos + 189, 12, 12, "A", b -> previewRange());
         addButton(showRangeButton);
     }
 
@@ -86,8 +86,8 @@ public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest
                 for (RelativeFace face : RelativeFace.values()) {
                     if (te.getPushPullMode(face) == PushPullMode.PULL) {
                         Direction dir = te.getAbsoluteFacing(face, te.getRotation());
-                        BlockPos pos = te.getPos().offset(dir, range + 1);
-                        posSet.addAll(RangeManager.getFrame(new AxisAlignedBB(pos, pos).grow(range)));
+                        BlockPos pos = te.getBlockPos().relative(dir, range + 1);
+                        posSet.addAll(RangeManager.getFrame(new AxisAlignedBB(pos, pos).inflate(range)));
                     }
                 }
                 AreaRenderManager.getInstance().showArea(posSet, 0x4000FFFF, te, false);
@@ -108,10 +108,10 @@ public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest
         if (te.getUpgrades(EnumUpgrade.MAGNET) > 0) {
             showRangeButton.setVisible(true);
             if (AreaRenderManager.getInstance().isShowing(te)) {
-                showRangeButton.setMessage(new StringTextComponent("R").mergeStyle(TextFormatting.AQUA));
+                showRangeButton.setMessage(new StringTextComponent("R").withStyle(TextFormatting.AQUA));
                 showRangeButton.setTooltipText(xlate("pneumaticcraft.gui.programmer.button.stopShowingArea"));
             } else {
-                showRangeButton.setMessage(new StringTextComponent("R").mergeStyle(TextFormatting.GRAY));
+                showRangeButton.setMessage(new StringTextComponent("R").withStyle(TextFormatting.GRAY));
                 showRangeButton.setTooltipText(xlate("pneumaticcraft.gui.programmer.button.showArea"));
             }
         } else {
@@ -155,7 +155,7 @@ public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest
                 break;
         }
         button.setTooltipText(ImmutableList.of(
-                new StringTextComponent(face.toString()).mergeStyle(TextFormatting.YELLOW),
+                new StringTextComponent(face.toString()).withStyle(TextFormatting.YELLOW),
                 xlate(mode.getTranslationKey()))
         );
     }
@@ -179,23 +179,23 @@ public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest
     public void render(MatrixStack matrixStack, int x, int y, float partialTick) {
         super.render(matrixStack, x, y, partialTick);
 
-        if (minecraft.player.inventory.getItemStack().isEmpty()
+        if (minecraft.player.inventory.getCarried().isEmpty()
                 && hoveredSlot != null
-                && hoveredSlot.getStack().isEmpty()
-                && hoveredSlot.slotNumber < CHEST_SIZE
-                && !te.getFilter(hoveredSlot.slotNumber).isEmpty())
+                && hoveredSlot.getItem().isEmpty()
+                && hoveredSlot.index < CHEST_SIZE
+                && !te.getFilter(hoveredSlot.index).isEmpty())
         {
-            ItemStack stack = te.getFilter(hoveredSlot.slotNumber);
+            ItemStack stack = te.getFilter(hoveredSlot.index);
             List<IReorderingProcessor> l = GuiUtils.wrapTextComponentList(
-                    GuiUtils.xlateAndSplit("pneumaticcraft.gui.smart_chest.filter", stack.getDisplayName().getString(), stack.getCount()),
-                    xSize, font);
+                    GuiUtils.xlateAndSplit("pneumaticcraft.gui.smart_chest.filter", stack.getHoverName().getString(), stack.getCount()),
+                    imageWidth, font);
             renderTooltip(matrixStack, l, x, y);
         }
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float partialTicks, int x, int y) {
-        super.drawGuiContainerBackgroundLayer(matrixStack, partialTicks, x, y);
+    protected void renderBg(MatrixStack matrixStack, float partialTicks, int x, int y) {
+        super.renderBg(matrixStack, partialTicks, x, y);
 
         RenderSystem.enableTexture();
         RenderSystem.enableBlend();
@@ -204,17 +204,17 @@ public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest
         // the filtered slots
         for (Pair<Integer, ItemStack> p : filter) {
             int slot = p.getLeft();
-            if (slot < te.getLastSlot() && container.inventorySlots.get(slot).getHasStack()) {
-                int sx = guiLeft + 8 + (slot % N_COLS) * 18;
-                int sy = guiTop + 18 + (slot / N_COLS) * 18;
+            if (slot < te.getLastSlot() && menu.slots.get(slot).hasItem()) {
+                int sx = leftPos + 8 + (slot % N_COLS) * 18;
+                int sy = topPos + 18 + (slot / N_COLS) * 18;
                 fill(matrixStack, sx, sy, sx + 16, sy + 16, 0x8080D080);
             }
         }
 
         // the closed-off slots
         for (int slot = te.getLastSlot(); slot < CHEST_SIZE; slot++) {
-            int sx = guiLeft + 8 + (slot % N_COLS) * 18;
-            int sy = guiTop + 18 + (slot / N_COLS) * 18;
+            int sx = leftPos + 8 + (slot % N_COLS) * 18;
+            int sy = topPos + 18 + (slot / N_COLS) * 18;
             fill(matrixStack, sx, sy, sx + 16, sy + 16, 0x40FF6060);
         }
 
@@ -222,8 +222,8 @@ public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int x, int y) {
-        super.drawGuiContainerForegroundLayer(matrixStack, x, y);
+    protected void renderLabels(MatrixStack matrixStack, int x, int y) {
+        super.renderLabels(matrixStack, x, y);
 
         RenderSystem.enableTexture();
         RenderSystem.enableBlend();
@@ -233,18 +233,18 @@ public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest
             if (slot < te.getLastSlot()) {
                 int sx = 8 + (slot % N_COLS) * 18;
                 int sy = 18 + (slot / N_COLS) * 18;
-                matrixStack.push();
+                matrixStack.pushPose();
                 ItemStack stack = p.getRight();
                 GuiUtils.renderItemStack(matrixStack, stack, sx, sy);
                 String label = "[" + stack.getCount() + "]";
                 matrixStack.translate(0, 0, 300);
-                if (!container.inventorySlots.get(slot).getHasStack()) {
+                if (!menu.slots.get(slot).hasItem()) {
                     fill(matrixStack, sx, sy, sx + 16, sy + 16, 0x6080D080);
                 }
                 matrixStack.scale(0.5f, 0.5f, 0.5f);
-                font.drawStringWithShadow(matrixStack, label, 2 * (sx + 16 - font.getStringWidth(label) / 2f), 2 * (sy + 1), 0xFFFFFFA0);
+                font.drawShadow(matrixStack, label, 2 * (sx + 16 - font.width(label) / 2f), 2 * (sy + 1), 0xFFFFFFA0);
                 matrixStack.scale(2.0f, 2.0f, 2.0f);
-                matrixStack.pop();
+                matrixStack.popPose();
             }
         }
 
@@ -252,11 +252,11 @@ public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest
     }
 
     @Override
-    protected void handleMouseClick(Slot slotIn, int slotId, int mouseButton, ClickType type) {
+    protected void slotClicked(Slot slotIn, int slotId, int mouseButton, ClickType type) {
         if (slotIn != null && slotId < CHEST_SIZE && mouseButton == 0 && Screen.hasAltDown()) {
-            ItemStack stack = slotIn.getStack();
+            ItemStack stack = slotIn.getItem();
             if (stack.isEmpty() && slotId > 0 && te.getFilter(slotId).isEmpty()) {
-                if (playerInventory.getItemStack().isEmpty()) {
+                if (inventory.getCarried().isEmpty()) {
                     // alt-click an empty slot - try to mark this as the last slot
                     // but only if all slots after this are also currently empty
                     if (slotId == te.getLastSlot()) {
@@ -265,13 +265,13 @@ public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest
                     } else {
                         // close all slots from the clicked one onwards, if possible
                         for (int i = slotId; i < CHEST_SIZE; i++) {
-                            if (!container.inventorySlots.get(i).getStack().isEmpty()) return;
+                            if (!menu.slots.get(i).getItem().isEmpty()) return;
                         }
                         te.setLastSlot(slotId);
                     }
                 } else {
                     // alt-click an empty slot with item on cursor: try to set it as a filter
-                    ItemStack inHand = playerInventory.getItemStack().copy();
+                    ItemStack inHand = inventory.getCarried().copy();
                     if (hasShiftDown()) inHand.setCount(inHand.getMaxStackSize());
                     te.setFilter(slotId, inHand);
                     if (te.getLastSlot() <= slotId) {
@@ -291,22 +291,22 @@ public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest
                 NetworkHandler.sendToServer(new PacketSyncSmartChest(this.te));
             }
         } else {
-            super.handleMouseClick(slotIn, slotId, mouseButton, type);
+            super.slotClicked(slotIn, slotId, mouseButton, type);
         }
     }
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double dir) {
         Slot s = getSlotUnderMouse();
-        if (Screen.hasAltDown() && s != null && s.slotNumber < CHEST_SIZE) {
-            ItemStack stack = te.getFilter(s.slotNumber);
+        if (Screen.hasAltDown() && s != null && s.index < CHEST_SIZE) {
+            ItemStack stack = te.getFilter(s.index);
             if (!stack.isEmpty()) {
                 int newSize = hasShiftDown() ?
                         (dir > 0 ? stack.getCount() * 2 : stack.getCount() / 2) :
                         stack.getCount() + (int) dir;
                 newSize = MathHelper.clamp(newSize, 1, stack.getMaxStackSize());
                 if (newSize != stack.getCount()) {
-                    te.setFilter(s.slotNumber, ItemHandlerHelper.copyStackWithSize(stack, newSize));
+                    te.setFilter(s.index, ItemHandlerHelper.copyStackWithSize(stack, newSize));
                     this.filter = te.getFilter();
                     sendDelayed(5);  // avoid packet spam while spinning mouse wheel
                 }
@@ -319,8 +319,8 @@ public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         Slot s = getSlotUnderMouse();
-        if (Screen.hasAltDown() && s != null && s.slotNumber < CHEST_SIZE) {
-            ItemStack stack = te.getFilter(s.slotNumber);
+        if (Screen.hasAltDown() && s != null && s.index < CHEST_SIZE) {
+            ItemStack stack = te.getFilter(s.index);
             if (!stack.isEmpty()) {
                 int newSize = stack.getCount();
                 switch (keyCode) {
@@ -333,7 +333,7 @@ public class GuiSmartChest extends GuiPneumaticContainerBase<ContainerSmartChest
                 }
                 newSize = MathHelper.clamp(newSize, 1, stack.getMaxStackSize());
                 if (newSize != stack.getCount()) {
-                    te.setFilter(s.slotNumber, ItemHandlerHelper.copyStackWithSize(stack, newSize));
+                    te.setFilter(s.index, ItemHandlerHelper.copyStackWithSize(stack, newSize));
                     this.filter = te.getFilter();
                     sendDelayed(5);  // avoid packet spam while spinning mouse wheel
                 }

@@ -17,7 +17,7 @@ import net.minecraft.world.IBlockReader;
 import java.util.List;
 
 public class BlockReinforcedChest extends BlockPneumaticCraft {
-    private static final VoxelShape SHAPE = makeCuboidShape(1, 0, 1, 15, 15, 15);
+    private static final VoxelShape SHAPE = box(1, 0, 1, 15, 15, 15);
 
     public BlockReinforcedChest() {
         super(ModBlocks.reinforcedStoneProps());

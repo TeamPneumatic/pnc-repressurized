@@ -22,9 +22,9 @@ public class GuiProgWidgetEmitRedstone extends GuiProgWidgetOptionBase<ProgWidge
 
         for (Direction dir : DirectionUtil.VALUES) {
             ITextComponent sideName = ClientUtils.translateDirectionComponent(dir);
-            WidgetCheckBox checkBox = new WidgetCheckBox(guiLeft + 8, guiTop + 30 + dir.getIndex() * 12, 0xFF404040, sideName,
-                    b -> progWidget.getSides()[dir.getIndex()] = b.checked);
-            checkBox.checked = progWidget.getSides()[dir.getIndex()];
+            WidgetCheckBox checkBox = new WidgetCheckBox(guiLeft + 8, guiTop + 30 + dir.get3DDataValue() * 12, 0xFF404040, sideName,
+                    b -> progWidget.getSides()[dir.get3DDataValue()] = b.checked);
+            checkBox.checked = progWidget.getSides()[dir.get3DDataValue()];
             addButton(checkBox);
         }
     }
@@ -33,6 +33,6 @@ public class GuiProgWidgetEmitRedstone extends GuiProgWidgetOptionBase<ProgWidge
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         super.render(matrixStack, mouseX, mouseY, partialTicks);
 
-        font.drawString(matrixStack, I18n.format("pneumaticcraft.gui.progWidget.general.affectingSides"), guiLeft + 8, guiTop + 20, 0xFF604040);
+        font.draw(matrixStack, I18n.get("pneumaticcraft.gui.progWidget.general.affectingSides"), guiLeft + 8, guiTop + 20, 0xFF604040);
     }
 }

@@ -30,10 +30,10 @@ public class PacketHackingBlockFinish extends LocationIntPacket {
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             PlayerEntity player = ClientUtils.getClientPlayer();
-            IHackableBlock hackableBlock = HackManager.getHackableForBlock(player.world, pos, player);
+            IHackableBlock hackableBlock = HackManager.getHackableForBlock(player.level, pos, player);
             if (hackableBlock != null) {
-                hackableBlock.onHackComplete(player.world, pos, player);
-                HackTickHandler.instance().trackBlock(player.world, pos, hackableBlock);
+                hackableBlock.onHackComplete(player.level, pos, player);
+                HackTickHandler.instance().trackBlock(player.level, pos, hackableBlock);
                 CommonArmorHandler.getHandlerForPlayer(player).getExtensionData(ArmorUpgradeRegistry.getInstance().hackHandler).setHackedBlockPos(null);
                 player.playSound(ModSounds.HELMET_HACK_FINISH.get(), 1.0F, 1.0F);
             }

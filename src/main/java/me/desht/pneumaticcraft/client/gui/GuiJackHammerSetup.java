@@ -30,25 +30,25 @@ public class GuiJackHammerSetup extends GuiPneumaticContainerBase<ContainerJackh
     public GuiJackHammerSetup(ContainerJackhammerSetup container, PlayerInventory inv, ITextComponent displayString) {
         super(container, inv, displayString);
 
-        ySize = 182;
+        imageHeight = 182;
     }
 
     @Override
     public void init() {
         super.init();
 
-        ItemStack hammerStack = playerInventory.player.getHeldItem(container.getHand());
+        ItemStack hammerStack = inventory.player.getItemInHand(menu.getHand());
 
         DigMode digMode = ItemJackHammer.getDigMode(hammerStack);
 
         if (digMode != null) {
-            addButton(selectorButton = new WidgetButtonExtended(guiLeft + 127, guiTop + 67, 20, 20,
+            addButton(selectorButton = new WidgetButtonExtended(leftPos + 127, topPos + 67, 20, 20,
                     StringTextComponent.EMPTY, b -> toggleShowChoices()))
                     .setRenderedIcon(digMode.getGuiIcon());
 
             int xBase = 147 - 20 * DigMode.values().length;
             for (DigMode dm : DigMode.values()) {
-                WidgetButtonExtended button = new WidgetButtonExtended(guiLeft + xBase, guiTop + 47, 20, 20,
+                WidgetButtonExtended button = new WidgetButtonExtended(leftPos + xBase, topPos + 47, 20, 20,
                         StringTextComponent.EMPTY, b -> selectDigMode(dm))
                         .setRenderedIcon(dm.getGuiIcon())
                         .withTag("digmode:" + dm.toString());
@@ -59,10 +59,10 @@ public class GuiJackHammerSetup extends GuiPneumaticContainerBase<ContainerJackh
             }
         }
 
-        addButton(new WidgetTooltipArea(guiLeft + 96, guiTop + 19, 18, 18) {
+        addButton(new WidgetTooltipArea(leftPos + 96, topPos + 19, 18, 18) {
             @Override
             public void addTooltip(double mouseX, double mouseY, List<ITextComponent> curTip, boolean shiftPressed) {
-                if (!container.inventorySlots.get(1).getHasStack()) {
+                if (!menu.slots.get(1).hasItem()) {
                     curTip.add(xlate("pneumaticcraft.gui.tooltip.jackhammer.enchantedBookTip"));
                 }
             }
@@ -87,12 +87,12 @@ public class GuiJackHammerSetup extends GuiPneumaticContainerBase<ContainerJackh
     }
 
     private void updateDigModeButtons() {
-        ItemStack drillStack = container.getSlot(0).getStack();
+        ItemStack drillStack = menu.getSlot(0).getItem();
         DrillBitType bitType = drillStack.getItem() instanceof ItemDrillBit ?
                 ((ItemDrillBit) drillStack.getItem()).getType() :
                 DrillBitType.NONE;
 
-        ItemStack hammerStack = playerInventory.player.getHeldItem(container.getHand());
+        ItemStack hammerStack = inventory.player.getItemInHand(menu.getHand());
         DigMode digMode = ItemJackHammer.getDigMode(hammerStack);
         if (digMode == null) digMode = DigMode.MODE_1X1;
 
@@ -111,7 +111,7 @@ public class GuiJackHammerSetup extends GuiPneumaticContainerBase<ContainerJackh
     protected void addProblems(List<ITextComponent> curInfo) {
         super.addProblems(curInfo);
 
-        if (!container.inventorySlots.get(0).getHasStack()) {
+        if (!menu.slots.get(0).hasItem()) {
             curInfo.addAll(GuiUtils.xlateAndSplit("pneumaticcraft.gui.tab.problems.jackhammer.noBit"));
         }
     }

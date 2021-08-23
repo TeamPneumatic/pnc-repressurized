@@ -35,7 +35,7 @@ public class GuiLiquidHopper extends GuiPneumaticContainerBase<ContainerLiquidHo
     @Override
     public void init() {
         super.init();
-        addButton(new WidgetTank(guiLeft + 116, guiTop + 15, te.getTank()));
+        addButton(new WidgetTank(leftPos + 116, topPos + 15, te.getTank()));
         statusStat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.hopperStatus"), new ItemStack(ModBlocks.LIQUID_HOPPER.get()), 0xFFFFAA00, false);
 
         WidgetAnimatedStat optionStat = addAnimatedStat(xlate("pneumaticcraft.gui.tab.gasLift.mode"), new ItemStack(Blocks.LEVER), 0xFFFFCC00, false);

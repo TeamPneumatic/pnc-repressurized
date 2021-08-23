@@ -18,12 +18,12 @@ public class SlotUntouchable extends SlotItemHandler implements IPhantomSlot {
     }
 
     @Override
-    public boolean isItemValid(@Nonnull ItemStack itemstack) {
+    public boolean mayPlace(@Nonnull ItemStack itemstack) {
         return false;
     }
 
     @Override
-    public boolean canTakeStack(PlayerEntity player) {
+    public boolean mayPickup(PlayerEntity player) {
         return false;
     }
 
@@ -37,7 +37,7 @@ public class SlotUntouchable extends SlotItemHandler implements IPhantomSlot {
     }
 
     @Override
-    public boolean isEnabled() {
+    public boolean isActive() {
         return enabled;
     }
 }

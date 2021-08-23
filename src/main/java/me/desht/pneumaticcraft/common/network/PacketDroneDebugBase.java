@@ -20,10 +20,10 @@ public abstract class PacketDroneDebugBase {
 
     public PacketDroneDebugBase(IDroneBase drone) {
         if (drone instanceof EntityDrone) {
-            entityId = ((EntityDrone) drone).getEntityId();
+            entityId = ((EntityDrone) drone).getId();
             pos = null;
         } else if (drone instanceof TileEntityProgrammableController) {
-            pos = ((TileEntityProgrammableController) drone).getPos();
+            pos = ((TileEntityProgrammableController) drone).getBlockPos();
             entityId = -1;
         } else {
             throw new IllegalArgumentException("drone must be an EntityDrone or TileEntityProgrammableController!");
@@ -57,15 +57,15 @@ public abstract class PacketDroneDebugBase {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
-            World world = ctx.get().getSender() == null ? ClientUtils.getClientWorld() : ctx.get().getSender().world;
+            World world = ctx.get().getSender() == null ? ClientUtils.getClientWorld() : ctx.get().getSender().level;
             PlayerEntity player =  ctx.get().getSender() == null ? ClientUtils.getClientPlayer() : ctx.get().getSender();
             if (entityId >= 0) {
-                Entity entity = world.getEntityByID(entityId);
+                Entity entity = world.getEntity(entityId);
                 if (entity instanceof EntityDrone) {
                     handle(player, (IDroneBase) entity);
                 }
             } else if (pos != null) {
-                TileEntity te = world.getTileEntity(pos);
+                TileEntity te = world.getBlockEntity(pos);
                 if (te instanceof TileEntityProgrammableController) {
                     handle(player, (IDroneBase) te);
                 }

@@ -19,7 +19,7 @@ public class PacketJetBootsStateSync {
     private final JetBootsStateTracker.JetBootsState state;
 
     public PacketJetBootsStateSync(PlayerEntity player, JetBootsStateTracker.JetBootsState state) {
-        this.playerId = player.getUniqueID();
+        this.playerId = player.getUUID();
         this.state = state;
     }
 

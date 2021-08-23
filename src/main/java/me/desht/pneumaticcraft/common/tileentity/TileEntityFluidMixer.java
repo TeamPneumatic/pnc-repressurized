@@ -94,7 +94,7 @@ public class TileEntityFluidMixer extends TileEntityPneumaticBase implements
         inputTank2.tick();
         outputTank.tick();
 
-        if (!world.isRemote) {
+        if (!level.isClientSide) {
             didWork = false;
             if (searchRecipes) {
                 currentRecipe = findApplicableRecipe();
@@ -123,15 +123,15 @@ public class TileEntityFluidMixer extends TileEntityPneumaticBase implements
                 }
             }
         } else {
-            if (didWork && world.rand.nextFloat() < 0.1f) {
-                ClientUtils.emitParticles(world, pos, ParticleTypes.RAIN);
+            if (didWork && level.random.nextFloat() < 0.1f) {
+                ClientUtils.emitParticles(level, worldPosition, ParticleTypes.RAIN);
             }
         }
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tag) {
-        super.write(tag);
+    public CompoundNBT save(CompoundNBT tag) {
+        super.save(tag);
 
         tag.put("Items", outputInv.serializeNBT());
 
@@ -139,8 +139,8 @@ public class TileEntityFluidMixer extends TileEntityPneumaticBase implements
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT tag) {
-        super.read(state, tag);
+    public void load(BlockState state, CompoundNBT tag) {
+        super.load(state, tag);
 
         outputInv.deserializeNBT(tag.getCompound("Items"));
     }
@@ -176,7 +176,7 @@ public class TileEntityFluidMixer extends TileEntityPneumaticBase implements
     }
 
     private FluidMixerRecipe findApplicableRecipe() {
-        for (FluidMixerRecipe recipe : PneumaticCraftRecipeType.FLUID_MIXER.getRecipes(world).values()) {
+        for (FluidMixerRecipe recipe : PneumaticCraftRecipeType.FLUID_MIXER.getRecipes(level).values()) {
             if (recipe.matches(inputTank1.getFluid(), inputTank2.getFluid())) {
                 return recipe;
             }
@@ -255,7 +255,7 @@ public class TileEntityFluidMixer extends TileEntityPneumaticBase implements
     @Nullable
     @Override
     public Container createMenu(int windowId, PlayerInventory inv, PlayerEntity player) {
-        return new ContainerFluidMixer(windowId, inv, pos);
+        return new ContainerFluidMixer(windowId, inv, worldPosition);
     }
 
     @Override
@@ -282,7 +282,7 @@ public class TileEntityFluidMixer extends TileEntityPneumaticBase implements
             moved = FluidUtil.tryFluidTransfer(outputTank, inputTank, inputTank.getFluidAmount(), true);
         }
         if (!moved.isEmpty() && player instanceof ServerPlayerEntity) {
-            NetworkHandler.sendToPlayer(new PacketPlaySound(SoundEvents.ITEM_BUCKET_FILL, SoundCategory.BLOCKS, pos, 1f, 1f, false), (ServerPlayerEntity) player);
+            NetworkHandler.sendToPlayer(new PacketPlaySound(SoundEvents.BUCKET_FILL, SoundCategory.BLOCKS, worldPosition, 1f, 1f, false), (ServerPlayerEntity) player);
         }
     }
 

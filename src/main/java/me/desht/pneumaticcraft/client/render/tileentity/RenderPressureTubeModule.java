@@ -36,9 +36,9 @@ public class RenderPressureTubeModule extends TileEntityRenderer<TileEntityPress
 
         Minecraft mc = Minecraft.getInstance();
         Hand holdingModule = null;
-        if (mc.player.getHeldItem(Hand.MAIN_HAND).getItem() instanceof ItemTubeModule) {
+        if (mc.player.getItemInHand(Hand.MAIN_HAND).getItem() instanceof ItemTubeModule) {
             holdingModule = Hand.MAIN_HAND;
-        } else if (mc.player.getHeldItem(Hand.OFF_HAND).getItem() instanceof ItemTubeModule) {
+        } else if (mc.player.getItemInHand(Hand.OFF_HAND).getItem() instanceof ItemTubeModule) {
             holdingModule = Hand.OFF_HAND;
         }
 
@@ -47,12 +47,12 @@ public class RenderPressureTubeModule extends TileEntityRenderer<TileEntityPress
         if (modules.isEmpty() && holdingModule == null)
             return;
 
-        if (holdingModule != null && mc.objectMouseOver instanceof BlockRayTraceResult) {
+        if (holdingModule != null && mc.hitResult instanceof BlockRayTraceResult) {
             // "fake" module is for showing a preview of where the module would be placed
-            BlockRayTraceResult brtr = (BlockRayTraceResult) mc.objectMouseOver;
-            Direction face = mc.player.isCrouching() ? brtr.getFace().getOpposite() : brtr.getFace();
-            if (brtr.getPos().equals(tile.getPos()) && mc.world.getTileEntity(brtr.getPos()) == tile && tile.getModule(face) == null) {
-                TubeModule fakeModule = ((ItemTubeModule) mc.player.getHeldItem(holdingModule).getItem()).createModule();
+            BlockRayTraceResult brtr = (BlockRayTraceResult) mc.hitResult;
+            Direction face = mc.player.isCrouching() ? brtr.getDirection().getOpposite() : brtr.getDirection();
+            if (brtr.getBlockPos().equals(tile.getBlockPos()) && mc.level.getBlockEntity(brtr.getBlockPos()) == tile && tile.getModule(face) == null) {
+                TubeModule fakeModule = ((ItemTubeModule) mc.player.getItemInHand(holdingModule).getItem()).createModule();
                 fakeModule.markFake();
                 fakeModule.setDirection(face);
                 fakeModule.setTube(tile);
@@ -72,7 +72,7 @@ public class RenderPressureTubeModule extends TileEntityRenderer<TileEntityPress
     }
 
     @Override
-    public boolean isGlobalRenderer(TileEntityPressureTube te) {
+    public boolean shouldRenderOffScreen(TileEntityPressureTube te) {
         return te.tubeModules().findAny().isPresent();
     }
 }

@@ -18,29 +18,29 @@ public class WrappedBuilderResult implements IFinishedRecipe {
     }
 
     @Override
-    public void serialize(JsonObject json) {
-        wrapped.serialize(json);
+    public void serializeRecipeData(JsonObject json) {
+        wrapped.serializeRecipeData(json);
     }
 
     @Override
-    public ResourceLocation getID() {
-        return wrapped.getID();
+    public ResourceLocation getId() {
+        return wrapped.getId();
     }
 
     @Override
-    public IRecipeSerializer<?> getSerializer() {
+    public IRecipeSerializer<?> getType() {
         return serializer.get();
     }
 
     @Nullable
     @Override
-    public JsonObject getAdvancementJson() {
-        return wrapped.getAdvancementJson();
+    public JsonObject serializeAdvancement() {
+        return wrapped.serializeAdvancement();
     }
 
     @Nullable
     @Override
-    public ResourceLocation getAdvancementID() {
-        return wrapped.getAdvancementID();
+    public ResourceLocation getAdvancementId() {
+        return wrapped.getAdvancementId();
     }
 }

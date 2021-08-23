@@ -18,54 +18,54 @@ import net.minecraftforge.fml.server.ServerLifecycleHooks;
 public class GlobalPosHelper {
     public static CompoundNBT toNBT(GlobalPos globalPos) {
         CompoundNBT tag = new CompoundNBT();
-        tag.put("pos", net.minecraft.nbt.NBTUtil.writeBlockPos(globalPos.getPos()));
-        tag.putString("dim", globalPos.getDimension().getLocation().toString());
+        tag.put("pos", net.minecraft.nbt.NBTUtil.writeBlockPos(globalPos.pos()));
+        tag.putString("dim", globalPos.dimension().location().toString());
         return tag;
     }
 
     public static GlobalPos fromNBT(CompoundNBT tag) {
-        RegistryKey<World> worldKey = RegistryKey.getOrCreateKey(Registry.WORLD_KEY, new ResourceLocation(tag.getString("dim")));
-        return GlobalPos.getPosition(worldKey, NBTUtil.readBlockPos(tag.getCompound("pos")));
+        RegistryKey<World> worldKey = RegistryKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(tag.getString("dim")));
+        return GlobalPos.of(worldKey, NBTUtil.readBlockPos(tag.getCompound("pos")));
     }
 
     public static JsonElement toJson(GlobalPos pos) {
         JsonObject posObj = new JsonObject();
-        posObj.addProperty("x", pos.getPos().getX());
-        posObj.addProperty("y", pos.getPos().getY());
-        posObj.addProperty("z", pos.getPos().getZ());
+        posObj.addProperty("x", pos.pos().getX());
+        posObj.addProperty("y", pos.pos().getY());
+        posObj.addProperty("z", pos.pos().getZ());
 
         JsonObject obj = new JsonObject();
-        obj.addProperty("dimension", pos.getDimension().getLocation().toString());
+        obj.addProperty("dimension", pos.dimension().location().toString());
         obj.add("pos", posObj);
         return obj;
     }
 
     public static GlobalPos fromJson(JsonObject json) {
-        RegistryKey<World> worldKey = RegistryKey.getOrCreateKey(Registry.WORLD_KEY, new ResourceLocation(JSONUtils.getString(json, "dimension")));
+        RegistryKey<World> worldKey = RegistryKey.create(Registry.DIMENSION_REGISTRY, new ResourceLocation(JSONUtils.getAsString(json, "dimension")));
         JsonObject posObj = json.get("pos").getAsJsonObject();
         BlockPos pos = new BlockPos(
-                JSONUtils.getInt(posObj, "x"),
-                JSONUtils.getInt(posObj, "y"),
-                JSONUtils.getInt(posObj, "z")
+                JSONUtils.getAsInt(posObj, "x"),
+                JSONUtils.getAsInt(posObj, "y"),
+                JSONUtils.getAsInt(posObj, "z")
         );
-        return GlobalPos.getPosition(worldKey, pos);
+        return GlobalPos.of(worldKey, pos);
     }
 
     public static ServerWorld getWorldForGlobalPos(GlobalPos pos) {
-        return ServerLifecycleHooks.getCurrentServer().getWorld(pos.getDimension());
+        return ServerLifecycleHooks.getCurrentServer().getLevel(pos.dimension());
     }
 
     public static GlobalPos makeGlobalPos(World w, BlockPos pos) {
-        return GlobalPos.getPosition(w.getDimensionKey(), pos);
+        return GlobalPos.of(w.dimension(), pos);
     }
 
     public static boolean isSameWorld(GlobalPos pos, World world) {
-        return pos.getDimension().compareTo(world.getDimensionKey()) == 0;
+        return pos.dimension().compareTo(world.dimension()) == 0;
     }
 
     public static String prettyPrint(GlobalPos pos) {
-        BlockPos p = pos.getPos();
-        String dim = pos.getDimension().getLocation().toString();
+        BlockPos p = pos.pos();
+        String dim = pos.dimension().location().toString();
         return String.format("%s [%d,%d,%d]", dim, p.getX(), p.getY(), p.getZ());
     }
 
@@ -77,8 +77,8 @@ public class GlobalPosHelper {
      */
     public static TileEntity getTileEntity(GlobalPos globalPos) {
         World world = getWorldForGlobalPos(globalPos);
-        if (world != null && world.isAreaLoaded(globalPos.getPos(), 1)) {
-            return world.getTileEntity(globalPos.getPos());
+        if (world != null && world.isAreaLoaded(globalPos.pos(), 1)) {
+            return world.getBlockEntity(globalPos.pos());
         }
         return null;
     }

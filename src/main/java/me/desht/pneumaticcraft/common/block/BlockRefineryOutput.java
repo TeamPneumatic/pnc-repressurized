@@ -29,8 +29,8 @@ import net.minecraftforge.fml.network.NetworkHooks;
 import net.minecraftforge.items.ItemHandlerHelper;
 
 public class BlockRefineryOutput extends BlockPneumaticCraft {
-    private static final VoxelShape SHAPE1 = makeCuboidShape(0, 0, 4, 16, 16, 12);
-    private static final VoxelShape SHAPE2 = makeCuboidShape(3, 0, 0, 13, 16, 16);
+    private static final VoxelShape SHAPE1 = box(0, 0, 4, 16, 16, 12);
+    private static final VoxelShape SHAPE2 = box(3, 0, 0, 13, 16, 16);
     private static final VoxelShape SHAPE_EW = VoxelShapes.or(SHAPE1, SHAPE2);
     private static final VoxelShape SHAPE_NS = VoxelShapeUtils.rotateY(SHAPE_EW, 90);
 
@@ -49,22 +49,22 @@ public class BlockRefineryOutput extends BlockPneumaticCraft {
     }
 
     @Override
-    public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
+    public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
         return PneumaticCraftUtils.getTileEntityAt(world, pos, TileEntityRefineryOutput.class).map(te -> {
             // normally, activating any refinery block would open the controller TE's gui, but if we
             // activate with a fluid tank in hand (which can actually transfer fluid out),
             // then we must activate the actual refinery output that was clicked
-            boolean canTransferFluid = FluidUtil.getFluidHandler(ItemHandlerHelper.copyStackWithSize(player.getHeldItem(hand), 1))
-                    .map(heldHandler -> FluidUtil.getFluidHandler(world, pos, brtr.getFace())
+            boolean canTransferFluid = FluidUtil.getFluidHandler(ItemHandlerHelper.copyStackWithSize(player.getItemInHand(hand), 1))
+                    .map(heldHandler -> FluidUtil.getFluidHandler(world, pos, brtr.getDirection())
                             .map(refineryHandler -> couldTransferFluidOut(heldHandler, refineryHandler))
                             .orElse(false))
                     .orElse(false);
             if (canTransferFluid) {
-                return super.onBlockActivated(state, world, pos, player, hand, brtr);
-            } else if (!world.isRemote) {
+                return super.use(state, world, pos, player, hand, brtr);
+            } else if (!world.isClientSide) {
                 TileEntityRefineryController master = te.getRefineryController();
                 if (master != null) {
-                    NetworkHooks.openGui((ServerPlayerEntity) player, master, master.getPos());
+                    NetworkHooks.openGui((ServerPlayerEntity) player, master, master.getBlockPos());
                 }
             }
             return ActionResultType.SUCCESS;
@@ -82,24 +82,24 @@ public class BlockRefineryOutput extends BlockPneumaticCraft {
     }
 
     @Override
-    public boolean isValidPosition(BlockState state, IWorldReader worldIn, BlockPos pos) {
+    public boolean canSurvive(BlockState state, IWorldReader worldIn, BlockPos pos) {
         int nOutputs = 0;
         int up = 1, down = 1;
-        while (worldIn.getBlockState(pos.up(up++)).getBlock() instanceof BlockRefineryOutput) {
+        while (worldIn.getBlockState(pos.above(up++)).getBlock() instanceof BlockRefineryOutput) {
             nOutputs++;
         }
-        while (worldIn.getBlockState(pos.down(down++)).getBlock() instanceof BlockRefineryOutput) {
+        while (worldIn.getBlockState(pos.below(down++)).getBlock() instanceof BlockRefineryOutput) {
             nOutputs++;
         }
-        return nOutputs < RefineryRecipe.MAX_OUTPUTS  && super.isValidPosition(state, worldIn, pos);
+        return nOutputs < RefineryRecipe.MAX_OUTPUTS  && super.canSurvive(state, worldIn, pos);
     }
 
     @Override
-    public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
-        if (!worldIn.isRemote() && facingState.getBlock() == ModBlocks.REFINERY_OUTPUT.get()) {
+    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
+        if (!worldIn.isClientSide() && facingState.getBlock() == ModBlocks.REFINERY_OUTPUT.get()) {
             recache(worldIn, currentPos);
         }
-        return super.updatePostPlacement(stateIn, facing, facingState, worldIn, currentPos, facingPos);
+        return super.updateShape(stateIn, facing, facingState, worldIn, currentPos, facingPos);
     }
 
     private void recache(IWorld world, BlockPos pos) {

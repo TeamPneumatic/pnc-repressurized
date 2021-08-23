@@ -26,7 +26,7 @@ public class EntityHarvestingDrone extends EntityBasicDrone {
 
     @Override
     public boolean addProgram(BlockPos clickPos, Direction facing, BlockPos pos, ItemStack droneStack, List<IProgWidget> widgets) {
-        TileEntity te = world.getTileEntity(clickPos);
+        TileEntity te = level.getBlockEntity(clickPos);
         ProgWidgetHarvest harvestPiece = new ProgWidgetHarvest();
         harvestPiece.setRequiresTool(IOHelper.getInventoryForTE(te, facing).isPresent());
         harvestPiece.setOrder(Ordering.HIGH_TO_LOW);

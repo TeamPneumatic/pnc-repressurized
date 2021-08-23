@@ -40,9 +40,9 @@ public class FluidMixerRecipeBuilder extends PneumaticCraftRecipeBuilder<FluidMi
         }
 
         @Override
-        public void serialize(JsonObject json) {
-            json.add("input1", input1.serialize());
-            json.add("input2", input2.serialize());
+        public void serializeRecipeData(JsonObject json) {
+            json.add("input1", input1.toJson());
+            json.add("input2", input2.toJson());
             if (!outputFluid.isEmpty()) json.add("fluid_output", ModCraftingHelper.fluidStackToJson(outputFluid));
             if (!outputItem.isEmpty()) json.add("item_output", SerializerHelper.serializeOneItemStack(outputItem));
             json.addProperty("pressure", pressure);

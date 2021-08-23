@@ -72,17 +72,17 @@ public class RenderDroneAI {
                     y = getInterpolated(pos.getY(), oldPos.getY(), partialTicks);
                     z = getInterpolated(pos.getZ(), oldPos.getZ(), partialTicks);
                 } else {
-                    x = MathHelper.lerp(partialTicks, drone.prevPosX, drone.getPosX());
-                    y = MathHelper.lerp(partialTicks, drone.prevPosY, drone.getPosY()) + 0.5;
-                    z = MathHelper.lerp(partialTicks, drone.prevPosZ, drone.getPosZ());
+                    x = MathHelper.lerp(partialTicks, drone.xo, drone.getX());
+                    y = MathHelper.lerp(partialTicks, drone.yo, drone.getY()) + 0.5;
+                    z = MathHelper.lerp(partialTicks, drone.zo, drone.getZ());
                 }
-                matrixStack.push();
+                matrixStack.pushPose();
                 matrixStack.translate(x, y + 0.5, z);
                 matrixStack.scale(0.01f, 0.01f, 0.01f);
-                matrixStack.rotate(Vector3f.XP.rotationDegrees(180));
-                matrixStack.rotate(Vector3f.YP.rotationDegrees(Minecraft.getInstance().gameRenderer.getActiveRenderInfo().getYaw()));
+                matrixStack.mulPose(Vector3f.XP.rotationDegrees(180));
+                matrixStack.mulPose(Vector3f.YP.rotationDegrees(Minecraft.getInstance().gameRenderer.getMainCamera().getYRot()));
                 ProgWidgetRenderer.renderProgWidget3d(matrixStack, buffer, activeWidget);
-                matrixStack.pop();
+                matrixStack.popPose();
             }
         }
     }

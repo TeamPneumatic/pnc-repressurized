@@ -14,7 +14,7 @@ import net.minecraft.world.IWorld;
 
 public class BlockPressureChamberGlass extends BlockPressureChamberWallBase {
     public BlockPressureChamberGlass() {
-        super(IBlockPressureChamber.pressureChamberBlockProps().notSolid());
+        super(IBlockPressureChamber.pressureChamberBlockProps().noOcclusion());
     }
 
     @Override
@@ -23,8 +23,8 @@ public class BlockPressureChamberGlass extends BlockPressureChamberWallBase {
     }
 
     @Override
-    public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
-        if (worldIn.isRemote()) {
+    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
+        if (worldIn.isClientSide()) {
             PneumaticCraftUtils.getTileEntityAt(worldIn, currentPos, TileEntityPressureChamberGlass.class).ifPresent(teGlass -> {
                 teGlass.requestModelDataUpdate();
                 // handle any glass that's diagonally connected
@@ -36,7 +36,7 @@ public class BlockPressureChamberGlass extends BlockPressureChamberWallBase {
                 }
             });
         }
-        return super.updatePostPlacement(stateIn, facing, facingState, worldIn, currentPos, facingPos);
+        return super.updateShape(stateIn, facing, facingState, worldIn, currentPos, facingPos);
     }
 
     @Override
@@ -45,12 +45,12 @@ public class BlockPressureChamberGlass extends BlockPressureChamberWallBase {
     }
 
     @Override
-    public boolean isSideInvisible(BlockState ourState, BlockState theirState, Direction side) {
-        return ourState.getBlock() == theirState.getBlock() || super.isSideInvisible(ourState, theirState, side);
+    public boolean skipRendering(BlockState ourState, BlockState theirState, Direction side) {
+        return ourState.getBlock() == theirState.getBlock() || super.skipRendering(ourState, theirState, side);
     }
 
     @Override
-    public float getAmbientOcclusionLightValue(BlockState p_220080_1_, IBlockReader p_220080_2_, BlockPos p_220080_3_) {
+    public float getShadeBrightness(BlockState p_220080_1_, IBlockReader p_220080_2_, BlockPos p_220080_3_) {
         return 0.2F;
     }
 

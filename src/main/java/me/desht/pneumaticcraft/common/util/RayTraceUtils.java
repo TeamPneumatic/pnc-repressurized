@@ -16,12 +16,12 @@ public class RayTraceUtils {
     public static RayTraceResult getEntityLookedObject(LivingEntity entity, double maxDistance) {
         Pair<Vector3d, Vector3d> vecs = getStartAndEndLookVec(entity, maxDistance);
         RayTraceContext ctx = new RayTraceContext(vecs.getLeft(), vecs.getRight(), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, entity);
-        return entity.world.rayTraceBlocks(ctx);
+        return entity.level.clip(ctx);
     }
 
     public static Pair<Vector3d, Vector3d> getStartAndEndLookVec(LivingEntity entity, double maxDistance) {
-        Vector3d entityVec = new Vector3d(entity.getPosX(), entity.getPosY() + entity.getEyeHeight(), entity.getPosZ());
-        Vector3d maxDistVec = entityVec.add(entity.getLook(1F).scale(maxDistance));
+        Vector3d entityVec = new Vector3d(entity.getX(), entity.getY() + entity.getEyeHeight(), entity.getZ());
+        Vector3d maxDistVec = entityVec.add(entity.getViewVector(1F).scale(maxDistance));
         return new ImmutablePair<>(entity.getEyePosition(1F), maxDistVec);
     }
 
@@ -32,19 +32,19 @@ public class RayTraceUtils {
         Vector3d eyePos = startAndEnd.getLeft();
 
         if (result.getType() != RayTraceResult.Type.MISS) {
-            rangeSq = result.getHitVec().squareDistanceTo(eyePos);
+            rangeSq = result.getLocation().distanceToSqr(eyePos);
         }
 
         double rangeSq2 = rangeSq;
         Vector3d hitVec = null;
         Entity focusedEntity = null;
 
-        Vector3d lookVec = lookingEntity.getLookVec().scale(range + 1);
-        AxisAlignedBB box = lookingEntity.getBoundingBox().grow(lookVec.x, lookVec.y, lookVec.z);
+        Vector3d lookVec = lookingEntity.getLookAngle().scale(range + 1);
+        AxisAlignedBB box = lookingEntity.getBoundingBox().inflate(lookVec.x, lookVec.y, lookVec.z);
 
-        for (Entity entity : lookingEntity.world.getEntitiesInAABBexcluding(lookingEntity, box, Entity::canBeCollidedWith)) {
-            AxisAlignedBB aabb = entity.getBoundingBox().grow(entity.getCollisionBorderSize());
-            Optional<Vector3d> vec = aabb.rayTrace(eyePos, startAndEnd.getRight());
+        for (Entity entity : lookingEntity.level.getEntities(lookingEntity, box, Entity::isPickable)) {
+            AxisAlignedBB aabb = entity.getBoundingBox().inflate(entity.getPickRadius());
+            Optional<Vector3d> vec = aabb.clip(eyePos, startAndEnd.getRight());
 
             if (aabb.contains(eyePos)) {
                 if (rangeSq2 >= 0.0D) {
@@ -53,10 +53,10 @@ public class RayTraceUtils {
                     rangeSq2 = 0.0D;
                 }
             } else if (vec.isPresent()) {
-                double rangeSq3 = eyePos.squareDistanceTo(vec.get());
+                double rangeSq3 = eyePos.distanceToSqr(vec.get());
 
                 if (rangeSq3 < rangeSq2 || rangeSq2 == 0.0D) {
-                    if (entity == entity.getRidingEntity() && !entity.canRiderInteract()) {
+                    if (entity == entity.getVehicle() && !entity.canRiderInteract()) {
                         if (rangeSq2 == 0.0D) {
                             focusedEntity = entity;
                             hitVec = vec.get();
@@ -76,6 +76,6 @@ public class RayTraceUtils {
     private static RayTraceResult raytraceEntityBlocks(LivingEntity entity, double range) {
         Pair<Vector3d, Vector3d> startAndEnd = getStartAndEndLookVec(entity, (float) range);
         RayTraceContext ctx = new RayTraceContext(startAndEnd.getLeft(), startAndEnd.getRight(), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, entity);
-        return entity.world.rayTraceBlocks(ctx);
+        return entity.level.clip(ctx);
     }
 }

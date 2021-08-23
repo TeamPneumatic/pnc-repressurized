@@ -25,10 +25,10 @@ public class RenderProgressBar {
 
         // draw the bar
         RenderUtils.renderWithTypeAndFinish(matrixStack, buffer, ModRenderTypes.getUntexturedQuad(true), (posMat, builder) -> {
-            RenderUtils.posF(builder, posMat, minX, minY, zLevel).color(f1[0], f1[1], f1[2], f1[3]).lightmap(FULL_BRIGHT).endVertex();
-            RenderUtils.posF(builder, posMat, minX, minY + (maxY - minY), zLevel).color(f1[0], f1[1], f1[2], f1[3]).lightmap(FULL_BRIGHT).endVertex();
-            RenderUtils.posF(builder, posMat, x, minY + (maxY - minY), zLevel).color(f2[0], f2[1], f2[2], f2[3]).lightmap(FULL_BRIGHT).endVertex();
-            RenderUtils.posF(builder, posMat, x, minY, zLevel).color(f2[0], f2[1], f2[2], f2[3]).lightmap(FULL_BRIGHT).endVertex();
+            RenderUtils.posF(builder, posMat, minX, minY, zLevel).color(f1[0], f1[1], f1[2], f1[3]).uv2(FULL_BRIGHT).endVertex();
+            RenderUtils.posF(builder, posMat, minX, minY + (maxY - minY), zLevel).color(f1[0], f1[1], f1[2], f1[3]).uv2(FULL_BRIGHT).endVertex();
+            RenderUtils.posF(builder, posMat, x, minY + (maxY - minY), zLevel).color(f2[0], f2[1], f2[2], f2[3]).uv2(FULL_BRIGHT).endVertex();
+            RenderUtils.posF(builder, posMat, x, minY, zLevel).color(f2[0], f2[1], f2[2], f2[3]).uv2(FULL_BRIGHT).endVertex();
         });
 
         // draw the outline
@@ -47,24 +47,24 @@ public class RenderProgressBar {
 
         float x = MathHelper.lerp(progress / 100F, minX, maxX);
 
-        Matrix4f posMat = matrixStack.getLast().getMatrix();
+        Matrix4f posMat = matrixStack.last().pose();
 
         RenderSystem.shadeModel(GL11.GL_SMOOTH);
-        BufferBuilder builder = Tessellator.getInstance().getBuffer();
+        BufferBuilder builder = Tessellator.getInstance().getBuilder();
         builder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-        builder.pos(posMat, minX, minY, zLevel).color(f1[0], f1[1], f1[2], f1[3]).endVertex();
-        builder.pos(posMat, minX, minY + (maxY - minY), zLevel).color(f1[0], f1[1], f1[2], f1[3]).endVertex();
-        builder.pos(posMat, x, minY + (maxY - minY), zLevel).color(f2[0], f2[1], f2[2], f2[3]).endVertex();
-        builder.pos(posMat, x, minY, zLevel).color(f2[0], f2[1], f2[2], f2[3]).endVertex();
-        Tessellator.getInstance().draw();
+        builder.vertex(posMat, minX, minY, zLevel).color(f1[0], f1[1], f1[2], f1[3]).endVertex();
+        builder.vertex(posMat, minX, minY + (maxY - minY), zLevel).color(f1[0], f1[1], f1[2], f1[3]).endVertex();
+        builder.vertex(posMat, x, minY + (maxY - minY), zLevel).color(f2[0], f2[1], f2[2], f2[3]).endVertex();
+        builder.vertex(posMat, x, minY, zLevel).color(f2[0], f2[1], f2[2], f2[3]).endVertex();
+        Tessellator.getInstance().end();
 
         RenderSystem.lineWidth(2.0f);
         builder.begin(GL11.GL_LINE_LOOP, DefaultVertexFormats.POSITION_COLOR);
-        builder.pos(posMat, minX, minY, zLevel).color(0, 0, 0, 1f).endVertex();
-        builder.pos(posMat, minX, maxY, zLevel).color(0, 0, 0, 1f).endVertex();
-        builder.pos(posMat, maxX, maxY, zLevel).color(0, 0, 0, 1f).endVertex();
-        builder.pos(posMat, maxX, minY, zLevel).color(0, 0, 0, 1f).endVertex();
-        Tessellator.getInstance().draw();
+        builder.vertex(posMat, minX, minY, zLevel).color(0, 0, 0, 1f).endVertex();
+        builder.vertex(posMat, minX, maxY, zLevel).color(0, 0, 0, 1f).endVertex();
+        builder.vertex(posMat, maxX, maxY, zLevel).color(0, 0, 0, 1f).endVertex();
+        builder.vertex(posMat, maxX, minY, zLevel).color(0, 0, 0, 1f).endVertex();
+        Tessellator.getInstance().end();
         RenderSystem.shadeModel(GL11.GL_FLAT);
     }
 

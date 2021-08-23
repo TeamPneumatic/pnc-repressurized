@@ -38,7 +38,7 @@ public class EntityFilter implements Predicate<Entity> {
     private static final Pattern ELEMENT_DIVIDER = Pattern.compile(";");
     private static final Pattern ELEMENT_SUBDIVIDER = Pattern.compile("[(),]");
     private static final Map<String,Predicate<Entity>> ENTITY_PREDICATES = ImmutableMap.<String,Predicate<Entity>>builder()
-            .put("mob", e -> e instanceof IMob && !(e instanceof TameableEntity && ((TameableEntity) e).isTamed()))
+            .put("mob", e -> e instanceof IMob && !(e instanceof TameableEntity && ((TameableEntity) e).isTame()))
             .put("animal", e -> e instanceof AnimalEntity)
             .put("living", e -> e instanceof LivingEntity)
             .put("player", e -> e instanceof PlayerEntity)
@@ -122,7 +122,7 @@ public class EntityFilter implements Predicate<Entity> {
     private static final Set<String> DYE_COLORS = new HashSet<>();
     static {
         for (DyeColor d : DyeColor.values()) {
-            DYE_COLORS.add(d.getTranslationKey());
+            DYE_COLORS.add(d.getName());
         }
     }
 
@@ -169,18 +169,18 @@ public class EntityFilter implements Predicate<Entity> {
 
         private static boolean testShearable(Entity entity, String val) {
             return entity instanceof IForgeShearable
-                    && ((IForgeShearable) entity).isShearable(new ItemStack(Items.SHEARS), entity.getEntityWorld(), entity.getPosition()) ?
+                    && ((IForgeShearable) entity).isShearable(new ItemStack(Items.SHEARS), entity.getCommandSenderWorld(), entity.blockPosition()) ?
                     val.equalsIgnoreCase("yes") : val.equalsIgnoreCase("no");
         }
 
         private static boolean testBreedable(Entity entity, String val) {
-            return entity instanceof AnimalEntity && (((AnimalEntity) entity).getGrowingAge() == 0 ?
+            return entity instanceof AnimalEntity && (((AnimalEntity) entity).getAge() == 0 ?
                     val.equalsIgnoreCase("yes") : val.equalsIgnoreCase("no")
             );
         }
 
         private static boolean testAge(Entity entity, String val) {
-            return entity instanceof AgeableEntity && (((AgeableEntity) entity).getGrowingAge() >= 0 ?
+            return entity instanceof AgeableEntity && (((AgeableEntity) entity).getAge() >= 0 ?
                     val.equalsIgnoreCase("adult") : val.equalsIgnoreCase("baby"));
         }
 
@@ -199,11 +199,11 @@ public class EntityFilter implements Predicate<Entity> {
 
         private static boolean hasColor(Entity entity, String val) {
             if (entity instanceof SheepEntity) {
-                return ((SheepEntity) entity).getFleeceColor().getTranslationKey().equalsIgnoreCase(val);
+                return ((SheepEntity) entity).getColor().getName().equalsIgnoreCase(val);
             } else if (entity instanceof WolfEntity) {
-                return ((WolfEntity) entity).getCollarColor().getTranslationKey().equalsIgnoreCase(val);
+                return ((WolfEntity) entity).getCollarColor().getName().equalsIgnoreCase(val);
             } else if (entity instanceof CatEntity) {
-                return ((CatEntity) entity).getCollarColor().getTranslationKey().equalsIgnoreCase(val);
+                return ((CatEntity) entity).getCollarColor().getName().equalsIgnoreCase(val);
             } else {
                 return false;
             }
@@ -214,7 +214,7 @@ public class EntityFilter implements Predicate<Entity> {
                 if (!name.contains(":")) {
                     name = "minecraft:" + name;
                 }
-                ItemStack stack = mainHand ? ((LivingEntity) entity).getHeldItemMainhand() : ((LivingEntity) entity).getHeldItemOffhand();
+                ItemStack stack = mainHand ? ((LivingEntity) entity).getMainHandItem() : ((LivingEntity) entity).getOffhandItem();
                 return stack.getItem().getRegistryName() != null && stack.getItem().getRegistryName().toString().equals(name);
             }
             return false;

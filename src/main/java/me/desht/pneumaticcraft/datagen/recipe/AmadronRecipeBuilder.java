@@ -39,8 +39,8 @@ public class AmadronRecipeBuilder extends PneumaticCraftRecipeBuilder<AmadronRec
         }
 
         @Override
-        public void serialize(JsonObject json) {
-            new AmadronOffer(getID(), input, output, isStatic, level, maxStock).toJson(json);
+        public void serializeRecipeData(JsonObject json) {
+            new AmadronOffer(getId(), input, output, isStatic, level, maxStock).toJson(json);
         }
     }
 }

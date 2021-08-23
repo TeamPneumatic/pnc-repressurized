@@ -37,7 +37,7 @@ public class ConstantSensor implements IPollSensorSetting {
 
     @Override
     public RangedInteger getTextboxIntRange() {
-        return RangedInteger.createRangedInteger(0, 16);
+        return RangedInteger.of(0, 16);
     }
 
     @Override

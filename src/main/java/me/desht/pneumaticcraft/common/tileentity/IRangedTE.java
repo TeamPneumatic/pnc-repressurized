@@ -16,7 +16,7 @@ public interface IRangedTE {
      * @return a text component
      */
     default ITextComponent rangeText() {
-        return new StringTextComponent("R").mergeStyle(getRangeManager().shouldShowRange() ? TextFormatting.AQUA : TextFormatting.GRAY);
+        return new StringTextComponent("R").withStyle(getRangeManager().shouldShowRange() ? TextFormatting.AQUA : TextFormatting.GRAY);
     }
 
     default int getRange() {

@@ -53,7 +53,7 @@ public abstract class AbstractSliderOptions<T extends IArmorUpgradeClientHandler
         Pair<Integer,Integer> range = getRange();
         int initVal = range.getRight();
         if (Minecraft.getInstance().player != null) {
-            ItemStack stack = Minecraft.getInstance().player.getItemStackFromSlot(getSlot());
+            ItemStack stack = Minecraft.getInstance().player.getItemBySlot(getSlot());
             initVal = ItemPneumaticArmor.getIntData(stack, getTagName(), range.getRight());
         }
         PointXY pos = getSliderPos();

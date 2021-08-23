@@ -24,7 +24,7 @@ import java.util.Optional;
 
 public class BlockElevatorCaller extends BlockPneumaticCraftCamo {
     public BlockElevatorCaller() {
-        super(ModBlocks.defaultProps().notSolid());
+        super(ModBlocks.defaultProps().noOcclusion());
     }
 
     @Override
@@ -33,16 +33,16 @@ public class BlockElevatorCaller extends BlockPneumaticCraftCamo {
     }
 
     @Override
-    public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
-        TileEntity te = world.getTileEntity(pos);
+    public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult brtr) {
+        TileEntity te = world.getBlockEntity(pos);
         if (te instanceof TileEntityElevatorCaller) {
             TileEntityElevatorCaller teEC = (TileEntityElevatorCaller) te;
-            if (!world.isRemote) {
-                int floor = getFloorForHit(teEC, brtr.getFace(), brtr.getHitVec().x, brtr.getHitVec().y, brtr.getHitVec().z);
+            if (!world.isClientSide) {
+                int floor = getFloorForHit(teEC, brtr.getDirection(), brtr.getLocation().x, brtr.getLocation().y, brtr.getLocation().z);
                 if (floor >= 0) setSurroundingElevators(world, pos, floor);
             }
         }
-        return getRotation(state).getOpposite() == brtr.getFace() ? ActionResultType.SUCCESS : ActionResultType.PASS;
+        return getRotation(state).getOpposite() == brtr.getDirection() ? ActionResultType.SUCCESS : ActionResultType.PASS;
     }
 
     private int getFloorForHit(TileEntityElevatorCaller teEC, Direction side, double hitX, double hitY, double hitZ) {
@@ -66,27 +66,27 @@ public class BlockElevatorCaller extends BlockPneumaticCraftCamo {
 
     @Override
     public VoxelShape getUncamouflagedShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext ctx) {
-        return VoxelShapes.fullCube();
+        return VoxelShapes.block();
     }
 
     public static void setSurroundingElevators(World world, BlockPos pos, int floor) {
         for (Direction dir : DirectionUtil.HORIZONTALS) {
-            getElevatorBase(world, pos.offset(dir).offset(Direction.DOWN, 2)).ifPresent(te -> te.goToFloor(floor));
+            getElevatorBase(world, pos.relative(dir).relative(Direction.DOWN, 2)).ifPresent(te -> te.goToFloor(floor));
         }
     }
 
     @Override
-    public void onBlockAdded(BlockState newState, World world, BlockPos pos, BlockState oldState, boolean isMoving) {
-        super.onBlockAdded(newState, world, pos, oldState, isMoving);
+    public void onPlace(BlockState newState, World world, BlockPos pos, BlockState oldState, boolean isMoving) {
+        super.onPlace(newState, world, pos, oldState, isMoving);
 
         updateElevatorButtons(world, pos);
     }
 
     @Override
-    public void onReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
+    public void onRemove(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
         updateElevatorButtons(world, pos);
 
-        super.onReplaced(state, world, pos, newState, isMoving);
+        super.onRemove(state, world, pos, newState, isMoving);
     }
 
     /**
@@ -97,7 +97,7 @@ public class BlockElevatorCaller extends BlockPneumaticCraftCamo {
      */
     private void updateElevatorButtons(World world, BlockPos pos) {
         for (Direction dir : DirectionUtil.HORIZONTALS) {
-            boolean ok = getElevatorBase(world, pos.offset(dir).offset(Direction.DOWN, 2)).map(te -> {
+            boolean ok = getElevatorBase(world, pos.relative(dir).relative(Direction.DOWN, 2)).map(te -> {
                 te.updateFloors(true);
                 return true;
             }).orElse(false);
@@ -122,13 +122,13 @@ public class BlockElevatorCaller extends BlockPneumaticCraftCamo {
     }
 
     @Override
-    public boolean canProvidePower(BlockState state) {
+    public boolean isSignalSource(BlockState state) {
         return true;
     }
 
     @Override
-    public int getWeakPower(BlockState state, IBlockReader par1IBlockAccess, BlockPos pos, Direction side) {
-        TileEntity te = par1IBlockAccess.getTileEntity(pos);
+    public int getSignal(BlockState state, IBlockReader par1IBlockAccess, BlockPos pos, Direction side) {
+        TileEntity te = par1IBlockAccess.getBlockEntity(pos);
         if (te instanceof TileEntityElevatorCaller) {
             TileEntityElevatorCaller teEc = (TileEntityElevatorCaller) te;
             return teEc.getEmittingRedstone() ? 15 : 0;

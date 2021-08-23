@@ -29,7 +29,7 @@ public class TrackerBlacklistManager {
     private static void addEntry(Set<ResourceLocation> blacklist, TileEntity te, Throwable e) {
         if (!blacklist.contains(keyFor(te))) {
             e.printStackTrace();
-            String title = te.getWorld().getBlockState(te.getPos()).getBlock().getRegistryName().toString();
+            String title = te.getLevel().getBlockState(te.getBlockPos()).getBlock().getRegistryName().toString();
             HUDHandler.getInstance().addMessage(
                     new StringTextComponent("Block tracking failed for " + title + "!"),
                     ImmutableList.of(new StringTextComponent("A stacktrace can be found in the log.")),

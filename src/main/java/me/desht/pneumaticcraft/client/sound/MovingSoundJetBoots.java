@@ -24,8 +24,8 @@ public class MovingSoundJetBoots extends TickableSound {
         super(ModSounds.LEAKING_GAS_LOW.get(), SoundCategory.NEUTRAL);
 
         this.player = player;
-        this.repeat = true;
-        this.repeatDelay = 0;
+        this.looping = true;
+        this.delay = 0;
         this.targetPitch = 0.7F;
         this.pitch = 0.5F;
         this.handler = CommonArmorHandler.getHandlerForPlayer(player);
@@ -42,7 +42,7 @@ public class MovingSoundJetBoots extends TickableSound {
         JetBootsStateTracker.JetBootsState jbState = JetBootsStateTracker.getClientTracker().getJetBootsState(player);
 
         if (endTimer == Integer.MAX_VALUE &&
-                (!jbState.isEnabled() || (!jbState.isActive() && (player.isOnGround() || player.isElytraFlying())))) {
+                (!jbState.isEnabled() || (!jbState.isActive() && (player.isOnGround() || player.isFallFlying())))) {
             endTimer = END_TICKS;
         }
         if (endTimer <= END_TICKS) {
@@ -53,16 +53,16 @@ public class MovingSoundJetBoots extends TickableSound {
             }
         }
 
-        x = (float) player.getPosX();
-        y = (float) player.getPosY();
-        z = (float) player.getPosZ();
+        x = (float) player.getX();
+        y = (float) player.getY();
+        z = (float) player.getZ();
 
         if (endTimer > 0 && endTimer <= END_TICKS) {
             targetPitch = 0.5F;
             volume = volumeFromConfig(jbState.isBuilderMode()) - ((END_TICKS - endTimer) / 50F);
         } else {
             if (jbState.isActive()) {
-                double vel = player.getMotion().length();
+                double vel = player.getDeltaMovement().length();
                 targetPitch = 0.9F + (float) vel / 15;
                 volume = volumeFromConfig(jbState.isBuilderMode()) + (float) vel / 15;
             } else {
@@ -79,20 +79,20 @@ public class MovingSoundJetBoots extends TickableSound {
     }
 
     @Override
-    public boolean isDonePlaying() {
+    public boolean isStopped() {
         return !handler.isValid() || !handler.isArmorEnabled() || endTimer <= 0;
     }
 
     private void handleParticles(boolean jetBootsActive, boolean builderMode) {
         int distThresholdSq = ClientUtils.getRenderDistanceThresholdSq();
-        if ((jetBootsActive || (player.world.getGameTime() & 0x3) == 0 || !ClientUtils.isFirstPersonCamera()) && player.getDistanceSq(ClientUtils.getClientPlayer()) < distThresholdSq) {
+        if ((jetBootsActive || (player.level.getGameTime() & 0x3) == 0 || !ClientUtils.isFirstPersonCamera()) && player.distanceToSqr(ClientUtils.getClientPlayer()) < distThresholdSq) {
             int nParticles = jetBootsActive ? 3 : 1;
-            Vector3d jetVec = jetBootsActive && !builderMode ? player.getLookVec().scale(-0.5) : IDLE_VEC;
+            Vector3d jetVec = jetBootsActive && !builderMode ? player.getLookAngle().scale(-0.5) : IDLE_VEC;
             Vector3d feet = jetBootsActive && !builderMode ?
-                    player.getPositionVec().add(player.getLookVec().scale(player == ClientUtils.getClientPlayer() ? -4 : -2)) :
-                    player.getPositionVec().add(0, -0.25, 0);
+                    player.position().add(player.getLookAngle().scale(player == ClientUtils.getClientPlayer() ? -4 : -2)) :
+                    player.position().add(0, -0.25, 0);
             for (int i = 0; i < nParticles; i++) {
-                player.world.addParticle(AirParticleData.DENSE, feet.x, feet.y, feet.z, jetVec.x, jetVec.y, jetVec.z);
+                player.level.addParticle(AirParticleData.DENSE, feet.x, feet.y, feet.z, jetVec.x, jetVec.y, jetVec.z);
             }
         }
     }

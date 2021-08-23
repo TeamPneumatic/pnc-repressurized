@@ -125,10 +125,10 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements
 
         tank.tick();
 
-        if (!getWorld().isRemote) {
+        if (!getLevel().isClientSide) {
             if (fuelQuality < 0) recalculateFuelQuality();
             processFluidItem(INPUT_SLOT, OUTPUT_SLOT);
-            if (getWorld().getGameTime() % 5 == 0) {
+            if (getLevel().getGameTime() % 5 == 0) {
                 int effectiveRange = rsController.shouldRun() && fuel > 0 ? targetRange : 0;
                 if (rsController.getCurrentMode() == RS_MODE_INTERPOLATE) {
                     effectiveRange = (int) (rsController.getCurrentRedstonePower() / 15D * targetRange);
@@ -138,8 +138,8 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements
                 useFuel();
             }
         } else {
-            if (getBlockState().get(LIT) && getWorld().rand.nextInt(10) == 0) {
-                getWorld().addParticle(ParticleTypes.FLAME, getPos().getX() + 0.4 + 0.2 * getWorld().rand.nextDouble(), getPos().getY() + 0.2 + tank.getFluidAmount() / 1000D * 3 / 16D, getPos().getZ() + 0.4 + 0.2 * getWorld().rand.nextDouble(), 0, 0, 0);
+            if (getBlockState().getValue(LIT) && getLevel().random.nextInt(10) == 0) {
+                getLevel().addParticle(ParticleTypes.FLAME, getBlockPos().getX() + 0.4 + 0.2 * getLevel().random.nextDouble(), getBlockPos().getY() + 0.2 + tank.getFluidAmount() / 1000D * 3 / 16D, getBlockPos().getZ() + 0.4 + 0.2 * getLevel().random.nextDouble(), 0, 0, 0);
             }
         }
     }
@@ -148,11 +148,11 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements
         if (!tank.isEmpty()) {
             if (PNCConfig.Common.Machines.keroseneLampCanUseAnyFuel) {
                 // 110 comes from kerosene's fuel value of 1,100,000 divided by the old FUEL_PER_MB value (10000)
-                fuelQuality = PneumaticRegistry.getInstance().getFuelRegistry().getFuelValue(world, tank.getFluid().getFluid()) / 110f;
+                fuelQuality = PneumaticRegistry.getInstance().getFuelRegistry().getFuelValue(level, tank.getFluid().getFluid()) / 110f;
             } else {
                 fuelQuality = tank.getFluid().getFluid() == ModFluids.KEROSENE.get() ? 10000f : 0f;
             }
-            if (tank.getFluid().getFluid().isIn(PneumaticCraftTags.Fluids.KEROSENE)) {
+            if (tank.getFluid().getFluid().is(PneumaticCraftTags.Fluids.KEROSENE)) {
                 fuelQuality *= 2.5f;  // kerosene is better than everything for lighting purposes
             }
             fuelQuality *= PNCConfig.Common.Machines.keroseneLampFuelEfficiency;
@@ -169,45 +169,45 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements
     }
 
     @Override
-    public void validate() {
-        super.validate();
-        checkingX = getPos().getX();
-        checkingY = getPos().getY();
-        checkingZ = getPos().getZ();
+    public void clearRemoved() {
+        super.clearRemoved();
+        checkingX = getBlockPos().getX();
+        checkingY = getBlockPos().getY();
+        checkingZ = getBlockPos().getZ();
     }
 
     @Override
-    public void remove() {
-        super.remove();
+    public void setRemoved() {
+        super.setRemoved();
         for (BlockPos pos : managingLights) {
             if (isLampLight(pos)) {
-                getWorld().removeBlock(pos, false);
+                getLevel().removeBlock(pos, false);
             }
         }
     }
 
     private boolean isLampLight(BlockPos pos) {
-        return getWorld().getBlockState(pos).getBlock() == ModBlocks.KEROSENE_LAMP_LIGHT.get();
+        return getLevel().getBlockState(pos).getBlock() == ModBlocks.KEROSENE_LAMP_LIGHT.get();
     }
 
     private void updateLights() {
         int roundedRange = range / LIGHT_SPACING * LIGHT_SPACING;
         checkingX += LIGHT_SPACING;
-        if (checkingX > getPos().getX() + roundedRange) {
-            checkingX = getPos().getX() - roundedRange;
+        if (checkingX > getBlockPos().getX() + roundedRange) {
+            checkingX = getBlockPos().getX() - roundedRange;
             checkingY += LIGHT_SPACING;
-            if (checkingY > getPos().getY() + roundedRange) {
-                checkingY = getPos().getY() - roundedRange;
+            if (checkingY > getBlockPos().getY() + roundedRange) {
+                checkingY = getBlockPos().getY() - roundedRange;
                 checkingZ += LIGHT_SPACING;
-                if (checkingZ > getPos().getZ() + roundedRange) checkingZ = getPos().getZ() - roundedRange;
+                if (checkingZ > getBlockPos().getZ() + roundedRange) checkingZ = getBlockPos().getZ() - roundedRange;
             }
         }
         BlockPos pos = new BlockPos(checkingX, checkingY, checkingZ);
-        BlockPos lampPos = new BlockPos(getPos().getX(), getPos().getY(), getPos().getZ());
+        BlockPos lampPos = new BlockPos(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ());
         if (managingLights.contains(pos)) {
             if (isLampLight(pos)) {
                 if (!passesRaytraceTest(pos, lampPos)) {
-                    getWorld().removeBlock(pos, false);
+                    getLevel().removeBlock(pos, false);
                     managingLights.remove(pos);
                 }
             } else {
@@ -221,12 +221,12 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements
     private void updateRange(int targetRange) {
         if (targetRange > range) {
             range++;
-            BlockPos lampPos = new BlockPos(getPos().getX(), getPos().getY(), getPos().getZ());
+            BlockPos lampPos = new BlockPos(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ());
             int roundedRange = range / LIGHT_SPACING * LIGHT_SPACING;
             for (int x = -roundedRange; x <= roundedRange; x += LIGHT_SPACING) {
                 for (int y = -roundedRange; y <= roundedRange; y += LIGHT_SPACING) {
                     for (int z = -roundedRange; z <= roundedRange; z += LIGHT_SPACING) {
-                        BlockPos pos = new BlockPos(x + getPos().getX(), y + getPos().getY(), z + getPos().getZ());
+                        BlockPos pos = new BlockPos(x + getBlockPos().getX(), y + getBlockPos().getY(), z + getBlockPos().getZ());
                         if (!managingLights.contains(pos)) {
                             tryAddLight(pos, lampPos);
                         }
@@ -236,13 +236,13 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements
         } else if (targetRange < range) {
             range--;
             Iterator<BlockPos> iterator = managingLights.iterator();
-            BlockPos lampPos = new BlockPos(getPos().getX(), getPos().getY(), getPos().getZ());
+            BlockPos lampPos = new BlockPos(getBlockPos().getX(), getBlockPos().getY(), getBlockPos().getZ());
             while (iterator.hasNext()) {
                 BlockPos pos = iterator.next();
                 if (!isLampLight(pos)) {
                     iterator.remove();
                 } else if (PneumaticCraftUtils.distBetween(pos, lampPos) > range) {
-                    getWorld().removeBlock(pos, false);
+                    getLevel().removeBlock(pos, false);
                     iterator.remove();
                 }
             }
@@ -250,8 +250,8 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements
         boolean wasOn = isOn;
         isOn = range > 0;
         if (isOn != wasOn) {
-            world.getChunkProvider().getLightManager().checkBlock(pos);
-            world.setBlockState(pos, getBlockState().with(LIT, isOn));
+            level.getChunkSource().getLightEngine().checkBlock(worldPosition);
+            level.setBlockAndUpdate(worldPosition, getBlockState().setValue(LIT, isOn));
         }
     }
 
@@ -261,16 +261,16 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements
 
     private boolean passesRaytraceTest(BlockPos pos, BlockPos lampPos) {
         // must be run on server!
-        RayTraceContext ctx = new RayTraceContext(new Vector3d(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5), new Vector3d(lampPos.getX() + 0.5, lampPos.getY() + 0.5, lampPos.getZ() + 0.5), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, FakePlayerFactory.getMinecraft((ServerWorld) getWorld()));
-        BlockRayTraceResult rtr = getWorld().rayTraceBlocks(ctx);
-        return rtr.getType() == RayTraceResult.Type.BLOCK && rtr.getPos().equals(lampPos);
+        RayTraceContext ctx = new RayTraceContext(new Vector3d(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5), new Vector3d(lampPos.getX() + 0.5, lampPos.getY() + 0.5, lampPos.getZ() + 0.5), RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, FakePlayerFactory.getMinecraft((ServerWorld) getLevel()));
+        BlockRayTraceResult rtr = getLevel().clip(ctx);
+        return rtr.getType() == RayTraceResult.Type.BLOCK && rtr.getBlockPos().equals(lampPos);
     }
 
     private void tryAddLight(BlockPos pos, BlockPos lampPos) {
         if (!PNCConfig.Common.Advanced.disableKeroseneLampFakeAirBlock && PneumaticCraftUtils.distBetween(pos, lampPos) <= range) {
-            if (getWorld().isAirBlock(pos) && !isLampLight(pos)) {
+            if (getLevel().isEmptyBlock(pos) && !isLampLight(pos)) {
                 if (passesRaytraceTest(pos, lampPos)) {
-                    getWorld().setBlockState(pos, ModBlocks.KEROSENE_LAMP_LIGHT.get().getDefaultState());
+                    getLevel().setBlockAndUpdate(pos, ModBlocks.KEROSENE_LAMP_LIGHT.get().defaultBlockState());
                     managingLights.add(pos);
                 }
             }
@@ -284,13 +284,13 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements
 
     @Override
     public void onDescUpdate() {
-        getWorld().getChunkProvider().getLightManager().checkBlock(getPos());
+        getLevel().getChunkSource().getLightEngine().checkBlock(getBlockPos());
         super.onDescUpdate();
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tag) {
-        super.write(tag);
+    public CompoundNBT save(CompoundNBT tag) {
+        super.save(tag);
         tag.put("lights", managingLights.stream().map(NBTUtil::writeBlockPos).collect(Collectors.toCollection(ListNBT::new)));
         tag.putByte("targetRange", (byte) targetRange);
         tag.putByte("range", (byte) range);
@@ -299,8 +299,8 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT tag) {
-        super.read(state, tag);
+    public void load(BlockState state, CompoundNBT tag) {
+        super.load(state, tag);
 
         managingLights.clear();
         ListNBT lights = tag.getList("lights", 10);
@@ -373,6 +373,6 @@ public class TileEntityKeroseneLamp extends TileEntityTickableBase implements
     @Nullable
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        return new ContainerKeroseneLamp(i, playerInventory, getPos());
+        return new ContainerKeroseneLamp(i, playerInventory, getBlockPos());
     }
 }

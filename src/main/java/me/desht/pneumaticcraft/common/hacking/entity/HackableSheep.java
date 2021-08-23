@@ -44,8 +44,8 @@ public class HackableSheep implements IHackableEntity {
     @Override
     public void onHackFinished(Entity entity, PlayerEntity player) {
         if (entity instanceof SheepEntity) {
-            DyeColor newColor = DyeColor.byId(player.getRNG().nextInt(DyeColor.values().length));
-            ((SheepEntity) entity).setFleeceColor(newColor);
+            DyeColor newColor = DyeColor.byId(player.getRandom().nextInt(DyeColor.values().length));
+            ((SheepEntity) entity).setColor(newColor);
         }
     }
 

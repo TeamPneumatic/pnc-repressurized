@@ -17,12 +17,12 @@ public class DroneAIDropItem<W extends ProgWidgetInventoryBase & IItemDropper> e
     }
 
     @Override
-    public boolean shouldExecute() {
+    public boolean canUse() {
         boolean shouldExecute = false;
         for (int i = 0; i < drone.getInv().getSlots(); i++) {
             ItemStack stack = drone.getInv().getStackInSlot(i);
             if (progWidget.isItemValidForFilters(stack)) {
-                shouldExecute = super.shouldExecute();
+                shouldExecute = super.canUse();
                 break;
             }
         }
@@ -54,12 +54,12 @@ public class DroneAIDropItem<W extends ProgWidgetInventoryBase & IItemDropper> e
                 }
                 ItemEntity item = new ItemEntity(drone.world(), pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, stack);
                 if (progWidget.dropStraight()) {
-                    item.setMotion(0, 0, 0);
+                    item.setDeltaMovement(0, 0, 0);
                 }
                 if (progWidget.hasPickupDelay()) {
-                    item.setPickupDelay(40);
+                    item.setPickUpDelay(40);
                 }
-                drone.world().addEntity(item);
+                drone.world().addFreshEntity(item);
                 if (useCount() && getRemainingCount() == 0) break;
             }
         }

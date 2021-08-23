@@ -24,8 +24,8 @@ public class BlockTrackOptions extends IOptionPage.SimpleOptionPage<BlockTracker
     public void populateGui(IGuiScreen gui) {
         gui.addWidget(new WidgetButtonExtended(30, settingsYposition() + 12, 150, 20,
                 xlate("pneumaticcraft.armor.gui.misc.moveStatScreen"), b -> {
-            Minecraft.getInstance().player.closeScreen();
-            Minecraft.getInstance().displayGuiScreen(new GuiMoveStat(getClientUpgradeHandler(), ArmorHUDLayout.LayoutType.BLOCK_TRACKER));
+            Minecraft.getInstance().player.closeContainer();
+            Minecraft.getInstance().setScreen(new GuiMoveStat(getClientUpgradeHandler(), ArmorHUDLayout.LayoutType.BLOCK_TRACKER));
         }));
 
         ResourceLocation blockTrackerID = ArmorUpgradeRegistry.getInstance().blockTrackerHandler.getID();

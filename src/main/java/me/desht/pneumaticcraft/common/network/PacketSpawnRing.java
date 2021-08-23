@@ -20,7 +20,7 @@ public class PacketSpawnRing extends LocationDoublePacket {
 
     public PacketSpawnRing(double x, double y, double z, Entity targetEntity, int... colors) {
         super(x, y, z);
-        targetEntityId = targetEntity.getEntityId();
+        targetEntityId = targetEntity.getId();
         this.colors = colors;
     }
 
@@ -44,7 +44,7 @@ public class PacketSpawnRing extends LocationDoublePacket {
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             World world = ClientUtils.getClientWorld();
-            Entity entity = world.getEntityByID(targetEntityId);
+            Entity entity = world.getEntity(targetEntityId);
             if (entity != null) {
                 for (int color : colors) {
                     ClientUtils.spawnEntityClientside(new EntityRing(world, x, y, z, entity, color));

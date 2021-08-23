@@ -44,7 +44,7 @@ public class HackManager {
     private static HackManager clientInstance, serverInstance;
 
     private static HackManager getInstance(World world) {
-        if (world.isRemote) {
+        if (world.isClientSide) {
             if (clientInstance == null) clientInstance = new HackManager();
             return clientInstance;
         } else {
@@ -98,7 +98,7 @@ public class HackManager {
 
     public static IHackableEntity getHackableForEntity(Entity entity, PlayerEntity player) {
         // clean up the tracked entities map
-        getInstance(player.getEntityWorld()).trackedHackableEntities.entrySet().removeIf(
+        getInstance(player.getCommandSenderWorld()).trackedHackableEntities.entrySet().removeIf(
                 entry -> !entry.getKey().isAlive()
                         || !entry.getValue().canHack(entry.getKey(), player) && !isInDisplayCooldown(entry.getValue(), entry.getKey())
         );
@@ -106,11 +106,11 @@ public class HackManager {
         if (entity instanceof IHackableEntity && ((IHackableEntity) entity).canHack(entity, player))
             return (IHackableEntity) entity;
 
-        IHackableEntity hackable = getInstance(player.getEntityWorld()).trackedHackableEntities.get(entity);
+        IHackableEntity hackable = getInstance(player.getCommandSenderWorld()).trackedHackableEntities.get(entity);
         if (hackable == null) {
             hackable = PneumaticHelmetRegistry.getInstance().getHackable(entity, player);
             if (hackable != null) {
-                getInstance(player.getEntityWorld()).trackedHackableEntities.put(entity, hackable);
+                getInstance(player.getCommandSenderWorld()).trackedHackableEntities.put(entity, hackable);
             }
         }
         return hackable;
@@ -120,7 +120,7 @@ public class HackManager {
         Block block = world.getBlockState(pos).getBlock();
 
         // clean up the tracked blocks map
-        getInstance(player.getEntityWorld()).trackedHackableBlocks.entrySet().removeIf(
+        getInstance(player.getCommandSenderWorld()).trackedHackableBlocks.entrySet().removeIf(
                 entry -> {
                     Block trackedBlock = entry.getValue().getLeft();
                     IHackableBlock hackableBlock = entry.getValue().getRight();
@@ -134,12 +134,12 @@ public class HackManager {
             return (IHackableBlock) block;
 
         WorldAndCoord loc = new WorldAndCoord(world, pos);
-        Pair<Block,IHackableBlock> pair = getInstance(player.getEntityWorld()).trackedHackableBlocks.get(loc);
+        Pair<Block,IHackableBlock> pair = getInstance(player.getCommandSenderWorld()).trackedHackableBlocks.get(loc);
         if (pair == null) {
             IHackableBlock hackable = PneumaticHelmetRegistry.getInstance().getHackable(block);
             if (hackable != null && hackable.canHack(world, pos, player)) {
                 pair = Pair.of(block, hackable);
-                getInstance(player.getEntityWorld()).trackedHackableBlocks.put(loc, pair);
+                getInstance(player.getCommandSenderWorld()).trackedHackableBlocks.put(loc, pair);
             } else {
                 return null;
             }
@@ -148,7 +148,7 @@ public class HackManager {
     }
 
     private static boolean isInDisplayCooldown(IHackableBlock hackableBlock, IBlockReader world, BlockPos pos, PlayerEntity player) {
-        if (player.world.isRemote) {
+        if (player.level.isClientSide) {
             RenderBlockTarget target = ArmorUpgradeClientRegistry.getInstance()
                     .getClientHandler(ArmorUpgradeRegistry.getInstance().blockTrackerHandler, BlockTrackerClientHandler.class)
                     .getTargetForCoord(pos);
@@ -160,7 +160,7 @@ public class HackManager {
     }
 
     private static boolean isInDisplayCooldown(IHackableEntity hackableEntity, Entity entity) {
-        if (entity.world.isRemote) {
+        if (entity.level.isClientSide) {
             RenderEntityTarget target = ArmorUpgradeClientRegistry.getInstance()
                     .getClientHandler(ArmorUpgradeRegistry.getInstance().entityTrackerHandler, EntityTrackerClientHandler.class)
                     .getTargetForEntity(entity);

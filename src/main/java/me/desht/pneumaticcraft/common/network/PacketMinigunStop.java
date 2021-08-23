@@ -23,11 +23,11 @@ public class PacketMinigunStop {
     }
 
     public PacketMinigunStop(PacketBuffer buf) {
-        this.stack = buf.readItemStack();
+        this.stack = buf.readItem();
     }
 
     public void toBytes(PacketBuffer buf) {
-        buf.writeItemStack(stack);
+        buf.writeItem(stack);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {

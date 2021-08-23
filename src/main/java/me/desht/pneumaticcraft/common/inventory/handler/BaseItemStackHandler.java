@@ -25,7 +25,7 @@ public class BaseItemStackHandler extends ItemStackHandler {
     @Override
     protected void onContentsChanged(int slot) {
         super.onContentsChanged(slot);
-        if (te != null) te.markDirty();
+        if (te != null) te.setChanged();
     }
 
     @Nonnull

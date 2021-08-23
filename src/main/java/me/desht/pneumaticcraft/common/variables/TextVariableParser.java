@@ -64,7 +64,7 @@ public class TextVariableParser {
     }
 
     private String stackToStr(ItemStack stack, boolean id) {
-        return id ? stack.getItem().getRegistryName().toString() : stack.getDisplayName().getString();
+        return id ? stack.getItem().getRegistryName().toString() : stack.getHoverName().getString();
     }
 
     private String posToStr(BlockPos pos, String ext) {

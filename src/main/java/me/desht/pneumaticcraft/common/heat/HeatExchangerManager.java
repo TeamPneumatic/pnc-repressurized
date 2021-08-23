@@ -39,7 +39,7 @@ public enum HeatExchangerManager implements IHeatRegistry {
     @Nonnull
     public LazyOptional<IHeatExchangerLogic> getLogic(World world, BlockPos pos, Direction side, BiPredicate<IWorld,BlockPos> blockFilter) {
         if (!world.isAreaLoaded(pos, 0)) return LazyOptional.empty();
-        TileEntity te = world.getTileEntity(pos);
+        TileEntity te = world.getBlockEntity(pos);
         // important: use cap here, not IHeatExchangingTE interface
         if (te != null && te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY, side).isPresent()) {
             return te.getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY, side);
@@ -53,7 +53,7 @@ public enum HeatExchangerManager implements IHeatRegistry {
             if (!l.isEmpty()) {
                 return l.get(0).getCapability(PNCCapabilities.HEAT_EXCHANGER_CAPABILITY);
             }
-            if (world.isAirBlock(pos)) {
+            if (world.isEmptyBlock(pos)) {
                 return LazyOptional.of(() -> HeatExchangerLogicAmbient.atPosition(world, pos));
             }
             HeatPropertiesRecipe entry = BlockHeatProperties.getInstance().getCustomHeatEntry(world, world.getBlockState(pos));

@@ -36,37 +36,37 @@ public class ItemGPSTool extends Item implements IPositionProvider {
     }
 
     @Override
-    public ActionResultType onItemUse(ItemUseContext ctx) {
-        BlockPos pos = ctx.getPos();
-        setGPSLocation(ctx.getPlayer().getHeldItem(ctx.getHand()), pos);
-        if (!ctx.getWorld().isRemote)
-            ctx.getPlayer().sendStatusMessage(new TranslationTextComponent("pneumaticcraft.message.gps_tool.targetSet" ,pos.getX(), pos.getY(), pos.getZ()).mergeStyle(TextFormatting.GREEN), false);
+    public ActionResultType useOn(ItemUseContext ctx) {
+        BlockPos pos = ctx.getClickedPos();
+        setGPSLocation(ctx.getPlayer().getItemInHand(ctx.getHand()), pos);
+        if (!ctx.getLevel().isClientSide)
+            ctx.getPlayer().displayClientMessage(new TranslationTextComponent("pneumaticcraft.message.gps_tool.targetSet" ,pos.getX(), pos.getY(), pos.getZ()).withStyle(TextFormatting.GREEN), false);
         ctx.getPlayer().playSound(ModSounds.CHIRP.get(), 1.0f, 1.5f);
         return ActionResultType.SUCCESS; // we don't want to use the item.
     }
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
-        ItemStack stack = playerIn.getHeldItem(handIn);
-        if (worldIn.isRemote) {
+    public ActionResult<ItemStack> use(World worldIn, PlayerEntity playerIn, Hand handIn) {
+        ItemStack stack = playerIn.getItemInHand(handIn);
+        if (worldIn.isClientSide) {
             GuiGPSTool.showGUI(stack, handIn, getGPSLocation(worldIn, stack));
         }
-        return ActionResult.resultSuccess(stack);
+        return ActionResult.success(stack);
     }
 
     @Override
-    public void addInformation(ItemStack stack, World worldIn, List<ITextComponent> infoList, ITooltipFlag par4) {
-        super.addInformation(stack, worldIn, infoList, par4);
+    public void appendHoverText(ItemStack stack, World worldIn, List<ITextComponent> infoList, ITooltipFlag par4) {
+        super.appendHoverText(stack, worldIn, infoList, par4);
 
         ClientUtils.addGuiContextSensitiveTooltip(stack, infoList);
         BlockPos pos = getGPSLocation(stack);
         if (pos != null) {
-            ITextComponent translated = new TranslationTextComponent(worldIn.getBlockState(pos).getBlock().getTranslationKey());
-            IFormattableTextComponent blockName = worldIn.getChunkProvider().isChunkLoaded(new ChunkPos(pos)) ?
-                    new StringTextComponent(" (").append(translated).appendString(")") :
-                    StringTextComponent.EMPTY.copyRaw();
+            ITextComponent translated = new TranslationTextComponent(worldIn.getBlockState(pos).getBlock().getDescriptionId());
+            IFormattableTextComponent blockName = worldIn.getChunkSource().isEntityTickingChunk(new ChunkPos(pos)) ?
+                    new StringTextComponent(" (").append(translated).append(")") :
+                    StringTextComponent.EMPTY.plainCopy();
             String str = String.format("[%d, %d, %d]", pos.getX(), pos.getY(), pos.getZ());
-            infoList.add(new StringTextComponent(str).mergeStyle(TextFormatting.YELLOW).append(blockName.mergeStyle(TextFormatting.GREEN)));
+            infoList.add(new StringTextComponent(str).withStyle(TextFormatting.YELLOW).append(blockName.withStyle(TextFormatting.GREEN)));
         }
         String varName = getVariable(stack);
         if (!varName.isEmpty()) {
@@ -77,7 +77,7 @@ public class ItemGPSTool extends Item implements IPositionProvider {
     @Override
     public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean heldItem) {
         String var = getVariable(stack);
-        if (!var.equals("") && !world.isRemote) {
+        if (!var.equals("") && !world.isClientSide) {
             BlockPos pos = GlobalVariableManager.getInstance().getPos(var);
             setGPSLocation(stack, pos);
         }
@@ -91,7 +91,7 @@ public class ItemGPSTool extends Item implements IPositionProvider {
         CompoundNBT compound = gpsTool.getTag();
         if (compound != null) {
             String var = getVariable(gpsTool);
-            if (!var.isEmpty() && world != null && !world.isRemote) {
+            if (!var.isEmpty() && world != null && !world.isClientSide) {
                 BlockPos pos = GlobalVariableManager.getInstance().getPos(var);
                 setGPSLocation(gpsTool, pos);
             }

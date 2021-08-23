@@ -31,8 +31,8 @@ public class FuelQualityBuilder extends PneumaticCraftRecipeBuilder<FuelQualityB
         }
 
         @Override
-        public void serialize(JsonObject json) {
-            json.add("fluid", fuel.serialize());
+        public void serializeRecipeData(JsonObject json) {
+            json.add("fluid", fuel.toJson());
             json.addProperty("air_per_bucket", airPerBucket);
             json.addProperty("burn_rate", burnRate);
         }

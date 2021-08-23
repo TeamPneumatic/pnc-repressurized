@@ -60,18 +60,18 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase<ProgWidgetI
         itemRad.visible = varRad.visible = advancedMode;
 
         // buttons to open item & inv search when in item filter mode
-        addButton(itemLabel = new WidgetLabel(guiLeft + 8, guiTop + 55, xlate("pneumaticcraft.gui.progWidget.itemFilter.itemLabel").appendString(":")));
+        addButton(itemLabel = new WidgetLabel(guiLeft + 8, guiTop + 55, xlate("pneumaticcraft.gui.progWidget.itemFilter.itemLabel").append(":")));
         addButton(itemSearchButton = new WidgetButtonExtended(guiLeft + itemLabel.getWidth() + 35, guiTop + 50, 20, 20, StringTextComponent.EMPTY,
                 b -> openSearcher()).setRenderStacks(new ItemStack(Items.COMPASS)).setTooltipKey("pneumaticcraft.gui.misc.searchItem"));
         addButton(invSearchButton = new WidgetButtonExtended(itemSearchButton.x + 25, guiTop + 50, 20, 20, StringTextComponent.EMPTY,
                 b -> openInventorySearcher()).setRenderStacks(new ItemStack(Items.CHEST)).setTooltipKey("pneumaticcraft.gui.misc.searchInventory"));
 
         // variable dropdown when in variable filter mode
-        addButton(variableLabel = new WidgetLabel(guiLeft + 8, guiTop + 53, xlate("pneumaticcraft.gui.progWidget.itemFilter.variableLabel").appendString(":")));
-        addButton(variableField = new WidgetComboBox(font, guiLeft + 12 + variableLabel.getWidth(), guiTop + 52, 80, font.FONT_HEIGHT + 1)
+        addButton(variableLabel = new WidgetLabel(guiLeft + 8, guiTop + 53, xlate("pneumaticcraft.gui.progWidget.itemFilter.variableLabel").append(":")));
+        addButton(variableField = new WidgetComboBox(font, guiLeft + 12 + variableLabel.getWidth(), guiTop + 52, 80, font.lineHeight + 1)
                 .setElements(guiProgrammer.te.getAllVariables()));
-        variableField.setMaxStringLength(GlobalVariableManager.MAX_VARIABLE_LEN);
-        variableField.setText(progWidget.getVariable());
+        variableField.setMaxLength(GlobalVariableManager.MAX_VARIABLE_LEN);
+        variableField.setValue(progWidget.getVariable());
 
         // checkboxes shown in both modes
         addButton(checkBoxUseDurability = new WidgetCheckBox(guiLeft + 8, guiTop + 96, 0xFF404040,
@@ -103,16 +103,16 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase<ProgWidgetI
 
     private void openSearcher() {
         ClientUtils.openContainerGui(ModContainers.ITEM_SEARCHER.get(), new StringTextComponent("Search"));
-        if (minecraft.currentScreen instanceof GuiItemSearcher) {
-            itemSearchGui = (GuiItemSearcher) minecraft.currentScreen;
+        if (minecraft.screen instanceof GuiItemSearcher) {
+            itemSearchGui = (GuiItemSearcher) minecraft.screen;
             itemSearchGui.setSearchStack(progWidget.getFilter());
         }
     }
 
     private void openInventorySearcher() {
         ClientUtils.openContainerGui(ModContainers.INVENTORY_SEARCHER.get(), new StringTextComponent("Search"));
-        if (minecraft.currentScreen instanceof GuiInventorySearcher) {
-            invSearchGui = (GuiInventorySearcher) minecraft.currentScreen;
+        if (minecraft.screen instanceof GuiInventorySearcher) {
+            invSearchGui = (GuiInventorySearcher) minecraft.screen;
             invSearchGui.setSearchStack(progWidget.getFilter());
         }
     }
@@ -142,15 +142,15 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase<ProgWidgetI
         checkBoxUseModSimilarity.active = varRad.isChecked() || !filter.isEmpty() && !checkBoxMatchBlock.checked;
         TranslationTextComponent msg = xlate("pneumaticcraft.gui.logistics_frame.matchModId");
         String modName = StringUtils.abbreviate(ModNameCache.getModName(filter.getItem()), 22);
-        checkBoxUseModSimilarity.setMessage(filter.isEmpty() ? msg : msg.appendString(" (" + modName + ")"));
+        checkBoxUseModSimilarity.setMessage(filter.isEmpty() ? msg : msg.append(" (" + modName + ")"));
         checkBoxMatchBlock.active = varRad.isChecked() || filter.getItem() instanceof BlockItem && !checkBoxUseNBT.checked && !checkBoxUseModSimilarity.checked;
     }
 
     @Override
-    public void onClose() {
-        progWidget.setVariable(variableField.getText());
+    public void removed() {
+        progWidget.setVariable(variableField.getValue());
 
-        super.onClose();
+        super.removed();
     }
 
     @Override
@@ -158,7 +158,7 @@ public class GuiProgWidgetItemFilter extends GuiProgWidgetOptionBase<ProgWidgetI
         super.render(matrixStack, mouseX, mouseY, partialTicks);
 
         if (itemRad.isChecked()) {
-            minecraft.getTextureManager().bindTexture(getTexture());
+            minecraft.getTextureManager().bind(getTexture());
             RenderSystem.enableTexture();
             RenderSystem.color4f(1, 1, 1, 1);
             blit(matrixStack, guiLeft + itemX, guiTop + 51, 186, 0, 18, 18);

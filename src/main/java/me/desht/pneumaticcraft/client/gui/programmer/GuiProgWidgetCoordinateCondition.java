@@ -21,7 +21,7 @@ public class GuiProgWidgetCoordinateCondition extends GuiProgWidgetOptionBase<Pr
 
         for (Direction.Axis axis : Direction.Axis.values()) {
             WidgetCheckBox checkBox = new WidgetCheckBox(guiLeft + 10, guiTop + 30 + axis.ordinal() * 12, 0xFF404040,
-                    new StringTextComponent(axis.getName2()), b -> progWidget.getAxisOptions().setCheck(axis, b.checked));
+                    new StringTextComponent(axis.getName()), b -> progWidget.getAxisOptions().setCheck(axis, b.checked));
             addButton(checkBox);
             checkBox.setChecked(progWidget.getAxisOptions().shouldCheck(axis));
         }
@@ -40,6 +40,6 @@ public class GuiProgWidgetCoordinateCondition extends GuiProgWidgetOptionBase<Pr
         super.render(matrixStack, mouseX, mouseY, partialTicks);
 
         String condition = progWidget.getCondition();
-        font.drawString(matrixStack, condition, width / 2f - font.getStringWidth(condition) / 2f, guiTop + 70, 0xFF404060);
+        font.draw(matrixStack, condition, width / 2f - font.width(condition) / 2f, guiTop + 70, 0xFF404060);
     }
 }

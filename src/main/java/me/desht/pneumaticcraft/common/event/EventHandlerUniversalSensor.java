@@ -12,21 +12,21 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 public class EventHandlerUniversalSensor {
     @SubscribeEvent
     public void onInteraction(PlayerInteractEvent event) {
-        sendEventToSensors(event.getEntity().world, event);
+        sendEventToSensors(event.getEntity().level, event);
     }
 
     @SubscribeEvent
     public void onPlayerAttack(AttackEntityEvent event) {
-        sendEventToSensors(event.getEntity().world, event);
+        sendEventToSensors(event.getEntity().level, event);
     }
 
     @SubscribeEvent
     public void onItemPickUp(EntityItemPickupEvent event) {
-        sendEventToSensors(event.getEntity().world, event);
+        sendEventToSensors(event.getEntity().level, event);
     }
 
     private void sendEventToSensors(World world, Event event) {
-        if (!world.isRemote) {
+        if (!world.isClientSide) {
             for (TileEntityUniversalSensor sensor : GlobalTileEntityCacheManager.getInstance().universalSensors) {
                 sensor.onEvent(event);
             }

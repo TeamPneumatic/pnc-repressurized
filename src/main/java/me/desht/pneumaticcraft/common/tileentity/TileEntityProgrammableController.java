@@ -175,7 +175,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
 
     @SubscribeEvent
     public void onSemiblockEvent(SemiblockEvent event) {
-        if (!event.getWorld().isRemote && event.getWorld() == getWorld() && event.getSemiblock() instanceof EntityLogisticsFrame) {
+        if (!event.getWorld().isClientSide && event.getWorld() == getLevel() && event.getSemiblock() instanceof EntityLogisticsFrame) {
             logisticsManager = null;
         }
     }
@@ -184,13 +184,13 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     public void tick() {
         super.tick();
 
-        if (!getWorld().isRemote && updateNeighbours) {
+        if (!getLevel().isClientSide && updateNeighbours) {
             updateNeighbours();
             updateNeighbours = false;
         }
 
         double speed = BASE_SPEED + speedUpgrades * SPEED_PER_UPGRADE;
-        if (PneumaticCraftUtils.distBetweenSq(getPos(), targetX, targetY, targetZ) <= 1 && isIdle) {
+        if (PneumaticCraftUtils.distBetweenSq(getBlockPos(), targetX, targetY, targetZ) <= 1 && isIdle) {
             curX = targetX;
             curY = targetY;
             curZ = targetZ;
@@ -202,12 +202,12 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
             curZ += vec.z;
         }
 
-        if (!getWorld().isRemote) {
+        if (!getLevel().isClientSide) {
             DroneFakePlayer fp = getFakePlayer();
             for (int i = 0; i < 4; i++) {
-                fp.interactionManager.tick();
+                fp.gameMode.tick();
             }
-            fp.setPosition(curX, curY, curZ);
+            fp.setPos(curX, curY, curZ);
             ChunkPos newChunkPos = new ChunkPos((int)curX >> 4, (int)curZ >> 4);
             if (prevChunkPos == null || !prevChunkPos.equals(newChunkPos)) {
                 handleDynamicChunkloading(prevChunkPos, newChunkPos);
@@ -226,19 +226,19 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
                 maybeChargeHeldItem();
             }
 
-            if (world.getGameTime() % 20 == 0) {
+            if (level.getGameTime() % 20 == 0) {
                 debugger.updateDebuggingPlayers();
             }
         } else {
-            if ((drone == null || !drone.isAlive()) && getWorld().isAreaLoaded(new BlockPos(curX, curY, curZ), 1)) {
-                drone = ModEntities.PROGRAMMABLE_CONTROLLER.get().create(getWorld());
+            if ((drone == null || !drone.isAlive()) && getLevel().isAreaLoaded(new BlockPos(curX, curY, curZ), 1)) {
+                drone = ModEntities.PROGRAMMABLE_CONTROLLER.get().create(getLevel());
                 if (drone != null) {
                     drone.setController(this);
-                    drone.setPosition(curX, curY, curZ);
+                    drone.setPos(curX, curY, curZ);
                     ClientUtils.spawnEntityClientside(drone);
                 }
             }
-            drone.setPosition(curX, curY, curZ);
+            drone.setPos(curX, curY, curZ);
         }
     }
 
@@ -256,7 +256,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
             ChunkPos cp = iter.next();
             boolean load = shouldLoadChunk(cp);
 //            Log.info("chunkload " + cp + "? " + load);
-            ForgeChunkManager.forceChunk((ServerWorld) world, Names.MOD_ID, pos, cp.x, cp.z, load, false);
+            ForgeChunkManager.forceChunk((ServerWorld) level, Names.MOD_ID, worldPosition, cp.x, cp.z, load, false);
             if (!load) {
                 iter.remove();
             }
@@ -266,7 +266,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     private boolean shouldLoadChunk(ChunkPos cp) {
         int cx = (int)curX >> 4;
         int cz = (int)curZ >> 4;
-        return chunkloadSelf && cp.x == pos.getX() >> 4 && cp.z == pos.getZ() >> 4
+        return chunkloadSelf && cp.x == worldPosition.getX() >> 4 && cp.z == worldPosition.getZ() >> 4
                 || chunkloadWorkingChunk && !isIdle && cp.x == cx && cp.z == cz
                 || chunkloadWorkingChunk3x3 && !isIdle && cp.x >= cx - 1 && cp.x <= cx + 1 && cp.z >= cz - 1 && cp.z <= cz + 1;
     }
@@ -296,15 +296,15 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
 
     @Override
     public void onVariableChanged(String varname, boolean isCoordinate) {
-        markDirty();
+        setChanged();
     }
 
     @Override
-    public void remove() {
-        super.remove();
+    public void setRemoved() {
+        super.setRemoved();
 
-        if (world instanceof ServerWorld) {
-            loadedChunks.forEach(cp -> ForgeChunkManager.forceChunk((ServerWorld) world, Names.MOD_ID, pos, cp.x, cp.z, false, false));
+        if (level instanceof ServerWorld) {
+            loadedChunks.forEach(cp -> ForgeChunkManager.forceChunk((ServerWorld) level, Names.MOD_ID, worldPosition, cp.x, cp.z, false, false));
         }
         MinecraftForge.EVENT_BUS.unregister(this);
     }
@@ -332,7 +332,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
         } else if (itemHandlerSideConfigurator.handleButtonPress(tag)) {
             updateNeighbours = true;
         }
-        markDirty();
+        setChanged();
     }
 
     @Override
@@ -346,7 +346,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     }
 
     public void setOwner(PlayerEntity ownerID) {
-        this.ownerID = ownerID.getUniqueID();
+        this.ownerID = ownerID.getUUID();
         this.ownerName = ownerID.getName();
         this.ownerNameClient = this.ownerName.getString();
     }
@@ -364,14 +364,14 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     @Nullable
     @Override
     public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-        return new ContainerProgrammableController(i, playerInventory, getPos());
+        return new ContainerProgrammableController(i, playerInventory, getBlockPos());
     }
 
 
     @Override
     public void onUpgradesChanged() {
         super.onUpgradesChanged();
-        if (getWorld() != null && !getWorld().isRemote) {
+        if (getLevel() != null && !getLevel().isClientSide) {
             calculateUpgrades();
         }
     }
@@ -396,15 +396,15 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
             ItemStack stack = droneItemHandler.getStackInSlot(i);
             if (!stack.isEmpty()) {
                 droneItemHandler.setStackInSlot(i, ItemStack.EMPTY);
-                PneumaticCraftUtils.dropItemOnGround(stack, getWorld(), getPos().up());
+                PneumaticCraftUtils.dropItemOnGround(stack, getLevel(), getBlockPos().above());
             }
         }
         droneItemHandler.setUseableSlots(newSize);
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT tag) {
-        super.read(state, tag);
+    public void load(BlockState state, CompoundNBT tag) {
+        super.load(state, tag);
 
         inventory.deserializeNBT(tag.getCompound("Items"));
         tank.setCapacity((getUpgrades(EnumUpgrade.INVENTORY) + 1) * 16000);
@@ -435,8 +435,8 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tag) {
-        super.write(tag);
+    public CompoundNBT save(CompoundNBT tag) {
+        super.save(tag);
 
         tag.put("Items", inventory.serializeNBT());
 
@@ -488,13 +488,13 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
 
         calculateUpgrades();
         inventory.onContentsChanged(0);  // force initial read of any installed drone/network api
-        curX = targetX = getPos().getX() + 0.5;
-        curY = targetY = getPos().getY() + 1.0;
-        curZ = targetZ = getPos().getZ() + 0.5;
+        curX = targetX = getBlockPos().getX() + 0.5;
+        curY = targetY = getBlockPos().getY() + 1.0;
+        curZ = targetZ = getBlockPos().getZ() + 0.5;
 
         if (chunkloadSelf) {
-            ChunkPos cp = new ChunkPos(pos);
-            ForgeChunkManager.forceChunk((ServerWorld) world, Names.MOD_ID, pos, cp.x, cp.z, true, false);
+            ChunkPos cp = new ChunkPos(worldPosition);
+            ForgeChunkManager.forceChunk((ServerWorld) level, Names.MOD_ID, worldPosition, cp.x, cp.z, true, false);
             loadedChunks.add(cp);
         }
     }
@@ -521,7 +521,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
 
     @Override
     public World world() {
-        return getWorld();
+        return getLevel();
     }
 
     @Override
@@ -537,9 +537,9 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     @Override
     public Vector3d getDronePos() {
         if (curX == 0 && curY == 0 && curZ == 0) {
-            curX = getPos().getX() + 0.5;
-            curY = getPos().getY() + 1.0;
-            curZ = getPos().getZ() + 0.5;
+            curX = getBlockPos().getX() + 0.5;
+            curY = getBlockPos().getY() + 1.0;
+            curZ = getBlockPos().getZ() + 0.5;
             targetX = curX;
             targetY = curY;
             targetZ = curZ;
@@ -553,7 +553,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
 
     @Override
     public BlockPos getControllerPos() {
-        return pos;
+        return worldPosition;
     }
 
     @Override
@@ -574,7 +574,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
 
             @Override
             public boolean moveToEntity(Entity entity) {
-                return moveToXYZ(entity.getPosX(), entity.getPosY() + 0.3, entity.getPosZ());
+                return moveToXYZ(entity.getX(), entity.getY() + 0.3, entity.getZ());
             }
 
             @Override
@@ -597,7 +597,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     @Override
     public DroneFakePlayer getFakePlayer() {
         if (fakePlayer == null) {
-            fakePlayer = new DroneFakePlayer((ServerWorld) getWorld(), new GameProfile(getOwnerUUID(), ownerName.getString()), this);
+            fakePlayer = new DroneFakePlayer((ServerWorld) getLevel(), new GameProfile(getOwnerUUID(), ownerName.getString()), this);
             fakePlayer.connection = new FakeNetHandlerPlayerServer(ServerLifecycleHooks.getCurrentServer(), fakePlayer);
         }
         return fakePlayer;
@@ -605,13 +605,13 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
 
     @Override
     public boolean isBlockValidPathfindBlock(BlockPos pos) {
-        return !getWorld().getBlockState(pos).getCollisionShape(getWorld(), pos, ISelectionContext.dummy()).equals(VoxelShapes.fullCube());
+        return !getLevel().getBlockState(pos).getCollisionShape(getLevel(), pos, ISelectionContext.empty()).equals(VoxelShapes.block());
     }
 
     @Override
     public void dropItem(ItemStack stack) {
         Vector3d pos = getDronePos();
-        getWorld().addEntity(new ItemEntity(getWorld(), pos.x, pos.y, pos.z, stack));
+        getLevel().addFreshEntity(new ItemEntity(getLevel(), pos.x, pos.y, pos.z, stack));
     }
 
     @Override
@@ -619,8 +619,8 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
         super.getContentsToDrop(drops);
 
         for (int i = 0; i < droneItemHandler.getSlots(); i++) {
-            if (!fakePlayer.inventory.getStackInSlot(i).isEmpty()) {
-                drops.add(fakePlayer.inventory.getStackInSlot(i).copy());
+            if (!fakePlayer.inventory.getItem(i).isEmpty()) {
+                drops.add(fakePlayer.inventory.getItem(i).copy());
             }
         }
     }
@@ -662,12 +662,12 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
 
     @Override
     public void setEmittingRedstone(Direction orientation, int emittingRedstone) {
-        redstoneLevels[orientation.getIndex()] = emittingRedstone;
+        redstoneLevels[orientation.get3DDataValue()] = emittingRedstone;
         updateNeighbours();
     }
 
     public int getEmittingRedstone(Direction direction) {
-        return redstoneLevels[direction.getIndex()];
+        return redstoneLevels[direction.get3DDataValue()];
     }
 
     @Override
@@ -677,7 +677,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
         }
         ItemStack stack = inventory.getStackInSlot(0).copy();
         if (!stack.isEmpty()) {
-            stack.setDisplayName(name);
+            stack.setHoverName(name);
             inventory.setStackInSlot(0, stack);
         }
     }
@@ -705,7 +705,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     @Override
     public PlayerEntity getOwner() {
         if (ownerID == null) return null;
-        if (getWorld().isRemote) return ClientUtils.getClientPlayer();
+        if (getLevel().isClientSide) return ClientUtils.getClientPlayer();
 
         return PneumaticCraftUtils.getPlayerFromId(ownerID);
     }
@@ -719,17 +719,17 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
             boolean inserted = findEjectionDest()
                     .map(h -> ItemHandlerHelper.insertItem(h, stack, false).isEmpty())
                     .orElse(false);
-            if (!inserted) PneumaticCraftUtils.dropItemOnGround(stack, world, pos.up());
-            world.playSound(null, pos, ModSounds.DRONE_DEATH.get(), SoundCategory.BLOCKS, 1f, 1f);
+            if (!inserted) PneumaticCraftUtils.dropItemOnGround(stack, level, worldPosition.above());
+            level.playSound(null, worldPosition, ModSounds.DRONE_DEATH.get(), SoundCategory.BLOCKS, 1f, 1f);
         }
         NetworkHandler.sendToAllTracking(new PacketSpawnParticle(ParticleTypes.SMOKE,
-                getPos().getX() - 0.5, getPos().getY() + 1, getPos().getZ() - 0.5,
+                getBlockPos().getX() - 0.5, getBlockPos().getY() + 1, getBlockPos().getZ() - 0.5,
                 0, 0, 0, 10, 1, 1, 1), this);
     }
 
     @Override
     public DroneAIManager getAIManager() {
-        if (!getWorld().isRemote) {
+        if (!getLevel().isClientSide) {
             if (aiManager == null) {
                 aiManager = new DroneAIManager(this, new ArrayList<>());
                 aiManager.dontStopWhenEndReached();
@@ -800,13 +800,13 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
     @Override
     public void storeTrackerData(ItemStack stack) {
         CompoundNBT tag = stack.getOrCreateTag();
-        tag.put(NBTKeys.PNEUMATIC_HELMET_DEBUGGING_PC, NBTUtil.writeBlockPos(getPos()));
+        tag.put(NBTKeys.PNEUMATIC_HELMET_DEBUGGING_PC, NBTUtil.writeBlockPos(getBlockPos()));
         tag.remove(NBTKeys.PNEUMATIC_HELMET_DEBUGGING_DRONE);
     }
 
     @Override
     public boolean isDroneStillValid() {
-        return !removed;
+        return !remove;
     }
 
     public boolean chunkloadSelf() {
@@ -830,7 +830,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
             }
         }
         if (dir != null) {
-            TileEntity te = world.getTileEntity(pos.offset(dir));
+            TileEntity te = level.getBlockEntity(worldPosition.relative(dir));
             return IOHelper.getInventoryForTE(te, dir.getOpposite());
         }
         return LazyOptional.empty();
@@ -852,9 +852,9 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
                 isIdle = false;
             } else {
                 setDugBlock(null);
-                targetX = getPos().getX() + 0.5;
-                targetY = getPos().getY() + 1.0;
-                targetZ = getPos().getZ() + 0.5;
+                targetX = getBlockPos().getX() + 0.5;
+                targetY = getBlockPos().getY() + 1.0;
+                targetZ = getBlockPos().getZ() + 0.5;
                 boolean updateNeighbours = false;
                 for (int i = 0; i < redstoneLevels.length; i++) {
                     if (redstoneLevels[i] > 0) {
@@ -865,7 +865,7 @@ public class TileEntityProgrammableController extends TileEntityPneumaticBase
                 if (updateNeighbours) updateNeighbours();
                 isIdle = true;
             }
-            if (getWorld() != null && !getWorld().isRemote) {
+            if (getLevel() != null && !getLevel().isClientSide) {
                 aiManager = null;
                 aiManager = getAIManager();
                 aiManager.setWidgets(progWidgets);

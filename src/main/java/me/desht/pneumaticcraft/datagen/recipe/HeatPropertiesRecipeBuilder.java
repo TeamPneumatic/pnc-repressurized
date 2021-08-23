@@ -57,7 +57,7 @@ public class HeatPropertiesRecipeBuilder extends PneumaticCraftRecipeBuilder<Hea
         }
 
         @Override
-        public void serialize(JsonObject json) {
+        public void serializeRecipeData(JsonObject json) {
             json.addProperty("block", block.getRegistryName().toString());
             json.addProperty("temperature", temperature);
             json.addProperty("thermalResistance", thermalResistance);

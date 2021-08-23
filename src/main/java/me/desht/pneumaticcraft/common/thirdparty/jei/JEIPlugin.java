@@ -121,13 +121,13 @@ public class JEIPlugin implements IModPlugin {
     }
 
     private void addRecipeType(IRecipeRegistration registration, PneumaticCraftRecipeType<?> type, ResourceLocation id) {
-        registration.addRecipes(type.getRecipes(Minecraft.getInstance().world).values(), id);
+        registration.addRecipes(type.getRecipes(Minecraft.getInstance().level).values(), id);
     }
 
     private void addStackInfo(IRecipeRegistration registry, ItemStack stack) {
         String k = ICustomTooltipName.getTranslationKey(stack, false);
-        if (I18n.hasKey(k)) {
-            String raw = TextFormatting.getTextWithoutFormattingCodes(I18n.format(k));
+        if (I18n.exists(k)) {
+            String raw = TextFormatting.stripFormatting(I18n.get(k));
             if (raw != null) {
                 registry.addIngredientInfo(stack, VanillaTypes.ITEM, StringUtils.splitByWholeSeparator(raw, GuiUtils.TRANSLATION_LINE_BREAK));
             }

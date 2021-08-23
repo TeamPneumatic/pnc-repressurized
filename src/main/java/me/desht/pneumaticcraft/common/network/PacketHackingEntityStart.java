@@ -22,7 +22,7 @@ public class PacketHackingEntityStart {
     private final int entityId;
 
     public PacketHackingEntityStart(Entity entity) {
-        entityId = entity.getEntityId();
+        entityId = entity.getId();
     }
 
     public PacketHackingEntityStart(PacketBuffer buffer) {
@@ -40,7 +40,7 @@ public class PacketHackingEntityStart {
             if (player == null) {
                 // client
                 PlayerEntity cPlayer = ClientUtils.getClientPlayer();
-                Entity entity = cPlayer.world.getEntityByID(entityId);
+                Entity entity = cPlayer.level.getEntity(entityId);
                 if (entity != null) {
                     CommonArmorHandler.getHandlerForPlayer(cPlayer)
                             .getExtensionData(r.hackHandler)
@@ -56,7 +56,7 @@ public class PacketHackingEntityStart {
                 // server
                 CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer(player);
                 if (handler.upgradeUsable(r.entityTrackerHandler, true)) {
-                    Entity entity = player.world.getEntityByID(entityId);
+                    Entity entity = player.level.getEntity(entityId);
                     if (entity != null) {
                         handler.getExtensionData(r.hackHandler).setHackedEntity(entity);
                         NetworkHandler.sendToAllTracking(this, entity);

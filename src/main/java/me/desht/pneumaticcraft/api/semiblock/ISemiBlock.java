@@ -28,7 +28,7 @@ public interface ISemiBlock extends ICapabilityProvider {
      * Get a unique ID for this semiblock, which should match the corresponding item's registry name.
      * @return a semiblock ID
      */
-    ResourceLocation getId();
+    ResourceLocation getSemiblockId();
 
     /**
      * Get the displayed name for this semiblock.
@@ -175,7 +175,7 @@ public interface ISemiBlock extends ICapabilityProvider {
      * @return a semiblock, or null if ID is not valid
      */
     static ISemiBlock byTrackingId(World world, int id) {
-        Entity e = world.getEntityByID(id);
+        Entity e = world.getEntity(id);
         return e instanceof ISemiBlock ? (ISemiBlock) e : null;
     }
 }

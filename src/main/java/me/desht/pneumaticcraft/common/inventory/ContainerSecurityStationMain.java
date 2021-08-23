@@ -39,10 +39,10 @@ public class ContainerSecurityStationMain extends ContainerPneumaticBase<TileEnt
         }
 
         @Override
-        public void onSlotChanged() {
-            super.onSlotChanged();
+        public void setChanged() {
+            super.setChanged();
 
-            if (te.getWorld().isRemote) GuiSecurityStationInventory.reinitConnectionRendering();
+            if (te.getLevel().isClientSide) GuiSecurityStationInventory.reinitConnectionRendering();
         }
     }
 }

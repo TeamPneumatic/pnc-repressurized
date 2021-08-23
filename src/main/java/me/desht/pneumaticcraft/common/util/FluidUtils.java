@@ -104,7 +104,7 @@ public class FluidUtils {
     }
 
     private static boolean doFluidInteraction(TileEntity te, Direction face, PlayerEntity player, Hand hand, boolean isInserting) {
-        ItemStack stack = player.getHeldItem(hand);
+        ItemStack stack = player.getItemInHand(hand);
         return FluidUtil.getFluidHandler(stack).map(stackHandler -> {
             if (te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, face).isPresent()) {
                 if (stackHandler.getTanks() == 0) return false;
@@ -112,10 +112,10 @@ public class FluidUtils {
                 return te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, face).map(handler -> {
                     PlayerInvWrapper invWrapper = new PlayerInvWrapper(player.inventory);
                     FluidActionResult result = isInserting ?
-                            FluidUtils.tryEmptyContainerAndStow(player.getHeldItem(hand), handler, invWrapper, capacity, player, true) :
-                            FluidUtil.tryFillContainerAndStow(player.getHeldItem(hand), handler, invWrapper, capacity, player, true);
+                            FluidUtils.tryEmptyContainerAndStow(player.getItemInHand(hand), handler, invWrapper, capacity, player, true) :
+                            FluidUtil.tryFillContainerAndStow(player.getItemInHand(hand), handler, invWrapper, capacity, player, true);
                     if (result.isSuccess()) {
-                        player.setHeldItem(hand, result.getResult());
+                        player.setItemInHand(hand, result.getResult());
                         return true;
                     }
                     return false;
@@ -146,7 +146,7 @@ public class FluidUtils {
      */
     public static boolean isSourceFluidBlock(World world, BlockPos pos, @Nullable Fluid fluid) {
         FluidState state = world.getFluidState(pos);
-        return state.isSource() && fluid == null || state.getFluid() == fluid;
+        return state.isSource() && fluid == null || state.getType() == fluid;
     }
 
     /**
@@ -168,7 +168,7 @@ public class FluidUtils {
      */
     public static boolean isFlowingFluidBlock(World world, BlockPos pos, @Nullable Fluid fluid) {
         FluidState state = world.getFluidState(pos);
-        return !state.isEmpty() && !state.isSource() && (fluid == null || fluid == state.getFluid());
+        return !state.isEmpty() && !state.isSource() && (fluid == null || fluid == state.getType());
     }
 
     /**
@@ -188,7 +188,7 @@ public class FluidUtils {
         }
 
         FluidState fluidState = state.getFluidState();
-        Fluid fluid = fluidState.getFluid();
+        Fluid fluid = fluidState.getType();
         if (fluid == Fluids.EMPTY || !fluid.isSource(fluidState)) {
             return FluidStack.EMPTY;
         }
@@ -205,14 +205,14 @@ public class FluidUtils {
         if (fluid == Fluids.WATER && PNCConfig.Common.Advanced.dontUpdateInfiniteWaterSources) {
             int n = 0;
             for (Direction d : DirectionUtil.HORIZONTALS) {
-                if (world.getFluidState(pos.offset(d)).getFluid() == Fluids.WATER && ++n >= 2) {
+                if (world.getFluidState(pos.relative(d)).getType() == Fluids.WATER && ++n >= 2) {
                     removeBlock = false;
                     break;
                 }
             }
         }
         if (removeBlock && action.execute()) {
-            ((IBucketPickupHandler) state.getBlock()).pickupFluid(world, pos, state);
+            ((IBucketPickupHandler) state.getBlock()).takeLiquid(world, pos, state);
         }
         FluidStack transferred = fluidCap.map(h ->
                 FluidUtil.tryFluidTransfer(h, tank, BUCKET_VOLUME, action.execute()))
@@ -254,16 +254,16 @@ public class FluidUtils {
             }
             Fluid fluid = toPlace.getFluid();
             Block block = blockstate.getBlock();
-            if (world.isAirBlock(pos) || isNotSolid || isReplaceable
-                    || block instanceof ILiquidContainer && ((ILiquidContainer)block).canContainFluid(world, pos, blockstate, toPlace.getFluid())) {
+            if (world.isEmptyBlock(pos) || isNotSolid || isReplaceable
+                    || block instanceof ILiquidContainer && ((ILiquidContainer)block).canPlaceLiquid(world, pos, blockstate, toPlace.getFluid())) {
                 if (action.execute()) {
-                    if (world.getDimensionType().isUltrawarm() && fluid.isIn(FluidTags.WATER)) {
+                    if (world.dimensionType().ultraWarm() && fluid.is(FluidTags.WATER)) {
                         // no pouring water in the nether!
                         playEvaporationEffects(world, pos);
                     } else if (block instanceof ILiquidContainer) {
                         // a block which can take fluid, e.g. waterloggable block like a slab
-                        FluidState still = fluid instanceof FlowingFluid ? ((FlowingFluid) fluid).getStillFluidState(false) : fluid.getDefaultState();
-                        if (((ILiquidContainer) block).receiveFluid(world, pos, blockstate, still) && playSound) {
+                        FluidState still = fluid instanceof FlowingFluid ? ((FlowingFluid) fluid).getSource(false) : fluid.defaultFluidState();
+                        if (((ILiquidContainer) block).placeLiquid(world, pos, blockstate, still) && playSound) {
                             playEmptySound(world, pos, fluid);
                         }
                     } else {
@@ -274,7 +274,7 @@ public class FluidUtils {
                         if (isNotSolid || isReplaceable) {
                             world.destroyBlock(pos, true);
                         }
-                        world.setBlockState(pos, fluid.getDefaultState().getBlockState(), Constants.BlockFlags.DEFAULT);
+                        world.setBlock(pos, fluid.defaultFluidState().createLegacyBlock(), Constants.BlockFlags.DEFAULT);
                     }
                 }
                 return true;
@@ -290,13 +290,13 @@ public class FluidUtils {
 
     private static void playEmptySound(World world, BlockPos pos, Fluid fluid) {
         SoundEvent soundevent = fluid.getAttributes().getEmptySound();
-        if(soundevent == null) soundevent = fluid.isIn(FluidTags.LAVA) ? SoundEvents.ITEM_BUCKET_EMPTY_LAVA : SoundEvents.ITEM_BUCKET_EMPTY;
+        if(soundevent == null) soundevent = fluid.is(FluidTags.LAVA) ? SoundEvents.BUCKET_EMPTY_LAVA : SoundEvents.BUCKET_EMPTY;
         world.playSound(null, pos, soundevent, SoundCategory.BLOCKS, 1.0F, 1.0F);
     }
 
     private static void playFillSound(World world, BlockPos pos, Fluid fluid) {
         SoundEvent soundEvent = fluid.getAttributes().getFillSound();
-        if (soundEvent == null) soundEvent = fluid.isIn(FluidTags.LAVA) ? SoundEvents.ITEM_BUCKET_FILL_LAVA : SoundEvents.ITEM_BUCKET_FILL;
+        if (soundEvent == null) soundEvent = fluid.is(FluidTags.LAVA) ? SoundEvents.BUCKET_FILL_LAVA : SoundEvents.BUCKET_FILL;
         world.playSound(null, pos, soundEvent, SoundCategory.BLOCKS, 1.0F, 1.0F);
     }
 
@@ -304,7 +304,7 @@ public class FluidUtils {
         int i = pos.getX();
         int j = pos.getY();
         int k = pos.getZ();
-        world.playSound(null, pos, SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.BLOCKS, 0.5F, 2.6F + (world.rand.nextFloat() - world.rand.nextFloat()) * 0.8F);
+        world.playSound(null, pos, SoundEvents.FIRE_EXTINGUISH, SoundCategory.BLOCKS, 0.5F, 2.6F + (world.random.nextFloat() - world.random.nextFloat()) * 0.8F);
         for(int l = 0; l < 8; ++l) {
             world.addParticle(ParticleTypes.LARGE_SMOKE, (double)i + Math.random(), (double)j + Math.random(), (double)k + Math.random(), 0.0D, 0.0D, 0.0D);
         }
@@ -329,7 +329,7 @@ public class FluidUtils {
             return FluidActionResult.FAILURE;
         }
 
-        if (player != null && player.abilities.isCreativeMode)
+        if (player != null && player.abilities.instabuild)
         {
             FluidActionResult emptiedReal = tryEmptyContainer(container, fluidDestination, maxAmount, player, doDrain);
             if (emptiedReal.isSuccess())
@@ -390,7 +390,7 @@ public class FluidUtils {
                     if (doDrain && player != null)
                     {
                         SoundEvent soundevent = transfer.getFluid().getAttributes().getEmptySound(transfer);
-                        player.world.playSound(null, player.getPosX(), player.getPosY() + 0.5, player.getPosZ(), soundevent, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                        player.level.playSound(null, player.getX(), player.getY() + 0.5, player.getZ(), soundevent, SoundCategory.BLOCKS, 1.0F, 1.0F);
                     }
 
                     ItemStack resultContainer = containerFluidHandler.getContainer();

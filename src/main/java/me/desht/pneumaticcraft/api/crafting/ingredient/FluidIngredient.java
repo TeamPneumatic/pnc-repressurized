@@ -64,7 +64,8 @@ public class FluidIngredient extends Ingredient {
         return new FluidIngredient(null, amount, fluidId, null);
     }
 
-    public static FluidIngredient of(Stream<FluidIngredient> stream) {
+    // not called "of" due to clash with Ingredient.of
+    public static FluidIngredient ofFluidStream(Stream<FluidIngredient> stream) {
         return new CompoundFluidIngredient(stream);
     }
 
@@ -76,7 +77,7 @@ public class FluidIngredient extends Ingredient {
                     fluids = Collections.singletonList(f);
                 }
             } else if (fluidTag != null) {
-                fluids = ImmutableList.copyOf(fluidTag.getAllElements());
+                fluids = ImmutableList.copyOf(fluidTag.getValues());
             } else {
                 throw new IllegalStateException("no fluid ID or fluid tag is available?");
             }
@@ -85,7 +86,7 @@ public class FluidIngredient extends Ingredient {
     }
 
     @Override
-    public boolean hasNoMatchingItems() {
+    public boolean isEmpty() {
         return getFluidList().isEmpty();
     }
 
@@ -98,7 +99,7 @@ public class FluidIngredient extends Ingredient {
     }
 
     @Override
-    public ItemStack[] getMatchingStacks() {
+    public ItemStack[] getItems() {
         if (cachedStacks == null) {
             List<ItemStack> l = new ArrayList<>();
             for (Fluid f : getFluidList()) {
@@ -132,11 +133,11 @@ public class FluidIngredient extends Ingredient {
     }
 
     @Override
-    public JsonElement serialize() {
+    public JsonElement toJson() {
         JsonObject json = new JsonObject();
         json.addProperty("type", Serializer.ID.toString());
         if (fluidTag != null) {
-            ResourceLocation tagId = TagCollectionManager.getManager().getFluidTags().getValidatedIdFromTag(fluidTag);
+            ResourceLocation tagId = TagCollectionManager.getInstance().getFluids().getIdOrThrow(fluidTag);
             json.addProperty("tag", tagId.toString());
         } else if (fluidId != null) {
             json.addProperty("fluid", fluidId.toString());
@@ -179,14 +180,14 @@ public class FluidIngredient extends Ingredient {
 
         @Override
         public FluidIngredient parse(JsonObject json) {
-            int amount = JSONUtils.getInt(json, "amount", 1000);
+            int amount = JSONUtils.getAsInt(json, "amount", 1000);
             if (json.has("tag")) {
-                ResourceLocation rl = new ResourceLocation(JSONUtils.getString(json, "tag"));
-                ITag<Fluid> tag = TagCollectionManager.getManager().getFluidTags().get(rl);
+                ResourceLocation rl = new ResourceLocation(JSONUtils.getAsString(json, "tag"));
+                ITag<Fluid> tag = TagCollectionManager.getInstance().getFluids().getTag(rl);
                 if (tag == null) throw new JsonSyntaxException("Unknown fluid tag '" + rl + "'");
                 return FluidIngredient.of(amount, tag);
             } else if (json.has("fluid")) {
-                ResourceLocation fluidName = new ResourceLocation(JSONUtils.getString(json, "fluid"));
+                ResourceLocation fluidName = new ResourceLocation(JSONUtils.getAsString(json, "fluid"));
                 Fluid fluid = ForgeRegistries.FLUIDS.getValue(fluidName);
                 if (fluid == null || fluid == Fluids.EMPTY) throw new JsonSyntaxException("Unknown fluid '" + fluidName + "'");
                 return FluidIngredient.of(amount, fluid);

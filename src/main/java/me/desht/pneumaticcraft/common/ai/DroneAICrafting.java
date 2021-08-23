@@ -26,7 +26,7 @@ public class DroneAICrafting extends Goal {
     }
 
     @Override
-    public boolean shouldExecute() {
+    public boolean canUse() {
         CraftingInventory craftingGrid = widget.getCraftingGrid();
         return widget.getRecipe(drone.world(), craftingGrid).map(recipe -> {
             List<List<ItemStack>> equivalentsList = buildEquivalentsList(craftingGrid);
@@ -36,9 +36,9 @@ public class DroneAICrafting extends Goal {
             do {
                 for (int i = 0; i < equivalentsList.size(); i++) {
                     ItemStack stack = equivalentsList.get(i).isEmpty() ? ItemStack.EMPTY : equivalentsList.get(i).get(equivIndices[i]);
-                    craftMatrix.setInventorySlotContents(i, stack);
+                    craftMatrix.setItem(i, stack);
                 }
-                if (recipe.matches(craftMatrix, drone.world()) && doCrafting(recipe.getCraftingResult(craftMatrix), craftMatrix)) {
+                if (recipe.matches(craftMatrix, drone.world()) && doCrafting(recipe.assemble(craftMatrix), craftMatrix)) {
                     return true;
                 }
             } while (count(equivIndices, equivalentsList));
@@ -58,9 +58,9 @@ public class DroneAICrafting extends Goal {
      */
     private List<List<ItemStack>> buildEquivalentsList(CraftingInventory craftingGrid) {
         List<List<ItemStack>> equivalentsList = new ArrayList<>();
-        for (int i = 0; i < craftingGrid.getSizeInventory(); i++) {
+        for (int i = 0; i < craftingGrid.getContainerSize(); i++) {
             equivalentsList.add(new ArrayList<>());
-            ItemStack recipeStack = craftingGrid.getStackInSlot(i);
+            ItemStack recipeStack = craftingGrid.getItem(i);
             if (!recipeStack.isEmpty()) {
                 List<ItemStack> equivalents = new ArrayList<>();
                 for (int j = 0; j < drone.getInv().getSlots(); j++) {
@@ -90,12 +90,12 @@ public class DroneAICrafting extends Goal {
     }
 
     public boolean doCrafting(ItemStack craftedStack, CraftingInventory craftMatrix) {
-        for (int i = 0; i < craftMatrix.getSizeInventory(); i++) {
+        for (int i = 0; i < craftMatrix.getContainerSize(); i++) {
             int requiredCount = 0;
-            ItemStack stack = craftMatrix.getStackInSlot(i);
+            ItemStack stack = craftMatrix.getItem(i);
             if (!stack.isEmpty()) {
-                for (int j = 0; j < craftMatrix.getSizeInventory(); j++) {
-                    if (stack == craftMatrix.getStackInSlot(j)) {
+                for (int j = 0; j < craftMatrix.getContainerSize(); j++) {
+                    if (stack == craftMatrix.getItem(j)) {
                         requiredCount++;
                     }
                 }
@@ -105,13 +105,13 @@ public class DroneAICrafting extends Goal {
 
         BasicEventHooks.firePlayerCraftingEvent(drone.getFakePlayer(), craftedStack, craftMatrix);
 
-        for (int i = 0; i < craftMatrix.getSizeInventory(); ++i) {
-            ItemStack stack = craftMatrix.getStackInSlot(i);
+        for (int i = 0; i < craftMatrix.getContainerSize(); ++i) {
+            ItemStack stack = craftMatrix.getItem(i);
 
             if (!stack.isEmpty()) {
                 if (stack.getItem().hasContainerItem(stack)) {
                     ItemStack containerItem = stack.getItem().getContainerItem(stack);
-                    if (!containerItem.isEmpty() && containerItem.isDamageable() && containerItem.getDamage() > containerItem.getMaxDamage()) {
+                    if (!containerItem.isEmpty() && containerItem.isDamageableItem() && containerItem.getDamageValue() > containerItem.getMaxDamage()) {
                         MinecraftForge.EVENT_BUS.post(new PlayerDestroyItemEvent(drone.getFakePlayer(), containerItem, Hand.MAIN_HAND));
                         continue;
                     }

@@ -23,7 +23,7 @@ public class SlotFluidContainer extends SlotItemHandler {
     }
 
     @Override
-    public boolean isItemValid(@Nonnull ItemStack stack) {
+    public boolean mayPlace(@Nonnull ItemStack stack) {
         if (FluidUtil.getFluidHandler(stack).isPresent()) {
             return FluidUtil.getFluidContained(stack).map(fluidStack -> fluidStack.getAmount() >= minFluid).orElse(minFluid == 0);
         } else {

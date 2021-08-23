@@ -38,7 +38,7 @@ public class PacketShiftScrollWheel {
         ctx.get().enqueueWork(() -> {
             ServerPlayerEntity player = ctx.get().getSender();
             if (player != null) {
-                ItemStack stack = player.getHeldItemMainhand();
+                ItemStack stack = player.getMainHandItem();
                 if (stack.getItem() instanceof IShiftScrollable) {
                     ((IShiftScrollable) stack.getItem()).onShiftScrolled(player, forward, mainHand ? Hand.MAIN_HAND : Hand.OFF_HAND);
                 }

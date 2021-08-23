@@ -78,32 +78,32 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
             if (jbState.isActive()) {
                 if (jbState.isBuilderMode() && jetbootsCount >= JetBootsClientHandler.BUILDER_MODE_LEVEL) {
                     // builder mode - rise vertically (or hover if sneaking and firing)
-                    setYMotion(player, player.isSneaking() ? 0 : 0.15 + 0.15 * (jetbootsCount - 3));
+                    setYMotion(player, player.isShiftKeyDown() ? 0 : 0.15 + 0.15 * (jetbootsCount - 3));
                     jetbootsAirUsage = (int) (PNCConfig.Common.Armor.jetBootsAirUsage * jetbootsCount / 2.5F);
                 } else {
                     // jetboots firing - move in direction of looking
-                    Vector3d lookVec = player.getLookVec().scale(0.3 * jetbootsCount);
+                    Vector3d lookVec = player.getLookAngle().scale(0.3 * jetbootsCount);
                     jbLocal.updateAccel(lookVec);
                     lookVec = jbLocal.getEffectiveMotion(lookVec);
-                    player.setMotion(lookVec.x, player.isOnGround() ? 0 : lookVec.y, lookVec.z);
+                    player.setDeltaMovement(lookVec.x, player.isOnGround() ? 0 : lookVec.y, lookVec.z);
                     jetbootsAirUsage = jbLocal.calcAirUsage(jetbootsCount);
                 }
                 if (player.isInWater()) jetbootsAirUsage *= 4;
                 jbLocal.tickActive();
-            } else if (jbState.isEnabled() && !player.isOnGround() && !player.isElytraFlying()) {
+            } else if (jbState.isEnabled() && !player.isOnGround() && !player.isFallFlying()) {
                 // jetboots not firing, but enabled - slowly descend (or hover if enough upgrades)
                 // and bring player to complete halt if flight stabilizers and not actively moving forward/sideways
                 boolean reallyHovering = !jbLocal.isSmartHover() || jbLocal.isHovering();
                 boolean stopped = jbLocal.isFlightStabilizers()
                         && jetbootsCount >= JetBootsClientHandler.STABLIZERS_LEVEL
-                        && PneumaticCraftUtils.epsilonEquals(player.moveForward, 0f)
-                        && PneumaticCraftUtils.epsilonEquals(player.moveStrafing, 0f);
-                double xMotion = stopped ? 0 : player.getMotion().x;
-                double yMotion = reallyHovering ? (player.isSneaking() ? -0.45 : -0.1 + 0.02 * jetbootsCount) : player.getMotion().y;
-                double zMotion = stopped ? 0 : player.getMotion().z;
-                player.setMotion(new Vector3d(xMotion, yMotion, zMotion));
+                        && PneumaticCraftUtils.epsilonEquals(player.zza, 0f)
+                        && PneumaticCraftUtils.epsilonEquals(player.xxa, 0f);
+                double xMotion = stopped ? 0 : player.getDeltaMovement().x;
+                double yMotion = reallyHovering ? (player.isShiftKeyDown() ? -0.45 : -0.1 + 0.02 * jetbootsCount) : player.getDeltaMovement().y;
+                double zMotion = stopped ? 0 : player.getDeltaMovement().z;
+                player.setDeltaMovement(new Vector3d(xMotion, yMotion, zMotion));
                 if (reallyHovering) player.fallDistance = 0;
-                jetbootsAirUsage = reallyHovering ? (int) (PNCConfig.Common.Armor.jetBootsAirUsage * (player.isSneaking() ? 0.25F : 0.5F)) : 0;
+                jetbootsAirUsage = reallyHovering ? (int) (PNCConfig.Common.Armor.jetBootsAirUsage * (player.isShiftKeyDown() ? 0.25F : 0.5F)) : 0;
                 jbLocal.resetAccel();
             } else if (player.isOnGround()) {
                 jbLocal.setHovering(false);
@@ -112,7 +112,7 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
             }
         } else {
             // insufficient pressure!
-            if (jbState.isEnabled() && !player.isOnGround() && !player.isElytraFlying() && jbLocal.isHovering()) {
+            if (jbState.isEnabled() && !player.isOnGround() && !player.isFallFlying() && jbLocal.isHovering()) {
                 // still active and in the air: using minimal air here keeps the boots running
                 // and thus avoids triggering multiple looping sounds (see "jet boots starting up" code below)
                 jetbootsAirUsage = 1;
@@ -120,22 +120,22 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
             setJetBootsActive(commonArmorHandler,false);
         }
 
-        if (jetbootsAirUsage != 0 && !player.world.isRemote) {
+        if (jetbootsAirUsage != 0 && !player.level.isClientSide) {
             if (jbLocal.getPrevJetBootsAirUsage() == 0) {
                 // jet boots starting up
-                NetworkHandler.sendToAllTracking(new PacketPlayMovingSound(MovingSounds.Sound.JET_BOOTS, SoundSource.of(player)), player.world, player.getPosition());
+                NetworkHandler.sendToAllTracking(new PacketPlayMovingSound(MovingSounds.Sound.JET_BOOTS, SoundSource.of(player)), player.level, player.blockPosition());
                 AdvancementTriggers.FLIGHT.trigger((ServerPlayerEntity) player);
             }
-            if (player.collidedHorizontally) {
-                double vel = player.getMotion().length();
-                if (player.world.getDifficulty() == Difficulty.HARD) {
+            if (player.horizontalCollision) {
+                double vel = player.getDeltaMovement().length();
+                if (player.level.getDifficulty() == Difficulty.HARD) {
                     vel *= 2;
-                } else if (player.world.getDifficulty() == Difficulty.NORMAL) {
+                } else if (player.level.getDifficulty() == Difficulty.NORMAL) {
                     vel *= 1.5;
                 }
                 if (vel > 2) {
-                    player.playSound(vel > 2.5 ? SoundEvents.ENTITY_GENERIC_BIG_FALL : SoundEvents.ENTITY_GENERIC_SMALL_FALL, 1.0F, 1.0F);
-                    player.attackEntityFrom(DamageSource.FLY_INTO_WALL, (float) vel);
+                    player.playSound(vel > 2.5 ? SoundEvents.GENERIC_BIG_FALL : SoundEvents.GENERIC_SMALL_FALL, 1.0F, 1.0F);
+                    player.hurt(DamageSource.FLY_INTO_WALL, (float) vel);
                     AdvancementTriggers.FLY_INTO_WALL.trigger((ServerPlayerEntity) player);
                 }
             }
@@ -147,7 +147,7 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
     @Override
     public void onInit(CommonArmorHandler commonArmorHandler) {
         PlayerEntity player = commonArmorHandler.getPlayer();
-        ItemStack armorStack = player.getItemStackFromSlot(EquipmentSlotType.FEET);
+        ItemStack armorStack = player.getItemBySlot(EquipmentSlotType.FEET);
         JetBootsHandler.JetBootsLocalState jbLocal = commonArmorHandler.getExtensionData(this);
         jbLocal.flightStabilizers = ItemPneumaticArmor.getBooleanData(armorStack, ItemPneumaticArmor.NBT_FLIGHT_STABILIZERS, false);
         jbLocal.jetBootsPower = ItemPneumaticArmor.getIntData(armorStack, ItemPneumaticArmor.NBT_JET_BOOTS_POWER, 100, 0, 100) / 100f;
@@ -172,16 +172,16 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
         JetBootsHandler.JetBootsLocalState jbLocal = commonArmorHandler.getExtensionData(this);
         switch (tagName) {
             case ItemPneumaticArmor.NBT_BUILDER_MODE:
-                JetBootsStateTracker.getTracker(player).getJetBootsState(player).setBuilderMode(((ByteNBT) inbt).getByte() == 1);
+                JetBootsStateTracker.getTracker(player).getJetBootsState(player).setBuilderMode(((ByteNBT) inbt).getAsByte() == 1);
                 break;
             case ItemPneumaticArmor.NBT_JET_BOOTS_POWER:
-                jbLocal.jetBootsPower = MathHelper.clamp(((IntNBT) inbt).getInt() / 100f, 0f, 1f);
+                jbLocal.jetBootsPower = MathHelper.clamp(((IntNBT) inbt).getAsInt() / 100f, 0f, 1f);
                 break;
             case ItemPneumaticArmor.NBT_FLIGHT_STABILIZERS:
-                jbLocal.flightStabilizers = ((ByteNBT) inbt).getByte() == 1;
+                jbLocal.flightStabilizers = ((ByteNBT) inbt).getAsByte() == 1;
                 break;
             case ItemPneumaticArmor.NBT_SMART_HOVER:
-                jbLocal.smartHover = ((ByteNBT) inbt).getByte() == 1;
+                jbLocal.smartHover = ((ByteNBT) inbt).getAsByte() == 1;
                 break;
         }
     }
@@ -194,12 +194,12 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
         if (!newActive) {
             jbLocal.resetActive();
             if (jbLocal.isFlightStabilizers() && jbs.isActive() && !jbs.isBuilderMode()) {
-                if (!player.world.isRemote) {
-                    double l = Math.pow(player.getMotion().length(), 1.65);
+                if (!player.level.isClientSide) {
+                    double l = Math.pow(player.getDeltaMovement().length(), 1.65);
                     commonArmorHandler.addAir(EquipmentSlotType.FEET, (int) (l * -50));
-                    NetworkHandler.sendToAllTracking(new PacketSpawnParticle(AirParticleData.DENSE, player.getPosX(), player.getPosY(), player.getPosZ(), 0, 0, 0, (int) (l * 2), 0, 0, 0), player.world, player.getPosition());
+                    NetworkHandler.sendToAllTracking(new PacketSpawnParticle(AirParticleData.DENSE, player.getX(), player.getY(), player.getZ(), 0, 0, 0, (int) (l * 2), 0, 0, 0), player.level, player.blockPosition());
                 }
-                player.setMotion(Vector3d.ZERO);
+                player.setDeltaMovement(Vector3d.ZERO);
             }
         }
 
@@ -212,9 +212,9 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
     }
 
     private void setYMotion(Entity entity, double y) {
-        Vector3d v = entity.getMotion();
+        Vector3d v = entity.getDeltaMovement();
         v = v.add(0, y - v.y, 0);
-        entity.setMotion(v);
+        entity.setDeltaMovement(v);
     }
 
     public JetBootsStateTracker.JetBootsState getJetBootsSyncedState(ICommonArmorHandler commonArmorHandler) {

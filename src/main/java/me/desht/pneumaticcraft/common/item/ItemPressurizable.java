@@ -66,9 +66,9 @@ public class ItemPressurizable extends Item implements IPressurizableItem, IVani
     }
 
     @Override
-    public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items) {
+    public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items) {
         // too early to use a capability here :(
-        if (this.isInGroup(group)) {
+        if (this.allowdedIn(group)) {
             items.add(new ItemStack(this));
 
             ItemStack stack = new ItemStack(this);
@@ -100,7 +100,7 @@ public class ItemPressurizable extends Item implements IPressurizableItem, IVani
     }
 
     @Override
-    public int getItemEnchantability() {
+    public int getEnchantmentValue() {
         return 9;  // same as iron or compressed iron
     }
 

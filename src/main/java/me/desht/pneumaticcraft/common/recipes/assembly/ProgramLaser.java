@@ -22,7 +22,7 @@ public class ProgramLaser extends AssemblyProgram {
     public boolean executeStep(TileEntityAssemblyController.AssemblySystem system) {
         boolean useAir = true;
 
-        World world = system.getPlatform().getWorld();
+        World world = system.getPlatform().getLevel();
 
         if (!system.getPlatform().getHeldStack().isEmpty()) {
             if (canItemBeLasered(world, system.getPlatform().getHeldStack())) {

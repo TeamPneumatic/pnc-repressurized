@@ -97,23 +97,23 @@ public class TileEntityVacuumTrap extends TileEntityPneumaticBase implements
 
         rangeManager.setRange(3 + getUpgrades(EnumUpgrade.RANGE));
 
-        if (!world.isRemote) {
+        if (!level.isClientSide) {
             isCoreLoaded = inv.getStats() != null;
 
             if (isOpen() && isCoreLoaded && inv.getStats().getUnusedPercentage() > 0 && getPressure() <= getMinWorkingPressure()) {
-                if ((world.getGameTime() & 0xf) == 0) {
+                if ((level.getGameTime() & 0xf) == 0) {
                     scanForEntities();
                 }
-                Vector3d trapVec = Vector3d.copyCentered(pos);
-                double min = world.getFluidState(pos).getFluid() == Fluids.WATER ? 2.5 : 1.75;
+                Vector3d trapVec = Vector3d.atCenterOf(worldPosition);
+                double min = level.getFluidState(worldPosition).getType() == Fluids.WATER ? 2.5 : 1.75;
                 for (MobEntity e : targetEntities) {
                     if (!e.isAlive() || e.getTags().contains(DEFENDER_TAG)) continue;
                     // kludge: mobs in water seem a bit flaky about getting close enough so increase the absorb dist a bit
-                    if (e.getDistanceSq(trapVec) <= min) {
+                    if (e.distanceToSqr(trapVec) <= min) {
                         absorbEntity(e);
                         addAir((int) (PneumaticValues.USAGE_VACUUM_TRAP * e.getHealth()));
                     } else {
-                        e.getNavigator().tryMoveToXYZ(trapVec.getX(), trapVec.getY(), trapVec.getZ(), 1.2);
+                        e.getNavigation().moveTo(trapVec.x(), trapVec.y(), trapVec.z(), 1.2);
                     }
                 }
             }
@@ -126,8 +126,8 @@ public class TileEntityVacuumTrap extends TileEntityPneumaticBase implements
             else
                 problem = Problems.OK;
         } else {
-            if (isOpen() && isCoreLoaded && world.rand.nextBoolean()) {
-                ClientUtils.emitParticles(world, pos, ParticleTypes.PORTAL);
+            if (isOpen() && isCoreLoaded && level.random.nextBoolean()) {
+                ClientUtils.emitParticles(level, worldPosition, ParticleTypes.PORTAL);
             }
         }
     }
@@ -135,28 +135,28 @@ public class TileEntityVacuumTrap extends TileEntityPneumaticBase implements
     private void absorbEntity(MobEntity e) {
         int toAdd = 1;
         if (xpTank.getFluid().getAmount() >= MEMORY_ESSENCE_AMOUNT) {
-            toAdd += e.world.rand.nextInt(3) + 1;
+            toAdd += e.level.random.nextInt(3) + 1;
         }
         if (inv.getStats().addAmount(e.getType(), toAdd)) {
             e.remove();
             if (toAdd > 1) xpTank.drain(MEMORY_ESSENCE_AMOUNT, IFluidHandler.FluidAction.EXECUTE);
             inv.getStats().serialize(inv.getStackInSlot(0));
-            e.world.playSound(null, pos, SoundEvents.BLOCK_PORTAL_TRIGGER, SoundCategory.BLOCKS, 1f, 2f);
-            if (world instanceof ServerWorld) {
-                ((ServerWorld) world).spawnParticle(ParticleTypes.CLOUD, e.getPosX(), e.getPosY() + 0.5, e.getPosZ(), 5, 0, 1, 0, 0);
+            e.level.playSound(null, worldPosition, SoundEvents.PORTAL_TRIGGER, SoundCategory.BLOCKS, 1f, 2f);
+            if (level instanceof ServerWorld) {
+                ((ServerWorld) level).sendParticles(ParticleTypes.CLOUD, e.getX(), e.getY() + 0.5, e.getZ(), 5, 0, 1, 0, 0);
             }
         }
     }
 
     private void scanForEntities() {
         targetEntities.clear();
-        targetEntities.addAll(world.getEntitiesWithinAABB(MobEntity.class, rangeManager.getExtents(), this::isApplicable));
+        targetEntities.addAll(level.getEntitiesOfClass(MobEntity.class, rangeManager.getExtents(), this::isApplicable));
     }
 
     private boolean isApplicable(LivingEntity e) {
-        return e.isNonBoss()
+        return e.canChangeDimensions()
                 && !(e instanceof EntityDrone)
-                && !(e instanceof TameableEntity && ((TameableEntity) e).isTamed())
+                && !(e instanceof TameableEntity && ((TameableEntity) e).isTame())
                 && !PNCConfig.Common.General.vacuumTrapBlacklist.contains(e.getType().getRegistryName());
     }
 
@@ -204,19 +204,19 @@ public class TileEntityVacuumTrap extends TileEntityPneumaticBase implements
     @Nullable
     @Override
     public Container createMenu(int windowId, PlayerInventory inv, PlayerEntity player) {
-        return new ContainerVacuumTrap(windowId, inv, getPos());
+        return new ContainerVacuumTrap(windowId, inv, getBlockPos());
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT tag) {
-        super.read(state, tag);
+    public void load(BlockState state, CompoundNBT tag) {
+        super.load(state, tag);
 
         inv.deserializeNBT(tag.getCompound("Items"));
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT tag) {
-        super.write(tag);
+    public CompoundNBT save(CompoundNBT tag) {
+        super.save(tag);
 
         tag.put("Items", inv.serializeNBT());
         return tag;
@@ -241,7 +241,7 @@ public class TileEntityVacuumTrap extends TileEntityPneumaticBase implements
     }
 
     public boolean isOpen() {
-        return getBlockState().getBlock() == ModBlocks.VACUUM_TRAP.get() && getBlockState().get(BlockStateProperties.OPEN);
+        return getBlockState().getBlock() == ModBlocks.VACUUM_TRAP.get() && getBlockState().getValue(BlockStateProperties.OPEN);
     }
 
     @Override
@@ -261,7 +261,7 @@ public class TileEntityVacuumTrap extends TileEntityPneumaticBase implements
 
         @Override
         public boolean isFluidValid(FluidStack stack) {
-            return stack.getFluid().isIn(PneumaticCraftTags.Fluids.EXPERIENCE);
+            return stack.getFluid().is(PneumaticCraftTags.Fluids.EXPERIENCE);
         }
     }
 

@@ -17,9 +17,9 @@ public class BlockFluidEtchingAcid extends FlowingFluidBlock {
     }
 
     @Override
-    public void onEntityCollision(BlockState state, World worldIn, BlockPos pos, Entity entity) {
-        if (entity instanceof LivingEntity && entity.ticksExisted % 10 == 0) {
-            entity.attackEntityFrom(DamageSourcePneumaticCraft.ETCHING_ACID, 1);
+    public void entityInside(BlockState state, World worldIn, BlockPos pos, Entity entity) {
+        if (entity instanceof LivingEntity && entity.tickCount % 10 == 0) {
+            entity.hurt(DamageSourcePneumaticCraft.ETCHING_ACID, 1);
         }
     }
 }

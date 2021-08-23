@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.AbstractHandler<CoreComponentsHandler> {
     private static final int MAX_BARS = 40;
     private static final String[] BAR_STR_CACHE = new String[MAX_BARS + 1];
-    private static final ITextComponent NO_ARMOR = new StringTextComponent("-").mergeStyle(TextFormatting.DARK_GRAY);
+    private static final ITextComponent NO_ARMOR = new StringTextComponent("-").withStyle(TextFormatting.DARK_GRAY);
 
     private final float[] lastPressure = new float[] { -1, -1, -1, -1 };
     private WidgetAnimatedStat powerStat;
@@ -56,7 +56,7 @@ public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.Abst
                 lastPressure[i] = armorHandler.getArmorPressure(slot);
                 needUpdate = true;
             }
-            ItemStack stack = armorHandler.getPlayer().getItemStackFromSlot(slot);
+            ItemStack stack = armorHandler.getPlayer().getItemBySlot(slot);
             pressureButtons.get(i).setRenderStacks(stack.getItem() instanceof ItemPneumaticArmor ? stack : ItemStack.EMPTY);
         }
         if (needUpdate) {
@@ -95,7 +95,7 @@ public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.Abst
             return NO_ARMOR;
         float pressure = handler.getArmorPressure(slot);
         if (showPressureNumerically) {
-            return new StringTextComponent(String.format("%4.1f", Math.max(0f, pressure))).mergeStyle(getColourForPressure(pressure));
+            return new StringTextComponent(String.format("%4.1f", Math.max(0f, pressure))).withStyle(getColourForPressure(pressure));
         } else {
             return new StringTextComponent(getBarStr(pressure));
         }

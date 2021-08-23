@@ -108,13 +108,13 @@ public class AmadronPlayerOffer extends AmadronOffer {
 
     @Override
     public boolean isRemovableBy(PlayerEntity player) {
-        return getPlayerId().equals(player.getUniqueID());
+        return getPlayerId().equals(player.getUUID());
     }
 
     public void notifyRestock() {
         PlayerEntity player = PneumaticCraftUtils.getPlayerFromId(getPlayerId());
         if (player != null) {
-            player.sendStatusMessage(xlate("pneumaticcraft.message.amadron.amadronRestocked", getDescription(), getStock()), false);
+            player.displayClientMessage(xlate("pneumaticcraft.message.amadron.amadronRestocked", getDescription(), getStock()), false);
         }
     }
 
@@ -212,8 +212,8 @@ public class AmadronPlayerOffer extends AmadronOffer {
     public void write(PacketBuffer buf) {
         input.writeToBuf(buf);
         output.writeToBuf(buf);
-        buf.writeString(offeringPlayerName);
-        buf.writeUniqueId(offeringPlayerId);
+        buf.writeUtf(offeringPlayerName);
+        buf.writeUUID(offeringPlayerId);
         buf.writeBoolean(providingPos != null);
         if (providingPos != null) {
             PacketUtil.writeGlobalPos(buf, providingPos);
@@ -229,7 +229,7 @@ public class AmadronPlayerOffer extends AmadronOffer {
     public static AmadronPlayerOffer playerOfferFromBuf(ResourceLocation id, PacketBuffer buf) {
         AmadronPlayerOffer offer = new AmadronPlayerOffer(id,
                 AmadronTradeResource.fromPacketBuf(buf), AmadronTradeResource.fromPacketBuf(buf),
-                buf.readString(100), buf.readUniqueId()
+                buf.readUtf(100), buf.readUUID()
         );
         if (buf.readBoolean()) {
             offer.setProvidingPosition(PacketUtil.readGlobalPos(buf));
@@ -259,7 +259,7 @@ public class AmadronPlayerOffer extends AmadronOffer {
     }
 
     public static AmadronPlayerOffer fromJson(JsonObject json) throws CommandSyntaxException {
-        AmadronOffer offer = AmadronOffer.fromJson(new ResourceLocation(JSONUtils.getString(json, "id")), json);
+        AmadronOffer offer = AmadronOffer.fromJson(new ResourceLocation(JSONUtils.getAsString(json, "id")), json);
         AmadronPlayerOffer custom = new AmadronPlayerOffer(offer.getId(), offer.input, offer.output,
                 json.get("offeringPlayerName").getAsString(), UUID.fromString(json.get("offeringPlayerId").getAsString()));
         custom.inStock = json.get("inStock").getAsInt();

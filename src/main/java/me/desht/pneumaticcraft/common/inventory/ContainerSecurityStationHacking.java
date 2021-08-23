@@ -32,7 +32,7 @@ public class ContainerSecurityStationHacking extends ContainerPneumaticBase<Tile
         for (int i = 0; i < TileEntitySecurityStation.INV_ROWS; i++) {
             for (int j = 0; j < TileEntitySecurityStation.INV_COLS; j++) {
                 SlotUntouchable slot = (SlotUntouchable) addSlot(new SlotUntouchable(te.getPrimaryInventory(), j + i * 5, 8 + j * NODE_SPACING, 22 + i * NODE_SPACING));
-                slot.setEnabled(slot.getHasStack());
+                slot.setEnabled(slot.hasItem());
             }
         }
     }
@@ -46,25 +46,25 @@ public class ContainerSecurityStationHacking extends ContainerPneumaticBase<Tile
         List<Pair<Integer, ItemStack>> nodes = new ArrayList<>();
         int nNodes = buffer.readVarInt();
         for (int i = 0; i < nNodes; i++) {
-            nodes.add(Pair.of(buffer.readVarInt(), buffer.readItemStack()));
+            nodes.add(Pair.of(buffer.readVarInt(), buffer.readItem()));
         }
 
         boolean justTesting = buffer.readBoolean();
 
-        return PneumaticCraftUtils.getTileEntityAt(player.world, tilePos, TileEntitySecurityStation.class).map(teSS -> {
+        return PneumaticCraftUtils.getTileEntityAt(player.level, tilePos, TileEntitySecurityStation.class).map(teSS -> {
             ISimulationController controller = new SimulationController(teSS, player, playerSimulation, aiSimulation, justTesting);
             nodes.forEach(node -> {
                 controller.getSimulation(HackingSide.PLAYER).addNode(node.getLeft(), node.getRight());
                 controller.getSimulation(HackingSide.AI).addNode(node.getLeft(), node.getRight());
             });
             teSS.setSimulationController(controller);
-            return teSS.getPos();
+            return teSS.getBlockPos();
         }).orElse(null);
     }
 
     @Nonnull
     @Override
-    public ItemStack transferStackInSlot(PlayerEntity par1EntityPlayer, int par2) {
+    public ItemStack quickMoveStack(PlayerEntity par1EntityPlayer, int par2) {
         return ItemStack.EMPTY;
     }
 

@@ -47,11 +47,11 @@ public class ItemAssemblyProgram extends Item {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void addInformation(ItemStack stack, World worldIn, List<ITextComponent> infoList, ITooltipFlag par4) {
+    public void appendHoverText(ItemStack stack, World worldIn, List<ITextComponent> infoList, ITooltipFlag par4) {
         infoList.add(new StringTextComponent("Required Machines:"));
-        infoList.add(bullet().append(xlate(ModBlocks.ASSEMBLY_CONTROLLER.get().getTranslationKey())));
+        infoList.add(bullet().append(xlate(ModBlocks.ASSEMBLY_CONTROLLER.get().getDescriptionId())));
         Arrays.stream(getProgram().getRequiredMachines())
-                .map(machine -> bullet().append(xlate(machine.getMachineBlock().getTranslationKey())))
+                .map(machine -> bullet().append(xlate(machine.getMachineBlock().getDescriptionId())))
                 .forEach(infoList::add);
     }
 

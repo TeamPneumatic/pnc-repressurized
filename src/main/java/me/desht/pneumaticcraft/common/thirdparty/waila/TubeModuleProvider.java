@@ -22,10 +22,10 @@ public class TubeModuleProvider {
         @Override
         public void appendServerData(CompoundNBT compoundNBT, ServerPlayerEntity player, World world, TileEntity te) {
             if (te instanceof TileEntityPressureTube) {
-                TubeModule module = BlockPressureTube.getFocusedModule(world, te.getPos(), player);
+                TubeModule module = BlockPressureTube.getFocusedModule(world, te.getBlockPos(), player);
                 if (module != null) {
                     compoundNBT.put("module", module.writeToNBT(new CompoundNBT()));
-                    compoundNBT.putByte("side", (byte) module.getDirection().getIndex());
+                    compoundNBT.putByte("side", (byte) module.getDirection().get3DDataValue());
                 }
             }
         }
@@ -39,7 +39,7 @@ public class TubeModuleProvider {
                 CompoundNBT tubeTag = accessor.getServerData();
                 if (tubeTag.contains("side", Constants.NBT.TAG_BYTE)) {
                     int side = tubeTag.getByte("side");
-                    TubeModule module = tube.getModule(Direction.byIndex(side));
+                    TubeModule module = tube.getModule(Direction.from3DDataValue(side));
                     if (module != null) {
                         module.readFromNBT(tubeTag.getCompound("module"));
                         module.addInfo(tooltip);

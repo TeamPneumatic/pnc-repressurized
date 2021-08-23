@@ -82,13 +82,13 @@ public class ProgWidgetText extends ProgWidget {
     @Override
     public void writeToPacket(PacketBuffer buf) {
         super.writeToPacket(buf);
-        buf.writeString(string);
+        buf.writeUtf(string);
     }
 
     @Override
     public void readFromPacket(PacketBuffer buf) {
         super.readFromPacket(buf);
-        string = buf.readString(32768);
+        string = buf.readUtf(32768);
 
     }
 

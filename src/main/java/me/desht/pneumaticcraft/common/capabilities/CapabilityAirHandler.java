@@ -34,7 +34,7 @@ public class CapabilityAirHandler {
 
         @Override
         public void readNBT(Capability<T> capability, T instance, Direction side, INBT nbt) {
-            instance.addAir(((IntNBT) nbt).getInt());
+            instance.addAir(((IntNBT) nbt).getAsInt());
         }
     }
 }

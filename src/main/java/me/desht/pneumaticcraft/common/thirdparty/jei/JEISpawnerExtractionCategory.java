@@ -28,7 +28,7 @@ public class JEISpawnerExtractionCategory implements IRecipeCategory<JEISpawnerE
     private final IDrawable icon;
 
     public JEISpawnerExtractionCategory() {
-        this.localizedName = I18n.format("pneumaticcraft.gui.jei.title.spawnerExtraction");
+        this.localizedName = I18n.get("pneumaticcraft.gui.jei.title.spawnerExtraction");
         this.background = JEIPlugin.jeiHelpers.getGuiHelper().createDrawable(Textures.GUI_JEI_SPAWNER_EXTRACTION, 0, 0, 120, 64);
         this.icon = JEIPlugin.jeiHelpers.getGuiHelper().createDrawableIngredient(new ItemStack(ModBlocks.SPAWNER_EXTRACTOR.get()));
     }

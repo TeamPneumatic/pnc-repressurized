@@ -22,7 +22,7 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
     }
 
     @Override
-    public void registerTags() {
+    public void addTags() {
 
         createAndAppend(PneumaticCraftTags.Blocks.REINFORCED_STONE, Tags.Blocks.STONE,
                 ModBlocks.REINFORCED_STONE);
@@ -57,9 +57,9 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
 
         createTag(PneumaticCraftTags.Blocks.PROBE_TARGET);
 
-        getOrCreateBuilder(Tags.Blocks.ORES);
-        getOrCreateBuilder(BlockTags.LOGS);
-        getOrCreateBuilder(PneumaticCraftTags.Blocks.JACKHAMMER_ORES).addTag(Tags.Blocks.ORES).addTag(BlockTags.LOGS);
+        tag(Tags.Blocks.ORES);
+        tag(BlockTags.LOGS);
+        tag(PneumaticCraftTags.Blocks.JACKHAMMER_ORES).addTag(Tags.Blocks.ORES).addTag(BlockTags.LOGS);
     }
 
 // with thanks to Tropicraft for these helper methods
@@ -71,12 +71,12 @@ public class ModBlockTagsProvider extends BlockTagsProvider {
 
     @SafeVarargs
     private final void createTag(ITag.INamedTag<Block> tag, Supplier<? extends Block>... blocks) {
-        getOrCreateBuilder(tag).add(resolveAll(Block[]::new, blocks));
+        tag(tag).add(resolveAll(Block[]::new, blocks));
     }
 
     @SafeVarargs
     private final void appendToTag(ITag.INamedTag<Block> tag, ITag.INamedTag<Block>... toAppend) {
-        getOrCreateBuilder(tag).addTags(toAppend);
+        tag(tag).addTags(toAppend);
     }
 
     @SafeVarargs

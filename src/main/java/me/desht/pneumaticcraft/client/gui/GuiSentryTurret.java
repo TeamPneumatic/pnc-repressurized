@@ -39,12 +39,12 @@ public class GuiSentryTurret extends GuiPneumaticContainerBase<ContainerSentryTu
     public void init() {
         super.init();
 
-        addButton(entityFilter = new WidgetTextField(font, guiLeft + 80, guiTop + 63, 70, font.FONT_HEIGHT));
-        entityFilter.setMaxStringLength(256);
-        entityFilter.setFocused2(true);
-        setListener(entityFilter);
+        addButton(entityFilter = new WidgetTextField(font, leftPos + 80, topPos + 63, 70, font.lineHeight));
+        entityFilter.setMaxLength(256);
+        entityFilter.setFocus(true);
+        setFocused(entityFilter);
 
-        addButton(errorButton = new WidgetButtonExtended(guiLeft + 155, guiTop + 52, 16, 16, StringTextComponent.EMPTY));
+        addButton(errorButton = new WidgetButtonExtended(leftPos + 155, topPos + 52, 16, 16, StringTextComponent.EMPTY));
         errorButton.setRenderedIcon(Textures.GUI_PROBLEMS_TEXTURE).setVisible(false);
     }
 
@@ -53,7 +53,7 @@ public class GuiSentryTurret extends GuiPneumaticContainerBase<ContainerSentryTu
         if (firstUpdate) {
             // setting the filter value in the textfield on init() isn't reliable; might not be sync'd in time
             prevFilterText = te.getText(0);
-            entityFilter.setText(te.getText(0));
+            entityFilter.setValue(te.getText(0));
             entityFilter.setResponder(this::onEntityFilterChanged);
         }
 
@@ -77,34 +77,34 @@ public class GuiSentryTurret extends GuiPneumaticContainerBase<ContainerSentryTu
 
     @Override
     protected void doDelayedAction() {
-        te.setText(0, entityFilter.getText());
+        te.setText(0, entityFilter.getValue());
         NetworkHandler.sendToServer(new PacketUpdateTextfield(te, 0));
     }
 
     @Override
-    protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int x, int y) {
-        super.drawGuiContainerForegroundLayer(matrixStack, x, y);
+    protected void renderLabels(MatrixStack matrixStack, int x, int y) {
+        super.renderLabels(matrixStack, x, y);
 
-        font.drawString(matrixStack, I18n.format("pneumaticcraft.gui.sentryTurret.ammo"), 80, 19, 0x404040);
-        font.drawString(matrixStack, I18n.format("pneumaticcraft.gui.sentryTurret.targetFilter"), 80, 53, 0x404040);
+        font.draw(matrixStack, I18n.get("pneumaticcraft.gui.sentryTurret.ammo"), 80, 19, 0x404040);
+        font.draw(matrixStack, I18n.get("pneumaticcraft.gui.sentryTurret.targetFilter"), 80, 53, 0x404040);
         if (ClientUtils.isKeyDown(GLFW.GLFW_KEY_F1)) {
             GuiUtils.showPopupHelpScreen(matrixStack, this, font,
                     GuiUtils.xlateAndSplit("pneumaticcraft.gui.entityFilter.helpText"));
-        } else if (x >= guiLeft + 76 && y >= guiTop + 51 && x <= guiLeft + 153 && y <= guiTop + 74) {
+        } else if (x >= leftPos + 76 && y >= topPos + 51 && x <= leftPos + 153 && y <= topPos + 74) {
             // cursor inside the entity filter area
-            String str = I18n.format("pneumaticcraft.gui.entityFilter.holdF1");
-            font.drawString(matrixStack, str, (xSize - font.getStringWidth(str)) / 2f, ySize + 5, 0x808080);
+            String str = I18n.get("pneumaticcraft.gui.entityFilter.holdF1");
+            font.draw(matrixStack, str, (imageWidth - font.width(str)) / 2f, imageHeight + 5, 0x808080);
         }
     }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-            minecraft.player.closeScreen();
+            minecraft.player.closeContainer();
         }
 
         return entityFilter.keyPressed(keyCode, scanCode, modifiers)
-                || entityFilter.canWrite()
+                || entityFilter.canConsumeInput()
                 || super.keyPressed(keyCode, scanCode, modifiers);
     }
 

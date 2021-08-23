@@ -24,15 +24,15 @@ import net.minecraft.world.IWorld;
 import javax.annotation.Nullable;
 
 public class BlockKeroseneLamp extends BlockPneumaticCraft {
-    private static final VoxelShape SHAPE_NS = Block.makeCuboidShape(3, 0, 5, 13, 10, 11);
-    private static final VoxelShape SHAPE_EW = Block.makeCuboidShape(5, 0, 3, 11, 10, 13);
+    private static final VoxelShape SHAPE_NS = Block.box(3, 0, 5, 13, 10, 11);
+    private static final VoxelShape SHAPE_EW = Block.box(5, 0, 3, 11, 10, 13);
 
     public static final EnumProperty<Direction> CONNECTED = EnumProperty.create("connected", Direction.class);
     public static final BooleanProperty LIT = BooleanProperty.create("lit");
 
     public BlockKeroseneLamp() {
-        super(ModBlocks.defaultProps().setLightLevel(state -> state.get(LIT) ? 15 : 0));
-        setDefaultState(getStateContainer().getBaseState().with(LIT, false));
+        super(ModBlocks.defaultProps().lightLevel(state -> state.getValue(LIT) ? 15 : 0));
+        registerDefaultState(getStateDefinition().any().setValue(LIT, false));
     }
 
     @Override
@@ -41,27 +41,27 @@ public class BlockKeroseneLamp extends BlockPneumaticCraft {
     }
 
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
-        super.fillStateContainer(builder);
+    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
         builder.add(CONNECTED, LIT);
     }
 
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockItemUseContext ctx) {
-        return super.getStateForPlacement(ctx).with(CONNECTED, getConnectedDirection(ctx.getWorld(), ctx.getPos()));
+        return super.getStateForPlacement(ctx).setValue(CONNECTED, getConnectedDirection(ctx.getLevel(), ctx.getClickedPos()));
     }
 
     @Override
-    public BlockState updatePostPlacement(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
-        return stateIn.with(CONNECTED, getConnectedDirection(worldIn, currentPos));
+    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
+        return stateIn.setValue(CONNECTED, getConnectedDirection(worldIn, currentPos));
     }
 
     private Direction getConnectedDirection(IWorld world, BlockPos pos) {
         Direction connectedDir = Direction.DOWN;
         for (Direction d : DirectionUtil.VALUES) {
-            BlockPos neighborPos = pos.offset(d);
-            if (Block.hasEnoughSolidSide(world, neighborPos, d.getOpposite())) {
+            BlockPos neighborPos = pos.relative(d);
+            if (Block.canSupportCenter(world, neighborPos, d.getOpposite())) {
                 connectedDir = d;
                 break;
             }
@@ -81,7 +81,7 @@ public class BlockKeroseneLamp extends BlockPneumaticCraft {
 
     @Override
     public int getLightValue(BlockState state, IBlockReader world, BlockPos pos) {
-        return state.get(LIT) ? 15 : 0;
+        return state.getValue(LIT) ? 15 : 0;
     }
 
     public static class ItemBlockKeroseneLamp extends BlockItem implements ICustomTooltipName {
@@ -91,7 +91,7 @@ public class BlockKeroseneLamp extends BlockPneumaticCraft {
 
         @Override
         public String getCustomTooltipTranslationKey() {
-            return PNCConfig.Common.Machines.keroseneLampCanUseAnyFuel ? getTranslationKey() : getTranslationKey() + ".kerosene_only";
+            return PNCConfig.Common.Machines.keroseneLampCanUseAnyFuel ? getDescriptionId() : getDescriptionId() + ".kerosene_only";
         }
     }
 }

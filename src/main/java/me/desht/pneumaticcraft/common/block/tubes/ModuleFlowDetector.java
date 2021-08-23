@@ -23,7 +23,7 @@ public class ModuleFlowDetector extends TubeModuleRedstoneEmitting implements II
         oldRotation = rotation;
         rotation += getRedstoneLevel() / 100F;
 
-        if (!pressureTube.getWorld().isRemote) {
+        if (!pressureTube.getLevel().isClientSide) {
             if (setRedstone(flow / 5)) {
                 sendDescriptionPacket();
             }

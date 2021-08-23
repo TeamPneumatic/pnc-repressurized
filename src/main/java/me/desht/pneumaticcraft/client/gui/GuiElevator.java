@@ -49,7 +49,7 @@ public class GuiElevator extends GuiPneumaticContainerBase<ContainerElevator, Ti
         floorNameStat.setMinimumExpandedDimensions(120, 85);
 
         floorNameField = new WidgetTextField(font,6, 60, 120, 20);
-        floorNameField.setText(te.getFloorName(currentEditedFloor));
+        floorNameField.setValue(te.getFloorName(currentEditedFloor));
         floorNameField.setResponder(this::updateFloor);  // gui responder
 
         floorNameStat.addSubWidget(floorNameField);
@@ -66,8 +66,8 @@ public class GuiElevator extends GuiPneumaticContainerBase<ContainerElevator, Ti
             if (currentEditedFloor >= te.floorHeights.length) currentEditedFloor = 0;
             else if (currentEditedFloor < 0) currentEditedFloor = te.floorHeights.length - 1;
 
-            floorNameField.setText(te.getFloorName(currentEditedFloor));
-            floorNameField.setFocused2(true);
+            floorNameField.setValue(te.getFloorName(currentEditedFloor));
+            floorNameField.setFocus(true);
         }
     }
 
@@ -87,8 +87,8 @@ public class GuiElevator extends GuiPneumaticContainerBase<ContainerElevator, Ti
     }
 
     @Override
-    protected void drawGuiContainerBackgroundLayer(MatrixStack matrixStack, float opacity, int x, int y) {
-        super.drawGuiContainerBackgroundLayer(matrixStack, opacity, x, y);
+    protected void renderBg(MatrixStack matrixStack, float opacity, int x, int y) {
+        super.renderBg(matrixStack, opacity, x, y);
     }
 
     @Override
@@ -107,9 +107,9 @@ public class GuiElevator extends GuiPneumaticContainerBase<ContainerElevator, Ti
         List<ITextComponent> text = new ArrayList<>();
 
         text.add(xlate("pneumaticcraft.gui.tab.info.elevator.extension",
-                PneumaticCraftUtils.roundNumberTo(te.extension, 1)).mergeStyle(TextFormatting.BLACK));
+                PneumaticCraftUtils.roundNumberTo(te.extension, 1)).withStyle(TextFormatting.BLACK));
         text.add(xlate("pneumaticcraft.gui.tab.info.elevator.maxExtension",
-                PneumaticCraftUtils.roundNumberTo(te.getMaxElevatorHeight(), 1)).mergeStyle(TextFormatting.BLACK));
+                PneumaticCraftUtils.roundNumberTo(te.getMaxElevatorHeight(), 1)).withStyle(TextFormatting.BLACK));
 
         return text;
     }

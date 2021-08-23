@@ -58,24 +58,24 @@ public class PacketModWrenchBlock extends LocationIntPacket {
             buf.writeInt(entityID);
         } else {
             buf.writeBoolean(false);
-            buf.writeByte(side.getIndex());
+            buf.writeByte(side.get3DDataValue());
         }
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             ServerPlayerEntity player = ctx.get().getSender();
-            if (player.world.isAreaLoaded(pos, 0) && PneumaticCraftUtils.canPlayerReach(player, pos)) {
-                if (ModdedWrenchUtils.getInstance().isModdedWrench(player.getHeldItem(hand))) {
+            if (player.level.isAreaLoaded(pos, 0) && PneumaticCraftUtils.canPlayerReach(player, pos)) {
+                if (ModdedWrenchUtils.getInstance().isModdedWrench(player.getItemInHand(hand))) {
                     if (entityID >= 0) {
-                        Entity e = player.world.getEntityByID(entityID);
+                        Entity e = player.level.getEntity(entityID);
                         if (e instanceof IPneumaticWrenchable && e.isAlive()) {
-                            ((IPneumaticWrenchable) e).onWrenched(player.world, player, pos, side, hand);
+                            ((IPneumaticWrenchable) e).onWrenched(player.level, player, pos, side, hand);
                         }
                     } else if (side != null) {
-                        BlockState state = player.world.getBlockState(pos);
+                        BlockState state = player.level.getBlockState(pos);
                         if (state.getBlock() instanceof IPneumaticWrenchable) {
-                            ((IPneumaticWrenchable) state.getBlock()).onWrenched(player.world, player, pos, side, hand);
+                            ((IPneumaticWrenchable) state.getBlock()).onWrenched(player.level, player, pos, side, hand);
                         }
                     }
                 }

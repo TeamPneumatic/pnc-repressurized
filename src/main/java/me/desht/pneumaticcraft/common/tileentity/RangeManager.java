@@ -22,7 +22,7 @@ public class RangeManager {
     public RangeManager(TileEntity te, int renderColour) {
         this.te = te;
         this.renderColour = renderColour;
-        this.extentsGenerator = () -> new AxisAlignedBB(te.getPos(), te.getPos()).grow(range);
+        this.extentsGenerator = () -> new AxisAlignedBB(te.getBlockPos(), te.getBlockPos()).inflate(range);
         this.setRange(1);
     }
 
@@ -39,8 +39,8 @@ public class RangeManager {
         if (newRange != range) {
             range = newRange;
             this.extents = extentsGenerator.get();
-            this.frame = te.getWorld() != null && te.getWorld().isRemote() ? getFrame(extents) : Collections.emptySet();
-            if (shouldShowRange() && te.getWorld() != null && te.getWorld().isRemote()) {
+            this.frame = te.getLevel() != null && te.getLevel().isClientSide() ? getFrame(extents) : Collections.emptySet();
+            if (shouldShowRange() && te.getLevel() != null && te.getLevel().isClientSide()) {
                 toggleShowRange();
                 toggleShowRange();
             }
@@ -49,7 +49,7 @@ public class RangeManager {
 
     public void toggleShowRange() {
         showRange = !showRange;
-        if (te.getWorld() != null && te.getWorld().isRemote()) {
+        if (te.getLevel() != null && te.getLevel().isClientSide()) {
             if (showRange) {
                 AreaRenderManager.getInstance().showArea(frame, renderColour, te, false);
             } else {

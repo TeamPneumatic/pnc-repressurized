@@ -22,9 +22,9 @@ public abstract class AbstractTileModelRenderer<T extends TileEntityBase> extend
     public void render(T te, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer iRenderTypeBuffer, int combinedLightIn, int combinedOverlayIn) {
         // boilerplate translation code, common to all our model-rendering TERs, is done here
 
-        if (!shouldRender(te) || !te.getWorld().getChunkProvider().isChunkLoaded(new ChunkPos(te.getPos()))) return;
+        if (!shouldRender(te) || !te.getLevel().getChunkSource().isEntityTickingChunk(new ChunkPos(te.getBlockPos()))) return;
 
-        matrixStack.push();
+        matrixStack.pushPose();
 
         // necessary transforms to make models render in the right place
         matrixStack.translate(0.5, 1.5, 0.5);
@@ -33,7 +33,7 @@ public abstract class AbstractTileModelRenderer<T extends TileEntityBase> extend
         // actual model rendering work
         renderModel(te, partialTicks, matrixStack, iRenderTypeBuffer, combinedLightIn, combinedOverlayIn);
 
-        matrixStack.pop();
+        matrixStack.popPose();
 
         renderExtras(te, partialTicks, matrixStack, iRenderTypeBuffer, combinedLightIn, combinedOverlayIn);
     }

@@ -43,8 +43,8 @@ public class HackableSilverfish implements IHackableBlock {
         BlockState state = world.getBlockState(pos);
 
         if (state.getBlock() instanceof SilverfishBlock) {
-            Block newBlock = ((SilverfishBlock) state.getBlock()).getMimickedBlock();
-            world.setBlockState(pos, newBlock.getDefaultState(), 3);
+            Block newBlock = ((SilverfishBlock) state.getBlock()).getHostBlock();
+            world.setBlock(pos, newBlock.defaultBlockState(), 3);
         }
     }
 }

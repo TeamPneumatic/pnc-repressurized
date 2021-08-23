@@ -17,12 +17,12 @@ public class ProgressingLine {
     }
 
     public ProgressingLine(Vector3f start, Vector3f end) {
-        this.startX = start.getX();
-        this.startY = start.getY();
-        this.startZ = start.getZ();
-        this.endX = end.getX();
-        this.endY = end.getY();
-        this.endZ = end.getZ();
+        this.startX = start.x();
+        this.startY = start.y();
+        this.startZ = start.z();
+        this.endX = end.x();
+        this.endY = end.y();
+        this.endZ = end.z();
     }
 
     public ProgressingLine(Vector3d start, Vector3d end) {

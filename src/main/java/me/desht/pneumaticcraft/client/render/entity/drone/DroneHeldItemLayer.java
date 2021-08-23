@@ -26,26 +26,26 @@ public class DroneHeldItemLayer extends LayerRenderer<EntityDroneBase, ModelDron
             EntityDrone drone = (EntityDrone) entityIn;
             ItemStack held = drone.getDroneHeldItem();
             if (!held.isEmpty() && !(held.getItem() instanceof ItemGunAmmo && drone.hasMinigun())) {
-                renderHeldItem(held, matrixStackIn, bufferIn, packedLightIn, LivingRenderer.getPackedOverlay(entityIn, 0.0F));
+                renderHeldItem(held, matrixStackIn, bufferIn, packedLightIn, LivingRenderer.getOverlayCoords(entityIn, 0.0F));
             }
         }
     }
 
     private void renderHeldItem(@Nonnull ItemStack stack, MatrixStack matrixStack, IRenderTypeBuffer buffer, int packedLight, int packedOverlay) {
-        matrixStack.push();
+        matrixStack.pushPose();
 
         // note: transform is currently set up so items render upside down
         matrixStack.translate(0.0D, 1.5D, 0.0D);
         if (!(stack.getItem() instanceof ToolItem || stack.getItem() instanceof SwordItem || stack.getItem() instanceof HoeItem)) {
             // since items are rendered suspended under the drone,
             // holding tools upside down looks more natural - especially if the drone is digging with them
-            matrixStack.rotate(Vector3f.XP.rotationDegrees(180));
+            matrixStack.mulPose(Vector3f.XP.rotationDegrees(180));
         }
         float scaleFactor = stack.getItem() instanceof BlockItem ? 0.7F : 0.5F;
         matrixStack.scale(scaleFactor, scaleFactor, scaleFactor);
-        Minecraft.getInstance().getItemRenderer().renderItem(stack, ItemCameraTransforms.TransformType.FIXED, packedLight, packedOverlay, matrixStack, buffer);
+        Minecraft.getInstance().getItemRenderer().renderStatic(stack, ItemCameraTransforms.TransformType.FIXED, packedLight, packedOverlay, matrixStack, buffer);
 
-        matrixStack.pop();
+        matrixStack.popPose();
     }
 
 }

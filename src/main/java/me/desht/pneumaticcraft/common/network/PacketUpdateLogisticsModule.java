@@ -19,7 +19,7 @@ public class PacketUpdateLogisticsModule extends LocationIntPacket {
     private final int status;
 
     public PacketUpdateLogisticsModule(ModuleLogistics logisticsModule, int action) {
-        super(logisticsModule.getTube().getPos());
+        super(logisticsModule.getTube().getBlockPos());
         side = logisticsModule.getDirection().ordinal();
         colorIndex = logisticsModule.getColorChannel();
         if (action > 0) {
@@ -46,7 +46,7 @@ public class PacketUpdateLogisticsModule extends LocationIntPacket {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> PacketUtil.getTE(ctx.get().getSender(), pos, TileEntityPressureTube.class).ifPresent(te -> {
-            TubeModule module = te.getModule(Direction.byIndex(side));
+            TubeModule module = te.getModule(Direction.from3DDataValue(side));
             if (module instanceof ModuleLogistics) {
                 ((ModuleLogistics) module).onUpdatePacket(status, colorIndex);
             }

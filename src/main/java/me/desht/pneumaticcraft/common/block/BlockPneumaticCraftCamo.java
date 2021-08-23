@@ -32,15 +32,15 @@ public abstract class BlockPneumaticCraftCamo extends BlockPneumaticCraft /*impl
 
     @Override
     public boolean removedByPlayer(BlockState state, World world, BlockPos pos, PlayerEntity player, boolean willHarvest, FluidState fluid) {
-        TileEntity te = world.getTileEntity(pos);
+        TileEntity te = world.getBlockEntity(pos);
         if (te instanceof ICamouflageableTE && !player.isCreative()) {
             BlockState camoState = ((ICamouflageableTE) te).getCamouflage();
             if (camoState != null) {
                 ItemStack camoStack = ICamouflageableTE.getStackForState(camoState);
                 ((ICamouflageableTE) te).setCamouflage(null);
-                world.playEvent(player, Constants.WorldEvents.BREAK_BLOCK_EFFECTS, pos, getStateId(camoState));
+                world.levelEvent(player, Constants.WorldEvents.BREAK_BLOCK_EFFECTS, pos, getId(camoState));
                 ItemEntity entity = new ItemEntity(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, camoStack);
-                world.addEntity(entity);
+                world.addFreshEntity(entity);
                 return false;
             }
         }
@@ -60,31 +60,31 @@ public abstract class BlockPneumaticCraftCamo extends BlockPneumaticCraft /*impl
     }
 
     @Override
-    public VoxelShape getRaytraceShape(BlockState state, IBlockReader worldIn, BlockPos pos) {
+    public VoxelShape getInteractionShape(BlockState state, IBlockReader worldIn, BlockPos pos) {
         ICamouflageableTE camo = getCamoState(worldIn, pos);
-        return camo == null ? getUncamouflagedRaytraceShape(state, worldIn, pos) : camo.getCamouflage().getRaytraceShape(worldIn, pos, ISelectionContext.dummy());
+        return camo == null ? getUncamouflagedRaytraceShape(state, worldIn, pos) : camo.getCamouflage().getVisualShape(worldIn, pos, ISelectionContext.empty());
     }
 
     @Override
-    public VoxelShape getRenderShape(BlockState state, IBlockReader worldIn, BlockPos pos) {
+    public VoxelShape getOcclusionShape(BlockState state, IBlockReader worldIn, BlockPos pos) {
         ICamouflageableTE camo = getCamoState(worldIn, pos);
-        return camo == null ? getUncamouflagedRenderShape(state, worldIn, pos) : camo.getCamouflage().getRenderShape(worldIn, pos);
+        return camo == null ? getUncamouflagedRenderShape(state, worldIn, pos) : camo.getCamouflage().getBlockSupportShape(worldIn, pos);
     }
 
     @Override
-    public int getOpacity(BlockState state, IBlockReader world, BlockPos pos) {
+    public int getLightBlock(BlockState state, IBlockReader world, BlockPos pos) {
         ICamouflageableTE camo = getCamoState(world, pos);
-        return camo == null ? super.getOpacity(state, world, pos) : camo.getCamouflage().getOpacity(world, pos);
+        return camo == null ? super.getLightBlock(state, world, pos) : camo.getCamouflage().getLightBlock(world, pos);
     }
 
     @Override
-    public boolean isVariableOpacity() {
+    public boolean hasDynamicShape() {
         return true;  // prevent blockstate caching side solidity
     }
 
     private ICamouflageableTE getCamoState(IBlockReader blockAccess, BlockPos pos) {
         if (blockAccess == null || pos == null) return null;
-        TileEntity te = blockAccess.getTileEntity(pos);
+        TileEntity te = blockAccess.getBlockEntity(pos);
         return te instanceof ICamouflageableTE && ((ICamouflageableTE) te).getCamouflage() != null ? (ICamouflageableTE) te : null;
     }
 
@@ -104,7 +104,7 @@ public abstract class BlockPneumaticCraftCamo extends BlockPneumaticCraft /*impl
     }
 
     protected VoxelShape getUncamouflagedRenderShape(BlockState state, IBlockReader reader, BlockPos pos) {
-        return getUncamouflagedShape(state, reader, pos, ISelectionContext.dummy());
+        return getUncamouflagedShape(state, reader, pos, ISelectionContext.empty());
     }
 
     protected VoxelShape getUncamouflagedRaytraceShape(BlockState state, IBlockReader reader, BlockPos pos) {

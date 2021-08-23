@@ -64,7 +64,7 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
 
         ItemStack stack = getRecipeResult(ClientUtils.getClientWorld());
         if (!stack.isEmpty()) {
-            curTooltip.add(stack.getDisplayName().deepCopy().mergeStyle(TextFormatting.YELLOW));
+            curTooltip.add(stack.getHoverName().copy().withStyle(TextFormatting.YELLOW));
         }
     }
 
@@ -111,7 +111,7 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
             ProgWidgetItemFilter itemFilter = (ProgWidgetItemFilter) getConnectedParameters()[y];
             for (int x = 0; x < 3 && itemFilter != null; x++) {
                 if (!itemFilter.getVariable().isEmpty()) usingVariables = true;
-                invCrafting.setInventorySlotContents(y * 3 + x, itemFilter.getFilter());
+                invCrafting.setItem(y * 3 + x, itemFilter.getFilter());
                 itemFilter = (ProgWidgetItemFilter) itemFilter.getConnectedParameters()[0];
             }
         }
@@ -120,14 +120,14 @@ public class ProgWidgetCrafting extends ProgWidget implements ICraftingWidget, I
 
     public ItemStack getRecipeResult(World world) {
         CraftingInventory grid = getCraftingGrid();
-        return getRecipe(world, grid).map(r -> r.getCraftingResult(grid)).orElse(ItemStack.EMPTY);
+        return getRecipe(world, grid).map(r -> r.assemble(grid)).orElse(ItemStack.EMPTY);
     }
 
     @Override
     public Optional<ICraftingRecipe> getRecipe(World world, CraftingInventory grid) {
         // no caching if using variables, because the item can change at any item
         return usingVariables ?
-                world.getRecipeManager().getRecipe(IRecipeType.CRAFTING, grid, world) :
+                world.getRecipeManager().getRecipeFor(IRecipeType.CRAFTING, grid, world) :
                 CraftingRecipeCache.INSTANCE.getCachedRecipe(world, grid);
     }
 

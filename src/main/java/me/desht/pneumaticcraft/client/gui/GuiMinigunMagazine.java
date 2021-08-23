@@ -49,7 +49,7 @@ public class GuiMinigunMagazine extends GuiPneumaticContainerBase<ContainerMinig
     public void tick() {
         super.tick();
 
-        ItemStack gunStack = Minecraft.getInstance().player.getHeldItem(container.getHand());
+        ItemStack gunStack = Minecraft.getInstance().player.getItemInHand(menu.getHand());
         if (gunStack.getItem() instanceof ItemMinigun) {
             lockedSlot = ItemMinigun.getLockedSlot(gunStack);
         }
@@ -68,7 +68,7 @@ public class GuiMinigunMagazine extends GuiPneumaticContainerBase<ContainerMinig
             RenderSystem.defaultBlendFunc();
 
             MatrixStack matrixStack = event.getMatrixStack();
-            BufferBuilder wr = Tessellator.getInstance().getBuffer();
+            BufferBuilder wr = Tessellator.getInstance().getBuilder();
             GuiUtils.drawUntexturedQuad(matrixStack, wr, minX, minY, 0, 16, 16, 0, 208, 0, 50);
             RenderSystem.lineWidth(3.0F);
             GuiUtils.drawOutline(matrixStack, wr, minX, minY, 0, 16, 16, 0, 208, 0, 255);

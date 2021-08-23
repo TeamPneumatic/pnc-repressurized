@@ -22,13 +22,13 @@ public class ShapedPressurizableRecipe extends ShapedRecipe {
     }
 
     @Override
-    public ItemStack getCraftingResult(CraftingInventory inv) {
-        ItemStack newOutput = this.getRecipeOutput().copy();
+    public ItemStack assemble(CraftingInventory inv) {
+        ItemStack newOutput = this.getResultItem().copy();
 
         newOutput.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).ifPresent(outputHandler -> {
             int totalAir = 0;
-            for (int i = 0; i < inv.getSizeInventory(); ++i) {
-                ItemStack stack = inv.getStackInSlot(i);
+            for (int i = 0; i < inv.getContainerSize(); ++i) {
+                ItemStack stack = inv.getItem(i);
                 totalAir += stack.getCapability(PNCCapabilities.AIR_HANDLER_ITEM_CAPABILITY).map(IAirHandler::getAir).orElse(0);
             }
             outputHandler.addAir(totalAir);
@@ -39,21 +39,21 @@ public class ShapedPressurizableRecipe extends ShapedRecipe {
 
     public static class Serializer extends ShapedRecipe.Serializer {
         @Override
-        public ShapedRecipe read(ResourceLocation recipeId, JsonObject json) {
-            ShapedRecipe r = super.read(recipeId, json);
-            return new ShapedPressurizableRecipe(r.getId(), r.getGroup(), r.getRecipeWidth(), r.getRecipeHeight(), r.getIngredients(), r.getRecipeOutput());
+        public ShapedRecipe fromJson(ResourceLocation recipeId, JsonObject json) {
+            ShapedRecipe r = super.fromJson(recipeId, json);
+            return new ShapedPressurizableRecipe(r.getId(), r.getGroup(), r.getRecipeWidth(), r.getRecipeHeight(), r.getIngredients(), r.getResultItem());
         }
 
         @Nullable
         @Override
-        public ShapedRecipe read(ResourceLocation recipeId, PacketBuffer buffer) {
-            ShapedRecipe r = super.read(recipeId, buffer);
-            return new ShapedPressurizableRecipe(r.getId(), r.getGroup(), r.getRecipeWidth(), r.getRecipeHeight(), r.getIngredients(), r.getRecipeOutput());
+        public ShapedRecipe fromNetwork(ResourceLocation recipeId, PacketBuffer buffer) {
+            ShapedRecipe r = super.fromNetwork(recipeId, buffer);
+            return new ShapedPressurizableRecipe(r.getId(), r.getGroup(), r.getRecipeWidth(), r.getRecipeHeight(), r.getIngredients(), r.getResultItem());
         }
 
         @Override
-        public void write(PacketBuffer buffer, ShapedRecipe recipe) {
-            super.write(buffer, recipe);
+        public void toNetwork(PacketBuffer buffer, ShapedRecipe recipe) {
+            super.toNetwork(buffer, recipe);
         }
     }
 }

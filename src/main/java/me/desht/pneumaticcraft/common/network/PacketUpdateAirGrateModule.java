@@ -19,13 +19,13 @@ public class PacketUpdateAirGrateModule extends PacketUpdateTubeModule {
 
     public PacketUpdateAirGrateModule(PacketBuffer buffer) {
         super(buffer);
-        entityFilter = buffer.readString(32767);
+        entityFilter = buffer.readUtf(32767);
     }
 
     @Override
     public void toBytes(PacketBuffer buffer) {
         super.toBytes(buffer);
-        buffer.writeString(entityFilter);
+        buffer.writeUtf(entityFilter);
     }
 
     @Override

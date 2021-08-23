@@ -38,20 +38,20 @@ public class FluidYeastCulture {
         }
 
         @Override
-        public int getTickRate(IWorldReader world) {
+        public int getTickDelay(IWorldReader world) {
             return 30;
         }
 
         @Override
         public void tick(World worldIn, BlockPos pos, FluidState state) {
             if (PNCConfig.Common.Recipes.inWorldYeastCrafting) {
-                List<ItemEntity> entities = worldIn.getEntitiesWithinAABB(ItemEntity.class, new AxisAlignedBB(pos), e -> e.getItem().getItem() == Items.SUGAR);
+                List<ItemEntity> entities = worldIn.getEntitiesOfClass(ItemEntity.class, new AxisAlignedBB(pos), e -> e.getItem().getItem() == Items.SUGAR);
                 if (!entities.isEmpty()) {
                     for (Direction d : DirectionUtil.VALUES) {
-                        BlockPos pos1 = pos.offset(d);
+                        BlockPos pos1 = pos.relative(d);
                         FluidState fluidState = worldIn.getFluidState(pos1);
-                        if (fluidState.isSource() && fluidState.getFluid() == Fluids.WATER && worldIn.getBlockState(pos1).getBlock() == Blocks.WATER) {
-                            worldIn.setBlockState(pos1, ModFluids.YEAST_CULTURE.get().getDefaultState().getBlockState(), Constants.BlockFlags.DEFAULT);
+                        if (fluidState.isSource() && fluidState.getType() == Fluids.WATER && worldIn.getBlockState(pos1).getBlock() == Blocks.WATER) {
+                            worldIn.setBlock(pos1, ModFluids.YEAST_CULTURE.get().defaultFluidState().createLegacyBlock(), Constants.BlockFlags.DEFAULT);
                             entities.get(0).getItem().shrink(1);
                             if (entities.get(0).getItem().isEmpty()) {
                                 entities.get(0).remove();

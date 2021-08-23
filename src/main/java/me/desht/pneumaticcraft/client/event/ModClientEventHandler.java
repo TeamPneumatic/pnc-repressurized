@@ -30,8 +30,8 @@ public class ModClientEventHandler {
         // set up camo models for camouflageable blocks
         for (RegistryObject<Block> block : ModBlocks.BLOCKS.getEntries()) {
             if (block.get() instanceof BlockPneumaticCraftCamo) {
-                for (BlockState state : block.get().getStateContainer().getValidStates()) {
-                    ModelResourceLocation loc = BlockModelShapes.getModelLocation(state);
+                for (BlockState state : block.get().getStateDefinition().getPossibleStates()) {
+                    ModelResourceLocation loc = BlockModelShapes.stateToModelLocation(state);
                     IBakedModel model = event.getModelRegistry().get(loc);
                     if (model != null) {
                         event.getModelRegistry().put(loc, new CamoModel(model));

@@ -24,7 +24,7 @@ public class GuiAdvancedLiquidCompressor extends GuiLiquidCompressor {
     public void init() {
         super.init();
 
-        addButton(tempWidget = new WidgetTemperature(guiLeft + 100, guiTop + 20, TemperatureRange.of(273, 673), 273, 50)
+        addButton(tempWidget = new WidgetTemperature(leftPos + 100, topPos + 20, TemperatureRange.of(273, 673), 273, 50)
                 .setOperatingRange(TemperatureRange.of(323, 625)).setShowOperatingRange(false));
     }
 

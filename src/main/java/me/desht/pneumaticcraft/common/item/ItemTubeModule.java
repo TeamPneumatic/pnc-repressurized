@@ -36,23 +36,23 @@ public class ItemTubeModule extends Item {
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void addInformation(ItemStack stack, World world, List<ITextComponent> tooltip, ITooltipFlag flag) {
-        super.addInformation(stack, world, tooltip, flag);
+    public void appendHoverText(ItemStack stack, World world, List<ITextComponent> tooltip, ITooltipFlag flag) {
+        super.appendHoverText(stack, world, tooltip, flag);
 
         TubeModule module = createModule();
-        tooltip.add(new StringTextComponent("In line: " + (module.isInline() ? "Yes" : "No")).mergeStyle(TextFormatting.DARK_AQUA));
+        tooltip.add(new StringTextComponent("In line: " + (module.isInline() ? "Yes" : "No")).withStyle(TextFormatting.DARK_AQUA));
     }
 
     @Override
-    public ActionResultType onItemUse(ItemUseContext context) {
+    public ActionResultType useOn(ItemUseContext context) {
         if (context.getPlayer() != null && context.getPlayer().isCrouching()) {
             // sneak-click module to attach it to opposite side of tube, if possible
-            BlockState state = context.getWorld().getBlockState(context.getPos());
+            BlockState state = context.getLevel().getBlockState(context.getClickedPos());
             if (state.getBlock() instanceof BlockPressureTube) {
-                BlockRayTraceResult brtr = new BlockRayTraceResult(context.getHitVec(), context.getFace().getOpposite(), context.getPos(), false);
-                return state.onBlockActivated(context.getWorld(), context.getPlayer(), context.getHand(), brtr);
+                BlockRayTraceResult brtr = new BlockRayTraceResult(context.getClickLocation(), context.getClickedFace().getOpposite(), context.getClickedPos(), false);
+                return state.use(context.getLevel(), context.getPlayer(), context.getHand(), brtr);
             }
         }
-        return super.onItemUse(context);
+        return super.useOn(context);
     }
 }

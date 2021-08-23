@@ -33,32 +33,32 @@ public class ContainerRefinery extends ContainerPneumaticBase<TileEntityRefinery
     }
 
     @Override
-    public boolean canInteractWith(PlayerEntity player) {
+    public boolean stillValid(PlayerEntity player) {
         return te.isGuiUseableByPlayer(player);
     }
 
     @Nonnull
     @Override
-    public ItemStack transferStackInSlot(PlayerEntity par1EntityPlayer, int slotIndex) {
+    public ItemStack quickMoveStack(PlayerEntity par1EntityPlayer, int slotIndex) {
         // Refinery itself has no item slots, but this allows shift-clicking items between player's inventory & hotbar
         ItemStack stack = ItemStack.EMPTY;
-        Slot srcSlot = inventorySlots.get(slotIndex);
+        Slot srcSlot = slots.get(slotIndex);
 
-        if (srcSlot != null && srcSlot.getHasStack()) {
-            ItemStack stackInSlot = srcSlot.getStack();
+        if (srcSlot != null && srcSlot.hasItem()) {
+            ItemStack stackInSlot = srcSlot.getItem();
             stack = stackInSlot.copy();
 
             if (slotIndex < 27) {
-                if (!mergeItemStack(stackInSlot, 27, 36, false)) return ItemStack.EMPTY;
+                if (!moveItemStackTo(stackInSlot, 27, 36, false)) return ItemStack.EMPTY;
             } else {
-                if (!mergeItemStack(stackInSlot, 0, 27, false)) return ItemStack.EMPTY;
+                if (!moveItemStackTo(stackInSlot, 0, 27, false)) return ItemStack.EMPTY;
             }
-            srcSlot.onSlotChange(stackInSlot, stack);
+            srcSlot.onQuickCraft(stackInSlot, stack);
 
             if (stackInSlot.isEmpty()) {
-                srcSlot.putStack(ItemStack.EMPTY);
+                srcSlot.set(ItemStack.EMPTY);
             } else {
-                srcSlot.onSlotChanged();
+                srcSlot.setChanged();
             }
 
             if (stackInSlot.getCount() == stack.getCount()) return ItemStack.EMPTY;

@@ -30,7 +30,7 @@ public class HackableDoor implements IHackableBlock {
 
     @Override
     public void addInfo(IBlockReader world, BlockPos pos, List<ITextComponent> curInfo, PlayerEntity player) {
-        if (world.getBlockState(pos).get(getOpenProperty())) {
+        if (world.getBlockState(pos).getValue(getOpenProperty())) {
             curInfo.add(xlate("pneumaticcraft.armor.hacking.result.close"));
         } else {
             curInfo.add(xlate("pneumaticcraft.armor.hacking.result.open"));
@@ -39,7 +39,7 @@ public class HackableDoor implements IHackableBlock {
 
     @Override
     public void addPostHackInfo(IBlockReader world, BlockPos pos, List<ITextComponent> curInfo, PlayerEntity player) {
-        if (world.getBlockState(pos).get(getOpenProperty())) {
+        if (world.getBlockState(pos).getValue(getOpenProperty())) {
             curInfo.add(xlate("pneumaticcraft.armor.hacking.finished.opened"));
         } else {
             curInfo.add(xlate("pneumaticcraft.armor.hacking.finished.closed"));
@@ -54,7 +54,7 @@ public class HackableDoor implements IHackableBlock {
     @Override
     public void onHackComplete(World world, BlockPos pos, PlayerEntity player) {
         BlockState state = world.getBlockState(pos);
-        fakeRayTrace(player, pos).ifPresent(rtr -> state.onBlockActivated(world, player, Hand.MAIN_HAND, rtr));
+        fakeRayTrace(player, pos).ifPresent(rtr -> state.use(world, player, Hand.MAIN_HAND, rtr));
     }
 
     protected BooleanProperty getOpenProperty() {

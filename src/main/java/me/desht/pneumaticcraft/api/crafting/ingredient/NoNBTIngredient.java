@@ -41,7 +41,7 @@ public class NoNBTIngredient extends Ingredient {
     }
 
     @Nonnull
-    public JsonElement serialize() {
+    public JsonElement toJson() {
         JsonObject json = new JsonObject();
         json.addProperty("type", Serializer.ID.toString());
         json.addProperty("item", this.stack.getItem().getRegistryName().toString());
@@ -60,17 +60,17 @@ public class NoNBTIngredient extends Ingredient {
 
         @Override
         public NoNBTIngredient parse(PacketBuffer buffer) {
-            return new NoNBTIngredient(buffer.readItemStack());
+            return new NoNBTIngredient(buffer.readItem());
         }
 
         @Override
         public NoNBTIngredient parse(JsonObject json) {
-            return new NoNBTIngredient(ShapedRecipe.deserializeItem(json));
+            return new NoNBTIngredient(ShapedRecipe.itemFromJson(json));
         }
 
         @Override
         public void write(PacketBuffer buffer, NoNBTIngredient ingredient) {
-            buffer.writeItemStack(ingredient.stack);
+            buffer.writeItem(ingredient.stack);
         }
     }
 }

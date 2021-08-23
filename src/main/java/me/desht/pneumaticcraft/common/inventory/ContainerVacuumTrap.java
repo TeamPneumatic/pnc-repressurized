@@ -33,12 +33,12 @@ public class ContainerVacuumTrap extends ContainerPneumaticBase<TileEntityVacuum
         }
 
         @Override
-        public boolean isItemValid(@Nonnull ItemStack stack) {
+        public boolean mayPlace(@Nonnull ItemStack stack) {
             return stack.getItem() instanceof ItemSpawnerCore;
         }
 
         @Override
-        public int getSlotStackLimit() {
+        public int getMaxStackSize() {
             return 1;
         }
     }
