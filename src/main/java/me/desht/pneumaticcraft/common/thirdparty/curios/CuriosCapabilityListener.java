@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.thirdparty.curios;
 
+import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.item.ItemMemoryStick;
-import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;

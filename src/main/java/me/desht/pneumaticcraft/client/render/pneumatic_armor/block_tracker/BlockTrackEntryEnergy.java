@@ -15,7 +15,7 @@ import net.minecraftforge.energy.CapabilityEnergy;
 import java.util.Collections;
 import java.util.List;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class BlockTrackEntryEnergy implements IBlockTrackEntry {

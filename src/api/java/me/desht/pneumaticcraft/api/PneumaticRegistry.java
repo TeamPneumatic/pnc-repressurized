@@ -10,7 +10,6 @@ import me.desht.pneumaticcraft.api.heat.IHeatRegistry;
 import me.desht.pneumaticcraft.api.item.IItemRegistry;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerMachineFactory;
 import me.desht.pneumaticcraft.api.universal_sensor.ISensorRegistry;
-import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.fluid.Fluid;
@@ -42,9 +41,19 @@ public final class PneumaticRegistry {
      * @param inter reference to the API interface object
      */
     public static void init(IPneumaticCraftInterface inter) {
-        if (instance == null && ModLoadingContext.get().getActiveContainer().getModId().equals(Names.MOD_ID))
+        if (instance == null && ModLoadingContext.get().getActiveContainer().getModId().equals(MOD_ID))
             instance = inter;//only allow initialization once; by PneumaticCraft
         else throw new IllegalStateException("Only pneumaticcraft is allowed to call this method!");
+    }
+
+    /**
+     * Get a resource location with the domain of PneumaticCraft: Repressurized's mod ID.
+     *
+     * @param path the path
+     * @return a mod-specific ResourceLocation for the given path
+     */
+    public static ResourceLocation RL(String path) {
+        return new ResourceLocation(MOD_ID, path);
     }
 
     /**
@@ -126,7 +135,9 @@ public final class PneumaticRegistry {
          *
          * @param path a path
          * @return a resource location
+         * @deprecated use {@link PneumaticRegistry#RL(String)}
          */
+        @Deprecated
         ResourceLocation RL(String path);
 
         /**

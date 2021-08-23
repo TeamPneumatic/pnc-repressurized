@@ -1,6 +1,5 @@
 package me.desht.pneumaticcraft.api.client.pneumatic_helmet;
 
-import me.desht.pneumaticcraft.common.util.DirectionUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
@@ -60,7 +59,7 @@ public interface IBlockTrackEntry {
 
     /**
      * This method is called each client tick to retrieve the block's additional
-     * information. The method behaves much the same as {@link net.minecraft.item.Item#addInformation(ItemStack, World, List, ITooltipFlag)}.
+     * information. The method behaves much the same as {@link net.minecraft.item.Item#appendHoverText(ItemStack, World, List, ITooltipFlag)}.
      * This method is only called if {@link #shouldTrackWithThisEntry(IBlockReader, BlockPos, BlockState, TileEntity)}
      * returned true, and the player is curently focused on the block.
      *
@@ -88,7 +87,7 @@ public interface IBlockTrackEntry {
      * @return true if the provider provides the capability on any face, including the null "face"
      */
     static boolean hasCapabilityOnAnyFace(ICapabilityProvider provider, Capability<?> cap) {
-        for (Direction face : DirectionUtil.VALUES) {
+        for (Direction face : Direction.values()) {
             if (provider.getCapability(cap, face).isPresent()) return true;
         }
         return provider.getCapability(cap).isPresent();

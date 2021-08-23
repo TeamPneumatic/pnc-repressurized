@@ -8,7 +8,7 @@ import net.minecraft.util.ResourceLocation;
 import javax.annotation.Nonnull;
 import java.util.Locale;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public abstract class AssemblyRecipe extends PneumaticCraftRecipe {
     protected AssemblyRecipe(ResourceLocation id) {

@@ -4,10 +4,10 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
+import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import me.desht.pneumaticcraft.common.tileentity.*;
 import me.desht.pneumaticcraft.common.util.NBTUtils;
 import me.desht.pneumaticcraft.common.util.UpgradableItemUtils;
-import me.desht.pneumaticcraft.lib.NBTKeys;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootContext;
@@ -20,8 +20,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import static me.desht.pneumaticcraft.lib.NBTKeys.NBT_AIR_AMOUNT;
-import static me.desht.pneumaticcraft.lib.NBTKeys.NBT_SIDE_CONFIG;
+import static me.desht.pneumaticcraft.api.lib.NBTKeys.NBT_AIR_AMOUNT;
+import static me.desht.pneumaticcraft.api.lib.NBTKeys.NBT_SIDE_CONFIG;
 
 /**
  * Handle the standard serialization of PNC tile entity data to the dropped itemstack.

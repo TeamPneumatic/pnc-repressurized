@@ -12,7 +12,7 @@ import net.minecraftforge.fluids.FluidStack;
 
 import javax.annotation.Nullable;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class ThermoPlantRecipeBuilder extends PneumaticCraftRecipeBuilder<ThermoPlantRecipeBuilder> {
     private final FluidIngredient inputFluid;

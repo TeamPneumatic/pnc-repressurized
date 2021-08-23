@@ -7,7 +7,7 @@ import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.util.ResourceLocation;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class AirConHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
     @Override

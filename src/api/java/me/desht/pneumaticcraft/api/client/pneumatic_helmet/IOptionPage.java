@@ -1,15 +1,14 @@
 package me.desht.pneumaticcraft.api.client.pneumatic_helmet;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
+import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.util.text.IFormattableTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.Optional;
-
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 /**
  * The Option Page is the page you see when you press 'F' (by default) with a Pneumatic Helmet equipped. You can
@@ -156,7 +155,7 @@ public interface IOptionPage {
 
         public SimpleOptionPage(IGuiScreen screen, T clientUpgradeHandler) {
             this.screen = screen;
-            this.name = xlate(ArmorUpgradeRegistry.getStringKey(clientUpgradeHandler.getCommonHandler().getID()));
+            this.name = new TranslationTextComponent(IArmorUpgradeHandler.getStringKey(clientUpgradeHandler.getCommonHandler().getID()));
             this.clientUpgradeHandler = clientUpgradeHandler;
         }
 

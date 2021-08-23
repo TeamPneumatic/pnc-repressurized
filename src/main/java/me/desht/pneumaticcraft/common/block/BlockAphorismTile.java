@@ -45,11 +45,11 @@ import net.minecraftforge.common.util.Constants;
 import javax.annotation.Nullable;
 import java.util.List;
 
+import static me.desht.pneumaticcraft.api.lib.NBTKeys.BLOCK_ENTITY_TAG;
+import static me.desht.pneumaticcraft.api.lib.NBTKeys.NBT_EXTRA;
 import static me.desht.pneumaticcraft.common.tileentity.TileEntityAphorismTile.NBT_BACKGROUND_COLOR;
 import static me.desht.pneumaticcraft.common.tileentity.TileEntityAphorismTile.NBT_BORDER_COLOR;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
-import static me.desht.pneumaticcraft.lib.NBTKeys.BLOCK_ENTITY_TAG;
-import static me.desht.pneumaticcraft.lib.NBTKeys.NBT_EXTRA;
 
 public class BlockAphorismTile extends BlockPneumaticCraft implements ColorHandlers.ITintableBlock {
     public static final float APHORISM_TILE_THICKNESS = 1 / 16F;

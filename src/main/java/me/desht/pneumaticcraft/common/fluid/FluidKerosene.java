@@ -6,7 +6,7 @@ import me.desht.pneumaticcraft.common.core.ModItems;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public abstract class FluidKerosene {
     private static final FluidAttributes.Builder ATTRS = FluidAttributes.builder(

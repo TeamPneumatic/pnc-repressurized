@@ -22,7 +22,7 @@ import net.minecraft.world.IBlockReader;
 
 import java.util.function.Supplier;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class HackHandler extends BaseArmorUpgradeHandler<HackHandler.HackData> {
     @Override

@@ -13,7 +13,7 @@ import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.placement.ChanceConfig;
 import net.minecraftforge.event.world.BiomeLoadingEvent;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class ModWorldGen {
     public static ConfiguredFeature<?,?> OIL_LAKES;

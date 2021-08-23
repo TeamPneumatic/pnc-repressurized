@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.common.network;
 
 import io.netty.buffer.Unpooled;
+import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
-import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.network.PacketBuffer;

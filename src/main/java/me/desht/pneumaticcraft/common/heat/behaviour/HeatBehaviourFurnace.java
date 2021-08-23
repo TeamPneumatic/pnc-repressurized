@@ -5,7 +5,7 @@ import net.minecraft.block.AbstractFurnaceBlock;
 import net.minecraft.tileentity.AbstractFurnaceTileEntity;
 import net.minecraft.util.ResourceLocation;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class HeatBehaviourFurnace extends HeatBehaviour<AbstractFurnaceTileEntity> {
     static final ResourceLocation ID = RL("furnace");

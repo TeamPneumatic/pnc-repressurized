@@ -1,7 +1,7 @@
 package me.desht.pneumaticcraft.common.villages;
 
 import com.mojang.datafixers.util.Pair;
-import me.desht.pneumaticcraft.lib.Names;
+import me.desht.pneumaticcraft.api.lib.Names;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.MutableRegistry;
 import net.minecraft.util.registry.Registry;

@@ -16,7 +16,7 @@ import top.theillusivec4.curios.api.type.capability.ICurio;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * Allows us to intercept ticks for memory stick(s) in a Curios inventory handler

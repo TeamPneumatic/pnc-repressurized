@@ -27,7 +27,7 @@ import net.minecraft.util.text.StringTextComponent;
 
 import java.util.Optional;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class JetBootsOptions extends AbstractSliderOptions<JetBootsClientHandler> {

@@ -3,7 +3,7 @@ package me.desht.pneumaticcraft.common.thirdparty.jei;
 import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipeTypes;
 import net.minecraft.util.ResourceLocation;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class ModCategoryUid {
     static final ResourceLocation FLUID_MIXER = RL(PneumaticCraftRecipeTypes.FLUID_MIXER);

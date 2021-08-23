@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.api.crafting;
 
 import com.google.gson.JsonObject;
-import me.desht.pneumaticcraft.common.core.ModRecipes;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipeSerializer;
@@ -19,6 +18,8 @@ import javax.annotation.Nullable;
  */
 public class ShapedRecipeNoMirror extends ShapedRecipe {
     private final NonNullList<Ingredient> recipeItemsIn;
+
+    public static final Serializer SERIALIZER = new Serializer();
 
     public ShapedRecipeNoMirror(ResourceLocation idIn, String groupIn, int recipeWidthIn, int recipeHeightIn, NonNullList<Ingredient> recipeItemsIn, ItemStack recipeOutputIn) {
         super(idIn, groupIn, recipeWidthIn, recipeHeightIn, recipeItemsIn, recipeOutputIn);
@@ -59,7 +60,7 @@ public class ShapedRecipeNoMirror extends ShapedRecipe {
 
     @Override
     public IRecipeSerializer<?> getSerializer() {
-        return ModRecipes.CRAFTING_SHAPED_NO_MIRROR.get();
+        return SERIALIZER;
     }
 
     public static class Serializer extends ShapedRecipe.Serializer {

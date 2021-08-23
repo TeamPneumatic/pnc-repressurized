@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.common.core;
 
 import me.desht.pneumaticcraft.api.harvesting.HarvestHandler;
+import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.harvesting.*;
-import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.*;
 import net.minecraft.item.Items;
 import net.minecraft.util.ResourceLocation;

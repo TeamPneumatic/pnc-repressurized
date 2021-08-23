@@ -155,10 +155,7 @@ dependencies {
 		runtimeOnly fg.deobf("extra-mods:$artifactId:$version")
 	}
 
-//    runtimeOnly fg.deobf("curse.maven:modernui:3158102")
 //    compileOnly "li.cil.oc:OpenComputers:MC1.12.2-${oc_version}:api"
-//    compileOnly "CraftTweaker2:CraftTweaker2-API:${crafttweaker_version}"
-//    compileOnly fg.deobf("com.blamejared.crafttweaker:CraftTweaker-1.14.4:${crafttweaker_version}")
 //    compileOnly "net.industrial-craft:industrialcraft-2:2.8.27-ex112:api"
 //    compileOnly "thaumcraft:Thaumcraft:${thaumcraft_version}"
 //    compileOnly "team.chisel.ctm:CTM:${ctm_version}:api"
@@ -290,9 +287,6 @@ task apiJar(type: Jar) {
 	duplicatesStrategy(DuplicatesStrategy.FAIL)
 	archiveClassifier.set('api')
 	from sourceSets.api.output
-	from(sourceSets.main.output) {
-		include "me/desht/pneumaticcraft/api/**"
-	}
 	afterEvaluate { finalizedBy reobfApiJar }
 
 	// TODO: when FG bug is fixed, remove allJava from the api jar.

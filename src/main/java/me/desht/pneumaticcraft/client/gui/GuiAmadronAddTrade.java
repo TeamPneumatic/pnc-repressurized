@@ -38,9 +38,9 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
 
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.inventory.ContainerAmadronAddTrade.INPUT_SLOT;
 import static me.desht.pneumaticcraft.common.inventory.ContainerAmadronAddTrade.OUTPUT_SLOT;
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class GuiAmadronAddTrade extends GuiPneumaticContainerBase<ContainerAmadronAddTrade, TileEntityBase> {

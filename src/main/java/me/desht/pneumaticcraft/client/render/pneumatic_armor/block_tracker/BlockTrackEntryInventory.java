@@ -23,7 +23,7 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import java.util.ArrayList;
 import java.util.List;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class BlockTrackEntryInventory implements IBlockTrackEntry {
     private static final ResourceLocation ID = RL("block_tracker.module.inventories");

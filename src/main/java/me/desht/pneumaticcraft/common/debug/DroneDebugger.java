@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.common.debug;
 
+import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.entity.living.EntityDrone;
@@ -7,7 +8,6 @@ import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketSendDroneDebugEntry;
 import me.desht.pneumaticcraft.common.network.PacketSyncDroneEntityProgWidgets;
-import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.play.server.SSpawnParticlePacket;
 import net.minecraft.particles.IParticleData;

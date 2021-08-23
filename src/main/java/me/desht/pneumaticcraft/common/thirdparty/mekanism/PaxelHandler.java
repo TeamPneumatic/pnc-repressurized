@@ -1,13 +1,13 @@
 package me.desht.pneumaticcraft.common.thirdparty.mekanism;
 
 import me.desht.pneumaticcraft.api.harvesting.HoeHandler;
-import me.desht.pneumaticcraft.lib.Names;
+import me.desht.pneumaticcraft.api.lib.Names;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD, modid = Names.MOD_ID)
 public class PaxelHandler extends HoeHandler {

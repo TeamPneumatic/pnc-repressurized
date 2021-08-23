@@ -8,7 +8,7 @@ import me.desht.pneumaticcraft.lib.PneumaticValues;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.util.ResourceLocation;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class BlockTrackerHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
     public static final int BLOCK_TRACKING_RANGE = 30;

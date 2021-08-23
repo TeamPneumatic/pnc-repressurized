@@ -3,6 +3,7 @@ package me.desht.pneumaticcraft.client.gui;
 import com.google.common.base.CaseFormat;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import me.desht.pneumaticcraft.api.item.IProgrammable;
+import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetCheckBox;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetTextField;
@@ -13,7 +14,6 @@ import me.desht.pneumaticcraft.common.util.LegacyAreaWidgetConverter.EnumOldArea
 import me.desht.pneumaticcraft.common.util.NBTToJsonConverter;
 import me.desht.pneumaticcraft.common.util.PastebinHandler;
 import me.desht.pneumaticcraft.lib.Log;
-import me.desht.pneumaticcraft.lib.Names;
 import me.desht.pneumaticcraft.lib.Textures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;

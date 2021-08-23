@@ -1,4 +1,4 @@
-package me.desht.pneumaticcraft.lib;
+package me.desht.pneumaticcraft.api.lib;
 
 public class NBTKeys {
     public static final String PNEUMATIC_HELMET_DEBUGGING_DRONE = "debuggingDrone";
@@ -13,6 +13,9 @@ public class NBTKeys {
     public static final String NBT_SIDE_CONFIG = "SideConfiguration";
     public static final String NBT_EXTRA = "ExtraData";
     public static final String NBT_REDSTONE_MODE = "redstoneMode";
+
+    // Standard tag for saving an item inventory
+    public static final String NBT_ITEM_INV = "Items";
 
     // this is the tag vanilla uses to serialize TE data onto dropped items
     public static final String BLOCK_ENTITY_TAG = "BlockEntityTag";

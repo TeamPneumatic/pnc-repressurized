@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.api.item;
 
-import me.desht.pneumaticcraft.lib.NBTKeys;
+import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.ITextComponent;
@@ -8,8 +8,6 @@ import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.items.ItemStackHandler;
 
 import java.util.List;
-
-import static me.desht.pneumaticcraft.common.tileentity.TileEntityReinforcedChest.NBT_ITEMS;
 
 /**
  * Implement this interface for your items that have an inventory. When you don't have access to the item, just create
@@ -47,9 +45,9 @@ public interface IInventoryItem {
      */
     static void getStacks(ItemStack stack, List<ItemStack> curStacks) {
         CompoundNBT sub = stack.getTagElement(NBTKeys.BLOCK_ENTITY_TAG);
-        if (sub != null && sub.contains(NBT_ITEMS, Constants.NBT.TAG_COMPOUND)) {
+        if (sub != null && sub.contains(NBTKeys.NBT_ITEM_INV, Constants.NBT.TAG_COMPOUND)) {
             ItemStackHandler handler = new ItemStackHandler();
-            handler.deserializeNBT(sub.getCompound(NBT_ITEMS));
+            handler.deserializeNBT(sub.getCompound(NBTKeys.NBT_ITEM_INV));
             for (int i = 0; i < handler.getSlots(); i++) {
                 if (!handler.getStackInSlot(i).isEmpty()) curStacks.add(handler.getStackInSlot(i));
             }

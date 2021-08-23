@@ -3,11 +3,11 @@ package me.desht.pneumaticcraft.common.util;
 import com.google.common.base.Splitter;
 import me.desht.pneumaticcraft.api.item.IInventoryItem;
 import me.desht.pneumaticcraft.api.item.ITagFilteringItem;
+import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.XPFluidManager;
 import me.desht.pneumaticcraft.common.core.ModFluids;
 import me.desht.pneumaticcraft.common.item.ItemRegistry;
 import me.desht.pneumaticcraft.lib.GuiConstants;
-import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FlowingFluidBlock;
@@ -533,16 +533,6 @@ public class PneumaticCraftUtils {
             }
         }
         return toConsume <= 0;
-    }
-
-    /**
-     * Get a resource location with the domain of PneumaticCraft: Repressurized's mod ID.
-     *
-     * @param path the path
-     * @return a mod-specific ResourceLocation for the given path
-     */
-    public static ResourceLocation RL(String path) {
-        return new ResourceLocation(Names.MOD_ID, path);
     }
 
     /**

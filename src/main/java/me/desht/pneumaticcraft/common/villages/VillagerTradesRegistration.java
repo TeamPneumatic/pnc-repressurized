@@ -1,12 +1,12 @@
 package me.desht.pneumaticcraft.common.villages;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModBlocks;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModVillagers;
 import me.desht.pneumaticcraft.common.util.RandomTradeBuilder;
-import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.entity.merchant.villager.VillagerTrades;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.village.VillagerTradesEvent;

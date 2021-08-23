@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.common.core;
 
 import com.google.common.collect.ImmutableSet;
+import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.villages.ModVillagerProfession;
-import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.merchant.villager.VillagerProfession;

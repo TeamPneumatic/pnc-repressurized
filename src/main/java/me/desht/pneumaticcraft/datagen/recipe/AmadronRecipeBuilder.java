@@ -6,7 +6,7 @@ import me.desht.pneumaticcraft.api.crafting.PneumaticCraftRecipeTypes;
 import me.desht.pneumaticcraft.common.recipes.amadron.AmadronOffer;
 import net.minecraft.util.ResourceLocation;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class AmadronRecipeBuilder extends PneumaticCraftRecipeBuilder<AmadronRecipeBuilder> {
     private final AmadronTradeResource input;

@@ -9,7 +9,7 @@ import me.desht.pneumaticcraft.common.recipes.ModCraftingHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class RefineryRecipeBuilder extends PneumaticCraftRecipeBuilder<RefineryRecipeBuilder> {
     private final FluidIngredient input;

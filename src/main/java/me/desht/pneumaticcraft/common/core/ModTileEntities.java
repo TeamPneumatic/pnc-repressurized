@@ -1,9 +1,9 @@
 package me.desht.pneumaticcraft.common.core;
 
 import com.google.common.collect.ImmutableSet;
+import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.TileEntityDroneInterface;
 import me.desht.pneumaticcraft.common.tileentity.*;
-import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;

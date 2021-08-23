@@ -1,6 +1,6 @@
 package me.desht.pneumaticcraft.common.capabilities;
 
-import me.desht.pneumaticcraft.lib.NBTKeys;
+import me.desht.pneumaticcraft.api.lib.NBTKeys;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;

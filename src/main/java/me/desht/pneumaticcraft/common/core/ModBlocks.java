@@ -1,8 +1,8 @@
 package me.desht.pneumaticcraft.common.core;
 
+import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.common.block.*;
 import me.desht.pneumaticcraft.common.thirdparty.computer_common.BlockDroneInterface;
-import me.desht.pneumaticcraft.lib.Names;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;

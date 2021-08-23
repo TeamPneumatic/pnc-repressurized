@@ -17,7 +17,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.Stack;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class HeatBehaviourCustomTransition extends HeatBehaviourTransition {
     static final ResourceLocation ID = RL("custom_transition");

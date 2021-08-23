@@ -33,7 +33,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.RegistryObject;
 import org.apache.commons.lang3.StringUtils;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 @JeiPlugin
 public class JEIPlugin implements IModPlugin {

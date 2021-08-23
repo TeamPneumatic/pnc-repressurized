@@ -14,7 +14,6 @@ import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound;
 import me.desht.pneumaticcraft.common.network.PacketPlayMovingSound.SoundSource;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
 import me.desht.pneumaticcraft.common.particle.AirParticleData;
-import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.JetBootsStateTracker;
 import me.desht.pneumaticcraft.common.util.PneumaticCraftUtils;
 import net.minecraft.entity.Entity;
@@ -35,7 +34,7 @@ import net.minecraft.world.Difficulty;
 
 import java.util.function.Supplier;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.JetBootsLocalState> {
     @Override
@@ -145,7 +144,7 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
     }
 
     @Override
-    public void onInit(CommonArmorHandler commonArmorHandler) {
+    public void onInit(ICommonArmorHandler commonArmorHandler) {
         PlayerEntity player = commonArmorHandler.getPlayer();
         ItemStack armorStack = player.getItemBySlot(EquipmentSlotType.FEET);
         JetBootsHandler.JetBootsLocalState jbLocal = commonArmorHandler.getExtensionData(this);

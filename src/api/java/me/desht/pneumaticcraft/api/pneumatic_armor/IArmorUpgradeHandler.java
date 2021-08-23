@@ -3,7 +3,6 @@ package me.desht.pneumaticcraft.api.pneumatic_armor;
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
-import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.ResourceLocation;
@@ -110,7 +109,7 @@ public interface IArmorUpgradeHandler<T extends IArmorExtensionData> {
      *
      * @param commonArmorHandler the armor handler object
      */
-    default void onInit(CommonArmorHandler commonArmorHandler) {
+    default void onInit(ICommonArmorHandler commonArmorHandler) {
     }
 
     /**

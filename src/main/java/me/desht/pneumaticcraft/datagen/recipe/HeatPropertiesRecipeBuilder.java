@@ -9,7 +9,7 @@ import net.minecraft.util.ResourceLocation;
 
 import java.util.Map;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 /**
  * Currently unused.  Would require a lot of extra mods in the dev workspace to use properly.  Maybe this should

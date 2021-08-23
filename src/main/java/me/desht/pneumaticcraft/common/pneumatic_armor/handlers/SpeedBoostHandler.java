@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class SpeedBoostHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
     private static final Vector3d FORWARD = new Vector3d(0, 0, 1);

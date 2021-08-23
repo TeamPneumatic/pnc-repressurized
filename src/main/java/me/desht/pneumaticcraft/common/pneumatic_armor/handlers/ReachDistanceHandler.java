@@ -13,7 +13,7 @@ import net.minecraftforge.common.ForgeMod;
 
 import java.util.UUID;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class ReachDistanceHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
     private static final UUID REACH_DIST_BOOST_ID = UUID.fromString("c9dce729-70c4-4c0f-95d4-31d2e50bc826");

@@ -1,8 +1,8 @@
-package me.desht.pneumaticcraft.lib;
+package me.desht.pneumaticcraft.api.lib;
 
 import net.minecraft.util.ResourceLocation;
 
-import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.RL;
+import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class Names {
     public static final String MOD_ID = "pneumaticcraft";
@@ -21,6 +21,6 @@ public class Names {
     public static final String PNEUMATIC_KEYBINDING_CATEGORY_UPGRADE_TOGGLES = "key.pneumaticcraft.category.upgrade_toggles";
     public static final String PNEUMATIC_KEYBINDING_CATEGORY_BLOCK_TRACKER = "key.pneumaticcraft.category.block_tracker";
 
-    // Agreed by convention among several mods to denote item entities which should not be magnet'd
+    // Agreed by convention among several mods to denote item entities which should not be magnet'ed
     public static final String PREVENT_REMOTE_MOVEMENT = "PreventRemoteMovement";
 }
