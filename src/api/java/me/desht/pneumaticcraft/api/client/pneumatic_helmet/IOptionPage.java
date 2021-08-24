@@ -138,7 +138,7 @@ public interface IOptionPage {
     default void tick() { }
 
     /**
-     * Get the keybinding button for this page, if any.  You can can create a keybinding button with
+     * Get the keybinding button for this page, if any.  You can create a keybinding button with
      * {@link IPneumaticHelmetRegistry#makeKeybindingButton(int, KeyBinding)}.
      *
      * @return the keybinding button, or {@code Optional.empty()} if there isn't one

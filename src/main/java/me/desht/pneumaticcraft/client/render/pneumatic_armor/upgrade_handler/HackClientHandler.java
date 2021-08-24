@@ -8,6 +8,7 @@ import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.option_screens.HackOptions;
+import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
@@ -22,12 +23,28 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 
 import java.util.List;
+import java.util.Optional;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class HackClientHandler extends IArmorUpgradeClientHandler.AbstractHandler<HackHandler> {
     public HackClientHandler() {
         super(ArmorUpgradeRegistry.getInstance().hackHandler);
+    }
+
+    @Override
+    public Optional<KeyBinding> getTriggerKeyBinding() {
+        return Optional.of(KeyHandler.getInstance().keybindHack);
+    }
+
+    @Override
+    public void onTriggered(ICommonArmorHandler armorHandler) {
+        if (enabledForPlayer(armorHandler.getPlayer())) {
+            ArmorUpgradeClientRegistry c = ArmorUpgradeClientRegistry.getInstance();
+            ArmorUpgradeRegistry r = ArmorUpgradeRegistry.getInstance();
+            c.getClientHandler(r.blockTrackerHandler, BlockTrackerClientHandler.class).hack();
+            c.getClientHandler(r.entityTrackerHandler, EntityTrackerClientHandler.class).hack();
+        }
     }
 
     @Override

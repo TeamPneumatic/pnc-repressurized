@@ -237,6 +237,6 @@ public class RenderEntityTarget {
     }
 
     public void updateColor(int color) {
-        if (stat != null) stat.setBackgroundColor(color);
+        stat.setBackgroundColor(color);
     }
 }

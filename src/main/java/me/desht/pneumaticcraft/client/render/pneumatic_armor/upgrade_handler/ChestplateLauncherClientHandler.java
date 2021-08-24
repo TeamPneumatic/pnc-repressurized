@@ -5,7 +5,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
 import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.option_screens.ChestplateLauncherOptions;
@@ -13,14 +12,14 @@ import me.desht.pneumaticcraft.client.render.RenderProgressBar;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketChestplateLauncher;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
-import me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.ChestplateLauncherHandler;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.util.HandSide;
 import net.minecraft.util.math.vector.Vector3f;
+
+import java.util.Optional;
 
 public class ChestplateLauncherClientHandler extends IArmorUpgradeClientHandler.SimpleToggleableHandler<ChestplateLauncherHandler> {
     public static final int MAX_PROGRESS = 15; // ticks
@@ -42,13 +41,27 @@ public class ChestplateLauncherClientHandler extends IArmorUpgradeClientHandler.
     }
 
     @Override
+    public Optional<KeyBinding> getTriggerKeyBinding() {
+        return Optional.of(KeyHandler.getInstance().keybindLauncher);
+    }
+
+    @Override
+    public void onTriggered(ICommonArmorHandler armorHandler) {
+        if (!armorHandler.getPlayer().getOffhandItem().isEmpty()
+                && launcherProgress == 0
+                && armorHandler.upgradeUsable(getCommonHandler(), false)) {
+            launcherProgress = 1;
+        }
+    }
+
+    @Override
     public void tickClient(ICommonArmorHandler armorHandler) {
         if (launcherProgress > 0) {
             if (!KeyHandler.getInstance().keybindLauncher.isDown()) {
                 NetworkHandler.sendToServer(new PacketChestplateLauncher((float) launcherProgress / (float) MAX_PROGRESS));
                 launcherProgress = 0;
-            } else if (launcherProgress > 0 && launcherProgress < MAX_PROGRESS) {
-                launcherProgress++;
+            } else {
+                launcherProgress = Math.min(launcherProgress + 1, MAX_PROGRESS);
             }
         }
     }
@@ -73,17 +86,5 @@ public class ChestplateLauncherClientHandler extends IArmorUpgradeClientHandler.
                 progress, 0xAA0000A0, 0xAA40A0FF);
         RenderSystem.enableTexture();
         matrixStack.popPose();
-    }
-
-    public void maybeStartCharging(KeyBinding key) {
-        if (launcherProgress == 0) {
-            CommonArmorHandler handler = CommonArmorHandler.getHandlerForPlayer();
-            if (handler.isArmorReady(EquipmentSlotType.CHEST)
-                    && handler.getUpgradeCount(EquipmentSlotType.CHEST, EnumUpgrade.DISPENSER) > 0
-                    && handler.getArmorPressure(EquipmentSlotType.CHEST) > 0.1f
-                    && key.isDown()) {
-                launcherProgress = 1;
-            }
-        }
     }
 }

@@ -7,6 +7,7 @@ import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHa
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
+import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiArmorMainScreen;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.option_screens.CoreComponentsOptions;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetAnimatedStat;
@@ -18,7 +19,9 @@ import me.desht.pneumaticcraft.common.config.subconfig.ArmorHUDLayout;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.pneumatic_armor.ArmorUpgradeRegistry;
 import me.desht.pneumaticcraft.common.pneumatic_armor.handlers.CoreComponentsHandler;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.MathHelper;
@@ -29,6 +32,7 @@ import net.minecraft.util.text.TextFormatting;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.AbstractHandler<CoreComponentsHandler> {
@@ -45,6 +49,19 @@ public class CoreComponentsClientHandler extends IArmorUpgradeClientHandler.Abst
 
     public CoreComponentsClientHandler() {
         super(ArmorUpgradeRegistry.getInstance().coreComponentsHandler);
+    }
+
+    @Override
+    public Optional<KeyBinding> getTriggerKeyBinding() {
+        return Optional.of(KeyHandler.getInstance().keybindOpenOptions);
+    }
+
+    @Override
+    public void onTriggered(ICommonArmorHandler armorHandler) {
+        Minecraft mc = Minecraft.getInstance();
+        if (ItemPneumaticArmor.isPlayerWearingAnyPneumaticArmor(mc.player)) {
+            mc.setScreen(GuiArmorMainScreen.getInstance());
+        }
     }
 
     @Override

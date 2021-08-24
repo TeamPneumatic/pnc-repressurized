@@ -2,7 +2,9 @@ package me.desht.pneumaticcraft.client.gui.pneumatic_armor;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
+import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.ICheckboxWidget;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IGuiScreen;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IOptionPage;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
@@ -10,7 +12,6 @@ import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.client.gui.GuiPneumaticScreenBase;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.option_screens.NullOptions;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetButtonExtended;
-import me.desht.pneumaticcraft.client.gui.widget.WidgetKeybindCheckBox;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
@@ -110,9 +111,10 @@ public class GuiArmorMainScreen extends GuiPneumaticScreenBase implements IGuiSc
         }
         pageNumber = Math.min(pageNumber, upgradeOptions.size() - 1);
         if (pageNumber < 0 && !upgradeOptions.isEmpty()) pageNumber = 0;
-        WidgetKeybindCheckBox checkBox = WidgetKeybindCheckBox.getOrCreate(getCurrentOptionsPage().upgradeID, 40, 25, 0xFFFFFFFF, null);
+        ICheckboxWidget checkBox = PneumaticRegistry.getInstance().getHelmetRegistry()
+                .makeKeybindingCheckBox(getCurrentOptionsPage().upgradeID, 40, 25, 0xFFFFFFFF, null);
         if (getCurrentOptionsPage().page.isToggleable()) {
-            addButton(checkBox);
+            addButton(checkBox.asWidget());
         }
         getCurrentOptionsPage().page.populateGui(this);
     }

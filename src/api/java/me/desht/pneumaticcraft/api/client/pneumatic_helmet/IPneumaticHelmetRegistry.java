@@ -6,9 +6,12 @@ import net.minecraft.block.Block;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.Entity;
 import net.minecraft.tags.ITag;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
@@ -58,8 +61,9 @@ public interface IPneumaticHelmetRegistry {
     List<IHackableEntity> getCurrentEntityHacks(Entity entity);
 
     /**
-     * Registers the client handler for a Pneumatic Armor upgrade. This must be called from a {@code FMLClientSetupEvent}
-     * handler. This also registers any keybindings referenced by the render handler
+     * Registers the client handler for a Pneumatic Armor upgrade. This must be called from a {@link FMLClientSetupEvent}
+     * handler, using {@link net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent#enqueueWork(Runnable)}. This
+     * also registers any keybindings referenced by the render handler
      * (see {@link IArmorUpgradeClientHandler#getInitialKeyBinding()} and {@link IArmorUpgradeClientHandler#getSubKeybinds()}.
      *
      * @param clientHandler the handler to register
@@ -76,4 +80,17 @@ public interface IPneumaticHelmetRegistry {
      * @return the new button
      */
     IKeybindingButton makeKeybindingButton(int yPos, KeyBinding keyBinding);
+
+    /**
+     * Get the checkbox for the given upgrade ID. If the checkbox doesn't already exist, it will be created; if it
+     * exists, the existing checkbox will be returned. There is only ever one checkbox in existence for a given upgrade
+     * ID.
+     *
+     * @param upgradeId the upgrade ID
+     * @param xPos X position of the widget
+     * @param yPos Y position of the widget
+     * @param color widget's text color in ARGB format
+     * @param onPressed called when the checkbox is toggled
+     */
+    ICheckboxWidget makeKeybindingCheckBox(ResourceLocation upgradeId, int xPos, int yPos, int color, Consumer<ICheckboxWidget> onPressed);
 }

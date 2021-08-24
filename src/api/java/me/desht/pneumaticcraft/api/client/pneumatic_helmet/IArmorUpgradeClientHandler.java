@@ -124,7 +124,8 @@ public interface IArmorUpgradeClientHandler<T extends IArmorUpgradeHandler<?>> {
      */
     default Optional<KeyBinding> getInitialKeyBinding() {
         return isToggleable() ?
-                Optional.of(new KeyBinding(IArmorUpgradeHandler.getStringKey(getCommonHandler().getID()), KeyConflictContext.IN_GAME, KeyModifier.NONE,
+                Optional.of(new KeyBinding(IArmorUpgradeHandler.getStringKey(getCommonHandler().getID()),
+                        KeyConflictContext.IN_GAME, KeyModifier.NONE,
                         InputMappings.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, getKeybindCategory())) :
                 Optional.empty();
     }
@@ -141,6 +142,23 @@ public interface IArmorUpgradeClientHandler<T extends IArmorUpgradeHandler<?>> {
     }
 
     /**
+     * Get the keybind used to trigger this upgrade's action, if any. This is distinct from the toggle keybind (which
+     * switches an upgrade on or off); the trigger keybind triggers an action, e.g. Hacking, Pneumatic Kick...
+     *
+     * @return an optional keybinding name
+     */
+    default Optional<KeyBinding> getTriggerKeyBinding() {
+        return Optional.empty();
+    }
+
+    /**
+     * Called when the registered triggered keybind (if any) is pressed.
+     * @param armorHandler the client-side common armor handler object for the player
+     */
+    default void onTriggered(ICommonArmorHandler armorHandler) {
+    }
+
+    /**
      * Get the keybind category for this upgrade.  By default, this is the same as the default category for all
      * PneumaticCraft keybinds.
      *
@@ -153,6 +171,7 @@ public interface IArmorUpgradeClientHandler<T extends IArmorUpgradeHandler<?>> {
     /**
      * Get the keybind category for any sub-keybinds.  By default, this is the same as the default category for all
      * PneumaticCraft keybinds.
+     *
      * @return a keybind category ID
      */
     default String getSubKeybindCategory() {

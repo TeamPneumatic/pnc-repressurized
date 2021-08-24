@@ -254,7 +254,7 @@ public class RenderBlockTarget {
     }
 
     public void updateColor(int color) {
-        if (stat != null) stat.setBackgroundColor(color);
+        stat.setBackgroundColor(color);
     }
 
     public ITextComponent getTitle() {

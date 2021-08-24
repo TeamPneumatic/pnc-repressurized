@@ -1,6 +1,7 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.ICheckboxWidget;
 import me.desht.pneumaticcraft.api.lib.Names;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
@@ -47,7 +48,7 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
     private boolean isListeningForBinding;
     private ITextComponent oldCheckboxText;
 
-    private WidgetKeybindCheckBox(ResourceLocation upgradeID, int x, int y, int color, Consumer<WidgetCheckBox> pressable) {
+    private WidgetKeybindCheckBox(ResourceLocation upgradeID, int x, int y, int color, Consumer<ICheckboxWidget> pressable) {
         super(x, y, color,
                 xlate("pneumaticcraft.gui.enableModule", xlate(ArmorUpgradeRegistry.getStringKey(upgradeID))),
                 pressable);
@@ -55,7 +56,7 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
         this.upgradeID = upgradeID;
     }
 
-    public static WidgetKeybindCheckBox getOrCreate(ResourceLocation upgradeID, int x, int y, int color, Consumer<WidgetCheckBox> pressable) {
+    public static WidgetKeybindCheckBox getOrCreate(ResourceLocation upgradeID, int x, int y, int color, Consumer<ICheckboxWidget> pressable) {
         WidgetKeybindCheckBox newCheckBox = KeyDispatcher.id2checkBox.get(upgradeID);
         if (newCheckBox == null) {
             newCheckBox = new WidgetKeybindCheckBox(upgradeID, x, y, color, pressable);
@@ -89,12 +90,8 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
         return coreComponents;
     }
 
-    /**
-     * Set the upgrade ID of the owning upgrade. Use this for sub-controls, e.g. the builder mode setting on jet boots.
-     * @param ownerUpgradeID the upgrade ID of the owning upgrade
-     * @return this widget, for fluency
-     */
-    public WidgetKeybindCheckBox withOwnerUpgradeID(ResourceLocation ownerUpgradeID) {
+    @Override
+    public ICheckboxWidget withOwnerUpgradeID(ResourceLocation ownerUpgradeID) {
         this.ownerUpgradeID = ownerUpgradeID;
         return this;
     }
@@ -251,6 +248,7 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
         setMessage(oldCheckboxText);
     }
 
+    @Override
     public ResourceLocation getUpgradeId() {
         return upgradeID;
     }

@@ -2,6 +2,9 @@ package me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.*;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
@@ -39,7 +42,10 @@ import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.items.CapabilityItemHandler;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
@@ -47,10 +53,10 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
     static final int BLOCK_TRACKING_RANGE = 30;
     private static final int HARD_MAX_BLOCKS_PER_TICK = 50000;
 
-    private final Map<BlockPos, RenderBlockTarget> blockTargets = new HashMap<>();
+    private final Map<BlockPos, RenderBlockTarget> blockTargets = new Object2ObjectOpenHashMap<>();
     private IGuiAnimatedStat blockTrackInfo;
-    private final Map<ResourceLocation, Integer> blockTypeCount = new HashMap<>();
-    private final Map<ResourceLocation, Integer> blockTypeCountPartial = new HashMap<>();
+    private final Object2IntMap<ResourceLocation> blockTypeCount = new Object2IntOpenHashMap<>();
+    private final Object2IntMap<ResourceLocation> blockTypeCountPartial = new Object2IntOpenHashMap<>();
     private int xOff = 0, yOff = 0, zOff = 0;
     private RenderBlockTarget focusedTarget = null;
     private Direction focusedFace = null;
@@ -92,10 +98,7 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
                 }
                 List<IBlockTrackEntry> entries = BlockTrackEntryList.INSTANCE.getEntriesForCoordinate(world, pos, te);
                 if (!entries.isEmpty()) {
-                    entries.forEach(entry -> {
-                        ResourceLocation k = entry.getEntryID();
-                        blockTypeCountPartial.put(k, blockTypeCountPartial.getOrDefault(k, 0) + 1);
-                    });
+                    entries.forEach(entry -> blockTypeCountPartial.mergeInt(entry.getEntryID(), 1, Integer::sum));
 
                     // there's at least one tracker type relevant to this blockpos
                     RenderBlockTarget blockTarget = blockTargets.get(pos);
@@ -123,10 +126,11 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
         focusedFace = null;
         Vector3d eyes = player.getEyePosition(1.0f);
         Vector3d v = eyes;
-        Vector3d lookVec = player.getLookAngle();
+        Vector3d lookVec = player.getLookAngle().scale(0.25);  // scale down to minimise clipping across a corner and missing the block
+        BlockPos.Mutable checkPos = new BlockPos.Mutable();
         for (int i = 0; i < blockTrackRange * 4; i++) {
-            v = v.add(lookVec.scale(0.25));  // scale down to minimise clipping across a corner and missing the block
-            BlockPos checkPos = new BlockPos(v.x, v.y, v.z);
+            v = v.add(lookVec);
+            checkPos.set(v.x, v.y, v.z);
             if (blockTargets.containsKey(checkPos)) {
                 BlockState state = player.level.getBlockState(checkPos);
                 BlockRayTraceResult brtr = state.getShape(player.level, checkPos).clip(eyes, v, checkPos);
@@ -231,7 +235,7 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
 
     private void updateBlockTypeCounts() {
         blockTypeCount.clear();
-        blockTypeCountPartial.forEach(blockTypeCount::put);
+        blockTypeCount.putAll(blockTypeCountPartial);
         blockTypeCountPartial.clear();
     }
 
@@ -331,9 +335,7 @@ public class BlockTrackerClientHandler extends IArmorUpgradeClientHandler.Abstra
     }
 
     public void hack() {
-        for (RenderBlockTarget target : blockTargets.values()) {
-            target.hack();
-        }
+        blockTargets.values().forEach(RenderBlockTarget::hack);
     }
 
     public RenderBlockTarget getTargetForCoord(BlockPos pos) {

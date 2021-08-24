@@ -5,21 +5,18 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.client.IGuiAnimatedStat;
 import me.desht.pneumaticcraft.api.client.pneumatic_helmet.IArmorUpgradeClientHandler;
-import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorUpgradeHandler;
 import me.desht.pneumaticcraft.client.IKeyListener;
-import me.desht.pneumaticcraft.client.KeyHandler;
 import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiArmorColors;
-import me.desht.pneumaticcraft.client.gui.pneumatic_armor.GuiArmorMainScreen;
 import me.desht.pneumaticcraft.client.gui.widget.WidgetKeybindCheckBox;
 import me.desht.pneumaticcraft.client.pneumatic_armor.ArmorUpgradeClientRegistry;
 import me.desht.pneumaticcraft.client.render.RenderProgressBar;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.*;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.BlockTrackerClientHandler;
+import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.EntityTrackerClientHandler;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
-import me.desht.pneumaticcraft.common.network.PacketPneumaticKick;
 import me.desht.pneumaticcraft.common.network.PacketToggleArmorFeature;
 import me.desht.pneumaticcraft.common.network.PacketToggleArmorFeatureBulk;
 import me.desht.pneumaticcraft.common.network.PacketToggleArmorFeatureBulk.FeatureSetting;
@@ -54,7 +51,7 @@ import static me.desht.pneumaticcraft.common.pneumatic_armor.CommonArmorHandler.
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 /**
- * Singleton object which manages all the Pneumatic Armor HUD drawing for the player.
+ * Singleton object which manages all the Pneumatic Armor HUD drawing and input for the player.
  */
 public enum HUDHandler implements IKeyListener {
     INSTANCE;
@@ -258,14 +255,14 @@ public enum HUDHandler implements IKeyListener {
         }
     }
 
-    private void ensureArmorInit(PlayerEntity player, CommonArmorHandler comHudHandler) {
+    private void ensureArmorInit(PlayerEntity player, CommonArmorHandler commonArmorHandler) {
         if (!isPneumaticArmorPiece(player, EquipmentSlotType.HEAD) && !sentForceInitPacket) {
             // Special case: ensure core components packet always gets sent so armor can switch on even if helmet
             // is not equipped (core components is in the helmet for historical reasons)
             boolean state = WidgetKeybindCheckBox.getCoreComponents().checked;
             // core-components is always in slot HEAD, index 0
             if (state) {
-                comHudHandler.setUpgradeEnabled(EquipmentSlotType.HEAD, (byte) 0, true);
+                commonArmorHandler.setUpgradeEnabled(EquipmentSlotType.HEAD, (byte) 0, true);
                 NetworkHandler.sendToServer(new PacketToggleArmorFeature(EquipmentSlotType.HEAD, (byte) 0, true));
             }
             sentForceInitPacket = true;
@@ -378,29 +375,9 @@ public enum HUDHandler implements IKeyListener {
 
     @Override
     public void handleInput(KeyBinding key) {
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.isWindowActive()) {
-            ArmorUpgradeClientRegistry c = ArmorUpgradeClientRegistry.getInstance();
-            ArmorUpgradeRegistry r = ArmorUpgradeRegistry.getInstance();
-            KeyHandler keyHandler = KeyHandler.getInstance();
-            if (key == keyHandler.keybindOpenOptions) {
-                if (ItemPneumaticArmor.isPlayerWearingAnyPneumaticArmor(mc.player)) {
-                    mc.setScreen(GuiArmorMainScreen.getInstance());
-                }
-            } else if (key == keyHandler.keybindHack
-                    && HackClientHandler.enabledForPlayer(mc.player)) {
-                c.getClientHandler(r.blockTrackerHandler, BlockTrackerClientHandler.class).hack();
-                c.getClientHandler(r.entityTrackerHandler, EntityTrackerClientHandler.class).hack();
-            } else if (key == keyHandler.keybindDebuggingDrone
-                    && DroneDebugClientHandler.enabledForPlayer(mc.player)) {
-                c.getClientHandler(r.entityTrackerHandler, EntityTrackerClientHandler.class).selectAsDebuggingTarget();
-            } else if (key == keyHandler.keybindKick
-                    && CommonArmorHandler.getHandlerForPlayer().getUpgradeCount(EquipmentSlotType.FEET, EnumUpgrade.DISPENSER) > 0) {
-                NetworkHandler.sendToServer(new PacketPneumaticKick());
-            } else if (key == keyHandler.keybindLauncher
-                    && !mc.player.getOffhandItem().isEmpty()) {
-                c.getClientHandler(r.chestplateLauncherHandler, ChestplateLauncherClientHandler.class).maybeStartCharging(key);
-            }
+        if (Minecraft.getInstance().isWindowActive()) {
+            ArmorUpgradeClientRegistry.getInstance().getTriggeredHandler(key)
+                    .ifPresent(h -> h.onTriggered(CommonArmorHandler.getHandlerForPlayer()));
         }
     }
 

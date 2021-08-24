@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.client.gui.widget;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import me.desht.pneumaticcraft.api.client.pneumatic_helmet.ICheckboxWidget;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketGuiButton;
 import net.minecraft.client.Minecraft;
@@ -21,17 +22,17 @@ import java.util.function.Consumer;
 
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
-public class WidgetCheckBox extends Widget implements ITaggedWidget, ITooltipProvider {
+public class WidgetCheckBox extends Widget implements ICheckboxWidget, ITaggedWidget, ITooltipProvider {
     public boolean checked;
     private final int color;
     private List<ITextComponent> tooltip = new ArrayList<>();
-    private final Consumer<WidgetCheckBox> pressable;
+    private final Consumer<? super WidgetCheckBox> pressable;
 
     private static final int CHECKBOX_WIDTH = 10;
     private static final int CHECKBOX_HEIGHT = 10;
     private String tag = null;
 
-    public WidgetCheckBox(int x, int y, int color, ITextComponent text, Consumer<WidgetCheckBox> pressable) {
+    public WidgetCheckBox(int x, int y, int color, ITextComponent text, Consumer<? super WidgetCheckBox> pressable) {
         super(x, y, CHECKBOX_WIDTH, CHECKBOX_HEIGHT, text);
 
         this.x = x;
@@ -117,5 +118,10 @@ public class WidgetCheckBox extends Widget implements ITaggedWidget, ITooltipPro
     @Override
     public void addTooltip(double mouseX, double mouseY, List<ITextComponent> curTip, boolean shift) {
         curTip.addAll(tooltip);
+    }
+
+    @Override
+    public boolean isChecked() {
+        return checked;
     }
 }

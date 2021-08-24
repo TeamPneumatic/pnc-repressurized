@@ -13,10 +13,7 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 import org.apache.commons.lang3.Validate;
 import org.lwjgl.glfw.GLFW;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public enum ArmorUpgradeClientRegistry {
     INSTANCE;
@@ -24,6 +21,7 @@ public enum ArmorUpgradeClientRegistry {
     private final List<List<IArmorUpgradeClientHandler<?>>> clientUpgradeHandlers = new ArrayList<>();
     private final Map<ResourceLocation, IArmorUpgradeClientHandler<?>> id2HandlerMap = new HashMap<>();
     private final Map<ResourceLocation, KeyBinding> id2KeyBindMap = new HashMap<>();
+    private final Map<String, IArmorUpgradeClientHandler<?>> triggerKeyBindMap = new HashMap<>();
 
     public static ArmorUpgradeClientRegistry getInstance() {
         return INSTANCE;
@@ -38,6 +36,8 @@ public enum ArmorUpgradeClientRegistry {
                         KeyConflictContext.IN_GAME, KeyModifier.NONE, InputMappings.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN,
                         clientHandler.getSubKeybindCategory())
         ));
+
+        clientHandler.getTriggerKeyBinding().ifPresent(k -> registerTriggerKeybinding(k, clientHandler));
     }
 
     private void registerKeyBinding(ResourceLocation upgradeID, KeyBinding keyBinding) {
@@ -45,10 +45,15 @@ public enum ArmorUpgradeClientRegistry {
         ClientRegistry.registerKeyBinding(keyBinding);
     }
 
+    private void registerTriggerKeybinding(KeyBinding keyBinding, IArmorUpgradeClientHandler<?> clientHandler) {
+        triggerKeyBindMap.put(keyBinding.getName(), clientHandler);
+    }
+
     public KeyBinding getKeybindingForUpgrade(ResourceLocation upgradeID) {
         return id2KeyBindMap.get(upgradeID);
     }
 
+    @SuppressWarnings("unused")
     public <C extends IArmorUpgradeClientHandler<U>, U extends IArmorUpgradeHandler<?>> C getClientHandler(U armorUpgradeHandler, Class<C> clientClass) {
         List<IArmorUpgradeClientHandler<?>> clientHandlers = getHandlersForSlot(armorUpgradeHandler.getEquipmentSlot());
         // common & client armor handlers should *always* directly correspond - if they don't,
@@ -59,6 +64,10 @@ public enum ArmorUpgradeClientRegistry {
 
     public IArmorUpgradeClientHandler<?> getClientHandler(ResourceLocation id) {
         return id2HandlerMap.get(id);
+    }
+
+    public Optional<IArmorUpgradeClientHandler<?>> getTriggeredHandler(KeyBinding keyBinding) {
+        return Optional.ofNullable(triggerKeyBindMap.get(keyBinding.getName()));
     }
 
     /**
