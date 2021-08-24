@@ -8,6 +8,7 @@ import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.ICustomDurabilityBar;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
+import me.desht.pneumaticcraft.api.pressure.IPressurizableItem;
 import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.client.util.ClientUtils;
 import me.desht.pneumaticcraft.common.ai.IDroneBase;
@@ -130,6 +131,17 @@ public class ItemPneumaticArmor extends ArmorItem implements
     @Override
     public int getBaseVolume() {
         return ARMOR_VOLUMES[slot.getIndex()];
+    }
+
+    @Override
+    public int getVolumeUpgrades(ItemStack stack) {
+        return UpgradableItemUtils.getUpgrades(stack, EnumUpgrade.VOLUME);
+    }
+
+    @Override
+    public int getAir(ItemStack stack) {
+        CompoundNBT tag = stack.getTag();
+        return tag != null ? tag.getInt(AirHandlerItemStack.AIR_NBT_KEY) : 0;
     }
 
     @Nullable

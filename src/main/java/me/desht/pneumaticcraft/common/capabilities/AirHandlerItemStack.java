@@ -1,19 +1,18 @@
 package me.desht.pneumaticcraft.common.capabilities;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
+import me.desht.pneumaticcraft.api.pressure.IPressurizableItem;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandlerItem;
-import me.desht.pneumaticcraft.common.item.IPressurizableItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
 import org.apache.commons.lang3.Validate;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class AirHandlerItemStack implements IAirHandlerItem, ICapabilityProvider {
+public class AirHandlerItemStack extends IAirHandlerItem.Provider {
     public static final String AIR_NBT_KEY = "pneumaticcraft:air";
 
     private final LazyOptional<IAirHandlerItem> holder = LazyOptional.of(() -> this);
@@ -39,7 +38,14 @@ public class AirHandlerItemStack implements IAirHandlerItem, ICapabilityProvider
 
     @Override
     public float getPressure() {
-        return pressurizable.getPressure(container);
+        float pressure = pressurizable.getPressure(container);
+        if (pressure > maxPressure) {
+            // this isn't impossible, e.g. enchant an item with CoFH Holding, pressurize, then disenchant...
+            // best option in this case is just to reduce air to the max amount it can actually hold
+            container.getOrCreateTag().putInt(AIR_NBT_KEY, (int) (maxPressure * getVolume()));
+            return maxPressure;
+        }
+        return pressure;
     }
 
     @Override
@@ -78,7 +84,7 @@ public class AirHandlerItemStack implements IAirHandlerItem, ICapabilityProvider
 
     @Override
     public int getVolume() {
-        return pressurizable.getUpgradedVolume(container);
+        return pressurizable.getEffectiveVolume(container);
     }
 
     @Override

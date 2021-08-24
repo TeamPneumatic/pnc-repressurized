@@ -1,5 +1,7 @@
 package me.desht.pneumaticcraft.api.tileentity;
 
+import me.desht.pneumaticcraft.api.item.ItemVolumeModifier;
+
 /**
  * Base functionality for all air handlers.  This is also used by entities which can be pressurized, e.g. drones.
  */
@@ -43,7 +45,9 @@ public interface IAirHandler {
     void setBaseVolume(int newBaseVolume);
 
     /**
-     * Get the effective volume of this air handler. This may have been increased by Volume Upgrades.
+     * Get the effective volume of this air handler. This may have been increased by Volume Upgrades, and also other
+     * external modifiers (see {@link me.desht.pneumaticcraft.api.item.IItemRegistry#registerPneumaticVolumeModifier(ItemVolumeModifier)}).
+     *
      * @return the effective volume, in mL
      */
     int getVolume();

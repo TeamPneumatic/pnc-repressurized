@@ -2,6 +2,7 @@ package me.desht.pneumaticcraft.common.item;
 
 import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.block.IPneumaticWrenchable;
+import me.desht.pneumaticcraft.api.pressure.IPressurizableItem;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.core.ModItems;
 import me.desht.pneumaticcraft.common.core.ModSounds;

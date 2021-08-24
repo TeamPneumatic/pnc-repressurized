@@ -10,7 +10,7 @@ import java.util.Map;
  */
 public interface IUpgradeAcceptor {
     /**
-     * This method is called right when an instance of this interface is registered, be aware.
+     * This method is called as soon as an instance of this interface is registered, be aware.
      * It should return a map which maps the collection of accepted upgrades for this machine/item to the
      * maximum number of each upgrade which can be inserted.
      *

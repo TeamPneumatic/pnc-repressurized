@@ -4,13 +4,13 @@ import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.pneumatic_armor.BaseArmorUpgradeHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorExtensionData;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
+import me.desht.pneumaticcraft.api.pressure.PressureHelper;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
 import me.desht.pneumaticcraft.common.core.ModSounds;
 import me.desht.pneumaticcraft.common.item.ItemPneumaticArmor;
 import me.desht.pneumaticcraft.common.network.NetworkHandler;
 import me.desht.pneumaticcraft.common.network.PacketPlaySound;
 import me.desht.pneumaticcraft.common.network.PacketSpawnParticle;
-import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
@@ -53,7 +53,7 @@ public class ScubaHandler extends BaseArmorUpgradeHandler<IArmorExtensionData> {
             ItemStack helmetStack = player.getItemBySlot(EquipmentSlotType.HEAD);
 
             int baseVol = ((ItemPneumaticArmor) helmetStack.getItem()).getBaseVolume();
-            int vol = ApplicableUpgradesDB.getInstance().getUpgradedVolume(baseVol, commonArmorHandler.getUpgradeCount(EquipmentSlotType.HEAD, EnumUpgrade.VOLUME));
+            int vol = PressureHelper.getUpgradedVolume(baseVol, commonArmorHandler.getUpgradeCount(EquipmentSlotType.HEAD, EnumUpgrade.VOLUME));
             float airInHelmet = commonArmorHandler.getArmorPressure(EquipmentSlotType.HEAD) * vol;
             int playerAir = (int) Math.min(300 - player.getAirSupply(), airInHelmet / PNCConfig.Common.Armor.scubaMultiplier);
             player.setAirSupply(player.getAirSupply() + playerAir);

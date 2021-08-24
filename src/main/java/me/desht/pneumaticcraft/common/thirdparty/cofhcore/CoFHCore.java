@@ -2,7 +2,7 @@ package me.desht.pneumaticcraft.common.thirdparty.cofhcore;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
 import me.desht.pneumaticcraft.api.lib.Names;
-import me.desht.pneumaticcraft.common.item.IPressurizableItem;
+import me.desht.pneumaticcraft.api.pressure.IPressurizableItem;
 import me.desht.pneumaticcraft.common.thirdparty.IThirdParty;
 import me.desht.pneumaticcraft.lib.Log;
 import net.minecraft.enchantment.Enchantment;

@@ -11,6 +11,7 @@ import me.desht.pneumaticcraft.api.drone.IPathfindHandler;
 import me.desht.pneumaticcraft.api.drone.ProgWidgetType;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.lib.NBTKeys;
+import me.desht.pneumaticcraft.api.pressure.PressureHelper;
 import me.desht.pneumaticcraft.api.semiblock.SemiblockEvent;
 import me.desht.pneumaticcraft.api.tileentity.IAirHandler;
 import me.desht.pneumaticcraft.api.tileentity.IManoMeasurable;
@@ -43,7 +44,6 @@ import me.desht.pneumaticcraft.common.util.*;
 import me.desht.pneumaticcraft.common.util.fakeplayer.DroneFakePlayer;
 import me.desht.pneumaticcraft.common.util.fakeplayer.DroneItemHandler;
 import me.desht.pneumaticcraft.common.util.fakeplayer.FakeNetHandlerPlayerServer;
-import me.desht.pneumaticcraft.common.util.upgrade.ApplicableUpgradesDB;
 import me.desht.pneumaticcraft.common.util.upgrade.IUpgradeHolder;
 import me.desht.pneumaticcraft.common.util.upgrade.UpgradeCache;
 import me.desht.pneumaticcraft.lib.Log;
@@ -889,10 +889,10 @@ public class EntityDrone extends EntityDroneBase implements
 
     protected BasicAirHandler getAirHandler() {
         if (airHandler == null) {
-            int vol = ApplicableUpgradesDB.getInstance().getUpgradedVolume(PneumaticValues.DRONE_VOLUME, getUpgrades(EnumUpgrade.VOLUME));
+            int vol = PressureHelper.getUpgradedVolume(PneumaticValues.DRONE_VOLUME, getUpgrades(EnumUpgrade.VOLUME));
             ItemStack stack = new ItemStack(getDroneItem());
             EnchantmentHelper.setEnchantments(stackEnchants, stack);
-            vol = ItemRegistry.getInstance().getUpgradedVolume(stack, vol);
+            vol = ItemRegistry.getInstance().getModifiedVolume(stack, vol);
             airHandler = new BasicAirHandler(vol);
         }
         return airHandler;

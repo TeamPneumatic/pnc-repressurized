@@ -5,6 +5,7 @@ import me.desht.pneumaticcraft.api.PNCCapabilities;
 import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.item.IUpgradeAcceptor;
 import me.desht.pneumaticcraft.api.lib.Names;
+import me.desht.pneumaticcraft.api.pressure.IPressurizableItem;
 import me.desht.pneumaticcraft.client.ColorHandlers;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.common.PneumaticCraftTags;

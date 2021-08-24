@@ -1,9 +1,11 @@
 package me.desht.pneumaticcraft.api.item;
 
 import me.desht.pneumaticcraft.api.PneumaticRegistry;
+import me.desht.pneumaticcraft.api.tileentity.IAirHandlerItem;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 
@@ -14,7 +16,6 @@ import java.util.List;
  * Get an instance of this with {@link PneumaticRegistry.IPneumaticCraftInterface#getItemRegistry()}
  */
 public interface IItemRegistry {
-
     /**
      * Register a third-party class that can contain items.  This is intended for classes from other mods - if it's
      * your class, just make it implement {@link IInventoryItem} directly.
@@ -32,8 +33,8 @@ public interface IItemRegistry {
 
     /**
      * Can be used for custom upgrade items to handle tooltips. This will work for implementors registered via
-     * {@link IItemRegistry#registerUpgradeAcceptor(IUpgradeAcceptor)}. You would generally call this from your
-     * {@link Item#addInformation(ItemStack, World, List, ITooltipFlag)} method to display
+     * {@link IItemRegistry#registerUpgradeAcceptor(IUpgradeAcceptor)}. This is intended to be called from
+     * {@link Item#appendHoverText(ItemStack, World, List, ITooltipFlag)} method to display
      * which machines and/or items accept it.
      *
      * @param upgrade the upgrade item
@@ -64,17 +65,45 @@ public interface IItemRegistry {
     boolean doesItemMatchFilter(@Nonnull ItemStack filterStack, @Nonnull ItemStack stack, boolean checkDurability, boolean checkNBT, boolean checkModSimilarity);
 
     /**
-     * Register a handler to calculate the effective volume of a pneumatic item (i.e. one that hold air/pressure).
+     * Register a handler to modify the effective volume of a pneumatic item (i.e. one that holds air/pressure).
      *
      * @param modifierFunc a volume modifier function
      */
     void registerPneumaticVolumeModifier(ItemVolumeModifier modifierFunc);
 
     /**
-     * Get some information for the given Spawner Core item
+     * Get the modified volume for a given item, based on the volume modifiers registered with
+     * {@link #registerPneumaticVolumeModifier(ItemVolumeModifier)}.
+     *
+     * @param stack the ItemStack to check
+     * @param originalVolume the original volume, which is the item's base volume,
+     *                       possibly already modified by Volume Upgrades
+     * @return the modified volume
+     */
+    int getModifiedVolume(ItemStack stack, int originalVolume);
+
+    /**
+     * Get some information for the given Spawner Core item.
+     *
      * @param stack an ItemStack, which must be a Spawner Core
      * @return a spawner core stats object, to query and manipulate the item
      * @throws IllegalArgumentException if the passed ItemStack is not a Spawner Core
      */
     ISpawnerCoreStats getSpawnerCoreStats(ItemStack stack);
+
+    /**
+     * Create an instance of PneumaticCraft's default item air handler provider, suitable for returning
+     * from {@link Item#initCapabilities(ItemStack, CompoundNBT)}.
+     * <p>
+     * You can use this method for your own air-handling items, <em>provided that</em> your item implements
+     * {@link me.desht.pneumaticcraft.api.pressure.IPressurizableItem}. If you want to avoid a hard dependency on
+     * PneumaticCraft, then create your own custom implementation of {@link IAirHandlerItem},
+     * and attach that implementation to your item via {@link net.minecraftforge.event.AttachCapabilitiesEvent}.
+     *
+     * @param stack the ItemStack
+     * @param maxPressure the maximum pressure allowed for the item
+     * @return an implementation of IAirHandler
+     * @implNote this air handler stores the item's air amount in the {@code}pneumaticcraft:air{@code} integer NBT tag
+     */
+    IAirHandlerItem.Provider makeItemAirHandlerProvider(ItemStack stack, float maxPressure);
 }
