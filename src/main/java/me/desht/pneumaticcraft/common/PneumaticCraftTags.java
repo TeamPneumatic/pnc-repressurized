@@ -9,6 +9,7 @@ import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.ITag;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.Tags;
 
 public class PneumaticCraftTags {
     public static class Blocks extends PneumaticCraftTags {
@@ -67,6 +68,8 @@ public class PneumaticCraftTags {
         public static final ITag.INamedTag<Item> CURIO = tag("curios", "curio");
 
         public static final ITag.INamedTag<Item> BREAD = forgeTag("bread");
+
+        public static final Tags.IOptionalNamedTag<Item> WRENCHES = ItemTags.createOptional(new ResourceLocation("forge:tools/wrench"));
 
         static ITag.INamedTag<Item> tag(String modid, String name) {
             return ItemTags.bind(new ResourceLocation(modid, name).toString());
