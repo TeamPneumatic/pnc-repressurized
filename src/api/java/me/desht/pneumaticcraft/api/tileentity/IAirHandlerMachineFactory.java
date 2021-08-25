@@ -1,5 +1,6 @@
 package me.desht.pneumaticcraft.api.tileentity;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 
 /**
@@ -32,9 +33,8 @@ public interface IAirHandlerMachineFactory {
      * <strong>provided that the following methods are forwarded to the IAirHandler object:</strong>
      * <ul>
      * <li>{@link net.minecraft.tileentity.ITickableTileEntity#tick()}</li>
-     * <li>{@link net.minecraft.tileentity.TileEntity#write(CompoundNBT)}</li>
-     * <li>{@link net.minecraft.tileentity.TileEntity#read(CompoundNBT)}</li>
-     * <li>{@link net.minecraft.tileentity.TileEntity#validate()}</li>
+     * <li>{@link net.minecraft.tileentity.TileEntity#load(BlockState, CompoundNBT)}</li>
+     * <li>{@link net.minecraft.tileentity.TileEntity#save(CompoundNBT)}</li>
      * </ul>
      *
      * @param dangerPressure   minimum pressure at which this machine can explode (the yellow to red transition)

@@ -8,7 +8,7 @@ import net.minecraftforge.event.RegistryEvent;
 /**
  * Implement this and register it with {@link IDroneRegistry#registerCustomBlockInteractor(RegistryEvent.Register, ICustomBlockInteract)}.
  * This will add a puzzle piece that has only an Area white- and blacklist parameter (similar to a Goto piece).
- * This can be used to create energy import/export widgets, for example.
+ * This could be used to create energy import/export widgets, for example.
  */
 public interface ICustomBlockInteract {
 

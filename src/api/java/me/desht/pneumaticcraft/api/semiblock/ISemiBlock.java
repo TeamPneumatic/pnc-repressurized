@@ -63,7 +63,7 @@ public interface ISemiBlock extends ICapabilityProvider {
      * displayed on TOP/Waila.
      * <p>
      * @implNote Data written to itemstacks is automatically applied to newly-spawned entities by
-     * {@link EntityType#applyItemNBT(World, PlayerEntity, Entity, CompoundNBT)} when the
+     * {@link EntityType#updateCustomEntityTag(World, PlayerEntity, Entity, CompoundNBT)} when the
      * semiblock entity is spawned from an item (i.e. placed by a player).
      * @param tag NBT tag to write data to
      */

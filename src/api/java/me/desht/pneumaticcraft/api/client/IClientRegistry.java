@@ -69,5 +69,11 @@ public interface IClientRegistry {
      */
     void drawPressureGauge(MatrixStack matrixStack, FontRenderer fontRenderer, float minPressure, float maxPressure, float dangerPressure, float minWorkingPressure, float currentPressure, int xPos, int yPos);
 
+    /**
+     * Register some custom item rendering behaviour for an item when held in an Assembly machine.
+     *
+     * @param entry a Forge registry entry, which should be an item
+     * @param renderOverride customized rendering behaviour for that item
+     */
     void registerRenderOverride(@Nonnull IForgeRegistryEntry<?> entry, @Nonnull IAssemblyRenderOverriding renderOverride);
 }

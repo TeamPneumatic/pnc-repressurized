@@ -13,9 +13,10 @@ import net.minecraftforge.fluids.FluidStack;
  */
 public interface IDroneRegistry {
     /**
-     * Normally drones will pathfind through any block that doesn't have any collisions (Block#getBlocksMovement returns true).
-     * With this method you can register custom blocks to allow the drone to pathfind through them. If the block requires any special
-     * handling, like allow pathfinding on certain conditions, you can pass a IPathFindHandler with the registry.
+     * Normally drones will pathfind through any block that doesn't have any collisions.
+     * With this method you can register custom blocks to allow the drone to pathfind through them. If the block
+     * requires any special handling, e.g. to allow pathfinding under certain conditions, you can pass a IPathFindHandler
+     * with the registry.
      *
      * @param block the block to allow pathfinding through
      * @param handler can be null, to always allow pathfinding through this block.
@@ -27,7 +28,7 @@ public interface IDroneRegistry {
      * It will do the specified behaviour. This can be used, for example, to create energy import/export widgets for a
      * custom energy type (i.e. other than Forge Energy).
      * <p>This <strong>must</strong> be called
-     * from a registry event handler for {@link RegistryEvent.Register&lt;ProgWidgetType&gt;} to ensure registration
+     * from a registry event handler for {@link RegistryEvent.Register} to ensure registration
      * is done at the right time - do not call it directly from elsewhere.
      *
      * @param event the Forge registry event
@@ -47,8 +48,9 @@ public interface IDroneRegistry {
      * delivering (or none if it dropped those items already). The Drone itself never will be dropped.
      *
      * @param globalPos global position to deliver items to
-     * @param deliveredStacks stacks that are delivered by the drone; when no stacks, or more than 65 stacks are given, this will generate an IllegalArgumentException.
+     * @param deliveredStacks stacks to be delivered by the drone
      * @return the drone; you can use this to set a custom name for example (defaults to "Amadron Delivery Drone").
+     * @throws IllegalArgumentException if the array of ItemStacks is empty or contains more than 36 separate stacks
      */
     CreatureEntity deliverItemsAmazonStyle(GlobalPos globalPos, ItemStack... deliveredStacks);
 
@@ -68,6 +70,8 @@ public interface IDroneRegistry {
      * @param globalPos global position to deliver the fluid to
      * @param deliveredFluid the fluid to deliver
      * @return the drone
+     * @throws IllegalArgumentException if the FluidStack contains more than 576,000 mB of fluid (the maximum a fully
+     * upgraded drone can carry)
      */
     CreatureEntity deliverFluidAmazonStyle(GlobalPos globalPos, FluidStack deliveredFluid);
 

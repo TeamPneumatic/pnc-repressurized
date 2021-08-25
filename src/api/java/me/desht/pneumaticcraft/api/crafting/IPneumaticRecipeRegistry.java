@@ -87,7 +87,7 @@ public interface IPneumaticRecipeRegistry {
      * @param inputs a list of input ingredients
      * @param pressureRequired the pressure require (this is a minimum if positive, and a maximum if negative)
      * @param outputs the output item(s)
-     * @return a recipe suitable for adding via {@link RegisterMachineRecipesEvent.Pre#getPressureChamber()}
+     * @return a pressure chamber recipe
      */
     PressureChamberRecipe pressureChamberRecipe(ResourceLocation id, List<Ingredient> inputs, float pressureRequired, ItemStack... outputs);
 

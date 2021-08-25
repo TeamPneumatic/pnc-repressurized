@@ -29,12 +29,11 @@ public abstract class HarvestHandler extends ForgeRegistryEntry<HarvestHandler> 
      * @param chunkCache Use preferably methods from this cache as it's generally quicker than accessing via 'world'. 
      * The cache has access to the chunks that are accessed by the Drone current program, so as long as only the y pos is varied of the
      * supplied pos, you are good. If not, use 'world'.
-     * @param pos
-     * @param state
-     * @param drone
-     * @return
+     * @param pos the block's position
+     * @param state the blockstate at the position
+     * @param drone the drone doing the harvesting
      */
-    public void harvest(World world, IBlockReader chunkCache, BlockPos pos, BlockState state, IDrone drone){
+    public void harvest(World world, IBlockReader chunkCache, BlockPos pos, BlockState state, IDrone drone) {
         world.destroyBlock(pos, true);
     }
     
@@ -44,9 +43,9 @@ public abstract class HarvestHandler extends ForgeRegistryEntry<HarvestHandler> 
      * @param chunkCache Use preferably methods from this cache as it's generally quicker than accessing via 'world'. 
      * The cache has access to the chunks that are accessed by the Drone current program, so as long as only the y pos is varied of the
      * supplied pos, you are good. If not, use 'world'.
-     * @param pos
-     * @param state
-     * @param drone
+     * @param pos the block's position
+     * @param state the blockstate at the position
+     * @param drone the drone doing the harvesting
      * @return true if the replanting succeeded (and the hoe the Drone carries needs to be damaged). If nothing needed to be replanted return false.
      */
     public boolean harvestAndReplant(World world, IBlockReader chunkCache, BlockPos pos, BlockState state, IDrone drone) {

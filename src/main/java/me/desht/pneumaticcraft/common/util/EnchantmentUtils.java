@@ -13,6 +13,10 @@ import java.util.List;
 /**
  * This class is copied from OpenMods' OpenModsLib
  * https://github.com/OpenMods/OpenModsLib/blob/master/src/main/java/openmods/utils/EnchantmentUtils.java
+ * and is Copyright (c) 2013 Open Mods
+ *
+ * The original file does not have a licence, but OpenModsLib is licensed under the MIT Licence and the file
+ * is used here under the terms of that licence.
  */
 public class EnchantmentUtils {
 

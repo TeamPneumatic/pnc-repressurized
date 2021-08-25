@@ -82,9 +82,12 @@ public interface IPneumaticHelmetRegistry {
     IKeybindingButton makeKeybindingButton(int yPos, KeyBinding keyBinding);
 
     /**
-     * Get the checkbox for the given upgrade ID. If the checkbox doesn't already exist, it will be created; if it
-     * exists, the existing checkbox will be returned. There is only ever one checkbox in existence for a given upgrade
-     * ID.
+     * Create or retrieve the toggle checkbox for the given upgrade. If the checkbox doesn't already exist, it will be
+     * created; if it exists, the existing checkbox will be returned. There is only ever one toggle checkbox in
+     * existence for any given upgrade ID / clientside upgrade handler.
+     * <p>
+     * This is intended to be called from {@link IOptionPage#populateGui(IGuiScreen)} when creating the GUI for
+     * an upgrade handler.
      *
      * @param upgradeId the upgrade ID
      * @param xPos X position of the widget

@@ -5,7 +5,6 @@ import net.minecraft.util.ResourceLocation;
 
 import java.util.function.Consumer;
 
-
 /**
  * Represents a checkbox widget which can have a key bound to toggle it; use this to create a checkbox to toggle
  * a toggleable upgrade on & off.

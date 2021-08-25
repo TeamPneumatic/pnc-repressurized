@@ -110,7 +110,7 @@ public interface IHackableBlock {
 
     /**
      * Fake up a ray trace result for a targeted block. This is intended to be passed into
-     * {@link BlockState#onBlockActivated(World, PlayerEntity, Hand, BlockRayTraceResult)}, which needs a non-null
+     * {@link BlockState#use(World, PlayerEntity, Hand, BlockRayTraceResult)}, which needs a non-null
      * ray trace result to get the block's position.
      *
      * @param player player doing the hacking

@@ -141,14 +141,14 @@ public class ClientUtils {
     }
 
     /**
-     * See AWT Rectangle's intersects() method
+     * Same as AWT Rectangle's intersects() method, but we don't have access to AWT...
      *
-     * @param rect
-     * @param x
-     * @param y
-     * @param w
-     * @param h
-     * @return
+     * @param rect a rectangle
+     * @param x x coord
+     * @param y y coord
+     * @param w width
+     * @param h height
+     * @return true if intersection, false otherwise
      */
     public static boolean intersects(Rectangle2d rect, double x, double y, double w, double h) {
         if (rect.getWidth() <= 0 || rect.getHeight() <= 0 || w <= 0 || h <= 0) {

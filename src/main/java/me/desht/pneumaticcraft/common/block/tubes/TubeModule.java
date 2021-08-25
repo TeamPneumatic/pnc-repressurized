@@ -73,7 +73,7 @@ public abstract class TubeModule {
     }
 
     /**
-     * Get the module's width (in range 0..16 as passed to {@link Block#makeCuboidShape(double, double, double, double, double, double)}
+     * Get the module's width (in range 0..16 as passed to {@link Block#box(double, double, double, double, double, double)}
      *
      * @return the width
      */
@@ -82,7 +82,7 @@ public abstract class TubeModule {
     }
 
     /**
-     * Get the module's height (in range 0..16 as passed to {@link Block#makeCuboidShape(double, double, double, double, double, double)}
+     * Get the module's height (in range 0..16 as passed to {@link Block#box(double, double, double, double, double, double)}
      *
      * @return the height
      */

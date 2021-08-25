@@ -32,7 +32,7 @@ public abstract class FuelQualityRecipe extends PneumaticCraftRecipe {
     /**
      * Get the burn rate for this fuel. Burn rate affects the speed at which the fuel is consumed (and compressed
      * air produced), without affecting the overall quantity of air produced.
-     * @return
+     * @return the burn rate; 1.0f is the baseline
      */
     public abstract float getBurnRate();
 }

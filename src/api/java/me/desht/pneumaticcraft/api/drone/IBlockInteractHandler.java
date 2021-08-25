@@ -8,12 +8,10 @@ import net.minecraft.util.math.BlockPos;
  * {@link ICustomBlockInteract#doInteract(BlockPos, IDrone, IBlockInteractHandler, boolean)}.
  */
 public interface IBlockInteractHandler {
-
     /**
-     * Returns a boolean[6] of all sides. When true, this side is accessible.  The sides are in order D,U,N,S,W,E;
-     * you can use {@link Direction#byIndex(int)} with an index into this array to get the facing direction.
-     * <p>
-     * See also {@link #isSideAccessible(Direction)}
+     * Returns a boolean[6] of all sides, in order D,U,N,S,W,E; you can use {@link Direction#get3DDataValue()} to get
+     * an index into this array to get the facing direction, or you use the {@link #isSideAccessible(Direction)}
+     * convenience method.
      *
      * @return an array of booleans indexed by the Direction index
      */

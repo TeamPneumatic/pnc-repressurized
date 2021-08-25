@@ -23,7 +23,7 @@ public interface IBlockAndCoordinateEventSensor extends IBaseSensor {
     /**
      * See {@link IEventSensorSetting#getRedstonePulseLength()}
      *
-     * @return
+     * @return a redstone pulse length, in ticks
      */
     int getRedstonePulseLength();
 }
