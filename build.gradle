@@ -42,7 +42,7 @@ String semver = "${mod_version_massive}.${mod_version_major}.${mod_version_minor
 // these two are required for the java plugin to generate jar files with a version
 version = "${semver}-${build_number}"
 group = 'me.desht' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "pneumaticcraft-repressurized"
+archivesBaseName = "pneumaticcraft-repressurized-${project.mc_version}"
 
 // All jar files from this folder will be added automatically as runtime mod dependencies
 def extraModsDir = "extra-mods-${project.mc_version}"
