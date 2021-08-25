@@ -203,6 +203,8 @@ public class TileEntitySmartChest extends TileEntityTickableBase
      * @return the next non-empty item (or ItemStack.EMPTY if the whole inventory is empty)
      */
     private ItemStack findNextItem(IItemHandler handler, EnumMap<Direction,Integer> slotMap, Direction dir) {
+        if (handler.getSlots() <= 0) return ItemStack.EMPTY; // https://github.com/TeamPneumatic/pnc-repressurized/issues/882
+
         if (handler.getStackInSlot(slotMap.getOrDefault(dir, 0)).isEmpty()) {
             slotMap.put(dir, scanForward(handler, slotMap.getOrDefault(dir, 0)));
         }
