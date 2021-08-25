@@ -8,6 +8,40 @@ Changes are in reverse chronological order; newest changes at the top.
 
 PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 
+## 2.14.0-??? (unreleased)
+
+Note: no player-visible changes related to 2.13.5 in this release. This is an alpha intended for testing API updates,
+and a heavily-overhauled build system.
+
+### Build System Updates
+* Now using Gradle 6 and ForgeGradle 5.1+
+* Now using official Mojang mappings plus parchment mappings
+* Now outputting Javadoc JAR as part of build
+
+### API Updates
+* The API JAR is now properly reobfuscated, like the main JAR. To use the API JAR, you should use something like:
+  * `compileOnly fg.deobf ("me.desht:pneumaticcraft-repressurized:${pnc_version}:api")`
+* The API has been moved into its own proper sourceset (`src/api/java/.../api`) instead of living under `src/main/java/.../api`
+* API updates intended to make it easier to add your own pressurizable items 
+  * New interface `IPressurizableItem`
+  * Added `IAirHandler.Provider` abstract class, and `IItemRegistry#makeItemAirHandlerProvider()` method to get an instance
+  * This intended to be returned from `Item#initCapabilities()`
+  * Added `PressureHelper` API class, although only method so far is for volume upgrade calculation
+* Various Pneumatic Armor API cleanup
+  * Internally, "trigger" key handling for upgrades (e.g. hack, kick, launch item) is moved into upgrade handler code, out of core
+  * See `IArmorUpgradeClientHandler#getTriggerKeyBinding()` and `IArmorUpgradeClientHandler#onTriggered()`
+  * Added `IPneumaticHelmetRegistry#makeKeybindingCheckBox()` method for getting a checkbox widget for upgrade toggling
+  * All part of effort to make it easier to add custom upgrades, although the API for this isn't yet complete...
+
+## Updates
+
+* Third party modded wrench detection now also checks for the item being in the `forge:tools/wrench` item tag
+
+## 2.13.5-218 (25 Aug 2021)
+
+### Fixes
+* Hotfix: server crash when Smart Chest tries to pull from Hopper Botany pot above
+
 ## 2.13.4-215 (20 Aug 2021)
   
 ### Updates
