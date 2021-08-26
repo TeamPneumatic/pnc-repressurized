@@ -14,12 +14,12 @@ Note: no player-visible changes related to 2.13.5 in this release. This is an al
 and a heavily-overhauled build system.
 
 ### Build System Updates
-* Now using Gradle 6 and ForgeGradle 5.1+
+* Now using Gradle 7 and ForgeGradle 5.1+
 * Now using official Mojang mappings plus parchment mappings
 * Now outputting Javadoc JAR as part of build
 
 ### API Updates
-* The API JAR is now properly reobfuscated, like the main JAR. To use the API JAR, you should use something like:
+* The API JAR is now properly reobfuscated, like the main JAR. To use the API JAR as a dependency, do something like:
   * `compileOnly fg.deobf ("me.desht:pneumaticcraft-repressurized:${pnc_version}:api")`
 * The API has been moved into its own proper sourceset (`src/api/java/.../api`) instead of living under `src/main/java/.../api`
 * API updates intended to make it easier to add your own pressurizable items 
@@ -36,6 +36,10 @@ and a heavily-overhauled build system.
 ## Updates
 
 * Third party modded wrench detection now also checks for the item being in the `forge:tools/wrench` item tag
+
+## Fixes
+
+* Fixed CraftTweaker removeRecipe() (to remove by output item) not working for Pressure Chamber and Explosion Crafting recipes
 
 ## 2.13.5-218 (25 Aug 2021)
 
