@@ -316,7 +316,7 @@ task reobf {
 
 task uploadJars(dependsOn: build) {
 	description = 'Uploads JARs'
-	if (project.hasProperty('local_maven')) {
+	if (System.getenv("local_maven") != null) {
 		apply plugin: 'maven-publish'
 		publishing {
 			publications { PublicationContainer publicationContainer ->
@@ -326,7 +326,7 @@ task uploadJars(dependsOn: build) {
 			}
 			repositories {
 				maven {
-					url("file://${local_maven}")
+					url("file://" +  System.getenv("local_maven"))
 				}
 			}
 		}
