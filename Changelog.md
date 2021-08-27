@@ -8,7 +8,7 @@ Changes are in reverse chronological order; newest changes at the top.
 
 PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 
-## 2.14.0-??? (unreleased)
+## 2.14.0-227 (27 Aug 2021)
 
 Note: despite the major version bump, only minor player-visible changes related to 2.13.5 in this release.
 This is an alpha intended for testing API updates, and a heavily-overhauled build system.
