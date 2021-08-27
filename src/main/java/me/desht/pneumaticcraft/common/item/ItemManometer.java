@@ -65,8 +65,7 @@ public class ItemManometer extends ItemPressurizable {
                 if (te instanceof INameable) {
                     curInfo.add(((INameable) te).getDisplayName().copy().withStyle(TextFormatting.AQUA));
                 } else {
-                    ItemStack stack1 = new ItemStack(te.getBlockState().getBlock());
-                    curInfo.add(stack1.getHoverName().copy().withStyle(TextFormatting.AQUA));
+                    curInfo.add(xlate(te.getBlockState().getBlock().getDescriptionId()).withStyle(TextFormatting.AQUA));
                 }
 
                 if (te.getCapability(PNCCapabilities.AIR_HANDLER_MACHINE_CAPABILITY).isPresent()) {
@@ -101,13 +100,12 @@ public class ItemManometer extends ItemPressurizable {
                     FluidStack fs = new FluidStack(f, 1000);
                     curInfo.add(fs.getDisplayName().copy().withStyle(TextFormatting.AQUA));
                 } else {
-                    ItemStack stack1 = new ItemStack(world.getBlockState(pos).getBlock());
-                    curInfo.add(stack1.getHoverName().copy().withStyle(TextFormatting.AQUA));
+                    curInfo.add(xlate(world.getBlockState(pos).getBlock().getDescriptionId()).withStyle(TextFormatting.AQUA));
                 }
                 HeatExchangerManager.INSTANCE.getLogic(world, pos, side)
                         .ifPresent(logic -> curInfo.add(HeatUtil.formatHeatString(logic.getTemperatureAsInt())));
-                checkForHeatExtraction(world, pos, curInfo);
             }
+            checkForHeatExtraction(world, pos, curInfo);
 
             if (curInfo.size() > 0) {
                 for (int i = 1; i < curInfo.size(); i++) {
