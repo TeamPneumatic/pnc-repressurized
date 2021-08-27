@@ -10,8 +10,8 @@ PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 
 ## 2.14.0-??? (unreleased)
 
-Note: no player-visible changes related to 2.13.5 in this release. This is an alpha intended for testing API updates,
-and a heavily-overhauled build system.
+Note: despite the major version bump, only minor player-visible changes related to 2.13.5 in this release.
+This is an alpha intended for testing API updates, and a heavily-overhauled build system.
 
 ### Build System Updates
 * Now using Gradle 7 and ForgeGradle 5.1+
@@ -40,6 +40,7 @@ and a heavily-overhauled build system.
 ## Fixes
 
 * Fixed CraftTweaker removeRecipe() (to remove by output item) not working for Pressure Chamber and Explosion Crafting recipes
+* Fixed mobs spawned by Pressurized Spawner despawning when players are too far away
 
 ## 2.13.5-218 (25 Aug 2021)
 

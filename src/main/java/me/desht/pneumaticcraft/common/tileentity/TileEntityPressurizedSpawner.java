@@ -35,6 +35,7 @@ public class TileEntityPressurizedSpawner extends TileEntityPneumaticBase implem
         INamedContainerProvider, IRangedTE
 {
     public static final int BASE_SPAWN_INTERVAL = 200;
+    private static final int MAX_NEARBY_ENTITIES = 32;
 
     private final ItemSpawnerCore.SpawnerCoreItemHandler inventory = new ItemSpawnerCore.SpawnerCoreItemHandler(this);
     private final LazyOptional<IItemHandler> invCap = LazyOptional.of(() -> inventory);
@@ -96,27 +97,24 @@ public class TileEntityPressurizedSpawner extends TileEntityPneumaticBase implem
         if (type != null && level instanceof ServerWorld) {
             ServerWorld serverworld = (ServerWorld)level;
             int spawnRange = getRange();
-            int maxNearbyEntities = 32;
             double x = (double)worldPosition.getX() + (serverworld.random.nextDouble() - level.random.nextDouble()) * (double)spawnRange + 0.5D;
             double y = worldPosition.getY() + serverworld.random.nextInt(3) - 1;
             double z = (double)worldPosition.getZ() + (serverworld.random.nextDouble() - level.random.nextDouble()) * (double)spawnRange + 0.5D;
             if (serverworld.noCollision(type.getAABB(x, y, z))) {
                 Entity entity = type.create(serverworld);
-                if (entity == null) return false;
+                if (!(entity instanceof MobEntity)) return false;
+                MobEntity mobentity = (MobEntity) entity;
                 int entityCount = serverworld.getEntitiesOfClass(MobEntity.class, rangeManager.getExtents()).size();
-                if (entityCount >= maxNearbyEntities) return false;
+                if (entityCount >= MAX_NEARBY_ENTITIES) return false;
                 entity.moveTo(x, y, z, level.random.nextFloat() * 360.0F, 0.0F);
-                if (entity instanceof MobEntity) {
-                    MobEntity mobentity = (MobEntity) entity;
-                    if (!ForgeEventFactory.doSpecialSpawn(mobentity, level, (float)entity.getX(), (float)entity.getY(), (float)entity.getZ(), null, SpawnReason.SPAWNER)) {
-                        mobentity.finalizeSpawn(serverworld, level.getCurrentDifficultyAt(entity.blockPosition()), SpawnReason.SPAWNER, null, null);
-                    }
+                if (ForgeEventFactory.doSpecialSpawn(mobentity, level, (float)entity.getX(), (float)entity.getY(), (float)entity.getZ(), null, SpawnReason.SPAWNER)) {
+                    return false;
                 }
+                mobentity.finalizeSpawn(serverworld, level.getCurrentDifficultyAt(entity.blockPosition()), SpawnReason.SPAWNER, null, null);
                 if (!serverworld.tryAddFreshEntityWithPassengers(entity)) return false;
                 level.levelEvent(Constants.WorldEvents.MOB_SPAWNER_PARTICLES, worldPosition, 0);
-                if (entity instanceof MobEntity) {
-                    ((MobEntity)entity).spawnAnim();
-                }
+                mobentity.spawnAnim();
+                mobentity.setPersistenceRequired();
                 return true;
             }
         }
