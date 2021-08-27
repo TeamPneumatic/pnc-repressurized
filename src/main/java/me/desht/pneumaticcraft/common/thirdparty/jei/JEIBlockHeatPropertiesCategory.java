@@ -62,11 +62,15 @@ public class JEIBlockHeatPropertiesCategory implements IRecipeCategory<HeatPrope
     }
 
     public static Collection<HeatPropertiesRecipe> getAllRecipes() {
-        List<HeatPropertiesRecipe> l = new ArrayList<>(BlockHeatProperties.getInstance().getAllEntries(Minecraft.getInstance().level));
-        l.sort(Comparator.comparingInt(HeatPropertiesRecipe::getTemperature).thenComparing(o -> o.getInputDisplayName().getString()));
-        ImmutableList.Builder<HeatPropertiesRecipe> res = ImmutableList.builder();
-        res.addAll(l);
-        return res.build();
+        // FIXME filtering out recipes whose input block has no item (e.g. minecraft:fire) is a kludge:
+        //  it suppresses JEI errors when loading recipes, but such recipes still aren't shown in JEI
+        //  (on the other hand the blocks in the recipe don't appear in JEI's display anyway so ¯\_(ツ)_/¯)
+        //noinspection UnstableApiUsage
+        return BlockHeatProperties.getInstance().getAllEntries(Minecraft.getInstance().level).stream()
+                .filter(r -> r.getBlock() instanceof FlowingFluidBlock || !new ItemStack(r.getBlock()).isEmpty())
+                .sorted(Comparator.comparingInt(HeatPropertiesRecipe::getTemperature)
+                        .thenComparing(o -> o.getInputDisplayName().getString()))
+                .collect(ImmutableList.toImmutableList());
     }
 
     @Override
