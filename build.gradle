@@ -237,7 +237,7 @@ javadoc {
 
 curseforge {
 	apiKey = project.findProperty('curseforge_apikey') ?: '0'
-	project = {
+	project {
 		id = curse_project_id
 		changelog = file('changelog.html')
 		changelogType = 'html'
