@@ -39,9 +39,9 @@ if (build_number == null) {
 String semver = "${mod_version_massive}.${mod_version_major}.${mod_version_minor}"
 
 // these two are required for the java plugin to generate jar files with a version
-version = "${semver}-${build_number}"
-group = 'me.desht' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "pneumaticcraft-repressurized-${project.mc_version}"
+version = "${project.mc_version}-${semver}-${build_number}"
+group = 'me.desht.pneumaticcraft' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+archivesBaseName = "pneumaticcraft-repressurized"
 
 // All jar files from this folder will be added automatically as runtime mod dependencies
 def extraModsDir = "extra-mods-${project.mc_version}"
@@ -313,50 +313,39 @@ task reobf {
 	dependsOn reobfApiJar
 }
 
-artifactory {
+// with thanks to AE2
+publishing {
 	if (System.getenv("artifactory_contextUrl") != null) {
-		contextUrl = System.getenv("artifactory_contextUrl") //"${artifactory_contextUrl}"
-		//The base Artifactory URL if not overridden by the publisher/resolver
-		publish {
-			repository {
-				repoKey = 'local-releases'
-				username = System.getenv("artifactory_user")
-				password = System.getenv("artifactory_password")
-				maven = true
+		publications {
+			maven(MavenPublication) {
+				groupId = project.group
+				artifactId = project.archivesBaseName
+				version = project.version
+
+				// ForgeGradle will generate wild dependency definitions, see https://github.com/MinecraftForge/ForgeGradle/issues/584
+				// Since we don't actually depend on anything, just remove the entire node.
+				pom.withXml {
+					asNode().remove(asNode().dependencies)
+				}
+
+				from components.java
+				artifact sourcesJar
+				artifact javadocJar
+				artifact apiJar
+			}
+		}
+		repositories {
+			maven {
+				name = "modmaven"
+				credentials {
+					username System.getenv("artifactory_user")
+					password System.getenv("artifactory_password")
+				}
+				url = "https://modmaven.dev/artifactory/local-releases/"
 			}
 		}
 	}
 }
-
-// with thanks to AE2
-//publishing {
-//	if (System.getenv("local_maven") != null) {
-//		publications {
-//			maven(MavenPublication) {
-//				groupId = project.group
-//				artifactId = project.archivesBaseName
-//				version = project.version
-//
-//				// ForgeGradle will generate wild dependency definitions, see https://github.com/MinecraftForge/ForgeGradle/issues/584
-//				// Since we don't actually depend on anything, just remove the entire node.
-//				pom.withXml {
-//					asNode().remove(asNode().dependencies)
-//				}
-//
-//				from components.java
-//				artifact sourcesJar
-//				artifact javadocJar
-//				artifact apiJar
-//			}
-//		}
-//		repositories {
-//			maven {
-//				name = "modmaven"
-//				url = "file://" + System.getenv("local_maven")
-//			}
-//		}
-//	}
-//}
 
 idea {
 	module {
