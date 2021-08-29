@@ -14,6 +14,7 @@ buildscript {
 	dependencies {
 		classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
 		classpath 'org.parchmentmc:librarian:1.+'
+		classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4+"
 	}
 }
 
@@ -27,6 +28,7 @@ plugins {
 }
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.parchmentmc.librarian.forgegradle'
+apply plugin: "com.jfrog.artifactory"
 
 //adds the build number to the end of the version string if on a build server
 String build_number = System.getenv().BUILD_NUMBER
@@ -311,35 +313,48 @@ task reobf {
 	dependsOn reobfApiJar
 }
 
-// with thanks to AE2
-publishing {
-	if (System.getenv("local_maven") != null) {
-		publications {
-			maven(MavenPublication) {
-				groupId = project.group
-				artifactId = project.archivesBaseName
-				version = project.version
+artifactory {
+	contextUrl = "${artifactory_contextUrl}"   //The base Artifactory URL if not overridden by the publisher/resolver
+	publish {
+		repository {
+			repoKey = 'local-releases'
+			username = "${artifactory_user}"
+			password = "${artifactory_password}"
+			maven = true
 
-				// ForgeGradle will generate wild dependency definitions, see https://github.com/MinecraftForge/ForgeGradle/issues/584
-				// Since we don't actually depend on anything, just remove the entire node.
-				pom.withXml {
-					asNode().remove(asNode().dependencies)
-				}
-
-				from components.java
-				artifact sourcesJar
-				artifact javadocJar
-				artifact apiJar
-			}
-		}
-		repositories {
-			maven {
-				name = "modmaven"
-				url = "file://" + System.getenv("local_maven")
-			}
 		}
 	}
 }
+
+// with thanks to AE2
+//publishing {
+//	if (System.getenv("local_maven") != null) {
+//		publications {
+//			maven(MavenPublication) {
+//				groupId = project.group
+//				artifactId = project.archivesBaseName
+//				version = project.version
+//
+//				// ForgeGradle will generate wild dependency definitions, see https://github.com/MinecraftForge/ForgeGradle/issues/584
+//				// Since we don't actually depend on anything, just remove the entire node.
+//				pom.withXml {
+//					asNode().remove(asNode().dependencies)
+//				}
+//
+//				from components.java
+//				artifact sourcesJar
+//				artifact javadocJar
+//				artifact apiJar
+//			}
+//		}
+//		repositories {
+//			maven {
+//				name = "modmaven"
+//				url = "file://" + System.getenv("local_maven")
+//			}
+//		}
+//	}
+//}
 
 idea {
 	module {
