@@ -314,14 +314,16 @@ task reobf {
 }
 
 artifactory {
-	contextUrl = "${artifactory_contextUrl}"   //The base Artifactory URL if not overridden by the publisher/resolver
-	publish {
-		repository {
-			repoKey = 'local-releases'
-			username = "${artifactory_user}"
-			password = "${artifactory_password}"
-			maven = true
-
+	if (System.getenv("artifactory_contextUrl") != null) {
+		contextUrl = System.getenv("artifactory_contextUrl") //"${artifactory_contextUrl}"
+		//The base Artifactory URL if not overridden by the publisher/resolver
+		publish {
+			repository {
+				repoKey = 'local-releases'
+				username = System.getenv("artifactory_user")
+				password = System.getenv("artifactory_password")
+				maven = true
+			}
 		}
 	}
 }
