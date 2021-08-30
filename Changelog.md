@@ -8,6 +8,17 @@ Changes are in reverse chronological order; newest changes at the top.
 
 PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 
+## 2.14.1-??? (unreleased)
+
+### Fixes
+
+* Fixed non-fatal client errors from JEI regarding missing item for Fire->Air heat transition recipe
+* Manometer now shows correct block when block has no associated item, e.g. Fire
+* Manometer now shows extracted heat for block with a tile entity, e.g. Campfires
+* Fixed Patchouli manual not working if Tough As Nails is installed 
+  * TAN page was written back in 1.12.2 days, and TAN 1.16 does not have all the features that it did in 1.12
+* Fixed build artifacts not being published to modmaven.dev after build system overhaul in 2.14.0
+  
 ## 2.14.0-227 (27 Aug 2021)
 
 Note: despite the major version bump, only minor player-visible changes related to 2.13.5 in this release.
