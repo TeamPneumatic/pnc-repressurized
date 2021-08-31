@@ -44,6 +44,7 @@ import net.minecraft.nbt.ListNBT;
 import net.minecraft.network.play.server.SSetSlotPacket;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.concurrent.TickDelayedTask;
@@ -131,9 +132,9 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
             simulationController.tick();
             PlayerEntity hacker = simulationController.getHacker();
             if (!(hacker.containerMenu instanceof ContainerSecurityStationHacking)) {
-                if (simulationController.isSimulationDone()) {
-                    simulationController = null;
-                } else if (simulationController.getSimulation(HackingSide.AI).isAwake() && !simulationController.isJustTesting()) {
+                if (!simulationController.isSimulationDone()
+                        && simulationController.getSimulation(HackingSide.AI).isAwake()
+                        && !simulationController.isJustTesting()) {
                     // hacker closed the window during hack...
                     retaliate(hacker);
                 }
@@ -188,7 +189,7 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
             }
         } else if (player.containerMenu instanceof ContainerSecurityStationHacking && isPlayerHacking(player)) {
             if (tag.equals("end_test") && simulationController.isJustTesting()) {
-                NetworkHooks.openGui((ServerPlayerEntity) player, this, getBlockPos());
+                NetworkHooks.openGui(player, this, getBlockPos());
             } else if (tag.startsWith("nuke:")) {
                 tryNukeVirus(tag, player);
             } else if (tag.equals("stop_worm")) {
@@ -282,9 +283,7 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
 
     public void addHacker(GameProfile user) {
         for (GameProfile hackedUser : hackedUsers) {
-            if (gameProfileEquals(hackedUser, user)) {
-                return;
-            }
+            if (gameProfileEquals(hackedUser, user)) return;
         }
         for (GameProfile sharedUser : sharedUsers) {
             if (gameProfileEquals(sharedUser, user)) return;
@@ -733,9 +732,10 @@ public class TileEntitySecurityStation extends TileEntityTickableBase implements
                 TileEntitySecurityStation teSS = ((ContainerSecurityStationHacking) event.getContainer()).te;
                 if (teSS.getSimulationController() != null && teSS.getSimulationController().isJustTesting()) {
                     ServerPlayerEntity player = (ServerPlayerEntity) event.getPlayer();
-                    if (player.getServer() != null) {
+                    MinecraftServer server = player.getServer();
+                    if (server != null) {
                         // deferring is important to avoid infinite close/open loop
-                        player.getServer().tell(new TickDelayedTask(1, () -> NetworkHooks.openGui(player, teSS, teSS.getBlockPos())));
+                        server.tell(new TickDelayedTask(server.getTickCount(), () -> NetworkHooks.openGui(player, teSS, teSS.getBlockPos())));
                     }
                 }
             }
