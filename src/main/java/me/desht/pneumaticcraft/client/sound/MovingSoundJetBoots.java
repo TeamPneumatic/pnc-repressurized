@@ -30,6 +30,11 @@ public class MovingSoundJetBoots extends TickableSound {
         this.pitch = 0.5F;
         this.handler = CommonArmorHandler.getHandlerForPlayer(player);
         this.volume = volumeFromConfig(JetBootsStateTracker.getClientTracker().getJetBootsState(player).isBuilderMode());
+
+        // kludge: tiny bit of upward displacement allows player to walk off an edge and back on again
+        // (when smart hover isn't being used)
+        // 0.1 displacement is too small to be perceptible to player
+        player.setPos(player.getX(), player.getY() + 0.1, player.getZ());
     }
 
     @Override
