@@ -125,6 +125,7 @@ public class ProgrammedDroneUtils {
         ProgWidgetLiquidImport liquidImport = new ProgWidgetLiquidImport();
         liquidImport.setUseCount(true);
         liquidImport.setCount(queriedFluid.getAmount());
+        liquidImport.setSides(ISidedWidget.ALL_SIDES);
         builder.add(liquidImport, ProgWidgetArea.fromPosition(pos), ProgWidgetLiquidFilter.withFilter(queriedFluid.getFluid()));
         builder.add(new ProgWidgetGoToLocation(), ProgWidgetArea.fromPosition(drone.blockPosition()));
         builder.add(new ProgWidgetSuicide());
