@@ -191,6 +191,8 @@ public class ModBlocks {
             BlockTagWorkbench::new);
     public static final RegistryObject<BlockDisplayTable> DISPLAY_TABLE = register("display_table",
             BlockDisplayTable::new);
+    public static final RegistryObject<BlockDisplayShelf> DISPLAY_SHELF = register("display_shelf",
+            BlockDisplayShelf::new);
     public static final RegistryObject<BlockDroneInterface> DRONE_INTERFACE = register("drone_interface",
             BlockDroneInterface::new);
     public static final RegistryObject<BlockThermalLagging> THERMAL_LAGGING = register("thermal_lagging",

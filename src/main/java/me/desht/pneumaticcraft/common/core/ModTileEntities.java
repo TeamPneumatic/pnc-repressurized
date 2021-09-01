@@ -128,7 +128,7 @@ public class ModTileEntities {
     public static final RegistryObject<TileEntityType<TileEntityTagWorkbench>> TAG_WORKBENCH
             = register("tag_workbench", () -> new TileEntityType<>(TileEntityTagWorkbench::new, ImmutableSet.of(ModBlocks.TAG_WORKBENCH.get()), null));
     public static final RegistryObject<TileEntityType<TileEntityDisplayTable>> DISPLAY_TABLE
-            = register("display_table", () -> new TileEntityType<>(TileEntityDisplayTable::new, ImmutableSet.of(ModBlocks.DISPLAY_TABLE.get()),
+            = register("display_table", () -> new TileEntityType<>(TileEntityDisplayTable::new, ImmutableSet.of(ModBlocks.DISPLAY_TABLE.get(), ModBlocks.DISPLAY_SHELF.get()),
             null));
     public static final RegistryObject<TileEntityType<TileEntityDroneInterface>> DRONE_INTERFACE
             = register("drone_interface", () -> new TileEntityType<>(TileEntityDroneInterface::new, ImmutableSet.of(ModBlocks.DRONE_INTERFACE.get()),

@@ -16,6 +16,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.shapes.ISelectionContext;
@@ -36,10 +37,6 @@ public class BlockDisplayTable extends BlockPneumaticCraft {
     private static final BooleanProperty NW = BooleanProperty.create("nw");
 
     private static final VoxelShape TOP = box(0, 14, 0, 16, 16, 16);
-    private static final VoxelShape LEG1 = box(1, 0, 1, 3, 14, 3);
-    private static final VoxelShape LEG2 = box(1, 0, 13, 3, 14, 15);
-    private static final VoxelShape LEG3 = box(13, 0, 1, 15, 14, 3);
-    private static final VoxelShape LEG4 = box(13, 0, 13, 15, 14, 15);
 
     public BlockDisplayTable() {
         super(ModBlocks.defaultProps());
@@ -62,6 +59,7 @@ public class BlockDisplayTable extends BlockPneumaticCraft {
     @Override
     public BlockState getStateForPlacement(BlockItemUseContext ctx) {
         BlockState state = super.getStateForPlacement(ctx);
+        if (state == null) return null;
         boolean[] connected = getConnections(ctx.getLevel(), ctx.getClickedPos(), state);
         return state.setValue(NE, connected[0]).setValue(SE, connected[1]).setValue(SW, connected[2]).setValue(NW, connected[3]);
     }
@@ -74,31 +72,58 @@ public class BlockDisplayTable extends BlockPneumaticCraft {
 
     private VoxelShape getCachedShape(BlockState state) {
         int shapeIdx = (state.getValue(NE) ? 1 : 0) | (state.getValue(SE) ? 2 : 0) | (state.getValue(SW) ? 4 : 0) | (state.getValue(NW) ? 8 : 0);
-        if (SHAPE_CACHE[shapeIdx] == null) {
-            VoxelShape shape = TOP;
-            for (Leg corner : Leg.values()) {
-                if (!state.getValue(corner.prop)) {
-                    shape = VoxelShapes.or(shape, corner.shape);
+        VoxelShape[] shapeCache = getShapeCache();
+        if (shapeCache[shapeIdx] == null) {
+            VoxelShape shape = adjustShapeForHeight(TOP);
+            for (Leg leg : Leg.values()) {
+                if (!state.getValue(leg.prop)) {
+                    shape = VoxelShapes.or(shape, adjustShapeForHeight(leg.shape));
                 }
             }
-            SHAPE_CACHE[shapeIdx] = shape.optimize();
+            shapeCache[shapeIdx] = shape.optimize();
         }
-        return SHAPE_CACHE[shapeIdx];
+        return shapeCache[shapeIdx];
+    }
+
+    private VoxelShape adjustShapeForHeight(VoxelShape shape) {
+        AxisAlignedBB aabb = shape.bounds();
+        return VoxelShapes.box(
+                aabb.minX, Math.max(0, aabb.minY - (1 - getTableHeight())), aabb.minZ,
+                aabb.maxX, aabb.maxY - (1 - getTableHeight()), aabb.maxZ
+        );
+    }
+
+    public double getTableHeight() {
+        // for shape calculation and item rendering Y positioning
+
+        return 1d;  // 1 block
+    }
+
+    protected VoxelShape[] getShapeCache() {
+        return SHAPE_CACHE;
+    }
+
+    protected boolean shelfLegs() {
+        return false;
     }
 
     private boolean[] getConnections(IWorld world, BlockPos pos, BlockState state) {
-        boolean[] res = new boolean[4];
+        BlockPos below = pos.below();
+        if (shelfLegs() && !world.getBlockState(below).isFaceSturdy(world, below, Direction.UP)) {
+            // no ground below; hide all legs
+            return new boolean[] { true, true, true, true };
+        }
 
         boolean connE = isMatch(world, pos, state, Direction.EAST);
         boolean connW = isMatch(world, pos, state, Direction.WEST);
         boolean connS = isMatch(world, pos, state, Direction.SOUTH);
         boolean connN = isMatch(world, pos, state, Direction.NORTH);
 
+        boolean[] res = new boolean[4];
         res[Leg.SE.ordinal()] = connE || connS;
         res[Leg.NE.ordinal()] = connE || connN;
         res[Leg.SW.ordinal()] = connW || connS;
         res[Leg.NW.ordinal()] = connW || connN;
-
         return res;
     }
 
@@ -143,7 +168,7 @@ public class BlockDisplayTable extends BlockPneumaticCraft {
                 } else {
                     // try to remove whatever is on the table
                     ItemStack stack = teDT.getPrimaryInventory().extractItem(0, 64, false);
-                    PneumaticCraftUtils.dropItemOnGroundPrecisely(stack, world, pos.getX() + 0.5, pos.getY() + 1.2, pos.getZ() + 0.5);
+                    PneumaticCraftUtils.dropItemOnGroundPrecisely(stack, world, pos.getX() + 0.5, pos.getY() + getTableHeight() + 0.1, pos.getZ() + 0.5);
                 }
             }
             return ActionResultType.SUCCESS;
@@ -152,10 +177,10 @@ public class BlockDisplayTable extends BlockPneumaticCraft {
     }
 
     private enum Leg {
-        NE( 1,-1, BlockDisplayTable.NE, Block.box(13f, 0,  1f, 15f, 16,  3f)),
-        SE( 1, 1, BlockDisplayTable.SE, Block.box(13f, 0, 13f, 15f, 16, 15f)),
-        SW(-1, 1, BlockDisplayTable.SW, Block.box( 1f, 0, 13f,  3f, 16, 15f)),
-        NW(-1,-1, BlockDisplayTable.NW, Block.box( 1f, 0,  1f,  3f, 16,  3f));
+        NE( 1,-1, BlockDisplayTable.NE, Block.box(13f, 0,  1f, 15f, 14,  3f)),
+        SE( 1, 1, BlockDisplayTable.SE, Block.box(13f, 0, 13f, 15f, 14, 15f)),
+        SW(-1, 1, BlockDisplayTable.SW, Block.box( 1f, 0, 13f,  3f, 14, 15f)),
+        NW(-1,-1, BlockDisplayTable.NW, Block.box( 1f, 0,  1f,  3f, 14,  3f));
 
         final int x;
         final int z;

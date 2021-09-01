@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "pneumaticcraft:display_table_from_shelf"
+    ]
+  },
+  "criteria": {
+    "has_reinforced_stone": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "pneumaticcraft:reinforced_stone"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "pneumaticcraft:display_table_from_shelf"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_reinforced_stone",
+      "has_the_recipe"
+    ]
+  ]
+}

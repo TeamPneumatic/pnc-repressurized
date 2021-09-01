@@ -21,11 +21,11 @@ public class RenderTagWorkbench extends TileEntityRenderer<TileEntityTagWorkbenc
         matrixStackIn.pushPose();
         matrixStackIn.translate(0.5, 1, 0.5);
         RenderDisplayTable.renderItemAt(matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn,
-                new ItemStack(Item.byId(te.itemId)), 0, -0.25, 0.4f, te.getRotation());
+                te.displayedStack, 0, 0, -0.25, 0.4f, te.getRotation());
         RenderDisplayTable.renderItemAt(matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn,
-                new ItemStack(Item.byId(te.paperItemId)), -0.25, 0.25, 0.4f, te.getRotation());
+                new ItemStack(Item.byId(te.paperItemId)), -0.25, 0, 0.25, 0.4f, te.getRotation());
         RenderDisplayTable.renderItemAt(matrixStackIn, bufferIn, combinedLightIn, combinedOverlayIn,
-                new ItemStack(Item.byId(te.outputItemId)), 0.25, 0.25, 0.4f, te.getRotation());
+                new ItemStack(Item.byId(te.outputItemId)), 0.25, 0, 0.25, 0.4f, te.getRotation());
         matrixStackIn.popPose();
     }
 }

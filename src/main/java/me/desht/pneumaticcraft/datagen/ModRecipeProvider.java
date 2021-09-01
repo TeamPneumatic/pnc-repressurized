@@ -264,6 +264,14 @@ public class ModRecipeProvider extends RecipeProvider {
                 'I', PneumaticCraftTags.Items.INGOTS_COMPRESSED_IRON
         ).save(consumer);
 
+        shapeless(ModBlocks.DISPLAY_TABLE.get(), ModBlocks.REINFORCED_STONE.get(),
+                ModBlocks.DISPLAY_SHELF.get()
+        ).save(consumer, RL("display_table_from_shelf"));
+
+        shapeless(ModBlocks.DISPLAY_SHELF.get(), ModBlocks.REINFORCED_STONE.get(),
+                ModBlocks.DISPLAY_TABLE.get()
+        ).save(consumer);
+
         shaped(ModBlocks.DRILL_PIPE.get(), 3, ModBlocks.GAS_LIFT.get(),
                 "T/T/T",
                 'T', ModBlocks.PRESSURE_TUBE.get()

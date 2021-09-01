@@ -82,7 +82,7 @@ public class TileEntityTagWorkbench extends TileEntityDisplayTable implements IN
         super.load(state, tag);
 
         inventory.deserializeNBT(tag.getCompound("Items"));
-        itemId = Item.getId(inventory.getStackInSlot(0).getItem());
+        displayedStack = inventory.getStackInSlot(0);
         paperItemId = Item.getId(inventory.getStackInSlot(1).getItem());
         outputItemId = Item.getId(inventory.getStackInSlot(2).getItem());
     }

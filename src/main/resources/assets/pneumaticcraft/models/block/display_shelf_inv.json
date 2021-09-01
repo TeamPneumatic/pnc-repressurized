@@ -1,0 +1,75 @@
+{
+  "parent": "forge:block/default",
+  "credit": "Made with Blockbench",
+  "textures": {
+    "all": "pneumaticcraft:block/display_table",
+    "particle": "pneumaticcraft:block/display_table"
+  },
+  "elements": [
+    {
+      "name": "top",
+      "from": [0, 6, 0],
+      "to": [16, 8, 16],
+      "faces": {
+        "north": {"uv": [0, 0, 16, 2], "rotation": 180, "texture": "#all"},
+        "east": {"uv": [0, 0, 2, 16], "rotation": 90, "texture": "#all"},
+        "south": {"uv": [0, 0, 16, 2], "texture": "#all"},
+        "west": {"uv": [0, 0, 2, 16], "rotation": 90, "texture": "#all"},
+        "up": {"uv": [0, 0, 16, 16], "texture": "#all"},
+        "down": {"uv": [0, 0, 16, 16], "texture": "#all"}
+      }
+    },
+    {
+      "name": "leg1",
+      "from": [1, 0, 1],
+      "to": [3, 6, 3],
+      "faces": {
+        "north": {"uv": [0, 4, 2, 10], "texture": "#all"},
+        "east": {"uv": [0, 4, 2, 10], "texture": "#all"},
+        "south": {"uv": [0, 4, 2, 10], "texture": "#all"},
+        "west": {"uv": [0, 4, 2, 10], "texture": "#all"},
+        "up": {"uv": [0, 0, 2, 12], "texture": "#all", "cullface": "up"},
+        "down": {"uv": [0, 0, 2, 12], "texture": "#all", "cullface": "down"}
+      }
+    },
+    {
+      "name": "leg2",
+      "from": [13, 0, 1],
+      "to": [15, 6, 3],
+      "faces": {
+        "north": {"uv": [0, 4, 2, 10], "texture": "#all"},
+        "east": {"uv": [0, 4, 2, 10], "texture": "#all"},
+        "south": {"uv": [0, 4, 2, 10], "texture": "#all"},
+        "west": {"uv": [0, 4, 2, 10], "texture": "#all"},
+        "up": {"uv": [0, 0, 2, 12], "texture": "#all", "cullface": "up"},
+        "down": {"uv": [0, 0, 2, 12], "texture": "#all", "cullface": "down"}
+      }
+    },
+    {
+      "name": "leg3",
+      "from": [13, 0, 13],
+      "to": [15, 6, 15],
+      "faces": {
+        "north": {"uv": [0, 4, 2, 10], "texture": "#all"},
+        "east": {"uv": [0, 4, 2, 10], "texture": "#all"},
+        "south": {"uv": [0, 4, 2, 10], "texture": "#all"},
+        "west": {"uv": [0, 4, 2, 10], "texture": "#all"},
+        "up": {"uv": [0, 0, 2, 12], "texture": "#all", "cullface": "up"},
+        "down": {"uv": [0, 0, 2, 12], "texture": "#all", "cullface": "down"}
+      }
+    },
+    {
+      "name": "leg4",
+      "from": [1, 0, 13],
+      "to": [3, 6, 15],
+      "faces": {
+        "north": {"uv": [0, 4, 2, 10], "texture": "#all"},
+        "east": {"uv": [0, 4, 2, 10], "texture": "#all"},
+        "south": {"uv": [0, 4, 2, 10], "texture": "#all"},
+        "west": {"uv": [0, 4, 2, 10], "texture": "#all"},
+        "up": {"uv": [0, 0, 2, 12], "texture": "#all", "cullface": "up"},
+        "down": {"uv": [0, 0, 2, 12], "texture": "#all", "cullface": "down"}
+      }
+    }
+  ]
+}
