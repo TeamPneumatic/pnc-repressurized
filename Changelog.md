@@ -8,7 +8,25 @@ Changes are in reverse chronological order; newest changes at the top.
 
 PNC:R 2.11.0 and later *require* Forge 36.0.42 or later.
 
-## 2.14.1-245 (unreleased)
+## 2.14.2-??? (unreleased)
+
+### New
+* Added new Display Shelf block, which is basically a half-height Display Table
+  * Same functionality as the Display Table
+  * Unlike Display Table, will hide legs completely if no solid block beneath
+
+### Updates
+* Amadron Tablet allows searching of offers by mod; use `@string` syntax, same as JEI or AE2
+* Slightly tweaked the Amadron Tablet GUI display of unaffordable offers for a better appearance
+
+### Fixes
+* Fixed Amadron tablet allowing fluid orders > 576000mB (taking full payment but only deliverying 576000mB)
+  * 576000 is a hard maximum for a single fluid order (the most a fully-upgraded drone can carry)
+* Fixed Amadrones failing to import fluid from any side of a tank other than the top
+  * Issue is noticeable e.g. with Mekanism Dynamic Tanks and a valve on the side
+* Villager Amadron offers now actually show a vendor name of "Villagers" on dedicated server
+
+## 2.14.1-245 (31 Aug 2021)
 
 ### Fixes
 
