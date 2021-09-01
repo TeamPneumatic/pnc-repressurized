@@ -48,6 +48,9 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
     public static final int ROWS = 4;
     public static final int OFFERS_PER_PAGE = ROWS * 2;
 
+    private static final int HARD_MAX_STACKS = 36;
+    private static final int HARD_MAX_MB = 576_000;
+
     public final List<AmadronRecipe> activeOffers = new ArrayList<>(AmadronOfferManager.getInstance().getActiveOffers());
     private final ItemStackHandler inv = new ItemStackHandler(OFFERS_PER_PAGE * 2);
     @GuiSynced
@@ -159,9 +162,9 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
             }
         }
         // an Amadrone has 35 inv upgrades, allowing 36 stacks of items and 576000mB of fluid to be carried
-        if (totalStacks > 36) {
+        if (totalStacks > HARD_MAX_STACKS) {
             problemState = EnumProblemState.TOO_MANY_ITEMS;
-        } else if (totalMb > 576000) {
+        } else if (totalMb > HARD_MAX_MB) {
             problemState = EnumProblemState.TOO_MUCH_FLUID;
         }
     }
@@ -438,7 +441,7 @@ public class ContainerAmadron extends ContainerPneumaticBase<TileEntityBase> {
             }
         } else if (offer.getOutput().getType() == AmadronTradeResource.Type.FLUID) {
             if (fluidCapOut.isPresent()) {
-                int availableTrades = offer.getOutput().findSpaceInFluidOutput(fluidCapOut, wantedTradeCount);
+                int availableTrades = Math.min(HARD_MAX_MB / offer.getOutput().getAmount(), offer.getOutput().findSpaceInFluidOutput(fluidCapOut, wantedTradeCount));
                 if (availableTrades < wantedTradeCount) {
                     wantedTradeCount = availableTrades;
                     problem = EnumProblemState.NOT_ENOUGH_FLUID_SPACE;
