@@ -82,8 +82,8 @@ public class AmadronOffer extends AmadronRecipe {
     }
 
     @Override
-    public String getVendor() {
-        return xlate(isVillagerTrade ? "pneumaticcraft.gui.amadron.villager" : "pneumaticcraft.gui.amadron").getString();
+    public ITextComponent getVendorName() {
+        return isVillagerTrade ? xlate("pneumaticcraft.gui.amadron.villager") : xlate("pneumaticcraft.gui.amadron");
     }
 
     @Override

@@ -68,7 +68,7 @@ public class PacketAmadronTradeAddCustom extends PacketAbstractAmadronTrade {
         if (PNCConfig.Common.Amadron.notifyOfTradeAddition) {
             ClientUtils.getClientPlayer().displayClientMessage(
                     new TranslationTextComponent("pneumaticcraft.message.amadron.playerAddedTrade",
-                            offer.getVendor(),
+                            offer.getVendorName(),
                             offer.getOutput().toString(),
                             offer.getInput().toString()
                     ), false);

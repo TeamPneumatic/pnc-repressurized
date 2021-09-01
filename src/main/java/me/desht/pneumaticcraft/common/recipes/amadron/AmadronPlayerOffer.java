@@ -19,6 +19,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.GlobalPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.items.ItemHandlerHelper;
 
@@ -90,8 +92,8 @@ public class AmadronPlayerOffer extends AmadronOffer {
     }
 
     @Override
-    public String getVendor() {
-        return offeringPlayerName;
+    public ITextComponent getVendorName() {
+        return new StringTextComponent(offeringPlayerName);
     }
 
     public UUID getPlayerId() {

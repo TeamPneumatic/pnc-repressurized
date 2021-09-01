@@ -94,15 +94,15 @@ public class JEIAmadronTradeCategory implements IRecipeCategory<AmadronRecipe> {
     @Override
     public void draw(AmadronRecipe recipe, MatrixStack matrixStack, double mouseX, double mouseY) {
         FontRenderer fr = Minecraft.getInstance().font;
-        int x = (background.getWidth() - fr.width(recipe.getVendor())) / 2;
-        fr.draw(matrixStack, recipe.getVendor(), x, 3, 0xFF404040);
+        int x = (background.getWidth() - fr.width(recipe.getVendorName())) / 2;
+        fr.draw(matrixStack, recipe.getVendorName(), x, 3, 0xFF404040);
     }
 
     @Override
     public List<ITextComponent> getTooltipStrings(AmadronRecipe recipe, double mouseX, double mouseY) {
         List<ITextComponent> res = new ArrayList<>();
         if (mouseX >= 22 && mouseX <= 51 && mouseY >= 12) {
-            res.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.vendor", recipe.getVendor()));
+            res.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.vendor", recipe.getVendorName()));
             res.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.selling", recipe.getOutput().toString()));
             res.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.buying", recipe.getInput().toString()));
         }

@@ -1,7 +1,6 @@
 package me.desht.pneumaticcraft.client.gui.widget;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.systems.RenderSystem;
 import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
 import me.desht.pneumaticcraft.api.crafting.recipe.AmadronRecipe;
 import me.desht.pneumaticcraft.client.util.GuiUtils;
@@ -69,18 +68,20 @@ public class WidgetAmadronOffer extends Widget implements ITooltipProvider {
             FontRenderer fr = Minecraft.getInstance().font;
             if (renderBackground) {
                 Minecraft.getInstance().getTextureManager().bind(Textures.WIDGET_AMADRON_OFFER);
-                RenderSystem.color4f(1f, canBuy ? 1f : 0.4f, canBuy ? 1f : 0.4f, 1f);
                 AbstractGui.blit(matrixStack, x, y, 0, 0, width, height, 256, 256);
             }
-            IReorderingProcessor r = fr.split(new StringTextComponent(offer.getVendor()).withStyle(canBuy ? TextFormatting.BLACK : TextFormatting.DARK_GRAY), 73).get(0);
+            IReorderingProcessor r = fr.split(offer.getVendorName(), 73).get(0);
             fr.draw(matrixStack, r, x + 2, y + 2, 0xFF000000);
             if (shoppingAmount > 0) {
-                String str = "" + shoppingAmount;
+                String str = Integer.toString(shoppingAmount);
                 fr.draw(matrixStack,str, x + 36 - fr.width(str) / 2f, y + (offer.getStock() >= 0 ? 15 : 20), 0xFF000000);
             }
             if (offer.getStock() >= 0) {
                 String str = TextFormatting.DARK_BLUE.toString() + offer.getStock();
-                fr.draw(matrixStack,str, x + 36 - fr.width(str) / 2f, y + 25, 0xFF000000);
+                fr.draw(matrixStack, str, x + 36 - fr.width(str) / 2f, y + 25, 0xFF000000);
+            }
+            if (!canBuy) {
+                AbstractGui.fill(matrixStack, x, y, x + width, y + height, 0xC0804040);
             }
         }
     }
@@ -109,7 +110,7 @@ public class WidgetAmadronOffer extends Widget implements ITooltipProvider {
             }
         }
         if (!isInBounds) {
-            curTip.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.vendor", offer.getVendor()));
+            curTip.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.vendor", offer.getVendorName()));
             curTip.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.selling", offer.getOutput().toString()));
             curTip.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.buying", offer.getInput().toString()));
             if (offer.getStock() >= 0) curTip.add(xlate("pneumaticcraft.gui.amadron.amadronWidget.stock", offer.getStock()));

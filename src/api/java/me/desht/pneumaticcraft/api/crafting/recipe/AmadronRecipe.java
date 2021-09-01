@@ -3,6 +3,8 @@ package me.desht.pneumaticcraft.api.crafting.recipe;
 import me.desht.pneumaticcraft.api.crafting.AmadronTradeResource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 
 /**
  * An Amadron trade offer, loaded from datapack.  Note that any trades discovered from villager trades,
@@ -33,12 +35,28 @@ public abstract class AmadronRecipe extends PneumaticCraftRecipe {
     public abstract AmadronTradeResource getOutput();
 
     /**
-     * Get the offer's vendor name, for display purposes.  This will be "Amadron" for static & periodic offers loaded
-     * from datapack, "Villagers" for villager-discovered offers, and the player's name for player-added offers.
+     * Get the offer's vendor name, for display purposes.  The default is "Amadron" for static & periodic offers loaded
+     * from datapack, "Villagers" for villager-discovered offers, and the player's display name (at the time of offer
+     * creation) for player-added offers.
      *
      * @return the vendor name
      */
-    public abstract String getVendor();
+    public ITextComponent getVendorName() {
+        // default implementation is just here for backwards compat and will likely go away in MC 1.17+
+        // recipe implementations should override this
+        return new StringTextComponent("Amadron");
+    }
+
+    /**
+     * Get the offer's vendor name.
+     *
+     * @return the vendor name
+     * @deprecated don't use this; use {@link #getVendorName()}
+     */
+    @Deprecated
+    public String getVendor() {
+        return "Amadron";
+    }
 
     /**
      * Is this a static offer, always displayed on the Amadron tablet?  Or periodic, shuffled in at random once per
@@ -98,8 +116,14 @@ public abstract class AmadronRecipe extends PneumaticCraftRecipe {
      */
     public final boolean passesQuery(String query) {
         String queryLow = query.toLowerCase();
+        if (queryLow.startsWith("@")) {
+            // search by mod id
+            String mod = queryLow.substring(1);
+            return getInput().getId().getNamespace().toLowerCase().contains(mod)
+                    || getOutput().getId().getNamespace().toLowerCase().contains(mod);
+        }
         return getInput().getName().toLowerCase().contains(queryLow)
                 || getOutput().getName().toLowerCase().contains(queryLow)
-                || getVendor().toLowerCase().contains(queryLow);
+                || getVendorName().getString().toLowerCase().contains(queryLow);
     }
 }

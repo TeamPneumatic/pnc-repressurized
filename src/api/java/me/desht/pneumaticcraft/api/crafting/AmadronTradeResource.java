@@ -201,6 +201,17 @@ public class AmadronTradeResource {
         }
     }
 
+    public ResourceLocation getId() {
+        switch (type) {
+            case ITEM:
+                return item.getItem().getRegistryName();
+            case FLUID:
+                return fluid.getFluid().getRegistryName();
+            default:
+                return null;
+        }
+    }
+
     public int getAmount() {
         switch (type) {
             case ITEM: return item.getCount();
