@@ -10,7 +10,8 @@ import java.util.function.Consumer;
  * a toggleable upgrade on & off.
  * <p>
  * Do not implement this class yourself; you can create & retrieve instances of it via
- * {@link IPneumaticHelmetRegistry#makeKeybindingCheckBox(ResourceLocation, int, int, int, Consumer)}.
+ * {@link IPneumaticHelmetRegistry#makeKeybindingCheckBox(ResourceLocation, int, int, int, Consumer)}. This would
+ * typically be done in {@link IOptionPage#populateGui(IGuiScreen)}.
  */
 public interface ICheckboxWidget {
     /**

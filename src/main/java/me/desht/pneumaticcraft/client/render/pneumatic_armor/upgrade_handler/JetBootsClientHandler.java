@@ -36,9 +36,6 @@ import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class JetBootsClientHandler extends IArmorUpgradeClientHandler.SimpleToggleableHandler<JetBootsHandler> {
-    public static final int BUILDER_MODE_LEVEL = 3;  // tier needed for builder mode
-    public static final int STABLIZERS_LEVEL = 4;  // tier needed for flight stabilizers
-
     private static final ItemStack PICK = new ItemStack(Items.DIAMOND_PICKAXE);
     private static final ItemStack ROTOR = new ItemStack(ModItems.TURBINE_ROTOR.get());
     private static final ItemStack ELYTRA = new ItemStack(Items.ELYTRA);

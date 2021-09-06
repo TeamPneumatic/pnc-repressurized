@@ -11,8 +11,8 @@ import net.minecraft.util.text.TranslationTextComponent;
 import java.util.Optional;
 
 /**
- * The Option Page is the page you see when you press 'F' (by default) with a Pneumatic Helmet equipped. You can
- * register this class by returning a new instance of it at {@link IArmorUpgradeClientHandler#getGuiOptionsPage(IGuiScreen)}
+ * An Option Page is the GUI object which holds the control widgets for a particular Pneumatic Armor upgrade. Create
+ * and return an instance of this class in {@link IArmorUpgradeClientHandler#getGuiOptionsPage(IGuiScreen)}.
  * <p>
  * It is strongly recommended to extend the {@link SimpleOptionPage} class rather than implement this interface directly.
  */

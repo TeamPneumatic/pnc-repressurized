@@ -41,6 +41,9 @@ import java.util.function.Consumer;
 import static me.desht.pneumaticcraft.common.util.PneumaticCraftUtils.xlate;
 
 public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipProvider {
+    // maps upgrade ID to keybind widget
+    private static final Map<ResourceLocation, WidgetKeybindCheckBox> id2checkBox = new HashMap<>();
+
     private static WidgetKeybindCheckBox coreComponents;
 
     private final ResourceLocation upgradeID;
@@ -57,25 +60,23 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
     }
 
     public static WidgetKeybindCheckBox getOrCreate(ResourceLocation upgradeID, int x, int y, int color, Consumer<ICheckboxWidget> pressable) {
-        WidgetKeybindCheckBox newCheckBox = KeyDispatcher.id2checkBox.get(upgradeID);
-        if (newCheckBox == null) {
-            newCheckBox = new WidgetKeybindCheckBox(upgradeID, x, y, color, pressable);
-            newCheckBox.checked = ArmorFeatureStatus.INSTANCE.isUpgradeEnabled(upgradeID);
-            KeyDispatcher.id2checkBox.put(upgradeID, newCheckBox);
-            KeyBinding keyBinding = ArmorUpgradeClientRegistry.getInstance().getKeybindingForUpgrade(upgradeID);
+        return id2checkBox.computeIfAbsent(upgradeID, id -> {
+            WidgetKeybindCheckBox newCheckBox = new WidgetKeybindCheckBox(id, x, y, color, pressable);
+            newCheckBox.checked = ArmorFeatureStatus.INSTANCE.isUpgradeEnabled(id);
+            KeyBinding keyBinding = ArmorUpgradeClientRegistry.getInstance().getKeybindingForUpgrade(id);
             if (keyBinding != null) {
                 KeyDispatcher.desc2checkbox.put(keyBinding.getName(), newCheckBox);
             }
-            if (upgradeID.equals(ArmorUpgradeRegistry.getInstance().coreComponentsHandler.getID())) {
+            if (id.equals(ArmorUpgradeRegistry.getInstance().coreComponentsHandler.getID())) {
                 // stash this one since it's referenced a lot
                 coreComponents = newCheckBox;
             }
-        }
-        return newCheckBox;
+            return newCheckBox;
+        });
     }
 
     public static WidgetKeybindCheckBox get(ResourceLocation upgradeID) {
-        return KeyDispatcher.id2checkBox.get(upgradeID);
+        return id2checkBox.get(upgradeID);
     }
 
     public static WidgetKeybindCheckBox forUpgrade(IArmorUpgradeHandler<?> handler) {
@@ -255,8 +256,6 @@ public class WidgetKeybindCheckBox extends WidgetCheckBox implements ITooltipPro
 
     @Mod.EventBusSubscriber(modid = Names.MOD_ID, value = Dist.CLIENT)
     public static class KeyDispatcher {
-        // maps upgrade ID to keybind widget
-        private static final Map<ResourceLocation, WidgetKeybindCheckBox> id2checkBox = new HashMap<>();
         // maps keybind ID (description) to keybind widget
         private static final Map<String, WidgetKeybindCheckBox> desc2checkbox = new HashMap<>();
         // thanks forge for caching these

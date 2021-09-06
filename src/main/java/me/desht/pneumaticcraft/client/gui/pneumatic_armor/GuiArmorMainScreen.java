@@ -46,13 +46,13 @@ public class GuiArmorMainScreen extends GuiPneumaticScreenBase implements IGuiSc
             new ItemStack(ModItems.PNEUMATIC_HELMET.get())
     };
 
-    private final List<UpgradeOption> upgradeOptions = new ArrayList<>();
-    private static int pageNumber;
-    private boolean inInitPhase = true;
-    private final UpgradeOption nullOptionsPage = new UpgradeOption(new NullOptions(this), RL("null"), new ItemStack(Items.BARRIER));
-
     // A static instance which can handle keybinds when the GUI is closed.
     private static GuiArmorMainScreen instance;
+    private static int pageNumber;
+
+    private final List<UpgradeOption> upgradeOptions = new ArrayList<>();
+    private boolean inInitPhase = true;
+    private final UpgradeOption nullOptionsPage = new UpgradeOption(new NullOptions(this), RL("null"), new ItemStack(Items.BARRIER));
 
     private GuiArmorMainScreen() {
         super(new StringTextComponent("Main Screen"));

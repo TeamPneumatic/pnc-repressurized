@@ -4,7 +4,6 @@ import me.desht.pneumaticcraft.api.item.EnumUpgrade;
 import me.desht.pneumaticcraft.api.pneumatic_armor.BaseArmorUpgradeHandler;
 import me.desht.pneumaticcraft.api.pneumatic_armor.IArmorExtensionData;
 import me.desht.pneumaticcraft.api.pneumatic_armor.ICommonArmorHandler;
-import me.desht.pneumaticcraft.client.render.pneumatic_armor.upgrade_handler.JetBootsClientHandler;
 import me.desht.pneumaticcraft.client.sound.MovingSounds;
 import me.desht.pneumaticcraft.common.advancements.AdvancementTriggers;
 import me.desht.pneumaticcraft.common.config.PNCConfig;
@@ -37,6 +36,9 @@ import java.util.function.Supplier;
 import static me.desht.pneumaticcraft.api.PneumaticRegistry.RL;
 
 public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.JetBootsLocalState> {
+    public static final int BUILDER_MODE_LEVEL = 3;  // tier needed for builder mode
+    public static final int STABLIZERS_LEVEL = 4;  // tier needed for flight stabilizers
+
     @Override
     public ResourceLocation getID() {
         return RL("jet_boots");
@@ -75,7 +77,7 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
 
         if (commonArmorHandler.hasMinPressure(EquipmentSlotType.FEET)) {
             if (jbState.isActive()) {
-                if (jbState.isBuilderMode() && jetbootsCount >= JetBootsClientHandler.BUILDER_MODE_LEVEL) {
+                if (jbState.isBuilderMode() && jetbootsCount >= BUILDER_MODE_LEVEL) {
                     // builder mode - rise vertically (or hover if sneaking and firing)
                     setYMotion(player, player.isShiftKeyDown() ? 0 : 0.15 + 0.15 * (jetbootsCount - 3));
                     jetbootsAirUsage = (int) (PNCConfig.Common.Armor.jetBootsAirUsage * jetbootsCount / 2.5F);
@@ -94,7 +96,7 @@ public class JetBootsHandler extends BaseArmorUpgradeHandler<JetBootsHandler.Jet
                 // and bring player to complete halt if flight stabilizers and not actively moving forward/sideways
                 boolean reallyHovering = !jbLocal.isSmartHover() || jbLocal.isHovering();
                 boolean stopped = jbLocal.isFlightStabilizers()
-                        && jetbootsCount >= JetBootsClientHandler.STABLIZERS_LEVEL
+                        && jetbootsCount >= STABLIZERS_LEVEL
                         && PneumaticCraftUtils.epsilonEquals(player.zza, 0f)
                         && PneumaticCraftUtils.epsilonEquals(player.xxa, 0f);
                 double xMotion = stopped ? 0 : player.getDeltaMovement().x;
