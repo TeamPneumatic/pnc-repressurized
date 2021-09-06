@@ -162,7 +162,7 @@ dependencies {
 }
 
 minecraft {
-	mappings channel: 'parchment', version: "2021.08.08-${project.mc_version}"
+	mappings channel: 'parchment', version: "${project.mappings_version}-${project.mc_version}"
 
 	accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
