@@ -5,8 +5,8 @@
     "1.16.3-latest": "1.16.5-2.10.3-149",
     "1.16.4-recommmended": "1.16.5-2.10.3-149",
     "1.16.4-latest": "1.16.5-2.10.3-149",
-    "1.16.5-recommmended": "1.16.5-2.14.1-245",
-    "1.16.5-latest": "1.16.5-2.14.1-245"
+    "1.16.5-recommmended": "1.16.5-2.14.2-247",
+    "1.16.5-latest": "1.16.5-2.14.2-247"
   },
   "1.16.5": {
     "1.16.4-2.9.3-120": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.4/Changelog.md#293-120-17-jan-2021",
@@ -33,6 +33,7 @@
     "1.16.5-2.13.3-209": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.4/Changelog.md#2133-211-3-aug-2021",
     "1.16.5-2.13.4-215": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.4/Changelog.md#2134-215-20-aug-2021",
     "1.16.5-2.14.0-227": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.4/Changelog.md#2140-227-27-aug-2021",
-    "1.16.5-2.14.1-245": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.4/Changelog.md#2141-245-31-aug-2021"
+    "1.16.5-2.14.1-245": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.5/Changelog.md#2141-245-31-aug-2021",
+    "1.16.5-2.14.2-247": "https://github.com/TeamPneumatic/pnc-repressurized/blob/1.16.5/Changelog.md#2142-247-6-sep-2021"
   }
 }
