@@ -887,6 +887,11 @@ public class EntityDrone extends EntityDroneBase implements
         }
     }
 
+    @Override
+    public boolean startRiding(Entity entity, boolean force) {
+        return PNCConfig.Common.General.dronesCanBePickedUp && super.startRiding(entity, force);
+    }
+
     protected BasicAirHandler getAirHandler() {
         if (airHandler == null) {
             int vol = PressureHelper.getUpgradedVolume(PneumaticValues.DRONE_VOLUME, getUpgrades(EnumUpgrade.VOLUME));
@@ -1015,7 +1020,7 @@ public class EntityDrone extends EntityDroneBase implements
     @Override
     public UUID getOwnerUUID() {
         if (ownerUUID == null) {
-            Log.warning(String.format("Drone with owner '%s' has no UUID! Substituting the Drone's UUID (%s).", ownerName, getUUID().toString()));
+            Log.warning("Drone with owner '%s' has no UUID! Substituting the Drone's UUID (%s).", ownerName, getUUID());
             Log.warning("If you use any protection mods, the drone might not be able to operate in protected areas.");
             ownerUUID = getUUID();
         }
@@ -1277,7 +1282,7 @@ public class EntityDrone extends EntityDroneBase implements
             for (Entity e : getCarryingEntities()) {
                 e.stopRiding();
                 double y = e.getY();
-                if (e instanceof AbstractMinecartEntity || e instanceof BoatEntity) {
+                if (PNCConfig.Common.General.dronesCanBePickedUp && (e instanceof AbstractMinecartEntity || e instanceof BoatEntity)) {
                     // little kludge to prevent the dropped minecart/boat immediately picking up the drone
                     y -= 2;
                     BlockPos pos = PneumaticCraftUtils.getPosForEntity(e);

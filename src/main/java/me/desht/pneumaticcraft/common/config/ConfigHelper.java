@@ -72,6 +72,7 @@ public class ConfigHelper {
         PNCConfig.Common.General.useUpDyesWhenColoring = common.general.useUpDyesWhenColoring.get();
         PNCConfig.Common.General.dronesRenderHeldItem = common.general.dronesRenderHeldItem.get();
         PNCConfig.Common.General.dronesCanImportXPOrbs = common.general.dronesCanImportXPOrbs.get();
+        PNCConfig.Common.General.dronesCanBePickedUp = common.general.dronesCanBePickedUp.get();
         PNCConfig.Common.General.droneDebuggerPathParticles = common.general.droneDebuggerPathParticles.get();
         PNCConfig.Common.General.vacuumTrapBlacklist = common.general.vacuumTrapBlacklist.get()
                 .stream().map(resourceName -> new ResourceLocation(resourceName.toLowerCase())).collect(Collectors.toSet());

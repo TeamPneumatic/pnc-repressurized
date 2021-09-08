@@ -23,6 +23,7 @@ public class CommonConfig {
         ForgeConfigSpec.BooleanValue useUpDyesWhenColoring;
         ForgeConfigSpec.BooleanValue dronesRenderHeldItem;
         ForgeConfigSpec.BooleanValue dronesCanImportXPOrbs;
+        ForgeConfigSpec.BooleanValue dronesCanBePickedUp;
     }
     public static class Machines {
         ForgeConfigSpec.BooleanValue aerialInterfaceArmorCompat;
@@ -218,6 +219,10 @@ public class CommonConfig {
                 .comment("Are drones allowed to import Experience Orbs and convert them to Memory Essence fluid?")
                 .translation("pneumaticcraft.config.common.general.drones_can_import_xp_orbs")
                 .define("drones_can_import_xp_orbs", true);
+        general.dronesCanBePickedUp = builder
+                .comment("Will Drones automatically get picked up by Boats/Minecarts/etc. if they're close enough?")
+                .translation("pneumaticcraft.config.common.general.drones_can_be_picked_up")
+                .define("drones_can_be_picked_up", false);
         general.droneDebuggerPathParticles = builder
                 .comment("Show particle trail indicating the currently-debugged drone's planned path")
                 .translation("pneumaticcraft.config.common.general.drone_debugger_path_particles")
