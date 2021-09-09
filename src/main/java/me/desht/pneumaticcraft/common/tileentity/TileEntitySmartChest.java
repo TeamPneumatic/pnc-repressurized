@@ -41,10 +41,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.EnumMap;
-import java.util.List;
+import java.util.*;
 
 public class TileEntitySmartChest extends TileEntityTickableBase
         implements INamedContainerProvider, IRedstoneControl<TileEntitySmartChest>, IComparatorSupport {
@@ -108,6 +105,8 @@ public class TileEntitySmartChest extends TileEntityTickableBase
         }
 
         return IOHelper.getInventoryForTE(te, dir.getOpposite()).map(dstHandler -> {
+            validateCachedSlot(pushSlots, dir, dstHandler);
+
             ItemStack toPush = findNextItem(inventory, pushSlots, dir);
             if (toPush.isEmpty()) {
                 // empty inventory
@@ -150,6 +149,8 @@ public class TileEntitySmartChest extends TileEntityTickableBase
         }
 
         return IOHelper.getInventoryForTE(getCachedNeighbor(dir), dir.getOpposite()).map(srcHandler -> {
+            validateCachedSlot(pullSlots, dir, srcHandler);
+
             ItemStack toPull = findNextItem(srcHandler, pullSlots, dir);
             if (toPull.isEmpty()) {
                 // source inventory is empty
@@ -193,6 +194,14 @@ public class TileEntitySmartChest extends TileEntityTickableBase
             return didWork;
         }
         return false;
+    }
+
+    private void validateCachedSlot(Map<Direction,Integer> slotMap, Direction dir, IItemHandler handler) {
+        // ensure cached slot is still valid for the handler we have
+        // could become invalid if the neighbouring TE has been replaced by one with a smaller inventory?
+        if (slotMap.getOrDefault(dir, 0) >= handler.getSlots()) {
+            slotMap.remove(dir);
+        }
     }
 
     /**
