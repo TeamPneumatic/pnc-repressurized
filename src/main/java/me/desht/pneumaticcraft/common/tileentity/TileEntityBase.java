@@ -210,6 +210,19 @@ public abstract class TileEntityBase extends TileEntity
         if (getHeatCap(null).isPresent()) getHeatCap(null).invalidate();
     }
 
+    @Override
+    public void setChanged() {
+        // overridden to only update neighbours if this TE actually has a useful comparator output
+        if (level != null) {
+            if (level.isAreaLoaded(worldPosition, 0)) {
+                level.getChunkAt(worldPosition).markUnsaved();
+            }
+            if (this instanceof IComparatorSupport && !this.getBlockState().isAir(this.level, this.worldPosition)) {
+                this.level.updateNeighbourForOutputSignal(this.worldPosition, this.getBlockState().getBlock());
+            }
+        }
+    }
+
     protected void onFirstServerTick() {
         // TODO 1.17 should be able to replace onFirstServerTick() with onLoad()
         if (this instanceof IHeatExchangingTE) {
@@ -218,7 +231,9 @@ public abstract class TileEntityBase extends TileEntity
     }
 
     protected void updateNeighbours() {
-        level.updateNeighborsAt(getBlockPos(), getBlockState().getBlock());
+        if (level != null) {
+            level.updateNeighborsAt(getBlockPos(), getBlockState().getBlock());
+        }
     }
 
     public void onBlockRotated() {
@@ -230,7 +245,9 @@ public abstract class TileEntityBase extends TileEntity
     }
 
     void rerenderTileEntity() {
-        level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 0);
+        if (level != null) {
+            level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 0);
+        }
     }
 
     protected boolean shouldRerenderChunkOnDescUpdate() {
@@ -238,7 +255,7 @@ public abstract class TileEntityBase extends TileEntity
     }
 
     /**
-     * Encoded into the description packet. Also included in saved data written by {@link TileEntityBase#write(CompoundNBT)}
+     * Encoded into the description packet. Also included in saved data written by {@link TileEntityBase#save(CompoundNBT)}
      *
      * Prefer to use @DescSynced where possible - use this either for complex fields not handled by @DescSynced,
      * or for non-ticking tile entities.
@@ -253,7 +270,7 @@ public abstract class TileEntityBase extends TileEntity
     }
 
     /**
-     * Encoded into the description packet. Also included in saved data read by {@link TileEntityBase#read(BlockState, CompoundNBT)}.
+     * Encoded into the description packet. Also included in saved data read by {@link TileEntityBase#load(BlockState, CompoundNBT)}.
      *
      * Prefer to use @DescSynced where possible - use this either for complex fields not handled by @DescSynced,
      * or for non-ticking tile entities.
@@ -370,12 +387,14 @@ public abstract class TileEntityBase extends TileEntity
     }
 
     public boolean isGuiUseableByPlayer(PlayerEntity player) {
-        return getLevel().getBlockEntity(getBlockPos()) == this
+        return level != null && level.getBlockEntity(getBlockPos()) == this
                 && player.distanceToSqr(Vector3d.atCenterOf(getBlockPos())) <= 64.0D;
     }
 
     public TileEntity getCachedNeighbor(Direction dir) {
         // don't attempt to cache client-side; we don't get neighbour block updates there so can't reliably clear the cache
+        if (level == null) return null;
+
         return level.isClientSide ?
                 level.getBlockEntity(worldPosition.relative(dir)) :
                 neighbourCache.getCachedNeighbour(dir);
@@ -383,7 +402,7 @@ public abstract class TileEntityBase extends TileEntity
 
     /**
      * Called when a neighboring tile entity changes state (specifically when
-     * {@link net.minecraft.world.World#updateComparatorOutputLevel(BlockPos, Block)} is called.
+     * {@link net.minecraft.world.World#updateNeighbourForOutputSignal(BlockPos, Block)} is called.
      * @param tilePos the blockpos of the neighboring tile entity
      */
     public void onNeighborTileUpdate(BlockPos tilePos) {
@@ -572,7 +591,7 @@ public abstract class TileEntityBase extends TileEntity
     /**
      * Get any extra data to be serialized onto a dropped item stack. The supplied tag is the "BlockEntityTag" subtag of
      * the item's NBT data, so will be automatically deserialized into the TE (i.e. available to
-     * {@link TileEntity#read(BlockState, CompoundNBT)} method) when the itemblock  is next placed.
+     * {@link TileEntity#load(BlockState, CompoundNBT)} method) when the itemblock  is next placed.
      *
      * @param blockEntityTag the existing "BlockEntityTag" subtag to add data to
      * @param preserveState true when dropped with a wrench, false when broken with a pickaxe etc.
